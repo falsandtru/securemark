@@ -1145,6 +1145,9 @@ require = function e(t, n, r) {
             var syntax_1 = require('../syntax');
             var segment_1 = require('./segment');
             function bind(el, source) {
+                if (source === void 0) {
+                    source = '';
+                }
                 var pairs = [];
                 void segment_1.segment(source).reduce(function (el, s) {
                     return void pairs.push([
