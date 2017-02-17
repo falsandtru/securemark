@@ -52,7 +52,7 @@ require = function e(t, n, r) {
         },
         {
             './syntax': 7,
-            './view': 31
+            './view': 32
         }
     ],
     5: [
@@ -115,17 +115,10 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var loop_1 = require('./parser/loop');
-            var block_1 = require('./syntax/block');
-            function parse(source) {
-                return (loop_1.loop(block_1.block)(source) || [[]])[0];
-            }
-            exports.parse = parse;
+            var parser_1 = require('./syntax/parser');
+            exports.parse = parser_1.parse;
         },
-        {
-            './parser/loop': 6,
-            './syntax/block': 8
-        }
+        { './syntax/parser': 30 }
     ],
     8: [
         function (require, module, exports) {
@@ -882,7 +875,7 @@ require = function e(t, n, r) {
         {
             '../../parser/compose': 5,
             '../../parser/loop': 6,
-            '../string/url': 30,
+            '../string/url': 31,
             './text': 29
         }
     ],
@@ -935,7 +928,7 @@ require = function e(t, n, r) {
         {
             '../../parser/compose': 5,
             '../../parser/loop': 6,
-            '../string/url': 30,
+            '../string/url': 31,
             './image': 24,
             './text': 29
         }
@@ -1107,6 +1100,24 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var loop_1 = require('../parser/loop');
+            var block_1 = require('./block');
+            function parse(source) {
+                return Array.from((loop_1.loop(block_1.block)(source) || [[]])[0]).reduce(function (doc, el) {
+                    return void doc.appendChild(el), doc;
+                }, document.createDocumentFragment());
+            }
+            exports.parse = parse;
+        },
+        {
+            '../parser/loop': 6,
+            './block': 8
+        }
+    ],
+    31: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
             function sanitize(url) {
                 url = url.trim();
                 try {
@@ -1129,16 +1140,16 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    31: [
+    32: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var bind_1 = require('./view/bind');
             exports.bind = bind_1.bind;
         },
-        { './view/bind': 32 }
+        { './view/bind': 33 }
     ],
-    32: [
+    33: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1152,7 +1163,7 @@ require = function e(t, n, r) {
                 void segment_1.segment(source).reduce(function (el, s) {
                     return void pairs.push([
                         s,
-                        syntax_1.parse(s)
+                        Array.from(syntax_1.parse(s).children)
                     ]), void pairs[pairs.length - 1][1].forEach(function (e) {
                         return void el.appendChild(e);
                     }), el;
@@ -1181,31 +1192,31 @@ require = function e(t, n, r) {
                             return void e.remove();
                         });
                     });
-                    void pairs.splice.apply(pairs, [
+                    var ref = pairs.slice(i).reduce(function (e, _a) {
+                        var es = _a[1];
+                        return e || es[0];
+                    }, null);
+                    return void pairs.splice.apply(pairs, [
                         i,
                         0
                     ].concat(ns.slice(i, ns.length - j).map(function (s) {
                         return [
                             s,
-                            syntax_1.parse(s).reverse().map(function (e) {
-                                return el.insertBefore(e, pairs.slice(i).reduce(function (e, _a) {
-                                    var es = _a[1];
-                                    return e || es[0];
-                                }, null));
-                            }).reverse()
+                            Array.from(syntax_1.parse(s).children).map(function (e) {
+                                return el.insertBefore(e, ref);
+                            })
                         ];
                     })));
-                    return;
                 };
             }
             exports.bind = bind;
         },
         {
             '../syntax': 7,
-            './segment': 33
+            './segment': 34
         }
     ],
-    33: [
+    34: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
