@@ -2,6 +2,12 @@
 
 describe('Unit: binder/bind', () => {
   describe('bind', () => {
+    it('empty', () => {
+      const el = document.createElement('div');
+      bind(el);
+      assert(el.innerHTML === '');
+    });
+
     it('update', () => {
       const el = document.createElement('div');
       const update = bind(el, '');

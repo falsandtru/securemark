@@ -6,4 +6,4 @@
 */
 
 export function parse(source: string): HTMLElement[];
-export function bind(el: HTMLElement, source: string): (source: string) => void;
+export function bind(el: HTMLElement, source?: string): (source: string) => void;
