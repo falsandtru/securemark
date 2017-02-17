@@ -9,18 +9,7 @@
     "url": "https://github.com/falsandtru/securemark"
   },
   "keywords": [
-    "supervisor",
-    "actor",
-    "observable",
-    "sequence",
-    "generator",
-    "iterator",
-    "maybe",
-    "either",
-    "monad",
-    "list",
-    "hlist",
-    "cache"
+    "markdown"
   ],
   "main": "./dist/securemark.js",
   "files": [
