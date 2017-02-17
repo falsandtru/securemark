@@ -6,7 +6,7 @@ export function bind(el: HTMLElement, source: string = ''): (source: string) => 
   const pairs: Pair[] = [];
   void segment(source)
     .reduce((el, s) => (
-      void pairs.push([s, parse(s)]),
+      void pairs.push([s, Array.from<HTMLElement>(<any>parse(s).children)]),
       void pairs[pairs.length - 1][1]
         .forEach(e =>
           void el.appendChild(e)),
@@ -29,9 +29,17 @@ export function bind(el: HTMLElement, source: string = ''): (source: string) => 
         void es
           .forEach(e =>
             void e.remove()));
-    void pairs.splice(i, 0, ...ns.slice(i, ns.length - j).map<Pair>(s => [s, parse(s).reverse().map(e =>
-      <HTMLElement>el.insertBefore(e, pairs.slice(i).reduce<HTMLElement | null>((e, [, es]) => e || es[0], null))
-    ).reverse()]));
-    return;
+    const ref = pairs.slice(i).reduce<HTMLElement | null>((e, [, es]) => e || es[0], null);
+    return void pairs.splice(
+      i,
+      0,
+      ...ns.slice(i, ns.length - j)
+        .map<Pair>(s =>
+          [
+            s,
+            Array.from<HTMLElement>(<any>parse(s).children)
+              .map(e =>
+                <HTMLElement>el.insertBefore(e, ref))
+          ]));
   };
 }
