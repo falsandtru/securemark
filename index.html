@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noarchive">
+
+<title>Securemark - secure markdown renderer working on browsers for user input data</title>
+
+<!-- Bootstrap -->
+<!-- Latest compiled and minified CSS -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+</head>
+<body>
+<noscript><p class="browsehappy warning">Please enable <strong>JavaScript</strong></p></noscript>
+<!--[if lte IE 9]>
+<p class="alert alert-warning" role="alert">You are using an <strong>outdated</strong> browser. Please <a class="alert-link" href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<div id="container" class="container">
+<!-- ----- HEADER ------------------------------------------------------------- -->
+<header id="header" class="row">
+<h1>Securemark</h1>
+<h3>Secure markdown renderer working on browsers for user input data.</h3>
+<p><a href="https://github.com/falsandtru/securemark">https://github.com/falsandtru/securemark</a></p>
+<p>Share: <a id="share" href=""></a></p>
+</header>
+
+<div id="wrapper" class="row">
+<!-- ----- PRIMARY ------------------------------------------------------------ -->
+<div id="primary" class="col-md-12">
+<article id="content">
+  <p>time: <span id="time">-</span>ms (<span id="diff">-</span>ms improved)</p>
+  <textarea id="editor" style="float: left; width: 45%; min-height: 200px;"></textarea>
+  <div id="viewer" style="float: left; width: 45%; min-height: 200px"></div>
+</article>
+<aside></aside>
+</div>
+
+</div>
+
+<!-- ----- FOOTER ------------------------------------------------------------- -->
+<footer id="footer">
+
+</footer>
+
+</div>
+<script src="https://cdn.polyfill.io/v2/polyfill.js?flags=gated"></script>
+<script src="/securemark/assets/js/lib/securemark.js"></script>
+
+<script>
+  document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
+  document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
+  document.getElementById('editor').value = decodeURIComponent(location.search.replace(/^\??/, '')) || `
+# Title
+
+## List
+
+- 1
+- 2
+- 3
+
+0. a
+0. b
+0. c
+
+>>a
+b
+>c
+`;
+  var parse = require('securemark').parse;
+  var update = require('securemark').bind(document.getElementById('viewer'), document.getElementById('editor').value);
+  var timer = 0;
+  document.getElementById('editor').addEventListener('keyup', function () {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      var time = Date.now();
+      update(document.getElementById('editor').value);
+      var partial = Date.now() - time;
+      Array.from(document.getElementById('viewer').querySelectorAll('img:not([src])'))
+        .forEach(img => img.setAttribute('src', img.getAttribute('data-src')));
+      var time = Date.now();
+      parse(document.getElementById('editor').value);
+      var full = Date.now() - time;
+      document.getElementById('time').textContent = partial;
+      document.getElementById('diff').textContent = full - partial;
+      document.getElementById('share').href = '?' + encodeURIComponent(document.getElementById('editor').value);
+      document.getElementById('share').textContent = document.getElementById('share').href;
+    }, 300);
+  });
+</script>
+
+<script>
+if (!window.ga) {
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-43533651-1', 'auto');
+  ga('require', 'linkid', 'linkid.js');
+  ga('require', 'displayfeatures');
+}
+ga('send', 'pageview', window.location.pathname.replace(/^\/?/, '/') + window.location.search);
+</script>
+
+</body>
+</html>
