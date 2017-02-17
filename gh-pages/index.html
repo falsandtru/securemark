@@ -79,6 +79,8 @@ b
       var time = Date.now();
       update(document.getElementById('editor').value);
       var partial = Date.now() - time;
+      Array.from(document.getElementById('viewer').querySelectorAll('img:not([src])'))
+        .forEach(img => img.setAttribute('src', img.getAttribute('data-src')));
       var time = Date.now();
       parse(document.getElementById('editor').value);
       var full = Date.now() - time;
