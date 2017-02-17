@@ -1,0 +1,10 @@
+﻿# binary
+coverage
+dist/**/*
+
+# vs
+.vs
+obj
+
+# node
+node_modules

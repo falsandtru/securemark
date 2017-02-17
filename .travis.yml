@@ -1,0 +1,78 @@
+language: node_js
+matrix:
+  include:
+  - os: linux
+    dist: trusty
+    sudo: required
+    node_js: 7
+  - os: osx
+    osx_image: xcode8
+    node_js: 7
+env:
+  global:
+  - secure: "WVYUIJ3NRW4toYkOgFR60wjZ8FgYxwU9fDbziySbCUc9y4HQX11Vi/Hrq+BFVb2OADPmQaA4WsV/e+I6WoCzgEJ4/Lx8a+XdrwNgHsvch9UTN05GAYy/PTGsjqVrD7YSE7NWfCdyi/w1nRXYUH99Wvn3Q8cpvtgXWwnhhKyw1FyzLNCQkl21Y5xdwbQBEpvWzZz8fWsWz7+boRlSHV8EaYRyYVyyasc2n/srVMgT32IvhYJWoGjQGaM8Rln88X7VUJidAVMWavjyLicsf+3TzHByMkRG0S3ODNYkZ+LE2Ep27QJi357Q8jEzz8e2W/HL0MNYnst5+V1OOHRjjy5Y/BePhKQqBfF5/8sLBzW9k0HPg2AIHCpchQ4YMod5g3kcpQog84INs4A7zjmIbWwoFhABWDaLZXUyzO2GbKRxdhRPyLF5DGzn66JjRNzPel0vB6z+Iy7Q+dpZ/gMiWewFm2tkfJVnJArTHM12M2gBWqtpyGIRgV2GeYgIAQYPnUFRuU8CvaiptJH+RgfE3/G2z9/MJZAPJAZppv4Pk4XXESRbXYmKhwU4L//uJtnZBXnG8z4Zb5jxhASfnH58e3dWAyak1wcQ/P9zv/cz1YHcvxQwdV044Cv+KNbvIr1RKR9Ry+z9Z5C1VF3Y6K+FSQXdtnI98oM8H2ZbGVt9OOrn0VE="
+  - GIT_OWNER=$(echo $TRAVIS_REPO_SLUG | cut -d/ -f1)
+  - GIT_REPO=$(echo $TRAVIS_REPO_SLUG | cut -d/ -f2)
+  - GIT_COMMITTER_NAME=$(git log -1 --pretty=format:%an)
+  - GIT_COMMITTER_EMAIL=$(git log -1 --pretty=format:%ae)
+  - GIT_COMMIT_ID=$(git rev-parse HEAD)
+addons:
+  firefox: latest
+  apt:
+    sources:
+    - google-chrome
+    packages:
+    - google-chrome-stable
+before_install:
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CHROME_BIN=chromium-browser; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0; fi
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew cask install google-chrome; fi
+script:
+- npm run ci
+before_deploy:
+- sed -i 's/"private":\ true/"private":\ false/' package.json
+- sed -i -E 's/^dist\/?.*$//' .gitignore
+deploy:
+  provider: npm
+  email:
+    secure: "Yg7vyltOc+y/S0EZ2A8eEXcCoZvYOK08vdyMxvSd8FEoSHRRGOD0BDhAiIFA2Q4mHqts3lyNjn4LAK1Rp8zXh8TZc0y3vncbIl1z8/igwItK+ZjrkZ6+HMgR916Qw6xz2RU4jYKZzNe638NCc7pIW6dWKa1XlnY/IvmljO8oJ0wbWhnEIWxqhfpmGSl4DaUA+U2Bli0ZJW+hAdy55ZNcV/n0JlYPSy7hejMPMlW5WaHAlcYWhAPJsQV+ouKqQaIhHOXyD/GXqIQEe97e34eJxeQG+bg4wq4EuSUZ/OBas1XHxLDoO/RU09qaYZnZKOrCrjLObb3MJn/pEIBzcnX5zpjDRcBnsqp7FSjwbPtJRVzJaB/pERuXE6DkTGuwjEA3jDj7Fbb1dlw8ET5weRDvfWgHtG+3Y1p9LhsbVHTDjPMPhLLOuzuKksNj8PQY8OHTCdzFGvndaQ/VpEtB6OdqmqTaxptqltA37xr/LXnEEBRrVkWjMNfC5cFswVEP3wa8VKEsc1X2k+p6rTxx2sm91vqcxYsB1E1EqcJq7ArhAcu77wp9GR0Z1/f+8t5mMP+YMEsssXrbH6Ybg74A5GW+/SBxDfoORz8aF96nBBBDTRiSSLwf1IsdVnyXhDpwtMG/43grzs4BkA0PUCedHfRMU+tl5Xw/Wd1iKkSEp8+K/5o="
+  api_key:
+    secure: "Q6qC/2e7tqRBEEDaffHivNb/YZRD+V/Ca9exgQLwLE3UH7ouP6f7tdIu8aJ29fMXPH2284+m5P73YSTLVPV1ntzNjC/b3yT58eAwCLDmQB0y/yTPKCCmvaB/lbe++kZwGFrAaLsKL7lrSNe4DgiL1E270NwbnkKkCh+3vuSaT93s3MQIjAunPBlyUZXaSPdX6PbJUGpBGNgpacgbSJwDa/tUs1CiyjNkLOaXtFTi3INqKG5k7eOOibh6k58yFrKRMeYcvSUslhB3izBKC9OSx38/ZL+C+Yhee7fW9jh/YmaeYY+mBFTcvfSgSqhwMVJmer3AeG/HstO6m+z4VR1opRkK2ewzwSJ0N8r7lIdtsHk89XhdM9UYL9rtrWmw4uQMJbkEH8fEyzZq3zsg08NGrvfa07GwfwnlzXVLRvIa6+kI1Z5hLcRG/PBt0HfabmHuXNDCRa+aD7oxOZHFrWTXlS8VfroOFlOkLIteGY6gn7fUgGNqzjHjc0SPI2m2e7hOg0tgIgYYh3NwyN0U2uJNJAyzUIqEr55ju02iTZcPdFKkZmMZTn7VJD6FIA2lRT9b3R+2D/4tTSDhZEC+6yGuL6A8RhNf1x/jPGSGYwMMydXidYSs3WSZFQCxUCUv668RJ8dmg3paPftJBr+iJlqFiaxhz2VqCrOSROhQw35Yusw="
+  on:
+    branch: master
+    node: 7
+    condition: $TRAVIS_OS_NAME = linux
+  skip_cleanup: true
+notifications:
+  email:
+    recipients:
+      secure: "Yg7vyltOc+y/S0EZ2A8eEXcCoZvYOK08vdyMxvSd8FEoSHRRGOD0BDhAiIFA2Q4mHqts3lyNjn4LAK1Rp8zXh8TZc0y3vncbIl1z8/igwItK+ZjrkZ6+HMgR916Qw6xz2RU4jYKZzNe638NCc7pIW6dWKa1XlnY/IvmljO8oJ0wbWhnEIWxqhfpmGSl4DaUA+U2Bli0ZJW+hAdy55ZNcV/n0JlYPSy7hejMPMlW5WaHAlcYWhAPJsQV+ouKqQaIhHOXyD/GXqIQEe97e34eJxeQG+bg4wq4EuSUZ/OBas1XHxLDoO/RU09qaYZnZKOrCrjLObb3MJn/pEIBzcnX5zpjDRcBnsqp7FSjwbPtJRVzJaB/pERuXE6DkTGuwjEA3jDj7Fbb1dlw8ET5weRDvfWgHtG+3Y1p9LhsbVHTDjPMPhLLOuzuKksNj8PQY8OHTCdzFGvndaQ/VpEtB6OdqmqTaxptqltA37xr/LXnEEBRrVkWjMNfC5cFswVEP3wa8VKEsc1X2k+p6rTxx2sm91vqcxYsB1E1EqcJq7ArhAcu77wp9GR0Z1/f+8t5mMP+YMEsssXrbH6Ybg74A5GW+/SBxDfoORz8aF96nBBBDTRiSSLwf1IsdVnyXhDpwtMG/43grzs4BkA0PUCedHfRMU+tl5Xw/Wd1iKkSEp8+K/5o="
+    on_success: change
+    on_failure: always
+after_deploy:
+- if [ $TRAVIS_BRANCH != "master" ] || [ ! $GH_TOKEN ]; then exit 0; fi
+- if [ $deploy == "false" ]; then exit 0; fi
+- gulp site
+- mkdir ../gh-pages
+- cp -rf ./gh-pages ../
+- cat package.json | json version
+- new_version=$(cat package.json | json version)
+- git reset --hard HEAD~
+- cat package.json | json version
+- old_version=$(cat package.json | json version)
+- git reset --hard ORIG_HEAD
+- node -e 'if (!require("semver").gte(process.argv[1], process.argv[2])) process.exit(1)' $new_version $old_version || exit 0
+- git fetch origin gh-pages:gh-pages
+- git checkout --orphan gh-pages
+- git checkout -m gh-pages
+- ls -a | grep -vE "^.git$|^\.+$" | xargs rm -rf
+- cp -rf ../gh-pages/* ./
+- find | grep -vE "^./.git(/|$)"
+- sed -i 's|\(baseurl:\s\+\)|\1//falsandtru.github.io|' _config.yml
+- git config user.name "Travis-CI"
+- git config user.email "Travis-CI"
+- git add -A :/
+- git commit -m 'chore(deploy)'\:' deploy web contents by Travis-CI'
+- git push https://${GH_TOKEN}@github.com/${GIT_OWNER}/${GIT_REPO}.git gh-pages:gh-pages 2>&1 | sed -e "s/:\/\/\w\+@/:\/\/[secure]@/g"
