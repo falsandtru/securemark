@@ -13,6 +13,10 @@ Secure markdown renderer working on browsers for user input data.
 - Recursive parsing.
 - Incremental update.
 
+## Demo
+
+https://falsandtru.github.io/securemark/
+
 ## API
 
 [index.d.ts](index.d.ts)
