@@ -14,7 +14,7 @@ export const image: ImageParser = function (source: string): Result<HTMLImageEle
   const [[, , ...first], next] = loop(compose<SubParsers, HTMLElement | Text>([text]), /^\]|^\n/)(source) || [[], ''];
   if (!next.startsWith('](')) return;
   const caption = first.reduce((s, c) => s + c.textContent, '').trim();
-  const [[, , ...second], rest] = loop(text, /^\)|^\n/)(next) || [[], ''];
+  const [[, , ...second], rest] = loop(text, /^\)|^\s/)(next) || [[], ''];
   if (!rest.startsWith(')')) return;
   const url = sanitize(second.reduce((s, c) => s + c.textContent, ''));
   if (url === '') return;

@@ -70,6 +70,11 @@ describe('Unit: syntax/text', () => {
       assert.deepStrictEqual(inspect(parser('||')), [['|', '|'], '']);
     });
 
+    it('space', () => {
+      const parser = loop(text);
+      assert.deepStrictEqual(inspect(parser('  ')), [[' ', ' '], '']);
+    });
+
     it('newlinw', () => {
       const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('\n ')), [[' '], '']);

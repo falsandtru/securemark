@@ -1,7 +1,7 @@
 ﻿import { Result } from '../../parser.d';
 import { TextParser } from '../inline';
 
-const separator = /[!~*`<>\[\]\(\)\|\n\\]/;
+const separator = /[!~*`<>\[\]\(\)\|\s\n\\]/;
 
 export const text: TextParser = function (source: string): Result<HTMLElement | Text, never> {
   if (source.length === 0) return;

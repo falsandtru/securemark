@@ -17,14 +17,19 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     : compose<SubParsers, HTMLElement | Text>([image])(source.slice(1)) || loop(compose<SubParsers, HTMLElement | Text>([text]), /^\]|^\n/)(source.slice(1)) || [[], ''];
   if (!next.startsWith('](')) return;
   const children = squash(first);
-  const [[, , ...second], rest] = loop(text, /^\)|^\n/)(next) || [[], ''];
+  const [[, , ...second], rest] = loop(text, /^\)|^\s(?!nofollow\))/)(next) || [[], ''];
   if (!rest.startsWith(')')) return;
-  const url = sanitize(second.reduce((s, c) => s + c.textContent, ''));
+  const [INSECURE_URL, nofollow] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
+  const url = sanitize(INSECURE_URL);
   if (url === '') return;
+  assert(nofollow === void 0 || nofollow === 'nofollow');
   const el = document.createElement('a');
   void el.setAttribute('href', url);
   if (location.protocol !== el.protocol || location.host !== el.host) {
     void el.setAttribute('target', '_blank');
+  }
+  if (nofollow) {
+    void el.setAttribute('rel', 'nofollow');
   }
   void el.appendChild(children.querySelector('img') || document.createTextNode((children.textContent || url).trim()));
   return [[el], rest.slice(1)];
