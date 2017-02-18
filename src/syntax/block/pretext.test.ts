@@ -16,6 +16,7 @@ describe('Unit: syntax/pretext', () => {
 
     it('ab', () => {
       const parser = loop(pretext);
+      assert.deepStrictEqual(inspect(parser('```\n\n```')), [['<pre></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\na\n```')), [['<pre>a</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\na\nb\n```')), [['<pre>a\nb</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n\\\n```')), [['<pre>\\</pre>'], '']);

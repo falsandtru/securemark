@@ -21,6 +21,7 @@ export namespace MarkdownParser {
       BlockParser.TableParser,
       BlockParser.BlockquoteParser,
       BlockParser.PreTextParser,
+      BlockParser.ExtensionParser,
       BlockParser.ParagraphParser
     ]> {
   }
@@ -90,6 +91,24 @@ export namespace MarkdownParser {
       Parser<HTMLPreElement, [
         InlineParser.PlainTextParser
       ]> {
+    }
+    export interface ExtensionParser extends
+      // ~~~
+      // ABC
+      // : abc
+      // ~~~
+      Markdown<'extension'>,
+      Parser<HTMLElement, [
+        ExtensionParser.PlaceholderParser
+      ]> {
+    }
+    export namespace ExtensionParser {
+      export interface PlaceholderParser extends
+        Markdown<'extension/placeholder'>,
+        Parser<HTMLElement, [
+          never
+        ]> {
+      }
     }
     export interface ParagraphParser extends
       // abc

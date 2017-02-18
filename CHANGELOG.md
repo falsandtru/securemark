@@ -3,6 +3,7 @@
 ## 0.4.0
 
 - Enhance pretext syntax.
+- Add extension syntax.
 - Allow `wbr` html tag.
 
 ## 0.3.1

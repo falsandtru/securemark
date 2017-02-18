@@ -9,6 +9,7 @@ import { olist } from './block/olist';
 import { table } from './block/table';
 import { blockquote } from './block/blockquote';
 import { pretext } from './block/pretext';
+import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 
 export import BlockParser = MarkdownParser.BlockParser;
@@ -20,6 +21,7 @@ export import OListParser = BlockParser.OListParser;
 export import TableParser = BlockParser.TableParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import PreTextParser = BlockParser.PreTextParser;
+export import ExtensionParser = BlockParser.ExtensionParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = compose<[
@@ -31,6 +33,7 @@ export const block: BlockParser = compose<[
   TableParser,
   BlockquoteParser,
   PreTextParser,
+  ExtensionParser,
   ParagraphParser
 ], HTMLElement>([
   newline,
@@ -41,6 +44,7 @@ export const block: BlockParser = compose<[
   table,
   blockquote,
   pretext,
+  extension,
   paragraph
 ]);
 
