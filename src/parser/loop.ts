@@ -6,6 +6,7 @@ export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, unti
     if (until && rest.slice(0, 99).search(until) === 0) return;
     const results: R[] = [];
     while (true) {
+      if (rest === '') break;
       const r = parser(rest);
       if (!r) break;
       void results.push(...r[0]);
@@ -13,8 +14,8 @@ export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, unti
       rest = r[1];
       if (until && rest.slice(0, 99).search(until) === 0) break;
     }
-    return source.length === rest.length
-      ? void 0
-      : [results, rest];
+    return rest.length < source.length
+      ? [results, rest]
+      : void 0;
   };
 }
