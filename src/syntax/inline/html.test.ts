@@ -19,23 +19,18 @@ describe('Unit: syntax/html', () => {
       const parser = loop(html);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('</u>')), void 0);
-      assert.deepStrictEqual(inspect(parser('u<u>')), void 0);
+      assert.deepStrictEqual(inspect(parser('a')), void 0);
+      assert.deepStrictEqual(inspect(parser('a<u>')), void 0);
     });
 
     it('ab', () => {
       const parser = loop(html);
-      assert.deepStrictEqual(inspect(parser('a')), void 0);
-      assert.deepStrictEqual(inspect(parser('ab')), void 0);
-    });
-
-    it('html', () => {
-      const parser = loop(html);
       assert.deepStrictEqual(inspect(parser('<u>')), [['<u></u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>u')), [['<u>u</u>'], '']);
+      assert.deepStrictEqual(inspect(parser('<u>a')), [['<u>a</u>'], '']);
       assert.deepStrictEqual(inspect(parser('<u><u>')), [['<u><u></u></u>'], '']);
       assert.deepStrictEqual(inspect(parser('<u></u>')), [['<u></u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>u</u>')), [['<u>u</u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>u</u>u')), [['<u>u</u>'], 'u']);
+      assert.deepStrictEqual(inspect(parser('<u>a</u>')), [['<u>a</u>'], '']);
+      assert.deepStrictEqual(inspect(parser('<u>a</u>a')), [['<u>a</u>'], 'a']);
       assert.deepStrictEqual(inspect(parser('<u>\n</u>')), [['<u></u>'], '']);
     });
 
