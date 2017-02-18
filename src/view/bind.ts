@@ -23,7 +23,7 @@ export function bind(el: HTMLElement, source: string = ''): (source: string) => 
     for (; i + j < os.length && i + j < ns.length; ++j) {
       if (os[os.length - j - 1] !== ns[ns.length - j - 1]) break;
     }
-    if (os.length === j && ns.length === j) return;
+    if (os.length === i && ns.length === i) return;
     void pairs.splice(i, os.length - j - i)
       .forEach(([, es]) =>
         void es
