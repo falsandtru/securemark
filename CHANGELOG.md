@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- Enhance pretext syntax.
+
 ## 0.3.1
 
 - Fix horizontalrule parsing.
@@ -8,7 +12,7 @@
 ## 0.3.0
 
 - Add nofollow link syntax.
-- Fix pre block language specification.
+- Fix pretext language specification.
 
 ## 0.2.0
 
