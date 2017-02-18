@@ -10,6 +10,8 @@ type SubParsers = [InlineParser] | [PlainTextParser];
 const syntax = /^(<([a-z]+)>)/i;
 const inlinetags = Object.freeze('small|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|u|mark|ruby|rt|rp|bdi|bdo|ins|del'.split('|'));
 assert(inlinetags.every(t => /[a-z]+/.test(t)));
+assert(inlinetags.every(t => ['script', 'style', 'link', 'a', 'img'].indexOf(t) === -1));
+assert(inlinetags.every(t => ['s', 'em', 'strong'].indexOf(t) === -1));
 const cache = new Map<string, RegExp>();
 
 export const html: HTMLParser = function (source: string): Result<HTMLElement, SubParsers> {
