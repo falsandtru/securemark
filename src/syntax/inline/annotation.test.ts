@@ -11,6 +11,7 @@ describe('Unit: syntax/annotation', () => {
       assert.deepStrictEqual(inspect(parser('((')), void 0);
       assert.deepStrictEqual(inspect(parser('()')), void 0);
       assert.deepStrictEqual(inspect(parser('(())')), void 0);
+      assert.deepStrictEqual(inspect(parser('((\\))')), void 0);
       assert.deepStrictEqual(inspect(parser('a((a))')), void 0);
     });
 

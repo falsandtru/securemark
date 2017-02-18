@@ -7,6 +7,7 @@ describe('Unit: syntax/olist', () => {
     it('invalid', () => {
       const parser = loop(olist);
       assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('0.0.')), void 0);
       assert.deepStrictEqual(inspect(parser('0.0')), void 0);
       assert.deepStrictEqual(inspect(parser('0.a')), void 0);

@@ -10,7 +10,9 @@ describe('Unit: binder/bind', () => {
 
     it('update', () => {
       const el = document.createElement('div');
-      const update = bind(el, '');
+      const update = bind(el, '0');
+      assert(el.innerHTML === '<p>0</p>');
+      update('');
       assert(el.innerHTML === '');
       update('1\n\n2\n\n9');
       assert(el.innerHTML === '<p>1</p><p>2</p><p>9</p>');

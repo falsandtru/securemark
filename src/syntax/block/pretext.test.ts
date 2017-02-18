@@ -7,6 +7,7 @@ describe('Unit: syntax/pretext', () => {
     it('invalid', () => {
       const parser = loop(pretext);
       assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('```')), void 0);
       assert.deepStrictEqual(inspect(parser('```\n')), void 0);
       assert.deepStrictEqual(inspect(parser('```\na```')), void 0);

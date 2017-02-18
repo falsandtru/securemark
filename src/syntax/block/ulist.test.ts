@@ -7,6 +7,7 @@ describe('Unit: syntax/ulist', () => {
     it('invalid', () => {
       const parser = loop(ulist);
       assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('--')), void 0);
       assert.deepStrictEqual(inspect(parser('-0')), void 0);
       assert.deepStrictEqual(inspect(parser('-a')), void 0);

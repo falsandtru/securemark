@@ -7,6 +7,7 @@ describe('Unit: syntax/table', () => {
     it('invalid', () => {
       const parser = loop(table);
       assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('|')), void 0);
       assert.deepStrictEqual(inspect(parser('||')), void 0);
       assert.deepStrictEqual(inspect(parser('|h')), void 0);

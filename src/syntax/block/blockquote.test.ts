@@ -7,6 +7,7 @@ describe('Unit: syntax/blockquote', () => {
     it('invalid', () => {
       const parser = loop(blockquote);
       assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('>')), void 0);
       assert.deepStrictEqual(inspect(parser('> ')), void 0);
       assert.deepStrictEqual(inspect(parser('>>')), void 0);
