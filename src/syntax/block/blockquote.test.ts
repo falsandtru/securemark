@@ -16,6 +16,10 @@ describe('Unit: syntax/blockquote', () => {
 
     it('ab', () => {
       const parser = loop(blockquote);
+      assert.deepStrictEqual(inspect(parser('>a')), [['<blockquote>a</blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n')), [['<blockquote>a</blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<blockquote>a<br>b</blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<blockquote>a<br>b</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a')), [['<blockquote>a</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n')), [['<blockquote>a</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n> b')), [['<blockquote>a<br>b</blockquote>'], '']);
