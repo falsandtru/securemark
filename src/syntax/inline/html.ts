@@ -18,7 +18,7 @@ export const html: HTMLParser = function (source: string): Result<HTMLElement, S
   if (!whole) return;
   if (inlinetags.indexOf(tagname.toLowerCase()) === -1) return;
   if (!cache.has(tagname)) {
-    void cache.set(tagname, new RegExp(`</${tagname}>`, 'i'));
+    void cache.set(tagname, new RegExp(`^</${tagname}>`, 'i'));
   }
   const [cs, rest] = tagname.toLowerCase() === 'code'
     ? loop(compose<SubParsers, HTMLElement | Text>([plaintext]), cache.get(tagname)!)(source.slice(opentag.length)) || [[], source.slice(opentag.length)]
