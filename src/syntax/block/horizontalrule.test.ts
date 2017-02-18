@@ -10,6 +10,8 @@ describe('Unit: syntax/horizontalrule', () => {
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('-')), void 0);
       assert.deepStrictEqual(inspect(parser('--')), void 0);
+      assert.deepStrictEqual(inspect(parser('--\n-')), void 0);
+      assert.deepStrictEqual(inspect(parser('---\na')), void 0);
       assert.deepStrictEqual(inspect(parser('***')), void 0);
     });
 
@@ -17,6 +19,8 @@ describe('Unit: syntax/horizontalrule', () => {
       const parser = loop(horizontalrule);
       assert.deepStrictEqual(inspect(parser('---')), [['<hr>'], '']);
       assert.deepStrictEqual(inspect(parser('---\n')), [['<hr>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\n\n')), [['<hr>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\n\n\n')), [['<hr>'], '\n']);
       assert.deepStrictEqual(inspect(parser('  -   - -')), [['<hr>'], '']);
       assert.deepStrictEqual(inspect(parser('  -   - - ')), [['<hr>'], '']);
       assert.deepStrictEqual(inspect(parser('  -   - - \n')), [['<hr>'], '']);
