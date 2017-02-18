@@ -8,7 +8,7 @@ import { squash } from '../inline/text';
 
 type SubParsers = [PlainTextParser];
 
-const syntax = /^```([0-9a-z])?[ \t]*\n/;
+const syntax = /^```([0-9a-z]+)?[ \t]*\n/;
 const closer = /^```\s*(?:\n|$)/;
 
 export const pretext: PreTextParser = function (source: string): Result<HTMLPreElement, SubParsers> {

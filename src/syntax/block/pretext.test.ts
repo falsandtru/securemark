@@ -22,6 +22,11 @@ describe('Unit: syntax/pretext', () => {
       assert.deepStrictEqual(inspect(parser('```\n\n\n```')), [['<pre>\n</pre>'], '']);
     });
 
+    it('lang', () => {
+      const parser = loop(pretext);
+      assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="lang-abc">a</pre>'], '']);
+    });
+
   });
 
 });

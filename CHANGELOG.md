@@ -3,6 +3,7 @@
 ## 0.3.0
 
 - Add nofollow link syntax.
+- Fix pre block language specification.
 
 ## 0.2.0
 
