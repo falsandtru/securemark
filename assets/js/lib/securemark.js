@@ -434,7 +434,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../parser/loop');
             var plaintext_1 = require('../inline/plaintext');
             var text_1 = require('../inline/text');
-            var syntax = /^```([0-9a-z])?[ \t]*\n/;
+            var syntax = /^```([0-9a-z]+)?[ \t]*\n/;
             var closer = /^```\s*(?:\n|$)/;
             exports.pretext = function (source) {
                 var _a = source.match(syntax) || [
@@ -714,6 +714,7 @@ require = function e(t, n, r) {
             var plaintext_1 = require('./plaintext');
             var text_1 = require('./text');
             var syntax = /^([\`]+)[\S\s]+?\1/;
+            var cache = new Map();
             exports.code = function (source) {
                 if (!source.startsWith('`'))
                     return;
@@ -723,7 +724,10 @@ require = function e(t, n, r) {
                     ], whole = _a[0], keyword = _a[1];
                 if (!whole)
                     return;
-                var _b = loop_1.loop(compose_1.compose([plaintext_1.plaintext]), new RegExp('^' + keyword))(source.slice(keyword.length)) || [
+                if (!cache.has(keyword)) {
+                    void cache.set(keyword, new RegExp('^' + keyword));
+                }
+                var _b = loop_1.loop(compose_1.compose([plaintext_1.plaintext]), cache.get(keyword))(source.slice(keyword.length)) || [
                         [],
                         ''
                     ], cs = _b[0], rest = _b[1];
@@ -804,7 +808,7 @@ require = function e(t, n, r) {
                 if (inlinetags.indexOf(tagname.toLowerCase()) === -1)
                     return;
                 if (!cache.has(tagname)) {
-                    void cache.set(tagname, new RegExp('</' + tagname + '>', 'i'));
+                    void cache.set(tagname, new RegExp('^</' + tagname + '>', 'i'));
                 }
                 var _b = tagname.toLowerCase() === 'code' ? loop_1.loop(compose_1.compose([plaintext_1.plaintext]), cache.get(tagname))(source.slice(opentag.length)) || [
                         [],
@@ -852,7 +856,7 @@ require = function e(t, n, r) {
                 var caption = first.reduce(function (s, c) {
                     return s + c.textContent;
                 }, '').trim();
-                var _c = loop_1.loop(text_1.text, /^\)|^\n/)(next) || [
+                var _c = loop_1.loop(text_1.text, /^\)|^\s/)(next) || [
                         [],
                         ''
                     ], _d = _c[0], second = _d.slice(2), rest = _c[1];
@@ -902,21 +906,25 @@ require = function e(t, n, r) {
                 if (!next.startsWith(']('))
                     return;
                 var children = text_1.squash(first);
-                var _b = loop_1.loop(text_1.text, /^\)|^\n/)(next) || [
+                var _b = loop_1.loop(text_1.text, /^\)|^\s(?!nofollow\))/)(next) || [
                         [],
                         ''
                     ], _c = _b[0], second = _c.slice(2), rest = _b[1];
                 if (!rest.startsWith(')'))
                     return;
-                var url = url_1.sanitize(second.reduce(function (s, c) {
-                    return s + c.textContent;
-                }, ''));
+                var _d = second.reduce(function (s, c) {
+                        return s + c.textContent;
+                    }, '').split(/\s/), INSECURE_URL = _d[0], nofollow = _d[1];
+                var url = url_1.sanitize(INSECURE_URL);
                 if (url === '')
                     return;
                 var el = document.createElement('a');
                 void el.setAttribute('href', url);
                 if (location.protocol !== el.protocol || location.host !== el.host) {
                     void el.setAttribute('target', '_blank');
+                }
+                if (nofollow) {
+                    void el.setAttribute('rel', 'nofollow');
                 }
                 void el.appendChild(children.querySelector('img') || document.createTextNode((children.textContent || url).trim()));
                 return [
@@ -1035,7 +1043,7 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var separator = /[!~*`<>\[\]\(\)\|\n\\]/;
+            var separator = /[!~*`<>\[\]\(\)\|\s\n\\]/;
             exports.text = function (source) {
                 if (source.length === 0)
                     return;
@@ -1184,7 +1192,7 @@ require = function e(t, n, r) {
                         if (os[os.length - j - 1] !== ns[ns.length - j - 1])
                             break;
                     }
-                    if (os.length === j && ns.length === j)
+                    if (os.length === i && ns.length === i)
                         return;
                     void pairs.splice(i, os.length - j - i).forEach(function (_a) {
                         var es = _a[1];

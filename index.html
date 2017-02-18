@@ -53,25 +53,36 @@
 <script>
   document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
-  document.getElementById('editor').value = decodeURIComponent(location.search.replace(/^\??/, '')) || `
-# Title
+  document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || `# Title
 
-## List
+mark
+down
 
-- 1
-- 2
-- 3
+[external link](https://google.com)\\
+[nofollow link](# nofollow)\\
 
-0. a
-0. b
-0. c
+- A
+  1. a
+  0. b
+  0. c
+- B
+  4. a
+  0. b
+  0. c
+- C
+  7. a
+  0. b
+  0. c
 
 >>a
 b
 >c
+d
+
 `;
   var parse = require('securemark').parse;
   var update = require('securemark').bind(document.getElementById('viewer'), document.getElementById('editor').value);
+  share();
   var timer = 0;
   document.getElementById('editor').addEventListener('keyup', function () {
     clearTimeout(timer);
@@ -86,10 +97,13 @@ b
       var full = Date.now() - time;
       document.getElementById('time').textContent = partial;
       document.getElementById('diff').textContent = full - partial;
-      document.getElementById('share').href = '?' + encodeURIComponent(document.getElementById('editor').value);
-      document.getElementById('share').textContent = document.getElementById('share').href;
+      share();
     }, 300);
   });
+  function share() {
+    document.getElementById('share').href = '#' + encodeURIComponent(document.getElementById('editor').value);
+    document.getElementById('share').textContent = document.getElementById('share').href;
+  }
 </script>
 
 <script>
