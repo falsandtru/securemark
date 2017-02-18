@@ -59,6 +59,11 @@ describe('Unit: syntax/html', () => {
       assert.deepStrictEqual(inspect(parser('<code> \\\\ </code>')), [['<code> \\\\ </code>'], '']);
     });
 
+    it('wbr', () => {
+      const parser = loop(html);
+      assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
+    });
+
   });
 
 });
