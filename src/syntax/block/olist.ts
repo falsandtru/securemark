@@ -33,6 +33,7 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
       case ' ':
       case '\t': {
         if (line.trim() === '') break;
+        if (el.lastElementChild!.lastElementChild && ['ul', 'ol'].indexOf(el.lastElementChild!.lastElementChild!.tagName.toLowerCase()) !== -1) return;
         const [block, rest] = indent(source);
         if (rest === source) return;
         const [children, brest] = compose<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], ''];

@@ -3,6 +3,7 @@
 ## 0.3.1
 
 - Fix horizontalrule parsing.
+- Fix ulist and olist parsing.
 
 ## 0.3.0
 
