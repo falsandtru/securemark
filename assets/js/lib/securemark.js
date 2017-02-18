@@ -261,12 +261,12 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var syntax = /^\s*-\s*-\s*(?:-\s*)+$/;
+            var syntax = /^[ \t]*-[ \t]*-[ \t]*(?:-[ \t]*)+(?:\n|$)/;
             exports.horizontalrule = function (source) {
                 var whole = (source.match(syntax) || [''])[0];
                 if (!whole)
                     return;
-                return block_1.consumeBlockEndEmptyLine([document.createElement('hr')], source.slice(whole.length + 1));
+                return block_1.consumeBlockEndEmptyLine([document.createElement('hr')], source.slice(whole.length));
             };
         },
         { '../block': 8 }
@@ -363,6 +363,11 @@ require = function e(t, n, r) {
                     case '\t': {
                             if (line.trim() === '')
                                 break;
+                            if (el.lastElementChild.lastElementChild && [
+                                    'ul',
+                                    'ol'
+                                ].indexOf(el.lastElementChild.lastElementChild.tagName.toLowerCase()) !== -1)
+                                return;
                             var _b = indent_1.indent(source), block = _b[0], rest = _b[1];
                             if (rest === source)
                                 return;
@@ -601,6 +606,11 @@ require = function e(t, n, r) {
                     case '\t': {
                             if (line.trim() === '')
                                 break;
+                            if (el.lastElementChild.lastElementChild && [
+                                    'ul',
+                                    'ol'
+                                ].indexOf(el.lastElementChild.lastElementChild.tagName.toLowerCase()) !== -1)
+                                return;
                             var _a = indent_1.indent(source), block = _a[0], rest = _a[1];
                             if (rest === source)
                                 return;
