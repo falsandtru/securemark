@@ -1,4 +1,4 @@
-/*! securemark v0.2.0 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | Apache-2.0 License */
+/*! securemark v0.3.0 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | Apache-2.0 License */
 require = function e(t, n, r) {
     function s(o, u) {
         if (!n[o]) {
