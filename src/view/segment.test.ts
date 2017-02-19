@@ -46,8 +46,8 @@ describe('Unit: view/segment', () => {
       assert.deepStrictEqual(segment('a\n\n\n```\n\n\n```'), ['a\n\n', '\n', '```\n\n\n```']);
       assert.deepStrictEqual(segment('a\n\n\n\n```\n\n\n```'), ['a\n\n', '\n\n', '```\n\n\n```']);
       assert.deepStrictEqual(segment('a\n```\n```'), ['a\n```\n```']);
-      assert.deepStrictEqual(segment(' \n```'), [' \n', '```']);
       assert.deepStrictEqual(segment('a\n```'), ['a\n```']);
+      assert.deepStrictEqual(segment(' \n```'), [' \n', '```']);
     });
 
     it('extension', () => {
@@ -57,8 +57,9 @@ describe('Unit: view/segment', () => {
       assert.deepStrictEqual(segment('~~~~\n~~~\n~~~~'), ['~~~~\n~~~\n~~~~']);
       assert.deepStrictEqual(segment('a\n\n\n~~~\n\n\n~~~'), ['a\n\n', '\n', '~~~\n\n\n~~~']);
       assert.deepStrictEqual(segment('a\n\n\n\n~~~\n\n\n~~~'), ['a\n\n', '\n\n', '~~~\n\n\n~~~']);
-      assert.deepStrictEqual(segment(' \n~~~'), [' \n', '~~~']);
+      assert.deepStrictEqual(segment('a\n~~~\n~~~'), ['a\n~~~\n~~~']);
       assert.deepStrictEqual(segment('a\n~~~'), ['a\n~~~']);
+      assert.deepStrictEqual(segment(' \n~~~'), [' \n', '~~~']);
     });
 
     it('mixed', () => {
