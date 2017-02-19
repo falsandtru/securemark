@@ -244,24 +244,16 @@ require = function e(t, n, r) {
             var block_1 = require('../block');
             var compose_1 = require('../../combinator/compose');
             var placeholder_1 = require('./extension/placeholder');
-            var syntax = /^(~{3,})[ \t]*\n((?:[^\n]*\n)*)\1/;
-            var cache = new Map();
+            var syntax = /^(~{3,})[ \t]*\n(?:[^\n]*\n)*\1/;
             exports.extension = function (source) {
-                var _a = source.match(syntax) || [
-                        '',
-                        '',
-                        ''
-                    ], whole = _a[0], keyword = _a[1], text = _a[2];
+                var whole = (source.match(syntax) || [''])[0];
                 if (!whole)
                     return;
-                if (!cache.has(keyword)) {
-                    void cache.set(keyword, new RegExp('^' + keyword + 's*(?:\n|$)'));
-                }
-                var _b = compose_1.compose([placeholder_1.placeholder])(text) || [
+                var _a = compose_1.compose([placeholder_1.placeholder])(source) || [
                         [],
                         ''
-                    ], ns = _b[0], rest = _b[1];
-                return source.length === rest.length ? void 0 : block_1.consumeBlockEndEmptyLine(ns, source.slice(whole.length));
+                    ], ns = _a[0], rest = _a[1];
+                return source.length === rest.length ? void 0 : block_1.consumeBlockEndEmptyLine(ns, rest);
             };
         },
         {
@@ -275,19 +267,21 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../../block');
-            exports.placeholder = function (source) {
+            var loop_1 = require('../../../combinator/loop');
+            var inline_1 = require('../../inline');
+            var text_1 = require('../../inline/text');
+            exports.placeholder = function (_) {
                 var el = document.createElement('p');
-                while (true) {
-                    var line = source.split('\n', 1)[0];
-                    el.textContent += line;
-                    source = source.slice(line.length + 1);
-                    if (source === '')
-                        break;
-                }
-                return block_1.consumeBlockEndEmptyLine([el], source);
+                void el.appendChild(text_1.squash(loop_1.loop(inline_1.inline)('**DON\'T USE THIS SYNTAX!!**\\\nThis syntax used `~~~` is reserved for extensibility.')[0]));
+                return block_1.consumeBlockEndEmptyLine([el], '');
             };
         },
-        { '../../block': 8 }
+        {
+            '../../../combinator/loop': 5,
+            '../../block': 8,
+            '../../inline': 21,
+            '../../inline/text': 31
+        }
     ],
     12: [
         function (require, module, exports) {
