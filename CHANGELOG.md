@@ -5,6 +5,7 @@
 - Enhance pretext syntax.
 - Add extension syntax.
 - Allow `wbr` html tag.
+- Fix segmentations.
 
 ## 0.3.1
 

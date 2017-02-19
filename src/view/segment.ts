@@ -18,7 +18,7 @@ export function segment(source: string): string[] {
   return segments;
 }
 
-const syntax = /^(?:[^\n]+\n)+\s*?\n|^(?:[ \t]*\n)+|^.*\n(?=```|~~~)/;
+const syntax = /^(?:\s*?\n)+|^(?:[^\n]*\n)+?\s*?\n/;
 assert(!''.match(syntax));
 assert(!' '.match(syntax));
 function block(source: string): [never[], string] {
