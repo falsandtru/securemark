@@ -98,17 +98,7 @@ export namespace MarkdownParser {
       // : abc
       // ~~~
       Markdown<'extension'>,
-      Parser<HTMLElement, [
-        ExtensionParser.PlaceholderParser
-      ]> {
-    }
-    export namespace ExtensionParser {
-      export interface PlaceholderParser extends
-        Markdown<'extension/placeholder'>,
-        Parser<HTMLElement, [
-          InlineParser
-        ]> {
-      }
+      Parser<HTMLElement, Parser<HTMLElement, any>[]> {
     }
     export interface ParagraphParser extends
       // abc
