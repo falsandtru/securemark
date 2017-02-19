@@ -140,7 +140,7 @@ require = function e(t, n, r) {
             var compose_1 = require('../combinator/compose');
             var newline_1 = require('./block/newline');
             var horizontalrule_1 = require('./block/horizontalrule');
-            var header_1 = require('./block/header');
+            var heading_1 = require('./block/heading');
             var ulist_1 = require('./block/ulist');
             var olist_1 = require('./block/olist');
             var table_1 = require('./block/table');
@@ -151,7 +151,7 @@ require = function e(t, n, r) {
             exports.block = compose_1.compose([
                 newline_1.newline,
                 horizontalrule_1.horizontalrule,
-                header_1.header,
+                heading_1.heading,
                 ulist_1.ulist,
                 olist_1.olist,
                 table_1.table,
@@ -174,7 +174,7 @@ require = function e(t, n, r) {
             '../combinator/compose': 4,
             './block/blockquote': 9,
             './block/extension': 10,
-            './block/header': 12,
+            './block/heading': 12,
             './block/horizontalrule': 13,
             './block/newline': 15,
             './block/olist': 16,
@@ -251,7 +251,7 @@ require = function e(t, n, r) {
                     return;
                 var _a = compose_1.compose([placeholder_1.placeholder])(source) || [
                         [],
-                        ''
+                        source
                     ], ns = _a[0], rest = _a[1];
                 return source.length === rest.length ? void 0 : block_1.consumeBlockEndEmptyLine(ns, rest);
             };
@@ -270,10 +270,37 @@ require = function e(t, n, r) {
             var loop_1 = require('../../../combinator/loop');
             var inline_1 = require('../../inline');
             var text_1 = require('../../inline/text');
-            exports.placeholder = function (_) {
-                var el = document.createElement('p');
-                void el.appendChild(text_1.squash(loop_1.loop(inline_1.inline)('**DON\'T USE `~~~` SYNTAX!!**\\\nThis extension syntax is reserved for extensibility.')[0]));
-                return block_1.consumeBlockEndEmptyLine([el], '');
+            var syntax = /^(~{3,})[ \t]*\n(?:[^\n]*\n)*\1/;
+            var cache = new Map();
+            exports.placeholder = function (source) {
+                var _a = source.match(syntax) || [
+                        '',
+                        ''
+                    ], whole = _a[0], keyword = _a[1];
+                if (!whole)
+                    return;
+                var message = document.createElement('p');
+                void message.appendChild(text_1.squash(loop_1.loop(inline_1.inline)('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.')[0]));
+                source = source.slice(source.indexOf('\n') + 1);
+                if (!cache.has(keyword)) {
+                    void cache.set(keyword, new RegExp('^' + keyword + 's*(?:\n|$)'));
+                }
+                var lines = [];
+                while (true) {
+                    var line = source.split('\n', 1)[0];
+                    if (line.match(cache.get(keyword)))
+                        break;
+                    void lines.push(line + '\n');
+                    source = source.slice(line.length + 1);
+                    if (source === '')
+                        return;
+                }
+                var quote = document.createElement('pre');
+                void quote.appendChild(document.createTextNode(keyword + '\n' + lines.join('') + keyword));
+                return block_1.consumeBlockEndEmptyLine([
+                    message,
+                    quote
+                ], source.slice(keyword.length));
             };
         },
         {
@@ -293,7 +320,7 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
             var syntax = /^(#{1,6})\s+?([^\n]+)/;
-            exports.header = function (source) {
+            exports.heading = function (source) {
                 var _a = source.match(syntax) || [
                         '',
                         '',
@@ -301,10 +328,7 @@ require = function e(t, n, r) {
                     ], whole = _a[0], level = _a[1].length, title = _a[2];
                 if (!whole)
                     return;
-                var children = (loop_1.loop(compose_1.compose([inline_1.inline]))(title) || [
-                    [],
-                    ''
-                ])[0];
+                var children = (loop_1.loop(compose_1.compose([inline_1.inline]))(title) || [[]])[0];
                 var el = document.createElement('h' + level);
                 void el.appendChild(text_1.squash(children));
                 return block_1.consumeBlockEndEmptyLine([el], source.slice(whole.length + 1));
@@ -477,11 +501,11 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('p');
                 var _a = loop_1.loop(compose_1.compose([inline_1.inline]), closer)(source.trim()) || [
-                        [],
+                        [document.createTextNode(source.trim())],
                         ''
                     ], cs = _a[0], rest = _a[1];
                 void el.appendChild(text_1.squash(cs));
-                return el.childNodes.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([el], rest.slice(1));
+                return block_1.consumeBlockEndEmptyLine([el], rest.slice(1));
             };
         },
         {
