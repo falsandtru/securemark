@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+- Improve table parser.
+
 ## 0.4.2
 
 - Fix paragraph parser.

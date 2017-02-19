@@ -35,9 +35,14 @@ describe('Unit: parser/table', () => {
 
     it('align', () => {
       const parser = loop(table);
-      assert.deepStrictEqual(inspect(parser('|h|\n|:-|\n|v|')), [['<table><thead><tr><td align="">h</td></tr></thead><tbody><tr><td align="left">v</td></tr></tbody></table>'], '']);
-      assert.deepStrictEqual(inspect(parser('|h|\n|-:|\n|v|')), [['<table><thead><tr><td align="">h</td></tr></thead><tbody><tr><td align="right">v</td></tr></tbody></table>'], '']);
-      assert.deepStrictEqual(inspect(parser('|h|\n|:-:|\n|v|')), [['<table><thead><tr><td align="">h</td></tr></thead><tbody><tr><td align="center">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|\n|:-|\n|v|')), [['<table><thead><tr><td align="left">h</td></tr></thead><tbody><tr><td align="left">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|\n|-:|\n|v|')), [['<table><thead><tr><td align="center">h</td></tr></thead><tbody><tr><td align="right">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|\n|:-:|\n|v|')), [['<table><thead><tr><td align="center">h</td></tr></thead><tbody><tr><td align="center">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|h|\n|:-|-|\n|v|v|')), [['<table><thead><tr><td align="left">h</td><td align="">h</td></tr></thead><tbody><tr><td align="left">v</td><td align="">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|h|\n|:-|:-|\n|v|v|')), [['<table><thead><tr><td align="left">h</td><td align="left">h</td></tr></thead><tbody><tr><td align="left">v</td><td align="left">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|h|\n|:-|:-:|\n|v|v|')), [['<table><thead><tr><td align="left">h</td><td align="center">h</td></tr></thead><tbody><tr><td align="left">v</td><td align="center">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|h|\n|:-|-:|\n|v|v|')), [['<table><thead><tr><td align="left">h</td><td align="center">h</td></tr></thead><tbody><tr><td align="left">v</td><td align="right">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|h|h|h|\n|:-:|:-|-:|\n|v|v|v|')), [['<table><thead><tr><td align="center">h</td><td align="left">h</td><td align="left">h</td></tr></thead><tbody><tr><td align="center">v</td><td align="left">v</td><td align="right">v</td></tr></tbody></table>'], '']);
     });
 
     it('nest', () => {

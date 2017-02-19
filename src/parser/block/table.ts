@@ -30,7 +30,12 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
           ? 'right'
           : '');
   void table.appendChild(document.createElement('thead'));
-  void append(headers, table, []);
+  void append(headers, table, headers.map((_, i) =>
+    i > 1
+      ? aligns[1]
+      : aligns[i] === 'right'
+        ? 'center'
+        : aligns[i]));
   void table.appendChild(document.createElement('tbody'));
   while (true) {
     const line = source.split('\n', 1)[0];
