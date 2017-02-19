@@ -26,7 +26,8 @@ https://falsandtru.github.io/securemark/
 [markdown.d.ts](markdown.d.ts)
 
 - Header (#)
-- UList (-) / OList (0.)
+- UList (-)
+- OList (0.)
 - Table (| |)
 - Blockquote (>)
 - CodeBlock (```)
