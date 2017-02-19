@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- Fix extension parser.
+
 ## 0.4.0
 
 - Enhance pretext syntax.
@@ -9,8 +13,8 @@
 
 ## 0.3.1
 
-- Fix horizontalrule parsing.
-- Fix ulist and olist parsing.
+- Fix horizontalrule parser.
+- Fix ulist and olist parser.
 
 ## 0.3.0
 

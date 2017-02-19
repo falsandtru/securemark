@@ -106,7 +106,7 @@ export namespace MarkdownParser {
       export interface PlaceholderParser extends
         Markdown<'extension/placeholder'>,
         Parser<HTMLElement, [
-          never
+          InlineParser
         ]> {
       }
     }
