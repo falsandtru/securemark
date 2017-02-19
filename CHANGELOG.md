@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+
+- Fix paragraph parser.
+
 ## 0.4.1
 
 - Fix extension parser.
