@@ -6,6 +6,7 @@ import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';
 import { olist } from './block/olist';
+import { dlist } from './block/dlist';
 import { table } from './block/table';
 import { blockquote } from './block/blockquote';
 import { pretext } from './block/pretext';
@@ -18,6 +19,7 @@ export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
 export import HeadingParser = BlockParser.HeadingParser;
 export import UListParser = BlockParser.UListParser;
 export import OListParser = BlockParser.OListParser;
+export import DListParser = BlockParser.DListParser;
 export import TableParser = BlockParser.TableParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import PreTextParser = BlockParser.PreTextParser;
@@ -30,6 +32,7 @@ export const block: BlockParser = compose<[
   HeadingParser,
   UListParser,
   OListParser,
+  DListParser,
   TableParser,
   BlockquoteParser,
   PreTextParser,
@@ -41,6 +44,7 @@ export const block: BlockParser = compose<[
   heading,
   ulist,
   olist,
+  dlist,
   table,
   blockquote,
   pretext,

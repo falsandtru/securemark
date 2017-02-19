@@ -18,6 +18,7 @@ export namespace MarkdownParser {
       BlockParser.HeadingParser,
       BlockParser.UListParser,
       BlockParser.OListParser,
+      BlockParser.DListParser,
       BlockParser.TableParser,
       BlockParser.BlockquoteParser,
       BlockParser.PreTextParser,
@@ -64,6 +65,14 @@ export namespace MarkdownParser {
       ] | [
         UListParser,
         OListParser
+      ]> {
+    }
+    export interface DListParser extends
+      // ~ term
+      // : description
+      Markdown<'dlist'>,
+      Parser<HTMLDListElement, [
+        InlineParser
       ]> {
     }
     export interface TableParser extends

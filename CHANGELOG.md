@@ -2,6 +2,7 @@
 
 ## 0.5.0
 
+- Add dlist syntax.
 - Improve table parser.
 
 ## 0.4.2
