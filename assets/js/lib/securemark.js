@@ -272,7 +272,7 @@ require = function e(t, n, r) {
             var text_1 = require('../../inline/text');
             exports.placeholder = function (_) {
                 var el = document.createElement('p');
-                void el.appendChild(text_1.squash(loop_1.loop(inline_1.inline)('**DON\'T USE THIS SYNTAX!!**\\\nThis syntax used `~~~` is reserved for extensibility.')[0]));
+                void el.appendChild(text_1.squash(loop_1.loop(inline_1.inline)('**DON\'T USE `~~~` SYNTAX!!**\\\nThis extension syntax is reserved for extensibility.')[0]));
                 return block_1.consumeBlockEndEmptyLine([el], '');
             };
         },
