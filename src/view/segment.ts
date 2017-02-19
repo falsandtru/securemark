@@ -1,8 +1,8 @@
-﻿import { PreTextParser, ExtensionParser } from '../syntax/block';
-import { pretext } from '../syntax/block/pretext';
-import { extension } from '../syntax/block/extension';
-import { compose } from '../parser/compose';
-import { loop } from '../parser/loop';
+﻿import { PreTextParser, ExtensionParser } from '../parser/block';
+import { pretext } from '../parser/block/pretext';
+import { extension } from '../parser/block/extension';
+import { compose } from '../combinator/compose';
+import { loop } from '../combinator/loop';
 
 export function segment(source: string): string[] {
   const segments: string[] = [];

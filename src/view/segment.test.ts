@@ -1,6 +1,6 @@
 ﻿import { segment } from './segment';
 
-describe('Unit: binder/segment', () => {
+describe('Unit: view/segment', () => {
   describe('segment', () => {
     it('empty', () => {
       assert.deepStrictEqual(segment(''), ['']);

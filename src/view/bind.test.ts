@@ -1,6 +1,6 @@
 ﻿import { bind } from './bind';
 
-describe('Unit: binder/bind', () => {
+describe('Unit: view/bind', () => {
   describe('bind', () => {
     it('empty', () => {
       const el = document.createElement('div');

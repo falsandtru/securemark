@@ -1,4 +1,4 @@
-import { Parser, Result } from './src/parser.d';
+import { Parser, Result } from './src/parser';
 
 declare abstract class Markdown<T> {
   private MARKDOWN?: T;
