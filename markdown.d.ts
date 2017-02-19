@@ -15,7 +15,7 @@ export namespace MarkdownParser {
     Parser<HTMLElement, [
       BlockParser.NewlineParser,
       BlockParser.HorizontalRuleParser,
-      BlockParser.HeaderParser,
+      BlockParser.HeadingParser,
       BlockParser.UListParser,
       BlockParser.OListParser,
       BlockParser.TableParser,
@@ -39,7 +39,7 @@ export namespace MarkdownParser {
         never
       ]> {
     }
-    export interface HeaderParser extends
+    export interface HeadingParser extends
       // # Title
       Markdown<'header'>,
       Parser<HTMLHeadingElement, [

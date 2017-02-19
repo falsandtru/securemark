@@ -1,11 +1,11 @@
 ﻿import { loop } from '../../combinator/loop';
-import { header } from './header';
+import { heading } from './heading';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/header', () => {
-  describe('header', () => {
+describe('Unit: parser/heading', () => {
+  describe('heaheading', () => {
     it('invalid', () => {
-      const parser = loop(header);
+      const parser = loop(heading);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('#')), void 0);
@@ -17,7 +17,7 @@ describe('Unit: parser/header', () => {
     });
 
     it('ab', () => {
-      const parser = loop(header);
+      const parser = loop(heading);
       assert.deepStrictEqual(inspect(parser('# a')), [['<h1>a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\n')), [['<h1>a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a \n')), [['<h1>a </h1>'], '']);
@@ -28,7 +28,7 @@ describe('Unit: parser/header', () => {
     });
 
     it('nest', () => {
-      const parser = loop(header);
+      const parser = loop(heading);
       assert.deepStrictEqual(inspect(parser('# *<u>`<a>`</u>*')), [['<h1><em><u><code>&lt;a&gt;</code></u></em></h1>'], '']);
     });
 

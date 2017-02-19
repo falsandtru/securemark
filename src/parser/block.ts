@@ -3,7 +3,7 @@ import { MarkdownParser } from '../../markdown.d';
 import { compose } from '../combinator/compose';
 import { newline } from './block/newline';
 import { horizontalrule } from './block/horizontalrule';
-import { header } from './block/header';
+import { heading } from './block/heading';
 import { ulist } from './block/ulist';
 import { olist } from './block/olist';
 import { table } from './block/table';
@@ -15,7 +15,7 @@ import { paragraph } from './block/paragraph';
 export import BlockParser = MarkdownParser.BlockParser;
 export import NewlineParser = BlockParser.NewlineParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
-export import HeaderParser = BlockParser.HeaderParser;
+export import HeadingParser = BlockParser.HeadingParser;
 export import UListParser = BlockParser.UListParser;
 export import OListParser = BlockParser.OListParser;
 export import TableParser = BlockParser.TableParser;
@@ -27,7 +27,7 @@ export import ParagraphParser = BlockParser.ParagraphParser;
 export const block: BlockParser = compose<[
   NewlineParser,
   HorizontalRuleParser,
-  HeaderParser,
+  HeadingParser,
   UListParser,
   OListParser,
   TableParser,
@@ -38,7 +38,7 @@ export const block: BlockParser = compose<[
 ], HTMLElement>([
   newline,
   horizontalrule,
-  header,
+  heading,
   ulist,
   olist,
   table,
