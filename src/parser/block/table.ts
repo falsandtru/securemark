@@ -17,10 +17,10 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
   if (headers.length === 0) return;
   const [aligns_, arest] = parse(source) || [[], ''];
   source = arest;
-  if (aligns_.length !== headers.length) return;
+  if (aligns_.length === 0) return;
   if (aligns_.some(e => !e.textContent || !e.textContent!.match(align))) return;
-  const aligns = aligns_
-    .map(e => e.textContent!)
+  const aligns = headers
+    .map((_, i) => (aligns_[i] || aligns_[aligns_.length - 1]).textContent!)
     .map(s =>
       s[0] === ':'
         ? s[s.length - 1] === ':'
@@ -39,8 +39,9 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
   void table.appendChild(document.createElement('tbody'));
   while (true) {
     const line = source.split('\n', 1)[0];
+    if (line.trim() === '') break;
     const [cols, rest] = parse(line) || [[], ''];
-    if (cols.length !== headers.length || rest !== '') break;
+    if (cols.length === 0 || rest !== '') return;
     void append(cols, table, aligns);
     source = source.slice(line.length + 1);
   }
@@ -65,16 +66,16 @@ function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: strin
 function parse(source: string): [DocumentFragment[], string] | undefined {
   const cols = [];
   while (true) {
-    const result = source.startsWith('||')
-      ? <[Text[], string]>[[], source.slice(1)]
-      : source[0] === '|' && source.length > 1
-        ? loop(inline, /^\|/)(source.slice(1))
-        : void 0;
+    const result = source[0] === '|'
+      ? source.length > 1 && source[1] !== '|'
+        ? loop(inline, /^\||^\n/)(source.slice(1))
+        : <[Text[], string]>[[], source.slice(1)]
+      : void 0;
     if (!result) return;
     const [col, rest] = result;
     source = rest;
     void cols.push(squash(col));
-    const [end] = rest.match(/^(\|\s*?(?:\n|$))/) || [''];
-    if (end) return [cols, rest.slice(end.length)];
+    const match = rest.match(/^\|?\s*?(?:\n|$)/);
+    if (match) return [cols, rest.slice(match[0].length)];
   }
 }

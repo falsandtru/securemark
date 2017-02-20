@@ -4,6 +4,7 @@
 
 - Refine dlist syntax.
 - Refine olist syntax.
+- Enhance table parser.
 
 ## 0.5.0
 
