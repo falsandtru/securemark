@@ -16,18 +16,20 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
   const el = document.createElement('dl');
   while (true) {
     const line = source.split('\n', 1)[0];
-    if (line.trim() === '' || !line.match(separator)) break;
-    switch (line[0]) {
+    if (line.trim() === '') break;
+    switch (line.slice(0, 2).trim()) {
       case '~': {
         const dt = el.appendChild(document.createElement('dt'));
         void dt.appendChild(squash((loop(compose<SubParsers, HTMLElement | Text>([inline]))(line.slice(1).trim()) || [[]])[0]));
         source = source.slice(line.length + 1);
         continue;
       }
-      case ':': {
-        if (!el.lastChild) return;
-        const dd = el.appendChild(document.createElement('dd'));
-        const texts: string[] = [line.slice(1).trim()];
+      default: {
+        assert(el.lastElementChild);
+        const dd = line.slice(0, 2).trim() === ':' || el.lastElementChild!.tagName.toLowerCase() !== 'dd'
+          ? el.appendChild(document.createElement('dd'))
+          : el.lastElementChild!;
+        const texts = [line.slice(line.slice(0, 2).trim() === ':' ? 1 : 0)];
         source = source.slice(line.length + 1);
         while (true) {
           const line = source.split('\n', 1)[0];
@@ -38,12 +40,13 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
         void dd.appendChild(squash((loop(compose<SubParsers, HTMLElement | Text>([inline]))(texts.join('\n').trim()) || [[]])[0]));
         continue;
       }
-      default: {
-        return;
-      }
     }
   }
-  return el.children.length === 0 || el.lastElementChild!.tagName.toLowerCase() !== 'dd'
+  assert(el.firstElementChild!.tagName.toLowerCase() === 'dt');
+  if (el.lastElementChild && el.lastElementChild!.tagName.toLowerCase() === 'dt') {
+    void el.appendChild(document.createElement('dd'));
+  }
+  return el.children.length === 0
     ? void 0
     : consumeBlockEndEmptyLine<HTMLDListElement, SubParsers>([el], source);
 }
