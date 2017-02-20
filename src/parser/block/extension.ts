@@ -13,7 +13,7 @@ export const extension: ExtensionParser = function (source: string): Result<HTML
   const [ns, rest] = compose<SubParsers, HTMLElement>([
     placeholder
   ])(source) || [[], source];
-  return source.length === rest.length
+  return rest.length === source.length
     ? void 0
     : consumeBlockEndEmptyLine<HTMLElement, SubParsers>(ns, rest);
 }
