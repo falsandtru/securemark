@@ -25,7 +25,7 @@
 <h1>Securemark</h1>
 <h3>Secure markdown renderer working on browsers for user input data.</h3>
 <p><a href="https://github.com/falsandtru/securemark">https://github.com/falsandtru/securemark</a></p>
-<p>Share: <a id="share" href=""></a></p>
+<p style="max-height: 7em; overflow: scroll;">Share: <a id="share" href=""></a></p>
 </header>
 
 <div id="wrapper" class="row">
@@ -53,36 +53,38 @@
 <script>
   document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
-  document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || `# Title
-
-mark
-down
-
-[external link](https://google.com)\\
-[nofollow link](# nofollow)\\
-
-- A
-  1. a
-  0. b
-  0. c
-- B
-  4. a
-  0. b
-  0. c
-- C
-  7. a
-  0. b
-  0. c
-
-~ term
-: description
-
->>a
-b
->c
-d
-
-`;
+  document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
+    '# Title',
+    '',
+    'mark',
+    'down',
+    '',
+    '[external link](https://google.com)\\',
+    '[nofollow link](# nofollow)\\',
+    '',
+    '- A',
+    '  1. a',
+    '  1. b',
+    '  1. c',
+    '- B',
+    '  4. a',
+    '  1. b',
+    '  1. c',
+    '- C',
+    '  7. a',
+    '  1. b',
+    '  1. c',
+    '',
+    '~ term',
+    'definition',
+    '',
+    '>>a',
+    'b',
+    '>c',
+    'd',
+    '',
+    ''
+  ].join('\n');
   var parse = require('securemark').parse;
   var update = require('securemark').bind(document.getElementById('viewer'), document.getElementById('editor').value);
   share();

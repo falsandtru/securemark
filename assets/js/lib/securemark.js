@@ -1,4 +1,4 @@
-/*! securemark v0.4.2 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | Apache-2.0 License */
+/*! securemark v0.5.0 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | Apache-2.0 License */
 require = function e(t, n, r) {
     function s(o, u) {
         if (!n[o]) {
@@ -107,12 +107,12 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var syntax_1 = require('./syntax');
             exports.parse = syntax_1.parse;
-            var view_1 = require('./view');
-            exports.bind = view_1.bind;
+            var viewer_1 = require('./viewer');
+            exports.bind = viewer_1.bind;
         },
         {
             './syntax': 34,
-            './view': 35
+            './viewer': 35
         }
     ],
     7: [
@@ -249,7 +249,8 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
-            var syntax = /^(?:~(?:[ \t][^\n]*)?\n)+:(?:[ \t][^\n]*)?(?:\n|$)/;
+            var syntax = /^~\s/;
+            var separator = /^[~:](?:\s|$)/;
             exports.dlist = function (source) {
                 var whole = (source.match(syntax) || [''])[0];
                 if (!whole)
@@ -257,41 +258,35 @@ require = function e(t, n, r) {
                 var el = document.createElement('dl');
                 while (true) {
                     var line = source.split('\n', 1)[0];
-                    switch (line[0]) {
+                    if (line.trim() === '')
+                        break;
+                    switch (line.slice(0, 2).trim()) {
                     case '~': {
-                            if (line.length > 1 && line[1].trim() !== '')
-                                break;
-                            var text = line.slice(1).trim();
                             var dt = el.appendChild(document.createElement('dt'));
-                            void dt.appendChild(text_1.squash((loop_1.loop(compose_1.compose([inline_1.inline]))(text) || [[]])[0]));
+                            void dt.appendChild(text_1.squash((loop_1.loop(compose_1.compose([inline_1.inline]))(line.slice(1).trim()) || [[]])[0]));
                             source = source.slice(line.length + 1);
                             continue;
                         }
-                    case ':': {
-                            if (!el.lastChild)
-                                return;
-                            if (line.length > 1 && line[1].trim() !== '')
-                                break;
-                            var dd = el.appendChild(document.createElement('dd'));
-                            var texts = [line.slice(1).trim()];
+                    default: {
+                            var dd = line.slice(0, 2).trim() === ':' || el.lastElementChild.tagName.toLowerCase() !== 'dd' ? el.appendChild(document.createElement('dd')) : el.lastElementChild;
+                            var texts = [line.slice(line.slice(0, 2).trim() === ':' ? 1 : 0)];
                             source = source.slice(line.length + 1);
-                            while (source !== '' && !source.match(/^[~:](?:\s|$)|^\s*?\n/)) {
+                            while (true) {
                                 var line_1 = source.split('\n', 1)[0];
+                                if (line_1.trim() === '' || line_1.match(separator))
+                                    break;
                                 void texts.push(line_1);
                                 source = source.slice(line_1.length + 1);
                             }
                             void dd.appendChild(text_1.squash((loop_1.loop(compose_1.compose([inline_1.inline]))(texts.join('\n').trim()) || [[]])[0]));
                             continue;
                         }
-                    default: {
-                            if (line.trim() === '')
-                                break;
-                            return;
-                        }
                     }
-                    break;
                 }
-                return el.children.length === 0 || el.lastElementChild.tagName.toLowerCase() !== 'dd' ? void 0 : block_1.consumeBlockEndEmptyLine([el], source);
+                if (el.lastElementChild && el.lastElementChild.tagName.toLowerCase() === 'dt') {
+                    void el.appendChild(document.createElement('dd'));
+                }
+                return el.children.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([el], source);
             };
         },
         {
@@ -318,7 +313,7 @@ require = function e(t, n, r) {
                         [],
                         source
                     ], ns = _a[0], rest = _a[1];
-                return source.length === rest.length ? void 0 : block_1.consumeBlockEndEmptyLine(ns, rest);
+                return rest.length === source.length ? void 0 : block_1.consumeBlockEndEmptyLine(ns, rest);
             };
         },
         {
@@ -482,7 +477,7 @@ require = function e(t, n, r) {
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
-            var syntax = /^([0-9]+)\.(?:\s|$)/;
+            var syntax = /^([0-9A-z]+)\.(?:\s|$)/;
             exports.olist = function (source) {
                 var _a = source.match(syntax) || [
                         '',
@@ -491,9 +486,12 @@ require = function e(t, n, r) {
                 if (!whole)
                     return;
                 var el = document.createElement('ol');
-                void el.setAttribute('start', +index > 0 ? index : '1');
+                void el.setAttribute('start', index);
+                void el.setAttribute('type', !isNaN(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A');
                 while (true) {
                     var line = source.split('\n', 1)[0];
+                    if (line.trim() === '')
+                        break;
                     if (line.match(syntax)) {
                         var text = line.slice(line.indexOf('.') + 1).trim();
                         var li = el.appendChild(document.createElement('li'));
@@ -501,8 +499,6 @@ require = function e(t, n, r) {
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
-                        if (line.trim() === '')
-                            break;
                         if (el.lastElementChild.lastElementChild && [
                                 'ul',
                                 'ol'
@@ -644,14 +640,14 @@ require = function e(t, n, r) {
                         ''
                     ], aligns_ = _b[0], arest = _b[1];
                 source = arest;
-                if (aligns_.length !== headers.length)
+                if (aligns_.length === 0)
                     return;
                 if (aligns_.some(function (e) {
                         return !e.textContent || !e.textContent.match(align);
                     }))
                     return;
-                var aligns = aligns_.map(function (e) {
-                    return e.textContent;
+                var aligns = headers.map(function (_, i) {
+                    return (aligns_[i] || aligns_[aligns_.length - 1]).textContent;
                 }).map(function (s) {
                     return s[0] === ':' ? s[s.length - 1] === ':' ? 'center' : 'left' : s[s.length - 1] === ':' ? 'right' : '';
                 });
@@ -662,12 +658,14 @@ require = function e(t, n, r) {
                 void table.appendChild(document.createElement('tbody'));
                 while (true) {
                     var line = source.split('\n', 1)[0];
+                    if (line.trim() === '')
+                        break;
                     var _c = parse(line) || [
                             [],
                             ''
                         ], cols = _c[0], rest = _c[1];
-                    if (cols.length !== headers.length || rest !== '')
-                        break;
+                    if (cols.length === 0 || rest !== '')
+                        return;
                     void append(cols, table, aligns);
                     source = source.slice(line.length + 1);
                 }
@@ -686,20 +684,20 @@ require = function e(t, n, r) {
             function parse(source) {
                 var cols = [];
                 while (true) {
-                    var result = source.startsWith('||') ? [
+                    var result = source[0] === '|' ? source.length > 1 && source[1] !== '|' ? loop_1.loop(inline_1.inline, /^\||^\n/)(source.slice(1)) : [
                         [],
                         source.slice(1)
-                    ] : source[0] === '|' && source.length > 1 ? loop_1.loop(inline_1.inline, /^\|/)(source.slice(1)) : void 0;
+                    ] : void 0;
                     if (!result)
                         return;
                     var col = result[0], rest = result[1];
                     source = rest;
                     void cols.push(text_1.squash(col));
-                    var end = (rest.match(/^(\|\s*?(?:\n|$))/) || [''])[0];
-                    if (end)
+                    var match = rest.match(/^\|?\s*?(?:\n|$)/);
+                    if (match)
                         return [
                             cols,
-                            rest.slice(end.length)
+                            rest.slice(match[0].length)
                         ];
                 }
             }
@@ -733,6 +731,8 @@ require = function e(t, n, r) {
                 var el = document.createElement('ul');
                 while (true) {
                     var line = source.split('\n', 1)[0];
+                    if (line.trim() === '')
+                        break;
                     if (line.match(syntax)) {
                         var text = line.slice(1).trim();
                         var li = el.appendChild(document.createElement('li'));
@@ -740,8 +740,6 @@ require = function e(t, n, r) {
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
-                        if (line.trim() === '')
-                            break;
                         if (el.lastElementChild.lastElementChild && [
                                 'ul',
                                 'ol'
@@ -1292,10 +1290,10 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var bind_1 = require('./view/bind');
+            var bind_1 = require('./viewer/bind');
             exports.bind = bind_1.bind;
         },
-        { './view/bind': 36 }
+        { './viewer/bind': 36 }
     ],
     36: [
         function (require, module, exports) {
