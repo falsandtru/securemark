@@ -12,6 +12,7 @@ Secure markdown renderer working on browsers for user input data.
 - Declarative syntax.
 - Recursive parsing.
 - Incremental update.
+- Unblinking rendering.
 
 ## Demo
 
