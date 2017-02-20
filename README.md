@@ -41,4 +41,5 @@ https://falsandtru.github.io/securemark/
 - Chrome
 - Firefox
 - Edge
+- Safari
 - https://cdn.polyfill.io
