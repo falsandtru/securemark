@@ -1,2 +1,2 @@
 ﻿export { parse } from './syntax';
-export { bind } from './view';
+export { bind } from './viewer';
