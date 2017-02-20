@@ -17,6 +17,7 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
   const el = document.createElement('ul');
   while (true) {
     const line = source.split('\n', 1)[0];
+    if (line.trim() === '') break;
     if (line.match(syntax)) {
       const text = line.slice(1).trim();
       const li = el.appendChild(document.createElement('li'));
@@ -25,7 +26,6 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
       continue;
     }
     else {
-      if (line.trim() === '') break;
       if (el.lastElementChild!.lastElementChild && ['ul', 'ol'].indexOf(el.lastElementChild!.lastElementChild!.tagName.toLowerCase()) !== -1) return;
       const [block, rest] = indent(source);
       if (rest === source) return;

@@ -7,7 +7,8 @@ import { squash } from '../inline/text';
 
 type SubParsers = [InlineParser];
 
-const syntax = /^(?:~(?:[ \t][^\n]*)?\n)+:(?:[ \t][^\n]*)?(?:\n|$)/;
+const syntax = /^~\s/;
+const separator = /^[~:](?:\s|$)/;
 
 export const dlist: DListParser = function (source: string): Result<HTMLDListElement, SubParsers> {
   const [whole] = source.match(syntax) || [''];
@@ -15,23 +16,22 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
   const el = document.createElement('dl');
   while (true) {
     const line = source.split('\n', 1)[0];
+    if (line.trim() === '' || !line.match(separator)) break;
     switch (line[0]) {
       case '~': {
-        if (line.length > 1 && line[1].trim() !== '') break;
-        const text = line.slice(1).trim();
         const dt = el.appendChild(document.createElement('dt'));
-        void dt.appendChild(squash((loop(compose<SubParsers, HTMLElement | Text>([inline]))(text) || [[]])[0]));
+        void dt.appendChild(squash((loop(compose<SubParsers, HTMLElement | Text>([inline]))(line.slice(1).trim()) || [[]])[0]));
         source = source.slice(line.length + 1);
         continue;
       }
       case ':': {
         if (!el.lastChild) return;
-        if (line.length > 1 && line[1].trim() !== '') break;
         const dd = el.appendChild(document.createElement('dd'));
         const texts: string[] = [line.slice(1).trim()];
         source = source.slice(line.length + 1);
-        while (source !== '' && !source.match(/^[~:](?:\s|$)|^\s*?\n/)) {
+        while (true) {
           const line = source.split('\n', 1)[0];
+          if (line.trim() === '' || line.match(separator)) break;
           void texts.push(line);
           source = source.slice(line.length + 1);
         }
@@ -39,11 +39,9 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
         continue;
       }
       default: {
-        if (line.trim() === '') break;
         return;
       }
     }
-    break;
   }
   return el.children.length === 0 || el.lastElementChild!.tagName.toLowerCase() !== 'dd'
     ? void 0

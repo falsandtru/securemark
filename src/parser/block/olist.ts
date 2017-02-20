@@ -18,6 +18,7 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
   void el.setAttribute('start', +index > 0 ? index : '1');
   while (true) {
     const line = source.split('\n', 1)[0];
+    if (line.trim() === '') break;
     if (line.match(syntax)) {
       const text = line.slice(line.indexOf('.') + 1).trim();
       const li = el.appendChild(document.createElement('li'));
@@ -26,7 +27,6 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
       continue;
     }
     else {
-      if (line.trim() === '') break;
       if (el.lastElementChild!.lastElementChild && ['ul', 'ol'].indexOf(el.lastElementChild!.lastElementChild!.tagName.toLowerCase()) !== -1) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
