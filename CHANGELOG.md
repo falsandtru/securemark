@@ -3,6 +3,7 @@
 ## 0.6.0
 
 - Refine dlist syntax.
+- Refine olist syntax.
 
 ## 0.5.0
 

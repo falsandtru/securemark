@@ -27,7 +27,7 @@ https://falsandtru.github.io/securemark/
 
 - Heading (#)
 - UList (-)
-- OList (0.)
+- OList (1.)
 - DList (~)
 - Table (| |)
 - Blockquote (>)

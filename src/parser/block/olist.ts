@@ -9,13 +9,14 @@ import { squash } from '../inline/text';
 
 type SubParsers = [InlineParser] | [UListParser, OListParser];
 
-const syntax = /^([0-9]+)\.(?:\s|$)/;
+const syntax = /^([0-9A-z]+)\.(?:\s|$)/;
 
 export const olist: OListParser = function (source: string): Result<HTMLOListElement, SubParsers> {
   const [whole, index] = source.match(syntax) || ['', ''];
   if (!whole) return;
   const el = document.createElement('ol');
-  void el.setAttribute('start', +index > 0 ? index : '1');
+  void el.setAttribute('start', index);
+  void el.setAttribute('type', !isNaN(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A');
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
