@@ -52,7 +52,7 @@ describe('Unit: parser/image', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('![\\[](#)')), [['<img data-src="#" alt="[">'], '']);
-      assert.deepStrictEqual(inspect(parser('![<u>"]("?"#")')), [['<img data-src="%22?%22#%22" alt="<u>&quot;">'], '']);
+      assert.deepStrictEqual(inspect(parser('![<var>"]("?"#")')), [['<img data-src="%22?%22#%22" alt="<var>&quot;">'], '']);
     });
 
     it('external', () => {

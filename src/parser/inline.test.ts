@@ -15,8 +15,8 @@ describe('Unit: parser/inline', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('~~<u>`a`</u>~~')), [['<s><u><code>a</code></u></s>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>~~<q>a</q>~~</u>')), [['<u><s><q>a</q></s></u>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~<var>`a`</var>~~')), [['<s><var><code>a</code></var></s>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>~~<dfn>a</dfn>~~</var>')), [['<var><s><dfn>a</dfn></s></var>'], '']);
     });
 
     it('flip', () => {

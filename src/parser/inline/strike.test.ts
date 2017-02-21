@@ -13,7 +13,7 @@ describe('Unit: parser/strike', () => {
       assert.deepStrictEqual(inspect(parser('~~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~~~a~~~~')), void 0);
-      assert.deepStrictEqual(inspect(parser('~~<u>~~')), void 0);
+      assert.deepStrictEqual(inspect(parser('~~<var>~~')), void 0);
       assert.deepStrictEqual(inspect(parser('a~~a~~')), void 0);
     });
 
@@ -26,9 +26,9 @@ describe('Unit: parser/strike', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('~~<a>~~')), [['<s>&lt;a&gt;</s>'], '']);
       assert.deepStrictEqual(inspect(parser('~~\\<a>~~')), [['<s>&lt;a&gt;</s>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~\\<u>~~')), [['<s>&lt;u&gt;</s>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~<u></u>~~')), [['<s><u></u></s>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~`<u>`~~')), [['<s><code>&lt;u&gt;</code></s>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~\\<var>~~')), [['<s>&lt;var&gt;</s>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~<var></var>~~')), [['<s><var></var></s>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~`<var>`~~')), [['<s><code>&lt;var&gt;</code></s>'], '']);
       assert.deepStrictEqual(inspect(parser('~~[](#)~~')), [['<s><a href="#">#</a></s>'], '']);
     });
 

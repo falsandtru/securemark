@@ -28,7 +28,7 @@ describe('Unit: parser/heading', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('# *<u>`<a>`</u>*')), [['<h1><em><u><code>&lt;a&gt;</code></u></em></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# *<var>`<a>`</var>*')), [['<h1><em><var><code>&lt;a&gt;</code></var></em></h1>'], '']);
     });
 
   });

@@ -11,7 +11,7 @@ describe('Unit: parser/emphasis', () => {
       assert.deepStrictEqual(inspect(parser('*')), void 0);
       assert.deepStrictEqual(inspect(parser('**')), void 0);
       assert.deepStrictEqual(inspect(parser('**a**')), void 0);
-      assert.deepStrictEqual(inspect(parser('*<u>*')), void 0);
+      assert.deepStrictEqual(inspect(parser('*<var>*')), void 0);
       assert.deepStrictEqual(inspect(parser('a*a*')), void 0);
     });
 
@@ -24,9 +24,9 @@ describe('Unit: parser/emphasis', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('*<a>*')), [['<em>&lt;a&gt;</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*\\<a>*')), [['<em>&lt;a&gt;</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*\\<u>*')), [['<em>&lt;u&gt;</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*<u></u>*')), [['<em><u></u></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*`<u>`*')), [['<em><code>&lt;u&gt;</code></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*\\<var>*')), [['<em>&lt;var&gt;</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*<var></var>*')), [['<em><var></var></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*`<var>`*')), [['<em><code>&lt;var&gt;</code></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*[](#)*')), [['<em><a href="#">#</a></em>'], '']);
     });
 

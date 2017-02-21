@@ -11,42 +11,42 @@ describe('Unit: parser/html', () => {
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), void 0);
       assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), void 0);
       assert.deepStrictEqual(inspect(parser('<script src="."></script>')), void 0);
-      assert.deepStrictEqual(inspect(parser('<u onclick="alert()">')), void 0);
-      assert.deepStrictEqual(inspect(parser('<u onclick="alert()"><u>')), void 0);
-      assert.deepStrictEqual(inspect(parser('<u><u onclick="alert()"></u></u>')), [['<u>&lt;u onclick="alert()"&gt;</u>'], '</u>']);
+      assert.deepStrictEqual(inspect(parser('<var onclick="alert()">')), void 0);
+      assert.deepStrictEqual(inspect(parser('<var onclick="alert()"><var>')), void 0);
+      assert.deepStrictEqual(inspect(parser('<var><var onclick="alert()"></var></var>')), [['<var>&lt;var onclick="alert()"&gt;</var>'], '</var>']);
     });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('</u>')), void 0);
+      assert.deepStrictEqual(inspect(parser('</var>')), void 0);
       assert.deepStrictEqual(inspect(parser('a')), void 0);
-      assert.deepStrictEqual(inspect(parser('a<u>')), void 0);
+      assert.deepStrictEqual(inspect(parser('a<var>')), void 0);
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser('<u>')), [['<u></u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>a')), [['<u>a</u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u><u>')), [['<u><u></u></u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u></u>')), [['<u></u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>a</u>')), [['<u>a</u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>a</u>a')), [['<u>a</u>'], 'a']);
-      assert.deepStrictEqual(inspect(parser('<u>\n</u>')), [['<u></u>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>')), [['<var></var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>a')), [['<var>a</var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var><var>')), [['<var><var></var></var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var></var>')), [['<var></var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>a</var>')), [['<var>a</var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>a</var>a')), [['<var>a</var>'], 'a']);
+      assert.deepStrictEqual(inspect(parser('<var>\n</var>')), [['<var></var>'], '']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('<u><u></u></u>')), [['<u><u></u></u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>a<u>b</u>c</u>')), [['<u>a<u>b</u>c</u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>`a`</u>')), [['<u><code>a</code></u>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var><var></var></var>')), [['<var><var></var></var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>a<var>b</var>c</var>')), [['<var>a<var>b</var>c</var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>`a`</var>')), [['<var><code>a</code></var>'], '']);
     });
 
     it('escape', () => {
       assert.deepStrictEqual(inspect(parser('<a>')), void 0);
-      assert.deepStrictEqual(inspect(parser('<u><a></a></u>')), [['<u>&lt;a&gt;&lt;/a&gt;</u>'], '']);
-      assert.deepStrictEqual(inspect(parser('<u>a<a>b</a>c</u>')), [['<u>a&lt;a&gt;b&lt;/a&gt;c</u>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var><a></a></var>')), [['<var>&lt;a&gt;&lt;/a&gt;</var>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var>a<a>b</a>c</var>')), [['<var>a&lt;a&gt;b&lt;/a&gt;c</var>'], '']);
       assert.deepStrictEqual(inspect(parser('<img>')), void 0);
-      assert.deepStrictEqual(inspect(parser('<u><img></u>')), [['<u>&lt;img&gt;</u>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var><img></var>')), [['<var>&lt;img&gt;</var>'], '']);
       assert.deepStrictEqual(inspect(parser('<img />')), void 0);
-      assert.deepStrictEqual(inspect(parser('<u><img /></u>')), [['<u>&lt;img /&gt;</u>'], '']);
+      assert.deepStrictEqual(inspect(parser('<var><img /></var>')), [['<var>&lt;img /&gt;</var>'], '']);
     });
 
     it('code', () => {

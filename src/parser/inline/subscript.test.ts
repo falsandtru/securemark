@@ -28,7 +28,7 @@ describe('Unit: parser/subscript', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('~*a*~')), [['<sub>*a*</sub>'], '']);
-      assert.deepStrictEqual(inspect(parser('~<u>~')), [['<sub>&lt;u&gt;</sub>'], '']);
+      assert.deepStrictEqual(inspect(parser('~<var>~')), [['<sub>&lt;var&gt;</sub>'], '']);
     });
 
   });
