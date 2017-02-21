@@ -5,7 +5,6 @@ import { strong } from './inline/strong';
 import { emphasis } from './inline/emphasis';
 import { superscript } from './inline/superscript';
 import { subscript } from './inline/subscript';
-import { quote } from './inline/quote';
 import { code } from './inline/code';
 import { image } from './inline/image';
 import { link } from './inline/link';
@@ -19,7 +18,6 @@ export import StrongParser = InlineParser.StrongParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
 export import SuperScriptParser = InlineParser.SuperScriptParser;
 export import SubScriptParser = InlineParser.SubScriptParser;
-export import QuoteParser = InlineParser.QuoteParser;
 export import CodeParser = InlineParser.CodeParser;
 export import ImageParser = InlineParser.ImageParser;
 export import LinkParser = InlineParser.LinkParser;
@@ -32,7 +30,6 @@ export const inline: InlineParser = combine<[
   StrikeParser,
   StrongParser,
   EmphasisParser,
-  QuoteParser,
   SuperScriptParser,
   SubScriptParser,
   CodeParser,
@@ -45,7 +42,6 @@ export const inline: InlineParser = combine<[
   strike,
   strong,
   emphasis,
-  quote,
   superscript,
   subscript,
   code,
