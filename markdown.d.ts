@@ -123,6 +123,7 @@ export namespace MarkdownParser {
       InlineParser.StrikeParser,
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
+      InlineParser.SuperScriptParser,
       InlineParser.CodeParser,
       InlineParser.ImageParser,
       InlineParser.LinkParser,
@@ -151,6 +152,13 @@ export namespace MarkdownParser {
       Markdown<'emphasis'>,
       Parser<HTMLElement, [
         InlineParser
+      ]> {
+    }
+    export interface SuperScriptParser extends
+      // ^abc^
+      Markdown<'superscript'>,
+      Parser<HTMLElement, [
+        TextParser
       ]> {
     }
     export interface CodeParser extends

@@ -3,6 +3,7 @@ import { compose } from '../combinator/compose';
 import { strike } from './inline/strike';
 import { strong } from './inline/strong';
 import { emphasis } from './inline/emphasis';
+import { superscript } from './inline/superscript';
 import { code } from './inline/code';
 import { image } from './inline/image';
 import { link } from './inline/link';
@@ -14,6 +15,7 @@ export import InlineParser = MarkdownParser.InlineParser;
 export import StrikeParser = InlineParser.StrikeParser;
 export import StrongParser = InlineParser.StrongParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
+export import SuperScriptParser = InlineParser.SuperScriptParser;
 export import CodeParser = InlineParser.CodeParser;
 export import ImageParser = InlineParser.ImageParser;
 export import LinkParser = InlineParser.LinkParser;
@@ -26,6 +28,7 @@ export const inline: InlineParser = compose<[
   StrikeParser,
   StrongParser,
   EmphasisParser,
+  SuperScriptParser,
   CodeParser,
   ImageParser,
   LinkParser,
@@ -36,6 +39,7 @@ export const inline: InlineParser = compose<[
   strike,
   strong,
   emphasis,
+  superscript,
   code,
   image,
   link,

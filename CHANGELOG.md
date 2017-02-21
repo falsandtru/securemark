@@ -2,6 +2,7 @@
 
 ## 0.7.0
 
+- Add superscript syntax.
 - Fix code parser.
 
 ## 0.6.0

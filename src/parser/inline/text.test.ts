@@ -25,6 +25,11 @@ describe('Unit: parser/text', () => {
       assert.deepStrictEqual(inspect(parser('**')), [['*', '*'], '']);
     });
 
+    it('^', () => {
+      const parser = loop(text);
+      assert.deepStrictEqual(inspect(parser('^^')), [['^', '^'], '']);
+    });
+
     it('~', () => {
       const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('~~')), [['~', '~'], '']);
