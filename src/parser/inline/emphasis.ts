@@ -7,7 +7,7 @@ import { squash } from './text';
 type SubParsers = [InlineParser];
 
 const syntax = /^\*[\s\S]+?\*/;
-const closer = /\*/;
+const closer = /^\*/;
 
 export const emphasis: EmphasisParser = function (source: string): Result<HTMLElement, SubParsers> {
   if (!source.startsWith('*') || source.startsWith('**') || !source.match(syntax)) return;
