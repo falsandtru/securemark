@@ -62,5 +62,5 @@
     "ci": "gulp ci"
   },
   "author": "falsandtru",
-  "license": "Apache-2.0"
+  "license": "(Apache-2.0 AND MPL-2.0)"
 }
