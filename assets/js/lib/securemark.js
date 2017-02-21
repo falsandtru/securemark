@@ -45,7 +45,7 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function compose(parsers) {
+            function combine(parsers) {
                 return function (source) {
                     var rest = source;
                     var results = [];
@@ -66,7 +66,7 @@ require = function e(t, n, r) {
                     ] : void 0;
                 };
             }
-            exports.compose = compose;
+            exports.combine = combine;
         },
         {}
     ],
@@ -105,14 +105,14 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var syntax_1 = require('./syntax');
-            exports.parse = syntax_1.parse;
-            var viewer_1 = require('./viewer');
-            exports.bind = viewer_1.bind;
+            var parser_1 = require('./parser');
+            exports.parse = parser_1.parse;
+            var bind_1 = require('./viewer/bind');
+            exports.bind = bind_1.bind;
         },
         {
-            './syntax': 34,
-            './viewer': 35
+            './parser': 7,
+            './viewer/bind': 38
         }
     ],
     7: [
@@ -121,23 +121,30 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var loop_1 = require('./combinator/loop');
             var block_1 = require('./parser/block');
+            var segment_1 = require('./parser/segment');
             function parse(source) {
-                return Array.from((loop_1.loop(block_1.block)(source) || [[]])[0]).reduce(function (doc, el) {
-                    return void doc.appendChild(el), doc;
+                return segment_1.segment(source).reduce(function (doc, source) {
+                    return parse_(source).reduce(function (doc, el) {
+                        return void doc.appendChild(el), doc;
+                    }, doc);
                 }, document.createDocumentFragment());
+                function parse_(source) {
+                    return (loop_1.loop(block_1.block)(source) || [[]])[0];
+                }
             }
             exports.parse = parse;
         },
         {
             './combinator/loop': 5,
-            './parser/block': 8
+            './parser/block': 8,
+            './parser/segment': 36
         }
     ],
     8: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var compose_1 = require('../combinator/compose');
+            var combine_1 = require('../combinator/combine');
             var newline_1 = require('./block/newline');
             var horizontalrule_1 = require('./block/horizontalrule');
             var heading_1 = require('./block/heading');
@@ -149,7 +156,7 @@ require = function e(t, n, r) {
             var pretext_1 = require('./block/pretext');
             var extension_1 = require('./block/extension');
             var paragraph_1 = require('./block/paragraph');
-            exports.block = compose_1.compose([
+            exports.block = combine_1.combine([
                 newline_1.newline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -173,7 +180,7 @@ require = function e(t, n, r) {
             exports.consumeBlockEndEmptyLine = consumeBlockEndEmptyLine;
         },
         {
-            '../combinator/compose': 4,
+            '../combinator/combine': 4,
             './block/blockquote': 9,
             './block/dlist': 10,
             './block/extension': 11,
@@ -192,7 +199,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('../inline/plaintext');
             var text_1 = require('../inline/text');
@@ -223,7 +230,7 @@ require = function e(t, n, r) {
                     if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
                         void bottom.appendChild(document.createElement('br'));
                     }
-                    void bottom.appendChild(text_1.squash((loop_1.loop(compose_1.compose([plaintext_1.plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
+                    void bottom.appendChild(text_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
                     if (!bottom.lastChild || !bottom.lastChild.textContent)
                         return;
                     indent = indent[0].repeat(indent.length + diff);
@@ -233,11 +240,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline/plaintext': 29,
-            '../inline/text': 32
+            '../inline/text': 35
         }
     ],
     10: [
@@ -245,7 +252,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
@@ -263,7 +270,7 @@ require = function e(t, n, r) {
                     switch (line.slice(0, 2).trim()) {
                     case '~': {
                             var dt = el.appendChild(document.createElement('dt'));
-                            void dt.appendChild(text_1.squash((loop_1.loop(compose_1.compose([inline_1.inline]))(line.slice(1).trim()) || [[]])[0]));
+                            void dt.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(line.slice(1).trim()) || [[]])[0]));
                             source = source.slice(line.length + 1);
                             continue;
                         }
@@ -278,7 +285,7 @@ require = function e(t, n, r) {
                                 void texts.push(line_1);
                                 source = source.slice(line_1.length + 1);
                             }
-                            void dd.appendChild(text_1.squash((loop_1.loop(compose_1.compose([inline_1.inline]))(texts.join('\n').trim()) || [[]])[0]));
+                            void dd.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(texts.join('\n').trim()) || [[]])[0]));
                             continue;
                         }
                     }
@@ -290,35 +297,23 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 32
+            '../inline/text': 35
         }
     ],
     11: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var placeholder_1 = require('./extension/placeholder');
-            var syntax = /^(~{3,})[ \t]*\n(?:[^\n]*\n)*\1/;
-            exports.extension = function (source) {
-                var whole = (source.match(syntax) || [''])[0];
-                if (!whole)
-                    return;
-                var _a = compose_1.compose([placeholder_1.placeholder])(source) || [
-                        [],
-                        source
-                    ], ns = _a[0], rest = _a[1];
-                return rest.length === source.length ? void 0 : block_1.consumeBlockEndEmptyLine(ns, rest);
-            };
+            exports.extension = combine_1.combine([placeholder_1.placeholder]);
         },
         {
-            '../../combinator/compose': 4,
-            '../block': 8,
+            '../../combinator/combine': 4,
             './extension/placeholder': 12
         }
     ],
@@ -330,7 +325,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../../combinator/loop');
             var inline_1 = require('../../inline');
             var text_1 = require('../../inline/text');
-            var syntax = /^(~{3,})[ \t]*\n(?:[^\n]*\n)*\1/;
+            var syntax = /^(~{3,})\s*?\n(?:[^\n]*\n)*\1/;
             var cache = new Map();
             exports.placeholder = function (source) {
                 var _a = source.match(syntax) || [
@@ -367,7 +362,7 @@ require = function e(t, n, r) {
             '../../../combinator/loop': 5,
             '../../block': 8,
             '../../inline': 22,
-            '../../inline/text': 32
+            '../../inline/text': 35
         }
     ],
     13: [
@@ -375,7 +370,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
@@ -388,18 +383,18 @@ require = function e(t, n, r) {
                     ], whole = _a[0], level = _a[1].length, title = _a[2];
                 if (!whole)
                     return;
-                var children = (loop_1.loop(compose_1.compose([inline_1.inline]))(title) || [[]])[0];
+                var children = (loop_1.loop(combine_1.combine([inline_1.inline]))(title) || [[]])[0];
                 var el = document.createElement('h' + level);
                 void el.appendChild(text_1.squash(children));
                 return block_1.consumeBlockEndEmptyLine([el], source.slice(whole.length + 1));
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 32
+            '../inline/text': 35
         }
     ],
     14: [
@@ -443,6 +438,7 @@ require = function e(t, n, r) {
                 ];
             }
             exports.indent = indent;
+            ;
         },
         {}
     ],
@@ -471,7 +467,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var ulist_1 = require('./ulist');
             var indent_1 = require('./indent');
@@ -495,7 +491,7 @@ require = function e(t, n, r) {
                     if (line.match(syntax)) {
                         var text = line.slice(line.indexOf('.') + 1).trim();
                         var li = el.appendChild(document.createElement('li'));
-                        void li.appendChild(text_1.squash((loop_1.loop(compose_1.compose([inline_1.inline]))(text) || [[]])[0]));
+                        void li.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
@@ -507,7 +503,7 @@ require = function e(t, n, r) {
                         var _b = indent_1.indent(source), block = _b[0], rest = _b[1];
                         if (rest === source)
                             return;
-                        var _c = compose_1.compose([
+                        var _c = combine_1.combine([
                                 ulist_1.ulist,
                                 exports.olist
                             ])(block) || [
@@ -525,11 +521,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 32,
+            '../inline/text': 35,
             './indent': 15,
             './ulist': 21
         }
@@ -539,7 +535,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
@@ -548,7 +544,7 @@ require = function e(t, n, r) {
                 if (source.startsWith('\n') || source.match(closer))
                     return;
                 var el = document.createElement('p');
-                var _a = loop_1.loop(compose_1.compose([inline_1.inline]), closer)(source.trim()) || [
+                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.trim()) || [
                         [document.createTextNode(source.trim())],
                         ''
                     ], cs = _a[0], rest = _a[1];
@@ -557,11 +553,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 32
+            '../inline/text': 35
         }
     ],
     19: [
@@ -569,7 +565,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('../inline/plaintext');
             var text_1 = require('../inline/text');
@@ -595,7 +591,7 @@ require = function e(t, n, r) {
                     var line = source.split('\n', 1)[0];
                     if (line.match(cache.get(keyword)))
                         break;
-                    void el.appendChild(text_1.squash((loop_1.loop(compose_1.compose([plaintext_1.plaintext]))(line + '\n') || [[]])[0]));
+                    void el.appendChild(text_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line + '\n') || [[]])[0]));
                     source = source.slice(line.length + 1);
                     if (source === '')
                         return;
@@ -607,11 +603,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline/plaintext': 29,
-            '../inline/text': 32
+            '../inline/text': 35
         }
     ],
     20: [
@@ -706,7 +702,7 @@ require = function e(t, n, r) {
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 32
+            '../inline/text': 35
         }
     ],
     21: [
@@ -714,7 +710,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var olist_1 = require('./olist');
             var indent_1 = require('./indent');
@@ -736,7 +732,7 @@ require = function e(t, n, r) {
                     if (line.match(syntax)) {
                         var text = line.slice(1).trim();
                         var li = el.appendChild(document.createElement('li'));
-                        void li.appendChild(text_1.squash((loop_1.loop(compose_1.compose([inline_1.inline]))(text) || [[]])[0]));
+                        void li.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
@@ -748,7 +744,7 @@ require = function e(t, n, r) {
                         var _a = indent_1.indent(source), block = _a[0], rest = _a[1];
                         if (rest === source)
                             return;
-                        var _b = compose_1.compose([
+                        var _b = combine_1.combine([
                                 exports.ulist,
                                 olist_1.olist
                             ])(block) || [
@@ -766,11 +762,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 32,
+            '../inline/text': 35,
             './indent': 15,
             './olist': 17
         }
@@ -779,20 +775,26 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var compose_1 = require('../combinator/compose');
+            var combine_1 = require('../combinator/combine');
             var strike_1 = require('./inline/strike');
             var strong_1 = require('./inline/strong');
             var emphasis_1 = require('./inline/emphasis');
+            var superscript_1 = require('./inline/superscript');
+            var subscript_1 = require('./inline/subscript');
+            var quote_1 = require('./inline/quote');
             var code_1 = require('./inline/code');
             var image_1 = require('./inline/image');
             var link_1 = require('./inline/link');
             var annotation_1 = require('./inline/annotation');
             var html_1 = require('./inline/html');
             var text_1 = require('./inline/text');
-            exports.inline = compose_1.compose([
+            exports.inline = combine_1.combine([
                 strike_1.strike,
                 strong_1.strong,
                 emphasis_1.emphasis,
+                quote_1.quote,
+                superscript_1.superscript,
+                subscript_1.subscript,
                 code_1.code,
                 image_1.image,
                 link_1.link,
@@ -802,30 +804,33 @@ require = function e(t, n, r) {
             ]);
         },
         {
-            '../combinator/compose': 4,
+            '../combinator/combine': 4,
             './inline/annotation': 23,
             './inline/code': 24,
             './inline/emphasis': 25,
             './inline/html': 26,
             './inline/image': 27,
             './inline/link': 28,
-            './inline/strike': 30,
-            './inline/strong': 31,
-            './inline/text': 32
+            './inline/quote': 30,
+            './inline/strike': 31,
+            './inline/strong': 32,
+            './inline/subscript': 33,
+            './inline/superscript': 34,
+            './inline/text': 35
         }
     ],
     23: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('./text');
             var syntax = /^\(\([\s\S]+?\)\)/;
             exports.annotation = function (source) {
                 if (!source.startsWith('((') || source.startsWith('(((') || !source.match(syntax))
                     return;
-                var _a = loop_1.loop(compose_1.compose([text_1.text]), /^\)\)/)(source.slice(2)) || [
+                var _a = loop_1.loop(combine_1.combine([text_1.text]), /^\)\)/)(source.slice(2)) || [
                         [],
                         ''
                     ], cs = _a[0], rest = _a[1];
@@ -842,20 +847,20 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            './text': 32
+            './text': 35
         }
     ],
     24: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('./plaintext');
             var text_1 = require('./text');
-            var syntax = /^([\`]+)[\S\s]+?\1/;
+            var syntax = /^([\`]+)[^\n]+?\1/;
             var cache = new Map();
             exports.code = function (source) {
                 if (!source.startsWith('`'))
@@ -869,7 +874,7 @@ require = function e(t, n, r) {
                 if (!cache.has(keyword)) {
                     void cache.set(keyword, new RegExp('^' + keyword));
                 }
-                var _b = loop_1.loop(compose_1.compose([plaintext_1.plaintext]), cache.get(keyword))(source.slice(keyword.length)) || [
+                var _b = loop_1.loop(combine_1.combine([plaintext_1.plaintext]), cache.get(keyword))(source.slice(keyword.length)) || [
                         [],
                         ''
                     ], cs = _b[0], rest = _b[1];
@@ -885,10 +890,10 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             './plaintext': 29,
-            './text': 32
+            './text': 35
         }
     ],
     25: [
@@ -896,15 +901,15 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var inline_1 = require('../inline');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('./text');
             var syntax = /^\*[\s\S]+?\*/;
-            var closer = /\*/;
+            var closer = /^\*/;
             exports.emphasis = function (source) {
                 if (!source.startsWith('*') || source.startsWith('**') || !source.match(syntax))
                     return;
-                var _a = loop_1.loop(compose_1.compose([inline_1.inline]), closer)(source.slice(1)) || [
+                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(1)) || [
                         [],
                         ''
                     ], cs = _a[0], rest = _a[1];
@@ -919,10 +924,10 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './text': 32
+            './text': 35
         }
     ],
     26: [
@@ -930,12 +935,12 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var inline_1 = require('../inline');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('./plaintext');
             var text_1 = require('./text');
             var syntax = /^(<([a-z]+)>)/i;
-            var inlinetags = Object.freeze('small|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|u|mark|ruby|rt|rp|bdi|bdo|ins|del|wbr'.split('|'));
+            var inlinetags = Object.freeze('small|cite|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|mark|ruby|rt|rp|bdi|bdo|ins|del|wbr'.split('|'));
             var cache = new Map();
             exports.html = function (source) {
                 if (!source.startsWith('<') || source.startsWith('<<'))
@@ -957,36 +962,35 @@ require = function e(t, n, r) {
                 if (!cache.has(tagname)) {
                     void cache.set(tagname, new RegExp('^</' + tagname + '>', 'i'));
                 }
-                var _b = tagname.toLowerCase() === 'code' ? loop_1.loop(compose_1.compose([plaintext_1.plaintext]), cache.get(tagname))(source.slice(opentag.length)) || [
+                var _b = tagname.toLowerCase() === 'code' ? loop_1.loop(combine_1.combine([plaintext_1.plaintext]), cache.get(tagname))(source.slice(opentag.length)) || [
                         [],
                         source.slice(opentag.length)
-                    ] : loop_1.loop(compose_1.compose([inline_1.inline]), cache.get(tagname))(source.slice(opentag.length)) || [
+                    ] : loop_1.loop(combine_1.combine([inline_1.inline]), cache.get(tagname))(source.slice(opentag.length)) || [
                         [],
                         source.slice(opentag.length)
                     ], cs = _b[0], rest = _b[1];
                 var el = document.createElement(tagname);
                 void el.appendChild(text_1.squash(cs));
                 var closetag = '</' + tagname + '>';
-                var closed = rest.slice(0, closetag.length).toLowerCase() === closetag.toLowerCase();
-                return [
+                return rest.slice(0, closetag.length).toLowerCase() === closetag ? [
                     [el],
-                    rest.slice(closed ? closetag.length : 0)
-                ];
+                    rest.slice(closetag.length)
+                ] : void 0;
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
             './plaintext': 29,
-            './text': 32
+            './text': 35
         }
     ],
     27: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('./text');
             var url_1 = require('../string/url');
@@ -994,7 +998,7 @@ require = function e(t, n, r) {
             exports.image = function (source) {
                 if (!source.startsWith('![') || !source.match(syntax))
                     return;
-                var _a = loop_1.loop(compose_1.compose([text_1.text]), /^\]|^\n/)(source) || [
+                var _a = loop_1.loop(combine_1.combine([text_1.text]), /^\]|^\n/)(source) || [
                         [],
                         ''
                     ], _b = _a[0], first = _b.slice(2), next = _a[1];
@@ -1024,17 +1028,17 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../string/url': 33,
-            './text': 32
+            '../string/url': 37,
+            './text': 35
         }
     ],
     28: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var image_1 = require('./image');
             var text_1 = require('./text');
@@ -1046,7 +1050,7 @@ require = function e(t, n, r) {
                 var _a = source.startsWith('[]') ? [
                         [],
                         source.slice(1)
-                    ] : compose_1.compose([image_1.image])(source.slice(1)) || loop_1.loop(compose_1.compose([text_1.text]), /^\]|^\n/)(source.slice(1)) || [
+                    ] : combine_1.combine([image_1.image])(source.slice(1)) || loop_1.loop(combine_1.combine([text_1.text]), /^\]|^\n/)(source.slice(1)) || [
                         [],
                         ''
                     ], first = _a[0], next = _a[1];
@@ -1081,11 +1085,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../string/url': 33,
+            '../string/url': 37,
             './image': 27,
-            './text': 32
+            './text': 35
         }
     ],
     29: [
@@ -1123,15 +1127,51 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var inline_1 = require('../inline');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
+            var loop_1 = require('../../combinator/loop');
+            var text_1 = require('./text');
+            var syntax = /^"\S[\s\S]*?"/;
+            var closer = /^"/;
+            exports.quote = function (source) {
+                if (!source.startsWith('"') || source.startsWith('""') || !source.match(syntax))
+                    return;
+                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(1)) || [
+                        [],
+                        ''
+                    ], cs = _a[0], rest = _a[1];
+                if (!rest.startsWith('"'))
+                    return;
+                var el = document.createElement('q');
+                void el.appendChild(text_1.squash(cs));
+                if (el.textContent && el.textContent !== el.textContent.trim())
+                    return;
+                return [
+                    [el],
+                    rest.slice(1)
+                ];
+            };
+        },
+        {
+            '../../combinator/combine': 4,
+            '../../combinator/loop': 5,
+            '../inline': 22,
+            './text': 35
+        }
+    ],
+    31: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../inline');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('./text');
             var syntax = /^~~[\s\S]+?~~/;
             var closer = /^~~/;
             exports.strike = function (source) {
-                if (!source.startsWith('~~') || source.startsWith('~~~') || !source.match(syntax))
+                if (!source.startsWith('~~') || source.startsWith('~~~~') || !source.match(syntax))
                     return;
-                var _a = loop_1.loop(compose_1.compose([inline_1.inline]), closer)(source.slice(2)) || [
+                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(2)) || [
                         [],
                         ''
                     ], cs = _a[0], rest = _a[1];
@@ -1146,18 +1186,18 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './text': 32
+            './text': 35
         }
     ],
-    31: [
+    32: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var inline_1 = require('../inline');
-            var compose_1 = require('../../combinator/compose');
+            var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('./text');
             var syntax = /^\*\*[\s\S]+?\*\*/;
@@ -1165,7 +1205,7 @@ require = function e(t, n, r) {
             exports.strong = function (source) {
                 if (!source.startsWith('**') || source.startsWith('****') || !source.match(syntax))
                     return;
-                var _a = loop_1.loop(compose_1.compose([inline_1.inline]), closer)(source.slice(2)) || [
+                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(2)) || [
                         [],
                         ''
                     ], cs = _a[0], rest = _a[1];
@@ -1180,17 +1220,85 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/compose': 4,
+            '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './text': 32
+            './text': 35
         }
     ],
-    32: [
+    33: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var separator = /[!~*`<>\[\]\(\)\|\s\n\\]/;
+            var combine_1 = require('../../combinator/combine');
+            var loop_1 = require('../../combinator/loop');
+            var text_1 = require('./text');
+            var syntax = /^~\S[^\n]*?~/;
+            var closer = /^~|^\n/;
+            exports.subscript = function (source) {
+                if (!source.startsWith('~') || source.startsWith('~~') || !source.match(syntax))
+                    return;
+                var _a = loop_1.loop(combine_1.combine([text_1.text]), closer)(source.slice(1)) || [
+                        [],
+                        ''
+                    ], cs = _a[0], rest = _a[1];
+                if (!rest.startsWith('~'))
+                    return;
+                var el = document.createElement('sub');
+                void el.appendChild(text_1.squash(cs));
+                if (el.textContent && el.textContent !== el.textContent.trim())
+                    return;
+                return [
+                    [el],
+                    rest.slice(1)
+                ];
+            };
+        },
+        {
+            '../../combinator/combine': 4,
+            '../../combinator/loop': 5,
+            './text': 35
+        }
+    ],
+    34: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var combine_1 = require('../../combinator/combine');
+            var loop_1 = require('../../combinator/loop');
+            var text_1 = require('./text');
+            var syntax = /^\^\S[^\n]*?\^/;
+            var closer = /^\^|^\n/;
+            exports.superscript = function (source) {
+                if (!source.startsWith('^') || source.startsWith('^^') || !source.match(syntax))
+                    return;
+                var _a = loop_1.loop(combine_1.combine([text_1.text]), closer)(source.slice(1)) || [
+                        [],
+                        ''
+                    ], cs = _a[0], rest = _a[1];
+                if (!rest.startsWith('^'))
+                    return;
+                var el = document.createElement('sup');
+                void el.appendChild(text_1.squash(cs));
+                if (el.textContent && el.textContent !== el.textContent.trim())
+                    return;
+                return [
+                    [el],
+                    rest.slice(1)
+                ];
+            };
+        },
+        {
+            '../../combinator/combine': 4,
+            '../../combinator/loop': 5,
+            './text': 35
+        }
+    ],
+    35: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var separator = /[!~^*"`<>\[\]\(\)\|\s\n\\]/;
             exports.text = function (source) {
                 if (source.length === 0)
                     return;
@@ -1251,7 +1359,43 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    33: [
+    36: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var pretext_1 = require('../parser/block/pretext');
+            var extension_1 = require('../parser/block/extension');
+            var combine_1 = require('../combinator/combine');
+            var loop_1 = require('../combinator/loop');
+            var syntax = /^(?:\s*?\n)+|^(?:[^\n]*\n)+?\s*?\n/;
+            function segment(source) {
+                var segments = [];
+                while (true) {
+                    var _a = loop_1.loop(combine_1.combine([
+                            pretext_1.pretext,
+                            extension_1.extension
+                        ]))(source) || [
+                            [],
+                            source.slice((source.match(syntax) || [source])[0].length)
+                        ], rest = _a[1];
+                    void segments.push(source.slice(0, source.length - rest.length));
+                    source = source.slice(source.length - rest.length);
+                    source = rest;
+                    if (source === '')
+                        break;
+                }
+                return segments;
+            }
+            exports.segment = segment;
+        },
+        {
+            '../combinator/combine': 4,
+            '../combinator/loop': 5,
+            '../parser/block/extension': 11,
+            '../parser/block/pretext': 19
+        }
+    ],
+    37: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1277,30 +1421,12 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    34: [
+    38: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var parser_1 = require('./parser');
-            exports.parse = parser_1.parse;
-        },
-        { './parser': 7 }
-    ],
-    35: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var bind_1 = require('./viewer/bind');
-            exports.bind = bind_1.bind;
-        },
-        { './viewer/bind': 36 }
-    ],
-    36: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var syntax_1 = require('../syntax');
-            var segment_1 = require('./segment');
+            var parser_1 = require('../parser');
+            var segment_1 = require('../parser/segment');
             function bind(el, source) {
                 if (source === void 0) {
                     source = '';
@@ -1309,7 +1435,7 @@ require = function e(t, n, r) {
                 void segment_1.segment(source).reduce(function (el, s) {
                     return void pairs.push([
                         s,
-                        Array.from(syntax_1.parse(s).children)
+                        Array.from(parser_1.parse(s).children)
                     ]), void pairs[pairs.length - 1][1].forEach(function (e) {
                         return void el.appendChild(e);
                     }), el;
@@ -1348,7 +1474,7 @@ require = function e(t, n, r) {
                     ].concat(ns.slice(i, ns.length - j).map(function (s) {
                         return [
                             s,
-                            Array.from(syntax_1.parse(s).children).map(function (e) {
+                            Array.from(parser_1.parse(s).children).map(function (e) {
                                 return el.insertBefore(e, ref);
                             })
                         ];
@@ -1358,47 +1484,8 @@ require = function e(t, n, r) {
             exports.bind = bind;
         },
         {
-            '../syntax': 34,
-            './segment': 37
-        }
-    ],
-    37: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var pretext_1 = require('../parser/block/pretext');
-            var extension_1 = require('../parser/block/extension');
-            var compose_1 = require('../combinator/compose');
-            var loop_1 = require('../combinator/loop');
-            function segment(source) {
-                var segments = [];
-                while (true) {
-                    var _a = loop_1.loop(compose_1.compose([
-                            pretext_1.pretext,
-                            extension_1.extension
-                        ]))(source) || block(source), rest = _a[1];
-                    void segments.push(source.slice(0, source.length - rest.length));
-                    source = source.slice(source.length - rest.length);
-                    source = rest;
-                    if (source === '')
-                        break;
-                }
-                return segments;
-            }
-            exports.segment = segment;
-            var syntax = /^(?:\s*?\n)+|^(?:[^\n]*\n)+?\s*?\n/;
-            function block(source) {
-                return [
-                    [],
-                    source.slice((source.match(syntax) || [source])[0].length)
-                ];
-            }
-        },
-        {
-            '../combinator/compose': 4,
-            '../combinator/loop': 5,
-            '../parser/block/extension': 11,
-            '../parser/block/pretext': 19
+            '../parser': 7,
+            '../parser/segment': 36
         }
     ],
     'securemark': [
