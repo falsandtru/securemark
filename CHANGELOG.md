@@ -6,6 +6,7 @@
 - Add subscript syntax.
 - Add quote syntax.
 - Remove `q` and `u` html tags.
+- Improve html parser.
 - Fix code parser.
 
 ## 0.6.0

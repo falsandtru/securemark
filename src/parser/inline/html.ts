@@ -29,6 +29,7 @@ export const html: HTMLParser = function (source: string): Result<HTMLElement, S
   const el = document.createElement(tagname);
   void el.appendChild(squash(cs));
   const closetag = `</${tagname}>`;
-  const closed = rest.slice(0, closetag.length).toLowerCase() === closetag.toLowerCase();
-  return [[el], rest.slice(closed ? closetag.length : 0)];
+  return rest.slice(0, closetag.length).toLowerCase() === closetag
+    ? [[el], rest.slice(closetag.length)]
+    : void 0;
 };

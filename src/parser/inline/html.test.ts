@@ -18,15 +18,14 @@ describe('Unit: parser/html', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('<var>')), void 0);
+      assert.deepStrictEqual(inspect(parser('<var>a')), void 0);
       assert.deepStrictEqual(inspect(parser('</var>')), void 0);
       assert.deepStrictEqual(inspect(parser('a')), void 0);
       assert.deepStrictEqual(inspect(parser('a<var>')), void 0);
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser('<var>')), [['<var></var>'], '']);
-      assert.deepStrictEqual(inspect(parser('<var>a')), [['<var>a</var>'], '']);
-      assert.deepStrictEqual(inspect(parser('<var><var>')), [['<var><var></var></var>'], '']);
       assert.deepStrictEqual(inspect(parser('<var></var>')), [['<var></var>'], '']);
       assert.deepStrictEqual(inspect(parser('<var>a</var>')), [['<var>a</var>'], '']);
       assert.deepStrictEqual(inspect(parser('<var>a</var>a')), [['<var>a</var>'], 'a']);
