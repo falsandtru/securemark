@@ -27,7 +27,7 @@ describe('Unit: parser/quote', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('"*a*"')), [['<q><em>a</em></q>'], '']);
-      assert.deepStrictEqual(inspect(parser('"<var></var>"')), [['<q><var></var></q>'], '']);
+      assert.deepStrictEqual(inspect(parser('"<wbr>"')), [['<q><wbr></q>'], '']);
     });
 
   });

@@ -57,7 +57,7 @@ describe('Unit: parser/link', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('[\\[](#)')), [['<a href="#">[</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[<var>"]("?"#")')), [['<a href="%22?%22#%22">&lt;var&gt;"</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[<wbr>"]("?"#")')), [['<a href="%22?%22#%22">&lt;wbr&gt;"</a>'], '']);
     });
 
     it('external', () => {

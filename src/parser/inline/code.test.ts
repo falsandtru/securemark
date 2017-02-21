@@ -29,7 +29,7 @@ describe('Unit: parser/code', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('`<var>`')), [['<code>&lt;var&gt;</code>'], '']);
+      assert.deepStrictEqual(inspect(parser('`<wbr>`')), [['<code>&lt;wbr&gt;</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`*u*`')), [['<code>*u*</code>'], '']);
     });
 
