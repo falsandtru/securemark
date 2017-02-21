@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/subscript', () => {
   describe('subscript', () => {
+    const parser = loop(subscript);
+
     it('invalid', () => {
-      const parser = loop(subscript);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~')), void 0);
@@ -20,14 +21,12 @@ describe('Unit: parser/subscript', () => {
     });
 
     it('ab', () => {
-      const parser = loop(subscript);
       assert.deepStrictEqual(inspect(parser('~a~')), [['<sub>a</sub>'], '']);
       assert.deepStrictEqual(inspect(parser('~ab~')), [['<sub>ab</sub>'], '']);
       assert.deepStrictEqual(inspect(parser('~a b~')), [['<sub>a b</sub>'], '']);
     });
 
     it('nest', () => {
-      const parser = loop(subscript);
       assert.deepStrictEqual(inspect(parser('~*a*~')), [['<sub>*a*</sub>'], '']);
       assert.deepStrictEqual(inspect(parser('~<u>~')), [['<sub>&lt;u&gt;</sub>'], '']);
     });

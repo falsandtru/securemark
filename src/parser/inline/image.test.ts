@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/image', () => {
   describe('image', () => {
+    const parser = loop(image);
+
     it('xss', () => {
-      const parser = loop(image);
       assert.deepStrictEqual(inspect(parser('![](javascript:alert)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](vbscript:alert)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K)')), void 0);
@@ -26,7 +27,6 @@ describe('Unit: parser/image', () => {
     });
 
     it('invalid', () => {
-      const parser = loop(image);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('![]()')), void 0);
       assert.deepStrictEqual(inspect(parser('![ ]()')), void 0);
@@ -42,7 +42,6 @@ describe('Unit: parser/image', () => {
     });
 
     it('ab', () => {
-      const parser = loop(image);
       assert.deepStrictEqual(inspect(parser('![](b)')), [['<img data-src="b" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![a](b)')), [['<img data-src="b" alt="a">'], '']);
       assert.deepStrictEqual(inspect(parser('![a b](c)')), [['<img data-src="c" alt="a b">'], '']);
@@ -52,13 +51,11 @@ describe('Unit: parser/image', () => {
     });
 
     it('nest', () => {
-      const parser = loop(image);
       assert.deepStrictEqual(inspect(parser('![\\[](#)')), [['<img data-src="#" alt="[">'], '']);
       assert.deepStrictEqual(inspect(parser('![<u>"]("?"#")')), [['<img data-src="%22?%22#%22" alt="<u>&quot;">'], '']);
     });
 
     it('external', () => {
-      const parser = loop(image);
       assert.deepStrictEqual(inspect(parser('![](//example.com)')), [['<img data-src="//example.com" alt="">'], '']);
     });
 

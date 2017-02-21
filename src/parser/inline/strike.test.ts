@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/strike', () => {
   describe('strike', () => {
+    const parser = loop(strike);
+
     it('invalid', () => {
-      const parser = loop(strike);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~')), void 0);
@@ -17,14 +18,12 @@ describe('Unit: parser/strike', () => {
     });
 
     it('ab', () => {
-      const parser = loop(strike);
       assert.deepStrictEqual(inspect(parser('~~a~~')), [['<s>a</s>'], '']);
       assert.deepStrictEqual(inspect(parser('~~ab~~')), [['<s>ab</s>'], '']);
       assert.deepStrictEqual(inspect(parser('~~a\nb~~')), [['<s>ab</s>'], '']);
     });
 
     it('nest', () => {
-      const parser = loop(strike);
       assert.deepStrictEqual(inspect(parser('~~<a>~~')), [['<s>&lt;a&gt;</s>'], '']);
       assert.deepStrictEqual(inspect(parser('~~\\<a>~~')), [['<s>&lt;a&gt;</s>'], '']);
       assert.deepStrictEqual(inspect(parser('~~\\<u>~~')), [['<s>&lt;u&gt;</s>'], '']);
@@ -34,7 +33,6 @@ describe('Unit: parser/strike', () => {
     });
 
     it('triple', () => {
-      const parser = loop(strike);
       assert.deepStrictEqual(inspect(parser('~~~a~~~')), [['<s><sub>a</sub></s>'], '']);
     });
 

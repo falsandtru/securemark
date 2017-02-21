@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/dlist', () => {
   describe('dlist', () => {
+    const parser = loop(dlist);
+
     it('invalid', () => {
-      const parser = loop(dlist);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('~~')), void 0);
@@ -21,7 +22,6 @@ describe('Unit: parser/dlist', () => {
     });
 
     it('single', () => {
-      const parser = loop(dlist);
       assert.deepStrictEqual(inspect(parser('~\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n:')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
@@ -48,7 +48,6 @@ describe('Unit: parser/dlist', () => {
     });
 
     it('multiple', () => {
-      const parser = loop(dlist);
       assert.deepStrictEqual(inspect(parser('~\n:\n~\n:')), [['<dl><dt></dt><dd></dd><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\n~ c\n: d')), [['<dl><dt>a</dt><dd>b</dd><dt>c</dt><dd>d</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n  b\nc\n  d')), [['<dl><dt>a</dt><dd>bc  d</dd></dl>'], '']);
@@ -60,7 +59,6 @@ describe('Unit: parser/dlist', () => {
     });
 
     it('nest', () => {
-      const parser = loop(dlist);
       assert.deepStrictEqual(inspect(parser('~ ~*a*\n: ~*b*')), [['<dl><dt>~<em>a</em></dt><dd>~<em>b</em></dd></dl>'], '']);
     });
 

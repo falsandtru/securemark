@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/annotation', () => {
   describe('annotation', () => {
+    const parser = loop(annotation);
+
     it('invalid', () => {
-      const parser = loop(annotation);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('(')), void 0);
       assert.deepStrictEqual(inspect(parser('((')), void 0);
@@ -16,7 +17,6 @@ describe('Unit: parser/annotation', () => {
     });
 
     it('ab', () => {
-      const parser = loop(annotation);
       assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation" title="a">*</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((ab))')), [['<sup class="annotation" title="ab">*</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((a\nb))')), [['<sup class="annotation" title="ab">*</sup>'], '']);
@@ -25,7 +25,6 @@ describe('Unit: parser/annotation', () => {
     });
 
     it('nest', () => {
-      const parser = loop(annotation);
       assert.deepStrictEqual(inspect(parser('(("))')), [['<sup class="annotation" title="&quot;">*</sup>'], '']);
     });
 

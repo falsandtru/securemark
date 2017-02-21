@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/emphasis', () => {
   describe('emphasis', () => {
+    const parser = loop(emphasis);
+
     it('invalid', () => {
-      const parser = loop(emphasis);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('*')), void 0);
       assert.deepStrictEqual(inspect(parser('**')), void 0);
@@ -15,14 +16,12 @@ describe('Unit: parser/emphasis', () => {
     });
 
     it('ab', () => {
-      const parser = loop(emphasis);
       assert.deepStrictEqual(inspect(parser('*a*')), [['<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*ab*')), [['<em>ab</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a\nb*')), [['<em>ab</em>'], '']);
     });
 
     it('nest', () => {
-      const parser = loop(emphasis);
       assert.deepStrictEqual(inspect(parser('*<a>*')), [['<em>&lt;a&gt;</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*\\<a>*')), [['<em>&lt;a&gt;</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*\\<u>*')), [['<em>&lt;u&gt;</em>'], '']);

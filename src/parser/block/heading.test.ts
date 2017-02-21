@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/heading', () => {
   describe('heaheading', () => {
+    const parser = loop(heading);
+
     it('invalid', () => {
-      const parser = loop(heading);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('#')), void 0);
@@ -17,7 +18,6 @@ describe('Unit: parser/heading', () => {
     });
 
     it('ab', () => {
-      const parser = loop(heading);
       assert.deepStrictEqual(inspect(parser('# a')), [['<h1>a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\n')), [['<h1>a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a \n')), [['<h1>a </h1>'], '']);
@@ -28,7 +28,6 @@ describe('Unit: parser/heading', () => {
     });
 
     it('nest', () => {
-      const parser = loop(heading);
       assert.deepStrictEqual(inspect(parser('# *<u>`<a>`</u>*')), [['<h1><em><u><code>&lt;a&gt;</code></u></em></h1>'], '']);
     });
 

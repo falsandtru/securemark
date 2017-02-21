@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/code', () => {
   describe('code', () => {
+    const parser = loop(code);
+
     it('invalid', () => {
-      const parser = loop(code);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('`')), void 0);
       assert.deepStrictEqual(inspect(parser('``')), void 0);
@@ -15,13 +16,11 @@ describe('Unit: parser/code', () => {
     });
 
     it('ab', () => {
-      const parser = loop(code);
       assert.deepStrictEqual(inspect(parser('`a`')), [['<code>a</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`ab`')), [['<code>ab</code>'], '']);
     });
 
     it('escape', () => {
-      const parser = loop(code);
       assert.deepStrictEqual(inspect(parser('`\\`')), [['<code>\\</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`\\\\`')), [['<code>\\\\</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`&nbsp;`')), [['<code>&amp;nbsp;</code>'], '']);
@@ -30,13 +29,11 @@ describe('Unit: parser/code', () => {
     });
 
     it('nest', () => {
-      const parser = loop(code);
       assert.deepStrictEqual(inspect(parser('`<u>`')), [['<code>&lt;u&gt;</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`*u*`')), [['<code>*u*</code>'], '']);
     });
 
     it('trim', () => {
-      const parser = loop(code);
       assert.deepStrictEqual(inspect(parser('` a b `')), [['<code>a b</code>'], '']);
     });
 

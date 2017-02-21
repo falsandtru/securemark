@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/horizontalrule', () => {
   describe('newline', () => {
+    const parser = loop(horizontalrule);
+
     it('invalid', () => {
-      const parser = loop(horizontalrule);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('-')), void 0);
@@ -16,7 +17,6 @@ describe('Unit: parser/horizontalrule', () => {
     });
 
     it('valid', () => {
-      const parser = loop(horizontalrule);
       assert.deepStrictEqual(inspect(parser('---')), [['<hr>'], '']);
       assert.deepStrictEqual(inspect(parser('---\n')), [['<hr>'], '']);
       assert.deepStrictEqual(inspect(parser('---\n\n')), [['<hr>'], '']);

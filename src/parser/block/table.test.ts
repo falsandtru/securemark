@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/table', () => {
   describe('table', () => {
+    const parser = loop(table);
+
     it('invalid', () => {
-      const parser = loop(table);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('|')), void 0);
@@ -21,7 +22,6 @@ describe('Unit: parser/table', () => {
     });
 
     it('valid', () => {
-      const parser = loop(table);
       assert.deepStrictEqual(inspect(parser('||\n|-|\n||')), [['<table><thead><tr><td align=""></td></tr></thead><tbody><tr><td align=""></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|||\n|-|-|\n|||')), [['<table><thead><tr><td align=""></td><td align=""></td></tr></thead><tbody><tr><td align=""></td><td align=""></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|h|\n|-|\n|')), [['<table><thead><tr><td align="">h</td></tr></thead><tbody><tr><td align=""></td></tr></tbody></table>'], '']);
@@ -41,7 +41,6 @@ describe('Unit: parser/table', () => {
     });
 
     it('align', () => {
-      const parser = loop(table);
       assert.deepStrictEqual(inspect(parser('|h|\n|:-|\n|v|')), [['<table><thead><tr><td align="left">h</td></tr></thead><tbody><tr><td align="left">v</td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|h|\n|-:|\n|v|')), [['<table><thead><tr><td align="center">h</td></tr></thead><tbody><tr><td align="right">v</td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|h|\n|:-:|\n|v|')), [['<table><thead><tr><td align="center">h</td></tr></thead><tbody><tr><td align="center">v</td></tr></tbody></table>'], '']);
@@ -55,7 +54,6 @@ describe('Unit: parser/table', () => {
     });
 
     it('nest', () => {
-      const parser = loop(table);
       assert.deepStrictEqual(inspect(parser('|*h*|\n|-|\n|*v*|')), [['<table><thead><tr><td align=""><em>h</em></td></tr></thead><tbody><tr><td align=""><em>v</em></td></tr></tbody></table>'], '']);
     });
 

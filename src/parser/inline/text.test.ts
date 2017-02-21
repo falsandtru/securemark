@@ -4,84 +4,70 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/text', () => {
   describe('text', () => {
+    const parser = loop(text);
+
     it('invalid', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('')), void 0);
     });
 
     it('ab', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('a')), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
     });
 
     it('`', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('``')), [['`', '`'], '']);
     });
 
     it('*', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('**')), [['*', '*'], '']);
     });
 
     it('^', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('^^')), [['^', '^'], '']);
     });
 
     it('~', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('~~')), [['~', '~'], '']);
     });
 
     it('!', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('!!')), [['!', '!'], '']);
     });
 
     it('<', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('<<')), [['&lt;', '&lt;'], '']);
     });
 
     it('>', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('>>')), [['&gt;', '&gt;'], '']);
     });
 
     it('[', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('[[')), [['[', '['], '']);
     });
 
     it(']', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser(']]')), [[']', ']'], '']);
     });
 
     it('(', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('((')), [['(', '('], '']);
     });
 
     it(')', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('))')), [[')', ')'], '']);
     });
 
     it('|', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('||')), [['|', '|'], '']);
     });
 
     it('space', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('  ')), [[' ', ' '], '']);
     });
 
     it('newlinw', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('\n ')), [[' '], '']);
       assert.deepStrictEqual(inspect(parser(' \n')), [[' '], '']);
       assert.deepStrictEqual(inspect(parser('\n\n')), [[], '']);
@@ -91,7 +77,6 @@ describe('Unit: parser/text', () => {
     });
 
     it('\\', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('\\')), [[''], '']);
       assert.deepStrictEqual(inspect(parser('\\\\')), [['\\'], '']);
       assert.deepStrictEqual(inspect(parser('\\\\\\')), [['\\', ''], '']);
@@ -101,7 +86,6 @@ describe('Unit: parser/text', () => {
     });
 
     it('break', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('\\\n')), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na')), [['<br>', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['a', '<br>'], '']);
@@ -109,7 +93,6 @@ describe('Unit: parser/text', () => {
     });
 
     it('escape', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('\\!')), [['!'], '']);
       assert.deepStrictEqual(inspect(parser('\\~')), [['~'], '']);
       assert.deepStrictEqual(inspect(parser('\\*')), [['*'], '']);
@@ -124,7 +107,6 @@ describe('Unit: parser/text', () => {
     });
 
     it('tag', () => {
-      const parser = loop(text);
       assert.deepStrictEqual(inspect(parser('<')), [['&lt;'], '']);
       assert.deepStrictEqual(inspect(parser('<<')), [['&lt;', '&lt;'], '']);
       assert.deepStrictEqual(inspect(parser('<a')), [['&lt;', 'a'], '']);

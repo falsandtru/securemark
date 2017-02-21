@@ -3,8 +3,9 @@ import { extension } from './extension';
 
 describe('Unit: parser/extension', () => {
   describe('extension', () => {
+    const parser = loop(extension);
+
     it('invalid', () => {
-      const parser = loop(extension);
       assert(!parser(''));
       assert(!parser('\n'));
       assert(!parser('~~~'));
@@ -14,7 +15,6 @@ describe('Unit: parser/extension', () => {
     });
 
     it('valid', () => {
-      const parser = loop(extension);
       assert(parser('~~~\n~~~'));
     });
 

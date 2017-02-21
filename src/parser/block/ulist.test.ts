@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/ulist', () => {
   describe('ulist', () => {
+    const parser = loop(ulist);
+
     it('invalid', () => {
-      const parser = loop(ulist);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('--')), void 0);
@@ -19,7 +20,6 @@ describe('Unit: parser/ulist', () => {
     });
 
     it('single', () => {
-      const parser = loop(ulist);
       assert.deepStrictEqual(inspect(parser('-')), [['<ul><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- ')), [['<ul><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- -')), [['<ul><li>-</li></ul>'], '']);
@@ -28,7 +28,6 @@ describe('Unit: parser/ulist', () => {
     });
 
     it('multiple', () => {
-      const parser = loop(ulist);
       assert.deepStrictEqual(inspect(parser('-\n-')), [['<ul><li></li><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n- 2')), [['<ul><li>1</li><li>2</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n- 2\n- 3')), [['<ul><li>1</li><li>2</li><li>3</li></ul>'], '']);
@@ -37,7 +36,6 @@ describe('Unit: parser/ulist', () => {
     });
 
     it('nest', () => {
-      const parser = loop(ulist);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2')), [['<ul><li>1<ul><li>2</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n - 3')), [['<ul><li>1<ul><li>2</li><li>3</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n  - 3')), [['<ul><li>1<ul><li>2<ul><li>3</li></ul></li></ul></li></ul>'], '']);

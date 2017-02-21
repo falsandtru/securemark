@@ -4,8 +4,9 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/blockquote', () => {
   describe('blockquote', () => {
+    const parser = loop(blockquote);
+
     it('invalid', () => {
-      const parser = loop(blockquote);
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('\n')), void 0);
       assert.deepStrictEqual(inspect(parser('>')), void 0);
@@ -15,7 +16,6 @@ describe('Unit: parser/blockquote', () => {
     });
 
     it('ab', () => {
-      const parser = loop(blockquote);
       assert.deepStrictEqual(inspect(parser('>a')), [['<blockquote>a</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('>a\n')), [['<blockquote>a</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<blockquote>a<br>b</blockquote>'], '']);
@@ -30,7 +30,6 @@ describe('Unit: parser/blockquote', () => {
     });
 
     it('nest', () => {
-      const parser = loop(blockquote);
       assert.deepStrictEqual(inspect(parser('> a\n>> b\n> c')), [['<blockquote>a<blockquote>b</blockquote>c</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>> b\n>> c')), [['<blockquote>a<blockquote>b<br>c</blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>> b\n>>> c')), [['<blockquote>a<blockquote>b<blockquote>c</blockquote></blockquote></blockquote>'], '']);
