@@ -1,6 +1,6 @@
 ﻿import { Parser, Result } from '../parser';
 import { MarkdownParser } from '../../markdown.d';
-import { compose } from '../combinator/compose';
+import { combine } from '../combinator/combine';
 import { newline } from './block/newline';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -26,7 +26,7 @@ export import PreTextParser = BlockParser.PreTextParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = compose<[
+export const block: BlockParser = combine<[
   NewlineParser,
   HorizontalRuleParser,
   HeadingParser,

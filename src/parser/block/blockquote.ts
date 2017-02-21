@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../parser';
 import { BlockquoteParser, consumeBlockEndEmptyLine } from '../block';
-import { compose } from '../../combinator/compose';
+import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { PlainTextParser } from '../inline';
 import { plaintext } from '../inline/plaintext';
@@ -35,7 +35,7 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
       void bottom.appendChild(document.createElement('br'));
     }
     void bottom.appendChild(
-      squash((loop(compose<[SubParsers[1]], HTMLElement | Text>([plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
+      squash((loop(combine<[SubParsers[1]], HTMLElement | Text>([plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
     if (!bottom.lastChild || !bottom.lastChild!.textContent) return;
     indent = indent[0].repeat(indent.length + diff);
     source = source.slice(line.length + 1);

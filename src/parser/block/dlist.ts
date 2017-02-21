@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../parser';
 import { DListParser, consumeBlockEndEmptyLine } from '../block';
-import { compose } from '../../combinator/compose';
+import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../inline/text';
@@ -20,7 +20,7 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
     switch (line.slice(0, 2).trim()) {
       case '~': {
         const dt = el.appendChild(document.createElement('dt'));
-        void dt.appendChild(squash((loop(compose<SubParsers, HTMLElement | Text>([inline]))(line.slice(1).trim()) || [[]])[0]));
+        void dt.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(line.slice(1).trim()) || [[]])[0]));
         source = source.slice(line.length + 1);
         continue;
       }
@@ -37,7 +37,7 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
           void texts.push(line);
           source = source.slice(line.length + 1);
         }
-        void dd.appendChild(squash((loop(compose<SubParsers, HTMLElement | Text>([inline]))(texts.join('\n').trim()) || [[]])[0]));
+        void dd.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(texts.join('\n').trim()) || [[]])[0]));
         continue;
       }
     }

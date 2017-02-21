@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../parser';
 import { PreTextParser, consumeBlockEndEmptyLine } from '../block';
-import { compose } from '../../combinator/compose';
+import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { PlainTextParser } from '../inline';
 import { plaintext } from '../inline/plaintext';
@@ -25,7 +25,7 @@ export const pretext: PreTextParser = function (source: string): Result<HTMLPreE
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.match(cache.get(keyword)!)) break;
-    void el.appendChild(squash((loop(compose<SubParsers, Text>([plaintext]))(line + '\n') || [[]])[0]));
+    void el.appendChild(squash((loop(combine<SubParsers, Text>([plaintext]))(line + '\n') || [[]])[0]));
     source = source.slice(line.length + 1);
     if (source === '') return;
   }

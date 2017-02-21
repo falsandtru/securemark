@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../parser';
 import { CodeParser, PlainTextParser } from '../inline';
-import { compose } from '../../combinator/compose';
+import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { plaintext } from './plaintext';
 import { squash } from './text';
@@ -17,7 +17,7 @@ export const code: CodeParser = function (source: string): Result<HTMLElement, S
   if (!cache.has(keyword)) {
     void cache.set(keyword, new RegExp(`^${keyword}`));
   }
-  const [cs, rest] = loop(compose<SubParsers, Text>([plaintext]), cache.get(keyword)!)(source.slice(keyword.length)) || [[], ''];
+  const [cs, rest] = loop(combine<SubParsers, Text>([plaintext]), cache.get(keyword)!)(source.slice(keyword.length)) || [[], ''];
   if (!rest.startsWith(keyword)) return;
   const el = document.createElement('code');
   void el.appendChild(squash(cs));

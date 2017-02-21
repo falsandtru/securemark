@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../parser';
 import { UListParser, OListParser, consumeBlockEndEmptyLine } from '../block';
-import { compose } from '../../combinator/compose';
+import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { olist } from './olist';
 import { indent } from './indent';
@@ -21,7 +21,7 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
     if (line.match(syntax)) {
       const text = line.slice(1).trim();
       const li = el.appendChild(document.createElement('li'));
-      void li.appendChild(squash((loop(compose<SubParsers, HTMLElement | Text>([inline]))(text) || [[]])[0]));
+      void li.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(text) || [[]])[0]));
       source = source.slice(line.length + 1);
       continue;
     }
@@ -29,7 +29,7 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
       if (el.lastElementChild!.lastElementChild && ['ul', 'ol'].indexOf(el.lastElementChild!.lastElementChild!.tagName.toLowerCase()) !== -1) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
-      const [children, brest] = compose<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], ''];
+      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], ''];
       if (children.length === 0 || brest) return;
       void el.lastElementChild!.appendChild(squash(children));
       source = rest;

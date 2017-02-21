@@ -1,8 +1,8 @@
 ﻿import { Parser, Result } from '../parser';
-import { compose } from './compose';
+import { combine } from './combine';
 
-describe('Unit: combinator/compose', () => {
-  describe('compose', () => {
+describe('Unit: combinator/combine', () => {
+  describe('combine', () => {
     const a: Parser<string, never> = (source: string): Result<string, never> => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1)]
@@ -13,7 +13,7 @@ describe('Unit: combinator/compose', () => {
         ? [['B'], source.slice(1)]
         : void 0;
     }
-    const ab = compose<[typeof a, typeof b], string>([a, b]);
+    const ab = combine<[typeof a, typeof b], string>([a, b]);
 
     it('a', () => {
       const parser = a;

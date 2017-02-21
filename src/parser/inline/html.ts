@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../parser';
 import { HTMLParser, InlineParser, PlainTextParser, inline } from '../inline';
-import { compose } from '../../combinator/compose';
+import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { plaintext } from './plaintext';
 import { squash } from './text';
@@ -24,8 +24,8 @@ export const html: HTMLParser = function (source: string): Result<HTMLElement, S
     void cache.set(tagname, new RegExp(`^</${tagname}>`, 'i'));
   }
   const [cs, rest] = tagname.toLowerCase() === 'code'
-    ? loop(compose<SubParsers, HTMLElement | Text>([plaintext]), cache.get(tagname)!)(source.slice(opentag.length)) || [[], source.slice(opentag.length)]
-    : loop(compose<SubParsers, HTMLElement | Text>([inline]), cache.get(tagname)!)(source.slice(opentag.length)) || [[], source.slice(opentag.length)];
+    ? loop(combine<SubParsers, HTMLElement | Text>([plaintext]), cache.get(tagname)!)(source.slice(opentag.length)) || [[], source.slice(opentag.length)]
+    : loop(combine<SubParsers, HTMLElement | Text>([inline]), cache.get(tagname)!)(source.slice(opentag.length)) || [[], source.slice(opentag.length)];
   const el = document.createElement(tagname);
   void el.appendChild(squash(cs));
   const closetag = `</${tagname}>`;

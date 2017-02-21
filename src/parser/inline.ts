@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { compose } from '../combinator/compose';
+import { combine } from '../combinator/combine';
 import { strike } from './inline/strike';
 import { strong } from './inline/strong';
 import { emphasis } from './inline/emphasis';
@@ -26,7 +26,7 @@ export import HTMLParser = InlineParser.HTMLParser;
 export import TextParser = InlineParser.TextParser;
 export import PlainTextParser = InlineParser.PlainTextParser;
 
-export const inline: InlineParser = compose<[
+export const inline: InlineParser = combine<[
   StrikeParser,
   StrongParser,
   EmphasisParser,

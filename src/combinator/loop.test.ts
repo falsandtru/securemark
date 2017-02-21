@@ -1,5 +1,5 @@
 ﻿import { Parser, Result } from '../parser';
-import { compose } from './compose';
+import { combine } from './combine';
 import { loop } from './loop';
 
 describe('Unit: combinator/loop', () => {
@@ -14,7 +14,7 @@ describe('Unit: combinator/loop', () => {
         ? [['B'], source.slice(1)]
         : void 0;
     }
-    const ab = compose<[typeof a, typeof b], string>([a, b]);
+    const ab = combine<[typeof a, typeof b], string>([a, b]);
 
     it('ab', () => {
       const parser = loop(ab, /aaa/);

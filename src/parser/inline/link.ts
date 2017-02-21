@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../parser';
 import { LinkParser, ImageParser, TextParser } from '../inline';
-import { compose } from '../../combinator/compose';
+import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { image } from './image';
 import { text, squash } from './text';
@@ -14,7 +14,7 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
   if (!source.startsWith('[') || source.startsWith('[[') || !source.match(syntax)) return;
   const [first, next] = source.startsWith('[]')
     ? [[], source.slice(1)]
-    : compose<SubParsers, HTMLElement | Text>([image])(source.slice(1)) || loop(compose<SubParsers, HTMLElement | Text>([text]), /^\]|^\n/)(source.slice(1)) || [[], ''];
+    : combine<SubParsers, HTMLElement | Text>([image])(source.slice(1)) || loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]|^\n/)(source.slice(1)) || [[], ''];
   if (!next.startsWith('](')) return;
   const children = squash(first);
   const [[, , ...second], rest] = loop(text, /^\)|^\s(?!nofollow\))/)(next) || [[], ''];
