@@ -7,4 +7,4 @@ export const newline: NewlineParser = function (source: string): Result<never, n
   const [whole, first] = source.match(syntax) || ['', ''];
   if (!whole) return;
   return [[], source.slice(first.length)];
-}
+};

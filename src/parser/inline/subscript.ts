@@ -17,4 +17,4 @@ export const subscript: SubScriptParser = function (source: string): Result<HTML
   void el.appendChild(squash(cs));
   if (el.textContent && el.textContent!== el.textContent!.trim()) return;
   return [[el], rest.slice(1)];
-}
+};

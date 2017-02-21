@@ -26,7 +26,7 @@ export const text: TextParser = function (source: string): Result<HTMLElement | 
     default:
       return [[document.createTextNode(source.slice(0, i))], source.slice(i)];
   }
-}
+};
 
 export function squash<N extends HTMLElement | Text>(nodes: N[]): DocumentFragment {
   const frag = document.createDocumentFragment();

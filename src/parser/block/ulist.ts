@@ -39,4 +39,4 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
   return el.children.length === 0
     ? void 0
     : consumeBlockEndEmptyLine<HTMLUListElement, SubParsers>([el], source);
-}
+};

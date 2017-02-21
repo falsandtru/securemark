@@ -49,4 +49,4 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
   return el.children.length === 0
     ? void 0
     : consumeBlockEndEmptyLine<HTMLDListElement, SubParsers>([el], source);
-}
+};

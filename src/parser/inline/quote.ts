@@ -17,4 +17,4 @@ export const quote: QuoteParser = function (source: string): Result<HTMLQuoteEle
   void el.appendChild(squash(cs));
   if (el.textContent && el.textContent!== el.textContent!.trim()) return;
   return [[el], rest.slice(1)];
-}
+};

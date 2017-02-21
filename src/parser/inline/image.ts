@@ -22,4 +22,4 @@ export const image: ImageParser = function (source: string): Result<HTMLImageEle
   void el.setAttribute('data-src', url);
   void el.setAttribute('alt', caption);
   return [[el], rest.slice(1)];
-}
+};

@@ -34,4 +34,4 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   const quote = document.createElement('pre');
   void quote.appendChild(document.createTextNode(`${keyword}\n${lines.join('')}${keyword}`));
   return consumeBlockEndEmptyLine<HTMLElement, SubParsers>([message, quote], source.slice(keyword.length));
-}
+};

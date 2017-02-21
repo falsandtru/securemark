@@ -43,4 +43,4 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
   return bottom.childNodes.length === 0
     ? void 0
     : consumeBlockEndEmptyLine<HTMLQuoteElement, SubParsers>([top], source);
-}
+};

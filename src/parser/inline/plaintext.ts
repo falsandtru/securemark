@@ -14,4 +14,4 @@ export const plaintext: PlainTextParser = function (source: string): Result<Text
     default:
       return [[document.createTextNode(source.slice(0, i))], source.slice(i)];
   }
-}
+};

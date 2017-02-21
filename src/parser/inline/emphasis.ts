@@ -16,4 +16,4 @@ export const emphasis: EmphasisParser = function (source: string): Result<HTMLEl
   const el = document.createElement('em');
   void el.appendChild(squash(cs));
   return [[el], rest.slice(1)];
-}
+};

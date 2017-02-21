@@ -15,4 +15,4 @@ export const paragraph: ParagraphParser = function (source: string): Result<HTML
   const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([inline]), closer)(source.trim()) || [[document.createTextNode(source.trim())], ''];
   void el.appendChild(squash(cs));
   return consumeBlockEndEmptyLine<HTMLParagraphElement, SubParsers>([el], rest.slice(1));
-}
+};

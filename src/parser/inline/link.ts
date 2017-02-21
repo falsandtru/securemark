@@ -33,4 +33,4 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
   }
   void el.appendChild(children.querySelector('img') || document.createTextNode((children.textContent || url).trim()));
   return [[el], rest.slice(1)];
-}
+};

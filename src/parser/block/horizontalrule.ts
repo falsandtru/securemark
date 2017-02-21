@@ -7,4 +7,4 @@ export const horizontalrule: HorizontalRuleParser = function (source: string): R
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;
   return consumeBlockEndEmptyLine<HTMLHRElement, never>([document.createElement('hr')], source.slice(whole.length));
-}
+};

@@ -17,4 +17,4 @@ export const annotation: AnnotationParser = function (source: string): Result<HT
   void el.setAttribute('title', squash(cs).textContent!.trim());
   el.textContent = '*';
   return [[el], rest.slice(2)];
-}
+};

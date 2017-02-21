@@ -16,4 +16,4 @@ export const strong: StrongParser = function (source: string): Result<HTMLElemen
   const el = document.createElement('strong');
   void el.appendChild(squash(cs));
   return [[el], rest.slice(2)];
-}
+};

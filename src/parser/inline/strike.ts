@@ -16,4 +16,4 @@ export const strike: StrikeParser = function (source: string): Result<HTMLElemen
   const el = document.createElement('s');
   void el.appendChild(squash(cs));
   return [[el], rest.slice(2)];
-}
+};

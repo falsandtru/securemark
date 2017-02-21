@@ -18,4 +18,4 @@ export const heading: HeadingParser = function (source: string): Result<HTMLHead
   const el = document.createElement(<'h1'>`h${level}`);
   void el.appendChild(squash(children));
   return consumeBlockEndEmptyLine<HTMLHeadingElement, SubParsers>([el], source.slice(whole.length + 1));
-}
+};

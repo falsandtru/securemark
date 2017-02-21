@@ -11,4 +11,4 @@ export function indent(source: string): [string, string] {
     source = source.slice(line.length + 1);
   }
   return [lines.join('\n'), source];
-}
+};

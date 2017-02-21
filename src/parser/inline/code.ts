@@ -23,4 +23,4 @@ export const code: CodeParser = function (source: string): Result<HTMLElement, S
   void el.appendChild(squash(cs));
   el.textContent = el.textContent!.trim();
   return [[el], rest.slice(keyword.length)];
-}
+};

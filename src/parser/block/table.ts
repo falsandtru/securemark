@@ -48,7 +48,7 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
   return table.lastElementChild!.children.length === 0
     ? void 0
     : consumeBlockEndEmptyLine<HTMLTableElement, SubParsers>([table], source);
-}
+};
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
   return void cols
