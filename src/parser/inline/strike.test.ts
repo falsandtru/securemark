@@ -11,7 +11,7 @@ describe('Unit: parser/strike', () => {
       assert.deepStrictEqual(inspect(parser('~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~~~')), void 0);
-      assert.deepStrictEqual(inspect(parser('~~~a~~~')), void 0);
+      assert.deepStrictEqual(inspect(parser('~~~~a~~~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~<u>~~')), void 0);
       assert.deepStrictEqual(inspect(parser('a~~a~~')), void 0);
     });

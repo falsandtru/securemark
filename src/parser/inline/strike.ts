@@ -10,7 +10,7 @@ const syntax = /^~~[\s\S]+?~~/;
 const closer = /^~~/;
 
 export const strike: StrikeParser = function (source: string): Result<HTMLElement, SubParsers> {
-  if (!source.startsWith('~~') || source.startsWith('~~~') || !source.match(syntax)) return;
+  if (!source.startsWith('~~') || source.startsWith('~~~~') || !source.match(syntax)) return;
   const [cs, rest] = loop(compose<SubParsers, HTMLElement | Text>([inline]), closer)(source.slice(2)) || [[], ''];
   if (!rest.startsWith('~~')) return;
   const el = document.createElement('s');
