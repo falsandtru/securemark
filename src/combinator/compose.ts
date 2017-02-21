@@ -1,6 +1,7 @@
 ﻿import { Parser } from '../parser';
 
 export function compose<P extends Parser<R, any>[], R>(parsers: P): Parser<R, P> {
+  assert(parsers.every(f => !!f));
   return (source: string) => {
     let rest = source;
     const results: R[] = [];
