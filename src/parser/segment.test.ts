@@ -1,6 +1,6 @@
 ﻿import { segment } from './segment';
 
-describe('Unit: view/segment', () => {
+describe('Unit: parser/segment', () => {
   describe('segment', () => {
     it('empty', () => {
       assert.deepStrictEqual(segment(''), ['']);

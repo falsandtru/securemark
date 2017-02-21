@@ -1,5 +1,5 @@
-﻿import { parse } from '../syntax';
-import { segment } from './segment';
+﻿import { parse } from '../parser';
+import { segment } from '../parser/segment';
 
 export function bind(el: HTMLElement, source: string = ''): (source: string) => void {
   type Pair = [string, HTMLElement[]];

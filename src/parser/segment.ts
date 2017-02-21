@@ -4,10 +4,14 @@ import { extension } from '../parser/block/extension';
 import { compose } from '../combinator/compose';
 import { loop } from '../combinator/loop';
 
+const syntax = /^(?:\s*?\n)+|^(?:[^\n]*\n)+?\s*?\n/;
+assert(!''.match(syntax));
+assert(!' '.match(syntax));
+
 export function segment(source: string): string[] {
   const segments: string[] = [];
   while (true) {
-    const [, rest] = loop(compose<[PreTextParser, ExtensionParser], HTMLElement>([pretext, extension]))(source) || block(source);
+    const [, rest] = loop(compose<[PreTextParser, ExtensionParser], HTMLElement>([pretext, extension]))(source) || [[], source.slice((source.match(syntax) || [source])[0].length)];
     void segments.push(source.slice(0, source.length - rest.length));
     assert(source === '' || source.length > rest.length);
     source = source.slice(source.length - rest.length);
@@ -16,11 +20,4 @@ export function segment(source: string): string[] {
   }
   assert(segment.length > 0);
   return segments;
-}
-
-const syntax = /^(?:\s*?\n)+|^(?:[^\n]*\n)+?\s*?\n/;
-assert(!''.match(syntax));
-assert(!' '.match(syntax));
-function block(source: string): [never[], string] {
-  return [[], source.slice((source.match(syntax) || [source])[0].length)];
 }
