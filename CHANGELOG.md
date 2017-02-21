@@ -4,6 +4,7 @@
 
 - Add superscript syntax.
 - Add subscript syntax.
+- Add quote syntax.
 - Remove `q` and `u` html tags.
 - Fix code parser.
 

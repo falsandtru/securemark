@@ -13,7 +13,7 @@ describe('Unit: parser/html', () => {
       assert.deepStrictEqual(inspect(parser('<script src="."></script>')), void 0);
       assert.deepStrictEqual(inspect(parser('<var onclick="alert()">')), void 0);
       assert.deepStrictEqual(inspect(parser('<var onclick="alert()"><var>')), void 0);
-      assert.deepStrictEqual(inspect(parser('<var><var onclick="alert()"></var></var>')), [['<var>&lt;var onclick="alert()"&gt;</var>'], '</var>']);
+      assert.deepStrictEqual(inspect(parser('<var><var onclick="alert()"></var></var>')), [['<var>&lt;var onclick=<q>alert()</q>&gt;</var>'], '</var>']);
     });
 
     it('invalid', () => {

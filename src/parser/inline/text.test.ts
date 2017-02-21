@@ -15,6 +15,10 @@ describe('Unit: parser/text', () => {
       assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
     });
 
+    it('"', () => {
+      assert.deepStrictEqual(inspect(parser('""')), [['"', '"'], '']);
+    });
+
     it('`', () => {
       assert.deepStrictEqual(inspect(parser('``')), [['`', '`'], '']);
     });
