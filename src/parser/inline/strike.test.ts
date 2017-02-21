@@ -33,6 +33,11 @@ describe('Unit: parser/strike', () => {
       assert.deepStrictEqual(inspect(parser('~~[](#)~~')), [['<s><a href="#">#</a></s>'], '']);
     });
 
+    it('triple', () => {
+      const parser = loop(strike);
+      assert.deepStrictEqual(inspect(parser('~~~a~~~')), [['<s><sub>a</sub></s>'], '']);
+    });
+
   });
 
 });

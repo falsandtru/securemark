@@ -124,6 +124,7 @@ export namespace MarkdownParser {
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
       InlineParser.SuperScriptParser,
+      InlineParser.SubScriptParser,
       InlineParser.CodeParser,
       InlineParser.ImageParser,
       InlineParser.LinkParser,
@@ -157,6 +158,13 @@ export namespace MarkdownParser {
     export interface SuperScriptParser extends
       // ^abc^
       Markdown<'superscript'>,
+      Parser<HTMLElement, [
+        TextParser
+      ]> {
+    }
+    export interface SubScriptParser extends
+      // ~abc~
+      Markdown<'subscript'>,
       Parser<HTMLElement, [
         TextParser
       ]> {
