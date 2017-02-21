@@ -9,14 +9,15 @@ describe('Unit: parser/code', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('`')), void 0);
       assert.deepStrictEqual(inspect(parser('``')), void 0);
-      assert.deepStrictEqual(inspect(parser('a`a`')), void 0);
+      assert.deepStrictEqual(inspect(parser('`\n`')), void 0);
+      assert.deepStrictEqual(inspect(parser('`a\nb`')), void 0);
+      assert.deepStrictEqual(inspect(parser('a`b`')), void 0);
     });
 
     it('ab', () => {
       const parser = loop(code);
       assert.deepStrictEqual(inspect(parser('`a`')), [['<code>a</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`ab`')), [['<code>ab</code>'], '']);
-      assert.deepStrictEqual(inspect(parser('`a\nb`')), [['<code>a\nb</code>'], '']);
     });
 
     it('escape', () => {

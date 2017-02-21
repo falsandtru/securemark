@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+- Fix code parser.
+
 ## 0.6.0
 
 - Refine dlist syntax.
