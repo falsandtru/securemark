@@ -1,4 +1,4 @@
-/*! securemark v0.7.0 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | Apache-2.0 License */
+/*! securemark v0.7.0 https://github.com/falsandtru/securemark | (c) 2017, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 require = function e(t, n, r) {
     function s(o, u) {
         if (!n[o]) {
@@ -1396,7 +1396,7 @@ require = function e(t, n, r) {
                 void segment_1.segment(source).reduce(function (el, s) {
                     return void pairs.push([
                         s,
-                        Array.from(parser_1.parse(s).children)
+                        Array.from(parser_1.parse(s).childNodes)
                     ]), void pairs[pairs.length - 1][1].forEach(function (e) {
                         return void el.appendChild(e);
                     }), el;
@@ -1435,7 +1435,7 @@ require = function e(t, n, r) {
                     ].concat(ns.slice(i, ns.length - j).map(function (s) {
                         return [
                             s,
-                            Array.from(parser_1.parse(s).children).map(function (e) {
+                            Array.from(parser_1.parse(s).childNodes).map(function (e) {
                                 return el.insertBefore(e, ref);
                             })
                         ];
