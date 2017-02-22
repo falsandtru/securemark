@@ -6,18 +6,18 @@ import { squash } from '../inline/text';
 
 type SubParsers = [InlineParser];
 
-const syntax = /^(\|[^\n]*)+?\|\s*\n/;
+const syntax = /^(\|[^\n]*)+?\s*?\n/;
 const align = /^:?-+:?$/;
 
 export const table: TableParser = function (source: string): Result<HTMLTableElement, SubParsers> {
   if (!source.match(syntax)) return;
   const table = document.createElement('table');
-  const [headers, hrest] = parse(source) || [[], ''];
+  const [headers, hrest] = parse(source) || [[], source];
+  if (hrest.length === source.length) return;
   source = hrest;
-  if (headers.length === 0) return;
-  const [aligns_, arest] = parse(source) || [[], ''];
+  const [aligns_, arest] = parse(source) || [[], source];
+  if (arest.length === source.length) return;
   source = arest;
-  if (aligns_.length === 0) return;
   if (aligns_.some(e => !e.textContent || !e.textContent!.match(align))) return;
   const aligns = headers
     .map((_, i) => (aligns_[i] || aligns_[aligns_.length - 1]).textContent!)
@@ -40,8 +40,8 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
-    const [cols, rest] = parse(line) || [[], ''];
-    if (cols.length === 0 || rest !== '') return;
+    const [cols, rest] = parse(line) || [[], line];
+    if (rest.length !== 0) return;
     void append(cols, table, aligns);
     source = source.slice(line.length + 1);
   }
@@ -52,10 +52,10 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
   return void cols
-    .map((h, i) => {
+    .map((col, i) => {
       const td = document.createElement('td');
       void td.setAttribute('align', aligns[i] || '');
-      void td.appendChild(h);
+      void td.appendChild(col);
       return td;
     })
     .reduce((tr, td) =>
@@ -63,19 +63,17 @@ function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: strin
   , table.lastChild!.appendChild(document.createElement('tr')));
 }
 
+const rowseparator = /^\||^\s*?\n/;
+const rowend = /^\|?\s*?(?:\n|$)/;
 function parse(source: string): [DocumentFragment[], string] | undefined {
   const cols = [];
   while (true) {
-    const result = source[0] === '|'
-      ? source.length > 1 && source[1] !== '|'
-        ? loop(inline, /^\||^\n/)(source.slice(1))
-        : <[Text[], string]>[[], source.slice(1)]
-      : void 0;
-    if (!result) return;
+    if (source[0] !== '|') return;
+    const result = loop(inline, rowseparator)(source.slice(1)) || [[document.createTextNode('')], source.slice(1)];
     const [col, rest] = result;
+    assert(rest.length < source.length);
     source = rest;
     void cols.push(squash(col));
-    const match = rest.match(/^\|?\s*?(?:\n|$)/);
-    if (match) return [cols, rest.slice(match[0].length)];
+    if (source.match(rowend)) return [cols, source.slice(source.split('\n')[0].length + 1)];
   }
 }

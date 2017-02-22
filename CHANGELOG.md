@@ -4,6 +4,7 @@
 
 - Extend pretext syntax.
 - Extend extension syntax.
+- Enhance table parser.
 - Fix olist parser.
 
 ## 0.8.0
