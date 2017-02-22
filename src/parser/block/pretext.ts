@@ -32,5 +32,5 @@ export const pretext: PreTextParser = function (source: string): Result<HTMLPreE
   if (el.lastChild) {
     el.lastChild!.textContent = el.lastChild.textContent!.slice(0, -1);
   }
-  return consumeBlockEndEmptyLine<HTMLPreElement, SubParsers>([el], source.slice(keyword.length));
+  return consumeBlockEndEmptyLine<HTMLPreElement, SubParsers>([el], source.slice(keyword.length + 1));
 };

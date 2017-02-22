@@ -5,6 +5,7 @@
 - Extend pretext syntax.
 - Extend extension syntax.
 - Enhance table parser.
+- Fix segment parser.
 - Fix olist parser.
 
 ## 0.8.0

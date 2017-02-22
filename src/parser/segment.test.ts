@@ -2,11 +2,8 @@
 
 describe('Unit: parser/segment', () => {
   describe('segment', () => {
-    it('empty', () => {
-      assert.deepStrictEqual(segment(''), ['']);
-    });
-
     it('ab', () => {
+      assert.deepStrictEqual(segment(''), []);
       assert.deepStrictEqual(segment('a'), ['a']);
       assert.deepStrictEqual(segment('a\n'), ['a\n']);
       assert.deepStrictEqual(segment('a\n\n'), ['a\n\n']);
@@ -71,6 +68,8 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(segment(' ~~~\n\n\n```\n\n\n~~~'), [' ~~~\n\n', '\n', '```\n\n', '\n', '~~~']);
       assert.deepStrictEqual(segment('a```\n\n\n~~~\n\n\n```'), ['a```\n\n', '\n', '~~~\n\n', '\n', '```']);
       assert.deepStrictEqual(segment('a~~~\n\n\n```\n\n\n~~~'), ['a~~~\n\n', '\n', '```\n\n', '\n', '~~~']);
+      assert.deepStrictEqual(segment('```\n```\n\n~~~\n~~~'), ['```\n```\n\n', '~~~\n~~~']);
+      assert.deepStrictEqual(segment('~~~\n~~~\n\n```\n```'), ['~~~\n~~~\n\n', '```\n```']);
     });
 
   });
