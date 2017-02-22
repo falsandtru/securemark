@@ -15,7 +15,6 @@
   "files": [
     "dist",
     "index.*",
-    "typings",
     "src",
     "test",
     "*.ts",
