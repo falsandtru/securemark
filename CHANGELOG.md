@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0
+
+- Extend extension syntax.
+
 ## 0.8.0
 
 - Change license to Apache-2.0 AND MPL-2.0.

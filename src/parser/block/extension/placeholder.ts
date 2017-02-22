@@ -11,7 +11,7 @@ export interface PlaceholderParser extends
 }
 type SubParsers = [PreTextParser];
 
-const syntax = /^(~{3,})\s*?\n(?:[^\n]*\n)*\1/;
+const syntax = /^(~{3,})(\S*?)\s*?\n(?:[^\n]*\n)*?\1/;
 const cache = new Map<string, RegExp>();
 
 export const placeholder: PlaceholderParser = function (source: string): Result<HTMLElement, SubParsers> {

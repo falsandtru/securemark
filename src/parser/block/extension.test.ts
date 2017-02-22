@@ -11,11 +11,14 @@ describe('Unit: parser/extension', () => {
       assert(!parser('~~~'));
       assert(!parser('~~~\n'));
       assert(!parser('~~~\na~~~'));
+      assert(!parser('~~~ a\n~~~'));
+      assert(!parser('~~~a b\n~~~'));
       assert(!parser(' ~~~\n~~~'));
     });
 
     it('valid', () => {
       assert(parser('~~~\n~~~'));
+      assert(parser('~~~a-b:c \n~~~'));
     });
 
   });
