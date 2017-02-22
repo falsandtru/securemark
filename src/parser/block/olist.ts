@@ -9,7 +9,7 @@ import { squash } from '../inline/text';
 
 type SubParsers = [InlineParser] | [UListParser, OListParser];
 
-const syntax = /^([0-9A-z]+)\.(?:\s|$)/;
+const syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?:\s|$)/;
 
 export const olist: OListParser = function (source: string): Result<HTMLOListElement, SubParsers> {
   const [whole, index] = source.match(syntax) || ['', ''];
