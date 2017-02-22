@@ -3,6 +3,7 @@
 ## 0.8.0
 
 - Change license to Apache-2.0 AND MPL-2.0.
+- Fix bind function.
 
 ## 0.7.0
 
