@@ -29,8 +29,8 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
       if (el.lastElementChild!.lastElementChild && ['ul', 'ol'].indexOf(el.lastElementChild!.lastElementChild!.tagName.toLowerCase()) !== -1) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
-      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], ''];
-      if (children.length === 0 || brest) return;
+      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], block];
+      if (children.length === 0 || brest.length !== 0) return;
       void el.lastElementChild!.appendChild(squash(children));
       source = rest;
       continue;
