@@ -12,6 +12,7 @@ describe('Unit: parser/pretext', () => {
       assert.deepStrictEqual(inspect(parser('```')), void 0);
       assert.deepStrictEqual(inspect(parser('```\n')), void 0);
       assert.deepStrictEqual(inspect(parser('```\na```')), void 0);
+      assert.deepStrictEqual(inspect(parser('``` a\n```')), void 0);
       assert.deepStrictEqual(inspect(parser(' ```\n```')), void 0);
     });
 
@@ -28,6 +29,7 @@ describe('Unit: parser/pretext', () => {
 
     it('lang', () => {
       assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="lang-abc">a</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a-b:c \n\n```')), [['<pre class="lang-a"></pre>'], '']);
     });
 
   });

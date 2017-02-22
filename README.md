@@ -32,7 +32,7 @@ https://falsandtru.github.io/securemark/
 - DList (~)
 - Table (| |)
 - Blockquote (>)
-- CodeBlock (```)
+- Preformattedtext (```)
 - HorizontalRule (---)
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
 - Inline html tags (\<smal>, \<ruby>, \<code>, ...)

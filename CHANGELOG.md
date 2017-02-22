@@ -2,6 +2,7 @@
 
 ## 0.9.0
 
+- Extend pretext syntax.
 - Extend extension syntax.
 
 ## 0.8.0
