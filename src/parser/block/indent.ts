@@ -1,7 +1,7 @@
-﻿const syntax = /^([ \t]*)/;
+﻿const syntax = /^\s*/;
 
 export function indent(source: string): [string, string] {
-  const [indent] = source.match(syntax) || [''];
+  const [indent] = source.split('\n', 1)[0].match(syntax) || [''];
   if (indent === '') return ['', source];
   const lines: string[] = [];
   while (true) {
