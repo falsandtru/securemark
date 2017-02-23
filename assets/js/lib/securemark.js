@@ -325,7 +325,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../../combinator/loop');
             var inline_1 = require('../../inline');
             var text_1 = require('../../inline/text');
-            var syntax = /^(~{3,})\s*?\n(?:[^\n]*\n)*\1/;
+            var syntax = /^(~{3,})(\S*?)\s*?\n(?:[^\n]*\n)*?\1/;
             var cache = new Map();
             exports.placeholder = function (source) {
                 var _a = source.match(syntax) || [
@@ -355,7 +355,7 @@ require = function e(t, n, r) {
                 return block_1.consumeBlockEndEmptyLine([
                     message,
                     quote
-                ], source.slice(keyword.length));
+                ], source.slice(keyword.length + 1));
             };
         },
         {
@@ -402,12 +402,12 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var block_1 = require('../block');
-            var syntax = /^[ \t]*-[ \t]*-[ \t]*(?:-[ \t]*)+(?:\n|$)/;
+            var syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;
             exports.horizontalrule = function (source) {
-                var whole = (source.match(syntax) || [''])[0];
+                var whole = (source.split('\n', 1)[0].match(syntax) || [''])[0];
                 if (!whole)
                     return;
-                return block_1.consumeBlockEndEmptyLine([document.createElement('hr')], source.slice(whole.length));
+                return block_1.consumeBlockEndEmptyLine([document.createElement('hr')], source.slice(whole.length + 1));
             };
         },
         { '../block': 8 }
@@ -416,9 +416,9 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var syntax = /^([ \t]*)/;
+            var syntax = /^\s*/;
             function indent(source) {
-                var indent = (source.match(syntax) || [''])[0];
+                var indent = (source.split('\n', 1)[0].match(syntax) || [''])[0];
                 if (indent === '')
                     return [
                         '',
@@ -473,7 +473,7 @@ require = function e(t, n, r) {
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
-            var syntax = /^([0-9A-z]+)\.(?:\s|$)/;
+            var syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?:\s|$)/;
             exports.olist = function (source) {
                 var _a = source.match(syntax) || [
                         '',
@@ -508,9 +508,9 @@ require = function e(t, n, r) {
                                 exports.olist
                             ])(block) || [
                                 [],
-                                ''
+                                block
                             ], children = _c[0], brest = _c[1];
-                        if (children.length === 0 || brest)
+                        if (children.length === 0 || brest.length !== 0)
                             return;
                         void el.lastElementChild.appendChild(text_1.squash(children));
                         source = rest;
@@ -569,7 +569,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('../inline/plaintext');
             var text_1 = require('../inline/text');
-            var syntax = /^(`{3,})([0-9a-z]+)?[ \t]*\n[\s\S]*?\1/;
+            var syntax = /^(`{3,})([0-9a-z]*)\S*\s*?\n(?:[^\n]*\n)*?\1/;
             var cache = new Map();
             exports.pretext = function (source) {
                 var _a = source.match(syntax) || [
@@ -599,7 +599,7 @@ require = function e(t, n, r) {
                 if (el.lastChild) {
                     el.lastChild.textContent = el.lastChild.textContent.slice(0, -1);
                 }
-                return block_1.consumeBlockEndEmptyLine([el], source.slice(keyword.length));
+                return block_1.consumeBlockEndEmptyLine([el], source.slice(keyword.length + 1));
             };
         },
         {
@@ -618,7 +618,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
             var text_1 = require('../inline/text');
-            var syntax = /^(\|[^\n]*)+?\|\s*\n/;
+            var syntax = /^(\|[^\n]*)+?\s*?\n/;
             var align = /^:?-+:?$/;
             exports.table = function (source) {
                 if (!source.match(syntax))
@@ -626,18 +626,18 @@ require = function e(t, n, r) {
                 var table = document.createElement('table');
                 var _a = parse(source) || [
                         [],
-                        ''
+                        source
                     ], headers = _a[0], hrest = _a[1];
-                source = hrest;
-                if (headers.length === 0)
+                if (hrest.length === source.length)
                     return;
+                source = hrest;
                 var _b = parse(source) || [
                         [],
-                        ''
+                        source
                     ], aligns_ = _b[0], arest = _b[1];
-                source = arest;
-                if (aligns_.length === 0)
+                if (arest.length === source.length)
                     return;
+                source = arest;
                 if (aligns_.some(function (e) {
                         return !e.textContent || !e.textContent.match(align);
                     }))
@@ -658,9 +658,9 @@ require = function e(t, n, r) {
                         break;
                     var _c = parse(line) || [
                             [],
-                            ''
+                            line
                         ], cols = _c[0], rest = _c[1];
-                    if (cols.length === 0 || rest !== '')
+                    if (rest.length !== 0)
                         return;
                     void append(cols, table, aligns);
                     source = source.slice(line.length + 1);
@@ -668,32 +668,33 @@ require = function e(t, n, r) {
                 return table.lastElementChild.children.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([table], source);
             };
             function append(cols, table, aligns) {
-                return void cols.map(function (h, i) {
+                return void cols.map(function (col, i) {
                     var td = document.createElement('td');
                     void td.setAttribute('align', aligns[i] || '');
-                    void td.appendChild(h);
+                    void td.appendChild(col);
                     return td;
                 }).reduce(function (tr, td) {
                     return void tr.appendChild(td), tr;
                 }, table.lastChild.appendChild(document.createElement('tr')));
             }
+            var rowseparator = /^\||^\s*?\n/;
+            var rowend = /^\|?\s*?(?:\n|$)/;
             function parse(source) {
                 var cols = [];
                 while (true) {
-                    var result = source[0] === '|' ? source.length > 1 && source[1] !== '|' ? loop_1.loop(inline_1.inline, /^\||^\n/)(source.slice(1)) : [
-                        [],
-                        source.slice(1)
-                    ] : void 0;
-                    if (!result)
+                    if (source[0] !== '|')
                         return;
+                    var result = loop_1.loop(inline_1.inline, rowseparator)(source.slice(1)) || [
+                        [document.createTextNode('')],
+                        source.slice(1)
+                    ];
                     var col = result[0], rest = result[1];
                     source = rest;
                     void cols.push(text_1.squash(col));
-                    var match = rest.match(/^\|?\s*?(?:\n|$)/);
-                    if (match)
+                    if (source.match(rowend))
                         return [
                             cols,
-                            rest.slice(match[0].length)
+                            source.slice(source.split('\n')[0].length + 1)
                         ];
                 }
             }
@@ -749,9 +750,9 @@ require = function e(t, n, r) {
                                 olist_1.olist
                             ])(block) || [
                                 [],
-                                ''
+                                block
                             ], children = _b[0], brest = _b[1];
-                        if (children.length === 0 || brest)
+                        if (children.length === 0 || brest.length !== 0)
                             return;
                         void el.lastElementChild.appendChild(text_1.squash(children));
                         source = rest;
@@ -1327,23 +1328,19 @@ require = function e(t, n, r) {
             var pretext_1 = require('../parser/block/pretext');
             var extension_1 = require('../parser/block/extension');
             var combine_1 = require('../combinator/combine');
-            var loop_1 = require('../combinator/loop');
             var syntax = /^(?:\s*?\n)+|^(?:[^\n]*\n)+?\s*?\n/;
             function segment(source) {
                 var segments = [];
-                while (true) {
-                    var _a = loop_1.loop(combine_1.combine([
+                while (source.length > 0) {
+                    var _a = combine_1.combine([
                             pretext_1.pretext,
                             extension_1.extension
-                        ]))(source) || [
+                        ])(source) || [
                             [],
                             source.slice((source.match(syntax) || [source])[0].length)
                         ], rest = _a[1];
                     void segments.push(source.slice(0, source.length - rest.length));
-                    source = source.slice(source.length - rest.length);
                     source = rest;
-                    if (source === '')
-                        break;
                 }
                 return segments;
             }
@@ -1351,7 +1348,6 @@ require = function e(t, n, r) {
         },
         {
             '../combinator/combine': 4,
-            '../combinator/loop': 5,
             '../parser/block/extension': 11,
             '../parser/block/pretext': 19
         }
