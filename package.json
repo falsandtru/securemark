@@ -52,7 +52,7 @@
     "power-assert": "^1.4.2",
     "run-sequence": "^1.2.2",
     "tsify": "^3.0.1",
-    "typescript": "2.3.0-dev.20170221",
+    "typescript": "2.3.0-dev.20170222",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },
