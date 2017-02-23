@@ -12,6 +12,7 @@ export function segment(source: string): string[] {
   while (source.length > 0) {
     const [, rest] = combine<[PreTextParser, ExtensionParser], HTMLElement>([pretext, extension])(source) || [[], source.slice((source.match(syntax) || [source])[0].length)];
     assert(rest.length < source.length);
+    assert(source.endsWith(rest));
     void segments.push(source.slice(0, source.length - rest.length));
     source = rest;
   }
