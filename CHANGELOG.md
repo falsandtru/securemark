@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.0
+
+- Remove `sup` and `sub` html tags.
+
 ## 0.9.0
 
 - Extend pretext syntax.

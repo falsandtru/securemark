@@ -8,10 +8,10 @@ import { squash } from './text';
 type SubParsers = [InlineParser] | [PlainTextParser];
 
 const syntax = /^(<([a-z]+)>)/i;
-const inlinetags = Object.freeze('small|q|cite|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|mark|ruby|rt|rp|bdi|bdo|ins|del|wbr'.split('|'));
+const inlinetags = Object.freeze('small|q|cite|dfn|abbr|data|time|code|var|samp|kbd|mark|ruby|rt|rp|bdi|bdo|ins|del|wbr'.split('|'));
 assert(inlinetags.every(t => /[a-z]+/.test(t)));
 assert(inlinetags.every(t => ['script', 'style', 'link', 'a', 'img'].indexOf(t) === -1));
-assert(inlinetags.every(t => ['s', 'em', 'strong', 'u'].indexOf(t) === -1));
+assert(inlinetags.every(t => ['s', 'em', 'strong', 'u', 'sup', 'sub'].indexOf(t) === -1));
 const cache = new Map<string, RegExp>();
 
 export const html: HTMLParser = function (source: string): Result<HTMLElement, SubParsers> {
