@@ -17,7 +17,7 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     : combine<SubParsers, HTMLElement | Text>([image])(source.slice(1)) || loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\(|^\n/)(source.slice(1)) || [[], ''];
   if (!next.startsWith('](')) return;
   const children = squash(first);
-  const [[, , ...second], rest] = loop(text, /^\)|^\s(?!nofollow\))/)(next) || [[], ''];
+  const [[, , ...second], rest] = loop(text, /^\)|^\s(?!nofollow)/)(next) || [[], ''];
   if (!rest.startsWith(')')) return;
   const [INSECURE_URL, nofollow] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
   const url = sanitize(INSECURE_URL);
