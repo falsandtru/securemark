@@ -120,7 +120,7 @@ export namespace MarkdownParser {
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
-      InlineParser.StrikeParser,
+      InlineParser.DeletionParser,
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
       InlineParser.SuperScriptParser,
@@ -134,9 +134,9 @@ export namespace MarkdownParser {
     ]> {
   }
   export namespace InlineParser {
-    export interface StrikeParser extends
+    export interface DeletionParser extends
       // ~~abc~~
-      Markdown<'strike'>,
+      Markdown<'deletion'>,
       Parser<HTMLElement, [
         InlineParser
       ]> {

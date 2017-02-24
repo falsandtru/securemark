@@ -2,6 +2,7 @@
 
 ## 0.10.0
 
+- Change strike to deletion syntax.
 - Remove `sup` and `sub` html tags.
 
 ## 0.9.0
