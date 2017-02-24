@@ -1,5 +1,6 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
 import { combine } from '../combinator/combine';
+import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
 import { strong } from './inline/strong';
 import { emphasis } from './inline/emphasis';
@@ -13,6 +14,7 @@ import { html } from './inline/html';
 import { text } from './inline/text';
 
 export import InlineParser = MarkdownParser.InlineParser;
+export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;
 export import StrongParser = InlineParser.StrongParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
@@ -27,6 +29,7 @@ export import TextParser = InlineParser.TextParser;
 export import PlainTextParser = InlineParser.PlainTextParser;
 
 export const inline: InlineParser = combine<[
+  InsertionParser,
   DeletionParser,
   StrongParser,
   EmphasisParser,
@@ -39,6 +42,7 @@ export const inline: InlineParser = combine<[
   HTMLParser,
   TextParser
 ], HTMLElement | Text>([
+  insertion,
   deletion,
   strong,
   emphasis,

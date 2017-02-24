@@ -2,6 +2,7 @@
 
 ## 0.10.0
 
+- Add insertion syntax.
 - Change strike to deletion syntax.
 - Remove `sup` and `sub` html tags.
 
