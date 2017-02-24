@@ -4,7 +4,7 @@
 
 - Add insertion syntax.
 - Change strike to deletion syntax.
-- Remove `sup` and `sub` html tags.
+- Remove `ins`, `del`, `sup`, and `sub` html tags.
 - Improve parser algorithm.
 
 ## 0.9.0
