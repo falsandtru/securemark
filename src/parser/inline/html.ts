@@ -15,7 +15,7 @@ assert(inlinetags.every(t => ['ins', 'del', 'strong', 'em', 'sup', 'sub', 's', '
 const cache = new Map<string, RegExp>();
 
 export const html: HTMLParser = function (source: string): Result<HTMLElement, SubParsers> {
-  if (!source.startsWith('<') || source.startsWith('<<')) return;
+  if (!source.startsWith('<')) return;
   const [whole, opentag, tagname] = source.match(syntax) || ['', '', ''];
   if (!whole) return;
   if (['wbr'].indexOf(tagname.toLowerCase()) !== -1) return [[document.createElement(tagname.toLowerCase())], source.slice(opentag.length)];
