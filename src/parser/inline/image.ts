@@ -11,7 +11,7 @@ const syntax = /^!\[[^\n]*?\]\(/;
 
 export const image: ImageParser = function (source: string): Result<HTMLImageElement, never> {
   if (!source.startsWith('![') || !source.match(syntax)) return;
-  const [[, , ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]|^\n/)(source) || [[], ''];
+  const [[, , ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\(|^\n/)(source) || [[], ''];
   if (!next.startsWith('](')) return;
   const caption = first.reduce((s, c) => s + c.textContent, '').trim();
   const [[, , ...second], rest] = loop(text, /^\)|^\s/)(next) || [[], ''];

@@ -10,7 +10,7 @@ const syntax = /^\^\S[^\n]*?\^/;
 const closer = /^\^|^\n/;
 
 export const superscript: SuperScriptParser = function (source: string): Result<HTMLElement, SubParsers> {
-  if (!source.startsWith('^') || source.startsWith('^^') || !source.match(syntax)) return;
+  if (!source.startsWith('^') || !source.match(syntax)) return;
   const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([text]), closer)(source.slice(1)) || [[], ''];
   if (!rest.startsWith('^')) return;
   const el = document.createElement('sup');

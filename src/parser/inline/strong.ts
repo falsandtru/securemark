@@ -10,7 +10,7 @@ const syntax = /^\*\*[\s\S]+?\*\*/;
 const closer = /^\*\*/;
 
 export const strong: StrongParser = function (source: string): Result<HTMLElement, SubParsers> {
-  if (!source.startsWith('**') || source.startsWith('****') || !source.match(syntax)) return;
+  if (!source.startsWith('**') || !source.match(syntax)) return;
   const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([inline]), closer)(source.slice(2)) || [[], ''];
   if (!rest.startsWith('**')) return;
   const el = document.createElement('strong');

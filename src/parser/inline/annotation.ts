@@ -7,10 +7,11 @@ import { text, squash } from './text';
 type SubParsers = [TextParser];
 
 const syntax = /^\(\([\s\S]+?\)\)/;
+const closer = /^\)\)(?!\))/;
 
 export const annotation: AnnotationParser = function (source: string): Result<HTMLElement, SubParsers> {
-  if (!source.startsWith('((') || source.startsWith('(((') || !source.match(syntax)) return;
-  const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^\)\)/)(source.slice(2)) || [[], ''];
+  if (!source.startsWith('((') || !source.match(syntax)) return;
+  const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([text]), closer)(source.slice(2)) || [[], ''];
   if (!rest.startsWith('))')) return;
   const el = document.createElement('sup');
   void el.setAttribute('class', 'annotation');
