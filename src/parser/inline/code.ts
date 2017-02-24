@@ -7,7 +7,7 @@ import { squash } from './text';
 
 type SubParsers = [PlainTextParser];
 
-const syntax = /^([\`]+)[^\n]+?\1/;
+const syntax = /^(`+)[^\n]+?\1/;
 const cache = new Map<string, RegExp>();
 
 export const code: CodeParser = function (source: string): Result<HTMLElement, SubParsers> {
