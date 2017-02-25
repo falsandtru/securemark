@@ -8,7 +8,7 @@ import { squash } from './text';
 type SubParsers = [InlineParser] | [PlainTextParser];
 
 const syntax = /^(<([a-z]+)>)/i;
-const inlinetags = Object.freeze('small|q|cite|dfn|abbr|data|time|code|var|samp|kbd|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+const inlinetags = Object.freeze('small|q|cite|code|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
 assert(inlinetags.every(t => /[a-z]+/.test(t)));
 assert(inlinetags.every(t => ['script', 'style', 'link', 'a', 'img'].indexOf(t) === -1));
 assert(inlinetags.every(t => ['ins', 'del', 'strong', 'em', 'sup', 'sub', 's', 'u'].indexOf(t) === -1));

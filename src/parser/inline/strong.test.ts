@@ -30,9 +30,9 @@ describe('Unit: parser/strong', () => {
     });
 
     it('triple', () => {
-      assert.deepStrictEqual(inspect(parser('***<var>***')), [['<strong><em>&lt;var&gt;</em></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('***<ruby>***')), [['<strong><em>&lt;ruby&gt;</em></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('***<wbr>***')), [['<strong><em><wbr></em></strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('***`<var>`***')), [['<strong><em><code>&lt;var&gt;</code></em></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('***`<ruby>`***')), [['<strong><em><code>&lt;ruby&gt;</code></em></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('***`<wbr>`***')), [['<strong><em><code>&lt;wbr&gt;</code></em></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('***[](#)***')), [['<strong><em><a href="#">#</a></em></strong>'], '']);
     });

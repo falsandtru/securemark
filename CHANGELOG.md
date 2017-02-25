@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0
+
+- Remove `dfn`, `abbr`, `samp`, `kbd`, `data`, `time`, and `var` html tags.
+
 ## 0.10.0
 
 - Add insertion syntax.
