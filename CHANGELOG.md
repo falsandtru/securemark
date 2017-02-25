@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0
+
+- Enhance bind function.
+
 ## 0.11.0
 
 - Remove `dfn`, `abbr`, `samp`, `kbd`, `data`, `time`, and `var` html tags.

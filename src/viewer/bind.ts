@@ -1,7 +1,7 @@
 ﻿import { parse } from '../parser';
 import { segment } from '../parser/segment';
 
-export function bind(el: HTMLElement, source: string = ''): (source: string) => void {
+export function bind(el: HTMLElement, source: string = ''): (source: string) => HTMLElement[] {
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
   void segment(source)
@@ -23,23 +23,23 @@ export function bind(el: HTMLElement, source: string = ''): (source: string) => 
     for (; i + j < os.length && i + j < ns.length; ++j) {
       if (os[os.length - j - 1] !== ns[ns.length - j - 1]) break;
     }
-    if (os.length === i && ns.length === i) return;
+    if (os.length === i && ns.length === i) return [];
     void pairs.splice(i, os.length - j - i)
       .forEach(([, es]) =>
         void es
           .forEach(e =>
             void e.remove()));
     const ref = pairs.slice(i).reduce<HTMLElement | null>((e, [, es]) => e || es[0], null);
-    return void pairs.splice(
-      i,
-      0,
-      ...ns.slice(i, ns.length - j)
-        .map<Pair>(s =>
-          [
-            s,
-            Array.from<HTMLElement>(<any>parse(s).childNodes)
-              .map(e =>
-                <HTMLElement>el.insertBefore(e, ref))
-          ]));
+    const ps = ns.slice(i, ns.length - j)
+      .map<Pair>(s =>
+        [
+          s,
+          Array.from<HTMLElement>(<any>parse(s).childNodes)
+            .map(e =>
+              <HTMLElement>el.insertBefore(e, ref))
+        ]);
+    void pairs.splice(i, 0, ...ps);
+    return ps
+      .reduce<HTMLElement[]>((acc, [, es]) => acc.concat(es), []);
   };
 }
