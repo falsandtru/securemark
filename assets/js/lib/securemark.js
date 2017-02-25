@@ -862,7 +862,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('./plaintext');
             var text_1 = require('./text');
-            var syntax = /^([\`]+)[^\n]+?\1/;
+            var syntax = /^(`+)[^\n]+?\1/;
             var cache = new Map();
             exports.code = function (source) {
                 if (!source.startsWith('`'))
@@ -976,10 +976,10 @@ require = function e(t, n, r) {
             var plaintext_1 = require('./plaintext');
             var text_1 = require('./text');
             var syntax = /^(<([a-z]+)>)/i;
-            var inlinetags = Object.freeze('small|q|cite|dfn|abbr|data|time|code|var|samp|kbd|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+            var inlinetags = Object.freeze('small|q|cite|code|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             var cache = new Map();
             exports.html = function (source) {
-                if (!source.startsWith('<') || source.startsWith('<<'))
+                if (!source.startsWith('<'))
                     return;
                 var _a = source.match(syntax) || [
                         '',
@@ -1127,7 +1127,7 @@ require = function e(t, n, r) {
                 if (!next.startsWith(']('))
                     return;
                 var children = text_1.squash(first);
-                var _b = loop_1.loop(text_1.text, /^\)|^\s(?!nofollow\))/)(next) || [
+                var _b = loop_1.loop(text_1.text, /^\)|^\s(?!nofollow)/)(next) || [
                         [],
                         ''
                     ], _c = _b[0], second = _c.slice(2), rest = _b[1];
