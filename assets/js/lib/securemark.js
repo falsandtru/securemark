@@ -1452,7 +1452,7 @@ require = function e(t, n, r) {
                             break;
                     }
                     if (os.length === i && ns.length === i)
-                        return;
+                        return [];
                     void pairs.splice(i, os.length - j - i).forEach(function (_a) {
                         var es = _a[1];
                         return void es.forEach(function (e) {
@@ -1463,17 +1463,22 @@ require = function e(t, n, r) {
                         var es = _a[1];
                         return e || es[0];
                     }, null);
-                    return void pairs.splice.apply(pairs, [
-                        i,
-                        0
-                    ].concat(ns.slice(i, ns.length - j).map(function (s) {
+                    var ps = ns.slice(i, ns.length - j).map(function (s) {
                         return [
                             s,
                             Array.from(parser_1.parse(s).childNodes).map(function (e) {
                                 return el.insertBefore(e, ref);
                             })
                         ];
-                    })));
+                    });
+                    void pairs.splice.apply(pairs, [
+                        i,
+                        0
+                    ].concat(ps));
+                    return ps.reduce(function (acc, _a) {
+                        var es = _a[1];
+                        return acc.concat(es);
+                    }, []);
                 };
             }
             exports.bind = bind;
