@@ -11,6 +11,7 @@
   "keywords": [
     "markdown"
   ],
+  "types": "./index.d.ts",
   "main": "./dist/securemark.js",
   "files": [
     "dist",

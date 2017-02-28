@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.1
+
+- Fix package settings.
+
 ## 0.12.0
 
 - Enhance bind function.
