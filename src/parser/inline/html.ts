@@ -1,9 +1,8 @@
 ﻿import { Result } from '../../parser';
-import { HTMLParser, InlineParser, PlainTextParser, inline } from '../inline';
+import { HTMLParser, InlineParser, PlainTextParser, inline, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { plaintext } from './plaintext';
-import { squash } from './text';
 
 type SubParsers = [InlineParser] | [PlainTextParser];
 

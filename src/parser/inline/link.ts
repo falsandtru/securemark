@@ -1,9 +1,9 @@
 ﻿import { Result } from '../../parser';
-import { LinkParser, ImageParser, TextParser } from '../inline';
+import { LinkParser, ImageParser, TextParser, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { image } from './image';
-import { text, squash } from './text';
+import { text } from './text';
 import { sanitize } from '../string/url';
 
 type SubParsers = [ImageParser] | [TextParser];

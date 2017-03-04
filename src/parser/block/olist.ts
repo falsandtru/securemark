@@ -4,8 +4,7 @@ import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { ulist } from './ulist';
 import { indent } from './indent';
-import { InlineParser, inline } from '../inline';
-import { squash } from '../inline/text';
+import { InlineParser, inline, squash } from '../inline';
 
 type SubParsers = [InlineParser] | [UListParser, OListParser];
 

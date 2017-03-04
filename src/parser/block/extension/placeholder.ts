@@ -2,8 +2,7 @@
 import { Parser, Result } from '../../../parser';
 import { PreTextParser, consumeBlockEndEmptyLine } from '../../block';
 import { loop } from '../../../combinator/loop';
-import { inline } from '../../inline';
-import { squash } from '../../inline/text';
+import { inline, squash } from '../../inline';
 
 export interface PlaceholderParser extends
   Markdown<'extension' & 'placeholder'>,

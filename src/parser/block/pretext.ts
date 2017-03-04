@@ -2,9 +2,8 @@
 import { PreTextParser, consumeBlockEndEmptyLine } from '../block';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { PlainTextParser } from '../inline';
+import { PlainTextParser, squash } from '../inline';
 import { plaintext } from '../inline/plaintext';
-import { squash } from '../inline/text';
 
 type SubParsers = [PlainTextParser];
 
