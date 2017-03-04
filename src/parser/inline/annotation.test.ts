@@ -17,16 +17,20 @@ describe('Unit: parser/annotation', () => {
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation" title="a">*</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((ab))')), [['<sup class="annotation" title="ab">*</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((a\nb))')), [['<sup class="annotation" title="ab">*</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('(( ))')), [['<sup class="annotation" title="">*</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((\n))')), [['<sup class="annotation" title="">*</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation">a</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((ab))')), [['<sup class="annotation">ab</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a\nb))')), [['<sup class="annotation">ab</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(( ))')), [['<sup class="annotation"> </sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((\n))')), [['<sup class="annotation"></sup>'], '']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('(("))')), [['<sup class="annotation" title="&quot;">*</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation" title="(a)">*</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(("))')), [['<sup class="annotation">"</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((<a>))')), [['<sup class="annotation">&lt;a&gt;</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((<wbr>))')), [['<sup class="annotation"><wbr></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((`<wbr>`))')), [['<sup class="annotation"><code>&lt;wbr&gt;</code></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(([](#)))')), [['<sup class="annotation"><a href="#">#</a></sup>'], '']);
     });
 
   });

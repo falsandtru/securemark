@@ -204,7 +204,7 @@ export namespace MarkdownParser {
       // ((abc))
       Markdown<'annotation'>,
       Parser<HTMLElement, [
-        TextParser
+        InlineParser
       ]> {
     }
     export interface HTMLParser extends

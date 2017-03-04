@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.13.0
+
+- Refine annotation parser.
+
 ## 0.12.1
 
 - Fix package settings.
