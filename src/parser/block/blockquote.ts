@@ -15,7 +15,7 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
   const top = document.createElement('blockquote');
   let bottom = indent.split('').slice(1)
     .reduce(p =>
-      <HTMLQuoteElement>p.appendChild(document.createElement('blockquote')), top);
+      p.appendChild(document.createElement('blockquote')), top);
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
@@ -23,7 +23,7 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
     if (diff > 0) {
       bottom = line.slice(0, diff).split('')
         .reduce(p =>
-          <HTMLQuoteElement>p.appendChild(document.createElement('blockquote')), bottom);
+          p.appendChild(document.createElement('blockquote')), bottom);
     }
     if (diff < 0) {
       bottom = line.slice(0, -diff).split('')
