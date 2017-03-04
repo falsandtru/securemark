@@ -201,8 +201,8 @@ require = function e(t, n, r) {
             var block_1 = require('../block');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
+            var inline_1 = require('../inline');
             var plaintext_1 = require('../inline/plaintext');
-            var text_1 = require('../inline/text');
             var syntax = /^>+/;
             exports.blockquote = function (source) {
                 var indent = (source.match(syntax) || [''])[0];
@@ -230,7 +230,7 @@ require = function e(t, n, r) {
                     if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
                         void bottom.appendChild(document.createElement('br'));
                     }
-                    void bottom.appendChild(text_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
+                    void bottom.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
                     if (!bottom.lastChild || !bottom.lastChild.textContent)
                         return;
                     indent = indent[0].repeat(indent.length + diff);
@@ -243,8 +243,8 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
-            '../inline/plaintext': 31,
-            '../inline/text': 35
+            '../inline': 22,
+            '../inline/plaintext': 31
         }
     ],
     10: [
@@ -255,7 +255,6 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
-            var text_1 = require('../inline/text');
             var syntax = /^~\s/;
             var separator = /^[~:](?:\s|$)/;
             exports.dlist = function (source) {
@@ -270,7 +269,7 @@ require = function e(t, n, r) {
                     switch (line.slice(0, 2).trim()) {
                     case '~': {
                             var dt = el.appendChild(document.createElement('dt'));
-                            void dt.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(line.slice(1).trim()) || [[]])[0]));
+                            void dt.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(line.slice(1).trim()) || [[]])[0]));
                             source = source.slice(line.length + 1);
                             continue;
                         }
@@ -285,7 +284,7 @@ require = function e(t, n, r) {
                                 void texts.push(line_1);
                                 source = source.slice(line_1.length + 1);
                             }
-                            void dd.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(texts.join('\n').trim()) || [[]])[0]));
+                            void dd.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(texts.join('\n').trim()) || [[]])[0]));
                             continue;
                         }
                     }
@@ -300,8 +299,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
-            '../inline': 22,
-            '../inline/text': 35
+            '../inline': 22
         }
     ],
     11: [
@@ -324,7 +322,6 @@ require = function e(t, n, r) {
             var block_1 = require('../../block');
             var loop_1 = require('../../../combinator/loop');
             var inline_1 = require('../../inline');
-            var text_1 = require('../../inline/text');
             var syntax = /^(~{3,})(\S*?)\s*?\n(?:[^\n]*\n)*?\1/;
             var cache = new Map();
             exports.placeholder = function (source) {
@@ -335,7 +332,7 @@ require = function e(t, n, r) {
                 if (!whole)
                     return;
                 var message = document.createElement('p');
-                void message.appendChild(text_1.squash(loop_1.loop(inline_1.inline)('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.')[0]));
+                void message.appendChild(inline_1.squash(loop_1.loop(inline_1.inline)('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.')[0]));
                 source = source.slice(source.indexOf('\n') + 1);
                 if (!cache.has(keyword)) {
                     void cache.set(keyword, new RegExp('^' + keyword + 's*(?:\n|$)'));
@@ -361,8 +358,7 @@ require = function e(t, n, r) {
         {
             '../../../combinator/loop': 5,
             '../../block': 8,
-            '../../inline': 22,
-            '../../inline/text': 35
+            '../../inline': 22
         }
     ],
     13: [
@@ -373,7 +369,6 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
-            var text_1 = require('../inline/text');
             var syntax = /^(#{1,6})\s+?([^\n]+)/;
             exports.heading = function (source) {
                 var _a = source.match(syntax) || [
@@ -385,7 +380,7 @@ require = function e(t, n, r) {
                     return;
                 var children = (loop_1.loop(combine_1.combine([inline_1.inline]))(title) || [[]])[0];
                 var el = document.createElement('h' + level);
-                void el.appendChild(text_1.squash(children));
+                void el.appendChild(inline_1.squash(children));
                 return block_1.consumeBlockEndEmptyLine([el], source.slice(whole.length + 1));
             };
         },
@@ -393,8 +388,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
-            '../inline': 22,
-            '../inline/text': 35
+            '../inline': 22
         }
     ],
     14: [
@@ -472,7 +466,6 @@ require = function e(t, n, r) {
             var ulist_1 = require('./ulist');
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
-            var text_1 = require('../inline/text');
             var syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?:\s|$)/;
             exports.olist = function (source) {
                 var _a = source.match(syntax) || [
@@ -491,7 +484,7 @@ require = function e(t, n, r) {
                     if (line.match(syntax)) {
                         var text = line.slice(line.indexOf('.') + 1).trim();
                         var li = el.appendChild(document.createElement('li'));
-                        void li.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
+                        void li.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
@@ -512,7 +505,7 @@ require = function e(t, n, r) {
                             ], children = _c[0], brest = _c[1];
                         if (children.length === 0 || brest.length !== 0)
                             return;
-                        void el.lastElementChild.appendChild(text_1.squash(children));
+                        void el.lastElementChild.appendChild(inline_1.squash(children));
                         source = rest;
                         continue;
                     }
@@ -525,7 +518,6 @@ require = function e(t, n, r) {
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 35,
             './indent': 15,
             './ulist': 21
         }
@@ -538,7 +530,6 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
-            var text_1 = require('../inline/text');
             var closer = /^\n\s*?\n/;
             exports.paragraph = function (source) {
                 if (source.startsWith('\n') || source.match(closer))
@@ -548,7 +539,7 @@ require = function e(t, n, r) {
                         [document.createTextNode(source.trim())],
                         ''
                     ], cs = _a[0], rest = _a[1];
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 return block_1.consumeBlockEndEmptyLine([el], rest.slice(1));
             };
         },
@@ -556,8 +547,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
-            '../inline': 22,
-            '../inline/text': 35
+            '../inline': 22
         }
     ],
     19: [
@@ -567,8 +557,8 @@ require = function e(t, n, r) {
             var block_1 = require('../block');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
+            var inline_1 = require('../inline');
             var plaintext_1 = require('../inline/plaintext');
-            var text_1 = require('../inline/text');
             var syntax = /^(`{3,})([0-9a-z]*)\S*\s*?\n(?:[^\n]*\n)*?\1/;
             var cache = new Map();
             exports.pretext = function (source) {
@@ -591,7 +581,7 @@ require = function e(t, n, r) {
                     var line = source.split('\n', 1)[0];
                     if (line.match(cache.get(keyword)))
                         break;
-                    void el.appendChild(text_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line + '\n') || [[]])[0]));
+                    void el.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line + '\n') || [[]])[0]));
                     source = source.slice(line.length + 1);
                     if (source === '')
                         return;
@@ -606,8 +596,8 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../block': 8,
-            '../inline/plaintext': 31,
-            '../inline/text': 35
+            '../inline': 22,
+            '../inline/plaintext': 31
         }
     ],
     20: [
@@ -617,7 +607,6 @@ require = function e(t, n, r) {
             var block_1 = require('../block');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
-            var text_1 = require('../inline/text');
             var syntax = /^(\|[^\n]*)+?\s*?\n/;
             var align = /^:?-+:?$/;
             exports.table = function (source) {
@@ -690,7 +679,7 @@ require = function e(t, n, r) {
                     ];
                     var col = result[0], rest = result[1];
                     source = rest;
-                    void cols.push(text_1.squash(col));
+                    void cols.push(inline_1.squash(col));
                     if (source.match(rowend))
                         return [
                             cols,
@@ -702,8 +691,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/loop': 5,
             '../block': 8,
-            '../inline': 22,
-            '../inline/text': 35
+            '../inline': 22
         }
     ],
     21: [
@@ -716,7 +704,6 @@ require = function e(t, n, r) {
             var olist_1 = require('./olist');
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
-            var text_1 = require('../inline/text');
             var syntax = /^-(?:\s|$)/;
             exports.ulist = function (source) {
                 var whole = (source.match(syntax) || [
@@ -733,7 +720,7 @@ require = function e(t, n, r) {
                     if (line.match(syntax)) {
                         var text = line.slice(1).trim();
                         var li = el.appendChild(document.createElement('li'));
-                        void li.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
+                        void li.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
@@ -754,7 +741,7 @@ require = function e(t, n, r) {
                             ], children = _b[0], brest = _b[1];
                         if (children.length === 0 || brest.length !== 0)
                             return;
-                        void el.lastElementChild.appendChild(text_1.squash(children));
+                        void el.lastElementChild.appendChild(inline_1.squash(children));
                         source = rest;
                         continue;
                     }
@@ -767,7 +754,6 @@ require = function e(t, n, r) {
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/text': 35,
             './indent': 15,
             './olist': 17
         }
@@ -803,6 +789,21 @@ require = function e(t, n, r) {
                 html_1.html,
                 text_1.text
             ]);
+            function squash(nodes) {
+                var frag = document.createDocumentFragment();
+                for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
+                    var curr = nodes_1[_i];
+                    var prev = frag.lastChild;
+                    if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
+                        prev.textContent += curr.textContent;
+                        curr.textContent = '';
+                    } else {
+                        void frag.appendChild(curr);
+                    }
+                }
+                return frag;
+            }
+            exports.squash = squash;
         },
         {
             '../combinator/combine': 4,
@@ -824,15 +825,15 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
-            var text_1 = require('./text');
             var syntax = /^\(\([\s\S]+?\)\)/;
             var closer = /^\)\)(?!\))/;
             exports.annotation = function (source) {
                 if (!source.startsWith('((') || !source.match(syntax))
                     return;
-                var _a = loop_1.loop(combine_1.combine([text_1.text]), closer)(source.slice(2)) || [
+                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(2)) || [
                         [],
                         ''
                     ], cs = _a[0], rest = _a[1];
@@ -840,8 +841,7 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('sup');
                 void el.setAttribute('class', 'annotation');
-                void el.setAttribute('title', text_1.squash(cs).textContent.trim());
-                el.textContent = '*';
+                void el.appendChild(inline_1.squash(cs));
                 return [
                     [el],
                     rest.slice(2)
@@ -851,17 +851,17 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            './text': 35
+            '../inline': 22
         }
     ],
     24: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('./plaintext');
-            var text_1 = require('./text');
             var syntax = /^(`+)[^\n]+?\1/;
             var cache = new Map();
             exports.code = function (source) {
@@ -883,7 +883,7 @@ require = function e(t, n, r) {
                 if (!rest.startsWith(keyword))
                     return;
                 var el = document.createElement('code');
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 el.textContent = el.textContent.trim();
                 return [
                     [el],
@@ -894,8 +894,8 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            './plaintext': 31,
-            './text': 35
+            '../inline': 22,
+            './plaintext': 31
         }
     ],
     25: [
@@ -905,7 +905,6 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
-            var text_1 = require('./text');
             var syntax = /^~~[\s\S]+?~~/;
             var closer = /^~~/;
             exports.deletion = function (source) {
@@ -918,7 +917,7 @@ require = function e(t, n, r) {
                 if (!rest.startsWith('~~'))
                     return;
                 var el = document.createElement('del');
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 return [
                     [el],
                     rest.slice(2)
@@ -928,8 +927,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../inline': 22,
-            './text': 35
+            '../inline': 22
         }
     ],
     26: [
@@ -939,7 +937,6 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
-            var text_1 = require('./text');
             var syntax = /^\*[\s\S]+?\*/;
             var closer = /^\*/;
             exports.emphasis = function (source) {
@@ -952,7 +949,7 @@ require = function e(t, n, r) {
                 if (!rest.startsWith('*'))
                     return;
                 var el = document.createElement('em');
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 return [
                     [el],
                     rest.slice(1)
@@ -962,8 +959,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../inline': 22,
-            './text': 35
+            '../inline': 22
         }
     ],
     27: [
@@ -974,7 +970,6 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('./plaintext');
-            var text_1 = require('./text');
             var syntax = /^(<([a-z]+)>)/i;
             var inlinetags = Object.freeze('small|q|cite|code|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             var cache = new Map();
@@ -1006,7 +1001,7 @@ require = function e(t, n, r) {
                         source.slice(opentag.length)
                     ], cs = _b[0], rest = _b[1];
                 var el = document.createElement(tagname);
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 var closetag = '</' + tagname + '>';
                 return rest.slice(0, closetag.length).toLowerCase() === closetag ? [
                     [el],
@@ -1018,8 +1013,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './plaintext': 31,
-            './text': 35
+            './plaintext': 31
         }
     ],
     28: [
@@ -1077,7 +1071,6 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
-            var text_1 = require('./text');
             var syntax = /^\+\+[\s\S]+?\+\+/;
             var closer = /^\+\+/;
             exports.insertion = function (source) {
@@ -1090,7 +1083,7 @@ require = function e(t, n, r) {
                 if (!rest.startsWith('++'))
                     return;
                 var el = document.createElement('ins');
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 return [
                     [el],
                     rest.slice(2)
@@ -1100,14 +1093,14 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../inline': 22,
-            './text': 35
+            '../inline': 22
         }
     ],
     30: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var image_1 = require('./image');
@@ -1126,7 +1119,7 @@ require = function e(t, n, r) {
                     ], first = _a[0], next = _a[1];
                 if (!next.startsWith(']('))
                     return;
-                var children = text_1.squash(first);
+                var children = inline_1.squash(first);
                 var _b = loop_1.loop(text_1.text, /^\)|^\s(?!nofollow)/)(next) || [
                         [],
                         ''
@@ -1157,6 +1150,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
+            '../inline': 22,
             '../string/url': 37,
             './image': 28,
             './text': 35
@@ -1199,7 +1193,6 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
-            var text_1 = require('./text');
             var syntax = /^\*\*[\s\S]+?\*\*/;
             var closer = /^\*\*/;
             exports.strong = function (source) {
@@ -1212,7 +1205,7 @@ require = function e(t, n, r) {
                 if (!rest.startsWith('**'))
                     return;
                 var el = document.createElement('strong');
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 return [
                     [el],
                     rest.slice(2)
@@ -1222,14 +1215,14 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../inline': 22,
-            './text': 35
+            '../inline': 22
         }
     ],
     33: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('./text');
@@ -1245,7 +1238,7 @@ require = function e(t, n, r) {
                 if (!rest.startsWith('~'))
                     return;
                 var el = document.createElement('sub');
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 if (el.textContent && el.textContent !== el.textContent.trim())
                     return;
                 return [
@@ -1257,6 +1250,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
+            '../inline': 22,
             './text': 35
         }
     ],
@@ -1264,6 +1258,7 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('./text');
@@ -1279,7 +1274,7 @@ require = function e(t, n, r) {
                 if (!rest.startsWith('^'))
                     return;
                 var el = document.createElement('sup');
-                void el.appendChild(text_1.squash(cs));
+                void el.appendChild(inline_1.squash(cs));
                 if (el.textContent && el.textContent !== el.textContent.trim())
                     return;
                 return [
@@ -1291,6 +1286,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
+            '../inline': 22,
             './text': 35
         }
     ],
@@ -1342,20 +1338,6 @@ require = function e(t, n, r) {
                     ];
                 }
             };
-            function squash(nodes) {
-                var frag = document.createDocumentFragment();
-                for (var _i = 0, nodes_1 = nodes; _i < nodes_1.length; _i++) {
-                    var curr = nodes_1[_i];
-                    var prev = frag.lastChild;
-                    if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
-                        prev.textContent += curr.textContent;
-                    } else {
-                        void frag.appendChild(curr);
-                    }
-                }
-                return frag;
-            }
-            exports.squash = squash;
         },
         {}
     ],
