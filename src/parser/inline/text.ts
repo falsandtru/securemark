@@ -34,6 +34,7 @@ export function squash<N extends HTMLElement | Text>(nodes: N[]): DocumentFragme
     const prev = frag.lastChild;
     if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
       prev.textContent += curr.textContent!;
+      curr.textContent = '';
     }
     else {
       void frag.appendChild(curr);
