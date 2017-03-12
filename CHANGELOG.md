@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.14.0
+
+- Refine link parser.
+
 ## 0.13.0
 
 - Refine annotation parser.

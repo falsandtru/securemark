@@ -1,12 +1,11 @@
 ﻿import { Result } from '../../parser';
-import { LinkParser, ImageParser, TextParser, squash } from '../inline';
+import { LinkParser, InlineParser, inline, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { image } from './image';
 import { text } from './text';
 import { sanitize } from '../string/url';
 
-type SubParsers = [ImageParser] | [TextParser];
+type SubParsers = [InlineParser];
 
 const syntax = /^\[[^\n]*?\]\(/;
 
@@ -14,9 +13,17 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
   if (!source.startsWith('[') || !source.match(syntax)) return;
   const [first, next] = source.startsWith('[]')
     ? [[], source.slice(1)]
-    : combine<SubParsers, HTMLElement | Text>([image])(source.slice(1)) || loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\(|^\n/)(source.slice(1)) || [[], ''];
+    : loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\(|^\n/)(source.slice(1)) || [[], ''];
   if (!next.startsWith('](')) return;
   const children = squash(first);
+  if (children.querySelectorAll('img,sup,sub,small,q,cite,mark,ruby,rt,rp,bdi,bdo,wbr').length !== children.querySelectorAll('*').length) return;
+  if (children.querySelector('img')) {
+    if (children.childNodes.length > 1) return;
+  }
+  else {
+    if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
+    if (children.textContent !== children.textContent!.trim()) return;
+  }
   const [[, , ...second], rest] = loop(text, /^\)|^\s(?!nofollow)/)(next) || [[], ''];
   if (!rest.startsWith(')')) return;
   const [INSECURE_URL, nofollow] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
@@ -31,6 +38,6 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
   if (nofollow) {
     void el.setAttribute('rel', 'nofollow');
   }
-  void el.appendChild(children.querySelector('img') || document.createTextNode((children.textContent || url).trim()));
+  void el.appendChild(children.textContent || children.querySelector('img') ? children : document.createTextNode(url.trim()));
   return [[el], rest.slice(1)];
 };

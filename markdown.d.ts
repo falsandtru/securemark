@@ -195,9 +195,7 @@ export namespace MarkdownParser {
       // [abc](url)
       Markdown<'link'>,
       Parser<HTMLAnchorElement, [
-        ImageParser
-      ] | [
-        TextParser
+        InlineParser
       ]> {
     }
     export interface AnnotationParser extends
