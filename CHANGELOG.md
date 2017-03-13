@@ -3,6 +3,7 @@
 ## 0.14.0
 
 - Refine link parser.
+- Allow only lower case html tags.
 
 ## 0.13.0
 

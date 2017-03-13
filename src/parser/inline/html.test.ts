@@ -20,6 +20,9 @@ describe('Unit: parser/html', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('<ruby>')), void 0);
       assert.deepStrictEqual(inspect(parser('<ruby>a')), void 0);
+      assert.deepStrictEqual(inspect(parser('<ruby>a</RUBY>')), void 0);
+      assert.deepStrictEqual(inspect(parser('<RUBY>a</ruby>')), void 0);
+      assert.deepStrictEqual(inspect(parser('<RUBY>a</RUBY>')), void 0);
       assert.deepStrictEqual(inspect(parser('</ruby>')), void 0);
       assert.deepStrictEqual(inspect(parser('a')), void 0);
       assert.deepStrictEqual(inspect(parser('a<ruby>')), void 0);
