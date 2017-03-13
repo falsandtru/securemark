@@ -20,6 +20,7 @@ export const code: CodeParser = function (source: string): Result<HTMLElement, S
   if (!rest.startsWith(keyword)) return;
   const el = document.createElement('code');
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   el.textContent = el.textContent!.trim();
   return [[el], rest.slice(keyword.length)];
 };

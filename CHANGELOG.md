@@ -4,6 +4,7 @@
 
 - Refine link parser.
 - Allow only lower case html tags.
+- Disallow empty contents.
 
 ## 0.13.0
 

@@ -15,6 +15,7 @@ export const subscript: SubScriptParser = function (source: string): Result<HTML
   if (!rest.startsWith('~')) return;
   const el = document.createElement('sub');
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   if (el.textContent !== el.textContent!.trim()) return;
   return [[el], rest.slice(1)];
 };

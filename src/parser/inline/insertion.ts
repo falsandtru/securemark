@@ -14,5 +14,6 @@ export const insertion: InsertionParser = function (source: string): Result<HTML
   if (!rest.startsWith('++')) return;
   const el = document.createElement('ins');
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   return [[el], rest.slice(2)];
 };

@@ -15,5 +15,6 @@ export const annotation: AnnotationParser = function (source: string): Result<HT
   const el = document.createElement('sup');
   void el.setAttribute('class', 'annotation');
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   return [[el], rest.slice(2)];
 };

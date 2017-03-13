@@ -14,5 +14,6 @@ export const emphasis: EmphasisParser = function (source: string): Result<HTMLEl
   if (!rest.startsWith('*')) return;
   const el = document.createElement('em');
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   return [[el], rest.slice(1)];
 };

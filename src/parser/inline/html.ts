@@ -27,6 +27,7 @@ export const html: HTMLParser = function (source: string): Result<HTMLElement, S
     : loop(combine<SubParsers, HTMLElement | Text>([inline]), cache.get(tagname)!)(source.slice(opentag.length)) || [[], source.slice(opentag.length)];
   const el = document.createElement(tagname);
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   const closetag = `</${tagname}>`;
   return rest.slice(0, closetag.length) === closetag
     ? [[el], rest.slice(closetag.length)]

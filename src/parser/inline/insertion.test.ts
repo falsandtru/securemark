@@ -12,6 +12,9 @@ describe('Unit: parser/insertion', () => {
       assert.deepStrictEqual(inspect(parser('++')), void 0);
       assert.deepStrictEqual(inspect(parser('+++')), void 0);
       assert.deepStrictEqual(inspect(parser('++++')), void 0);
+      assert.deepStrictEqual(inspect(parser('++ ++')), void 0);
+      assert.deepStrictEqual(inspect(parser('++\n++')), void 0);
+      assert.deepStrictEqual(inspect(parser('++<wbr>++')), void 0);
       assert.deepStrictEqual(inspect(parser('++++a++++')), void 0);
       assert.deepStrictEqual(inspect(parser('a++a++')), void 0);
     });
@@ -24,7 +27,6 @@ describe('Unit: parser/insertion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('++<a>++')), [['<ins>&lt;a&gt;</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++<wbr>++')), [['<ins><wbr></ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++`<wbr>`++')), [['<ins><code>&lt;wbr&gt;</code></ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++[](#)++')), [['<ins><a href="#">#</a></ins>'], '']);
     });

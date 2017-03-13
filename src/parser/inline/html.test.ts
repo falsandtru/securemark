@@ -11,6 +11,9 @@ describe('Unit: parser/html', () => {
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), void 0);
       assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), void 0);
       assert.deepStrictEqual(inspect(parser('<script src="."></script>')), void 0);
+      assert.deepStrictEqual(inspect(parser('<ruby></ruby>')), void 0);
+      assert.deepStrictEqual(inspect(parser('<ruby> </ruby>')), void 0);
+      assert.deepStrictEqual(inspect(parser('<ruby>\n</ruby>')), void 0);
       assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()">')), void 0);
       assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()"><ruby>')), void 0);
       assert.deepStrictEqual(inspect(parser('<ruby><ruby onclick="alert()"></ruby></ruby>')), [['<ruby>&lt;ruby onclick="alert()"&gt;</ruby>'], '</ruby>']);
@@ -29,14 +32,12 @@ describe('Unit: parser/html', () => {
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser('<ruby></ruby>')), [['<ruby></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>a</ruby>')), [['<ruby>a</ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>a</ruby>a')), [['<ruby>a</ruby>'], 'a']);
-      assert.deepStrictEqual(inspect(parser('<ruby>\n</ruby>')), [['<ruby></ruby>'], '']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('<ruby><ruby></ruby></ruby>')), [['<ruby><ruby></ruby></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('<ruby><ruby>a</ruby></ruby>')), [['<ruby><ruby>a</ruby></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>a<ruby>b</ruby>c</ruby>')), [['<ruby>a<ruby>b</ruby>c</ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>`a`</ruby>')), [['<ruby><code>a</code></ruby>'], '']);
     });

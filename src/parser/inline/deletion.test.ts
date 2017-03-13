@@ -12,6 +12,9 @@ describe('Unit: parser/deletion', () => {
       assert.deepStrictEqual(inspect(parser('~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~~~')), void 0);
+      assert.deepStrictEqual(inspect(parser('~~ ~~')), void 0);
+      assert.deepStrictEqual(inspect(parser('~~\n~~')), void 0);
+      assert.deepStrictEqual(inspect(parser('~~<wbr>~~')), void 0);
       assert.deepStrictEqual(inspect(parser('~~~~a~~~~')), void 0);
       assert.deepStrictEqual(inspect(parser('a~~a~~')), void 0);
     });
@@ -24,7 +27,6 @@ describe('Unit: parser/deletion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('~~<a>~~')), [['<del>&lt;a&gt;</del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~<wbr>~~')), [['<del><wbr></del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~`<wbr>`~~')), [['<del><code>&lt;wbr&gt;</code></del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~[](#)~~')), [['<del><a href="#">#</a></del>'], '']);
     });

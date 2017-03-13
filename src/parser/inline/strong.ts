@@ -14,5 +14,6 @@ export const strong: StrongParser = function (source: string): Result<HTMLElemen
   if (!rest.startsWith('**')) return;
   const el = document.createElement('strong');
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   return [[el], rest.slice(2)];
 };

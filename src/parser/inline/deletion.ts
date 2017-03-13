@@ -14,5 +14,6 @@ export const deletion: DeletionParser = function (source: string): Result<HTMLEl
   if (!rest.startsWith('~~')) return;
   const el = document.createElement('del');
   void el.appendChild(squash(cs));
+  if (el.textContent!.trim() === '') return;
   return [[el], rest.slice(2)];
 };
