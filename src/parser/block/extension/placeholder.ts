@@ -11,7 +11,6 @@ export interface PlaceholderParser extends
 type SubParsers = [PreTextParser];
 
 const syntax = /^(~{3,})(\S*?)\s*?\n(?:[^\n]*\n)*?\1/;
-const cache = new Map<string, RegExp>();
 
 export const placeholder: PlaceholderParser = function (source: string): Result<HTMLElement, SubParsers> {
   const [whole, keyword] = source.match(syntax) || ['', ''];
@@ -19,13 +18,10 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   const message = document.createElement('p');
   void message.appendChild(squash(loop(inline)("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.")![0]));
   source = source.slice(source.indexOf('\n') + 1);
-  if (!cache.has(keyword)) {
-    void cache.set(keyword, new RegExp(`^${keyword}\s*(?:\n|$)`));
-  }
   const lines: string[] = [];
   while (true) {
     const line = source.split('\n', 1)[0];
-    if (line.match(cache.get(keyword)!)) break;
+    if (line.match(`^${keyword}\s*(?:\n|$)`)) break;
     void lines.push(line + '\n');
     source = source.slice(line.length + 1);
     if (source === '') return;

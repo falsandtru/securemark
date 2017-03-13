@@ -8,7 +8,6 @@ import { plaintext } from '../inline/plaintext';
 type SubParsers = [PlainTextParser];
 
 const syntax = /^(`{3,})([0-9a-z]*)\S*\s*?\n(?:[^\n]*\n)*?\1/;
-const cache = new Map<string, RegExp>();
 
 export const pretext: PreTextParser = function (source: string): Result<HTMLPreElement, SubParsers> {
   const [whole, keyword, lang] = source.match(syntax) || ['', '', ''];
@@ -18,12 +17,9 @@ export const pretext: PreTextParser = function (source: string): Result<HTMLPreE
     void el.setAttribute('class', `lang-${lang.toLowerCase()}`);
   }
   source = source.slice(source.indexOf('\n') + 1);
-  if (!cache.has(keyword)) {
-    void cache.set(keyword, new RegExp(`^${keyword}\s*(?:\n|$)`));
-  }
   while (true) {
     const line = source.split('\n', 1)[0];
-    if (line.match(cache.get(keyword)!)) break;
+    if (line.match(`^${keyword}\s*(?:\n|$)`)) break;
     void el.appendChild(squash((loop(combine<SubParsers, Text>([plaintext]))(line + '\n') || [[]])[0]));
     source = source.slice(line.length + 1);
     if (source === '') return;
