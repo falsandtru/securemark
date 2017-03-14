@@ -323,7 +323,6 @@ require = function e(t, n, r) {
             var loop_1 = require('../../../combinator/loop');
             var inline_1 = require('../../inline');
             var syntax = /^(~{3,})(\S*?)\s*?\n(?:[^\n]*\n)*?\1/;
-            var cache = new Map();
             exports.placeholder = function (source) {
                 var _a = source.match(syntax) || [
                         '',
@@ -334,13 +333,10 @@ require = function e(t, n, r) {
                 var message = document.createElement('p');
                 void message.appendChild(inline_1.squash(loop_1.loop(inline_1.inline)('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.')[0]));
                 source = source.slice(source.indexOf('\n') + 1);
-                if (!cache.has(keyword)) {
-                    void cache.set(keyword, new RegExp('^' + keyword + 's*(?:\n|$)'));
-                }
                 var lines = [];
                 while (true) {
                     var line = source.split('\n', 1)[0];
-                    if (line.match(cache.get(keyword)))
+                    if (line.match('^' + keyword + 's*(?:\n|$)'))
                         break;
                     void lines.push(line + '\n');
                     source = source.slice(line.length + 1);
@@ -560,7 +556,6 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var plaintext_1 = require('../inline/plaintext');
             var syntax = /^(`{3,})([0-9a-z]*)\S*\s*?\n(?:[^\n]*\n)*?\1/;
-            var cache = new Map();
             exports.pretext = function (source) {
                 var _a = source.match(syntax) || [
                         '',
@@ -574,12 +569,9 @@ require = function e(t, n, r) {
                     void el.setAttribute('class', 'lang-' + lang.toLowerCase());
                 }
                 source = source.slice(source.indexOf('\n') + 1);
-                if (!cache.has(keyword)) {
-                    void cache.set(keyword, new RegExp('^' + keyword + 's*(?:\n|$)'));
-                }
                 while (true) {
                     var line = source.split('\n', 1)[0];
-                    if (line.match(cache.get(keyword)))
+                    if (line.match('^' + keyword + 's*(?:\n|$)'))
                         break;
                     void el.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line + '\n') || [[]])[0]));
                     source = source.slice(line.length + 1);
@@ -842,6 +834,8 @@ require = function e(t, n, r) {
                 var el = document.createElement('sup');
                 void el.setAttribute('class', 'annotation');
                 void el.appendChild(inline_1.squash(cs));
+                if (el.textContent.trim() === '')
+                    return;
                 return [
                     [el],
                     rest.slice(2)
@@ -863,7 +857,6 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('./plaintext');
             var syntax = /^(`+)[^\n]+?\1/;
-            var cache = new Map();
             exports.code = function (source) {
                 if (!source.startsWith('`'))
                     return;
@@ -873,10 +866,7 @@ require = function e(t, n, r) {
                     ], whole = _a[0], keyword = _a[1];
                 if (!whole)
                     return;
-                if (!cache.has(keyword)) {
-                    void cache.set(keyword, new RegExp('^' + keyword));
-                }
-                var _b = loop_1.loop(combine_1.combine([plaintext_1.plaintext]), cache.get(keyword))(source.slice(keyword.length)) || [
+                var _b = loop_1.loop(combine_1.combine([plaintext_1.plaintext]), '^' + keyword)(source.slice(keyword.length)) || [
                         [],
                         ''
                     ], cs = _b[0], rest = _b[1];
@@ -884,6 +874,8 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('code');
                 void el.appendChild(inline_1.squash(cs));
+                if (el.textContent.trim() === '')
+                    return;
                 el.textContent = el.textContent.trim();
                 return [
                     [el],
@@ -918,6 +910,8 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('del');
                 void el.appendChild(inline_1.squash(cs));
+                if (el.textContent.trim() === '')
+                    return;
                 return [
                     [el],
                     rest.slice(2)
@@ -950,6 +944,8 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('em');
                 void el.appendChild(inline_1.squash(cs));
+                if (el.textContent.trim() === '')
+                    return;
                 return [
                     [el],
                     rest.slice(1)
@@ -971,8 +967,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var plaintext_1 = require('./plaintext');
             var syntax = /^(<([a-z]+)>)/i;
-            var inlinetags = Object.freeze('small|q|cite|code|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
-            var cache = new Map();
+            var inlinetags = Object.freeze('code|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             exports.html = function (source) {
                 if (!source.startsWith('<'))
                     return;
@@ -983,27 +978,26 @@ require = function e(t, n, r) {
                     ], whole = _a[0], opentag = _a[1], tagname = _a[2];
                 if (!whole)
                     return;
-                if (['wbr'].indexOf(tagname.toLowerCase()) !== -1)
+                if (inlinetags.indexOf(tagname) === -1)
+                    return;
+                if (tagname === 'wbr')
                     return [
-                        [document.createElement(tagname.toLowerCase())],
+                        [document.createElement(tagname)],
                         source.slice(opentag.length)
                     ];
-                if (inlinetags.indexOf(tagname.toLowerCase()) === -1)
-                    return;
-                if (!cache.has(tagname)) {
-                    void cache.set(tagname, new RegExp('^</' + tagname + '>', 'i'));
-                }
-                var _b = tagname.toLowerCase() === 'code' ? loop_1.loop(combine_1.combine([plaintext_1.plaintext]), cache.get(tagname))(source.slice(opentag.length)) || [
+                var _b = tagname === 'code' ? loop_1.loop(combine_1.combine([plaintext_1.plaintext]), '^</' + tagname + '>')(source.slice(opentag.length)) || [
                         [],
                         source.slice(opentag.length)
-                    ] : loop_1.loop(combine_1.combine([inline_1.inline]), cache.get(tagname))(source.slice(opentag.length)) || [
+                    ] : loop_1.loop(combine_1.combine([inline_1.inline]), '^</' + tagname + '>')(source.slice(opentag.length)) || [
                         [],
                         source.slice(opentag.length)
                     ], cs = _b[0], rest = _b[1];
                 var el = document.createElement(tagname);
                 void el.appendChild(inline_1.squash(cs));
+                if (el.textContent.trim() === '')
+                    return;
                 var closetag = '</' + tagname + '>';
-                return rest.slice(0, closetag.length).toLowerCase() === closetag ? [
+                return rest.slice(0, closetag.length) === closetag ? [
                     [el],
                     rest.slice(closetag.length)
                 ] : void 0;
@@ -1084,6 +1078,8 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('ins');
                 void el.appendChild(inline_1.squash(cs));
+                if (el.textContent.trim() === '')
+                    return;
                 return [
                     [el],
                     rest.slice(2)
@@ -1103,7 +1099,6 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
-            var image_1 = require('./image');
             var text_1 = require('./text');
             var url_1 = require('../string/url');
             var syntax = /^\[[^\n]*?\]\(/;
@@ -1113,13 +1108,24 @@ require = function e(t, n, r) {
                 var _a = source.startsWith('[]') ? [
                         [],
                         source.slice(1)
-                    ] : combine_1.combine([image_1.image])(source.slice(1)) || loop_1.loop(combine_1.combine([text_1.text]), /^\]\(|^\n/)(source.slice(1)) || [
+                    ] : loop_1.loop(combine_1.combine([inline_1.inline]), /^\]\(|^\n/)(source.slice(1)) || [
                         [],
                         ''
                     ], first = _a[0], next = _a[1];
                 if (!next.startsWith(']('))
                     return;
                 var children = inline_1.squash(first);
+                if (children.querySelectorAll('img,sup,sub,small,q,cite,mark,ruby,rt,rp,bdi,bdo,wbr').length !== children.querySelectorAll('*').length)
+                    return;
+                if (children.querySelector('img')) {
+                    if (children.childNodes.length > 1)
+                        return;
+                } else {
+                    if (children.childNodes.length > 0 && children.textContent.trim() === '')
+                        return;
+                    if (children.textContent !== children.textContent.trim())
+                        return;
+                }
                 var _b = loop_1.loop(text_1.text, /^\)|^\s(?!nofollow)/)(next) || [
                         [],
                         ''
@@ -1140,7 +1146,7 @@ require = function e(t, n, r) {
                 if (nofollow) {
                     void el.setAttribute('rel', 'nofollow');
                 }
-                void el.appendChild(children.querySelector('img') || document.createTextNode((children.textContent || url).trim()));
+                void el.appendChild(children.textContent || children.querySelector('img') ? children : document.createTextNode(url.trim()));
                 return [
                     [el],
                     rest.slice(1)
@@ -1152,7 +1158,6 @@ require = function e(t, n, r) {
             '../../combinator/loop': 5,
             '../inline': 22,
             '../string/url': 37,
-            './image': 28,
             './text': 35
         }
     ],
@@ -1206,6 +1211,8 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('strong');
                 void el.appendChild(inline_1.squash(cs));
+                if (el.textContent.trim() === '')
+                    return;
                 return [
                     [el],
                     rest.slice(2)
@@ -1239,7 +1246,9 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('sub');
                 void el.appendChild(inline_1.squash(cs));
-                if (el.textContent && el.textContent !== el.textContent.trim())
+                if (el.textContent.trim() === '')
+                    return;
+                if (el.textContent !== el.textContent.trim())
                     return;
                 return [
                     [el],
@@ -1275,7 +1284,9 @@ require = function e(t, n, r) {
                     return;
                 var el = document.createElement('sup');
                 void el.appendChild(inline_1.squash(cs));
-                if (el.textContent && el.textContent !== el.textContent.trim())
+                if (el.textContent.trim() === '')
+                    return;
+                if (el.textContent !== el.textContent.trim())
                     return;
                 return [
                     [el],
