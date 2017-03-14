@@ -16,7 +16,7 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     : loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\(|^\n/)(source.slice(1)) || [[], ''];
   if (!next.startsWith('](')) return;
   const children = squash(first);
-  if (children.querySelectorAll('img,sup,sub,small,q,cite,mark,ruby,rt,rp,bdi,bdo,wbr').length !== children.querySelectorAll('*').length) return;
+  if (children.querySelector('a, .annotation')) return;
   if (children.querySelector('img')) {
     if (children.childNodes.length > 1) return;
   }

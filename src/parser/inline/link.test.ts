@@ -46,6 +46,7 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[ ![](#)](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[ ![](#) ](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[![](#)![](#)](#)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[((#))](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[<wbr>](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](#)')), void 0);
     });

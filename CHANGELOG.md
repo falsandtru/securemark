@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.15.0
+
+- Enhance link parser.
+
 ## 0.14.0
 
 - Refine link parser.
