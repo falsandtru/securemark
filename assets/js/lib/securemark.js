@@ -112,7 +112,7 @@ require = function e(t, n, r) {
         },
         {
             './parser': 7,
-            './viewer/bind': 38
+            './viewer/bind': 39
         }
     ],
     7: [
@@ -137,7 +137,7 @@ require = function e(t, n, r) {
         {
             './combinator/loop': 5,
             './parser/block': 8,
-            './parser/segment': 36
+            './parser/segment': 37
         }
     ],
     8: [
@@ -244,7 +244,7 @@ require = function e(t, n, r) {
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/plaintext': 31
+            '../inline/plaintext': 32
         }
     ],
     10: [
@@ -589,7 +589,7 @@ require = function e(t, n, r) {
             '../../combinator/loop': 5,
             '../block': 8,
             '../inline': 22,
-            '../inline/plaintext': 31
+            '../inline/plaintext': 32
         }
     ],
     20: [
@@ -671,13 +671,24 @@ require = function e(t, n, r) {
                     ];
                     var col = result[0], rest = result[1];
                     source = rest;
-                    void cols.push(inline_1.squash(col));
+                    void cols.push(trim(inline_1.squash(col)));
                     if (source.match(rowend))
                         return [
                             cols,
                             source.slice(source.split('\n')[0].length + 1)
                         ];
                 }
+            }
+            function trim(n) {
+                if (!n.firstChild || !n.lastChild)
+                    return n;
+                if (n.firstChild === n.firstElementChild)
+                    return n;
+                n.firstChild.textContent = n.firstChild.textContent.replace(/^\s+/, '');
+                if (n.lastChild === n.lastElementChild)
+                    return n;
+                n.lastChild.textContent = n.lastChild.textContent.replace(/\s+$/, '');
+                return n;
             }
         },
         {
@@ -755,6 +766,8 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../combinator/combine');
+            var parenthesis_1 = require('./inline/parenthesis');
+            var annotation_1 = require('./inline/annotation');
             var insertion_1 = require('./inline/insertion');
             var deletion_1 = require('./inline/deletion');
             var strong_1 = require('./inline/strong');
@@ -764,10 +777,11 @@ require = function e(t, n, r) {
             var code_1 = require('./inline/code');
             var image_1 = require('./inline/image');
             var link_1 = require('./inline/link');
-            var annotation_1 = require('./inline/annotation');
             var html_1 = require('./inline/html');
             var text_1 = require('./inline/text');
             exports.inline = combine_1.combine([
+                parenthesis_1.parenthesis,
+                annotation_1.annotation,
                 insertion_1.insertion,
                 deletion_1.deletion,
                 strong_1.strong,
@@ -777,7 +791,6 @@ require = function e(t, n, r) {
                 code_1.code,
                 image_1.image,
                 link_1.link,
-                annotation_1.annotation,
                 html_1.html,
                 text_1.text
             ]);
@@ -807,10 +820,11 @@ require = function e(t, n, r) {
             './inline/image': 28,
             './inline/insertion': 29,
             './inline/link': 30,
-            './inline/strong': 32,
-            './inline/subscript': 33,
-            './inline/superscript': 34,
-            './inline/text': 35
+            './inline/parenthesis': 31,
+            './inline/strong': 33,
+            './inline/subscript': 34,
+            './inline/superscript': 35,
+            './inline/text': 36
         }
     ],
     23: [
@@ -821,7 +835,7 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var syntax = /^\(\([\s\S]+?\)\)/;
-            var closer = /^\)\)(?!\))/;
+            var closer = /^\)\)/;
             exports.annotation = function (source) {
                 if (!source.startsWith('((') || !source.match(syntax))
                     return;
@@ -887,7 +901,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './plaintext': 31
+            './plaintext': 32
         }
     ],
     25: [
@@ -1007,7 +1021,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './plaintext': 31
+            './plaintext': 32
         }
     ],
     28: [
@@ -1054,8 +1068,8 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../string/url': 37,
-            './text': 35
+            '../string/url': 38,
+            './text': 36
         }
     ],
     29: [
@@ -1115,7 +1129,7 @@ require = function e(t, n, r) {
                 if (!next.startsWith(']('))
                     return;
                 var children = inline_1.squash(first);
-                if (children.querySelectorAll('img,sup,sub,small,q,cite,mark,ruby,rt,rp,bdi,bdo,wbr').length !== children.querySelectorAll('*').length)
+                if (children.querySelector('a, .annotation'))
                     return;
                 if (children.querySelector('img')) {
                     if (children.childNodes.length > 1)
@@ -1157,11 +1171,51 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            '../string/url': 37,
-            './text': 35
+            '../string/url': 38,
+            './text': 36
         }
     ],
     31: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../inline');
+            var combine_1 = require('../../combinator/combine');
+            var loop_1 = require('../../combinator/loop');
+            var annotation_1 = require('./annotation');
+            var syntax = /^\([\s\S]*?\)/;
+            var closer = /^\)/;
+            exports.parenthesis = function (source) {
+                if (!source.startsWith('(') || !source.match(syntax))
+                    return;
+                if (source.startsWith('((')) {
+                    var r = annotation_1.annotation(source);
+                    if (r)
+                        return r;
+                }
+                var _a = source.startsWith('()') ? [
+                        [],
+                        source.slice(1)
+                    ] : loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(1)) || [
+                        [],
+                        ''
+                    ], cs = _a[0], rest = _a[1];
+                if (!rest.startsWith(')'))
+                    return;
+                return [
+                    Array.from(inline_1.squash([document.createTextNode('(')].concat(cs).concat([document.createTextNode(')')])).childNodes).slice(),
+                    rest.slice(1)
+                ];
+            };
+        },
+        {
+            '../../combinator/combine': 4,
+            '../../combinator/loop': 5,
+            '../inline': 22,
+            './annotation': 23
+        }
+    ],
+    32: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1191,7 +1245,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    32: [
+    33: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1225,7 +1279,7 @@ require = function e(t, n, r) {
             '../inline': 22
         }
     ],
-    33: [
+    34: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1260,10 +1314,10 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './text': 35
+            './text': 36
         }
     ],
-    34: [
+    35: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1298,10 +1352,10 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            './text': 35
+            './text': 36
         }
     ],
-    35: [
+    36: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1352,7 +1406,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    36: [
+    37: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1383,7 +1437,7 @@ require = function e(t, n, r) {
             '../parser/block/pretext': 19
         }
     ],
-    37: [
+    38: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1409,7 +1463,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    38: [
+    39: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1478,7 +1532,7 @@ require = function e(t, n, r) {
         },
         {
             '../parser': 7,
-            '../parser/segment': 36
+            '../parser/segment': 37
         }
     ],
     'securemark': [
