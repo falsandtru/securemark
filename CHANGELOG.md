@@ -4,6 +4,7 @@
 
 - Enhance link parser.
 - Improve annotation parser.
+- Improve table parser.
 
 ## 0.14.0
 

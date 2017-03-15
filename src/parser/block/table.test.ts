@@ -58,6 +58,11 @@ describe('Unit: parser/table', () => {
       assert.deepStrictEqual(inspect(parser('|h|h|\n|:-|-|\n|v|v|')), [['<table><thead><tr><td align="left">h</td><td align="">h</td></tr></thead><tbody><tr><td align="left">v</td><td align="">v</td></tr></tbody></table>'], '']);
     });
 
+    it('trim', () => {
+      assert.deepStrictEqual(inspect(parser('|  h  \n|-\n|  v  ')), [['<table><thead><tr><td align="">h</td></tr></thead><tbody><tr><td align="">v</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|  h  |\n|-\n|  v  |')), [['<table><thead><tr><td align="">h</td></tr></thead><tbody><tr><td align="">v</td></tr></tbody></table>'], '']);
+    });
+
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('|*h*|\n|-|\n|*v*|')), [['<table><thead><tr><td align=""><em>h</em></td></tr></thead><tbody><tr><td align=""><em>v</em></td></tr></tbody></table>'], '']);
     });

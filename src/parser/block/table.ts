@@ -72,7 +72,16 @@ function parse(source: string): [DocumentFragment[], string] | undefined {
     const [col, rest] = result;
     assert(rest.length < source.length);
     source = rest;
-    void cols.push(squash(col));
+    void cols.push(trim(squash(col)));
     if (source.match(rowend)) return [cols, source.slice(source.split('\n')[0].length + 1)];
   }
+}
+
+function trim(n: DocumentFragment): DocumentFragment {
+  if (!n.firstChild || !n.lastChild) return n;
+  if (n.firstChild === n.firstElementChild) return n;
+  n.firstChild.textContent = n.firstChild.textContent!.replace(/^\s+/, '');
+  if (n.lastChild === n.lastElementChild) return n;
+  n.lastChild.textContent = n.lastChild.textContent!.replace(/\s+$/, '');
+  return n;
 }
