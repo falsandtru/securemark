@@ -1,5 +1,7 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
 import { combine } from '../combinator/combine';
+import { parenthesis } from './inline/parenthesis';
+import { annotation } from './inline/annotation';
 import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
 import { strong } from './inline/strong';
@@ -9,10 +11,11 @@ import { subscript } from './inline/subscript';
 import { code } from './inline/code';
 import { image } from './inline/image';
 import { link } from './inline/link';
-import { annotation } from './inline/annotation';
 import { html } from './inline/html';
 import { text } from './inline/text';
 
+export import ParenthesisParser = InlineParser.ParenthesisParser;
+export import AnnotationParser = InlineParser.AnnotationParser;
 export import InlineParser = MarkdownParser.InlineParser;
 export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;
@@ -23,12 +26,13 @@ export import SubScriptParser = InlineParser.SubScriptParser;
 export import CodeParser = InlineParser.CodeParser;
 export import ImageParser = InlineParser.ImageParser;
 export import LinkParser = InlineParser.LinkParser;
-export import AnnotationParser = InlineParser.AnnotationParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import TextParser = InlineParser.TextParser;
 export import PlainTextParser = InlineParser.PlainTextParser;
 
 export const inline: InlineParser = combine<[
+  ParenthesisParser,
+  AnnotationParser,
   InsertionParser,
   DeletionParser,
   StrongParser,
@@ -38,10 +42,11 @@ export const inline: InlineParser = combine<[
   CodeParser,
   ImageParser,
   LinkParser,
-  AnnotationParser,
   HTMLParser,
   TextParser
 ], HTMLElement | Text>([
+  parenthesis,
+  annotation,
   insertion,
   deletion,
   strong,
@@ -51,7 +56,6 @@ export const inline: InlineParser = combine<[
   code,
   image,
   link,
-  annotation,
   html,
   text
 ]);

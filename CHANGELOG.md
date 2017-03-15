@@ -3,6 +3,7 @@
 ## 0.15.0
 
 - Enhance link parser.
+- Improve annotation parser.
 
 ## 0.14.0
 

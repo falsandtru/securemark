@@ -26,6 +26,7 @@ describe('Unit: parser/annotation', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation"><sup class="annotation">a</sup></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(("))')), [['<sup class="annotation">"</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((<a>))')), [['<sup class="annotation">&lt;a&gt;</sup>'], '']);

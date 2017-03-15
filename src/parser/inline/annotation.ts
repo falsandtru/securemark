@@ -6,7 +6,7 @@ import { loop } from '../../combinator/loop';
 type SubParsers = [InlineParser];
 
 const syntax = /^\(\([\s\S]+?\)\)/;
-const closer = /^\)\)(?!\))/;
+const closer = /^\)\)/;
 
 export const annotation: AnnotationParser = function (source: string): Result<HTMLElement, SubParsers> {
   if (!source.startsWith('((') || !source.match(syntax)) return;
