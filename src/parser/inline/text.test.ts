@@ -13,6 +13,7 @@ describe('Unit: parser/text', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
+      assert.deepStrictEqual(inspect(parser('a\nb')), [['a', ' ', 'b'], '']);
     });
 
     it('`', () => {
@@ -72,12 +73,13 @@ describe('Unit: parser/text', () => {
     });
 
     it('newlinw', () => {
-      assert.deepStrictEqual(inspect(parser('\n ')), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser(' \n')), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('\n\n')), [[], '']);
-      assert.deepStrictEqual(inspect(parser(' \n\n')), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('\n \n')), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('\n\n ')), [[' '], '']);
+      assert.deepStrictEqual(inspect(parser('\n')), [[' '], '']);
+      assert.deepStrictEqual(inspect(parser('\n ')), [[' ', ' '], '']);
+      assert.deepStrictEqual(inspect(parser(' \n')), [[' ', ' '], '']);
+      assert.deepStrictEqual(inspect(parser('\n\n')), [[' ', ' '], '']);
+      assert.deepStrictEqual(inspect(parser(' \n\n')), [[' ', ' ', ' '], '']);
+      assert.deepStrictEqual(inspect(parser('\n \n')), [[' ', ' ', ' '], '']);
+      assert.deepStrictEqual(inspect(parser('\n\n ')), [[' ', ' ', ' '], '']);
     });
 
     it('\\', () => {
@@ -87,13 +89,13 @@ describe('Unit: parser/text', () => {
       assert.deepStrictEqual(inspect(parser('\\\\\\\\')), [['\\', '\\'], '']);
       assert.deepStrictEqual(inspect(parser('\\0')), [['0'], '']);
       assert.deepStrictEqual(inspect(parser('\\a')), [['a'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\\a')), [['\\', 'a'], '']);
     });
 
     it('break', () => {
       assert.deepStrictEqual(inspect(parser('\\\n')), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na')), [['<br>', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['a', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('\\\\\n')), [['\\'], '']);
     });
 
     it('escape', () => {

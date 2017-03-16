@@ -22,7 +22,7 @@ describe('Unit: parser/annotation', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((ab))')), [['<sup class="annotation">ab</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((a\nb))')), [['<sup class="annotation">ab</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a\nb))')), [['<sup class="annotation">a b</sup>'], '']);
     });
 
     it('nest', () => {

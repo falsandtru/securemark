@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.0
+
+- Fix text parser.
+
 ## 0.15.0
 
 - Enhance link parser.

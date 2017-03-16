@@ -16,14 +16,14 @@ describe('Unit: parser/parenthesis', () => {
     it('empty', () => {
       assert.deepStrictEqual(inspect(parser('()')), [['()'], '']);
       assert.deepStrictEqual(inspect(parser('( )')), [['( )'], '']);
-      assert.deepStrictEqual(inspect(parser('(\n)')), [['()'], '']);
+      assert.deepStrictEqual(inspect(parser('(\n)')), [['( )'], '']);
       assert.deepStrictEqual(inspect(parser('(<wbr>)')), [['(', '<wbr>', ')'], '']);
     });
 
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('(a)')), [['(a)'], '']);
       assert.deepStrictEqual(inspect(parser('(ab)')), [['(ab)'], '']);
-      assert.deepStrictEqual(inspect(parser('(a\nb)')), [['(ab)'], '']);
+      assert.deepStrictEqual(inspect(parser('(a\nb)')), [['(a b)'], '']);
     });
 
     it('nest', () => {

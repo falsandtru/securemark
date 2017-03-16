@@ -19,7 +19,7 @@ export const text: TextParser = function (source: string): Result<HTMLElement | 
               return [[document.createTextNode(source.slice(1, 2))], source.slice(2)];
           }
         case '\n':
-          return [[], source.slice(1)];
+          return [[document.createTextNode(' ')], source.slice(1)];
         default:
           return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
       }

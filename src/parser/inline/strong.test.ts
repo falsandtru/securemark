@@ -22,7 +22,7 @@ describe('Unit: parser/strong', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('**a**')), [['<strong>a</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**ab**')), [['<strong>ab</strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('**a\nb**')), [['<strong>ab</strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**a\nb**')), [['<strong>a b</strong>'], '']);
     });
 
     it('nest', () => {

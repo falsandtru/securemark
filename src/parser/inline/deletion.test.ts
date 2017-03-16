@@ -22,7 +22,7 @@ describe('Unit: parser/deletion', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('~~a~~')), [['<del>a</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~ab~~')), [['<del>ab</del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~a\nb~~')), [['<del>ab</del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~a\nb~~')), [['<del>a b</del>'], '']);
     });
 
     it('nest', () => {

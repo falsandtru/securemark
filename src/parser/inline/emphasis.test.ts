@@ -20,7 +20,7 @@ describe('Unit: parser/emphasis', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('*a*')), [['<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*ab*')), [['<em>ab</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*a\nb*')), [['<em>ab</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a\nb*')), [['<em>a b</em>'], '']);
     });
 
     it('nest', () => {

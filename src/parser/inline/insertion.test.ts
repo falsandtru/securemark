@@ -22,7 +22,7 @@ describe('Unit: parser/insertion', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('++a++')), [['<ins>a</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++ab++')), [['<ins>ab</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\nb++')), [['<ins>ab</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++a\nb++')), [['<ins>a b</ins>'], '']);
     });
 
     it('nest', () => {
