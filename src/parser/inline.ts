@@ -1,7 +1,7 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
 import { combine } from '../combinator/combine';
-import { parenthesis } from './inline/parenthesis';
 import { annotation } from './inline/annotation';
+import { parenthesis } from './inline/parenthesis';
 import { insertion } from './inline/insertion';
 import { deletion } from './inline/deletion';
 import { strong } from './inline/strong';
@@ -14,8 +14,8 @@ import { link } from './inline/link';
 import { html } from './inline/html';
 import { text } from './inline/text';
 
-export import ParenthesisParser = InlineParser.ParenthesisParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
+export import ParenthesisParser = InlineParser.ParenthesisParser;
 export import InlineParser = MarkdownParser.InlineParser;
 export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;
@@ -31,8 +31,8 @@ export import TextParser = InlineParser.TextParser;
 export import PlainTextParser = InlineParser.PlainTextParser;
 
 export const inline: InlineParser = combine<[
-  ParenthesisParser,
   AnnotationParser,
+  ParenthesisParser,
   InsertionParser,
   DeletionParser,
   StrongParser,
@@ -45,8 +45,8 @@ export const inline: InlineParser = combine<[
   HTMLParser,
   TextParser
 ], HTMLElement | Text>([
-  parenthesis,
   annotation,
+  parenthesis,
   insertion,
   deletion,
   strong,

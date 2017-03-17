@@ -120,8 +120,8 @@ export namespace MarkdownParser {
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
-      InlineParser.ParenthesisParser,
       InlineParser.AnnotationParser,
+      InlineParser.ParenthesisParser,
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
       InlineParser.StrongParser,
@@ -136,17 +136,17 @@ export namespace MarkdownParser {
     ]> {
   }
   export namespace InlineParser {
-    export interface ParenthesisParser extends
-      // (abc)
-      Markdown<'parenthesis'>,
-      Parser<HTMLElement | Text, [
-        InlineParser
-      ]> {
-    }
     export interface AnnotationParser extends
       // ((abc))
       Markdown<'annotation'>,
       Parser<HTMLElement, [
+        InlineParser
+      ]> {
+    }
+    export interface ParenthesisParser extends
+      // (abc)
+      Markdown<'parenthesis'>,
+      Parser<HTMLElement | Text, [
         InlineParser
       ]> {
     }

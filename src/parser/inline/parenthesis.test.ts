@@ -27,15 +27,11 @@ describe('Unit: parser/parenthesis', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('((a))')), [['<sup class="annotation">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(")')), [['(")'], '']);
       assert.deepStrictEqual(inspect(parser('(<a>)')), [['(&lt;a&gt;)'], '']);
       assert.deepStrictEqual(inspect(parser('(`<wbr>`)')), [['(', '<code>&lt;wbr&gt;</code>', ')'], '']);
       assert.deepStrictEqual(inspect(parser('([](#))')), [['(', '<a href="#">#</a>', ')'], '']);
-    });
-
-    it('triple', () => {
-      assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((a))')), [['((a))'], '']);
     });
 
   });
