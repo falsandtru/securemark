@@ -2,6 +2,7 @@
 
 ## 0.16.0
 
+- Improve link parser.
 - Fix text parser.
 
 ## 0.15.0

@@ -25,6 +25,12 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[<img>](#)')), [['<a href="#">&lt;img&gt;</a>'], '']);
     })
 
+    it('fishing', () => {
+      assert.deepStrictEqual(inspect(parser('[http://host](http://evil)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[ http://host ](http://evil)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[_http://host](http://evil)')), void 0);
+    });
+
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
       assert.deepStrictEqual(inspect(parser('[]()')), void 0);
@@ -48,6 +54,7 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[![](#)![](#)](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[((#))](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[<wbr>](#)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[http://host](http://host)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](#)')), void 0);
     });
 
@@ -63,6 +70,9 @@ describe('Unit: parser/link', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('[\\[](#)')), [['<a href="#">[</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[\\]](#)')), [['<a href="#">]</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](#()')), [['<a href="#(">#(</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](#\\))')), [['<a href="#)">#)</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~#~](#)')), [['<a href="#"><sub>#</sub></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[<wbr>"]("?"#")')), [['<a href="%22?%22#%22"><wbr>"</a>'], '']);
     });

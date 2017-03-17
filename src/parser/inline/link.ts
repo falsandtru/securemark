@@ -24,10 +24,11 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
     if (children.textContent !== children.textContent!.trim()) return;
   }
-  const [[, , ...second], rest] = loop(text, /^\)|^\s(?!nofollow)/)(next) || [[], ''];
+  const [second, rest] = loop(text, /^\)|^\s(?!nofollow)/)(next.slice(2)) || [[], ''];
   if (!rest.startsWith(')')) return;
   const [INSECURE_URL, nofollow] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
   const url = sanitize(INSECURE_URL);
+  assert(url === url.trim());
   if (url === '') return;
   assert(nofollow === void 0 || nofollow === 'nofollow');
   const el = document.createElement('a');
@@ -38,6 +39,7 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
   if (nofollow) {
     void el.setAttribute('rel', 'nofollow');
   }
-  void el.appendChild(children.textContent || children.querySelector('img') ? children : document.createTextNode(url.trim()));
+  if (children.textContent!.match(/https?:\/\//i) && children.textContent !== url) return;
+  void el.appendChild(children.textContent || children.querySelector('img') ? children : document.createTextNode(url));
   return [[el], rest.slice(1)];
 };
