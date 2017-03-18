@@ -33,16 +33,6 @@ describe('Unit: parser/pretext', () => {
       assert.deepStrictEqual(inspect(parser('\\\n')), [['\\', '\n'], '']);
     });
 
-    it('escape', () => {
-      assert.deepStrictEqual(inspect(parser('\\!')), [['\\!'], '']);
-      assert.deepStrictEqual(inspect(parser('\\[')), [['\\['], '']);
-      assert.deepStrictEqual(inspect(parser('\\~')), [['\\~'], '']);
-      assert.deepStrictEqual(inspect(parser('\\*')), [['\\*'], '']);
-      assert.deepStrictEqual(inspect(parser('\\`')), [['\\', '`'], '']);
-      assert.deepStrictEqual(inspect(parser('\\<')), [['\\<'], '']);
-      assert.deepStrictEqual(inspect(parser('\\\\!')), [['\\\\!'], '']);
-    });
-
   });
 
 });
