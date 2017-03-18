@@ -19,7 +19,7 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
-    if (line.match(syntax)) {
+    if (line.search(syntax) === 0) {
       const text = line.slice(line.indexOf('.') + 1).trim();
       const li = el.appendChild(document.createElement('li'));
       void li.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(text) || [[]])[0]));

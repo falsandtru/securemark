@@ -19,7 +19,7 @@ export const pretext: PreTextParser = function (source: string): Result<HTMLPreE
   source = source.slice(source.indexOf('\n') + 1);
   while (true) {
     const line = source.split('\n', 1)[0];
-    if (line.match(`^${keyword}\s*(?:\n|$)`)) break;
+    if (line.search(`^${keyword}\s*(?:\n|$)`) === 0) break;
     void el.appendChild(squash((loop(combine<SubParsers, Text>([plaintext]))(line + '\n') || [[]])[0]));
     source = source.slice(line.length + 1);
     if (source === '') return;

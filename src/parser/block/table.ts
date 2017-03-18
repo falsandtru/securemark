@@ -9,7 +9,7 @@ const syntax = /^(\|[^\n]*)+?\s*?\n/;
 const align = /^:?-+:?$/;
 
 export const table: TableParser = function (source: string): Result<HTMLTableElement, SubParsers> {
-  if (!source.match(syntax)) return;
+  if (source.search(syntax) !== 0) return;
   const table = document.createElement('table');
   const [headers, hrest] = parse(source) || [[], source];
   if (hrest.length === source.length) return;
@@ -17,7 +17,7 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
   const [aligns_, arest] = parse(source) || [[], source];
   if (arest.length === source.length) return;
   source = arest;
-  if (aligns_.some(e => !e.textContent || !e.textContent!.match(align))) return;
+  if (aligns_.some(e => !e.textContent || e.textContent!.search(align) !== 0)) return;
   const aligns = headers
     .map((_, i) => (aligns_[i] || aligns_[aligns_.length - 1]).textContent!)
     .map(s =>
@@ -73,7 +73,7 @@ function parse(source: string): [DocumentFragment[], string] | undefined {
     assert(rest.length < source.length);
     source = rest;
     void cols.push(trim(squash(col)));
-    if (source.match(rowend)) return [cols, source.slice(source.split('\n')[0].length + 1)];
+    if (source.search(rowend) === 0) return [cols, source.slice(source.split('\n')[0].length + 1)];
   }
 }
 

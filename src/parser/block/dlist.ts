@@ -32,7 +32,7 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
         source = source.slice(line.length + 1);
         while (true) {
           const line = source.split('\n', 1)[0];
-          if (line.trim() === '' || line.match(separator)) break;
+          if (line.trim() === '' || line.search(separator) === 0) break;
           void texts.push(line);
           source = source.slice(line.length + 1);
         }

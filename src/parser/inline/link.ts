@@ -10,7 +10,7 @@ type SubParsers = [InlineParser];
 const syntax = /^\[[^\n]*?\]\(/;
 
 export const link: LinkParser = function (source: string): Result<HTMLAnchorElement, SubParsers> {
-  if (!source.startsWith('[') || !source.match(syntax)) return;
+  if (!source.startsWith('[') || source.search(syntax) !== 0) return;
   const [[, ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\(|^\n/)(` ${source.slice(1)}`) || [[], ''];
   if (!next.startsWith('](')) return;
   const children = squash(first);

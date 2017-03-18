@@ -21,7 +21,7 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   const lines: string[] = [];
   while (true) {
     const line = source.split('\n', 1)[0];
-    if (line.match(`^${keyword}\s*(?:\n|$)`)) break;
+    if (line.search(`^${keyword}\s*(?:\n|$)`) === 0) break;
     void lines.push(line + '\n');
     source = source.slice(line.length + 1);
     if (source === '') return;
