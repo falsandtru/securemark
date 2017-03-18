@@ -14,6 +14,7 @@ export function bind(el: HTMLElement, source: string = ''): (source: string) => 
     ), el);
   return (source: string) => {
     const os = pairs.map(([s]) => s);
+    if (source === os.join('')) return [];
     const ns = segment(source);
     let i = 0;
     for (; i < os.length; ++i) {
@@ -23,7 +24,6 @@ export function bind(el: HTMLElement, source: string = ''): (source: string) => 
     for (; i + j < os.length && i + j < ns.length; ++j) {
       if (os[os.length - j - 1] !== ns[ns.length - j - 1]) break;
     }
-    if (os.length === i && ns.length === i) return [];
     void pairs.splice(i, os.length - j - i)
       .forEach(([, es]) =>
         void es
