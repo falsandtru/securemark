@@ -8,8 +8,8 @@ const escape = /^[0-9a-zA-Z@]@/;
 
 export const account: AutolinkParser.AccountParser = function (source: string): Result<HTMLSpanElement | Text, SubParsers> {
   if (source.search(escape) === 0) {
-    const [txt] = source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [source];
-    return [[document.createTextNode(txt)], source.slice(txt.length)];
+    const [frag] = source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [source];
+    return [[document.createTextNode(frag)], source.slice(frag.length)];
   }
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;
