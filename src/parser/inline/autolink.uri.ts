@@ -16,5 +16,5 @@ export const uri: AutolinkParser.UriParser = function (source: string): Result<H
   if (source.search(syntax) !== 0) return;
   const [cs, rest] = loop(combine<[TextParser], HTMLElement | Text>([text]), closer)(source) || [[], ''];
   assert(!squash(cs).querySelector('*'));
-  return link(`[](${source[0] === 't' ? 'h' : ''}${source.slice(0, source.length - rest.length)}${source[0] === 't' ? ' nofollow' : ''})${rest}`);
+  return link(`[](${source.startsWith('h') ? '' : 'h'}${source.slice(0, source.length - rest.length)}${source.startsWith('h') ? '' : ' nofollow'})${rest}`);
 };
