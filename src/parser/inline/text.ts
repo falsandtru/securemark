@@ -2,6 +2,7 @@
 import { TextParser } from '../inline';
 
 const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[0-9a-zA-Z]?h?ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]/;
+const linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;
 
 export const text: TextParser = function (source: string): Result<HTMLElement | Text, never> {
   if (source.length === 0) return;
@@ -14,7 +15,7 @@ export const text: TextParser = function (source: string): Result<HTMLElement | 
         case '\\':
           switch (source[1]) {
             case '\n':
-              return [[document.createElement('br')], source.slice(2)];
+              return [[document.createElement('br')], source.replace(linebreaks, '')];
             default:
               return [[document.createTextNode(source.slice(1, 2))], source.slice(2)];
           }

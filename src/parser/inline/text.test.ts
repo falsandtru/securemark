@@ -134,8 +134,18 @@ describe('Unit: parser/text', () => {
 
     it('break', () => {
       assert.deepStrictEqual(inspect(parser('\\\n')), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n ')), [['<br>', ' '], '']);
       assert.deepStrictEqual(inspect(parser('\\\na')), [['<br>', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n\\\n')), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n \\\n')), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n\\ \\\n')), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n\\\n ')), [['<br>', ' '], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n\\\n\\\n')), [['<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n\\\\\\\n')), [['<br>', '\\', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['a', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\\\nb\\\n')), [['a', '<br>', 'b', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\\\n\\\nb')), [['a', '<br>', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\\\\\n')), [['\\', '<br>'], '']);
     });
 
     it('escape', () => {

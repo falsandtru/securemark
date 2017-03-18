@@ -5,6 +5,7 @@
 - Add autolink syntax.
 - Improve link parser.
 - Fix text parser.
+- Squash multiple linebreaks.
 
 ## 0.15.0
 
