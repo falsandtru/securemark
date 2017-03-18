@@ -36,6 +36,7 @@ https://falsandtru.github.io/securemark/
 - HorizontalRule (---)
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
 - Inline html tags (\<smal>, \<ruby>, \<code>, ...)
+- Autolink (https://host, ttps://host, @account)
 
 ## Browser
 

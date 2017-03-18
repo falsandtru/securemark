@@ -39,18 +39,8 @@ describe('Unit: parser/pretext', () => {
       assert.deepStrictEqual(inspect(parser('\\~')), [['\\~'], '']);
       assert.deepStrictEqual(inspect(parser('\\*')), [['\\*'], '']);
       assert.deepStrictEqual(inspect(parser('\\`')), [['\\', '`'], '']);
-      assert.deepStrictEqual(inspect(parser('\\<')), [['\\&lt;'], '']);
+      assert.deepStrictEqual(inspect(parser('\\<')), [['\\<'], '']);
       assert.deepStrictEqual(inspect(parser('\\\\!')), [['\\\\!'], '']);
-    });
-
-    it('tag', () => {
-      assert.deepStrictEqual(inspect(parser('<')), [['&lt;'], '']);
-      assert.deepStrictEqual(inspect(parser('<<')), [['&lt;&lt;'], '']);
-      assert.deepStrictEqual(inspect(parser('<a')), [['&lt;a'], '']);
-      assert.deepStrictEqual(inspect(parser('<a>')), [['&lt;a&gt;'], '']);
-      assert.deepStrictEqual(inspect(parser('<a></a>')), [['&lt;a&gt;&lt;/a&gt;'], '']);
-      assert.deepStrictEqual(inspect(parser('<a>a')), [['&lt;a&gt;a'], '']);
-      assert.deepStrictEqual(inspect(parser('<a>a</a>')), [['&lt;a&gt;a&lt;/a&gt;'], '']);
     });
 
   });

@@ -12,6 +12,8 @@ import { code } from './inline/code';
 import { image } from './inline/image';
 import { link } from './inline/link';
 import { html } from './inline/html';
+import { htmlentity } from './inline/htmlentity';
+import { autolink } from './inline/autolink';
 import { text } from './inline/text';
 
 export import AnnotationParser = InlineParser.AnnotationParser;
@@ -27,6 +29,8 @@ export import CodeParser = InlineParser.CodeParser;
 export import ImageParser = InlineParser.ImageParser;
 export import LinkParser = InlineParser.LinkParser;
 export import HTMLParser = InlineParser.HTMLParser;
+export import HTMLEntityParser = InlineParser.HTMLEntityParser;
+export import AutolinkParser = InlineParser.AutolinkParser;
 export import TextParser = InlineParser.TextParser;
 export import PlainTextParser = InlineParser.PlainTextParser;
 
@@ -43,6 +47,8 @@ export const inline: InlineParser = combine<[
   ImageParser,
   LinkParser,
   HTMLParser,
+  HTMLEntityParser,
+  AutolinkParser,
   TextParser
 ], HTMLElement | Text>([
   annotation,
@@ -57,12 +63,14 @@ export const inline: InlineParser = combine<[
   image,
   link,
   html,
+  htmlentity,
+  autolink,
   text
 ]);
 
-export function squash<N extends HTMLElement | Text>(nodes: N[]): DocumentFragment {
+export function squash(nodes: Node[] | NodeList): DocumentFragment {
   const frag = document.createDocumentFragment();
-  for (const curr of nodes) {
+  for (const curr of Array.from(nodes)) {
     const prev = frag.lastChild;
     if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
       prev.textContent += curr.textContent!;

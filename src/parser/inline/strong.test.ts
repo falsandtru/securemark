@@ -27,8 +27,7 @@ describe('Unit: parser/strong', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('**<a>**')), [['<strong>&lt;a&gt;</strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('**`<wbr>`**')), [['<strong><code>&lt;wbr&gt;</code></strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('**[](#)**')), [['<strong><a href="#">#</a></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**`a`**')), [['<strong><code>a</code></strong>'], '']);
     });
 
     it('triple', () => {

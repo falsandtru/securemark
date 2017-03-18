@@ -2,11 +2,12 @@
 
 export function inspect(r: Result<HTMLElement | Text, any>): [string[], string] | undefined {
   return r
-    ? [r[0].map(n => {
-        const el = document.createElement('div');
-        void el.appendChild(n);
-        //assert(el.innerHTML === (el.innerHTML = el.innerHTML, el.innerHTML));
-        return el.innerHTML;
-      }), r[1]]
+    ? [
+        r[0].map(n =>
+        n instanceof Text
+            ? n.textContent!
+            : n.outerHTML),
+        r[1]
+      ]
     : r;
 }

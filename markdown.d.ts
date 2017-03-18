@@ -132,6 +132,8 @@ export namespace MarkdownParser {
       InlineParser.ImageParser,
       InlineParser.LinkParser,
       InlineParser.HTMLParser,
+      InlineParser.HTMLEntityParser,
+      InlineParser.AutolinkParser,
       InlineParser.TextParser
     ]> {
   }
@@ -221,6 +223,36 @@ export namespace MarkdownParser {
       ] | [
         PlainTextParser
       ]> {
+    }
+    export interface HTMLEntityParser extends
+      // &copy;
+      Markdown<'htmlentity'>,
+      Parser<Text, [
+        never
+      ]> {
+    }
+    export interface AutolinkParser extends
+      Markdown<'autolink'>,
+      Parser<HTMLAnchorElement | HTMLSpanElement | Text, [
+        AutolinkParser.UriParser,
+        AutolinkParser.AccountParser
+      ]> {
+    }
+    export namespace AutolinkParser {
+      export interface UriParser extends
+        // https://host
+        Markdown<'uri'>,
+        Parser<HTMLAnchorElement | Text, [
+          InlineParser
+        ]> {
+      }
+      export interface AccountParser extends
+        // @account
+        Markdown<'account'>,
+        Parser<HTMLSpanElement | Text, [
+          never
+        ]> {
+      }
     }
     export interface TextParser extends
       // abc

@@ -27,8 +27,7 @@ describe('Unit: parser/deletion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('~~<a>~~')), [['<del>&lt;a&gt;</del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~`<wbr>`~~')), [['<del><code>&lt;wbr&gt;</code></del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~[](#)~~')), [['<del><a href="#">#</a></del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~`a`~~')), [['<del><code>a</code></del>'], '']);
     });
 
     it('triple', () => {

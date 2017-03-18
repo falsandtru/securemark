@@ -2,6 +2,7 @@
 
 ## 0.16.0
 
+- Add autolink syntax.
 - Improve link parser.
 - Fix text parser.
 

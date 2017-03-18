@@ -27,8 +27,7 @@ describe('Unit: parser/insertion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('++<a>++')), [['<ins>&lt;a&gt;</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++`<wbr>`++')), [['<ins><code>&lt;wbr&gt;</code></ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++[](#)++')), [['<ins><a href="#">#</a></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++`a`++')), [['<ins><code>a</code></ins>'], '']);
     });
 
   });
