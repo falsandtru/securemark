@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.0
+
+- Extend ulist syntax.
+
 ## 0.16.0
 
 - Add autolink syntax.
