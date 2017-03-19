@@ -1,17 +1,18 @@
 ﻿import { parse } from '../parser';
 import { segment } from '../parser/segment';
 
-export function bind(el: HTMLElement, source: string = ''): (source: string) => HTMLElement[] {
+export function bind(node: Node, source: string = ''): (source: string) => HTMLElement[] {
+  assert(node.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
   void segment(source)
-    .reduce((el, s) => (
-      void pairs.push([s, Array.from<HTMLElement>(<any>parse(s).childNodes)]),
+    .reduce((node, s) => (
+      void pairs.push([s, <HTMLElement[]>Array.from(parse(s).childNodes)]),
       void pairs[pairs.length - 1][1]
         .forEach(e =>
-          void el.appendChild(e)),
-      el
-    ), el);
+          void node.appendChild(e)),
+      node
+    ), node);
   return (source: string) => {
     const os = pairs.map(([s]) => s);
     if (source === os.join('')) return [];
@@ -34,9 +35,9 @@ export function bind(el: HTMLElement, source: string = ''): (source: string) => 
       .map<Pair>(s =>
         [
           s,
-          Array.from<HTMLElement>(<any>parse(s).childNodes)
+          Array.from(parse(s).childNodes)
             .map(e =>
-              <HTMLElement>el.insertBefore(e, ref))
+              <HTMLElement>node.insertBefore(e, ref))
         ]);
     void pairs.splice(i, 0, ...ps);
     return ps

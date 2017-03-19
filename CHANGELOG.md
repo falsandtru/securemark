@@ -3,6 +3,7 @@
 ## 0.17.0
 
 - Extend ulist syntax.
+- Extend bind function signature.
 
 ## 0.16.0
 

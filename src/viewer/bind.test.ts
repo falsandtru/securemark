@@ -6,6 +6,11 @@ describe('Unit: viewer/bind', () => {
       return es.map(e => e.outerHTML);
     }
 
+    it('target', () => {
+      assert(bind(document.createElement('div')));
+      assert(bind(document.createDocumentFragment()));
+    });
+
     it('empty', () => {
       const el = document.createElement('div');
       bind(el);
