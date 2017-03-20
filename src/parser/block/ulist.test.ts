@@ -24,17 +24,21 @@ describe('Unit: parser/ulist', () => {
     });
 
     it('single', () => {
+      // pending
       assert.deepStrictEqual(inspect(parser('-')), [['<ul><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- ')), [['<ul><li></li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- -')), [['<ul><li>-</li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- -\n')), [['<ul><li>-</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('-\n')), [['<ul><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('+')), [['<ul><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('*')), [['<ul><li></li></ul>'], '']);
+      // filled
+      assert.deepStrictEqual(inspect(parser('- -')), [['<ul><li>-</li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- -\n')), [['<ul><li>-</li></ul>'], '']);
     });
 
     it('multiple', () => {
+      // pending
       assert.deepStrictEqual(inspect(parser('-\n-')), [['<ul><li></li><li></li></ul>'], '']);
+      // filled
       assert.deepStrictEqual(inspect(parser('- 1\n- 2')), [['<ul><li>1</li><li>2</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n- 2\n- 3')), [['<ul><li>1</li><li>2</li><li>3</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n\n- 2')), [['<ul><li>1</li></ul>', '<ul><li>2</li></ul>'], '']);
@@ -46,7 +50,6 @@ describe('Unit: parser/ulist', () => {
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n - 3')), [['<ul><li>1<ul><li>2</li><li>3</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n  - 3')), [['<ul><li>1<ul><li>2<ul><li>3</li></ul></li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n- 3')), [['<ul><li>1<ul><li>2</li></ul></li><li>3</li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- *1*')), [['<ul><li><em>1</em></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n + 2')), [['<ul><li>1<ul><li>2</li></ul></li></ul>'], '']);
     });
 
