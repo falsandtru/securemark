@@ -5,9 +5,9 @@ import { loop } from '../../combinator/loop';
 import { PlainTextParser, squash } from '../inline';
 import { plaintext } from '../inline/plaintext';
 
-type SubParsers = [BlockquoteParser, PlainTextParser];
+type SubParsers = [PlainTextParser];
 
-const syntax = /^>+/;
+const syntax = /^>+(?=[ \n]|$)/;
 
 export const blockquote: BlockquoteParser = function (source: string): Result<HTMLQuoteElement, SubParsers> {
   let [indent] = source.match(syntax) || [''];
@@ -15,7 +15,8 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
   const top = document.createElement('blockquote');
   let bottom = indent.split('').slice(1)
     .reduce(p =>
-      p.appendChild(document.createElement('blockquote')), top);
+      p.appendChild(document.createElement('blockquote'))
+    , top);
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
@@ -23,23 +24,26 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
     if (diff > 0) {
       bottom = line.slice(0, diff).split('')
         .reduce(p =>
-          p.appendChild(document.createElement('blockquote')), bottom);
+          p.appendChild(document.createElement('blockquote'))
+        , bottom);
     }
     if (diff < 0) {
       bottom = line.slice(0, -diff).split('')
         .reduce(p =>
-          <HTMLQuoteElement>p.parentElement!, bottom);
+          <HTMLQuoteElement>p.parentElement!
+        , bottom);
     }
+    assert(indent.length + diff > 0);
+    indent = indent[0].repeat(indent.length + diff);
     if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
       void bottom.appendChild(document.createElement('br'));
     }
-    void bottom.appendChild(
-      squash((loop(combine<[SubParsers[1]], HTMLElement | Text>([plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
-    if (!bottom.lastChild || !bottom.lastChild!.textContent) return;
-    indent = indent[0].repeat(indent.length + diff);
+    const text = line.split(' ', 1)[0] === indent
+      ? line.trim().slice(indent.length + 1).replace(/ /g, String.fromCharCode(160))
+      : `>${line}`.trim().slice(1).replace(/ /g, String.fromCharCode(160));
+    void bottom.appendChild(squash((loop(combine<SubParsers, Text>([plaintext]))(text) || [[document.createTextNode('')]])[0]));
+    if (bottom.childNodes.length === 1 && bottom.firstChild!.textContent!.trim() === '') return;
     source = source.slice(line.length + 1);
   }
-  return bottom.childNodes.length === 0
-    ? void 0
-    : consumeBlockEndEmptyLine<HTMLQuoteElement, SubParsers>([top], source);
+  return consumeBlockEndEmptyLine<HTMLQuoteElement, SubParsers>([top], source);
 };

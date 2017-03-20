@@ -88,7 +88,6 @@ export namespace MarkdownParser {
       // > abc
       Markdown<'blockquote'>,
       Parser<HTMLQuoteElement, [
-        BlockquoteParser,
         InlineParser.PlainTextParser
       ]> {
     }

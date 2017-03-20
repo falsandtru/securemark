@@ -2,6 +2,7 @@
 
 ## 0.17.0
 
+- Fix blockquote syntax.
 - Extend ulist syntax.
 - Extend bind function signature.
 
