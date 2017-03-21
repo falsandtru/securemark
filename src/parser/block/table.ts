@@ -41,12 +41,10 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
     if (line.trim() === '') break;
     const [cols, rest] = parse(line) || [[], line];
     if (rest.length !== 0) return;
-    void append(cols, table, aligns);
+    void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
     source = source.slice(line.length + 1);
   }
-  return table.lastElementChild!.children.length === 0
-    ? void 0
-    : consumeBlockEndEmptyLine<HTMLTableElement, SubParsers>([table], source);
+  return consumeBlockEndEmptyLine<HTMLTableElement, SubParsers>([table], source);
 };
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
