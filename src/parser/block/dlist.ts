@@ -45,7 +45,6 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
   if (el.lastElementChild && el.lastElementChild!.tagName.toLowerCase() === 'dt') {
     void el.appendChild(document.createElement('dd'));
   }
-  return el.children.length === 0
-    ? void 0
-    : consumeBlockEndEmptyLine<HTMLDListElement, SubParsers>([el], source);
+  assert(el.children.length > 0);
+  return consumeBlockEndEmptyLine<HTMLDListElement, SubParsers>([el], source);
 };

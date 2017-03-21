@@ -37,7 +37,6 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
       continue;
     }
   }
-  return el.children.length === 0
-    ? void 0
-    : consumeBlockEndEmptyLine<HTMLOListElement, SubParsers>([el], source);
+  assert(el.children.length > 0);
+  return consumeBlockEndEmptyLine<HTMLOListElement, SubParsers>([el], source);
 };
