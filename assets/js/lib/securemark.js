@@ -203,7 +203,7 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
             var plaintext_1 = require('../inline/plaintext');
-            var syntax = /^>+/;
+            var syntax = /^>+(?=[ \n]|$)/;
             exports.blockquote = function (source) {
                 var indent = (source.match(syntax) || [''])[0];
                 if (!indent)
@@ -227,16 +227,17 @@ require = function e(t, n, r) {
                             return p.parentElement;
                         }, bottom);
                     }
+                    indent = indent[0].repeat(indent.length + diff);
                     if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
                         void bottom.appendChild(document.createElement('br'));
                     }
-                    void bottom.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(line[0] === '>' ? line.slice(indent.length + diff).trim() : line.trim()) || [[]])[0]));
-                    if (!bottom.lastChild || !bottom.lastChild.textContent)
+                    var text = line.split(' ', 1)[0] === indent ? line.trim().slice(indent.length + 1).replace(/ /g, String.fromCharCode(160)) : ('>' + line).trim().slice(1).replace(/ /g, String.fromCharCode(160));
+                    void bottom.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(text) || [[document.createTextNode('')]])[0]));
+                    if (bottom.childNodes.length === 1 && bottom.firstChild.textContent.trim() === '')
                         return;
-                    indent = indent[0].repeat(indent.length + diff);
                     source = source.slice(line.length + 1);
                 }
-                return bottom.childNodes.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([top], source);
+                return block_1.consumeBlockEndEmptyLine([top], source);
             };
         },
         {
@@ -292,7 +293,7 @@ require = function e(t, n, r) {
                 if (el.lastElementChild && el.lastElementChild.tagName.toLowerCase() === 'dt') {
                     void el.appendChild(document.createElement('dd'));
                 }
-                return el.children.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([el], source);
+                return block_1.consumeBlockEndEmptyLine([el], source);
             };
         },
         {
@@ -408,7 +409,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var syntax = /^\s*/;
             function indent(source) {
-                var indent = (source.split('\n', 1)[0].match(syntax) || [''])[0];
+                var indent = (source.match(syntax) || [''])[0];
                 if (indent === '')
                     return [
                         '',
@@ -506,7 +507,7 @@ require = function e(t, n, r) {
                         continue;
                     }
                 }
-                return el.children.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([el], source);
+                return block_1.consumeBlockEndEmptyLine([el], source);
             };
         },
         {
@@ -633,20 +634,29 @@ require = function e(t, n, r) {
                     return i > 1 ? aligns[1] : aligns[i] === 'right' ? 'center' : aligns[i];
                 }));
                 void table.appendChild(document.createElement('tbody'));
-                while (true) {
+                var _loop_1 = function () {
                     var line = source.split('\n', 1)[0];
                     if (line.trim() === '')
-                        break;
-                    var _c = parse(line) || [
+                        return 'break';
+                    var _a = parse(line) || [
                             [],
                             line
-                        ], cols = _c[0], rest = _c[1];
+                        ], cols = _a[0], rest = _a[1];
                     if (rest.length !== 0)
-                        return;
-                    void append(cols, table, aligns);
+                        return { value: void 0 };
+                    void append(headers.map(function (_, i) {
+                        return cols[i] || document.createDocumentFragment();
+                    }), table, aligns);
                     source = source.slice(line.length + 1);
+                };
+                while (true) {
+                    var state_1 = _loop_1();
+                    if (typeof state_1 === 'object')
+                        return state_1.value;
+                    if (state_1 === 'break')
+                        break;
                 }
-                return table.lastElementChild.children.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([table], source);
+                return block_1.consumeBlockEndEmptyLine([table], source);
             };
             function append(cols, table, aligns) {
                 return void cols.map(function (col, i) {
@@ -707,12 +717,13 @@ require = function e(t, n, r) {
             var olist_1 = require('./olist');
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
-            var syntax = /^-(?:\s|$)/;
+            var syntax = /^([-+*])(?:\s|$)/;
+            var content = /^(\[[ x]\](?: +|$))?.*$/;
             exports.ulist = function (source) {
-                var whole = (source.match(syntax) || [
-                    '',
-                    ''
-                ])[0];
+                var _a = source.match(syntax) || [
+                        '',
+                        ''
+                    ], whole = _a[0], flag = _a[1];
                 if (!whole)
                     return;
                 var el = document.createElement('ul');
@@ -721,9 +732,17 @@ require = function e(t, n, r) {
                     if (line.trim() === '')
                         break;
                     if (line.search(syntax) === 0) {
-                        var text = line.slice(1).trim();
+                        if (!line.startsWith(flag))
+                            return;
+                        var _b = line.slice(1).trim().match(content), text = _b[0], _c = _b[1], checkbox = _c === void 0 ? '' : _c;
                         var li = el.appendChild(document.createElement('li'));
-                        void li.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
+                        if (checkbox) {
+                            var cb = document.createElement('span');
+                            void cb.setAttribute('class', 'checkbox');
+                            void cb.appendChild(document.createTextNode(checkbox.trim() + ' '));
+                            void li.appendChild(cb);
+                        }
+                        void li.appendChild(inline_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text.slice(checkbox.length)) || [[]])[0]));
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
@@ -732,16 +751,16 @@ require = function e(t, n, r) {
                                 'ol'
                             ].indexOf(el.lastElementChild.lastElementChild.tagName.toLowerCase()) !== -1)
                             return;
-                        var _a = indent_1.indent(source), block = _a[0], rest = _a[1];
+                        var _d = indent_1.indent(source), block = _d[0], rest = _d[1];
                         if (rest === source)
                             return;
-                        var _b = combine_1.combine([
+                        var _e = combine_1.combine([
                                 exports.ulist,
                                 olist_1.olist
                             ])(block) || [
                                 [],
                                 block
-                            ], children = _b[0], brest = _b[1];
+                            ], children = _e[0], brest = _e[1];
                         if (children.length === 0 || brest.length !== 0)
                             return;
                         void el.lastElementChild.appendChild(inline_1.squash(children));
@@ -749,7 +768,7 @@ require = function e(t, n, r) {
                         continue;
                     }
                 }
-                return el.children.length === 0 ? void 0 : block_1.consumeBlockEndEmptyLine([el], source);
+                return block_1.consumeBlockEndEmptyLine([el], source);
             };
         },
         {
@@ -876,10 +895,10 @@ require = function e(t, n, r) {
             var escape = /^[0-9a-zA-Z@]@/;
             exports.account = function (source) {
                 if (source.search(escape) === 0) {
-                    var txt = (source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [source])[0];
+                    var frag = (source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [source])[0];
                     return [
-                        [document.createTextNode(txt)],
-                        source.slice(txt.length)
+                        [document.createTextNode(frag)],
+                        source.slice(frag.length)
                     ];
                 }
                 var whole = (source.match(syntax) || [''])[0];
@@ -938,7 +957,7 @@ require = function e(t, n, r) {
                         [],
                         ''
                     ], cs = _a[0], rest = _a[1];
-                return link_1.link('[](' + (source[0] === 't' ? 'h' : '') + source.slice(0, source.length - rest.length) + (source[0] === 't' ? ' nofollow' : '') + ')' + rest);
+                return link_1.link('[](' + (source.startsWith('h') ? '' : 'h') + source.slice(0, source.length - rest.length) + (source.startsWith('h') ? '' : ' nofollow') + ')' + rest);
             };
         },
         {
@@ -1569,24 +1588,26 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var parser_1 = require('../parser');
             var segment_1 = require('../parser/segment');
-            function bind(el, source) {
+            function bind(node, source) {
                 if (source === void 0) {
                     source = '';
                 }
                 var pairs = [];
-                void segment_1.segment(source).reduce(function (el, s) {
+                void segment_1.segment(source).reduce(function (node, s) {
                     return void pairs.push([
                         s,
                         Array.from(parser_1.parse(s).childNodes)
                     ]), void pairs[pairs.length - 1][1].forEach(function (e) {
-                        return void el.appendChild(e);
-                    }), el;
-                }, el);
+                        return void node.appendChild(e);
+                    }), node;
+                }, node);
                 return function (source) {
                     var os = pairs.map(function (_a) {
                         var s = _a[0];
                         return s;
                     });
+                    if (source === os.join(''))
+                        return [];
                     var ns = segment_1.segment(source);
                     var i = 0;
                     for (; i < os.length; ++i) {
@@ -1598,8 +1619,6 @@ require = function e(t, n, r) {
                         if (os[os.length - j - 1] !== ns[ns.length - j - 1])
                             break;
                     }
-                    if (os.length === i && ns.length === i)
-                        return [];
                     void pairs.splice(i, os.length - j - i).forEach(function (_a) {
                         var es = _a[1];
                         return void es.forEach(function (e) {
@@ -1614,7 +1633,7 @@ require = function e(t, n, r) {
                         return [
                             s,
                             Array.from(parser_1.parse(s).childNodes).map(function (e) {
-                                return el.insertBefore(e, ref);
+                                return node.insertBefore(e, ref);
                             })
                         ];
                     });
