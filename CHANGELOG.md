@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.17.1
+
+- Fix url processing.
+
 ## 0.17.0
 
 - Accept bodiless incomplete table.

@@ -11,17 +11,17 @@ describe('Unit: parser/image', () => {
       assert.deepStrictEqual(inspect(parser('![](vbscript:alert)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](any:alert)')), void 0);
-      assert.deepStrictEqual(inspect(parser('![](#")')), [['<img data-src="#%22" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](#")')), [['<img data-src="#&quot;" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](#\\)')), void 0);
-      assert.deepStrictEqual(inspect(parser('![](")')), [['<img data-src="%22" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]("#)')), [['<img data-src="%22#" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](")')), [['<img data-src="&quot;" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]("#)')), [['<img data-src="&quot;#" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![]("\\)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](\\)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](\\#)')), [['<img data-src="#" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![](\\")')), [['<img data-src="%22" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![](\\\\)')), [['<img data-src="%5C" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![](\\\\#)')), [['<img data-src="%5C#" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![](\\\\")')), [['<img data-src="%5C%22" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](\\")')), [['<img data-src="&quot;" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](\\\\)')), [['<img data-src="\\" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](\\\\#)')), [['<img data-src="\\#" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](\\\\")')), [['<img data-src="\\&quot;" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('!["](#)')), [['<img data-src="#" alt="&quot;">'], '']);
       assert.deepStrictEqual(inspect(parser('![\\"](#)')), [['<img data-src="#" alt="&quot;">'], '']);
     });
@@ -52,7 +52,7 @@ describe('Unit: parser/image', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('![\\[](#)')), [['<img data-src="#" alt="[">'], '']);
-      assert.deepStrictEqual(inspect(parser('![<wbr>"]("?"#")')), [['<img data-src="%22?%22#%22" alt="<wbr>&quot;">'], '']);
+      assert.deepStrictEqual(inspect(parser('![<wbr>"]("?"#")')), [['<img data-src="&quot;?&quot;#&quot;" alt="<wbr>&quot;">'], '']);
     });
 
     it('external', () => {

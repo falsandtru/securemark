@@ -11,17 +11,17 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[](vbscript:alert)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](any:alert)')), void 0);
-      assert.deepStrictEqual(inspect(parser('[](#")')), [['<a href="#%22">#%22</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](#")')), [['<a href="#&quot;">#"</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[](#\\)')), void 0);
-      assert.deepStrictEqual(inspect(parser('[](")')), [['<a href="%22">%22</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]("#)')), [['<a href="%22#">%22#</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](")')), [['<a href="&quot;">"</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]("#)')), [['<a href="&quot;#">"#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]("\\)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](\\)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](#)')), [['<a href="#">#</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[](\\")')), [['<a href="%22">%22</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[](\\\\)')), [['<a href="%5C">%5C</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[](\\\\#)')), [['<a href="%5C#">%5C#</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[](\\\\")')), [['<a href="%5C%22">%5C%22</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](\\")')), [['<a href="&quot;">"</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](\\\\)')), [['<a href="\\">\\</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](\\\\#)')), [['<a href="\\#">\\#</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](\\\\")')), [['<a href="\\&quot;">\\"</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[<img>](#)')), [['<a href="#">&lt;img&gt;</a>'], '']);
     })
 
@@ -77,7 +77,7 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[](#()')), [['<a href="#(">#(</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[](#\\))')), [['<a href="#)">#)</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~#~](#)')), [['<a href="#"><sub>#</sub></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[<wbr>"]("?"#")')), [['<a href="%22?%22#%22"><wbr>"</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[<wbr>"]("?"#")')), [['<a href="&quot;?&quot;#&quot;"><wbr>"</a>'], '']);
     });
 
     it('external', () => {
