@@ -1562,12 +1562,6 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             function sanitize(url) {
                 url = url.trim();
-                try {
-                    url = encodeURI(decodeURI(url));
-                } catch (e) {
-                    url = '';
-                    console.error(e);
-                }
                 return isAcceptedProtocol(url) ? url : '';
             }
             exports.sanitize = sanitize;
