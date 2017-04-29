@@ -256,7 +256,7 @@ export namespace MarkdownParser {
     export interface TextParser extends
       // abc
       Markdown<'text'>,
-      Parser<HTMLElement | Text, [
+      Parser<HTMLBRElement | Text, [
         never
       ]> {
     }

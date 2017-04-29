@@ -4,7 +4,7 @@ import { TextParser } from '../inline';
 const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[0-9a-zA-Z]?h?ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]/;
 const linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;
 
-export const text: TextParser = function (source: string): Result<HTMLElement | Text, never> {
+export const text: TextParser = function (source: string): Result<HTMLBRElement | Text, never> {
   if (source.length === 0) return;
   const i = source.search(separator);
   switch (i) {
