@@ -23,7 +23,7 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[](\\\\#)')), [['<a href="\\#">\\#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[](\\\\")')), [['<a href="\\&quot;">\\"</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[<img>](#)')), [['<a href="#">&lt;img&gt;</a>'], '']);
-    })
+    });
 
     it('fishing', () => {
       assert.deepStrictEqual(inspect(parser('[http://host](http://evil)')), void 0);
