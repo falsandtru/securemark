@@ -1,8 +1,8 @@
-﻿import { loop } from '../../combinator/loop';
-import { account } from './autolink.account';
-import { inspect } from '../debug.test';
+﻿import { loop } from '../../../combinator/loop';
+import { account } from './account';
+import { inspect } from '../../debug.test';
 
-describe('Unit: parser/autolink.account', () => {
+describe('Unit: parser/autolink/account', () => {
   describe('account', () => {
     const parser = loop(account);
 

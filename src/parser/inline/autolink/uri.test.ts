@@ -1,8 +1,8 @@
-﻿import { loop } from '../../combinator/loop';
-import { uri } from './autolink.uri';
-import { inspect } from '../debug.test';
+﻿import { loop } from '../../../combinator/loop';
+import { uri } from './uri';
+import { inspect } from '../../debug.test';
 
-describe('Unit: parser/autolink.uri', () => {
+describe('Unit: parser/autolink/uri', () => {
   describe('uri', () => {
     const parser = loop(uri);
 
