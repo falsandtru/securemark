@@ -257,15 +257,29 @@ export namespace MarkdownParser {
       // abc
       Markdown<'text'>,
       Parser<HTMLBRElement | Text, [
-        never
+        Zalgo.ZalgoTextParser
       ]> {
     }
     export interface PlainTextParser extends
       // abc
       Markdown<'plaintext'>,
       Parser<Text, [
-        never
+        Zalgo.ZalgoPlainTextParser
       ]> {
+    }
+    export namespace Zalgo {
+      export interface ZalgoTextParser extends
+        Markdown<'zalgo/text'>,
+        Parser<Text, [
+          never
+        ]> {
+      }
+      export interface ZalgoPlainTextParser extends
+        Markdown<'zalgo/plaintext'>,
+        Parser<Text, [
+          never
+        ]> {
+      }
     }
   }
 }

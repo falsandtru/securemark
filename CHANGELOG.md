@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.18.0
+
+- Add zalgo parser.
+
 ## 0.17.1
 
 - Fix url processing.

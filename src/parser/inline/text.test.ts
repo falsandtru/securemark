@@ -56,6 +56,12 @@ describe('Unit: parser/text', () => {
       assert.deepStrictEqual(inspect(parser('\\\\\\\n')), [['\\', '<br>'], '']);
     });
 
+    it('zalgo', () => {
+      assert.deepStrictEqual(inspect(parser('\u0300\u036F')), [['\u0300'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\u0300\\\u036F')), [['\u0300'], '']);
+      assert.deepStrictEqual(inspect(parser('a\u0300\u036F')), [['a', '\u0300'], '']);
+    });
+
     it('uri', () => {
       assert.deepStrictEqual(inspect(parser('http:')), [['h', 't', 'tp', ':'], '']);
       assert.deepStrictEqual(inspect(parser('https:')), [['h', 't', 'tps', ':'], '']);

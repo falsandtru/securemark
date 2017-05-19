@@ -33,6 +33,12 @@ describe('Unit: parser/pretext', () => {
       assert.deepStrictEqual(inspect(parser('\\\n')), [['\\', '\n'], '']);
     });
 
+    it('zalgo', () => {
+      assert.deepStrictEqual(inspect(parser('\u0300\u036F')), [['\u0300'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\u0300\\\u036F')), [['\\', '\u0300', '\\', '\u036F'], '']);
+      assert.deepStrictEqual(inspect(parser('a\u0300\u036F')), [['a', '\u0300'], '']);
+    });
+
   });
 
 });

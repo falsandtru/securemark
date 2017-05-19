@@ -16,9 +16,9 @@ import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
 import { text } from './inline/text';
 
+export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
 export import ParenthesisParser = InlineParser.ParenthesisParser;
-export import InlineParser = MarkdownParser.InlineParser;
 export import InsertionParser = InlineParser.InsertionParser;
 export import DeletionParser = InlineParser.DeletionParser;
 export import StrongParser = InlineParser.StrongParser;
@@ -33,6 +33,7 @@ export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 export import TextParser = InlineParser.TextParser;
 export import PlainTextParser = InlineParser.PlainTextParser;
+export import Zalgo = InlineParser.Zalgo;
 
 export const inline: InlineParser = combine<[
   AnnotationParser,
