@@ -112,7 +112,7 @@ require = function e(t, n, r) {
         },
         {
             './parser': 7,
-            './viewer/bind': 43
+            './viewer/bind': 45
         }
     ],
     7: [
@@ -137,7 +137,7 @@ require = function e(t, n, r) {
         {
             './combinator/loop': 5,
             './parser/block': 8,
-            './parser/segment': 41
+            './parser/segment': 43
         }
     ],
     8: [
@@ -836,7 +836,7 @@ require = function e(t, n, r) {
         {
             '../combinator/combine': 4,
             './inline/annotation': 23,
-            './inline/autolink': 25,
+            './inline/autolink': 24,
             './inline/code': 27,
             './inline/deletion': 28,
             './inline/emphasis': 29,
@@ -891,6 +891,24 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var combine_1 = require('../../combinator/combine');
+            var uri_1 = require('./autolink/uri');
+            var account_1 = require('./autolink/account');
+            exports.autolink = combine_1.combine([
+                uri_1.uri,
+                account_1.account
+            ]);
+        },
+        {
+            '../../combinator/combine': 4,
+            './autolink/account': 25,
+            './autolink/uri': 26
+        }
+    ],
+    25: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
             var syntax = /^@[a-zA-Z0-9]+(?:[_\-]+[0-9a-zA-Z]+)*(?![0-9a-zA-Z@])/;
             var escape = /^[0-9a-zA-Z@]@/;
             exports.account = function (source) {
@@ -915,33 +933,15 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    25: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var combine_1 = require('../../combinator/combine');
-            var autolink_uri_1 = require('./autolink.uri');
-            var autolink_account_1 = require('./autolink.account');
-            exports.autolink = combine_1.combine([
-                autolink_uri_1.uri,
-                autolink_account_1.account
-            ]);
-        },
-        {
-            '../../combinator/combine': 4,
-            './autolink.account': 24,
-            './autolink.uri': 26
-        }
-    ],
     26: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var inline_1 = require('../inline');
-            var combine_1 = require('../../combinator/combine');
-            var loop_1 = require('../../combinator/loop');
-            var text_1 = require('./text');
-            var link_1 = require('./link');
+            var inline_1 = require('../../inline');
+            var combine_1 = require('../../../combinator/combine');
+            var loop_1 = require('../../../combinator/loop');
+            var text_1 = require('../text');
+            var link_1 = require('../link');
             var syntax = /^h?ttps?:\/\/\S+/;
             var closer = /^['"`[\](){}<>]|^\\?(?:\s|$)|^[~^+*,.;:!?]*(?:[\s\])}<>|]|$)/;
             var escape = /^(?:[0-9a-zA-Z]h|[0-9a-gi-zA-Z])ttps?:\/\/\S+/;
@@ -961,11 +961,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 4,
-            '../../combinator/loop': 5,
-            '../inline': 22,
-            './link': 34,
-            './text': 40
+            '../../../combinator/combine': 4,
+            '../../../combinator/loop': 5,
+            '../../inline': 22,
+            '../link': 34,
+            '../text': 40
         }
     ],
     27: [
@@ -1198,7 +1198,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
-            '../string/url': 42,
+            '../string/url': 44,
             './text': 40
         }
     ],
@@ -1299,7 +1299,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 4,
             '../../combinator/loop': 5,
             '../inline': 22,
-            '../string/url': 42,
+            '../string/url': 44,
             './text': 40
         }
     ],
@@ -1337,7 +1337,8 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var separator = /`|<\/code>|\n/i;
+            var plaintext_1 = require('./zalgo/plaintext');
+            var separator = /`|<\/code>|\n|[\u0300-\u036F]/i;
             exports.plaintext = function (source) {
                 if (source.length === 0)
                     return;
@@ -1349,7 +1350,7 @@ require = function e(t, n, r) {
                         ''
                     ];
                 case 0:
-                    return [
+                    return plaintext_1.zalgo(source) || [
                         [document.createTextNode(source.slice(0, 1))],
                         source.slice(1)
                     ];
@@ -1361,7 +1362,7 @@ require = function e(t, n, r) {
                 }
             };
         },
-        {}
+        { './zalgo/plaintext': 41 }
     ],
     37: [
         function (require, module, exports) {
@@ -1477,7 +1478,8 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[0-9a-zA-Z]?h?ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]/;
+            var text_1 = require('./zalgo/text');
+            var separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|[0-9a-zA-Z]?h?ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]/;
             var linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;
             exports.text = function (source) {
                 if (source.length === 0)
@@ -1499,7 +1501,7 @@ require = function e(t, n, r) {
                                 source.replace(linebreaks, '')
                             ];
                         default:
-                            return [
+                            return text_1.zalgo(source) || [
                                 [document.createTextNode(source.slice(1, 2))],
                                 source.slice(2)
                             ];
@@ -1510,7 +1512,7 @@ require = function e(t, n, r) {
                             source.slice(1)
                         ];
                     default:
-                        return [
+                        return text_1.zalgo(source) || [
                             [document.createTextNode(source.slice(0, 1))],
                             source.slice(1)
                         ];
@@ -1523,9 +1525,41 @@ require = function e(t, n, r) {
                 }
             };
         },
-        {}
+        { './zalgo/text': 42 }
     ],
     41: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var syntax = /^[\u0300-\u036F]+/;
+            exports.zalgo = function (source) {
+                if (source.search(syntax) !== 0)
+                    return;
+                return [
+                    [document.createTextNode(source[0])],
+                    source.replace(syntax, '')
+                ];
+            };
+        },
+        {}
+    ],
+    42: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var syntax = /^(?:\\?[\u0300-\u036F])+/;
+            exports.zalgo = function (source) {
+                if (source.search(syntax) !== 0)
+                    return;
+                return [
+                    [document.createTextNode(source.startsWith('\\') ? source[1] : source[0])],
+                    source.replace(syntax, '')
+                ];
+            };
+        },
+        {}
+    ],
+    43: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1556,7 +1590,7 @@ require = function e(t, n, r) {
             '../parser/block/pretext': 19
         }
     ],
-    42: [
+    44: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1576,7 +1610,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    43: [
+    45: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1645,7 +1679,7 @@ require = function e(t, n, r) {
         },
         {
             '../parser': 7,
-            '../parser/segment': 41
+            '../parser/segment': 43
         }
     ],
     'securemark': [
