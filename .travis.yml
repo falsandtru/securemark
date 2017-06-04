@@ -4,10 +4,10 @@ matrix:
   - os: linux
     dist: trusty
     sudo: required
-    node_js: 7
+    node_js: 8
   - os: osx
     osx_image: xcode8
-    node_js: 7
+    node_js: 8
 env:
   global:
   - secure: "WVYUIJ3NRW4toYkOgFR60wjZ8FgYxwU9fDbziySbCUc9y4HQX11Vi/Hrq+BFVb2OADPmQaA4WsV/e+I6WoCzgEJ4/Lx8a+XdrwNgHsvch9UTN05GAYy/PTGsjqVrD7YSE7NWfCdyi/w1nRXYUH99Wvn3Q8cpvtgXWwnhhKyw1FyzLNCQkl21Y5xdwbQBEpvWzZz8fWsWz7+boRlSHV8EaYRyYVyyasc2n/srVMgT32IvhYJWoGjQGaM8Rln88X7VUJidAVMWavjyLicsf+3TzHByMkRG0S3ODNYkZ+LE2Ep27QJi357Q8jEzz8e2W/HL0MNYnst5+V1OOHRjjy5Y/BePhKQqBfF5/8sLBzW9k0HPg2AIHCpchQ4YMod5g3kcpQog84INs4A7zjmIbWwoFhABWDaLZXUyzO2GbKRxdhRPyLF5DGzn66JjRNzPel0vB6z+Iy7Q+dpZ/gMiWewFm2tkfJVnJArTHM12M2gBWqtpyGIRgV2GeYgIAQYPnUFRuU8CvaiptJH+RgfE3/G2z9/MJZAPJAZppv4Pk4XXESRbXYmKhwU4L//uJtnZBXnG8z4Zb5jxhASfnH58e3dWAyak1wcQ/P9zv/cz1YHcvxQwdV044Cv+KNbvIr1RKR9Ry+z9Z5C1VF3Y6K+FSQXdtnI98oM8H2ZbGVt9OOrn0VE="
@@ -42,7 +42,7 @@ deploy:
     secure: "Q6qC/2e7tqRBEEDaffHivNb/YZRD+V/Ca9exgQLwLE3UH7ouP6f7tdIu8aJ29fMXPH2284+m5P73YSTLVPV1ntzNjC/b3yT58eAwCLDmQB0y/yTPKCCmvaB/lbe++kZwGFrAaLsKL7lrSNe4DgiL1E270NwbnkKkCh+3vuSaT93s3MQIjAunPBlyUZXaSPdX6PbJUGpBGNgpacgbSJwDa/tUs1CiyjNkLOaXtFTi3INqKG5k7eOOibh6k58yFrKRMeYcvSUslhB3izBKC9OSx38/ZL+C+Yhee7fW9jh/YmaeYY+mBFTcvfSgSqhwMVJmer3AeG/HstO6m+z4VR1opRkK2ewzwSJ0N8r7lIdtsHk89XhdM9UYL9rtrWmw4uQMJbkEH8fEyzZq3zsg08NGrvfa07GwfwnlzXVLRvIa6+kI1Z5hLcRG/PBt0HfabmHuXNDCRa+aD7oxOZHFrWTXlS8VfroOFlOkLIteGY6gn7fUgGNqzjHjc0SPI2m2e7hOg0tgIgYYh3NwyN0U2uJNJAyzUIqEr55ju02iTZcPdFKkZmMZTn7VJD6FIA2lRT9b3R+2D/4tTSDhZEC+6yGuL6A8RhNf1x/jPGSGYwMMydXidYSs3WSZFQCxUCUv668RJ8dmg3paPftJBr+iJlqFiaxhz2VqCrOSROhQw35Yusw="
   on:
     branch: master
-    node: 7
+    node: 8
     condition: $TRAVIS_OS_NAME = linux
   skip_cleanup: true
 notifications:
