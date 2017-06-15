@@ -10,22 +10,16 @@ type SubParsers = [PlainTextParser];
 const syntax = /^(`{3,})([0-9a-z]*)\S*\s*?\n(?:[^\n]*\n)*?\1/;
 
 export const pretext: PreTextParser = function (source: string): Result<HTMLPreElement, SubParsers> {
+  if (!source.startsWith('```')) return;
   const [whole, keyword, lang] = source.match(syntax) || ['', '', ''];
   if (!whole) return;
   const el = document.createElement('pre');
   if (lang) {
     void el.setAttribute('class', `lang-${lang.toLowerCase()}`);
   }
-  source = source.slice(source.indexOf('\n') + 1);
-  while (true) {
-    const line = source.split('\n', 1)[0];
-    if (line.search(`^${keyword}\s*(?:\n|$)`) === 0) break;
-    void el.appendChild(squash((loop(combine<SubParsers, Text>([plaintext]))(line + '\n') || [[]])[0]));
-    source = source.slice(line.length + 1);
-    if (source === '') return;
-  }
-  if (el.lastChild) {
-    el.lastChild!.textContent = el.lastChild.textContent!.slice(0, -1);
-  }
-  return consumeBlockEndEmptyLine<HTMLPreElement, SubParsers>([el], source.slice(keyword.length + 1));
+  const closer = `^\n${keyword}\s*(?:\n|$)`;
+  const [[, ...cs], rest] = loop(combine<SubParsers, Text>([plaintext]), closer)(`\n${source.slice(source.indexOf('\n') + 1)}`) || [[], ''];
+  if (rest.search(closer) !== 0) return;
+  void el.appendChild(squash(cs));
+  return consumeBlockEndEmptyLine<HTMLPreElement, SubParsers>([el], source.slice(source.length - rest.length + 1 + keyword.length + 1));
 };
