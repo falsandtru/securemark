@@ -32,7 +32,7 @@
 <!-- ----- PRIMARY ------------------------------------------------------------ -->
 <div id="primary" class="col-md-12">
 <article id="content">
-  <p>time: <span id="time">-</span>ms (<span id="diff">-</span>ms improved)</p>
+  <p>time: <span id="time">-</span>ms</p>
   <textarea id="editor" style="float: left; width: 45%; min-height: 200px;"></textarea>
   <div id="viewer" style="float: left; width: 45%; min-height: 200px"></div>
 </article>
@@ -48,6 +48,18 @@
 
 </div>
 <script src="https://cdn.polyfill.io/v2/polyfill.js?features=default,String.prototype.repeat&flags=gated"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    CommonHTML: { matchFontHeight: false },
+    tex2jax: {
+      inlineMath: [['$','$']],//, ['\\(','\\)']],
+      displayMath: [['$$','$$']],//, ['\[','\]']],
+      processEscapes: true
+    },
+    skipStartupTypeset: true
+  });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML,Safe"></script>
 <script src="/securemark/assets/js/lib/securemark.js"></script>
 
 <script>
@@ -61,6 +73,26 @@
     '',
     'Superscript: 19^th^\\',
     'Subscript: H~2~O\\',
+    '',
+    '$0 - $100\\',
+    '$E = mc^2$\\',
+    '`$E = mc^2$`',
+    '',
+    '$$',
+    '\\frac{\\pi}{2} =',
+    '\\left( \\int_{0}^{\\infty} \\frac{\\sin x}{\\sqrt{x}} dx \\right)^2 =',
+    '\\sum_{k=0}^{\\infty} \\frac{(2k)!}{2^{2k}(k!)^2} \\frac{1}{2k+1} =',
+    '\\prod_{k=1}^{\\infty} \\frac{4k^2}{4k^2 - 1}',
+    '$$',
+    '',
+    '```',
+    '$$',
+    '\\frac{\\pi}{2} =',
+    '\\left( \\int_{0}^{\\infty} \\frac{\\sin x}{\\sqrt{x}} dx \\right)^2 =',
+    '\\sum_{k=0}^{\\infty} \\frac{(2k)!}{2^{2k}(k!)^2} \\frac{1}{2k+1} =',
+    '\\prod_{k=1}^{\\infty} \\frac{4k^2}{4k^2 - 1}',
+    '$$',
+    '```',
     '',
     '[external link](https://google.com)\\',
     '[nofollow link](# nofollow)\\',
@@ -102,11 +134,7 @@
         .forEach(function (img) {
           return img.setAttribute('src', img.getAttribute('data-src'));
         });
-      var time = Date.now();
-      parse(document.getElementById('editor').value);
-      var full = Date.now() - time;
       document.getElementById('time').textContent = partial;
-      document.getElementById('diff').textContent = full - partial;
       share();
     }, 300);
   });
