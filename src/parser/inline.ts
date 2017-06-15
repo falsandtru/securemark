@@ -14,7 +14,8 @@ import { link } from './inline/link';
 import { html } from './inline/html';
 import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
-import { text } from './inline/text';
+import { TextParser } from './text';
+import { text } from './text/text';
 
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
@@ -31,9 +32,6 @@ export import LinkParser = InlineParser.LinkParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
-export import TextParser = InlineParser.TextParser;
-export import PlainTextParser = InlineParser.PlainTextParser;
-export import Zalgo = InlineParser.Zalgo;
 
 export const inline: InlineParser = combine<[
   AnnotationParser,
@@ -68,18 +66,3 @@ export const inline: InlineParser = combine<[
   autolink,
   text
 ]);
-
-export function squash(nodes: Node[] | NodeList): DocumentFragment {
-  const frag = document.createDocumentFragment();
-  for (const curr of Array.from(nodes)) {
-    const prev = frag.lastChild;
-    if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
-      prev.textContent += curr.textContent!;
-      curr.textContent = '';
-    }
-    else {
-      void frag.appendChild(curr);
-    }
-  }
-  return frag;
-}

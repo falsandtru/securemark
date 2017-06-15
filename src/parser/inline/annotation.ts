@@ -1,7 +1,8 @@
 ﻿import { Result } from '../../parser';
-import { AnnotationParser, InlineParser, inline, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
+import { AnnotationParser, InlineParser, inline } from '../inline';
+import { squash } from '../text';
 
 type SubParsers = [InlineParser];
 

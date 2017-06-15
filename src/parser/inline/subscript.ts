@@ -1,8 +1,9 @@
 ﻿import { Result } from '../../parser';
-import { SubScriptParser, TextParser, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { text } from './text';
+import { SubScriptParser } from '../inline';
+import { TextParser, squash } from '../text';
+import { text } from '../text/text';
 
 type SubParsers = [TextParser];
 

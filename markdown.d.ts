@@ -88,7 +88,7 @@ export namespace MarkdownParser {
       // > abc
       Markdown<'blockquote'>,
       Parser<HTMLQuoteElement, [
-        InlineParser.PlainTextParser
+        TextParser.PlainTextParser
       ]> {
     }
     export interface PreTextParser extends
@@ -97,7 +97,7 @@ export namespace MarkdownParser {
       // ```
       Markdown<'pretext'>,
       Parser<HTMLPreElement, [
-        InlineParser.PlainTextParser
+        TextParser.PlainTextParser
       ]> {
     }
     export interface ExtensionParser extends
@@ -133,7 +133,7 @@ export namespace MarkdownParser {
       InlineParser.HTMLParser,
       InlineParser.HTMLEntityParser,
       InlineParser.AutolinkParser,
-      InlineParser.TextParser
+      TextParser.TextParser
     ]> {
   }
   export namespace InlineParser {
@@ -183,28 +183,28 @@ export namespace MarkdownParser {
       // ^abc^
       Markdown<'superscript'>,
       Parser<HTMLElement, [
-        TextParser
+        TextParser.TextParser
       ]> {
     }
     export interface SubScriptParser extends
       // ~abc~
       Markdown<'subscript'>,
       Parser<HTMLElement, [
-        TextParser
+        TextParser.TextParser
       ]> {
     }
     export interface CodeParser extends
       // `abc`
       Markdown<'code'>,
       Parser<HTMLElement, [
-        PlainTextParser
+        TextParser.PlainTextParser
       ]> {
     }
     export interface ImageParser extends
       // ![abc](url)
       Markdown<'image'>,
       Parser<HTMLImageElement, [
-        TextParser
+        TextParser.TextParser
       ]> {
     }
     export interface LinkParser extends
@@ -220,7 +220,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         InlineParser
       ] | [
-        PlainTextParser
+        TextParser.PlainTextParser
       ]> {
     }
     export interface HTMLEntityParser extends
@@ -253,6 +253,8 @@ export namespace MarkdownParser {
         ]> {
       }
     }
+  }
+  export namespace TextParser {
     export interface TextParser extends
       // abc
       Markdown<'text'>,

@@ -1,5 +1,5 @@
 ﻿import { Result } from '../../parser';
-import { PlainTextParser, Zalgo } from '../inline';
+import { PlainTextParser, Zalgo } from '../text';
 import { zalgo } from './zalgo/plaintext';
 
 const separator = /`|<\/code>|\n|[\u0300-\u036F]/i;

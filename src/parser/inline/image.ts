@@ -1,9 +1,10 @@
 ﻿import { Result } from '../../parser';
-import { ImageParser, TextParser } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { text } from './text';
-import { sanitize } from '../string/url';
+import { ImageParser } from '../inline';
+import { TextParser } from '../text';
+import { text } from '../text/text';
+import { sanitize } from '../text/url';
 
 type SubParsers = [TextParser];
 

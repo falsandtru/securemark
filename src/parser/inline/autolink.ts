@@ -1,5 +1,5 @@
-﻿import { AutolinkParser } from '../inline';
-import { combine } from '../../combinator/combine';
+﻿import { combine } from '../../combinator/combine';
+import { AutolinkParser } from '../inline';
 import { uri } from './autolink/uri';
 import { account } from './autolink/account';
 

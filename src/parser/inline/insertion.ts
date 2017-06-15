@@ -1,7 +1,8 @@
 ﻿import { Result } from '../../parser';
-import { InsertionParser, InlineParser, inline, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
+import { InsertionParser, InlineParser, inline } from '../inline';
+import { squash } from '../text';
 
 type SubParsers = [InlineParser];
 

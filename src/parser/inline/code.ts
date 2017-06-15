@@ -1,8 +1,9 @@
 ﻿import { Result } from '../../parser';
-import { CodeParser, PlainTextParser, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { plaintext } from './plaintext';
+import { CodeParser } from '../inline';
+import { PlainTextParser, squash } from '../text';
+import { plaintext } from '../text/plaintext';
 
 type SubParsers = [PlainTextParser];
 

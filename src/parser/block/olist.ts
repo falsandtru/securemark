@@ -1,10 +1,11 @@
 ﻿import { Result } from '../../parser';
-import { UListParser, OListParser, consumeBlockEndEmptyLine } from '../block';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
+import { UListParser, OListParser, consumeBlockEndEmptyLine } from '../block';
 import { ulist } from './ulist';
 import { indent } from './indent';
-import { InlineParser, inline, squash } from '../inline';
+import { InlineParser, inline } from '../inline';
+import { squash } from '../text';
 
 type SubParsers = [InlineParser] | [UListParser, OListParser];
 

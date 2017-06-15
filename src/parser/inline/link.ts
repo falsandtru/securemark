@@ -1,9 +1,10 @@
 ﻿import { Result } from '../../parser';
-import { LinkParser, InlineParser, inline, squash } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { text } from './text';
-import { sanitize } from '../string/url';
+import { LinkParser, InlineParser, inline } from '../inline';
+import { squash } from '../text';
+import { text } from '../text/text';
+import { sanitize } from '../text/url';
 
 type SubParsers = [InlineParser];
 

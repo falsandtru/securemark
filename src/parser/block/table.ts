@@ -1,7 +1,8 @@
 ﻿import { Result } from '../../parser';
-import { TableParser, consumeBlockEndEmptyLine } from '../block';
 import { loop } from '../../combinator/loop';
-import { InlineParser, inline, squash } from '../inline';
+import { TableParser, consumeBlockEndEmptyLine } from '../block';
+import { InlineParser, inline } from '../inline';
+import { squash } from '../text';
 
 type SubParsers = [InlineParser];
 

@@ -1,5 +1,5 @@
 ﻿import { Result } from '../../../parser';
-import { Zalgo } from '../../inline';
+import { Zalgo } from '../../text';
 
 const syntax = /^(?:\\?[\u0300-\u036F])+/;
 

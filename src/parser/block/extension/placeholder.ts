@@ -1,12 +1,13 @@
 ﻿import { Markdown } from '../../../../markdown.d';
 import { Parser, Result } from '../../../parser';
-import { PreTextParser, consumeBlockEndEmptyLine } from '../../block';
 import { loop } from '../../../combinator/loop';
-import { plaintext } from '../../inline/plaintext';
-import { inline, squash } from '../../inline';
+import { PreTextParser, consumeBlockEndEmptyLine } from '../../block';
+import { inline } from '../../inline';
+import { squash } from '../../text';
+import { plaintext } from '../../text/plaintext';
 
 export interface PlaceholderParser extends
-  Markdown<'extension' & 'placeholder'>,
+  Markdown<'extension' & 'extension/placeholder'>,
   Parser<HTMLElement, SubParsers> {
 }
 type SubParsers = [PreTextParser];
