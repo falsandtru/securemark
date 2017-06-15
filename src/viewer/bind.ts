@@ -1,18 +1,10 @@
 ﻿import { parse } from '../parser';
 import { segment } from '../parser/segment';
 
-export function bind(node: Node, source: string = ''): (source: string) => HTMLElement[] {
+export function bind(node: Node): (source: string) => HTMLElement[] {
   assert(node.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
-  void segment(source)
-    .reduce((node, s) => (
-      void pairs.push([s, <HTMLElement[]>Array.from(parse(s).childNodes)]),
-      void pairs[pairs.length - 1][1]
-        .forEach(e =>
-          void node.appendChild(e)),
-      node
-    ), node);
   return (source: string) => {
     const os = pairs.map(([s]) => s);
     if (source === os.join('')) return [];

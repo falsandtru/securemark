@@ -121,23 +121,33 @@
     ''
   ].join('\n');
   var parse = require('securemark').parse;
-  var update = require('securemark').bind(document.getElementById('viewer'), document.getElementById('editor').value);
+  var render = require('securemark').bind(document.getElementById('viewer'));
+  update(render(document.getElementById('editor').value));
   share();
   var timer = 0;
   document.getElementById('editor').addEventListener('keyup', function () {
     clearTimeout(timer);
     timer = setTimeout(function () {
       var time = Date.now();
-      update(document.getElementById('editor').value);
+      update(render(document.getElementById('editor').value));
       var partial = Date.now() - time;
-      Array.from(document.getElementById('viewer').querySelectorAll('img:not([src])'))
-        .forEach(function (img) {
-          return img.setAttribute('src', img.getAttribute('data-src'));
-        });
       document.getElementById('time').textContent = partial;
-      share();
     }, 300);
   });
+  function update(es) {
+    es
+      .forEach(function (el) {
+        Array.from(el.querySelectorAll('img:not([src])'))
+          .forEach(function (img) {
+            img.setAttribute('src', img.getAttribute('data-src'));
+          });
+        Array.from(el.matches('.math') ? [el] : el.querySelectorAll('.math'))
+          .forEach(function (el) {
+            void MathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
+          });
+      });
+    share();
+  }
   function share() {
     document.getElementById('share').href = '#' + encodeURIComponent(document.getElementById('editor').value);
     document.getElementById('share').textContent = document.getElementById('share').href;

@@ -6,4 +6,4 @@
 */
 
 export function parse(source: string): DocumentFragment;
-export function bind(el: HTMLElement, source?: string): (source: string) => HTMLElement[];
+export function bind(el: HTMLElement): (source: string) => HTMLElement[];

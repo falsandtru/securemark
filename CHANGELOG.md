@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.20.0
+
+- Change bind function design.
+
 ## 0.19.0
 
 - Add math syntax.

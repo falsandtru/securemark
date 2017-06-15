@@ -19,8 +19,9 @@ describe('Unit: viewer/bind', () => {
 
     it('update', () => {
       const el = document.createElement('div');
+      const update = bind(el);
       // init
-      const update = bind(el, '0');
+      assert.deepStrictEqual(inspect(update('0')), ['<p>0</p>']);
       assert(el.innerHTML === '<p>0</p>');
       // clear
       assert.deepStrictEqual(inspect(update('')), []);
