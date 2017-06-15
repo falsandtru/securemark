@@ -2,6 +2,7 @@
 import { Parser, Result } from '../../../parser';
 import { PreTextParser, consumeBlockEndEmptyLine } from '../../block';
 import { loop } from '../../../combinator/loop';
+import { plaintext } from '../../inline/plaintext';
 import { inline, squash } from '../../inline';
 
 export interface PlaceholderParser extends
@@ -22,7 +23,7 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.search(`^${keyword}\s*(?:\n|$)`) === 0) break;
-    void lines.push(line + '\n');
+    void lines.push(squash((loop(plaintext)(`${line}\n`) || [[]])[0]).textContent!);
     source = source.slice(line.length + 1);
     if (source === '') return;
   }
