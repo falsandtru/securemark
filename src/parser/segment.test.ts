@@ -47,6 +47,17 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(segment(' \n```'), [' \n', '```']);
     });
 
+    it('mathblock', () => {
+      assert.deepStrictEqual(segment('$$'), ['$$']);
+      assert.deepStrictEqual(segment('$$\n$$'), ['$$\n$$']);
+      assert.deepStrictEqual(segment('$$\n\n\n$$'), ['$$\n\n\n$$']);
+      assert.deepStrictEqual(segment('a\n\n\n$$\n\n\n$$'), ['a\n\n', '\n', '$$\n\n\n$$']);
+      assert.deepStrictEqual(segment('a\n\n\n\n$$\n\n\n$$'), ['a\n\n', '\n\n', '$$\n\n\n$$']);
+      assert.deepStrictEqual(segment('a\n$$\n$$'), ['a\n$$\n$$']);
+      assert.deepStrictEqual(segment('a\n$$'), ['a\n$$']);
+      assert.deepStrictEqual(segment(' \n$$'), [' \n', '$$']);
+    });
+
     it('extension', () => {
       assert.deepStrictEqual(segment('~~~'), ['~~~']);
       assert.deepStrictEqual(segment('~~~\n~~~'), ['~~~\n~~~']);

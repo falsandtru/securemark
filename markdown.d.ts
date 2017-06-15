@@ -22,6 +22,7 @@ export namespace MarkdownParser {
       BlockParser.TableParser,
       BlockParser.BlockquoteParser,
       BlockParser.PreTextParser,
+      BlockParser.MathBlockParser,
       BlockParser.ExtensionParser,
       BlockParser.ParagraphParser
     ]> {
@@ -100,6 +101,15 @@ export namespace MarkdownParser {
         TextParser.PlainTextParser
       ]> {
     }
+    export interface MathBlockParser extends
+      // $$
+      // expr
+      // $$
+      Markdown<'mathblock'>,
+      Parser<HTMLDivElement, [
+        TextParser.MathTextParser
+      ]> {
+    }
     export interface ExtensionParser extends
       // ~~~
       // ABC
@@ -128,6 +138,7 @@ export namespace MarkdownParser {
       InlineParser.SuperScriptParser,
       InlineParser.SubScriptParser,
       InlineParser.CodeParser,
+      InlineParser.MathInlineParser,
       InlineParser.ImageParser,
       InlineParser.LinkParser,
       InlineParser.HTMLParser,
@@ -200,6 +211,13 @@ export namespace MarkdownParser {
         TextParser.PlainTextParser
       ]> {
     }
+    export interface MathInlineParser extends
+      // $expr$
+      Markdown<'mathinline'>,
+      Parser<HTMLSpanElement, [
+        TextParser.MathTextParser
+      ]> {
+    }
     export interface ImageParser extends
       // ![abc](url)
       Markdown<'image'>,
@@ -265,6 +283,13 @@ export namespace MarkdownParser {
     export interface PlainTextParser extends
       // abc
       Markdown<'plaintext'>,
+      Parser<Text, [
+        Zalgo.ZalgoPlainTextParser
+      ]> {
+    }
+    export interface MathTextParser extends
+      // abc
+      Markdown<'mathtext'>,
       Parser<Text, [
         Zalgo.ZalgoPlainTextParser
       ]> {

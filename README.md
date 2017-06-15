@@ -13,6 +13,7 @@ Secure markdown renderer working on browsers for user input data.
 - Recursive parsing.
 - Incremental update.
 - Unblinking rendering.
+- LaTeX support with MathJax.
 
 ## Demo
 
@@ -37,6 +38,7 @@ https://falsandtru.github.io/securemark/
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
 - Inline html tags (\<smal>, \<ruby>, \<code>, ...)
 - Autolink (https://host, ttps://host, @account)
+- LaTeX ($expr$, $$expr$$)
 
 ## Browser
 

@@ -9,7 +9,8 @@
     "url": "https://github.com/falsandtru/securemark"
   },
   "keywords": [
-    "markdown"
+    "markdown",
+    "latex"
   ],
   "types": "./index.d.ts",
   "main": "./dist/securemark.js",
@@ -26,6 +27,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "@types/mathjax": "0.0.31",
     "@types/mocha": "^2.2.41",
     "@types/power-assert": "1.4.29",
     "browserify": "^14.4.0",

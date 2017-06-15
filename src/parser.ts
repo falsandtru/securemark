@@ -11,8 +11,13 @@ export function parse(source: string): DocumentFragment {
   return segment(source)
     .reduce((doc, source) =>
       parse_(source)
-        .reduce((doc, el) =>
-          (void doc.appendChild(el), doc)
+        .reduce((doc, el) => (
+          void doc.appendChild(el),
+          typeof MathJax !== 'undefined' &&
+          void Array.from(el.matches('.math') ? [el] : el.querySelectorAll('.math'))
+            .forEach(el =>
+              void MathJax.Hub!.Queue(["Typeset", MathJax.Hub, el])),
+          doc)
         , doc)
     , document.createDocumentFragment());
 

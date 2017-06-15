@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.19.0
+
+- Add math syntax.
+
 ## 0.18.0
 
 - Add zalgo parser.

@@ -9,6 +9,7 @@ import { emphasis } from './inline/emphasis';
 import { superscript } from './inline/superscript';
 import { subscript } from './inline/subscript';
 import { code } from './inline/code';
+import { mathinline } from './inline/mathinline';
 import { image } from './inline/image';
 import { link } from './inline/link';
 import { html } from './inline/html';
@@ -27,6 +28,7 @@ export import EmphasisParser = InlineParser.EmphasisParser;
 export import SuperScriptParser = InlineParser.SuperScriptParser;
 export import SubScriptParser = InlineParser.SubScriptParser;
 export import CodeParser = InlineParser.CodeParser;
+export import MathInlineParser = InlineParser.MathInlineParser;
 export import ImageParser = InlineParser.ImageParser;
 export import LinkParser = InlineParser.LinkParser;
 export import HTMLParser = InlineParser.HTMLParser;
@@ -43,6 +45,7 @@ export const inline: InlineParser = combine<[
   SuperScriptParser,
   SubScriptParser,
   CodeParser,
+  MathInlineParser,
   ImageParser,
   LinkParser,
   HTMLParser,
@@ -59,6 +62,7 @@ export const inline: InlineParser = combine<[
   superscript,
   subscript,
   code,
+  mathinline,
   image,
   link,
   html,
