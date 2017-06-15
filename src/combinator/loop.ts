@@ -1,4 +1,4 @@
-﻿import { Parser, Result } from '../parser';
+﻿import { Parser, Result } from './parser';
 
 export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, until?: string | RegExp): Parser<R, P> {
   return (source: string): Result<R, P> => {

@@ -1,4 +1,4 @@
-import { Parser, Result } from './src/parser';
+import { Parser, Result } from './src/combinator/parser';
 
 declare abstract class Markdown<T> {
   private MARKDOWN?: T;

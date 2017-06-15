@@ -1,4 +1,4 @@
-﻿import { Result } from '../parser';
+﻿import { Result } from '../combinator/parser';
 
 export function inspect(r: Result<HTMLElement | Text, any>): [string[], string] | undefined {
   return r

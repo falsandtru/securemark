@@ -1,4 +1,4 @@
-﻿import { Result } from '../../../parser';
+﻿import { Result } from '../../../combinator/parser';
 import { Zalgo } from '../../text';
 
 const syntax = /^(?:\\?[\u0300-\u036F])+/;

@@ -1,5 +1,5 @@
 ﻿import { Markdown } from '../../../../markdown.d';
-import { Parser, Result } from '../../../parser';
+import { Parser, Result } from '../../../combinator/parser';
 import { loop } from '../../../combinator/loop';
 import { PreTextParser, consumeBlockEndEmptyLine } from '../../block';
 import { inline } from '../../inline';

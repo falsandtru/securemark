@@ -1,4 +1,4 @@
-﻿import { Parser, Result } from '../parser';
+﻿import { Parser, Result } from './parser';
 import { combine } from './combine';
 import { loop } from './loop';
 

@@ -1,4 +1,4 @@
-﻿import { Parser } from '../parser';
+﻿import { Parser } from './parser';
 
 export function combine<P extends Parser<R, any>[], R>(parsers: P): Parser<R, P> {
   assert(parsers.every(f => !!f));

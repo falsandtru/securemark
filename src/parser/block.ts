@@ -1,4 +1,4 @@
-﻿import { Parser, Result } from '../parser';
+﻿import { Parser, Result } from '../combinator/parser';
 import { MarkdownParser } from '../../markdown.d';
 import { combine } from '../combinator/combine';
 import { newline } from './block/newline';

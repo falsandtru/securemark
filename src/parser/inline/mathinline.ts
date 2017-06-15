@@ -1,4 +1,4 @@
-﻿import { Result } from '../../parser';
+﻿import { Result } from '../../combinator/parser';
 import { MathInlineParser } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';

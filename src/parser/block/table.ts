@@ -1,4 +1,4 @@
-﻿import { Result } from '../../parser';
+﻿import { Result } from '../../combinator/parser';
 import { loop } from '../../combinator/loop';
 import { TableParser, consumeBlockEndEmptyLine } from '../block';
 import { InlineParser, inline } from '../inline';

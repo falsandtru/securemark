@@ -1,4 +1,4 @@
-﻿import { Result } from '../../parser';
+﻿import { Result } from '../../combinator/parser';
 import { HorizontalRuleParser, consumeBlockEndEmptyLine } from '../block';
 
 const syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;

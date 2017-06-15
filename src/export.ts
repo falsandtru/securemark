@@ -1,2 +1,2 @@
-﻿export { parse } from './parser';
-export { bind } from './viewer/bind';
+﻿export { parse } from './renderer/parser';
+export { bind } from './renderer/bind';

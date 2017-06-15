@@ -1,4 +1,4 @@
-﻿import { Result } from '../../parser';
+﻿import { Result } from '../../combinator/parser';
 import { MathTextParser, Zalgo } from '../text';
 import { zalgo } from './zalgo/plaintext';
 

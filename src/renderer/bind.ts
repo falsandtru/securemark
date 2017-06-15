@@ -1,4 +1,4 @@
-﻿import { parse } from '../parser';
+﻿import { parse } from './parser';
 import { segment } from '../parser/segment';
 
 export function bind(node: Node): (source: string) => HTMLElement[] {
