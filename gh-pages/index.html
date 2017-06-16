@@ -69,7 +69,7 @@
   document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
-    '# $LaTeX\\ in\\ Markdown$',
+    '# $LaTeX$ in Markdown',
     '',
     'Markdown',
     '+',
@@ -94,13 +94,21 @@
     '$$',
     '```',
     '',
-    'Superscript: 19^th^\\',
-    'Subscript: H~2~O\\',
-    '',
     '[external link](https://google.com)\\',
     '[nofollow link](# nofollow)\\',
     '',
-    '- A',
+    'Superscript: 19^th^\\',
+    'Subscript: H~2~O\\',
+    '',
+    '~ term',
+    'definition',
+    '',
+    '>> **a',
+    'b**',
+    '',
+    '|>> **a',
+    'b**',
+    '> - A',
     '  1. a',
     '  1. b',
     '  1. c',
@@ -112,14 +120,6 @@
     '  7. a',
     '  1. b',
     '  1. c',
-    '',
-    '~ term',
-    'definition',
-    '',
-    '>> a',
-    'b',
-    '> c',
-    'd',
     '',
     ''
   ].join('\n');
@@ -145,7 +145,7 @@
           });
         Array.from(el.matches('.math') ? [el] : el.querySelectorAll('.math'))
           .forEach(function (el) {
-            void MathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
+            MathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
           });
       });
     share();

@@ -2,6 +2,7 @@
 
 ## 0.21.0
 
+- Extend blockquote syntax.
 - Relax olist syntax.
 - Fix constraints of list children.
 

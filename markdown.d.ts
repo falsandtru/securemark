@@ -90,6 +90,8 @@ export namespace MarkdownParser {
       Markdown<'blockquote'>,
       Parser<HTMLQuoteElement, [
         TextParser.PlainTextParser
+      ] | [
+        BlockParser
       ]> {
     }
     export interface PreTextParser extends

@@ -2,14 +2,21 @@
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { BlockquoteParser, consumeBlockEndEmptyLine } from '../block';
+import { BlockParser, block } from '../block';
 import { PlainTextParser, squash } from '../text';
 import { plaintext } from '../text/plaintext';
 
-type SubParsers = [PlainTextParser];
+type SubParsers = [PlainTextParser] | [BlockParser];
 
 const syntax = /^>+(?=[ \n]|$)/;
 
 export const blockquote: BlockquoteParser = function (source: string): Result<HTMLQuoteElement, SubParsers> {
+  const mode = source.startsWith('|>')
+    ? 'block'
+    : 'plain';
+  source = mode === 'block'
+    ? source.slice(1)
+    : source;
   let [indent] = source.match(syntax) || [''];
   if (!indent) return;
   const top = document.createElement('blockquote');
@@ -38,12 +45,45 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
     if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
       void bottom.appendChild(document.createElement('br'));
     }
-    const text = line.split(' ', 1)[0] === indent
-      ? line.trim().slice(indent.length + 1).replace(/ /g, String.fromCharCode(160))
-      : `>${line}`.trim().slice(1).replace(/ /g, String.fromCharCode(160));
-    void bottom.appendChild(squash((loop(combine<SubParsers, Text>([plaintext]))(text) || [[document.createTextNode('')]])[0]));
+    const text = line
+      .slice(line.split(' ', 1)[0] === indent ? indent.length + 1 : 0)
+      .replace(mode === 'plain' ? / /g : /$^/, String.fromCharCode(160));
+    void bottom.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([plaintext]))(text) || [[document.createTextNode('')]])[0]));
     if (bottom.childNodes.length === 1 && bottom.firstChild!.textContent!.trim() === '') return;
     source = source.slice(line.length + 1);
   }
+  if (mode === 'block') {
+    void expand(top);
+  }
   return consumeBlockEndEmptyLine<HTMLQuoteElement, SubParsers>([top], source);
 };
+
+function expand(el: HTMLQuoteElement): void {
+  return void Array.from(el.childNodes)
+    .reduce<string[]>((ss, node) => {
+      if (node instanceof Text) {
+        void ss.push(node.textContent!);
+      }
+      if (node instanceof HTMLBRElement) {
+        void ss.push('\n');
+      }
+      if (node instanceof HTMLQuoteElement) {
+        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
+        void expand(node);
+      }
+      if (!node.nextSibling) {
+        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
+      }
+      if (node instanceof HTMLQuoteElement) return ss;
+      void el.removeChild(node);
+      return ss;
+    }, []);
+
+  function parse(source: string): DocumentFragment {
+    return (loop(block)(source) || [<HTMLElement[]>[]])[0]
+      .reduce((frag, node) => (
+        frag.appendChild(node),
+        frag
+      ), document.createDocumentFragment());
+  }
+}
