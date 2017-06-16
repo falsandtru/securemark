@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.21.0
+
+- Fix constraints of list children.
+
 ## 0.20.0
 
 - Change bind function design.

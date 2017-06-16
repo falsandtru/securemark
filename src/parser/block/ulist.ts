@@ -21,7 +21,7 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
     if (line.trim() === '') break;
     if (line.search(syntax) === 0) {
       if (!line.startsWith(flag)) return;
-      const [text, checkbox = ''] = line.slice(1).trim().match(content)!;
+      const [text, checkbox = ''] = line.slice(line.split(' ', 1)[0].length + 1).trim().match(content)!;
       assert(checkbox === '' || checkbox.slice(0, 3) === '[ ]' || checkbox.slice(0, 3) === '[x]');
       assert(checkbox.slice(3).trim() === '');
       const li = el.appendChild(document.createElement('li'));
@@ -36,12 +36,13 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
       continue;
     }
     else {
-      if (el.lastElementChild!.lastElementChild && ['ul', 'ol'].indexOf(el.lastElementChild!.lastElementChild!.tagName.toLowerCase()) !== -1) return;
+      const li = el.lastElementChild!;
+      if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
       const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], block];
-      if (children.length === 0 || brest.length !== 0) return;
-      void el.lastElementChild!.appendChild(squash(children));
+      if (children.length !== 1 || brest.length !== 0) return;
+      void li.appendChild(squash(children));
       source = rest;
       continue;
     }

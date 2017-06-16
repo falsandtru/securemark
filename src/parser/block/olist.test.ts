@@ -16,9 +16,11 @@ describe('Unit: parser/olist', () => {
       assert.deepStrictEqual(inspect(parser('1.1')), void 0);
       assert.deepStrictEqual(inspect(parser('1.1.')), void 0);
       assert.deepStrictEqual(inspect(parser('1.a')), void 0);
-      assert.deepStrictEqual(inspect(parser('1.\n*')), void 0);
-      assert.deepStrictEqual(inspect(parser('1.\n  1.\n 1.')), void 0);
+      assert.deepStrictEqual(inspect(parser('1.\n 1.')), void 0);
+      assert.deepStrictEqual(inspect(parser('1.\n 1. a')), void 0);
+      assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), void 0);
       assert.deepStrictEqual(inspect(parser(' 1.')), void 0);
+      assert.deepStrictEqual(inspect(parser('1.\n-')), void 0);
     });
 
     it('single', () => {
