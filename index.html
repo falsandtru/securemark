@@ -50,12 +50,15 @@
 <script src="https://cdn.polyfill.io/v2/polyfill.js?features=default,String.prototype.repeat&flags=gated"></script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
-    CommonHTML: { matchFontHeight: false },
+    CommonHTML: {
+      matchFontHeight: false
+    },
     tex2jax: {
-      inlineMath: [['$','$']],//, ['\\(','\\)']],
-      displayMath: [['$$','$$']],//, ['\[','\]']],
+      inlineMath: [['$','$']],
+      displayMath: [['$$','$$']],
       processEscapes: true
     },
+    messageStyle: 'none',
     skipStartupTypeset: true
   });
 </script>
@@ -76,7 +79,7 @@
     '',
     '$0 - $100\\',
     '$E = mc^2$\\',
-    '`$E = mc^2$`',
+    '`$E = mc^2$`\\',
     '',
     '$$',
     '\\frac{\\pi}{2} =',
@@ -120,21 +123,20 @@
     '',
     ''
   ].join('\n');
-  var parse = require('securemark').parse;
-  var render = require('securemark').bind(document.getElementById('viewer'));
-  update(render(document.getElementById('editor').value));
+  var parse = require('securemark').bind(document.getElementById('viewer'));
+  render(parse(document.getElementById('editor').value));
   share();
   var timer = 0;
   document.getElementById('editor').addEventListener('keyup', function () {
     clearTimeout(timer);
     timer = setTimeout(function () {
       var time = Date.now();
-      update(render(document.getElementById('editor').value));
+      render(parse(document.getElementById('editor').value));
       var partial = Date.now() - time;
       document.getElementById('time').textContent = partial;
     }, 300);
   });
-  function update(es) {
+  function render(es) {
     es
       .forEach(function (el) {
         Array.from(el.querySelectorAll('img:not([src])'))
