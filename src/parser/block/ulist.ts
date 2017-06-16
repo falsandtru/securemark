@@ -9,7 +9,7 @@ import { squash } from '../text';
 
 type SubParsers = [InlineParser] | [UListParser, OListParser];
 
-const syntax = /^([-+*])(?:\s|$)/;
+const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
 
 export const ulist: UListParser = function (source: string): Result<HTMLUListElement, SubParsers> {
@@ -40,7 +40,7 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
-      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], block];
+      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, str => `${str}.`)) || [[], block];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

@@ -2,6 +2,7 @@
 
 ## 0.21.0
 
+- Relax olist syntax.
 - Fix constraints of list children.
 
 ## 0.20.0

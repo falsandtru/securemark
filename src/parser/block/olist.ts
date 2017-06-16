@@ -9,14 +9,14 @@ import { squash } from '../text';
 
 type SubParsers = [InlineParser] | [UListParser, OListParser];
 
-const syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?:\s|$)/;
+const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
 
 export const olist: OListParser = function (source: string): Result<HTMLOListElement, SubParsers> {
-  const [whole, index] = source.match(syntax) || ['', ''];
-  if (!whole) return;
+  const [whole, index, flag] = source.match(syntax) || ['', '', ''];
+  if (!whole || !flag) return;
   const el = document.createElement('ol');
   void el.setAttribute('start', index);
-  void el.setAttribute('type', !isNaN(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A');
+  void el.setAttribute('type', Number.isFinite(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A');
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
@@ -32,7 +32,7 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
-      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block) || [[], block];
+      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, str => `${str}.`)) || [[], block];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

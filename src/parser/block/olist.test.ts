@@ -13,6 +13,9 @@ describe('Unit: parser/olist', () => {
       assert.deepStrictEqual(inspect(parser('a1.')), void 0);
       assert.deepStrictEqual(inspect(parser('aZ.')), void 0);
       assert.deepStrictEqual(inspect(parser('Az.')), void 0);
+      assert.deepStrictEqual(inspect(parser('1')), void 0);
+      assert.deepStrictEqual(inspect(parser('1 ')), void 0);
+      assert.deepStrictEqual(inspect(parser('1\n')), void 0);
       assert.deepStrictEqual(inspect(parser('1.1')), void 0);
       assert.deepStrictEqual(inspect(parser('1.1.')), void 0);
       assert.deepStrictEqual(inspect(parser('1.a')), void 0);
@@ -35,6 +38,7 @@ describe('Unit: parser/olist', () => {
 
     it('multiple', () => {
       // pending
+      assert.deepStrictEqual(inspect(parser('1.\n1')), [['<ol start="1" type="1"><li></li><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1.\n1.')), [['<ol start="1" type="1"><li></li><li></li></ol>'], '']);
       // filled
       assert.deepStrictEqual(inspect(parser('1. 1\n1. 2')), [['<ol start="1" type="1"><li>1</li><li>2</li></ol>'], '']);
@@ -44,6 +48,9 @@ describe('Unit: parser/olist', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('1. 1\n 1')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li></li></ol></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. 1\n 1.')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li></li></ol></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. 1\n 1. ')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li></li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n 1. 2')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li>2</li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n 1. 2\n 1. 3')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li>2</li><li>3</li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n 1. 2\n  1. 3')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li>2<ol start="1" type="1"><li>3</li></ol></li></ol></li></ol>'], '']);
