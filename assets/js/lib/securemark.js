@@ -179,10 +179,13 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var block_1 = require('../block');
+            var block_2 = require('../block');
             var text_1 = require('../text');
             var plaintext_1 = require('../text/plaintext');
             var syntax = /^>+(?=[ \n]|$)/;
             exports.blockquote = function (source) {
+                var mode = source.startsWith('|>') ? 'block' : 'plain';
+                source = mode === 'block' ? source.slice(1) : source;
                 var indent = (source.match(syntax) || [''])[0];
                 if (!indent)
                     return;
@@ -209,14 +212,43 @@ require = function e(t, n, r) {
                     if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
                         void bottom.appendChild(document.createElement('br'));
                     }
-                    var text = line.split(' ', 1)[0] === indent ? line.trim().slice(indent.length + 1).replace(/ /g, String.fromCharCode(160)) : ('>' + line).trim().slice(1).replace(/ /g, String.fromCharCode(160));
+                    var text = line.slice(line.split(' ', 1)[0] === indent ? indent.length + 1 : 0).replace(mode === 'plain' ? / /g : /$^/, String.fromCharCode(160));
                     void bottom.appendChild(text_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(text) || [[document.createTextNode('')]])[0]));
                     if (bottom.childNodes.length === 1 && bottom.firstChild.textContent.trim() === '')
                         return;
                     source = source.slice(line.length + 1);
                 }
+                if (mode === 'block') {
+                    void expand(top);
+                }
                 return block_1.consumeBlockEndEmptyLine([top], source);
             };
+            function expand(el) {
+                return void Array.from(el.childNodes).reduce(function (ss, node) {
+                    if (node instanceof Text) {
+                        void ss.push(node.textContent);
+                    }
+                    if (node instanceof HTMLBRElement) {
+                        void ss.push('\n');
+                    }
+                    if (node instanceof HTMLQuoteElement) {
+                        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
+                        void expand(node);
+                    }
+                    if (!node.nextSibling) {
+                        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
+                    }
+                    if (node instanceof HTMLQuoteElement)
+                        return ss;
+                    void el.removeChild(node);
+                    return ss;
+                }, []);
+                function parse(source) {
+                    return (loop_1.loop(block_2.block)(source) || [[]])[0].reduce(function (frag, node) {
+                        return frag.appendChild(node), frag;
+                    }, document.createDocumentFragment());
+                }
+            }
         },
         {
             '../../combinator/combine': 4,
@@ -484,49 +516,62 @@ require = function e(t, n, r) {
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
             var text_1 = require('../text');
-            var syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?:\s|$)/;
+            var syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
             exports.olist = function (source) {
                 var _a = source.match(syntax) || [
                         '',
+                        '',
                         ''
-                    ], whole = _a[0], index = _a[1];
-                if (!whole)
+                    ], whole = _a[0], index = _a[1], flag = _a[2];
+                if (!whole || !flag)
                     return;
                 var el = document.createElement('ol');
                 void el.setAttribute('start', index);
-                void el.setAttribute('type', !isNaN(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A');
-                while (true) {
+                void el.setAttribute('type', Number.isFinite(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A');
+                var _loop_1 = function () {
                     var line = source.split('\n', 1)[0];
                     if (line.trim() === '')
-                        break;
+                        return 'break';
                     if (line.search(syntax) === 0) {
-                        var text = line.slice(line.indexOf('.') + 1).trim();
+                        var text = line.slice(line.split(' ', 1)[0].length + 1).trim();
                         var li = el.appendChild(document.createElement('li'));
                         void li.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text) || [[]])[0]));
                         source = source.slice(line.length + 1);
-                        continue;
+                        return 'continue';
                     } else {
-                        if (el.lastElementChild.lastElementChild && [
-                                'ul',
-                                'ol'
-                            ].indexOf(el.lastElementChild.lastElementChild.tagName.toLowerCase()) !== -1)
-                            return;
-                        var _b = indent_1.indent(source), block = _b[0], rest = _b[1];
+                        var li_1 = el.lastElementChild;
+                        if (!li_1.firstChild || [
+                                HTMLUListElement,
+                                HTMLOListElement
+                            ].some(function (E) {
+                                return li_1.lastElementChild instanceof E;
+                            }))
+                            return { value: void 0 };
+                        var _a = indent_1.indent(source), block = _a[0], rest = _a[1];
                         if (rest === source)
-                            return;
-                        var _c = combine_1.combine([
+                            return { value: void 0 };
+                        var _b = combine_1.combine([
                                 ulist_1.ulist,
                                 exports.olist
-                            ])(block) || [
+                            ])(block.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, function (str) {
+                                return str + '.';
+                            })) || [
                                 [],
                                 block
-                            ], children = _c[0], brest = _c[1];
-                        if (children.length === 0 || brest.length !== 0)
-                            return;
-                        void el.lastElementChild.appendChild(text_1.squash(children));
+                            ], children = _b[0], brest = _b[1];
+                        if (children.length !== 1 || brest.length !== 0)
+                            return { value: void 0 };
+                        void li_1.appendChild(text_1.squash(children));
                         source = rest;
-                        continue;
+                        return 'continue';
                     }
+                };
+                while (true) {
+                    var state_1 = _loop_1();
+                    if (typeof state_1 === 'object')
+                        return state_1.value;
+                    if (state_1 === 'break')
+                        break;
                 }
                 return block_1.consumeBlockEndEmptyLine([el], source);
             };
@@ -741,7 +786,7 @@ require = function e(t, n, r) {
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
             var text_1 = require('../text');
-            var syntax = /^([-+*])(?:\s|$)/;
+            var syntax = /^([-+*])(?=\s|$)/;
             var content = /^(\[[ x]\](?: +|$))?.*$/;
             exports.ulist = function (source) {
                 var _a = source.match(syntax) || [
@@ -751,14 +796,14 @@ require = function e(t, n, r) {
                 if (!whole)
                     return;
                 var el = document.createElement('ul');
-                while (true) {
+                var _loop_1 = function () {
                     var line = source.split('\n', 1)[0];
                     if (line.trim() === '')
-                        break;
+                        return 'break';
                     if (line.search(syntax) === 0) {
                         if (!line.startsWith(flag))
-                            return;
-                        var _b = line.slice(1).trim().match(content), text = _b[0], _c = _b[1], checkbox = _c === void 0 ? '' : _c;
+                            return { value: void 0 };
+                        var _a = line.slice(line.split(' ', 1)[0].length + 1).trim().match(content), text = _a[0], _b = _a[1], checkbox = _b === void 0 ? '' : _b;
                         var li = el.appendChild(document.createElement('li'));
                         if (checkbox) {
                             var cb = document.createElement('span');
@@ -768,29 +813,41 @@ require = function e(t, n, r) {
                         }
                         void li.appendChild(text_1.squash((loop_1.loop(combine_1.combine([inline_1.inline]))(text.slice(checkbox.length)) || [[]])[0]));
                         source = source.slice(line.length + 1);
-                        continue;
+                        return 'continue';
                     } else {
-                        if (el.lastElementChild.lastElementChild && [
-                                'ul',
-                                'ol'
-                            ].indexOf(el.lastElementChild.lastElementChild.tagName.toLowerCase()) !== -1)
-                            return;
-                        var _d = indent_1.indent(source), block = _d[0], rest = _d[1];
+                        var li_1 = el.lastElementChild;
+                        if (!li_1.firstChild || [
+                                HTMLUListElement,
+                                HTMLOListElement
+                            ].some(function (E) {
+                                return li_1.lastElementChild instanceof E;
+                            }))
+                            return { value: void 0 };
+                        var _c = indent_1.indent(source), block = _c[0], rest = _c[1];
                         if (rest === source)
-                            return;
-                        var _e = combine_1.combine([
+                            return { value: void 0 };
+                        var _d = combine_1.combine([
                                 exports.ulist,
                                 olist_1.olist
-                            ])(block) || [
+                            ])(block.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, function (str) {
+                                return str + '.';
+                            })) || [
                                 [],
                                 block
-                            ], children = _e[0], brest = _e[1];
-                        if (children.length === 0 || brest.length !== 0)
-                            return;
-                        void el.lastElementChild.appendChild(text_1.squash(children));
+                            ], children = _d[0], brest = _d[1];
+                        if (children.length !== 1 || brest.length !== 0)
+                            return { value: void 0 };
+                        void li_1.appendChild(text_1.squash(children));
                         source = rest;
-                        continue;
+                        return 'continue';
                     }
+                };
+                while (true) {
+                    var state_1 = _loop_1();
+                    if (typeof state_1 === 'object')
+                        return state_1.value;
+                    if (state_1 === 'break')
+                        break;
                 }
                 return block_1.consumeBlockEndEmptyLine([el], source);
             };
