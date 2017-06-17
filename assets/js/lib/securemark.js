@@ -184,8 +184,8 @@ require = function e(t, n, r) {
             var plaintext_1 = require('../text/plaintext');
             var syntax = /^>+(?=[ \n]|$)/;
             exports.blockquote = function (source) {
-                var mode = source.startsWith('|>') ? 'block' : 'plain';
-                source = mode === 'block' ? source.slice(1) : source;
+                var mode = source.startsWith('|>') ? 'markdown' : 'plain';
+                source = mode === 'markdown' ? source.slice(1) : source;
                 var indent = (source.match(syntax) || [''])[0];
                 if (!indent)
                     return;
@@ -209,39 +209,36 @@ require = function e(t, n, r) {
                         }, bottom);
                     }
                     indent = indent[0].repeat(indent.length + diff);
-                    if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
-                        void bottom.appendChild(document.createElement('br'));
+                    if (bottom.lastChild instanceof Text) {
+                        var node_1 = mode === 'plain' ? document.createElement('br') : document.createTextNode('\n');
+                        void bottom.appendChild(node_1);
                     }
-                    var text = line.slice(line.split(' ', 1)[0] === indent ? indent.length + 1 : 0).replace(mode === 'plain' ? / /g : /$^/, String.fromCharCode(160));
-                    void bottom.appendChild(text_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(text) || [[document.createTextNode('')]])[0]));
-                    if (bottom.childNodes.length === 1 && bottom.firstChild.textContent.trim() === '')
+                    var text = line.split(' ', 1)[0] === indent ? line.slice(indent.length + 1) : line;
+                    var node = mode === 'plain' ? text_1.squash((loop_1.loop(combine_1.combine([plaintext_1.plaintext]))(text.replace(/ /g, String.fromCharCode(160))) || [[document.createTextNode('')]])[0]) : document.createTextNode(text);
+                    if (bottom.childNodes.length === 0 && node.textContent.trim() === '')
                         return;
+                    void bottom.appendChild(node);
                     source = source.slice(line.length + 1);
                 }
-                if (mode === 'block') {
+                if (mode === 'markdown') {
                     void expand(top);
                 }
                 return block_1.consumeBlockEndEmptyLine([top], source);
             };
             function expand(el) {
                 return void Array.from(el.childNodes).reduce(function (ss, node) {
-                    if (node instanceof Text) {
-                        void ss.push(node.textContent);
-                    }
-                    if (node instanceof HTMLBRElement) {
-                        void ss.push('\n');
-                    }
                     if (node instanceof HTMLQuoteElement) {
-                        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
                         void expand(node);
+                        return [];
+                    } else {
+                        void ss.push(node.textContent);
+                        var ref = node.nextSibling;
+                        void el.removeChild(node);
+                        if (ref instanceof Text)
+                            return ss;
+                        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), ref);
+                        return [];
                     }
-                    if (!node.nextSibling) {
-                        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
-                    }
-                    if (node instanceof HTMLQuoteElement)
-                        return ss;
-                    void el.removeChild(node);
-                    return ss;
                 }, []);
                 function parse(source) {
                     return (loop_1.loop(block_2.block)(source) || [[]])[0].reduce(function (frag, node) {
