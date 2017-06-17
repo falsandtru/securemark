@@ -12,9 +12,9 @@ const syntax = /^>+(?=[ \n]|$)/;
 
 export const blockquote: BlockquoteParser = function (source: string): Result<HTMLQuoteElement, SubParsers> {
   const mode = source.startsWith('|>')
-    ? 'block'
+    ? 'markdown'
     : 'plain';
-  source = mode === 'block'
+  source = mode === 'markdown'
     ? source.slice(1)
     : source;
   let [indent] = source.match(syntax) || [''];
@@ -42,17 +42,23 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
     }
     assert(indent.length + diff > 0);
     indent = indent[0].repeat(indent.length + diff);
-    if (bottom.lastChild && bottom.lastChild !== bottom.lastElementChild) {
-      void bottom.appendChild(document.createElement('br'));
+    if (bottom.lastChild instanceof Text) {
+      const node = mode === 'plain'
+        ? document.createElement('br')
+        : document.createTextNode('\n');
+      void bottom.appendChild(node);
     }
-    const text = line
-      .slice(line.split(' ', 1)[0] === indent ? indent.length + 1 : 0)
-      .replace(mode === 'plain' ? / /g : /$^/, String.fromCharCode(160));
-    void bottom.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([plaintext]))(text) || [[document.createTextNode('')]])[0]));
-    if (bottom.childNodes.length === 1 && bottom.firstChild!.textContent!.trim() === '') return;
+    const text = line.split(' ', 1)[0] === indent
+      ? line.slice(indent.length + 1)
+      : line;
+    const node = mode === 'plain'
+      ? squash((loop(combine<SubParsers, HTMLElement | Text>([plaintext]))(text.replace(/ /g, String.fromCharCode(160))) || [[document.createTextNode('')]])[0])
+      : document.createTextNode(text);
+    if (bottom.childNodes.length === 0 && node.textContent!.trim() === '') return;
+    void bottom.appendChild(node);
     source = source.slice(line.length + 1);
   }
-  if (mode === 'block') {
+  if (mode === 'markdown') {
     void expand(top);
   }
   return consumeBlockEndEmptyLine<HTMLQuoteElement, SubParsers>([top], source);
@@ -61,22 +67,19 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
 function expand(el: HTMLQuoteElement): void {
   return void Array.from(el.childNodes)
     .reduce<string[]>((ss, node) => {
-      if (node instanceof Text) {
-        void ss.push(node.textContent!);
-      }
-      if (node instanceof HTMLBRElement) {
-        void ss.push('\n');
-      }
+      assert(node instanceof Text || node instanceof HTMLQuoteElement);
       if (node instanceof HTMLQuoteElement) {
-        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
         void expand(node);
+        return [];
       }
-      if (!node.nextSibling) {
-        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), node);
+      else {
+        void ss.push(node.textContent!);
+        const ref = node.nextSibling;
+        void el.removeChild(node);
+        if (ref instanceof Text) return ss;
+        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), ref);
+        return [];
       }
-      if (node instanceof HTMLQuoteElement) return ss;
-      void el.removeChild(node);
-      return ss;
     }, []);
 
   function parse(source: string): DocumentFragment {
