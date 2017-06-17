@@ -445,6 +445,12 @@ require = function e(t, n, r) {
             }
             exports.indent = indent;
             ;
+            function fillOListFlag(source) {
+                return source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, function (str) {
+                    return str + '.';
+                });
+            }
+            exports.fillOListFlag = fillOListFlag;
         },
         {}
     ],
@@ -550,9 +556,7 @@ require = function e(t, n, r) {
                         var _b = combine_1.combine([
                                 ulist_1.ulist,
                                 exports.olist
-                            ])(block.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, function (str) {
-                                return str + '.';
-                            })) || [
+                            ])(indent_1.fillOListFlag(block)) || [
                                 [],
                                 block
                             ], children = _b[0], brest = _b[1];
@@ -826,9 +830,7 @@ require = function e(t, n, r) {
                         var _d = combine_1.combine([
                                 exports.ulist,
                                 olist_1.olist
-                            ])(block.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, function (str) {
-                                return str + '.';
-                            })) || [
+                            ])(indent_1.fillOListFlag(block)) || [
                                 [],
                                 block
                             ], children = _d[0], brest = _d[1];
