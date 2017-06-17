@@ -3,7 +3,7 @@ import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { UListParser, OListParser, consumeBlockEndEmptyLine } from '../block';
 import { ulist } from './ulist';
-import { indent } from './indent';
+import { indent, fillOListFlag } from './indent';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../text';
 
@@ -32,7 +32,7 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
-      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(block.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, str => `${str}.`)) || [[], block];
+      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(fillOListFlag(block)) || [[], block];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

@@ -12,3 +12,7 @@ export function indent(source: string): [string, string] {
   }
   return [lines.join('\n'), source];
 };
+
+export function fillOListFlag(source: string): string {
+  return source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, str => `${str}.`);
+}
