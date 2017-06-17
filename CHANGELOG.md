@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.21.1
+
+- Refactoring.
+
 ## 0.21.0
 
 - Extend blockquote syntax.
