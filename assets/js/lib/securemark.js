@@ -236,7 +236,7 @@ require = function e(t, n, r) {
                         void el.removeChild(node);
                         if (ref instanceof Text)
                             return ss;
-                        void el.insertBefore(parse(ss.splice(0, Infinity).join('')), ref);
+                        void el.insertBefore(parse(ss.join('')), ref);
                         return [];
                     }
                 }, []);
