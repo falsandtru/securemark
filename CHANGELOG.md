@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.21.2
+
+- Optimization.
+
 ## 0.21.1
 
 - Refactoring.
