@@ -7,3 +7,4 @@
 
 export function parse(source: string): DocumentFragment;
 export function bind(el: HTMLElement): (source: string) => HTMLElement[];
+export function render(el: HTMLElement): void;

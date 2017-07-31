@@ -6,6 +6,10 @@ describe('Unit: parser/url', () => {
       assert(sanitize('') === '');
     });
 
+    it('invalid', () => {
+      assert(sanitize(' a\n b\n') === 'a%0A%20b');
+    });
+
     it('protocol', () => {
       assert(sanitize('javascript:') === '');
       assert(sanitize('javascript:alert)') === '');

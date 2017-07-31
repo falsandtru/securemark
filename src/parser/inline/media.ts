@@ -5,6 +5,7 @@ import { MediaParser } from '../inline';
 import { TextParser } from '../text';
 import { text } from '../text/text';
 import { sanitize } from '../text/url';
+import DOM from 'typed-dom';
 
 type SubParsers = [TextParser];
 
@@ -19,9 +20,11 @@ export const media: MediaParser = function (source: string): Result<HTMLImageEle
   if (!rest.startsWith(')')) return;
   const url = sanitize(second.reduce((s, c) => s + c.textContent, ''));
   if (url === '') return;
-  const el = document.createElement('img');
-  void el.setAttribute('class', 'media');
-  void el.setAttribute('data-src', url);
-  void el.setAttribute('alt', caption);
+  const el = DOM.img({
+    class: 'media',
+    'data-src': url,
+    alt: caption,
+    style: 'max-width: 100%;',
+  }, []).element;
   return [[el], rest.slice(1)];
 };

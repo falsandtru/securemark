@@ -1,8 +1,8 @@
 ﻿import { parse } from './parser';
 
-describe('Unit: parser', () => {
+describe('Unit: renderer/parser', () => {
   describe('parse', () => {
-    it('return type', () => {
+    it('result', () => {
       assert(parse('') instanceof DocumentFragment);
     });
 

@@ -1,5 +1,5 @@
 ﻿export function sanitize(url: string): string {
-  url = url.trim();
+  url = url.trim().replace(/\s/g, encodeURIComponent);
   return isAcceptedProtocol(url)
     ? url
     : '';

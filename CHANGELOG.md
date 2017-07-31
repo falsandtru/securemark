@@ -2,6 +2,7 @@
 
 ## 0.22.0
 
+- Add render function.
 - Extend autolink syntax.
 
 ## 0.21.2
