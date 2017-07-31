@@ -1,7 +1,7 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { ImageParser } from '../inline';
+import { MediaParser } from '../inline';
 import { TextParser } from '../text';
 import { text } from '../text/text';
 import { sanitize } from '../text/url';
@@ -10,7 +10,7 @@ type SubParsers = [TextParser];
 
 const syntax = /^!\[[^\n]*?\]\(/;
 
-export const image: ImageParser = function (source: string): Result<HTMLImageElement, never> {
+export const media: MediaParser = function (source: string): Result<HTMLImageElement, never> {
   if (!source.startsWith('![') || source.search(syntax) !== 0) return;
   const [[, , ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\(|^\n/)(source) || [[], ''];
   if (!next.startsWith('](')) return;
@@ -20,6 +20,7 @@ export const image: ImageParser = function (source: string): Result<HTMLImageEle
   const url = sanitize(second.reduce((s, c) => s + c.textContent, ''));
   if (url === '') return;
   const el = document.createElement('img');
+  void el.setAttribute('class', 'media');
   void el.setAttribute('data-src', url);
   void el.setAttribute('alt', caption);
   return [[el], rest.slice(1)];

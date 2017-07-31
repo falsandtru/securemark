@@ -63,18 +63,19 @@ describe('Unit: parser/text', () => {
     });
 
     it('uri', () => {
-      assert.deepStrictEqual(inspect(parser('http:')), [['h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('https:')), [['h', 't', 'tps', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('_http:')), [['_', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('$http:')), [['$', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('+http:')), [['+', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('-http:')), [['-', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('0http:')), [['0', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('ahttp:')), [['a', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('Ahttp:')), [['A', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('0aAhttp:')), [['0a', 'A', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser(' http:')), [[' ', 'h', 't', 'tp', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('hhttp:')), [['h', 'h', 't', 'tp', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('http:')), [['http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('https:')), [['https', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('_http:')), [['_', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('$http:')), [['$', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('+http:')), [['+', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('-http:')), [['-', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('0http:')), [['0', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('ahttp:')), [['a', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('Ahttp:')), [['A', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('0aAhttp:')), [['0a', 'A', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser(' http:')), [[' ', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('hhttp:')), [['h', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('!http:')), [['!', 'http', ':'], '']);
     });
 
     it('account', () => {

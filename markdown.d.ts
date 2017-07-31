@@ -141,7 +141,7 @@ export namespace MarkdownParser {
       InlineParser.SubScriptParser,
       InlineParser.CodeParser,
       InlineParser.MathInlineParser,
-      InlineParser.ImageParser,
+      InlineParser.MediaParser,
       InlineParser.LinkParser,
       InlineParser.HTMLParser,
       InlineParser.HTMLEntityParser,
@@ -220,9 +220,9 @@ export namespace MarkdownParser {
         TextParser.MathTextParser
       ]> {
     }
-    export interface ImageParser extends
+    export interface MediaParser extends
       // ![abc](url)
-      Markdown<'image'>,
+      Markdown<'media'>,
       Parser<HTMLImageElement, [
         TextParser.TextParser
       ]> {

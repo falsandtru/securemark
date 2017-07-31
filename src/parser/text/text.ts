@@ -2,7 +2,7 @@
 import { TextParser, Zalgo } from '../text';
 import { zalgo } from './zalgo/text';
 
-const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|[0-9a-zA-Z]?h?ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]/;
+const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]/;
 const linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;
 
 export const text: TextParser = function (source: string): Result<HTMLBRElement | Text, [Zalgo.ZalgoTextParser]> {

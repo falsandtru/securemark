@@ -10,7 +10,7 @@ import { superscript } from './inline/superscript';
 import { subscript } from './inline/subscript';
 import { code } from './inline/code';
 import { mathinline } from './inline/mathinline';
-import { image } from './inline/image';
+import { media } from './inline/media';
 import { link } from './inline/link';
 import { html } from './inline/html';
 import { htmlentity } from './inline/htmlentity';
@@ -29,7 +29,7 @@ export import SuperScriptParser = InlineParser.SuperScriptParser;
 export import SubScriptParser = InlineParser.SubScriptParser;
 export import CodeParser = InlineParser.CodeParser;
 export import MathInlineParser = InlineParser.MathInlineParser;
-export import ImageParser = InlineParser.ImageParser;
+export import MediaParser = InlineParser.MediaParser;
 export import LinkParser = InlineParser.LinkParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
@@ -46,7 +46,7 @@ export const inline: InlineParser = combine<[
   SubScriptParser,
   CodeParser,
   MathInlineParser,
-  ImageParser,
+  MediaParser,
   LinkParser,
   HTMLParser,
   HTMLEntityParser,
@@ -63,7 +63,7 @@ export const inline: InlineParser = combine<[
   subscript,
   code,
   mathinline,
-  image,
+  media,
   link,
   html,
   htmlentity,

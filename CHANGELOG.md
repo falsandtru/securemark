@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.22.0
+
+- Extend autolink syntax.
+
 ## 0.21.2
 
 - Optimization.
