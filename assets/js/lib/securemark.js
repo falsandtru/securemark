@@ -77,8 +77,6 @@ require = function e(t, n, r) {
                     this.mode = this.children_ === void 0 ? 'empty' : typeof this.children_ === 'string' ? 'text' : Array.isArray(this.children_) ? 'collection' : 'struct';
                     this.structkeys = this.mode === 'struct' ? Object.keys(this.children_) : [];
                     this.tag;
-                    if (children_ === void 0)
-                        return;
                     switch (this.mode) {
                     case 'empty':
                         return;
@@ -1708,15 +1706,15 @@ require = function e(t, n, r) {
             var text_1 = require('../text');
             var text_2 = require('../text/text');
             var url_1 = require('../text/url');
-            var syntax = /^\[[^\n]*?\]\(/;
+            var syntax = /^\[[^\n]*?\]\n?\(/;
             exports.link = function (source) {
                 if (!source.startsWith('[') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), /^\]\(|^\n/)(' ' + source.slice(1)) || [
+                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), /^\]\n?\(|^\n/)(' ' + source.slice(1)) || [
                         [],
                         ''
                     ], _b = _a[0], first = _b.slice(1), next = _a[1];
-                if (!next.startsWith(']('))
+                if (!next.startsWith('](') && !next.startsWith(']\n('))
                     return;
                 var children = text_1.squash(first);
                 if (children.querySelector('a, .annotation'))
@@ -1730,7 +1728,7 @@ require = function e(t, n, r) {
                     if (children.textContent !== children.textContent.trim())
                         return;
                 }
-                var _c = loop_1.loop(text_2.text, /^\)|^\s(?!nofollow)/)('?' + next.slice(2)) || [
+                var _c = loop_1.loop(text_2.text, /^\)|^\s(?!nofollow)/)('?' + next.replace(/^\]\n?\(/, '')) || [
                         [],
                         ''
                     ], _d = _c[0], second = _d.slice(1), rest = _c[1];
@@ -1815,23 +1813,23 @@ require = function e(t, n, r) {
             var text_1 = require('../text/text');
             var url_1 = require('../text/url');
             var typed_dom_1 = require('typed-dom');
-            var syntax = /^!\[[^\n]*?\]\(/;
+            var syntax = /^!\[[^\n]*?\]\n?\(/;
             exports.media = function (source) {
                 if (!source.startsWith('![') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([text_1.text]), /^\]\(|^\n/)(source) || [
+                var _a = loop_1.loop(combine_1.combine([text_1.text]), /^\]\n?\(|^\n/)(source) || [
                         [],
                         ''
                     ], _b = _a[0], first = _b.slice(2), next = _a[1];
-                if (!next.startsWith(']('))
+                if (!next.startsWith('](') && !next.startsWith(']\n('))
                     return;
                 var caption = first.reduce(function (s, c) {
                     return s + c.textContent;
                 }, '').trim();
-                var _c = loop_1.loop(text_1.text, /^\)|^\s/)(next) || [
+                var _c = loop_1.loop(text_1.text, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [
                         [],
                         ''
-                    ], _d = _c[0], second = _d.slice(2), rest = _c[1];
+                    ], second = _c[0].slice(0), rest = _c[1];
                 if (!rest.startsWith(')'))
                     return;
                 var url = url_1.sanitize(second.reduce(function (s, c) {
@@ -2441,7 +2439,7 @@ require = function e(t, n, r) {
                     style: 'position: relative;'
                 }, [typed_dom_1.default.em('loading ' + url)], function () {
                     var outer = document.createElement('div');
-                    void $.ajax('https://www.slideshare.net/api/oembed/2?url=https://www.slideshare.net/' + url.split('//www.slideshare.net/', 2).pop() + '&format=json', {
+                    void $.ajax('https://www.slideshare.net/api/oembed/2?url=' + url + '&format=json', {
                         dataType: 'jsonp',
                         timeout: 10 * 1000,
                         success: function (_a) {
@@ -2482,7 +2480,7 @@ require = function e(t, n, r) {
                     style: 'position: relative;'
                 }, [typed_dom_1.default.em('loading ' + url)], function () {
                     var outer = document.createElement('div');
-                    void $.ajax('https://publish.twitter.com/oembed?url=' + url.replace(/\?/, '&'), {
+                    void $.ajax('https://publish.twitter.com/oembed?url=' + url.replace('?', '&'), {
                         dataType: 'jsonp',
                         timeout: 10 * 1000,
                         success: function (_a) {
@@ -2515,7 +2513,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var typed_dom_1 = require('typed-dom');
             function youtube(url) {
-                var query = void 0 || url.startsWith('https://youtu.be/') && url.split('//youtu.be/', 2).pop() || url.startsWith('https://www.youtube.com/watch?v=') && url.split('=', 2).pop().replace(/&/, '?') || '';
+                var query = void 0 || url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9)) || url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?') || '';
                 if (!query)
                     return;
                 return typed_dom_1.default.div({
