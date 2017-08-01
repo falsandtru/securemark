@@ -37,6 +37,8 @@ describe('Unit: parser/media', () => {
       assert.deepStrictEqual(inspect(parser('![]( # )')), void 0);
       assert.deepStrictEqual(inspect(parser('![](# #)')), void 0);
       assert.deepStrictEqual(inspect(parser('![#]()')), void 0);
+      assert.deepStrictEqual(inspect(parser('![a\nb](ab)')), void 0);
+      assert.deepStrictEqual(inspect(parser('![ab](a\nb)')), void 0);
       assert.deepStrictEqual(inspect(parser('a![](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](#)')), void 0);
     });
@@ -48,6 +50,7 @@ describe('Unit: parser/media', () => {
       assert.deepStrictEqual(inspect(parser('![ a](b)')), [['<img class="media" data-src="b" alt="a" style="max-width: 100%;">'], '']);
       assert.deepStrictEqual(inspect(parser('![a ](b)')), [['<img class="media" data-src="b" alt="a" style="max-width: 100%;">'], '']);
       assert.deepStrictEqual(inspect(parser('![ a ](b)')), [['<img class="media" data-src="b" alt="a" style="max-width: 100%;">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]\n(b)')), [['<img class="media" data-src="b" alt="" style="max-width: 100%;">'], '']);
     });
 
     it('nest', () => {
