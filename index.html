@@ -47,7 +47,7 @@
 </footer>
 
 </div>
-<script src="https://cdn.polyfill.io/v2/polyfill.js?features=default,String.prototype.repeat&flags=gated"></script>
+<script src="https://cdn.polyfill.io/v2/polyfill.js?features=default,String.prototype.repeat,IntersectionObserver&flags=gated"></script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     CommonHTML: {
@@ -63,17 +63,20 @@
   });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML,Safe"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="/securemark/assets/js/lib/securemark.js"></script>
 
 <script>
   document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
-    '# $LaTeX$ in Markdown',
+    '# Securemark',
     '',
     'Markdown',
     '+',
     '$LaTeX$',
+    '',
+    '## LaTex',
     '',
     '$E = mc^2$\\',
     '`$E = mc^2$`\\',
@@ -94,14 +97,23 @@
     '$$',
     '```',
     '',
-    '[external link](https://google.com)\\',
-    '[nofollow link](# nofollow)\\',
+    '## Link',
     '',
-    'Superscript: 19^th^\\',
-    'Subscript: H~2~O\\',
+    '~ normal',
+    'https://google.com',
+    '~ nofollow',
+    'ttps://google.com',
     '',
-    '~ term',
-    'definition',
+    '## Media',
+    '',
+    '!https://youtu.be/xRF7WIZV4lA',
+    '!https://gist.github.com/falsandtru/cdf4a19b70012b0d6e3c9e1ec021e557',
+    '!https://www.slideshare.net/Slideshare/an-overview-to-slideshare-for-business',
+    '!https://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf',
+    '!https://twitter.com/hourenso_u/status/856828123882676225?hide_thread=true',
+    '!https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg',
+    '',
+    '## Blockquote',
     '',
     '>> **a',
     'b**',
@@ -124,29 +136,30 @@
     ''
   ].join('\n');
   var parse = require('securemark').bind(document.getElementById('viewer'));
-  render(parse(document.getElementById('editor').value));
-  share();
+  var render = require('securemark').render;
+  var observer = new IntersectionObserver(function (changes) {
+    changes
+      .forEach(function (change) {
+        render(change.target);
+      });
+  }, {
+    rootMargin: '100px',
+  });
+  display();
   var timer = 0;
   document.getElementById('editor').addEventListener('keyup', function () {
     clearTimeout(timer);
     timer = setTimeout(function () {
       var time = Date.now();
-      render(parse(document.getElementById('editor').value));
+      display();
       var partial = Date.now() - time;
       document.getElementById('time').textContent = partial;
     }, 300);
   });
-  function render(es) {
-    es
+  function display() {
+    parse(document.getElementById('editor').value)
       .forEach(function (el) {
-        Array.from(el.querySelectorAll('img:not([src])'))
-          .forEach(function (img) {
-            img.setAttribute('src', img.getAttribute('data-src'));
-          });
-        Array.from(el.matches('.math') ? [el] : el.querySelectorAll('.math'))
-          .forEach(function (el) {
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub, el]);
-          });
+        observer.observe(el);
       });
     share();
   }
