@@ -1,7 +1,6 @@
 ﻿import DOM from 'typed-dom';
 
-export function youtube(source: HTMLImageElement): HTMLElement | void {
-  const url = source.getAttribute('data-src')!;
+export function youtube(url: string): HTMLElement | void {
   const query = void 0
     || url.startsWith('https://youtu.be/') && url.split('//youtu.be/', 2).pop()
     || url.startsWith('https://www.youtube.com/watch?v=') && url.split('=', 2).pop()!.replace(/&/, '?')

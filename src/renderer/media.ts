@@ -8,13 +8,14 @@ import { image } from './media/image';
 export function media(source: HTMLImageElement): void {
   assert(source.parentElement);
   assert(source.hasAttribute('data-src'));
+  const url = source.getAttribute('data-src')!;
   const target = source.closest('a') || source;
   const el = void 0
-    || twitter(source)
-    || youtube(source)
-    || gist(source)
-    || slideshare(source)
-    || pdf(source)
+    || twitter(url)
+    || youtube(url)
+    || gist(url)
+    || slideshare(url)
+    || pdf(url)
     || image(source);
   void target.parentElement!.replaceChild(el, target);
 }

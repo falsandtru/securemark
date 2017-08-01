@@ -1,8 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse } from '../parser';
 
-export function twitter(source: HTMLImageElement): HTMLElement | void {
-  const url = source.getAttribute('data-src')!;
+export function twitter(url: string): HTMLElement | void {
   if (!url.startsWith('https://twitter.com/')) return;
   return DOM.div({
     class: 'media',

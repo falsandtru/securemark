@@ -1,8 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse } from '../parser';
 
-export function slideshare(source: HTMLImageElement): HTMLElement | void {
-  const url = source.getAttribute('data-src')!;
+export function slideshare(url: string): HTMLElement | void {
   if (!url.startsWith('https://www.slideshare.net/')) return;
   return DOM.div({
     class: 'media',

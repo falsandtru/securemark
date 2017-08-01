@@ -1,8 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse } from '../parser';
 
-export function gist(source: HTMLImageElement): HTMLElement | void {
-  const url = source.getAttribute('data-src')!;
+export function gist(url: string): HTMLElement | void {
   if (!url.startsWith('https://gist.github.com/')) return;
   return DOM.div({
     class: 'media',

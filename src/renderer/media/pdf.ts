@@ -1,8 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse } from '../parser';
 
-export function pdf(source: HTMLImageElement): HTMLElement | void {
-  const url = source.getAttribute('data-src')!;
+export function pdf(url: string): HTMLElement | void {
   if (!url.split(/[?#]/).shift()!.endsWith('.pdf') || url.split('/').length < 4) return;
   return DOM.div({
     class: 'media',
