@@ -8,12 +8,12 @@ import { sanitize } from '../text/url';
 
 type SubParsers = [InlineParser];
 
-const syntax = /^\[[^\n]*?\]\(/;
+const syntax = /^\[[^\n]*?\]\n?\(/;
 
 export const link: LinkParser = function (source: string): Result<HTMLAnchorElement, SubParsers> {
   if (!source.startsWith('[') || source.search(syntax) !== 0) return;
-  const [[, ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\(|^\n/)(` ${source.slice(1)}`) || [[], ''];
-  if (!next.startsWith('](')) return;
+  const [[, ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\n?\(|^\n/)(` ${source.slice(1)}`) || [[], ''];
+  if (!next.startsWith('](') && !next.startsWith(']\n(')) return;
   const children = squash(first);
   if (children.querySelector('a, .annotation')) return;
   if (children.querySelector('img')) {
@@ -23,7 +23,7 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
     if (children.textContent !== children.textContent!.trim()) return;
   }
-  const [[, ...second], rest] = loop(text, /^\)|^\s(?!nofollow)/)(`?${next.slice(2)}`) || [[], ''];
+  const [[, ...second], rest] = loop(text, /^\)|^\s(?!nofollow)/)(`?${next.replace(/^\]\n?\(/, '')}`) || [[], ''];
   if (!rest.startsWith(')')) return;
   const [INSECURE_URL, nofollow] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
   const url = sanitize(INSECURE_URL);

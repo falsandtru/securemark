@@ -2,6 +2,7 @@
 
 ## 0.23.0
 
+- Extend link syntax.
 - Fix media url parsing.
 
 ## 0.22.0

@@ -54,6 +54,8 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[<wbr>](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[http://host](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[http://host](http://host)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[a\nb](ab)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[ab](a\nb)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](#)')), void 0);
     });
 
@@ -65,6 +67,7 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[a]()')), [['<a href="">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a](b)')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a b](c)')), [['<a href="c">a b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]\n(b)')), [['<a href="b">b</a>'], '']);
     });
 
     it('image', () => {
