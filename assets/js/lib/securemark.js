@@ -2315,8 +2315,9 @@ require = function e(t, n, r) {
             var pdf_1 = require('./media/pdf');
             var image_1 = require('./media/image');
             function media(source) {
+                var url = source.getAttribute('data-src');
                 var target = source.closest('a') || source;
-                var el = void 0 || twitter_1.twitter(source) || youtube_1.youtube(source) || gist_1.gist(source) || slideshare_1.slideshare(source) || pdf_1.pdf(source) || image_1.image(source);
+                var el = void 0 || twitter_1.twitter(url) || youtube_1.youtube(url) || gist_1.gist(url) || slideshare_1.slideshare(url) || pdf_1.pdf(url) || image_1.image(source);
                 void target.parentElement.replaceChild(el, target);
             }
             exports.media = media;
@@ -2336,8 +2337,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var typed_dom_1 = require('typed-dom');
             var parser_1 = require('../parser');
-            function gist(source) {
-                var url = source.getAttribute('data-src');
+            function gist(url) {
                 if (!url.startsWith('https://gist.github.com/'))
                     return;
                 return typed_dom_1.default.div({
@@ -2399,8 +2399,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var typed_dom_1 = require('typed-dom');
             var parser_1 = require('../parser');
-            function pdf(source) {
-                var url = source.getAttribute('data-src');
+            function pdf(url) {
                 if (!url.split(/[?#]/).shift().endsWith('.pdf') || url.split('/').length < 4)
                     return;
                 return typed_dom_1.default.div({
@@ -2434,8 +2433,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var typed_dom_1 = require('typed-dom');
             var parser_1 = require('../parser');
-            function slideshare(source) {
-                var url = source.getAttribute('data-src');
+            function slideshare(url) {
                 if (!url.startsWith('https://www.slideshare.net/'))
                     return;
                 return typed_dom_1.default.div({
@@ -2476,8 +2474,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var typed_dom_1 = require('typed-dom');
             var parser_1 = require('../parser');
-            function twitter(source) {
-                var url = source.getAttribute('data-src');
+            function twitter(url) {
                 if (!url.startsWith('https://twitter.com/'))
                     return;
                 return typed_dom_1.default.div({
@@ -2517,8 +2514,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var typed_dom_1 = require('typed-dom');
-            function youtube(source) {
-                var url = source.getAttribute('data-src');
+            function youtube(url) {
                 var query = void 0 || url.startsWith('https://youtu.be/') && url.split('//youtu.be/', 2).pop() || url.startsWith('https://www.youtube.com/watch?v=') && url.split('=', 2).pop().replace(/&/, '?') || '';
                 if (!query)
                     return;
