@@ -2,8 +2,8 @@
 
 export function youtube(url: string): HTMLElement | void {
   const query = void 0
-    || url.startsWith('https://youtu.be/') && url.split('//youtu.be/', 2).pop()
-    || url.startsWith('https://www.youtube.com/watch?v=') && url.split('=', 2).pop()!.replace(/&/, '?')
+    || url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9))
+    || url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?')
     || '';
   if (!query) return;
   return DOM.div({

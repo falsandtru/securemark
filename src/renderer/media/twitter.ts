@@ -8,7 +8,7 @@ export function twitter(url: string): HTMLElement | void {
     style: 'position: relative;',
   }, [DOM.em(`loading ${url}`)], () => {
     const outer = document.createElement('div');
-    void $.ajax(`https://publish.twitter.com/oembed?url=${url.replace(/\?/, '&')}`, {
+    void $.ajax(`https://publish.twitter.com/oembed?url=${url.replace('?', '&')}`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
       success({ html }) {

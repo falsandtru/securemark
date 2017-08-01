@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.23.0
+
+- Fix media url parsing.
+
 ## 0.22.0
 
 - Add render function.

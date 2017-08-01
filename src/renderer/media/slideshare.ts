@@ -8,7 +8,7 @@ export function slideshare(url: string): HTMLElement | void {
     style: 'position: relative;',
   }, [DOM.em(`loading ${url}`)], () => {
     const outer = document.createElement('div');
-    void $.ajax(`https://www.slideshare.net/api/oembed/2?url=https://www.slideshare.net/${url.split('//www.slideshare.net/', 2).pop()}&format=json`, {
+    void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${url}&format=json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
       success({ html }) {
