@@ -349,25 +349,21 @@ require = function e(t, n, r) {
                             return document.createElement(tag);
                         })(), attrs);
                     case 'object':
-                        return Object.keys(attrs).some(function (key) {
-                            return typeof attrs[key] === 'string';
-                        }) ? typeof children === 'function' ? new builder_1.TypedHTMLElement(attribute(attrs, (children || function () {
+                        factory = typeof children === 'function' ? children : factory || function () {
                             return document.createElement(tag);
-                        })()), void 0) : new builder_1.TypedHTMLElement(attribute(attrs, (factory || function () {
-                            return document.createElement(tag);
-                        })()), children) : new builder_1.TypedHTMLElement((children || function () {
-                            return document.createElement(tag);
-                        })(), attrs);
+                        };
+                        return [Object.keys(attrs)[0]].every(function (key) {
+                            return key === void 0 || typeof attrs[key] === 'object';
+                        }) ? new builder_1.TypedHTMLElement(factory(), attrs) : new builder_1.TypedHTMLElement(define(factory(), attrs), children === factory ? void 0 : children);
                     default:
                         throw new TypeError('Invalid arguments: [' + attrs + ', ' + children + ', ' + factory + ']');
                     }
                 }, obj;
             }, {});
-            function attribute(attrs, element) {
-                void Object.keys(attrs).forEach(function (name) {
-                    return void element.setAttribute(name, attrs[name] || '');
-                });
-                return element;
+            function define(el, attrs) {
+                return Object.keys(attrs).reduce(function (el, name) {
+                    return void el.setAttribute(name, attrs[name] || ''), el;
+                }, el);
             }
         },
         { './builder': 5 }
