@@ -19,7 +19,7 @@ export function youtube(url: string): HTMLElement | void {
         allowfullscreen: '',
         frameborder: '0',
         style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;',
-      }, []),
+      }),
     ]),
   ]).element;
 }

@@ -28,7 +28,7 @@ export function gist(url: string): HTMLElement | void {
           rel: 'stylesheet',
           href: stylesheet,
           crossorigin: 'anonymous',
-        }, []).element);
+        }).element);
       },
       error({ statusText }) {
         outer.innerHTML = parse(`*${url}\\\n-> ${statusText}*`).querySelector('p')!.innerHTML;

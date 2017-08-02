@@ -25,6 +25,6 @@ export const media: MediaParser = function (source: string): Result<HTMLImageEle
     'data-src': url,
     alt: caption,
     style: 'max-width: 100%;',
-  }, []).element;
+  }).element;
   return [[el], rest.slice(1)];
 };

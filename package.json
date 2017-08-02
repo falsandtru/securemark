@@ -56,8 +56,8 @@
     "pump": "^1.0.2",
     "run-sequence": "^2.1.0",
     "tsify": "^3.0.1",
-    "typed-dom": "0.0.34",
-    "typescript": "2.5.0-dev.20170731",
+    "typed-dom": "0.0.37",
+    "typescript": "2.5.0-dev.20170801",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

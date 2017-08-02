@@ -14,14 +14,14 @@ export function pdf(url: string): HTMLElement | void {
         type: 'application/pdf',
         data: url,
         style: 'width: 100%; height: 100%; min-height: 400px;',
-      }, [], () => {
+      }, () => {
         const el = document.createElement('object');
         el.typeMustMatch = true;
         return el;
       }),
     ]),
     DOM.div([
-      DOM.strong([], () =>
+      DOM.strong(() =>
         parse(`**${url}**`).querySelector('strong')!),
     ]),
   ]).element;
