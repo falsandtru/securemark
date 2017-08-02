@@ -16,11 +16,8 @@ export function gist(url: string): HTMLElement | void {
         const gist = <HTMLElement>outer.querySelector('.gist')!;
         void gist.insertBefore(
           DOM.div({ class: 'gist-description' }, [
-            DOM.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, () => {
-              const outer = parse(url).querySelector('a')!;
-              void outer.removeChild(outer.firstChild!);
-              return outer;
-            }),
+            DOM.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, () =>
+              parse(url).querySelector('a')!),
           ]).element,
           gist.firstChild);
         if (document.head.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
