@@ -339,11 +339,28 @@ require = function e(t, n, r) {
                 'custom'
             ].reduce(function (obj, tag) {
                 return obj[tag] = function (attrs, children, factory) {
-                    return !attrs || children === void 0 || typeof children === 'function' ? new builder_1.TypedHTMLElement((children || function () {
-                        return document.createElement(tag);
-                    })(), attrs) : new builder_1.TypedHTMLElement(attribute(attrs, (factory || function () {
-                        return document.createElement(tag);
-                    })()), children);
+                    switch (typeof attrs) {
+                    case 'undefined':
+                        return new builder_1.TypedHTMLElement(document.createElement(tag), void 0);
+                    case 'function':
+                        return new builder_1.TypedHTMLElement(attrs(), void 0);
+                    case 'string':
+                        return new builder_1.TypedHTMLElement((children || function () {
+                            return document.createElement(tag);
+                        })(), attrs);
+                    case 'object':
+                        return Object.keys(attrs).some(function (key) {
+                            return typeof attrs[key] === 'string';
+                        }) ? typeof children === 'function' ? new builder_1.TypedHTMLElement(attribute(attrs, (children || function () {
+                            return document.createElement(tag);
+                        })()), void 0) : new builder_1.TypedHTMLElement(attribute(attrs, (factory || function () {
+                            return document.createElement(tag);
+                        })()), children) : new builder_1.TypedHTMLElement((children || function () {
+                            return document.createElement(tag);
+                        })(), attrs);
+                    default:
+                        throw new TypeError('Invalid arguments: [' + attrs + ', ' + children + ', ' + factory + ']');
+                    }
                 }, obj;
             }, {});
             function attribute(attrs, element) {
@@ -1842,7 +1859,7 @@ require = function e(t, n, r) {
                     'data-src': url,
                     alt: caption,
                     style: 'max-width: 100%;'
-                }, []).element;
+                }).element;
                 return [
                     [el],
                     rest.slice(1)
@@ -2361,7 +2378,7 @@ require = function e(t, n, r) {
                                 rel: 'stylesheet',
                                 href: stylesheet,
                                 crossorigin: 'anonymous'
-                            }, []).element);
+                            }).element);
                         },
                         error: function (_a) {
                             var statusText = _a.statusText;
@@ -2408,12 +2425,12 @@ require = function e(t, n, r) {
                             type: 'application/pdf',
                             data: url,
                             style: 'width: 100%; height: 100%; min-height: 400px;'
-                        }, [], function () {
+                        }, function () {
                             var el = document.createElement('object');
                             el.typeMustMatch = true;
                             return el;
                         })]),
-                    typed_dom_1.default.div([typed_dom_1.default.strong([], function () {
+                    typed_dom_1.default.div([typed_dom_1.default.strong(function () {
                             return parser_1.parse('**' + url + '**').querySelector('strong');
                         })])
                 ]).element;
@@ -2525,7 +2542,7 @@ require = function e(t, n, r) {
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
-                        }, [])])]).element;
+                        })])]).element;
             }
             exports.youtube = youtube;
         },
