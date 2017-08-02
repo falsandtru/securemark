@@ -74,18 +74,20 @@ require = function e(t, n, r) {
                     var _this = this;
                     this.element_ = element_;
                     this.children_ = children_;
-                    this.mode = this.children_ === void 0 ? 'empty' : typeof this.children_ === 'string' ? 'text' : Array.isArray(this.children_) ? 'collection' : 'struct';
+                    this.mode = this.children_ === void 0 ? 'void' : typeof this.children_ === 'string' ? 'text' : Array.isArray(this.children_) ? 'collection' : 'struct';
                     this.structkeys = this.mode === 'struct' ? Object.keys(this.children_) : [];
                     this.tag;
                     switch (this.mode) {
-                    case 'empty':
+                    case 'void':
                         return;
                     case 'text':
+                        void clear();
                         this.children_ = document.createTextNode('');
                         void this.element_.appendChild(this.children_);
                         this.children = children_;
                         return;
                     case 'collection':
+                        void clear();
                         if (element_.id) {
                             void children_.forEach(function (_a) {
                                 var element = _a.element;
@@ -96,6 +98,7 @@ require = function e(t, n, r) {
                         this.children = children_;
                         return;
                     case 'struct':
+                        void clear();
                         if (element_.id) {
                             void Object.keys(children_).map(function (k) {
                                 return children_[k];
@@ -109,6 +112,11 @@ require = function e(t, n, r) {
                             return void _this.element_.appendChild(children_[k].element);
                         });
                         return;
+                    }
+                    function clear() {
+                        while (element_.childNodes.length > 0) {
+                            void element_.removeChild(element_.firstChild);
+                        }
                     }
                     function scope(style) {
                         if (!element_.id.match(/^[\w\-]+$/))
@@ -138,7 +146,7 @@ require = function e(t, n, r) {
                     set: function (children) {
                         var _this = this;
                         switch (this.mode) {
-                        case 'empty':
+                        case 'void':
                             return;
                         case 'text':
                             if (children === this.children_.data)
@@ -2364,9 +2372,7 @@ require = function e(t, n, r) {
                             outer.innerHTML = '<div style="position: relative; margin-bottom: -1em;">' + div + '</div>';
                             var gist = outer.querySelector('.gist');
                             void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, function () {
-                                    var outer = parser_1.parse(url).querySelector('a');
-                                    void outer.removeChild(outer.firstChild);
-                                    return outer;
+                                    return parser_1.parse(url).querySelector('a');
                                 })]).element, gist.firstChild);
                             if (document.head.querySelector('link[rel="stylesheet"][href="' + stylesheet + '"]'))
                                 return;
