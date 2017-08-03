@@ -7,6 +7,7 @@ import { image } from './media/image';
 
 export function media(source: HTMLImageElement): void {
   assert(source.parentElement);
+  assert(!source.hasAttribute('src'));
   assert(source.hasAttribute('data-src'));
   const url = source.getAttribute('data-src')!;
   const target = source.closest('a') || source;

@@ -20,7 +20,8 @@ $$
 !http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf
 !https://twitter.com/hourenso_u/status/856828123882676225?hide_thread=true
 !https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg
-      `.trim()).children).forEach(render);
+      `.trim()).children)
+        .forEach(render);
     });
 
   });

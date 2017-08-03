@@ -1,5 +1,4 @@
 ﻿export function image(source: HTMLImageElement): HTMLElement {
-  const url = source.getAttribute('data-src')!;
-  void source.setAttribute('src', url);
+  void source.setAttribute('src', source.getAttribute('data-src')!);
   return <HTMLElement>source.closest('a') || source;
 }
