@@ -2402,8 +2402,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function image(source) {
-                var url = source.getAttribute('data-src');
-                void source.setAttribute('src', url);
+                void source.setAttribute('src', source.getAttribute('data-src'));
                 return source.closest('a') || source;
             }
             exports.image = image;
@@ -2581,7 +2580,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var media_1 = require('./media');
             function render(el) {
-                void [el].concat(Array.from(el.querySelectorAll('img:not([src]), .math'))).forEach(function (el) {
+                void [el].concat(Array.from(el.querySelectorAll('img:not([src])[data-src], .math'))).forEach(function (el) {
                     switch (true) {
                     case el instanceof HTMLImageElement:
                         return void media_1.media(el);
