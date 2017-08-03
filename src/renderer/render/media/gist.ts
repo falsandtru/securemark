@@ -1,8 +1,12 @@
 ﻿import DOM from 'typed-dom';
-import { parse } from '../parser';
+import { parse } from '../../parser';
+import { Cache } from 'spica/cache';
+
+const cache = new Cache<string, HTMLElement>(100);
 
 export function gist(url: string): HTMLElement | void {
   if (!url.startsWith('https://gist.github.com/')) return;
+  if (cache.has(url)) return <HTMLElement>cache.get(url)!.cloneNode(true);
   return DOM.div({
     class: 'media',
     style: 'position: relative;',
@@ -13,6 +17,7 @@ export function gist(url: string): HTMLElement | void {
       timeout: 10 * 1e3,
       success({ div, stylesheet, description }) {
         outer.innerHTML = `<div style="position: relative; margin-bottom: -1em;">${div}</div>`;
+        void cache.set(url, outer);
         const gist = <HTMLElement>outer.querySelector('.gist')!;
         void gist.insertBefore(
           DOM.div({ class: 'gist-description' }, [

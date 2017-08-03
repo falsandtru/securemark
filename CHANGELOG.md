@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.24.0
+
+- Add rendering cache feature.
+
 ## 0.23.0
 
 - Extend link syntax.

@@ -76,7 +76,7 @@
     '+',
     '$LaTeX$',
     '',
-    '## LaTex',
+    '## LaTeX',
     '',
     '$E = mc^2$\\',
     '`$E = mc^2$`\\',
@@ -140,6 +140,7 @@
   var observer = new IntersectionObserver(function (changes) {
     changes
       .forEach(function (change) {
+        observer.unobserve(change.target);
         render(change.target);
       });
   }, {

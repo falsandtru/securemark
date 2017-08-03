@@ -6,9 +6,10 @@ import { pdf } from './media/pdf';
 import { image } from './media/image';
 
 export function media(source: HTMLImageElement): void {
-  assert(source.parentElement);
-  assert(!source.hasAttribute('src'));
+  assert(source instanceof HTMLImageElement);
+  assert(source.matches('.media'));
   assert(source.hasAttribute('data-src'));
+  assert(source.parentElement);
   const url = source.getAttribute('data-src')!;
   const target = source.closest('a') || source;
   const el = void 0

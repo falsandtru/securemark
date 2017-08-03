@@ -20,7 +20,7 @@ export function bind(node: Node): (source: string) => HTMLElement[] {
     void pairs.splice(i, os.length - j - i)
       .forEach(([, es]) =>
         void es
-          .forEach(e =>
+          .forEach((e) =>
             void e.remove()));
     const ref = pairs.slice(i).reduce<HTMLElement | null>((e, [, es]) => e || es[0], null);
     const ps = ns.slice(i, ns.length - j)
@@ -29,7 +29,7 @@ export function bind(node: Node): (source: string) => HTMLElement[] {
           s,
           Array.from(parse(s).childNodes)
             .map(e =>
-              <HTMLElement>node.insertBefore(e, ref))
+              <HTMLElement>node.insertBefore(e, ref)),
         ]);
     void pairs.splice(i, 0, ...ps);
     return ps
