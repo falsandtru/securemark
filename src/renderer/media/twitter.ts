@@ -1,6 +1,12 @@
 ﻿import DOM from 'typed-dom';
 import { parse } from '../parser';
 
+declare global {
+  interface Window {
+    twttr: any;
+  }
+}
+
 export function twitter(url: string): HTMLElement | void {
   if (!url.startsWith('https://twitter.com/')) return;
   return DOM.div({
@@ -11,8 +17,9 @@ export function twitter(url: string): HTMLElement | void {
     void $.ajax(`https://publish.twitter.com/oembed?url=${url.replace('?', '&')}`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
-      success({ html }) {
+      success({ html }): void {
         outer.innerHTML = `<div style="margin-top: -10px; margin-bottom: -10px;">${html}</div>`;
+        if (window.twttr) return void window.twttr.widgets.load(outer);
         $.ajax(outer.querySelector('script')!.src, {
           dataType: 'script',
           cache: true,
