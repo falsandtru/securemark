@@ -15,6 +15,7 @@ type SubParsers = [PreTextParser];
 const syntax = /^(~{3,})(\S*?)\s*?\n(?:[^\n]*\n)*?\1/;
 
 export const placeholder: PlaceholderParser = function (source: string): Result<HTMLElement, SubParsers> {
+  if (!source.startsWith('~~~')) return;
   const [whole, keyword] = source.match(syntax) || ['', ''];
   if (!whole) return;
   const message = document.createElement('p');

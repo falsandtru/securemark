@@ -10,7 +10,7 @@ const syntax = /^(\|[^\n]*)+?\s*?\n/;
 const align = /^:?-+:?$/;
 
 export const table: TableParser = function (source: string): Result<HTMLTableElement, SubParsers> {
-  if (source.search(syntax) !== 0) return;
+  if (!source.startsWith('|') || source.search(syntax) !== 0) return;
   const table = document.createElement('table');
   const [headers, hrest] = parse(source) || [[], source];
   if (hrest.length === source.length) return;

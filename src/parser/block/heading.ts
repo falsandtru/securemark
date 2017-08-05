@@ -10,6 +10,7 @@ type SubParsers = [InlineParser];
 const syntax = /^(#{1,6})\s+?([^\n]+)/;
 
 export const heading: HeadingParser = function (source: string): Result<HTMLHeadingElement, SubParsers> {
+  if (!source.startsWith('#')) return;
   const [whole, {length: level}, title] = source.match(syntax) || ['', '', ''];
   if (!whole) return;
   assert(level > 0 && level < 7);

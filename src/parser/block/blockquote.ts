@@ -11,12 +11,14 @@ type SubParsers = [PlainTextParser] | [BlockParser];
 const syntax = /^>+(?=[ \n]|$)/;
 
 export const blockquote: BlockquoteParser = function (source: string): Result<HTMLQuoteElement, SubParsers> {
-  const mode = source.startsWith('|>')
-    ? 'markdown'
-    : 'plain';
-  source = mode === 'markdown'
-    ? source.slice(1)
-    : source;
+  const mode = void 0
+    || source.startsWith('>') && 'plain'
+    || source.startsWith('|>') && 'markdown'
+    || '';
+  if (mode === '') return;
+  source = mode === 'plain'
+    ? source
+    : source.slice(1);
   let [indent] = source.match(syntax) || [''];
   if (!indent) return;
   const top = document.createElement('blockquote');
