@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.25.0
+
+- Fix cached math rendering.
+
 ## 0.24.0
 
 - Add rendering cache feature.
