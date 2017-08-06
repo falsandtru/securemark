@@ -1,10 +1,9 @@
 ﻿import { Result } from '../../combinator/parser';
-import { MathTextParser, Zalgo } from '../text';
-import { zalgo } from './zalgo/plaintext';
+import { MathTextParser } from '../text';
 
-const separator = /\$|\\|\n|[\u0300-\u036F]/i;
+const separator = /\$|\\|\n/i;
 
-export const mathtext: MathTextParser = function (source: string): Result<Text, [Zalgo.ZalgoPlainTextParser]> {
+export const mathtext: MathTextParser = function (source: string): Result<Text, [never]> {
   if (source.length === 0) return;
   const i = source.search(separator);
   switch (i) {
@@ -16,15 +15,12 @@ export const mathtext: MathTextParser = function (source: string): Result<Text, 
           switch (source[1]) {
             case '\\':
             case '$':
-              return zalgo(source)
-                  || [[document.createTextNode(source.slice(0, 2))], source.slice(2)];
+              return [[document.createTextNode(source.slice(0, 2))], source.slice(2)];
             default:
-              return zalgo(source)
-                || [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
+              return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
           }
         default:
-          return zalgo(source)
-              || [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
+          return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
       }
     default:
       return [[document.createTextNode(source.slice(0, i))], source.slice(i)];

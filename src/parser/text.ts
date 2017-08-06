@@ -4,7 +4,6 @@ export import StringParser = MarkdownParser.TextParser;
 export import TextParser = StringParser.TextParser;
 export import PlainTextParser = StringParser.PlainTextParser;
 export import MathTextParser = StringParser.MathTextParser;
-export import Zalgo = StringParser.Zalgo;
 
 export function squash(nodes: Node[] | NodeList): DocumentFragment {
   const frag = document.createDocumentFragment();

@@ -7,6 +7,7 @@
 - Extend autolink syntax.
 - Improve media rendering.
 - Fix cached math rendering.
+- Remove zalgo parser.
 
 ## 0.24.0
 
