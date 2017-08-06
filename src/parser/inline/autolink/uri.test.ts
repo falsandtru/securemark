@@ -17,6 +17,7 @@ describe('Unit: parser/autolink/uri', () => {
       assert.deepStrictEqual(inspect(parser('_http://')), void 0);
       assert.deepStrictEqual(inspect(parser('_ttp://')), void 0);
       assert.deepStrictEqual(inspect(parser('0!ttp://host')), void 0);
+      assert.deepStrictEqual(inspect(parser('#')), void 0);
     });
 
     it('escape', () => {
@@ -36,67 +37,71 @@ describe('Unit: parser/autolink/uri', () => {
     });
 
     it('trailing symbols', () => {
-      assert.deepStrictEqual(inspect(parser('http://host ')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], ' ']);
-      assert.deepStrictEqual(inspect(parser('http://host\n')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '\n']);
-      assert.deepStrictEqual(inspect(parser('http://host\\')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '\\']);
-      assert.deepStrictEqual(inspect(parser('http://host\\ ')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '\\ ']);
-      assert.deepStrictEqual(inspect(parser('http://host\\\n')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '\\\n']);
-      assert.deepStrictEqual(inspect(parser('http://host,')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], ',']);
-      assert.deepStrictEqual(inspect(parser('http://host;')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], ';']);
-      assert.deepStrictEqual(inspect(parser('http://host.')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '.']);
-      assert.deepStrictEqual(inspect(parser('http://host:')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], ':']);
-      assert.deepStrictEqual(inspect(parser('http://host!')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '!']);
-      assert.deepStrictEqual(inspect(parser('http://host?')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '?']);
-      assert.deepStrictEqual(inspect(parser('http://host!?')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '!?']);
-      assert.deepStrictEqual(inspect(parser('http://host+')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '+']);
-      assert.deepStrictEqual(inspect(parser('http://host-')), [['<a href="http://host-" target="_blank" rel="noopener">http://host-</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://host*')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '*']);
-      assert.deepStrictEqual(inspect(parser('http://host~')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '~']);
-      assert.deepStrictEqual(inspect(parser('http://host^')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '^']);
-      assert.deepStrictEqual(inspect(parser(`http://host'`)), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], `'`]);
-      assert.deepStrictEqual(inspect(parser('http://host"')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '"']);
-      assert.deepStrictEqual(inspect(parser('http://host`')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '`']);
-      assert.deepStrictEqual(inspect(parser('http://host|')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '|']);
-      assert.deepStrictEqual(inspect(parser('http://host&')), [['<a href="http://host&amp;" target="_blank" rel="noopener">http://host&amp;</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://host_')), [['<a href="http://host_" target="_blank" rel="noopener">http://host_</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://host$')), [['<a href="http://host$" target="_blank" rel="noopener">http://host$</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://user@host')), [['<a href="http://user@host" target="_blank" rel="noopener">http://user@host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://host#@')), [['<a href="http://host#@" target="_blank" rel="noopener">http://host#@</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://host[')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '[']);
-      assert.deepStrictEqual(inspect(parser('http://host]')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], ']']);
-      assert.deepStrictEqual(inspect(parser('http://host(')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '(']);
-      assert.deepStrictEqual(inspect(parser('http://host)')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], ')']);
-      assert.deepStrictEqual(inspect(parser('http://host{')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '{']);
-      assert.deepStrictEqual(inspect(parser('http://host}')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '}']);
-      assert.deepStrictEqual(inspect(parser('http://host<')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '<']);
-      assert.deepStrictEqual(inspect(parser('http://host>')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '>']);
+      assert.deepStrictEqual(inspect(parser('http://host ')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], ' ']);
+      assert.deepStrictEqual(inspect(parser('http://host\n')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '\n']);
+      assert.deepStrictEqual(inspect(parser('http://host\\')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '\\']);
+      assert.deepStrictEqual(inspect(parser('http://host\\ ')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '\\ ']);
+      assert.deepStrictEqual(inspect(parser('http://host\\\n')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '\\\n']);
+      assert.deepStrictEqual(inspect(parser('http://host,')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], ',']);
+      assert.deepStrictEqual(inspect(parser('http://host;')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], ';']);
+      assert.deepStrictEqual(inspect(parser('http://host.')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '.']);
+      assert.deepStrictEqual(inspect(parser('http://host:')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], ':']);
+      assert.deepStrictEqual(inspect(parser('http://host!')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '!']);
+      assert.deepStrictEqual(inspect(parser('http://host?')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '?']);
+      assert.deepStrictEqual(inspect(parser('http://host!?')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '!?']);
+      assert.deepStrictEqual(inspect(parser('http://host+')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '+']);
+      assert.deepStrictEqual(inspect(parser('http://host-')), [['<a href="http://host-" rel="noopener" target="_blank">http://host-</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host*')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '*']);
+      assert.deepStrictEqual(inspect(parser('http://host~')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '~']);
+      assert.deepStrictEqual(inspect(parser('http://host^')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '^']);
+      assert.deepStrictEqual(inspect(parser(`http://host'`)), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], `'`]);
+      assert.deepStrictEqual(inspect(parser('http://host"')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '"']);
+      assert.deepStrictEqual(inspect(parser('http://host`')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '`']);
+      assert.deepStrictEqual(inspect(parser('http://host|')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '|']);
+      assert.deepStrictEqual(inspect(parser('http://host&')), [['<a href="http://host&amp;" rel="noopener" target="_blank">http://host&amp;</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host_')), [['<a href="http://host_" rel="noopener" target="_blank">http://host_</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host$')), [['<a href="http://host$" rel="noopener" target="_blank">http://host$</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://user@host')), [['<a href="http://user@host" rel="noopener" target="_blank">http://user@host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host#@')), [['<a href="http://host#@" rel="noopener" target="_blank">http://host#@</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host[')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '[']);
+      assert.deepStrictEqual(inspect(parser('http://host]')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], ']']);
+      assert.deepStrictEqual(inspect(parser('http://host(')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '(']);
+      assert.deepStrictEqual(inspect(parser('http://host)')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], ')']);
+      assert.deepStrictEqual(inspect(parser('http://host{')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '{']);
+      assert.deepStrictEqual(inspect(parser('http://host}')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '}']);
+      assert.deepStrictEqual(inspect(parser('http://host<')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '<']);
+      assert.deepStrictEqual(inspect(parser('http://host>')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '>']);
     });
 
     it('trailing entities', () => {
-      assert.deepStrictEqual(inspect(parser('http://host?&hl;')), [['<a href="http://host?&amp;hl" target="_blank" rel="noopener">http://host?&amp;hl</a>'], ';']);
-      assert.deepStrictEqual(inspect(parser('http://host?&hl;&hl;')), [['<a href="http://host?&amp;hl;&amp;hl" target="_blank" rel="noopener">http://host?&amp;hl;&amp;hl</a>'], ';']);
+      assert.deepStrictEqual(inspect(parser('http://host?&hl;')), [['<a href="http://host?&amp;hl" rel="noopener" target="_blank">http://host?&amp;hl</a>'], ';']);
+      assert.deepStrictEqual(inspect(parser('http://host?&hl;&hl;')), [['<a href="http://host?&amp;hl;&amp;hl" rel="noopener" target="_blank">http://host?&amp;hl;&amp;hl</a>'], ';']);
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser('http://a')), [['<a href="http://a" target="_blank" rel="noopener">http://a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://a.b')), [['<a href="http://a.b" target="_blank" rel="noopener">http://a.b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://a?b=c+d&#')), [['<a href="http://a?b=c+d&amp;#" target="_blank" rel="noopener">http://a?b=c+d&amp;#</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://a|b')), [['<a href="http://a" target="_blank" rel="noopener">http://a</a>'], '|b']);
+      assert.deepStrictEqual(inspect(parser('http://a')), [['<a href="http://a" rel="noopener" target="_blank">http://a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://a.b')), [['<a href="http://a.b" rel="noopener" target="_blank">http://a.b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://a?b=c+d&#')), [['<a href="http://a?b=c+d&amp;#" rel="noopener" target="_blank">http://a?b=c+d&amp;#</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://a|b')), [['<a href="http://a" rel="noopener" target="_blank">http://a</a>'], '|b']);
     });
 
     it('protocol', () => {
-      assert.deepStrictEqual(inspect(parser('http://host')), [['<a href="http://host" target="_blank" rel="noopener">http://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('https://host')), [['<a href="https://host" target="_blank" rel="noopener">https://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('https://host')), [['<a href="https://host" rel="noopener" target="_blank">https://host</a>'], '']);
     });
 
     it('nofollow', () => {
-      assert.deepStrictEqual(inspect(parser('ttp://host')), [['<a href="http://host" target="_blank" rel="noopener nofollow noreferrer">ttp://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('ttps://host')), [['<a href="https://host" target="_blank" rel="noopener nofollow noreferrer">ttps://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('ttp://host')), [['<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('ttps://host')), [['<a href="https://host" rel="noopener nofollow noreferrer" target="_blank">ttps://host</a>'], '']);
+    });
+
+    it('section', () => {
+      assert.deepStrictEqual(inspect(parser('#a')), [['<a href="#section:a" rel="noopener">a</a>'], '']);
     });
 
     it('media', () => {
-      assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" target="_blank" rel="noopener"><img class="media" data-src="http://host" alt="" style="max-width: 100%;"></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" target="_blank" rel="noopener"><img class="media" data-src="https://host" alt="" style="max-width: 100%;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" rel="noopener" target="_blank"><img class="media" data-type="image" src="http://host" alt="" style="max-width: 100%;"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" rel="noopener" target="_blank"><img class="media" data-type="image" src="https://host" alt="" style="max-width: 100%;"></a>'], '']);
     });
 
   });

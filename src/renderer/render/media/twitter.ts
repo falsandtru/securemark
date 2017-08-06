@@ -11,8 +11,7 @@ declare global {
 let widgetScriptRequested = false;
 const cache = new Cache<string, HTMLElement>(100);
 
-export function twitter(url: string): HTMLElement | void {
-  if (!url.startsWith('https://twitter.com/')) return;
+export function twitter(url: string): HTMLElement {
   if (cache.has(url)) {
     const el = <HTMLElement>cache.get(url)!.cloneNode(true);
     window.twttr && void window.twttr.widgets.load(el);

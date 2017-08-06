@@ -3,7 +3,6 @@ import { youtube } from './media/youtube';
 import { gist } from './media/gist';
 import { slideshare } from './media/slideshare';
 import { pdf } from './media/pdf';
-import { image } from './media/image';
 
 export function media(source: HTMLImageElement): void {
   assert(source instanceof HTMLImageElement);
@@ -11,13 +10,22 @@ export function media(source: HTMLImageElement): void {
   assert(source.hasAttribute('data-src'));
   assert(source.parentElement);
   const url = source.getAttribute('data-src')!;
-  const target = source.closest('a') || source;
-  const el = void 0
-    || twitter(url)
-    || youtube(url)
-    || gist(url)
-    || slideshare(url)
-    || pdf(url)
-    || image(source);
-  void target.parentElement!.replaceChild(el, target);
+  switch (source.getAttribute('data-type')) {
+    case 'twitter':
+      return void replace(source, twitter(url));
+    case 'youtube':
+      return void replace(source, youtube(url));
+    case 'gist':
+      return void replace(source, gist(url));
+    case 'slideshare':
+      return void replace(source, slideshare(url));
+    case 'pdf':
+      return void replace(source, pdf(url));
+    default:
+      return;
+  }
+
+  function replace(from: HTMLElement, to: HTMLElement): void {
+    return void from.parentElement!.replaceChild(to, from);
+  }
 }

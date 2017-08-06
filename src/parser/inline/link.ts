@@ -5,6 +5,7 @@ import { LinkParser, InlineParser, inline } from '../inline';
 import { squash } from '../text';
 import { text } from '../text/text';
 import { sanitize } from '../text/url';
+import { section } from '../text/section';
 
 type SubParsers = [InlineParser];
 
@@ -23,23 +24,26 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
     if (children.textContent !== children.textContent!.trim()) return;
   }
-  const [[, ...second], rest] = loop(text, /^\)|^\s(?!nofollow)/)(`?${next.replace(/^\]\n?\(/, '')}`) || [[], ''];
+  const [[, ...second], rest] = loop(text, /^\)|^\s(?!nofollow|section)/)(`?${next.replace(/^\]\n?\(/, '')}`) || [[], ''];
   if (!rest.startsWith(')')) return;
-  const [INSECURE_URL, nofollow] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
+  const [INSECURE_URL, attribute] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
+  assert(attribute === void 0 || attribute === 'nofollow' || attribute === 'section');
   const url = sanitize(INSECURE_URL);
   assert(url === url.trim());
   if (INSECURE_URL !== '' && url === '') return;
-  assert(nofollow === void 0 || nofollow === 'nofollow');
   const el = document.createElement('a');
-  void el.setAttribute('href', url);
+  void el.setAttribute('href', attribute === 'section' ? url.replace(/#\S+/, hash => `#${section(hash.slice(1))}`) : url);
+  void el.setAttribute('rel', attribute === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener');
   if (location.protocol !== el.protocol || location.host !== el.host) {
     void el.setAttribute('target', '_blank');
-    void el.setAttribute('rel', 'noopener');
   }
-  if (nofollow) {
-    void el.setAttribute('rel', 'noopener nofollow noreferrer');
-  }
-  void el.appendChild(children.textContent || children.querySelector('img') ? children : document.createTextNode((url || el.href).replace(/^h(?=ttps?:\/\/)/, nofollow ? '' : 'h')));
+  if (attribute === 'section' && el.hash.length < 2) return;
+  void el.appendChild(
+    children.textContent || children.querySelector('img')
+      ? children
+      : attribute === 'section'
+        ? document.createTextNode(INSECURE_URL.slice(1))
+        : document.createTextNode((INSECURE_URL || el.href).replace(/^h(?=ttps?:\/\/)/, attribute === 'nofollow' ? '' : 'h')));
   assert(el.querySelector('img') || el.textContent!.trim());
   return [[el], rest.slice(1)];
 };

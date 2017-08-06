@@ -4,6 +4,7 @@ import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { MathTextParser, squash } from '../text';
 import { mathtext } from '../text/mathtext';
+import { cache } from '../../renderer/render/math';
 
 type SubParsers = [MathTextParser];
 
@@ -17,7 +18,8 @@ export const mathinline: MathInlineParser = function (source: string): Result<HT
   const el = document.createElement('span');
   void el.setAttribute('class', 'math');
   void el.appendChild(squash([document.createTextNode('$'), ...cs, document.createTextNode('$')]));
-  if (el.textContent!.slice(1, -1).trim() === '') return;
+  assert(el.textContent!.slice(1, -1).trim() !== '');
   if (el.textContent!.slice(1, -1) !== el.textContent!.slice(1, -1).trim()) return;
+  if (cache.has(el.textContent!)) return [[<HTMLSpanElement>cache.get(el.textContent!)!.cloneNode(true)], rest.slice(1)];
   return [[el], rest.slice(1)];
 };

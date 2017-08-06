@@ -45,8 +45,18 @@ export namespace MarkdownParser {
       // # Title
       Markdown<'header'>,
       Parser<HTMLHeadingElement, [
+        HeadingParser.IndexParser,
         InlineParser
       ]> {
+    }
+    export namespace HeadingParser {
+      export interface IndexParser extends
+        // [#index]
+        Markdown<'index'>,
+        Parser<HTMLElement, [
+          never
+        ]> {
+      }
     }
     export interface UListParser extends
       // - item
@@ -252,7 +262,7 @@ export namespace MarkdownParser {
     }
     export interface AutolinkParser extends
       Markdown<'autolink'>,
-      Parser<HTMLAnchorElement | HTMLSpanElement | Text, [
+      Parser<HTMLAnchorElement | HTMLImageElement | HTMLSpanElement | Text, [
         AutolinkParser.UriParser,
         AutolinkParser.AccountParser
       ]> {
@@ -261,8 +271,9 @@ export namespace MarkdownParser {
       export interface UriParser extends
         // https://host
         Markdown<'uri'>,
-        Parser<HTMLAnchorElement | Text, [
-          InlineParser
+        Parser<HTMLAnchorElement | HTMLImageElement | Text, [
+          InlineParser |
+          TextParser.TextParser
         ]> {
       }
       export interface AccountParser extends

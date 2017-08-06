@@ -27,7 +27,7 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "@types/jquery": "^3.2.10",
+    "@types/jquery": "^3.2.11",
     "@types/mathjax": "0.0.31",
     "@types/mocha": "^2.2.41",
     "@types/power-assert": "1.4.29",
@@ -55,10 +55,10 @@
     "power-assert": "^1.4.4",
     "pump": "^1.0.2",
     "run-sequence": "^2.1.0",
-    "spica": "0.0.99",
+    "spica": "0.0.100",
     "tsify": "^3.0.1",
     "typed-dom": "0.0.39",
-    "typescript": "2.5.0-dev.20170801",
+    "typescript": "2.5.0-dev.20170803",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

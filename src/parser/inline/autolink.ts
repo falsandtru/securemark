@@ -6,7 +6,7 @@ import { account } from './autolink/account';
 export const autolink: AutolinkParser = combine<[
   AutolinkParser.UriParser,
   AutolinkParser.AccountParser
-], HTMLAnchorElement | HTMLSpanElement | Text>([
+], HTMLAnchorElement | HTMLImageElement | HTMLSpanElement | Text>([
   uri,
   account
 ]);

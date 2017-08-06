@@ -1,8 +1,8 @@
-﻿import { Result } from '../../combinator/parser';
+import { Result } from '../../combinator/parser';
 import { TextParser, Zalgo } from '../text';
 import { zalgo } from './zalgo/text';
 
-const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]/;
+const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:|[0-9a-zA-Z][!?]*#\S|[0-9a-zA-Z@]?@[0-9a-zA-Z]|[、。]/u;
 const linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;
 
 export const text: TextParser = function (source: string): Result<HTMLBRElement | Text, [Zalgo.ZalgoTextParser]> {
@@ -20,6 +20,14 @@ export const text: TextParser = function (source: string): Result<HTMLBRElement 
             default:
               return zalgo(source)
                   || [[document.createTextNode(source.slice(1, 2))], source.slice(2)];
+          }
+        case '、':
+        case '。':
+          switch (source[1]) {
+            case '\n':
+              return [[document.createTextNode(source.slice(0, 1))], source.slice(2)];
+            default:
+              return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
           }
         case '\n':
           return [[document.createTextNode(' ')], source.slice(1)];

@@ -6,7 +6,7 @@ export function render(el: HTMLElement): void {
   void [el].concat(Array.from(<NodeListOf<HTMLElement>>el.querySelectorAll('.media, .math')))
     .forEach(el => {
       switch (true) {
-        case el.matches('.media[data-src]'):
+        case el.matches('.media[data-type][data-src]'):
           assert(el instanceof HTMLImageElement);
           return void media(<HTMLImageElement>el);
         case el.matches('.math'):

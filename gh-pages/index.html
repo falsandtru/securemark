@@ -70,13 +70,13 @@
   document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
-    '# Securemark',
+    '# Securemark [#title]',
     '',
     'Markdown',
     '+',
     '$LaTeX$',
     '',
-    '## LaTeX',
+    '## $LaTeX$',
     '',
     '$E = mc^2$\\',
     '`$E = mc^2$`\\',
@@ -103,6 +103,8 @@
     'https://google.com',
     '~ nofollow',
     'ttps://google.com',
+    '~ section',
+    '#title',
     '',
     '## Media',
     '',
@@ -155,7 +157,7 @@
       display();
       var partial = Date.now() - time;
       document.getElementById('time').textContent = partial;
-    }, 300);
+    }, 500);
   });
   function display() {
     parse(document.getElementById('editor').value)

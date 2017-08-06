@@ -2,6 +2,10 @@
 
 ## 0.25.0
 
+- Add index syntax.
+- Extend link syntax.
+- Extend autolink syntax.
+- Improve media rendering.
 - Fix cached math rendering.
 
 ## 0.24.0

@@ -11,6 +11,8 @@ describe('Unit: parser/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser('@')), void 0);
       assert.deepStrictEqual(inspect(parser('@_')), void 0);
       assert.deepStrictEqual(inspect(parser('@-')), void 0);
+      assert.deepStrictEqual(inspect(parser('@_a')), void 0);
+      assert.deepStrictEqual(inspect(parser('@-a')), void 0);
       assert.deepStrictEqual(inspect(parser('@a@')), void 0);
       assert.deepStrictEqual(inspect(parser('@a@b')), void 0);
       assert.deepStrictEqual(inspect(parser('@a@http://host')), void 0);

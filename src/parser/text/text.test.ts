@@ -1,4 +1,4 @@
-﻿import { loop } from '../../combinator/loop';
+import { loop } from '../../combinator/loop';
 import { text } from './text';
 import { inspect } from '../debug.test';
 
@@ -56,6 +56,13 @@ describe('Unit: parser/text', () => {
       assert.deepStrictEqual(inspect(parser('\\\\\\\n')), [['\\', '<br>'], '']);
     });
 
+    it('locale Japanese', () => {
+      assert.deepStrictEqual(inspect(parser('、\n')), [['、'], '']);
+      assert.deepStrictEqual(inspect(parser('。\n')), [['。'], '']);
+      assert.deepStrictEqual(inspect(parser('、\n、')), [['、', '、'], '']);
+      assert.deepStrictEqual(inspect(parser('。\n。')), [['。', '。'], '']);
+    });
+
     it('zalgo', () => {
       assert.deepStrictEqual(inspect(parser('\u0300\u036F')), [['\u0300'], '']);
       assert.deepStrictEqual(inspect(parser('\\\u0300\\\u036F')), [['\u0300'], '']);
@@ -76,6 +83,14 @@ describe('Unit: parser/text', () => {
       assert.deepStrictEqual(inspect(parser(' http:')), [[' ', 'http', ':'], '']);
       assert.deepStrictEqual(inspect(parser('hhttp:')), [['h', 'http', ':'], '']);
       assert.deepStrictEqual(inspect(parser('!http:')), [['!', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('?http:')), [['?', 'http', ':'], '']);
+      assert.deepStrictEqual(inspect(parser('#sec')), [['#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('0#sec')), [['0', '#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('a#sec')), [['a', '#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('A#sec')), [['A', '#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('0aA#sec')), [['0a', 'A', '#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('!#sec')), [['!', '#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('?#sec')), [['?', '#', 'sec'], '']);
     });
 
     it('account', () => {

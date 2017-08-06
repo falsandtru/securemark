@@ -13,6 +13,7 @@ Secure markdown renderer working on browsers for user input data.
 - Recursive parsing.
 - Incremental update.
 - Unblinking rendering.
+- Large document support.
 - LaTeX support with MathJax.
 
 ## Demo
@@ -37,7 +38,7 @@ https://falsandtru.github.io/securemark/
 - HorizontalRule (---)
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
 - Inline html tags (\<smal>, \<ruby>, \<code>, ...)
-- Autolink (https://host, ttps://host, !https://host/image.png, @account)
+- Autolink (https://host, ttps://host, #section, !https://host/image.png, @account)
 - Media (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
 - LaTeX ($expr$, $$expr$$)
 

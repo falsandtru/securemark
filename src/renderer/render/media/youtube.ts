@@ -1,11 +1,6 @@
 ﻿import DOM from 'typed-dom';
 
-export function youtube(url: string): HTMLElement | void {
-  const query = void 0
-    || url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9))
-    || url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?')
-    || '';
-  if (!query) return;
+export function youtube(url: string): HTMLElement {
   return DOM.div({
     class: 'media',
     style: 'position: relative;',
@@ -14,7 +9,10 @@ export function youtube(url: string): HTMLElement | void {
       style: 'position: relative; padding-top: 56.25%;',
     }, [
       DOM.iframe({
-        src: `https://www.youtube.com/embed/${query}`,
+        src: `https://www.youtube.com/embed/${
+          url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1) ||
+          url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?')
+        }`,
         sandbox: 'allow-scripts allow-same-origin allow-presentation',
         allowfullscreen: '',
         frameborder: '0',
