@@ -1688,7 +1688,6 @@ require = function e(t, n, r) {
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('../text');
             var plaintext_1 = require('../text/plaintext');
-            var math_1 = require('../../renderer/render/math');
             var syntax = /^(`+)[^\n]+?\1/;
             exports.code = function (source) {
                 if (!source.startsWith('`'))
@@ -1711,11 +1710,6 @@ require = function e(t, n, r) {
                 if (el.textContent === '')
                     return;
                 void el.setAttribute('data-src', source.slice(0, source.length - rest.length + keyword.length));
-                if (math_1.cache.has(el.textContent))
-                    return [
-                        [math_1.cache.get(el.textContent).cloneNode(true)],
-                        rest.slice(keyword.length)
-                    ];
                 return [
                     [el],
                     rest.slice(keyword.length)
@@ -1725,7 +1719,6 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 12,
             '../../combinator/loop': 13,
-            '../../renderer/render/math': 59,
             '../text': 49,
             '../text/plaintext': 52
         }
@@ -2616,26 +2609,14 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var cache_1 = require('spica/cache');
-            exports.cache = new cache_1.Cache(100);
             function code(source) {
                 if (source.children.length > 0)
                     return;
-                if (source instanceof HTMLPreElement)
-                    return void Prism.highlightElement(source, true);
-                void source.setAttribute('data-src', source.textContent);
-                var expr = source.textContent;
-                if (exports.cache.has(expr)) {
-                    source.innerHTML = exports.cache.get(expr).innerHTML;
-                } else {
-                    void Prism.highlightElement(source, true, function () {
-                        return void exports.cache.set(expr, source.cloneNode(true));
-                    });
-                }
+                void Prism.highlightElement(source, true);
             }
             exports.code = code;
         },
-        { 'spica/cache': 4 }
+        {}
     ],
     59: [
         function (require, module, exports) {
