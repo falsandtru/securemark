@@ -1,6 +1,6 @@
 ﻿import { sanitize } from './url';
 
-describe('Unit: parser/url', () => {
+describe('Unit: parser/text/url', () => {
   describe('sanitiza', () => {
     it('empty', () => {
       assert(sanitize('') === '');

@@ -1,10 +1,10 @@
 ﻿import { loop } from '../../../combinator/loop';
-import { uri } from './uri';
+import { url } from './url';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/autolink/uri', () => {
-  describe('uri', () => {
-    const parser = loop(uri);
+describe('Unit: parser/inline/autolink/url', () => {
+  describe('url', () => {
+    const parser = loop(url);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
@@ -95,8 +95,8 @@ describe('Unit: parser/autolink/uri', () => {
       assert.deepStrictEqual(inspect(parser('ttps://host')), [['<a href="https://host" rel="noopener nofollow noreferrer" target="_blank">ttps://host</a>'], '']);
     });
 
-    it('section', () => {
-      assert.deepStrictEqual(inspect(parser('#a')), [['<a href="#section:a" rel="noopener">a</a>'], '']);
+    it('index', () => {
+      assert.deepStrictEqual(inspect(parser('#a')), [['<a href="#index:a" rel="noopener">a</a>'], '']);
     });
 
     it('media', () => {

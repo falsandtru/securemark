@@ -2,7 +2,7 @@
 import { mathblock} from './mathblock';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/mathblock', () => {
+describe('Unit: parser/block/mathblock', () => {
   describe('mathblock', () => {
     const parser = loop(mathblock);
 

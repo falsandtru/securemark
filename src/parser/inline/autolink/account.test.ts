@@ -2,7 +2,7 @@
 import { account } from './account';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/autolink/account', () => {
+describe('Unit: parser/inline/autolink/account', () => {
   describe('account', () => {
     const parser = loop(account);
 

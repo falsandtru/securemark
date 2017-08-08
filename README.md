@@ -39,7 +39,9 @@ https://falsandtru.github.io/securemark/
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
 - Inline html tags (\<smal>, \<ruby>, \<code>, ...)
 - Autolink (https://host, ttps://host, #section, !https://host/image.png, @account)
+- Index (# title [#section])
 - Media (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
+- Syntex highlight (```lang filename)
 - LaTeX ($expr$, $$expr$$)
 
 ## Media
@@ -53,6 +55,7 @@ https://falsandtru.github.io/securemark/
 
 ## Dependency
 
+- PrismJS
 - MathJax
 - jQuery (for Ajax)
 

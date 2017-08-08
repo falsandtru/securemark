@@ -2,7 +2,7 @@
 import { subscript } from './subscript';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/subscript', () => {
+describe('Unit: parser/inline/subscript', () => {
   describe('subscript', () => {
     const parser = loop(subscript);
 

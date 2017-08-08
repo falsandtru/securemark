@@ -1,8 +1,8 @@
 ﻿import { loop } from '../../combinator/loop';
-import { index } from './heading.index';
+import { index } from './index';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/heading.index', () => {
+describe('Unit: parser/text/index', () => {
   describe('index', () => {
     const parser = loop(index);
 
@@ -21,11 +21,11 @@ describe('Unit: parser/heading.index', () => {
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser(' [#a]')), [['<span class="identifier">a</span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#]]')), [['<span class="identifier">]</span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#\\]')), [['<span class="identifier">\\</span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#a][#b]')), [['<span class="identifier">a][#b</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('  [#a]')), [['<span class="identifier">a</span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a]')), [['<span class="index">a</span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#]]')), [['<span class="index">]</span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#\\]')), [['<span class="index">\\</span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a][#b]')), [['<span class="index">a][#b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('  [#a]')), [['<span class="index">a</span>'], '']);
     });
 
   });

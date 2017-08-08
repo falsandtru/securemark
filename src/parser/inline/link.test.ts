@@ -2,7 +2,7 @@
 import { link } from './link';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/link', () => {
+describe('Unit: parser/inline/link', () => {
   describe('link', () => {
     const parser = loop(link);
 
@@ -36,11 +36,11 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[](# )')), void 0);
       assert.deepStrictEqual(inspect(parser('[]( #)')), void 0);
       assert.deepStrictEqual(inspect(parser('[]( # )')), void 0);
-      assert.deepStrictEqual(inspect(parser('[]( section)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[]( index)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](# #)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](# nofollow )')), void 0);
       assert.deepStrictEqual(inspect(parser('[](#  nofollow)')), void 0);
-      assert.deepStrictEqual(inspect(parser('[](# section)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[](# index)')), void 0);
       assert.deepStrictEqual(inspect(parser('[]( )')), void 0);
       assert.deepStrictEqual(inspect(parser('[ ]()')), void 0);
       assert.deepStrictEqual(inspect(parser('[ ]( )')), void 0);
@@ -95,9 +95,9 @@ describe('Unit: parser/link', () => {
       assert.deepStrictEqual(inspect(parser('[](http://host nofollow)')), [['<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
     });
 
-    it('section', () => {
-      assert.deepStrictEqual(inspect(parser('[](#a section)')), [['<a href="#section:a" rel="noopener">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[](#%& section)')), [['<a href="#section:%&amp;" rel="noopener">%&amp;</a>'], '']);
+    it('index', () => {
+      assert.deepStrictEqual(inspect(parser('[](#a index)')), [['<a href="#index:a" rel="noopener">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](#%& index)')), [['<a href="#index:%&amp;" rel="noopener">%&amp;</a>'], '']);
     });
 
   });

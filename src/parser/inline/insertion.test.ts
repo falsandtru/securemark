@@ -2,7 +2,7 @@
 import { insertion } from './insertion';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/insertion', () => {
+describe('Unit: parser/inline/insertion', () => {
   describe('insertion', () => {
     const parser = loop(insertion);
 
@@ -27,7 +27,7 @@ describe('Unit: parser/insertion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('++<a>++')), [['<ins>&lt;a&gt;</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++`a`++')), [['<ins><code>a</code></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++`a`++')), [['<ins><code data-src="`a`">a</code></ins>'], '']);
     });
 
   });

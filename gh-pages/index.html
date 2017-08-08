@@ -11,6 +11,21 @@
 <!-- Bootstrap -->
 <!-- Latest compiled and minified CSS -->
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link href="/securemark/assets/lib/prismjs/themes/prism.css" rel="stylesheet">
+<style>
+  pre {
+    position: relative;
+  }
+  pre[data-file]:before {
+    content: attr(data-file);
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
+    background: none;
+  }
+</style>
 
 </head>
 <body>
@@ -48,6 +63,12 @@
 
 </div>
 <script src="https://cdn.polyfill.io/v2/polyfill.js?features=default,String.prototype.repeat,IntersectionObserver&flags=gated"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="/securemark/assets/lib/prismjs/prism.js"></script>
+<script src="/securemark/assets/lib/prismjs/plugins/autoloader/prism-autoloader.js"></script>
+<script>
+  Prism.plugins.autoloader.languages_path = '/securemark/assets/lib/prismjs/components/';
+</script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     CommonHTML: {
@@ -63,7 +84,6 @@
   });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML,Safe"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="/securemark/assets/js/lib/securemark.js"></script>
 
 <script>
@@ -75,6 +95,15 @@
     'Markdown',
     '+',
     '$LaTeX$',
+    '',
+    '## Syntax highlight',
+    '',
+    '```haskell main.hs',
+    'main = putStrLn $ show $ primes !! 5',
+    '',
+    'primes = filterPrime [2..] where',
+    '  filterPrime (p:xs) = p : filterPrime [x | x <- xs, x \`mod\` p /= 0]',
+    '```',
     '',
     '## $LaTeX$',
     '',

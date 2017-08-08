@@ -2,7 +2,7 @@
 import { dlist } from './dlist';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/dlist', () => {
+describe('Unit: parser/block/dlist', () => {
   describe('dlist', () => {
     const parser = loop(dlist);
 

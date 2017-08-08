@@ -2,7 +2,7 @@
 import { olist } from './olist';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/olist', () => {
+describe('Unit: parser/block/olist', () => {
   describe('olist', () => {
     const parser = loop(olist);
 

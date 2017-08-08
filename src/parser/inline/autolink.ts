@@ -1,12 +1,12 @@
 ﻿import { combine } from '../../combinator/combine';
 import { AutolinkParser } from '../inline';
-import { uri } from './autolink/uri';
+import { url } from './autolink/url';
 import { account } from './autolink/account';
 
 export const autolink: AutolinkParser = combine<[
-  AutolinkParser.UriParser,
+  AutolinkParser.UrlParser,
   AutolinkParser.AccountParser
 ], HTMLAnchorElement | HTMLImageElement | HTMLSpanElement | Text>([
-  uri,
+  url,
   account
 ]);

@@ -2,7 +2,7 @@
 import { superscript } from './superscript';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/superscript', () => {
+describe('Unit: parser/inline/superscript', () => {
   describe('superscript', () => {
     const parser = loop(superscript);
 

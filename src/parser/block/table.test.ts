@@ -2,7 +2,7 @@
 import { table } from './table';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/table', () => {
+describe('Unit: parser/block/table', () => {
   describe('table', () => {
     const parser = loop(table);
 

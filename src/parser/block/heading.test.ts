@@ -2,7 +2,7 @@
 import { heading } from './heading';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/heading', () => {
+describe('Unit: parser/block/heading', () => {
   describe('heading', () => {
     const parser = loop(heading);
 
@@ -20,21 +20,22 @@ describe('Unit: parser/heading', () => {
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser('# a')), [['<h1 id="section:a">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a ')), [['<h1 id="section:a">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a\n')), [['<h1 id="section:a">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a b  c \n')), [['<h1 id="section:a-b-c">a b  c</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a\n\n#')), [['<h1 id="section:a">a</h1>'], '#']);
-      assert.deepStrictEqual(inspect(parser('# a\n\n# b')), [['<h1 id="section:a">a</h1>', '<h1 id="section:b">b</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a\n\n\n# b')), [['<h1 id="section:a">a</h1>'], '\n# b']);
-      assert.deepStrictEqual(inspect(parser('###### a')), [['<h6 id="section:a">a</h6>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a[#b]')), [['<h1 id="section:a[b]">a[<a href="#section:b" rel="noopener">b</a>]</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a [#b]')), [['<h1 id="section:b">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a [#b] ')), [['<h1 id="section:b">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a [#b c]')), [['<h1 id="section:a-[b-c]">a [<a href="#section:b" rel="noopener">b</a> c]</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a [#b] [#c]')), [['<h1 id="section:c">a [<a href="#section:b" rel="noopener">b</a>]</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a  [#b] \n')), [['<h1 id="section:b">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a \\[#b]')), [['<h1 id="section:a-[b]">a [<a href="#section:b" rel="noopener">b</a>]</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a')), [['<h1 id="index:a">a</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a ')), [['<h1 id="index:a">a</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a\n')), [['<h1 id="index:a">a</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a b  c \n')), [['<h1 id="index:a-b-c">a b  c</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a\n\n#')), [['<h1 id="index:a">a</h1>'], '#']);
+      assert.deepStrictEqual(inspect(parser('# a\n\n# b')), [['<h1 id="index:a">a</h1>', '<h1 id="index:b">b</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a\n\n\n# b')), [['<h1 id="index:a">a</h1>'], '\n# b']);
+      assert.deepStrictEqual(inspect(parser('###### a')), [['<h6 id="index:a">a</h6>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a[#b]')), [['<h1 id="index:a[b]">a[<a href="#index:b" rel="noopener">b</a>]</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a [#b]')), [['<h1 id="index:b">a</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a [#b] ')), [['<h1 id="index:b">a</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a [#b c]')), [['<h1 id="index:a-[b-c]">a [<a href="#index:b" rel="noopener">b</a> c]</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a [#b] [#c]')), [['<h1 id="index:c">a [<a href="#index:b" rel="noopener">b</a>]</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a  [#b] \n')), [['<h1 id="index:b">a</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a \\[#b]')), [['<h1 id="index:a-[b]">a [<a href="#index:b" rel="noopener">b</a>]</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# `a`$b$')), [['<h1 id="index:`a`$b$"><code data-src="`a`">a</code><span class="math" data-src="$b$">$b$</span></h1>'], '']);
     });
 
   });

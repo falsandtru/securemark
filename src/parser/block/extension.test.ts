@@ -1,7 +1,7 @@
 ﻿import { loop } from '../../combinator/loop';
 import { extension } from './extension';
 
-describe('Unit: parser/extension', () => {
+describe('Unit: parser/block/extension', () => {
   describe('extension', () => {
     const parser = loop(extension);
 

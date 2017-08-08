@@ -45,7 +45,11 @@ const config = {
     ''
   ].join('\n'),
   clean: {
-    dist: 'dist'
+    dist: 'dist',
+    site: [
+      'gh-pages/assets/js/lib',
+      'gh-pages/assets/lib',
+    ],
   }
 };
 
@@ -53,6 +57,7 @@ function compile(paths, force) {
   let done = true;
     return browserify(Object.values(paths).map(p => glob.sync(p)))
     .require(`./index.ts`, { expose: pkg.name })
+    .exclude('prismjs')
     .plugin(tsify, Object.assign({ global: true }, require('./tsconfig.json').compilerOptions))
     .bundle()
     .on("error", err => done = console.log(err + ''))
@@ -120,7 +125,7 @@ gulp.task('karma:ci', function (done) {
 });
 
 gulp.task('clean', function () {
-  return del([config.clean.dist]);
+  return del([config.clean.dist, ...config.clean.site]);
 });
 
 gulp.task('install', function () {
@@ -167,10 +172,19 @@ gulp.task('dist', ['clean'], function (done) {
 });
 
 gulp.task('site', ['dist'], function () {
-  return gulp.src([
-    'dist/securemark.js'
+  gulp.src([
+    'dist/securemark.js',
   ])
     .pipe(gulp.dest('./gh-pages/assets/js/lib'));
+  return gulp.src([
+    'node_modules/prismjs/prism.js',
+    'node_modules/prismjs/components/**',
+    'node_modules/prismjs/plugins/autoloader/**',
+    'node_modules/prismjs/themes/prism.css',
+  ], {
+    base: 'node_modules'
+  })
+    .pipe(gulp.dest('./gh-pages/assets/lib'));
 });
 
 gulp.task('ci', ['clean'], function (done) {

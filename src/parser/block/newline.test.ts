@@ -2,7 +2,7 @@
 import { newline } from './newline';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/newline', () => {
+describe('Unit: parser/block/newline', () => {
   describe('newline', () => {
     const parser = loop(newline);
 

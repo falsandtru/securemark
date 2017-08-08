@@ -9,7 +9,7 @@ import { emphasis } from './inline/emphasis';
 import { superscript } from './inline/superscript';
 import { subscript } from './inline/subscript';
 import { code } from './inline/code';
-import { mathinline } from './inline/mathinline';
+import { math } from './inline/math';
 import { media } from './inline/media';
 import { link } from './inline/link';
 import { html } from './inline/html';
@@ -62,7 +62,7 @@ export const inline: InlineParser = combine<[
   superscript,
   subscript,
   code,
-  mathinline,
+  math,
   media,
   link,
   html,

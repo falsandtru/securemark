@@ -2,7 +2,7 @@
 import { horizontalrule } from './horizontalrule';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/horizontalrule', () => {
+describe('Unit: parser/block/horizontalrule', () => {
   describe('newline', () => {
     const parser = loop(horizontalrule);
 

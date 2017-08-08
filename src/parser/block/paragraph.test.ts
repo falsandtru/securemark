@@ -2,7 +2,7 @@
 import { paragraph } from './paragraph';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/paragraph', () => {
+describe('Unit: parser/block/paragraph', () => {
   describe('paragraph', () => {
     const parser = loop(paragraph);
 

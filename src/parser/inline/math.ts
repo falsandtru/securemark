@@ -11,7 +11,7 @@ type SubParsers = [MathTextParser];
 const syntax = /^\$(\S[^\n]*?)\$(?!\d)/;
 const closer = /^\$(?!\d)|^\n/;
 
-export const mathinline: MathInlineParser = function (source: string): Result<HTMLSpanElement, SubParsers> {
+export const math: MathInlineParser = function (source: string): Result<HTMLSpanElement, SubParsers> {
   if (!source.startsWith('$') || source.search(syntax) !== 0) return;
   const [cs, rest] = loop(combine<SubParsers, Text>([mathtext]), closer)(source.slice(1)) || [[], ''];
   if (!rest.startsWith('$')) return;
@@ -20,6 +20,7 @@ export const mathinline: MathInlineParser = function (source: string): Result<HT
   void el.appendChild(squash([document.createTextNode('$'), ...cs, document.createTextNode('$')]));
   assert(el.textContent!.slice(1, -1).trim() !== '');
   if (el.textContent!.slice(1, -1) !== el.textContent!.slice(1, -1).trim()) return;
+  void el.setAttribute('data-src', el.textContent!);
   if (cache.has(el.textContent!)) return [[<HTMLSpanElement>cache.get(el.textContent!)!.cloneNode(true)], rest.slice(1)];
   return [[el], rest.slice(1)];
 };

@@ -2,7 +2,7 @@ import { loop } from '../../combinator/loop';
 import { text } from './text';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/text', () => {
+describe('Unit: parser/text/text', () => {
   describe('text', () => {
     const parser = loop(text);
 

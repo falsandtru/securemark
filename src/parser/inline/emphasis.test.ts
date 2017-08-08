@@ -2,7 +2,7 @@
 import { emphasis } from './emphasis';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/emphasis', () => {
+describe('Unit: parser/inline/emphasis', () => {
   describe('emphasis', () => {
     const parser = loop(emphasis);
 
@@ -25,8 +25,8 @@ describe('Unit: parser/emphasis', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('*<ruby>*')), [['<em>&lt;ruby&gt;</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*`<ruby>`*')), [['<em><code>&lt;ruby&gt;</code></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*`a`*')), [['<em><code>a</code></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*`<ruby>`*')), [['<em><code data-src="`<ruby>`">&lt;ruby&gt;</code></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*`a`*')), [['<em><code data-src="`a`">a</code></em>'], '']);
     });
 
   });

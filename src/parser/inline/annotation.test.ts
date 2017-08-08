@@ -2,7 +2,7 @@
 import { annotation } from './annotation';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/annotation', () => {
+describe('Unit: parser/inline/annotation', () => {
   describe('annotation', () => {
     const parser = loop(annotation);
 
@@ -29,7 +29,7 @@ describe('Unit: parser/annotation', () => {
       assert.deepStrictEqual(inspect(parser('(("))')), [['<sup class="annotation">"</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((<a>))')), [['<sup class="annotation">&lt;a&gt;</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((`a`))')), [['<sup class="annotation"><code>a</code></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((`a`))')), [['<sup class="annotation"><code data-src="`a`">a</code></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation"><sup class="annotation">a</sup></sup>'], '']);
     });

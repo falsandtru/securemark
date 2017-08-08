@@ -2,7 +2,7 @@
 import { plaintext } from './plaintext';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/pretext', () => {
+describe('Unit: parser/text/plaintext', () => {
   describe('pretext', () => {
     const parser = loop(plaintext);
 

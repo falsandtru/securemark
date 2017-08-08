@@ -11,7 +11,7 @@ const syntax = /^(?:!?h)?ttps?:\/\/\S|^#\S/;
 const closer = /^['"`[\](){}<>]|^\\?(?:\s|$)|^[~^+*,.;:!?]*(?:[\s\])}<>|]|$)/;
 const escape = /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:\/\/\S|^[0-9a-zA-Z][!?]*#\S/;
 
-export const uri: AutolinkParser.UriParser = function (source: string): Result<HTMLAnchorElement | HTMLImageElement | Text, [InlineParser | TextParser]> {
+export const url: AutolinkParser.UrlParser = function (source: string): Result<HTMLAnchorElement | HTMLImageElement | Text, [InlineParser | TextParser]> {
   if (source.search(escape) === 0) return [[document.createTextNode(source.slice(0, source.search(/[:#]/)))], source.slice(source.indexOf(':'))];
   if (source.search(syntax) !== 0) return;
   const flag = source.startsWith('!h');
@@ -21,7 +21,7 @@ export const uri: AutolinkParser.UriParser = function (source: string): Result<H
   const [cs, rest] = loop(combine<[TextParser], HTMLElement | Text>([text]), closer)(source) || [[], ''];
   assert(!squash(cs).querySelector('*'));
   const attribute = source.startsWith('#')
-    ? ' section'
+    ? ' index'
     : source.startsWith('ttp')
       ? ' nofollow'
       : '';

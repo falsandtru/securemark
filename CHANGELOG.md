@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.26.0
+
+- Add syntax highlight.
+- Fix cached math rendering.
+
 ## 0.25.0
 
 - Add index syntax.

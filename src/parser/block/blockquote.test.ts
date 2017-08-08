@@ -2,7 +2,7 @@
 import { blockquote } from './blockquote';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/blockquote', () => {
+describe('Unit: parser/block/blockquote', () => {
   describe('blockquote', () => {
     const parser = loop(blockquote);
 

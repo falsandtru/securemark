@@ -2,7 +2,7 @@
 import { parenthesis } from './parenthesis';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/parenthesis', () => {
+describe('Unit: parser/inline/parenthesis', () => {
   describe('parenthesis', () => {
     const parser = loop(parenthesis);
 
@@ -29,7 +29,7 @@ describe('Unit: parser/parenthesis', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('(")')), [['(")'], '']);
       assert.deepStrictEqual(inspect(parser('(<a>)')), [['(<a>)'], '']);
-      assert.deepStrictEqual(inspect(parser('(`a`)')), [['(', '<code>a</code>', ')'], '']);
+      assert.deepStrictEqual(inspect(parser('(`a`)')), [['(', '<code data-src="`a`">a</code>', ')'], '']);
       assert.deepStrictEqual(inspect(parser('((a))')), [['((a))'], '']);
     });
 

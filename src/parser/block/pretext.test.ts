@@ -2,7 +2,7 @@
 import { pretext} from './pretext';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/pretext', () => {
+describe('Unit: parser/block/pretext', () => {
   describe('pretext', () => {
     const parser = loop(pretext);
 
@@ -28,9 +28,9 @@ describe('Unit: parser/pretext', () => {
       assert.deepStrictEqual(inspect(parser('````\n```\n````')), [['<pre>```</pre>'], '']);
     });
 
-    it('lang', () => {
-      assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="lang-abc">a</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```a-b:c \n\n```')), [['<pre class="lang-a"></pre>'], '']);
+    it('attribute', () => {
+      assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="language-abc" data-lang="abc">a</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a  b.c  \n\n```')), [['<pre class="language-a" data-lang="a" data-file="b.c"></pre>'], '']);
     });
 
   });

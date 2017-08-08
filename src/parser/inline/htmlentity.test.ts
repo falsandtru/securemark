@@ -2,7 +2,7 @@
 import { htmlentity } from './htmlentity';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/htmlentity', () => {
+describe('Unit: parser/inline/htmlentity', () => {
   describe('htmlentity', () => {
     const parser = loop(htmlentity);
 

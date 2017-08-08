@@ -11,8 +11,8 @@ describe('Unit: parser/inline', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('++<a>`b`&c;&amp; ++')), [['<ins>&lt;a&gt;<code>b</code>&amp;c;&amp; </ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~<ruby>`a`</ruby>~~')), [['<del><ruby><code>a</code></ruby></del>'], '']);
+      assert.deepStrictEqual(inspect(parser('++<a>`b`&c;&amp; ++')), [['<ins>&lt;a&gt;<code data-src="`b`">b</code>&amp;c;&amp; </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~<ruby>`a`</ruby>~~')), [['<del><ruby><code data-src="`a`">a</code></ruby></del>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>~~<mark>a</mark>~~</ruby>')), [['<ruby><del><mark>a</mark></del></ruby>'], '']);
     });
 

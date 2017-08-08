@@ -2,7 +2,7 @@
 import { media } from './media';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/media', () => {
+describe('Unit: parser/inline/media', () => {
   describe('media', () => {
     const parser = loop(media);
 

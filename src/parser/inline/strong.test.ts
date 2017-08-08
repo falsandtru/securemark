@@ -2,7 +2,7 @@
 import { strong } from './strong';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/strong', () => {
+describe('Unit: parser/inline/strong', () => {
   describe('strong', () => {
     const parser = loop(strong);
 
@@ -27,7 +27,7 @@ describe('Unit: parser/strong', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('**<a>**')), [['<strong>&lt;a&gt;</strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('**`a`**')), [['<strong><code>a</code></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**`a`**')), [['<strong><code data-src="`a`">a</code></strong>'], '']);
     });
 
     it('triple', () => {

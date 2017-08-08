@@ -1,10 +1,10 @@
 ﻿import { loop } from '../../combinator/loop';
-import { mathinline } from './mathinline';
+import { math } from './math';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/mathinline', () => {
-  describe('mathinline', () => {
-    const parser = loop(mathinline);
+describe('Unit: parser/inline/math', () => {
+  describe('math', () => {
+    const parser = loop(math);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
@@ -24,17 +24,17 @@ describe('Unit: parser/mathinline', () => {
     });
 
     it('ab', () => {
-      assert.deepStrictEqual(inspect(parser('$a$')), [['<span class="math">$a$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$ab$')), [['<span class="math">$ab$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$a b$')), [['<span class="math">$a b$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$\\a$')), [['<span class="math">$\\a$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$\\$$')), [['<span class="math">$\\$$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$\\\\$')), [['<span class="math">$\\\\$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$a$')), [['<span class="math" data-src="$a$">$a$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$ab$')), [['<span class="math" data-src="$ab$">$ab$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$a b$')), [['<span class="math" data-src="$a b$">$a b$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\a$')), [['<span class="math" data-src="$\\a$">$\\a$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\$$')), [['<span class="math" data-src="$\\$$">$\\$$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\\\$')), [['<span class="math" data-src="$\\\\$">$\\\\$</span>'], '']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('$*a*$')), [['<span class="math">$*a*$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$<wbr>$')), [['<span class="math">$&lt;wbr&gt;$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$*a*$')), [['<span class="math" data-src="$*a*$">$*a*$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$<wbr>$')), [['<span class="math" data-src="$<wbr>$">$&lt;wbr&gt;$</span>'], '']);
     });
 
   });

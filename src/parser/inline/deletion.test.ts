@@ -2,7 +2,7 @@
 import { deletion } from './deletion';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/deletion', () => {
+describe('Unit: parser/inline/deletion', () => {
   describe('deletion', () => {
     const parser = loop(deletion);
 
@@ -27,7 +27,7 @@ describe('Unit: parser/deletion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('~~<a>~~')), [['<del>&lt;a&gt;</del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~`a`~~')), [['<del><code>a</code></del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~`a`~~')), [['<del><code data-src="`a`">a</code></del>'], '']);
     });
 
     it('triple', () => {

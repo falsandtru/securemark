@@ -1,9 +1,10 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
+import StringParser = MarkdownParser.TextParser;
 
-export import StringParser = MarkdownParser.TextParser;
 export import TextParser = StringParser.TextParser;
 export import PlainTextParser = StringParser.PlainTextParser;
 export import MathTextParser = StringParser.MathTextParser;
+export import IndexParser = StringParser.IndexParser;
 
 export function squash(nodes: Node[] | NodeList): DocumentFragment {
   const frag = document.createDocumentFragment();

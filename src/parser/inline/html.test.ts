@@ -2,7 +2,7 @@
 import { html } from './html';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/html', () => {
+describe('Unit: parser/inline/html', () => {
   describe('html', () => {
     const parser = loop(html);
 
@@ -39,7 +39,7 @@ describe('Unit: parser/html', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('<ruby><ruby>a</ruby></ruby>')), [['<ruby><ruby>a</ruby></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>a<ruby>b</ruby>c</ruby>')), [['<ruby>a<ruby>b</ruby>c</ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('<ruby>`a`</ruby>')), [['<ruby><code>a</code></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('<ruby>`a`</ruby>')), [['<ruby><code data-src="`a`">a</code></ruby>'], '']);
     });
 
     it('escape', () => {
