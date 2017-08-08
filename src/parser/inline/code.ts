@@ -4,7 +4,6 @@ import { loop } from '../../combinator/loop';
 import { CodeParser } from '../inline';
 import { PlainTextParser, squash } from '../text';
 import { plaintext } from '../text/plaintext';
-import { cache } from '../../renderer/render/math';
 
 type SubParsers = [PlainTextParser];
 
@@ -21,6 +20,5 @@ export const code: CodeParser = function (source: string): Result<HTMLElement, S
   el.textContent = el.textContent!.trim();
   if (el.textContent! === '') return;
   void el.setAttribute('data-src', source.slice(0, source.length - rest.length + keyword.length));
-  if (cache.has(el.textContent!)) return [[<HTMLSpanElement>cache.get(el.textContent!)!.cloneNode(true)], rest.slice(keyword.length)];
   return [[el], rest.slice(keyword.length)];
 };

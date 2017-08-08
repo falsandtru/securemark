@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.26.1
+
+- Remove verbose code.
+
 ## 0.26.0
 
 - Add syntax highlight.
