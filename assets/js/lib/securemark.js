@@ -2612,7 +2612,7 @@ require = function e(t, n, r) {
             function code(source) {
                 if (source.children.length > 0)
                     return;
-                void Prism.highlightElement(source, true);
+                void Prism.highlightElement(source, false);
             }
             exports.code = code;
         },
