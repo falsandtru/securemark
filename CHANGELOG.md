@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.26.2
+
+- Avoid a bug of PrismJS.
+
 ## 0.26.1
 
 - Remove verbose code.
