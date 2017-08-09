@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.28.0
+
+- Add rendering options.
+
 ## 0.27.0
 
 - Fix index syntax.

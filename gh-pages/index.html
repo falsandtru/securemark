@@ -13,14 +13,23 @@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <link href="/securemark/assets/lib/prismjs/themes/prism.css" rel="stylesheet">
 <style>
-  pre {
+  pre[class*="language-"] {
+    background: unset;
+    background-color: #fbfbfb;
     position: relative;
+    border-color: #eee;
+    border-radius: unset;
   }
   pre[data-file]:before {
     content: attr(data-file);
     position: absolute;
     top: 0;
     right: 0;
+    border-left: solid 1px #eee;
+    border-bottom: solid 1px #eee;
+    border-radius: 2px;
+    padding-left: 5px;
+    padding-right: 2px;
   }
   .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
     background: none;
@@ -48,8 +57,8 @@
 <div id="primary" class="col-md-12">
 <article id="content">
   <p>time: <span id="time">-</span>ms</p>
-  <textarea id="editor" style="float: left; width: 45%; min-height: 200px;"></textarea>
-  <div id="viewer" style="float: left; width: 45%; min-height: 200px"></div>
+  <textarea id="editor" style="float: left; width: 49%; min-height: 200px;"></textarea>
+  <div id="viewer" style="float: left; width: 49%; min-height: 200px"></div>
 </article>
 <aside></aside>
 </div>
