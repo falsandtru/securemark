@@ -1,10 +1,10 @@
 ﻿import { loop } from '../../combinator/loop';
-import { index } from './index';
+import { indexer } from './indexer';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/text/index', () => {
+describe('Unit: parser/block/indexer', () => {
   describe('index', () => {
-    const parser = loop(index);
+    const parser = loop(indexer);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);
@@ -16,15 +16,13 @@ describe('Unit: parser/text/index', () => {
       assert.deepStrictEqual(inspect(parser(' [# ]')), void 0);
       assert.deepStrictEqual(inspect(parser(' [#a ]')), void 0);
       assert.deepStrictEqual(inspect(parser(' [#a] ')), void 0);
-      assert.deepStrictEqual(inspect(parser(' [#a] [#b]')), void 0);
-      assert.deepStrictEqual(inspect(parser(' [#a]\n')), void 0);
+      assert.deepStrictEqual(inspect(parser(' [#]]')), void 0);
+      assert.deepStrictEqual(inspect(parser(' [#\\]')), void 0);
     });
 
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser(' [#a]')), [['<span class="index">a</span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#]]')), [['<span class="index">]</span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#\\]')), [['<span class="index">\\</span>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#a][#b]')), [['<span class="index">a][#b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#\\]]')), [['<span class="index">]</span>'], '']);
       assert.deepStrictEqual(inspect(parser('  [#a]')), [['<span class="index">a</span>'], '']);
     });
 

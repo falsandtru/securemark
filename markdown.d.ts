@@ -45,7 +45,7 @@ export namespace MarkdownParser {
       // # Title
       Markdown<'header'>,
       Parser<HTMLHeadingElement, [
-        TextParser.IndexParser,
+        IndexerParser,
         InlineParser
       ]> {
     }
@@ -74,6 +74,7 @@ export namespace MarkdownParser {
       // : description
       Markdown<'dlist'>,
       Parser<HTMLDListElement, [
+        IndexerParser,
         InlineParser
       ]> {
     }
@@ -128,6 +129,13 @@ export namespace MarkdownParser {
         InlineParser
       ]> {
     }
+    export interface IndexerParser extends
+      // [#index]
+      Markdown<'indexer'>,
+      Parser<HTMLElement, [
+        TextParser.TextParser
+      ]> {
+    }
   }
   export interface InlineParser extends
     Markdown<'inline'>,
@@ -144,6 +152,7 @@ export namespace MarkdownParser {
       InlineParser.MathInlineParser,
       InlineParser.MediaParser,
       InlineParser.LinkParser,
+      InlineParser.IndexParser,
       InlineParser.HTMLParser,
       InlineParser.HTMLEntityParser,
       InlineParser.AutolinkParser,
@@ -235,6 +244,13 @@ export namespace MarkdownParser {
         InlineParser
       ]> {
     }
+    export interface IndexParser extends
+      // [#a b]
+      Markdown<'index'>,
+      Parser<HTMLAnchorElement | Text, [
+        TextParser.TextParser
+      ]> {
+    }
     export interface HTMLParser extends
       // <small>abc</small>
       Markdown<'html'>,
@@ -295,13 +311,6 @@ export namespace MarkdownParser {
       // abc
       Markdown<'mathtext'>,
       Parser<Text, [
-        never
-      ]> {
-    }
-    export interface IndexParser extends
-      // [#index]
-      Markdown<'index'>,
-      Parser<HTMLElement, [
         never
       ]> {
     }

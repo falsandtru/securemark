@@ -1,11 +1,12 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { DListParser, consumeBlockEndEmptyLine } from '../block';
+import { DListParser, IndexerParser, consumeBlockEndEmptyLine } from '../block';
+import { indexer, defineIndex } from './indexer';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../text';
 
-type SubParsers = [InlineParser];
+type SubParsers = [IndexerParser, InlineParser];
 
 const syntax = /^~\s/;
 const separator = /^[~:](?:\s|$)/;
@@ -20,7 +21,8 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
     switch (line.slice(0, 2).trim()) {
       case '~': {
         const dt = el.appendChild(document.createElement('dt'));
-        void dt.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(line.slice(1).trim()) || [[]])[0]));
+        void dt.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([indexer, inline]))(line.slice(1).trim()) || [[]])[0]));
+        void defineIndex(dt);
         source = source.slice(line.length + 1);
         continue;
       }
@@ -37,7 +39,7 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
           void texts.push(line);
           source = source.slice(line.length + 1);
         }
-        void dd.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(texts.join('\n').trim()) || [[]])[0]));
+        void dd.appendChild(squash((loop(combine<[InlineParser], HTMLElement | Text>([inline]))(texts.join('\n').trim()) || [[]])[0]));
         continue;
       }
     }

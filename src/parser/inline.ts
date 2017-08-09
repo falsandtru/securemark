@@ -12,6 +12,7 @@ import { code } from './inline/code';
 import { math } from './inline/math';
 import { media } from './inline/media';
 import { link } from './inline/link';
+import { index } from './inline/index';
 import { html } from './inline/html';
 import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
@@ -31,6 +32,7 @@ export import CodeParser = InlineParser.CodeParser;
 export import MathInlineParser = InlineParser.MathInlineParser;
 export import MediaParser = InlineParser.MediaParser;
 export import LinkParser = InlineParser.LinkParser;
+export import IndexParser = InlineParser.IndexParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
@@ -48,6 +50,7 @@ export const inline: InlineParser = combine<[
   MathInlineParser,
   MediaParser,
   LinkParser,
+  IndexParser,
   HTMLParser,
   HTMLEntityParser,
   AutolinkParser,
@@ -65,6 +68,7 @@ export const inline: InlineParser = combine<[
   math,
   media,
   link,
+  index,
   html,
   htmlentity,
   autolink,

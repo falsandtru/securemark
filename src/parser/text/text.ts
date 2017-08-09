@@ -1,7 +1,7 @@
 import { Result } from '../../combinator/parser';
 import { TextParser } from '../text';
 
-const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:|[0-9a-zA-Z][!?]*#\S|[0-9a-zA-Z@]?@[0-9a-zA-Z]|[、。]/u;
+const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]|[、。]/u;
 const linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;
 
 export const text: TextParser = function (source: string): Result<HTMLBRElement | Text, [never]> {

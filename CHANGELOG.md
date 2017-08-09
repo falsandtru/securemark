@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.27.0
+
+- Fix index syntax.
+
 ## 0.26.2
 
 - Avoid a bug of PrismJS.

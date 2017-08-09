@@ -63,7 +63,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('。\n。')), [['。', '。'], '']);
     });
 
-    it('uri', () => {
+    it('url', () => {
       assert.deepStrictEqual(inspect(parser('http:')), [['http', ':'], '']);
       assert.deepStrictEqual(inspect(parser('https:')), [['https', ':'], '']);
       assert.deepStrictEqual(inspect(parser('_http:')), [['_', 'http', ':'], '']);
@@ -82,7 +82,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('0#sec')), [['0', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('a#sec')), [['a', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('A#sec')), [['A', '#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('0aA#sec')), [['0a', 'A', '#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('0aA#sec')), [['0aA', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('!#sec')), [['!', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('?#sec')), [['?', '#', 'sec'], '']);
     });

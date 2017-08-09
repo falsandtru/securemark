@@ -27,6 +27,7 @@ export import PreTextParser = BlockParser.PreTextParser;
 export import MathBlockParser = BlockParser.MathBlockParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
+export import IndexerParser = BlockParser.IndexerParser;
 
 export const block: BlockParser = combine<[
   NewlineParser,

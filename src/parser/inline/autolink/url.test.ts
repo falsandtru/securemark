@@ -95,10 +95,6 @@ describe('Unit: parser/inline/autolink/url', () => {
       assert.deepStrictEqual(inspect(parser('ttps://host')), [['<a href="https://host" rel="noopener nofollow noreferrer" target="_blank">ttps://host</a>'], '']);
     });
 
-    it('index', () => {
-      assert.deepStrictEqual(inspect(parser('#a')), [['<a href="#index:a" rel="noopener">a</a>'], '']);
-    });
-
     it('media', () => {
       assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" rel="noopener" target="_blank"><img class="media" data-type="image" src="http://host" alt="" style="max-width: 100%;"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" rel="noopener" target="_blank"><img class="media" data-type="image" src="https://host" alt="" style="max-width: 100%;"></a>'], '']);
