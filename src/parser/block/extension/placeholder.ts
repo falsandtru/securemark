@@ -12,7 +12,7 @@ export interface PlaceholderParser extends
 }
 type SubParsers = [PreTextParser];
 
-const syntax = /^(~{3,})(\S*?)\s*?\n(?:[^\n]*\n)*?\1/;
+const syntax = /^(~{3,})(\S*)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
 
 export const placeholder: PlaceholderParser = function (source: string): Result<HTMLElement, SubParsers> {
   if (!source.startsWith('~~~')) return;
@@ -24,7 +24,7 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   const lines: string[] = [];
   while (true) {
     const line = source.split('\n', 1)[0];
-    if (line.search(`^${keyword}\s*(?:\n|$)`) === 0) break;
+    if (line.startsWith(`${keyword}`) && line.trim() === `${keyword}`) break;
     void lines.push(squash((loop(plaintext)(`${line}\n`) || [[]])[0]).textContent!);
     source = source.slice(line.length + 1);
     if (source === '') return;

@@ -10,7 +10,7 @@ import { dlist } from './block/dlist';
 import { table } from './block/table';
 import { blockquote } from './block/blockquote';
 import { pretext } from './block/pretext';
-import { mathblock } from './block/mathblock';
+import { math } from './block/math';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 
@@ -52,12 +52,12 @@ export const block: BlockParser = combine<[
   table,
   blockquote,
   pretext,
-  mathblock,
+  math,
   extension,
   paragraph
 ]);
 
-const blockend = /^\s*?(?:\n|$)/;
+const blockend = /^[^\S\n]*(?:\n|$)/;
 export function consumeBlockEndEmptyLine<R, P extends Parser<any, any>[]>(rs: R[], rest: string): Result<R, P> {
   const [newline = void 0] = rest.match(blockend) || [];
   return newline === void 0

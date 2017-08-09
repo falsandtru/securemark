@@ -8,7 +8,7 @@ import { squash } from '../text';
 
 type SubParsers = [IndexerParser, InlineParser];
 
-const syntax = /^(#{1,6})\s+?([^\n]+)/;
+const syntax = /^(#{1,6})[^\S\n]+?([^\n]+)/;
 
 export const heading: HeadingParser = function (source: string): Result<HTMLHeadingElement, SubParsers> {
   if (!source.startsWith('#')) return;

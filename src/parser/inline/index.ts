@@ -5,7 +5,7 @@ import { IndexParser } from '../inline';
 import { TextParser, squash } from '../text';
 import { link } from './link';
 import { text } from '../text/text';
-import { makeIndex } from '../text/indextext';
+import { makeIndex } from '../text/index';
 
 type SubParsers = [TextParser];
 

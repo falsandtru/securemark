@@ -6,7 +6,7 @@ import { squash } from '../text';
 
 type SubParsers = [InlineParser];
 
-const syntax = /^(\|[^\n]*)+?\s*?\n/;
+const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
 const align = /^:?-+:?$/;
 
 export const table: TableParser = function (source: string): Result<HTMLTableElement, SubParsers> {
@@ -61,8 +61,8 @@ function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: strin
   , table.lastChild!.appendChild(document.createElement('tr')));
 }
 
-const rowseparator = /^\||^\s*?\n/;
-const rowend = /^\|?\s*?(?:\n|$)/;
+const rowseparator = /^\||^[^\S\n]*\n/;
+const rowend = /^\|?[^\S\n]*(?:\n|$)/;
 function parse(source: string): [DocumentFragment[], string] | undefined {
   const cols = [];
   while (true) {

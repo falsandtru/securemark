@@ -7,7 +7,7 @@ import { squash } from '../text';
 
 type SubParsers = [InlineParser];
 
-const closer = /^\n\s*?\n/;
+const closer = /^\n[^\S\n]*\n/;
 
 export const paragraph: ParagraphParser = function (source: string): Result<HTMLParagraphElement, SubParsers> {
   if (source.startsWith('\n') || source.search(closer) === 0) return;

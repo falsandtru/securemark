@@ -4,7 +4,7 @@ import { loop } from '../../combinator/loop';
 import { IndexerParser } from '../block';
 import { TextParser, squash } from '../text';
 import { text } from '../text/text';
-import { makeIndex } from '../text/indextext';
+import { makeIndex } from '../text/index';
 
 type SubParsers = [TextParser];
 
