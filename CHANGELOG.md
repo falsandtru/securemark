@@ -3,6 +3,7 @@
 ## 0.28.0
 
 - Add rendering options.
+- Fix math syntax to disallow empty lines.
 
 ## 0.27.0
 

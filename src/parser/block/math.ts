@@ -7,8 +7,8 @@ import { mathtext } from '../text/mathtext';
 
 type SubParsers = [MathTextParser];
 
-const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*\n)*?\$\$/;
-const closer = /^\n\$\$[^\S\n]*(?:\n|$)/;
+const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
+const closer = /^\n\$\$[^\S\n]*(?=\n|$)/;
 
 export const math: MathBlockParser = function (source: string): Result<HTMLDivElement, SubParsers> {
   if (!source.startsWith('$$') || source.search(syntax) !== 0) return;
