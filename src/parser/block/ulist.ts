@@ -1,7 +1,7 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { UListParser, OListParser, consumeBlockEndEmptyLine } from '../block';
+import { UListParser, OListParser, verifyBlockEnd } from '../block';
 import { olist } from './olist';
 import { indent, fillOListFlag } from './indent';
 import { InlineParser, inline } from '../inline';
@@ -21,7 +21,7 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
     if (line.trim() === '') break;
     if (line.search(syntax) === 0) {
       if (!line.startsWith(flag)) return;
-      const [text, checkbox = ''] = line.slice(line.split(' ', 1)[0].length + 1).trim().match(content)!;
+      const [text, checkbox = ''] = line.slice(line.split(/\s/, 1)[0].length + 1).trim().match(content)!;
       assert(checkbox === '' || checkbox.slice(0, 3) === '[ ]' || checkbox.slice(0, 3) === '[x]');
       assert(checkbox.slice(3).trim() === '');
       const li = el.appendChild(document.createElement('li'));
@@ -48,5 +48,5 @@ export const ulist: UListParser = function (source: string): Result<HTMLUListEle
     }
   }
   assert(el.children.length > 0);
-  return consumeBlockEndEmptyLine<HTMLUListElement, SubParsers>([el], source);
+  return verifyBlockEnd<HTMLUListElement, SubParsers>([el], source);
 };

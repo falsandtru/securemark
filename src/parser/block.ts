@@ -57,10 +57,8 @@ export const block: BlockParser = combine<[
   paragraph
 ]);
 
-const blockend = /^[^\S\n]*(?:\n|$)/;
-export function consumeBlockEndEmptyLine<R, P extends Parser<any, any>[]>(rs: R[], rest: string): Result<R, P> {
-  const [newline = void 0] = rest.match(blockend) || [];
-  return newline === void 0
-    ? void 0
-    : [rs, rest.slice(newline.length)];
+export function verifyBlockEnd<R, P extends Parser<any, any>[]>(rs: R[], rest: string): Result<R, P> {
+  return rest.split('\n', 1).shift()!.trim() === ''
+    ? [rs, rest]
+    : void 0;
 }

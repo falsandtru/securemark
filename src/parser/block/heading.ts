@@ -1,7 +1,7 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { HeadingParser, IndexerParser, consumeBlockEndEmptyLine } from '../block';
+import { HeadingParser, IndexerParser, verifyBlockEnd } from '../block';
 import { indexer, defineIndex } from './indexer';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../text';
@@ -20,5 +20,5 @@ export const heading: HeadingParser = function (source: string): Result<HTMLHead
   const el = document.createElement(<'h1'>`h${level}`);
   void el.appendChild(squash(children));
   void defineIndex(el);
-  return consumeBlockEndEmptyLine<HTMLHeadingElement, SubParsers>([el], source.slice(whole.length + 1));
+  return verifyBlockEnd<HTMLHeadingElement, SubParsers>([el], source.slice(whole.length + 1));
 };

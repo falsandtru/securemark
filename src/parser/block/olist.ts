@@ -1,7 +1,7 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { UListParser, OListParser, consumeBlockEndEmptyLine } from '../block';
+import { UListParser, OListParser, verifyBlockEnd } from '../block';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './indent';
 import { InlineParser, inline } from '../inline';
@@ -21,7 +21,7 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
     if (line.search(syntax) === 0) {
-      const text = line.slice(line.split(' ', 1)[0].length + 1).trim();
+      const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
       const li = el.appendChild(document.createElement('li'));
       void li.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(text) || [[]])[0]));
       source = source.slice(line.length + 1);
@@ -40,5 +40,5 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
     }
   }
   assert(el.children.length > 0);
-  return consumeBlockEndEmptyLine<HTMLOListElement, SubParsers>([el], source);
+  return verifyBlockEnd<HTMLOListElement, SubParsers>([el], source);
 };

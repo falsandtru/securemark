@@ -1,6 +1,6 @@
 ﻿import { Result } from '../../combinator/parser';
 import { loop } from '../../combinator/loop';
-import { TableParser, consumeBlockEndEmptyLine } from '../block';
+import { TableParser, verifyBlockEnd } from '../block';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../text';
 
@@ -45,7 +45,7 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
     void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
     source = source.slice(line.length + 1);
   }
-  return consumeBlockEndEmptyLine<HTMLTableElement, SubParsers>([table], source);
+  return verifyBlockEnd<HTMLTableElement, SubParsers>([table], source);
 };
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
