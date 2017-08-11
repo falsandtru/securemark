@@ -20,3 +20,9 @@ export interface RenderingOptions {
     pdf?: boolean;
   };
 }
+
+import { Cache } from 'spica/cache';
+export const caches: {
+  readonly image: Cache<string, HTMLImageElement>;
+  readonly math: Cache<string, HTMLElement>;
+};

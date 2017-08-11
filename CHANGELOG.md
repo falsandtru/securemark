@@ -4,6 +4,7 @@
 
 - Reserve symbol syntax.
 - Extend extension syntax.
+- Expose caches for custom renderer implementation.
 
 ## 0.28.0
 
