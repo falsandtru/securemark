@@ -153,6 +153,7 @@ export namespace MarkdownParser {
       InlineParser.MediaParser,
       InlineParser.LinkParser,
       InlineParser.IndexParser,
+      InlineParser.SymbolParser,
       InlineParser.HTMLParser,
       InlineParser.HTMLEntityParser,
       InlineParser.AutolinkParser,
@@ -248,6 +249,13 @@ export namespace MarkdownParser {
       // [#a b]
       Markdown<'index'>,
       Parser<HTMLAnchorElement, [
+        TextParser.TextParser
+      ]> {
+    }
+    export interface SymbolParser extends
+      // [:a b]
+      Markdown<'symbol'>,
+      Parser<HTMLSpanElement, [
         TextParser.TextParser
       ]> {
     }
