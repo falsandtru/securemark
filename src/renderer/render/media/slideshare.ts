@@ -5,6 +5,7 @@ import { Cache } from 'spica/cache';
 const cache = new Cache<string, HTMLElement>(100);
 
 export function slideshare(url: string): HTMLElement {
+  if (!url.startsWith('https://www.slideshare.net/')) throw new Error(`Invalid slideshare url: ${url}`);
   if (cache.has(url)) return <HTMLElement>cache.get(url)!.cloneNode(true);
   return DOM.div({
     class: 'media',

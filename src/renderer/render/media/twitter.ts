@@ -12,6 +12,7 @@ let widgetScriptRequested = false;
 const cache = new Cache<string, HTMLElement>(100);
 
 export function twitter(url: string): HTMLElement {
+  if (!url.startsWith('https://twitter.com/')) throw new Error(`Invalid twitter url: ${url}`);
   if (cache.has(url)) {
     const el = <HTMLElement>cache.get(url)!.cloneNode(true);
     window.twttr && void window.twttr.widgets.load(el);
