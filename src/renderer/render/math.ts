@@ -10,6 +10,6 @@ export function math(source: HTMLElement): void {
   }
   else {
     void MathJax.Hub!.Queue(["Typeset", MathJax.Hub, source, () =>
-      void cache.set(expr, <HTMLElement>source.cloneNode(true))]);
+      void cache.set(expr, source.cloneNode(true) as HTMLElement)]);
   }
 }

@@ -29,7 +29,7 @@ export function bind(node: Node): (source: string) => HTMLElement[] {
           s,
           Array.from(parse(s).childNodes)
             .map(e =>
-              <HTMLElement>node.insertBefore(e, ref)),
+              node.insertBefore(e, ref) as HTMLElement),
         ]);
     void pairs.splice(i, 0, ...ps);
     return ps

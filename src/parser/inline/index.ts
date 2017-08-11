@@ -21,5 +21,5 @@ export const index: IndexParser = function (source: string): Result<HTMLAnchorEl
   if (!result) return;
   const [[el]] = result;
   el.textContent = txt;
-  return <Result<HTMLAnchorElement, SubParsers>>result;
+  return result as Result<HTMLAnchorElement, SubParsers>;
 };

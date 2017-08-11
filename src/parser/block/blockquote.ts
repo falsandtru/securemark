@@ -39,7 +39,7 @@ export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: str
     if (diff < 0) {
       bottom = source.slice(0, -diff).split('')
         .reduce(p =>
-          <HTMLQuoteElement>p.parentElement!
+          p.parentElement! as HTMLQuoteElement
         , bottom);
     }
     assert(indent.length + diff > 0);
@@ -81,7 +81,7 @@ function expand(el: HTMLQuoteElement): void {
           void el.insertBefore(parse(ss.join('')), ref);
           return [];
         case node instanceof HTMLQuoteElement:
-          void expand(<HTMLQuoteElement>node);
+          void expand(node as HTMLQuoteElement);
           return [];
         default:
           void el.insertBefore(node, node.nextSibling);
@@ -90,7 +90,7 @@ function expand(el: HTMLQuoteElement): void {
     }, []);
 
   function parse(source: string): DocumentFragment {
-    return (loop(block)(source) || [<HTMLElement[]>[]])[0]
+    return (loop(block)(source) || [[] as HTMLElement[]])[0]
       .reduce((frag, node) => (
         frag.appendChild(node),
         frag

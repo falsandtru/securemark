@@ -6,7 +6,7 @@ const cache = new Cache<string, HTMLElement>(100);
 
 export function slideshare(url: string): HTMLElement | void {
   if (!url.startsWith('https://www.slideshare.net/')) return;
-  if (cache.has(url)) return <HTMLElement>cache.get(url)!.cloneNode(true);
+  if (cache.has(url)) return cache.get(url)!.cloneNode(true) as HTMLElement;
   return DOM.div({
     class: 'media',
     style: 'position: relative;',
@@ -22,7 +22,7 @@ export function slideshare(url: string): HTMLElement | void {
         iframe.parentElement!.style.paddingTop = `${(+iframe.height / +iframe.width) * 100}%`;
         void outer.appendChild(iframe.nextElementSibling!);
         void outer.lastElementChild!.removeAttribute('style');
-        void cache.set(url, <HTMLElement>outer.cloneNode(true));
+        void cache.set(url, outer.cloneNode(true) as HTMLElement);
       },
       error({ statusText }) {
         outer.innerHTML = parse(`*${url}\\\n-> ${statusText}*`).querySelector('p')!.innerHTML;

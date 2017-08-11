@@ -23,7 +23,7 @@ export const media: MediaParser = function (source: string): Result<HTMLImageEle
   if (!rest.startsWith(')')) return;
   const url = sanitize(second.reduce((s, c) => s + c.textContent, ''));
   if (url === '') return;
-  if (cache.has(url)) return [[<HTMLImageElement>cache.get(url)!.cloneNode(true)], rest.slice(1)];
+  if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLImageElement], rest.slice(1)];
   const el = DOM.img({
     'data-src': url,
     alt: caption,

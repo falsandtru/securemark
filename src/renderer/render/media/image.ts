@@ -6,16 +6,16 @@ export function image(source: HTMLImageElement): HTMLImageElement | HTMLAnchorEl
   assert(source.hasAttribute('alt'));
   const url = source.getAttribute('data-src')!;
   const el = cache.has(url)
-    ? <HTMLImageElement>cache.get(url)!.cloneNode(true)
-    : cache.set(url, <HTMLImageElement>DOM.img({
+    ? cache.get(url)!.cloneNode(true) as HTMLImageElement
+    : cache.set(url, DOM.img({
         class: 'media',
         src: url,
         alt: source.getAttribute('alt')!,
         style: 'max-width: 100%;',
-      }).element.cloneNode(true));
+      }).element.cloneNode(true) as HTMLImageElement);
   return source.parentElement
       && source.parentElement.matches('a')
       && source.parentElement.replaceChild(el, source)
-    ? <HTMLAnchorElement>el.parentElement!
+    ? el.parentElement! as HTMLImageElement
     : el;
 }
