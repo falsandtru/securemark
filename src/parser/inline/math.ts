@@ -22,7 +22,7 @@ export const math: MathInlineParser = function (source: string): Result<HTMLSpan
   void el.appendChild(squash([document.createTextNode('$'), ...cs, document.createTextNode('$')]));
   assert(el.textContent!.slice(1, -1).trim() !== '');
   if (el.textContent!.slice(1, -1) !== el.textContent!.slice(1, -1).trim()) return;
-  void el.setAttribute('data-src', el.textContent!);
   if (cache.has(el.textContent!)) return [[<HTMLSpanElement>cache.get(el.textContent!)!.cloneNode(true)], rest.slice(1)];
+  void el.setAttribute('data-src', el.textContent!);
   return [[el], rest.slice(1)];
 };
