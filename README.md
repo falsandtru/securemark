@@ -13,8 +13,9 @@ Secure markdown renderer working on browsers for user input data.
 - Recursive parsing.
 - Incremental update.
 - Unblinking rendering.
-- Large document support.
+- Syntax highlight with PrismJS.
 - LaTeX support with MathJax.
+- Large document support.
 
 ## Demo
 
