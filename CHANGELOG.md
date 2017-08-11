@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.31.0
+
+- Improve image rendering function interface.
+
 ## 0.30.1
 
 - Fix RenderingOptions interface.

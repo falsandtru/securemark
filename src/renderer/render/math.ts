@@ -1,15 +1,15 @@
 ﻿import { cache } from '../../parser/inline/math';
 
-export function math(source: HTMLElement): void {
-  assert(source.children.length === 0);
-  if (source instanceof HTMLDivElement) return void MathJax.Hub!.Queue(["Typeset", MathJax.Hub, source]);
-  void source.setAttribute('data-src', source.textContent!);
-  const expr = source.textContent!;
+export function math(target: HTMLElement): void {
+  assert(target.children.length === 0);
+  if (target instanceof HTMLDivElement) return void MathJax.Hub!.Queue(["Typeset", MathJax.Hub, target]);
+  void target.setAttribute('data-src', target.textContent!);
+  const expr = target.textContent!;
   if (cache.has(expr)) {
-    source.innerHTML = cache.get(expr)!.innerHTML;
+    target.innerHTML = cache.get(expr)!.innerHTML;
   }
   else {
-    void MathJax.Hub!.Queue(["Typeset", MathJax.Hub, source, () =>
-      void cache.set(expr, source.cloneNode(true) as HTMLElement)]);
+    void MathJax.Hub!.Queue(["Typeset", MathJax.Hub, target, () =>
+      void cache.set(expr, target.cloneNode(true) as HTMLElement)]);
   }
 }
