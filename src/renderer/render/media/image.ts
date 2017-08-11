@@ -16,6 +16,6 @@ export function image(source: HTMLImageElement): HTMLImageElement | HTMLAnchorEl
   return source.parentElement
       && source.parentElement.matches('a')
       && source.parentElement.replaceChild(el, source)
-    ? el.parentElement! as HTMLImageElement
+    ? el.parentElement! as HTMLAnchorElement
     : el;
 }

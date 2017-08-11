@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.30.1
+
+- Fix RenderingOptions interface.
+
 ## 0.30.0
 
 - Refine rendering options.
