@@ -1,7 +1,8 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { DListParser, IndexerParser, verifyBlockEnd } from '../block';
+import { DListParser, IndexerParser } from '../block';
+import { verifyBlockEnd } from './end';
 import { indexer, defineIndex } from './indexer';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../text';
@@ -11,7 +12,7 @@ type SubParsers = [IndexerParser, InlineParser];
 const syntax = /^~\s/;
 const separator = /^[~:](?:\s|$)/;
 
-export const dlist: DListParser = function (source: string): Result<HTMLDListElement, SubParsers> {
+export const dlist: DListParser = verifyBlockEnd(function (source: string): Result<HTMLDListElement, SubParsers> {
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;
   const el = document.createElement('dl');
@@ -49,5 +50,5 @@ export const dlist: DListParser = function (source: string): Result<HTMLDListEle
     void el.appendChild(document.createElement('dd'));
   }
   assert(el.children.length > 0);
-  return verifyBlockEnd<HTMLDListElement, SubParsers>([el], source);
-};
+  return [[el], source];
+});

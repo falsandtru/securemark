@@ -1,10 +1,11 @@
 ﻿import { Result } from '../../combinator/parser';
-import { HorizontalRuleParser, verifyBlockEnd } from '../block';
+import { HorizontalRuleParser } from '../block';
+import { verifyBlockEnd } from './end';
 
 const syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;
 
-export const horizontalrule: HorizontalRuleParser = function (source: string): Result<HTMLHRElement, never> {
+export const horizontalrule: HorizontalRuleParser = verifyBlockEnd(function (source: string): Result<HTMLHRElement, never> {
   const [whole] = source.split('\n', 1)[0].match(syntax) || [''];
   if (!whole) return;
-  return verifyBlockEnd<HTMLHRElement, never>([document.createElement('hr')], source.slice(whole.length + 1));
-};
+  return [[document.createElement('hr')], source.slice(whole.length + 1)];
+});

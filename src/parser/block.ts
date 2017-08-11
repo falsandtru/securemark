@@ -1,5 +1,4 @@
-﻿import { Parser, Result } from '../combinator/parser';
-import { MarkdownParser } from '../../markdown.d';
+﻿import { MarkdownParser } from '../../markdown.d';
 import { combine } from '../combinator/combine';
 import { newline } from './block/newline';
 import { horizontalrule } from './block/horizontalrule';
@@ -56,9 +55,3 @@ export const block: BlockParser = combine<[
   extension,
   paragraph
 ]);
-
-export function verifyBlockEnd<R, P extends Parser<any, any>[]>(rs: R[], rest: string): Result<R, P> {
-  return rest.split('\n', 1).shift()!.trim() === ''
-    ? [rs, rest]
-    : void 0;
-}

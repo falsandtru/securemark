@@ -247,7 +247,7 @@ export namespace MarkdownParser {
     export interface IndexParser extends
       // [#a b]
       Markdown<'index'>,
-      Parser<HTMLAnchorElement | Text, [
+      Parser<HTMLAnchorElement, [
         TextParser.TextParser
       ]> {
     }

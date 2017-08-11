@@ -1,7 +1,7 @@
 ﻿import { Markdown } from '../../../../markdown.d';
 import { Parser, Result } from '../../../combinator/parser';
 import { loop } from '../../../combinator/loop';
-import { PreTextParser, verifyBlockEnd } from '../../block';
+import { PreTextParser } from '../../block';
 import { inline } from '../../inline';
 import { squash } from '../../text';
 import { plaintext } from '../../text/plaintext';
@@ -31,5 +31,5 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   }
   const quote = document.createElement('pre');
   void quote.appendChild(document.createTextNode(`${keyword}\n${lines.join('')}${keyword}`));
-  return verifyBlockEnd<HTMLElement, SubParsers>([message, quote], source.slice(keyword.length + 1));
+  return [[message, quote], source.slice(keyword.length + 1)];
 };

@@ -1,6 +1,7 @@
 ﻿import { Result } from '../../combinator/parser';
 import { loop } from '../../combinator/loop';
-import { TableParser, verifyBlockEnd } from '../block';
+import { TableParser } from '../block';
+import { verifyBlockEnd } from './end';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../text';
 
@@ -9,7 +10,7 @@ type SubParsers = [InlineParser];
 const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
 const align = /^:?-+:?$/;
 
-export const table: TableParser = function (source: string): Result<HTMLTableElement, SubParsers> {
+export const table: TableParser = verifyBlockEnd(function (source: string): Result<HTMLTableElement, SubParsers> {
   if (!source.startsWith('|') || source.search(syntax) !== 0) return;
   const table = document.createElement('table');
   const [headers, hrest] = parse(source) || [[], source];
@@ -45,8 +46,8 @@ export const table: TableParser = function (source: string): Result<HTMLTableEle
     void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
     source = source.slice(line.length + 1);
   }
-  return verifyBlockEnd<HTMLTableElement, SubParsers>([table], source);
-};
+  return [[table], source];
+});
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
   return void cols

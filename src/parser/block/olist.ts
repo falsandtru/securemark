@@ -1,7 +1,8 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { UListParser, OListParser, verifyBlockEnd } from '../block';
+import { UListParser, OListParser } from '../block';
+import { verifyBlockEnd } from './end';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './indent';
 import { InlineParser, inline } from '../inline';
@@ -11,7 +12,7 @@ type SubParsers = [InlineParser] | [UListParser, OListParser];
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
 
-export const olist: OListParser = function (source: string): Result<HTMLOListElement, SubParsers> {
+export const olist: OListParser = verifyBlockEnd(function (source: string): Result<HTMLOListElement, SubParsers> {
   const [whole, index, flag] = source.match(syntax) || ['', '', ''];
   if (!whole || !flag) return;
   const el = document.createElement('ol');
@@ -40,5 +41,5 @@ export const olist: OListParser = function (source: string): Result<HTMLOListEle
     }
   }
   assert(el.children.length > 0);
-  return verifyBlockEnd<HTMLOListElement, SubParsers>([el], source);
-};
+  return [[el], source];
+});

@@ -1,7 +1,8 @@
 ﻿import { Result } from '../../combinator/parser';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { BlockquoteParser, verifyBlockEnd } from '../block';
+import { BlockquoteParser } from '../block';
+import { verifyBlockEnd } from './end';
 import { BlockParser, block } from '../block';
 import { PlainTextParser, squash } from '../text';
 import { plaintext } from '../text/plaintext';
@@ -10,7 +11,7 @@ type SubParsers = [PlainTextParser] | [BlockParser];
 
 const syntax = /^>+(?=\s|$)/;
 
-export const blockquote: BlockquoteParser = function (source: string): Result<HTMLQuoteElement, SubParsers> {
+export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: string): Result<HTMLQuoteElement, SubParsers> {
   const mode = void 0
     || source.startsWith('>') && 'plain'
     || source.startsWith('|>') && 'markdown'
@@ -65,8 +66,8 @@ export const blockquote: BlockquoteParser = function (source: string): Result<HT
   if (mode === 'markdown') {
     void expand(top);
   }
-  return verifyBlockEnd<HTMLQuoteElement, SubParsers>([top], source);
-};
+  return [[top], source];
+});
 
 function expand(el: HTMLQuoteElement): void {
   return void Array.from(el.childNodes)

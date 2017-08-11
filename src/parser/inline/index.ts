@@ -11,7 +11,7 @@ type SubParsers = [TextParser];
 
 const syntax = /^\[#\S[^\n]*?\]/;
 
-export const index: IndexParser = function (source: string): Result<HTMLAnchorElement | Text, SubParsers> {
+export const index: IndexParser = function (source: string): Result<HTMLAnchorElement, SubParsers> {
   if (!source.startsWith('[#') || source.search(syntax) !== 0) return;
   const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^[\]\n]/)(`${source.slice(2)}`) || [[], ''];
   if (!rest.startsWith(']')) return;
