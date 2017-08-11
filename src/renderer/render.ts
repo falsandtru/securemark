@@ -3,7 +3,7 @@ import { code } from './render/code';
 import { math } from './render/math';
 import { RenderingOptions } from '../../';
 
-export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
+export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
   assert(target instanceof HTMLImageElement === false);
   void [target].concat(Array.from(target.querySelectorAll('img, pre, .math') as NodeListOf<HTMLElement>))
     .forEach(target => {
@@ -25,4 +25,5 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
           return;
       }
     });
+  return target;
 }
