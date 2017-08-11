@@ -3,6 +3,7 @@
 ## 0.29.0
 
 - Reserve symbol syntax.
+- Extend extension syntax.
 
 ## 0.28.0
 

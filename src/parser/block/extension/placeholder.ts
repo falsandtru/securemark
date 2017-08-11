@@ -12,7 +12,7 @@ export interface PlaceholderParser extends
 }
 type SubParsers = [PreTextParser];
 
-const syntax = /^(~{3,})(\S*)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
+const syntax = /^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
 
 export const placeholder: PlaceholderParser = function (source: string): Result<HTMLElement, SubParsers> {
   if (!source.startsWith('~~~')) return;
