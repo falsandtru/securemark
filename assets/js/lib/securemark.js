@@ -2715,18 +2715,21 @@ require = function e(t, n, r) {
             var media_1 = require('./render/media');
             var code_1 = require('./render/code');
             var math_1 = require('./render/math');
-            function render(el, opts) {
+            function render(target, opts) {
                 if (opts === void 0) {
                     opts = {};
                 }
-                void [el].concat(Array.from(el.querySelectorAll('img, pre, .math'))).forEach(function (el) {
+                void [target].concat(Array.from(target.querySelectorAll('img, pre, .math'))).forEach(function (target) {
                     switch (true) {
-                    case el.matches('img[data-src]'):
-                        return void media_1.media(el, opts.media);
-                    case el.matches('pre') && el.children.length === 0:
-                        return void (opts.code || code_1.code)(el);
-                    case el.matches('.math') && el.children.length === 0:
-                        return void (opts.math || math_1.math)(el);
+                    case target.matches('img[data-src]'): {
+                            var el = media_1.media(target, opts.media);
+                            var tgt = el instanceof HTMLImageElement || !target.closest('a') ? target : target.closest('a');
+                            return void tgt.parentElement.replaceChild(el, tgt);
+                        }
+                    case target.matches('pre') && target.children.length === 0:
+                        return void (opts.code || code_1.code)(target);
+                    case target.matches('.math') && target.children.length === 0:
+                        return void (opts.math || math_1.math)(target);
                     default:
                         return;
                     }
@@ -2744,8 +2747,8 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function code(source) {
-                void Prism.highlightElement(source, false);
+            function code(target) {
+                void Prism.highlightElement(target, false);
             }
             exports.code = code;
         },
@@ -2756,24 +2759,24 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var math_1 = require('../../parser/inline/math');
-            function math(source) {
-                if (source instanceof HTMLDivElement)
+            function math(target) {
+                if (target instanceof HTMLDivElement)
                     return void MathJax.Hub.Queue([
                         'Typeset',
                         MathJax.Hub,
-                        source
+                        target
                     ]);
-                void source.setAttribute('data-src', source.textContent);
-                var expr = source.textContent;
+                void target.setAttribute('data-src', target.textContent);
+                var expr = target.textContent;
                 if (math_1.cache.has(expr)) {
-                    source.innerHTML = math_1.cache.get(expr).innerHTML;
+                    target.innerHTML = math_1.cache.get(expr).innerHTML;
                 } else {
                     void MathJax.Hub.Queue([
                         'Typeset',
                         MathJax.Hub,
-                        source,
+                        target,
                         function () {
-                            return void math_1.cache.set(expr, source.cloneNode(true));
+                            return void math_1.cache.set(expr, target.cloneNode(true));
                         }
                     ]);
                 }
@@ -2792,14 +2795,12 @@ require = function e(t, n, r) {
             var slideshare_1 = require('./media/slideshare');
             var pdf_1 = require('./media/pdf');
             var image_1 = require('./media/image');
-            function media(source, opts) {
+            function media(target, opts) {
                 if (opts === void 0) {
                     opts = {};
                 }
-                var url = source.getAttribute('data-src');
-                var target = source.parentElement && source.parentElement.matches('a') ? source.parentElement : source;
-                var media = void 0 || (opts.twitter || twitter_1.twitter)(url) || (opts.youtube || youtube_1.youtube)(url) || (opts.gist || gist_1.gist)(url) || (opts.slideshare || slideshare_1.slideshare)(url) || (opts.pdf || pdf_1.pdf)(url) || (opts.image || image_1.image)(source);
-                void target.parentElement.replaceChild(media, target);
+                var url = target.getAttribute('data-src') || '';
+                return void 0 || (opts.twitter || twitter_1.twitter)(url) || (opts.youtube || youtube_1.youtube)(url) || (opts.gist || gist_1.gist)(url) || (opts.slideshare || slideshare_1.slideshare)(url) || (opts.pdf || pdf_1.pdf)(url) || (opts.image || image_1.image)(url, target.getAttribute('alt') || '');
             }
             exports.media = media;
         },
@@ -2871,15 +2872,13 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var typed_dom_1 = require('typed-dom');
             var media_1 = require('../../../parser/inline/media');
-            function image(source) {
-                var url = source.getAttribute('data-src');
-                var el = media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.img({
+            function image(url, alt) {
+                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.img({
                     class: 'media',
                     src: url,
-                    alt: source.getAttribute('alt'),
+                    alt: alt,
                     style: 'max-width: 100%;'
                 }).element.cloneNode(true));
-                return source.parentElement && source.parentElement.matches('a') && source.parentElement.replaceChild(el, source) ? el.parentElement : el;
             }
             exports.image = image;
         },
