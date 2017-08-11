@@ -4,7 +4,9 @@ import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { MathTextParser, squash } from '../text';
 import { mathtext } from '../text/mathtext';
-import { cache } from '../../renderer/render/math';
+import { Cache } from 'spica/cache';
+
+export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
 type SubParsers = [MathTextParser];
 

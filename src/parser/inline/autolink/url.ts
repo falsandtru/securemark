@@ -5,13 +5,12 @@ import { AutolinkParser, InlineParser } from '../../inline';
 import { TextParser, squash } from '../../text';
 import { text } from '../../text/text';
 import { link } from '../link';
-import { media, mediatype } from '../media';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;
 const closer = /^['"`[\](){}<>]|^\\?(?:\s|$)|^[~^+*,.;:!?]*(?:[\s\])}<>|]|$)/;
 const escape = /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:\/\/\S/;
 
-export const url: AutolinkParser.UrlParser = function (source: string): Result<HTMLAnchorElement | HTMLImageElement | Text, [InlineParser | TextParser]> {
+export const url: AutolinkParser.UrlParser = function (source: string): Result<HTMLAnchorElement | Text, [InlineParser]> {
   if (source.search(escape) === 0) return [[document.createTextNode(source.slice(0, source.indexOf(':')))], source.slice(source.indexOf(':'))];
   if (source.search(syntax) !== 0) return;
   const flag = source.startsWith('!h');
@@ -26,7 +25,5 @@ export const url: AutolinkParser.UrlParser = function (source: string): Result<H
   const uri = `${source.startsWith('ttp') ? 'h' : ''}${source.slice(0, source.length - rest.length)}`;
   return !flag
     ? link(`[](${uri}${attribute})${rest}`)
-    : mediatype(uri) === 'image'
-      ? link(`[![](${uri})](${uri})${rest}`)
-      : media(`![](${uri})${rest}`);
+    : link(`[![](${uri})](${uri})${rest}`);
 };

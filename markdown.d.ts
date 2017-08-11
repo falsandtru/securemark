@@ -286,9 +286,8 @@ export namespace MarkdownParser {
       export interface UrlParser extends
         // https://host
         Markdown<'url'>,
-        Parser<HTMLAnchorElement | HTMLImageElement | Text, [
-          InlineParser |
-          TextParser.TextParser
+        Parser<HTMLAnchorElement | Text, [
+          InlineParser
         ]> {
       }
       export interface AccountParser extends

@@ -4,8 +4,8 @@ import { Cache } from 'spica/cache';
 
 const cache = new Cache<string, HTMLElement>(100);
 
-export function gist(url: string): HTMLElement {
-  if (!url.startsWith('https://gist.github.com/')) throw new Error(`Invalid gist url: ${url}`);
+export function gist(url: string): HTMLElement | void {
+  if (!url.startsWith('https://gist.github.com/')) return;
   if (cache.has(url)) return <HTMLElement>cache.get(url)!.cloneNode(true);
   return DOM.div({
     class: 'media',
@@ -17,7 +17,6 @@ export function gist(url: string): HTMLElement {
       timeout: 10 * 1e3,
       success({ div, stylesheet, description }) {
         outer.innerHTML = `<div style="position: relative; margin-bottom: -1em;">${div}</div>`;
-        void cache.set(url, outer);
         const gist = <HTMLElement>outer.querySelector('.gist')!;
         void gist.insertBefore(
           DOM.div({ class: 'gist-description' }, [
@@ -25,6 +24,7 @@ export function gist(url: string): HTMLElement {
               parse(url).querySelector('a')!),
           ]).element,
           gist.firstChild);
+        void cache.set(url, <HTMLElement>outer.cloneNode(true));
         if (document.head.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
         void document.head.appendChild(DOM.link({
           rel: 'stylesheet',

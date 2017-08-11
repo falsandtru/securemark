@@ -1,6 +1,4 @@
-﻿import { Cache } from 'spica/cache';
-
-export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
+﻿import { cache } from '../../parser/inline/math';
 
 export function math(source: HTMLElement): void {
   if (source.children.length > 0) return;
