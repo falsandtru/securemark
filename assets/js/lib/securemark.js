@@ -2734,6 +2734,7 @@ require = function e(t, n, r) {
                         return;
                     }
                 });
+                return target;
             }
             exports.render = render;
         },
