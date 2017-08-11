@@ -2134,12 +2134,12 @@ require = function e(t, n, r) {
                 void el.appendChild(text_1.squash([document.createTextNode('$')].concat(cs, [document.createTextNode('$')])));
                 if (el.textContent.slice(1, -1) !== el.textContent.slice(1, -1).trim())
                     return;
-                void el.setAttribute('data-src', el.textContent);
                 if (exports.cache.has(el.textContent))
                     return [
                         [exports.cache.get(el.textContent).cloneNode(true)],
                         rest.slice(1)
                     ];
+                void el.setAttribute('data-src', el.textContent);
                 return [
                     [el],
                     rest.slice(1)
@@ -2189,7 +2189,12 @@ require = function e(t, n, r) {
                 }, ''));
                 if (url === '')
                     return;
-                var el = exports.cache.has(url) ? exports.cache.get(url).cloneNode(true) : typed_dom_1.default.img({
+                if (exports.cache.has(url))
+                    return [
+                        [exports.cache.get(url).cloneNode(true)],
+                        rest.slice(1)
+                    ];
+                var el = typed_dom_1.default.img({
                     'data-src': url,
                     alt: caption
                 }).element;
@@ -2714,14 +2719,14 @@ require = function e(t, n, r) {
                 if (opts === void 0) {
                     opts = {};
                 }
-                void [el].concat(Array.from(el.querySelectorAll('img[data-src], pre, .math'))).forEach(function (el) {
+                void [el].concat(Array.from(el.querySelectorAll('img, pre, .math'))).forEach(function (el) {
                     switch (true) {
-                    case el.matches('img'):
+                    case el.matches('img[data-src]'):
                         return void media_1.media(el, opts.media);
-                    case opts.code !== false && el.matches('pre'):
-                        return void code_1.code(el);
-                    case opts.math !== false && el.matches('.math'):
-                        return void math_1.math(el);
+                    case el.matches('pre') && el.children.length === 0:
+                        return void (opts.code || code_1.code)(el);
+                    case el.matches('.math') && el.children.length === 0:
+                        return void (opts.math || math_1.math)(el);
                     default:
                         return;
                     }
@@ -2740,8 +2745,6 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function code(source) {
-                if (source.children.length > 0)
-                    return;
                 void Prism.highlightElement(source, false);
             }
             exports.code = code;
@@ -2754,8 +2757,6 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var math_1 = require('../../parser/inline/math');
             function math(source) {
-                if (source.children.length > 0)
-                    return;
                 if (source instanceof HTMLDivElement)
                     return void MathJax.Hub.Queue([
                         'Typeset',
@@ -2796,8 +2797,9 @@ require = function e(t, n, r) {
                     opts = {};
                 }
                 var url = source.getAttribute('data-src');
-                var target = source.closest('a') || source;
-                void target.parentElement.replaceChild(void 0 || opts.twitter !== false && twitter_1.twitter(url) || opts.youtube !== false && youtube_1.youtube(url) || opts.gist !== false && gist_1.gist(url) || opts.slideshare !== false && slideshare_1.slideshare(url) || opts.pdf !== false && pdf_1.pdf(url) || image_1.image(source), target);
+                var target = source.parentElement && source.parentElement.matches('a') ? source.parentElement : source;
+                var media = void 0 || (opts.twitter || twitter_1.twitter)(url) || (opts.youtube || youtube_1.youtube)(url) || (opts.gist || gist_1.gist)(url) || (opts.slideshare || slideshare_1.slideshare)(url) || (opts.pdf || pdf_1.pdf)(url) || (opts.image || image_1.image)(source);
+                void target.parentElement.replaceChild(media, target);
             }
             exports.media = media;
         },
@@ -2871,16 +2873,13 @@ require = function e(t, n, r) {
             var media_1 = require('../../../parser/inline/media');
             function image(source) {
                 var url = source.getAttribute('data-src');
-                void source.removeAttribute('data-src');
-                source = typed_dom_1.default.img({
+                var el = media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.img({
                     class: 'media',
                     src: url,
+                    alt: source.getAttribute('alt'),
                     style: 'max-width: 100%;'
-                }, function () {
-                    return source;
-                }).element;
-                void media_1.cache.set(url, source.cloneNode(true));
-                return source.closest('a') || source;
+                }).element.cloneNode(true));
+                return source.parentElement && source.parentElement.matches('a') && source.parentElement.replaceChild(el, source) ? el.parentElement : el;
             }
             exports.image = image;
         },
