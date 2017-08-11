@@ -5,17 +5,17 @@ import { RenderingOptions } from '../../';
 
 export function render(el: HTMLElement, opts: RenderingOptions = {}): void {
   assert(el instanceof HTMLImageElement === false);
-  void [el].concat(Array.from(<NodeListOf<HTMLElement>>el.querySelectorAll('img[data-src], pre, .math')))
+  void [el].concat(Array.from(<NodeListOf<HTMLElement>>el.querySelectorAll('img, pre, .math')))
     .forEach(el => {
       switch (true) {
-        case el.matches('img'):
+        case el.matches('img[data-src]'):
           return void media(<HTMLImageElement>el, opts.media);
-        case opts.code !== false
-          && el.matches('pre'):
-          return void code(el);
-        case opts.math !== false
-          && el.matches('.math'):
-          return void math(el);
+        case el.matches('pre')
+          && el.children.length === 0:
+          return void (opts.code || code)(el);
+        case el.matches('.math')
+          && el.children.length === 0:
+          return void (opts.math || math)(el);
         default:
           return;
       }

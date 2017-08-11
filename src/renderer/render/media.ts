@@ -7,19 +7,18 @@ import { image } from './media/image';
 import { RenderingOptions } from '../../../';
 
 export function media(source: HTMLImageElement, opts: RenderingOptions['media'] = {}): void {
-  assert(source instanceof HTMLImageElement);
   assert(!source.hasAttribute('src'));
   assert(source.hasAttribute('data-src'));
-  assert(source.parentElement);
   const url = source.getAttribute('data-src')!;
-  const target = source.closest('a') || source;
-  void target.parentElement!.replaceChild(
-    void 0
-    || opts.twitter !== false && twitter(url)
-    || opts.youtube !== false && youtube(url)
-    || opts.gist !== false && gist(url)
-    || opts.slideshare !== false && slideshare(url)
-    || opts.pdf !== false && pdf(url)
-    || image(source),
-    target);
+  const target = source.parentElement && source.parentElement.matches('a')
+    ? source.parentElement!
+    : source;
+  const media = void 0
+    || (opts.twitter || twitter)(url)
+    || (opts.youtube || youtube)(url)
+    || (opts.gist || gist)(url)
+    || (opts.slideshare || slideshare)(url)
+    || (opts.pdf || pdf)(url)
+    || (opts.image || image)(source);
+  void target.parentElement!.replaceChild(media, target);
 }

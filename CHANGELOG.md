@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.30.0
+
+- Refine rendering options.
+
 ## 0.29.0
 
 - Reserve symbol syntax.

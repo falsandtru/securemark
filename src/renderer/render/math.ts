@@ -1,7 +1,7 @@
 ﻿import { cache } from '../../parser/inline/math';
 
 export function math(source: HTMLElement): void {
-  if (source.children.length > 0) return;
+  assert(source.children.length === 0);
   if (source instanceof HTMLDivElement) return void MathJax.Hub!.Queue(["Typeset", MathJax.Hub, source]);
   void source.setAttribute('data-src', source.textContent!);
   const expr = source.textContent!;
