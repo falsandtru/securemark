@@ -7,10 +7,8 @@ import { image } from './media/image';
 import { RenderingOptions } from '../../../';
 
 export function media(target: HTMLImageElement, opts: RenderingOptions['media'] = {}): HTMLElement {
-  assert(!target.hasAttribute('src'));
-  assert(target.hasAttribute('data-src'));
-  assert(target.hasAttribute('alt'));
-  const url = target.getAttribute('data-src') || '';
+  assert(target.matches(':not([src])[data-src]'));
+  const url = target.getAttribute('data-src')!;
   return void 0
     || (opts.twitter || twitter)(url)
     || (opts.youtube || youtube)(url)
