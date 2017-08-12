@@ -25,5 +25,7 @@ export interface RenderingOptions {
 import { Cache } from 'spica/cache';
 export const caches: {
   readonly math: Cache<string, HTMLElement>;
-  readonly image: Cache<string, HTMLImageElement>;
+  readonly media: {
+    readonly image: Cache<string, HTMLImageElement>;
+  };
 };

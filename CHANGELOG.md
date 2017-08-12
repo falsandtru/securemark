@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.32.0
+
+- Change schema of caches.
+
 ## 0.31.0
 
 - Improve image rendering function interface.

@@ -1,7 +1,9 @@
-import { cache as image } from './inline/media';
 import { cache as math } from './inline/math';
+import { cache as image } from './inline/media';
 
 export const caches = {
-  image,
   math,
+  media: {
+    image,
+  },
 };
