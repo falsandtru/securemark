@@ -1573,11 +1573,11 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var media_1 = require('./inline/media');
             var math_1 = require('./inline/math');
+            var media_1 = require('./inline/media');
             exports.caches = {
-                image: media_1.cache,
-                math: math_1.cache
+                math: math_1.cache,
+                media: { image: media_1.cache }
             };
         },
         {
@@ -2721,10 +2721,10 @@ require = function e(t, n, r) {
                 }
                 void [target].concat(Array.from(target.querySelectorAll('img, pre, .math'))).forEach(function (target) {
                     switch (true) {
-                    case target.matches('img[data-src]'): {
-                            var el = media_1.media(target, opts.media);
-                            var tgt = el instanceof HTMLImageElement || !target.closest('a') ? target : target.closest('a');
-                            return void tgt.parentElement.replaceChild(el, tgt);
+                    case target.matches('img:not([src])[data-src]'): {
+                            var content = media_1.media(target, opts.media);
+                            var scope = content instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
+                            return void scope.parentElement.replaceChild(content, scope);
                         }
                     case target.matches('pre') && target.children.length === 0:
                         return void (opts.code || code_1.code)(target);
@@ -2769,18 +2769,16 @@ require = function e(t, n, r) {
                     ]);
                 void target.setAttribute('data-src', target.textContent);
                 var expr = target.textContent;
-                if (math_1.cache.has(expr)) {
-                    target.innerHTML = math_1.cache.get(expr).innerHTML;
-                } else {
-                    void MathJax.Hub.Queue([
-                        'Typeset',
-                        MathJax.Hub,
-                        target,
-                        function () {
-                            return void math_1.cache.set(expr, target.cloneNode(true));
-                        }
-                    ]);
-                }
+                if (math_1.cache.has(expr))
+                    return void (target.innerHTML = math_1.cache.get(expr).innerHTML);
+                void MathJax.Hub.Queue([
+                    'Typeset',
+                    MathJax.Hub,
+                    target,
+                    function () {
+                        return void math_1.cache.set(expr, target.cloneNode(true));
+                    }
+                ]);
             }
             exports.math = math;
         },
@@ -2800,7 +2798,7 @@ require = function e(t, n, r) {
                 if (opts === void 0) {
                     opts = {};
                 }
-                var url = target.getAttribute('data-src') || '';
+                var url = target.getAttribute('data-src');
                 return void 0 || (opts.twitter || twitter_1.twitter)(url) || (opts.youtube || youtube_1.youtube)(url) || (opts.gist || gist_1.gist)(url) || (opts.slideshare || slideshare_1.slideshare)(url) || (opts.pdf || pdf_1.pdf)(url) || (opts.image || image_1.image)(url, target.getAttribute('alt') || '');
             }
             exports.media = media;
