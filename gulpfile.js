@@ -55,9 +55,8 @@ const config = {
 
 function compile(paths, force) {
   let done = true;
-    return browserify(Object.values(paths).map(p => glob.sync(p)))
-    .require(`./index.ts`, { expose: pkg.name })
-    .exclude('prismjs')
+  return browserify(Object.values(paths).map(p => glob.sync(p)))
+  .require(`./index.ts`, { expose: pkg.name })
     .plugin(tsify, Object.assign({ global: true }, require('./tsconfig.json').compilerOptions))
     .bundle()
     .on("error", err => done = console.log(err + ''))
