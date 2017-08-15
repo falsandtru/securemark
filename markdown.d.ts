@@ -287,8 +287,6 @@ export namespace MarkdownParser {
       Markdown<'html'>,
       Parser<HTMLElement, [
         InlineParser
-      ] | [
-        SourceParser.UnescapableSourceParser
       ]> {
     }
     export interface HTMLEntityParser extends

@@ -52,12 +52,6 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<ruby><img /></ruby>')), [['<ruby>&lt;img /&gt;</ruby>'], '']);
     });
 
-    it('code', () => {
-      assert.deepStrictEqual(inspect(parser('<code>`</code>')), [['<code>`</code>'], '']);
-      assert.deepStrictEqual(inspect(parser('<code> \\ </code>')), [['<code> \\ </code>'], '']);
-      assert.deepStrictEqual(inspect(parser('<code> \\\\ </code>')), [['<code> \\\\ </code>'], '']);
-    });
-
     it('wbr', () => {
       assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
     });

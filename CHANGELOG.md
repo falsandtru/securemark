@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.33.0
+
+- Remove `code` html tag.
+
 ## 0.32.0
 
 - Change schema of caches.
