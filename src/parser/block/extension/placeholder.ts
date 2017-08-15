@@ -3,11 +3,11 @@ import { Parser, Result } from '../../../combinator/parser';
 import { loop } from '../../../combinator/loop';
 import { PreTextParser } from '../../block';
 import { inline } from '../../inline';
-import { squash } from '../../text';
-import { plaintext } from '../../text/plaintext';
+import { unescsource } from '../../source/unescapable';
+import { squash } from '../../squash';
 
 export interface PlaceholderParser extends
-  Markdown<'extension' & 'extension/placeholder'>,
+  Markdown<'extensionblock' & 'extensionblock/placeholder'>,
   Parser<HTMLElement, SubParsers> {
 }
 type SubParsers = [PreTextParser];
@@ -25,7 +25,7 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.startsWith(`${keyword}`) && line.trim() === `${keyword}`) break;
-    void lines.push(squash((loop(plaintext)(`${line}\n`) || [[]])[0]).textContent!);
+    void lines.push(squash((loop(unescsource)(`${line}\n`) || [[]])[0]).textContent!);
     source = source.slice(line.length + 1);
     if (source === '') return;
   }

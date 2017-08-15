@@ -17,7 +17,7 @@ describe('Unit: combinator/loop', () => {
     const ab = combine<[typeof a, typeof b], string>([a, b]);
 
     it('ab', () => {
-      const parser = loop(ab, /aaa/);
+      const parser = loop(ab, /aaa|$/);
       assert.deepStrictEqual(parser(''), void 0);
       assert.deepStrictEqual(parser('a'), [['A'], '']);
       assert.deepStrictEqual(parser('b'), [['B'], '']);

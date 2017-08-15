@@ -1,9 +1,9 @@
 ﻿import { Result } from '../../combinator/parser';
 import { PreTextParser } from '../block';
 import { verifyBlockEnd } from './end';
-import { PlainTextParser } from '../text';
+import { UnescapableSourceParser } from '../source';
 
-type SubParsers = [PlainTextParser];
+type SubParsers = [UnescapableSourceParser];
 
 const syntax = /^(`{3,})([a-z]*)(?:[^\S\n]+([0-9a-zA-Z_\-.]+))?[^\S\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
 

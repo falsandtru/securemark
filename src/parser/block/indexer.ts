@@ -1,27 +1,21 @@
 ﻿import { Result } from '../../combinator/parser';
-import { combine } from '../../combinator/combine';
-import { loop } from '../../combinator/loop';
 import { IndexerParser } from '../block';
-import { TextParser, squash } from '../text';
-import { text } from '../text/text';
-import { makeIndex } from '../text/index';
+import { ExtensionParser, inline } from '../inline';
+import { makeIndex } from '../string/index';
 
-type SubParsers = [TextParser];
+const syntax = /^\s+\[#\S+?\]$/;
 
-const syntax = /^\s+\[(#\S+?)\]$/;
-
-export const indexer: IndexerParser = function (source: string): Result<HTMLElement, [never]> {
+export const indexer: IndexerParser = function (source: string): Result<HTMLElement, [ExtensionParser.IndexParser]> {
   assert(!source.match(/\n/));
   if (!source.trim().startsWith('[#') || source.search(syntax) !== 0) return;
   assert(source.endsWith(']'));
   source = source.trim();
   assert(source.startsWith('[#'));
-  const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]/)(source.slice(2)) || [[], ''];
-  if (rest !== ']') return;
-  const el = document.createElement('span');
+  const [[el], rest] = inline(source) || [[document.createTextNode('')], ''];
+  if (!(el instanceof HTMLAnchorElement)) return;
+  if (rest !== '') return;
+  assert(el.matches(`a[href^="#${makeIndex('')}"]`));
   void el.setAttribute('class', 'index');
-  void el.appendChild(squash(cs));
-  if (el.textContent! !== el.textContent!.trim()) return;
   return [[el], ''];
 };
 

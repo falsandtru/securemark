@@ -1,10 +1,10 @@
 ﻿import { loop } from '../../combinator/loop';
-import { plaintext } from './plaintext';
+import { unescsource } from './unescapable';
 import { inspect } from '../debug.test';
 
-describe('Unit: parser/text/plaintext', () => {
-  describe('pretext', () => {
-    const parser = loop(plaintext);
+describe('Unit: parser/source/unescapable', () => {
+  describe('unescsource', () => {
+    const parser = loop(unescsource);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), void 0);

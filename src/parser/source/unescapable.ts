@@ -1,9 +1,9 @@
 ﻿import { Result } from '../../combinator/parser';
-import { PlainTextParser } from '../text';
+import { UnescapableSourceParser } from '../source';
 
 const separator = /`|<\/code>|\n/i;
 
-export const plaintext: PlainTextParser = function (source: string): Result<Text, [never]> {
+export const unescsource: UnescapableSourceParser = function (source: string): Result<Text, [never]> {
   if (source.length === 0) return;
   const i = source.search(separator);
   switch (i) {

@@ -5,7 +5,7 @@ import { DListParser, IndexerParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { indexer, defineIndex } from './indexer';
 import { InlineParser, inline } from '../inline';
-import { squash } from '../text';
+import { squash } from '../squash';
 
 type SubParsers = [IndexerParser, InlineParser];
 

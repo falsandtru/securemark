@@ -16,6 +16,7 @@ export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, unti
       if (until && rest.slice(0, 99).search(until) === 0) break;
     }
     return rest.length < source.length
+        && (!until || rest.slice(0, 99).search(until) === 0)
       ? [results, rest]
       : void 0;
   };

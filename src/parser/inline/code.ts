@@ -2,10 +2,11 @@
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { CodeParser } from '../inline';
-import { PlainTextParser, squash } from '../text';
-import { plaintext } from '../text/plaintext';
+import { UnescapableSourceParser } from '../source';
+import { unescsource } from '../source/unescapable';
+import { squash } from '../squash';
 
-type SubParsers = [PlainTextParser];
+type SubParsers = [UnescapableSourceParser];
 
 const syntax = /^(`+)[^\n]+?\1/;
 
@@ -13,7 +14,7 @@ export const code: CodeParser = function (source: string): Result<HTMLElement, S
   if (!source.startsWith('`')) return;
   const [whole, keyword] = source.match(syntax) || ['', ''];
   if (!whole) return;
-  const [cs, rest] = loop(combine<SubParsers, Text>([plaintext]), `^${keyword}`)(source.slice(keyword.length)) || [[], ''];
+  const [cs, rest] = loop(combine<SubParsers, Text>([unescsource]), `^${keyword}`)(source.slice(keyword.length)) || [[], ''];
   if (!rest.startsWith(keyword)) return;
   const el = document.createElement('code');
   void el.appendChild(squash(cs));

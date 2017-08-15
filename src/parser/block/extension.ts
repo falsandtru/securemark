@@ -1,8 +1,10 @@
 ﻿import { combine } from '../../combinator/combine';
+import { ExtensionBlockParser } from '../block';
 import { placeholder } from './extension/placeholder';
-import { ExtensionParser } from '../block';
 import { verifyBlockEnd } from './end';
 
-export const extension: ExtensionParser = combine<ExtensionParser[], HTMLElement>([
-  placeholder,
-].map(verifyBlockEnd));
+export const extension: ExtensionBlockParser = combine<[
+  ExtensionBlockParser.PlaceholderParser
+], HTMLElement>([
+  verifyBlockEnd(placeholder),
+]);

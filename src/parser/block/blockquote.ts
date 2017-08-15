@@ -4,10 +4,11 @@ import { loop } from '../../combinator/loop';
 import { BlockquoteParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { BlockParser, block } from '../block';
-import { PlainTextParser, squash } from '../text';
-import { plaintext } from '../text/plaintext';
+import { UnescapableSourceParser } from '../source';
+import { unescsource } from '../source/unescapable';
+import { squash } from '../squash';
 
-type SubParsers = [PlainTextParser] | [BlockParser];
+type SubParsers = [UnescapableSourceParser] | [BlockParser];
 
 const syntax = /^>+(?=\s|$)/;
 
@@ -55,7 +56,7 @@ export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: str
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([plaintext]), '\n')(source) || [[document.createTextNode('')], source];
+    const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([unescsource]), '\n|$')(source) || [[document.createTextNode('')], source];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs);

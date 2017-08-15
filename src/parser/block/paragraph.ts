@@ -4,7 +4,7 @@ import { loop } from '../../combinator/loop';
 import { ParagraphParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { InlineParser, inline } from '../inline';
-import { squash } from '../text';
+import { squash } from '../squash';
 
 type SubParsers = [InlineParser];
 

@@ -2,9 +2,9 @@
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { MediaParser } from '../inline';
-import { TextParser } from '../text';
-import { text } from '../text/text';
-import { sanitize } from '../text/url';
+import { TextParser } from '../source';
+import { text } from '../source/text';
+import { sanitize } from '../string/url';
 import DOM from 'typed-dom';
 import { Cache } from 'spica/cache';
 

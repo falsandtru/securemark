@@ -6,7 +6,7 @@ import { verifyBlockEnd } from './end';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './indent';
 import { InlineParser, inline } from '../inline';
-import { squash } from '../text';
+import { squash } from '../squash';
 
 type SubParsers = [InlineParser] | [UListParser, OListParser];
 

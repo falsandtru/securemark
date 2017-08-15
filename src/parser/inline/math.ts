@@ -2,20 +2,21 @@
 import { MathInlineParser } from '../inline';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
-import { MathTextParser, squash } from '../text';
-import { mathtext } from '../text/mathtext';
+import { EscapableSourceParser } from '../source';
+import { escsource } from '../source/escapable';
+import { squash } from '../squash';
 import { Cache } from 'spica/cache';
 
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
-type SubParsers = [MathTextParser];
+type SubParsers = [EscapableSourceParser];
 
-const syntax = /^\$(\S[^\n]*?)\$(?!\d)/;
+const syntax = /^\$\S[^\n]*?\$(?!\d)/;
 const closer = /^\$(?!\d)|^\n/;
 
 export const math: MathInlineParser = function (source: string): Result<HTMLSpanElement, SubParsers> {
-  if (!source.startsWith('$') || source.search(syntax) !== 0) return;
-  const [cs, rest] = loop(combine<SubParsers, Text>([mathtext]), closer)(source.slice(1)) || [[], ''];
+  if (!source.startsWith('$') || source.startsWith('$$') || source.search(syntax) !== 0) return;
+  const [cs, rest] = loop(combine<SubParsers, Text>([escsource]), closer)(source.slice(1)) || [[], ''];
   if (!rest.startsWith('$')) return;
   const el = document.createElement('span');
   void el.setAttribute('class', 'math');

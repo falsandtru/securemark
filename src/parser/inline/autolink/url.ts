@@ -2,8 +2,9 @@
 import { combine } from '../../../combinator/combine';
 import { loop } from '../../../combinator/loop';
 import { AutolinkParser, InlineParser } from '../../inline';
-import { TextParser, squash } from '../../text';
-import { text } from '../../text/text';
+import { TextParser } from '../../source';
+import { text } from '../../source/text';
+import { squash } from '../../squash';
 import { link } from '../link';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;

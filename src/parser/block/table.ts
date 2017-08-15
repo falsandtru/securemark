@@ -3,7 +3,7 @@ import { loop } from '../../combinator/loop';
 import { TableParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { InlineParser, inline } from '../inline';
-import { squash } from '../text';
+import { squash } from '../squash';
 
 type SubParsers = [InlineParser];
 
@@ -62,8 +62,8 @@ function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: strin
   , table.lastChild!.appendChild(document.createElement('tr')));
 }
 
-const rowseparator = /^\||^[^\S\n]*\n/;
-const rowend = /^\|?[^\S\n]*(?:\n|$)/;
+const rowseparator = /^\||^[^\S\n]*(?=\n|$)/;
+const rowend = /^\|?[^\S\n]*(?=\n|$)/;
 function parse(source: string): [DocumentFragment[], string] | undefined {
   const cols = [];
   while (true) {

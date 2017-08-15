@@ -2,7 +2,7 @@
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { EmphasisParser, InlineParser, inline } from '../inline';
-import { squash } from '../text';
+import { squash } from '../squash';
 
 type SubParsers = [InlineParser];
 

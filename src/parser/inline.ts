@@ -12,13 +12,12 @@ import { code } from './inline/code';
 import { math } from './inline/math';
 import { media } from './inline/media';
 import { link } from './inline/link';
-import { index } from './inline/index';
-import { symbol } from './inline/symbol';
+import { extension } from './inline/extension';
 import { html } from './inline/html';
 import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
-import { TextParser } from './text';
-import { text } from './text/text';
+import { TextParser } from './source';
+import { text } from './source/text';
 
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
@@ -33,8 +32,7 @@ export import CodeParser = InlineParser.CodeParser;
 export import MathInlineParser = InlineParser.MathInlineParser;
 export import MediaParser = InlineParser.MediaParser;
 export import LinkParser = InlineParser.LinkParser;
-export import IndexParser = InlineParser.IndexParser;
-export import SymbolParser = InlineParser.SymbolParser;
+export import ExtensionParser = InlineParser.ExtensionParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
@@ -52,8 +50,7 @@ export const inline: InlineParser = combine<[
   MathInlineParser,
   MediaParser,
   LinkParser,
-  IndexParser,
-  SymbolParser,
+  ExtensionParser,
   HTMLParser,
   HTMLEntityParser,
   AutolinkParser,
@@ -71,8 +68,7 @@ export const inline: InlineParser = combine<[
   math,
   media,
   link,
-  index,
-  symbol,
+  extension,
   html,
   htmlentity,
   autolink,

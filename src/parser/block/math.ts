@@ -1,9 +1,9 @@
 ﻿import { Result } from '../../combinator/parser';
 import { MathBlockParser } from '../block';
 import { verifyBlockEnd } from './end';
-import { MathTextParser } from '../text';
+import { EscapableSourceParser } from '../source';
 
-type SubParsers = [MathTextParser];
+type SubParsers = [EscapableSourceParser];
 
 const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
 

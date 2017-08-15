@@ -2,12 +2,13 @@
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { HTMLParser, InlineParser, inline } from '../inline';
-import { PlainTextParser, squash } from '../text';
-import { plaintext } from '../text/plaintext';
+import { UnescapableSourceParser } from '../source';
+import { unescsource } from '../source/unescapable';
+import { squash } from '../squash';
 
-type SubParsers = [InlineParser] | [PlainTextParser];
+type SubParsers = [InlineParser] | [UnescapableSourceParser];
 
-const syntax = /^(<([a-z]+)>)/i;
+const syntax = /^(<([a-z]+)>)/;
 const inlinetags = Object.freeze('code|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
 assert(inlinetags.every(t => /[a-z]+/.test(t)));
 assert(inlinetags.every(t => ['script', 'style', 'link', 'a', 'img'].indexOf(t) === -1));
@@ -20,7 +21,7 @@ export const html: HTMLParser = function (source: string): Result<HTMLElement, S
   if (inlinetags.indexOf(tagname) === -1) return;
   if (tagname === 'wbr') return [[document.createElement(tagname)], source.slice(opentag.length)];
   const [cs, rest] = tagname === 'code'
-    ? loop(combine<SubParsers, HTMLElement | Text>([plaintext]), `^</${tagname}>`)(source.slice(opentag.length)) || [[], source.slice(opentag.length)]
+    ? loop(combine<SubParsers, HTMLElement | Text>([unescsource]), `^</${tagname}>`)(source.slice(opentag.length)) || [[], source.slice(opentag.length)]
     : loop(combine<SubParsers, HTMLElement | Text>([inline]), `^</${tagname}>`)(source.slice(opentag.length)) || [[], source.slice(opentag.length)];
   const el = document.createElement(tagname);
   void el.appendChild(squash(cs));

@@ -1,5 +1,5 @@
 import { Result } from '../../combinator/parser';
-import { TextParser } from '../text';
+import { TextParser } from '../source';
 
 const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]|[、。]/;
 const linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;

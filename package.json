@@ -57,7 +57,7 @@
     "prismjs": "^1.6.0",
     "pump": "^1.0.2",
     "run-sequence": "^2.1.0",
-    "spica": "0.0.100",
+    "spica": "0.0.101",
     "tsify": "^3.0.1",
     "typed-dom": "0.0.39",
     "typescript": "2.5.0-dev.20170803",

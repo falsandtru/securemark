@@ -24,7 +24,7 @@ export import TableParser = BlockParser.TableParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import PreTextParser = BlockParser.PreTextParser;
 export import MathBlockParser = BlockParser.MathBlockParser;
-export import ExtensionParser = BlockParser.ExtensionParser;
+export import ExtensionBlockParser = BlockParser.ExtensionBlockParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 export import IndexerParser = BlockParser.IndexerParser;
 
@@ -39,7 +39,7 @@ export const block: BlockParser = combine<[
   BlockquoteParser,
   PreTextParser,
   MathBlockParser,
-  ExtensionParser,
+  ExtensionBlockParser,
   ParagraphParser
 ], HTMLElement>([
   newline,
