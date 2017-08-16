@@ -30,10 +30,6 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('**`a`**')), [['<strong><code data-src="`a`">a</code></strong>'], '']);
     });
 
-    it('triple', () => {
-      assert.deepStrictEqual(inspect(parser('***a***')), [['<strong><em>a</em></strong>'], '']);
-    });
-
   });
 
 });

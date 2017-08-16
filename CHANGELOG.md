@@ -6,6 +6,7 @@
 - Remove insertion, deletion, superscript, and subscript syntax.
 - Remove `code` html tag.
 - Improve parsing with brackets.
+- Fix parsing with strong and emphasis syntax.
 
 ## 0.32.0
 

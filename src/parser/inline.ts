@@ -8,8 +8,8 @@ import { extension } from './inline/extension';
 import { bracket } from './inline/bracket';
 import { html } from './inline/html';
 import { anglebracket } from './inline/anglebracket';
-import { strong } from './inline/strong';
 import { emphasis } from './inline/emphasis';
+import { strong } from './inline/strong';
 import { code } from './inline/code';
 import { math } from './inline/math';
 import { media } from './inline/media';
@@ -27,8 +27,8 @@ export import ExtensionParser = InlineParser.ExtensionParser;
 export import BracketParser = InlineParser.BracketParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import AngleBracketParser = InlineParser.AngleBracketParser;
-export import StrongParser = InlineParser.StrongParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
+export import StrongParser = InlineParser.StrongParser;
 export import CodeParser = InlineParser.CodeParser;
 export import MathInlineParser = InlineParser.MathInlineParser;
 export import MediaParser = InlineParser.MediaParser;
@@ -44,8 +44,8 @@ export const inline: InlineParser = combine<[
   BracketParser,
   HTMLParser,
   AngleBracketParser,
-  StrongParser,
   EmphasisParser,
+  StrongParser,
   CodeParser,
   MathInlineParser,
   MediaParser,
@@ -61,8 +61,8 @@ export const inline: InlineParser = combine<[
   bracket,
   html,
   anglebracket,
-  strong,
   emphasis,
+  strong,
   code,
   math,
   media,

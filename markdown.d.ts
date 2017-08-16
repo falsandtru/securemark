@@ -162,8 +162,8 @@ export namespace MarkdownParser {
       InlineParser.BracketParser,
       InlineParser.HTMLParser,
       InlineParser.AngleBracketParser,
-      InlineParser.StrongParser,
       InlineParser.EmphasisParser,
+      InlineParser.StrongParser,
       InlineParser.CodeParser,
       InlineParser.MathInlineParser,
       InlineParser.MediaParser,
@@ -246,16 +246,16 @@ export namespace MarkdownParser {
         InlineParser
       ]> {
     }
-    export interface StrongParser extends
-      // **abc**
-      Markdown<'strong'>,
+    export interface EmphasisParser extends
+      // *abc*
+      Markdown<'emphasis'>,
       Parser<HTMLElement, [
         InlineParser
       ]> {
     }
-    export interface EmphasisParser extends
-      // *abc*
-      Markdown<'emphasis'>,
+    export interface StrongParser extends
+      // **abc**
+      Markdown<'strong'>,
       Parser<HTMLElement, [
         InlineParser
       ]> {
