@@ -715,7 +715,7 @@ require = function e(t, n, r) {
                         void results.push.apply(results, rs);
                         rest = r;
                     }
-                    if (rest === source)
+                    if (rest.length === source.length)
                         return;
                     return !until || check(rest) ? [
                         results,
