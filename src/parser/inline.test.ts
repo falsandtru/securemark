@@ -12,7 +12,7 @@ describe('Unit: parser/inline', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('**[*a*]**')), [['<strong>[<em>a</em>]</strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('*(**a**)*')), [['<em>(<strong>a</strong>)</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*[**a**]*')), [['<em>[<strong>a</strong>]</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*<a>`b`&c;&amp; *')), [['<em>&lt;a&gt;<code data-src="`b`">b</code>&amp;c;&amp; </em>'], '']);
       assert.deepStrictEqual(inspect(parser('*<ruby>`a`</ruby>*')), [['<em><ruby><code data-src="`a`">a</code></ruby></em>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>*<mark>a</mark>*</ruby>')), [['<ruby><em><mark>a</mark></em></ruby>'], '']);

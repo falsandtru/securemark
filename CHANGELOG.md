@@ -5,6 +5,7 @@
 - Add `ins`, `del`, `sup`, and `sub` html tags.
 - Remove insertion, deletion, superscript, and subscript syntax.
 - Remove `code` html tag.
+- Improve parsing with brackets.
 
 ## 0.32.0
 

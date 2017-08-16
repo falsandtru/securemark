@@ -154,22 +154,32 @@ export namespace MarkdownParser {
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
+      InlineParser.BraceParser,
       InlineParser.AnnotationParser,
       InlineParser.ParenthesisParser,
+      InlineParser.LinkParser,
+      InlineParser.ExtensionParser,
+      InlineParser.BracketParser,
+      InlineParser.HTMLParser,
+      InlineParser.AngleBracketParser,
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
       InlineParser.CodeParser,
       InlineParser.MathInlineParser,
       InlineParser.MediaParser,
-      InlineParser.LinkParser,
-      InlineParser.ExtensionParser,
-      InlineParser.HTMLParser,
       InlineParser.HTMLEntityParser,
       InlineParser.AutolinkParser,
       SourceParser.TextParser
     ]> {
   }
   export namespace InlineParser {
+    export interface BraceParser extends
+      // {abc}
+      Markdown<'brace'>,
+      Parser<HTMLElement | Text, [
+        InlineParser
+      ]> {
+    }
     export interface AnnotationParser extends
       // ((abc))
       Markdown<'annotation'>,
@@ -180,6 +190,58 @@ export namespace MarkdownParser {
     export interface ParenthesisParser extends
       // (abc)
       Markdown<'parenthesis'>,
+      Parser<HTMLElement | Text, [
+        InlineParser
+      ]> {
+    }
+    export interface LinkParser extends
+      // [abc](url)
+      Markdown<'link'>,
+      Parser<HTMLAnchorElement, [
+        InlineParser
+      ]> {
+    }
+    export interface ExtensionParser extends
+      // [#abc]
+      Markdown<'extension'>,
+      Parser<HTMLElement, [
+        ExtensionParser.IndexParser,
+        ExtensionParser.PlaceholderParser
+      ]> {
+    }
+    export namespace ExtensionParser {
+      export interface IndexParser extends
+        // [#abc]
+        Markdown<'extension' & 'extension/index'>,
+        Parser<HTMLAnchorElement, [
+          SourceParser.TextParser
+        ]> {
+      }
+      export interface PlaceholderParser extends
+        // [:abc]
+        Markdown<'extension' & 'extension/placeholder'>,
+        Parser<HTMLSpanElement, [
+          SourceParser.TextParser
+        ]> {
+      }
+    }
+    export interface BracketParser extends
+      // [abc]
+      Markdown<'bracket'>,
+      Parser<HTMLElement | Text, [
+        InlineParser
+      ]> {
+    }
+    export interface HTMLParser extends
+      // <small>abc</small>
+      Markdown<'html'>,
+      Parser<HTMLElement, [
+        InlineParser
+      ]> {
+    }
+    export interface AngleBracketParser extends
+      // <abc>
+      Markdown<'anglebracket'>,
       Parser<HTMLElement | Text, [
         InlineParser
       ]> {
@@ -217,44 +279,6 @@ export namespace MarkdownParser {
       Markdown<'media'>,
       Parser<HTMLImageElement, [
         SourceParser.TextParser
-      ]> {
-    }
-    export interface LinkParser extends
-      // [abc](url)
-      Markdown<'link'>,
-      Parser<HTMLAnchorElement, [
-        InlineParser
-      ]> {
-    }
-    export interface ExtensionParser extends
-      // [#abc]
-      Markdown<'extension'>,
-      Parser<HTMLElement, [
-        ExtensionParser.IndexParser,
-        ExtensionParser.PlaceholderParser
-      ]> {
-    }
-    export namespace ExtensionParser {
-      export interface IndexParser extends
-        // [#abc]
-        Markdown<'extension' & 'extension/index'>,
-        Parser<HTMLAnchorElement, [
-          SourceParser.TextParser
-        ]> {
-      }
-      export interface PlaceholderParser extends
-        // [:abc]
-        Markdown<'extension' & 'extension/placeholder'>,
-        Parser<HTMLSpanElement, [
-          SourceParser.TextParser
-        ]> {
-      }
-    }
-    export interface HTMLParser extends
-      // <small>abc</small>
-      Markdown<'html'>,
-      Parser<HTMLElement, [
-        InlineParser
       ]> {
     }
     export interface HTMLEntityParser extends
