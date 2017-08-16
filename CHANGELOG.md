@@ -2,6 +2,8 @@
 
 ## 0.33.0
 
+- Add `ins`, `del`, `sup`, and `sub` html tags.
+- Remove insertion, deletion, superscript, and subscript syntax.
 - Remove `code` html tag.
 
 ## 0.32.0

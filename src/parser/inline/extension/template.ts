@@ -8,7 +8,7 @@ import { Cache } from 'spica/cache';
 
 type SubParsers = [TextParser];
 
-const syntax = /^\[[#:][^\s\[\]][^\n]*?\]/;
+const syntax = /^\[[~#:^\[][^\s\[\]][^\n]*?\]/;
 
 export const template = function <T extends Result<HTMLElement, any>>(parser: (flag: string, query: string) => T) {
   return function (source: string): T | undefined {

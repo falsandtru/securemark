@@ -156,12 +156,8 @@ export namespace MarkdownParser {
     Parser<HTMLElement | Text, [
       InlineParser.AnnotationParser,
       InlineParser.ParenthesisParser,
-      InlineParser.InsertionParser,
-      InlineParser.DeletionParser,
       InlineParser.StrongParser,
       InlineParser.EmphasisParser,
-      InlineParser.SuperScriptParser,
-      InlineParser.SubScriptParser,
       InlineParser.CodeParser,
       InlineParser.MathInlineParser,
       InlineParser.MediaParser,
@@ -188,20 +184,6 @@ export namespace MarkdownParser {
         InlineParser
       ]> {
     }
-    export interface InsertionParser extends
-      // ++abc++
-      Markdown<'insertion'>,
-      Parser<HTMLElement, [
-        InlineParser
-      ]> {
-    }
-    export interface DeletionParser extends
-      // ~~abc~~
-      Markdown<'deletion'>,
-      Parser<HTMLElement, [
-        InlineParser
-      ]> {
-    }
     export interface StrongParser extends
       // **abc**
       Markdown<'strong'>,
@@ -214,20 +196,6 @@ export namespace MarkdownParser {
       Markdown<'emphasis'>,
       Parser<HTMLElement, [
         InlineParser
-      ]> {
-    }
-    export interface SuperScriptParser extends
-      // ^abc^
-      Markdown<'superscript'>,
-      Parser<HTMLElement, [
-        SourceParser.TextParser
-      ]> {
-    }
-    export interface SubScriptParser extends
-      // ~abc~
-      Markdown<'subscript'>,
-      Parser<HTMLElement, [
-        SourceParser.TextParser
       ]> {
     }
     export interface CodeParser extends
