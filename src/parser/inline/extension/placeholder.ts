@@ -5,8 +5,8 @@ import { TextParser } from '../../source';
 import { squash } from '../../squash';
 import { template } from './template';
 
-export const placeholder: ExtensionParser.PlaceholderParser = template(function (): Result<HTMLSpanElement, [TextParser]> {
+export const placeholder: ExtensionParser.PlaceholderParser = template(function (flag): Result<HTMLSpanElement, [TextParser]> {
   const el = document.createElement('span');
-  void el.appendChild(squash(loop(inline)(`++**WARNING: DON'T USE \`[: ]\` SYNTAX!!** This syntax is reserved for extensibility.++`)![0]));
+  void el.appendChild(squash(loop(inline)(`++**WARNING: DON'T USE \`[${flag} ]\` SYNTAX!!** This syntax is reserved for extensibility.++`)![0]));
   return [[el], ''];
 });

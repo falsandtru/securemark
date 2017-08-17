@@ -4,9 +4,9 @@ export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, unti
   const check = ((): (rest: string) => boolean => {
     switch (typeof until) {
       case 'undefined':
-        return _ => false;
+        return () => false;
       case 'function':
-        return rest => (until as any)(rest);
+        return until as any;
       default:
         return rest => rest.slice(0, 99).search(until as string | RegExp) === 0;
     }
