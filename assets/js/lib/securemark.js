@@ -687,13 +687,11 @@ require = function e(t, n, r) {
                 var check = function () {
                     switch (typeof until) {
                     case 'undefined':
-                        return function (_) {
+                        return function () {
                             return false;
                         };
                     case 'function':
-                        return function (rest) {
-                            return until(rest);
-                        };
+                        return until;
                     default:
                         return function (rest) {
                             return rest.slice(0, 99).search(until) === 0;
@@ -2006,9 +2004,9 @@ require = function e(t, n, r) {
             var inline_1 = require('../../inline');
             var squash_1 = require('../../squash');
             var template_1 = require('./template');
-            exports.placeholder = template_1.template(function () {
+            exports.placeholder = template_1.template(function (flag) {
                 var el = document.createElement('span');
-                void el.appendChild(squash_1.squash(loop_1.loop(inline_1.inline)('++**WARNING: DON\'T USE `[: ]` SYNTAX!!** This syntax is reserved for extensibility.++')[0]));
+                void el.appendChild(squash_1.squash(loop_1.loop(inline_1.inline)('++**WARNING: DON\'T USE `[' + flag + ' ]` SYNTAX!!** This syntax is reserved for extensibility.++')[0]));
                 return [
                     [el],
                     ''
