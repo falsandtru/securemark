@@ -1,16 +1,19 @@
-import 'mocha';
-import _assert from 'power-assert';
-import _Prism from 'prismjs';
-import 'mathjax';
-import 'jquery';
+import Prism from 'prismjs';
+
+type Prism = typeof Prism;
 
 declare global {
-  const assert: typeof _assert;
-
-  const Prism: typeof _Prism;
+  const Prism: Prism;
 
   interface HTMLObjectElement {
     typeMustMatch: boolean;
   }
+}
 
+import assert from 'power-assert';
+
+type Assert = typeof assert;
+
+declare global {
+  const assert: Assert;
 }
