@@ -171,19 +171,10 @@ gulp.task('dist', ['clean'], function (done) {
 });
 
 gulp.task('site', ['dist'], function () {
-  gulp.src([
+  return gulp.src([
     'dist/securemark.js',
   ])
     .pipe(gulp.dest('./gh-pages/assets/js/lib'));
-  return gulp.src([
-    'node_modules/prismjs/prism.js',
-    'node_modules/prismjs/components/**',
-    'node_modules/prismjs/plugins/autoloader/**',
-    'node_modules/prismjs/themes/prism.css',
-  ], {
-    base: 'node_modules'
-  })
-    .pipe(gulp.dest('./gh-pages/assets/lib'));
 });
 
 gulp.task('ci', ['clean'], function (done) {
