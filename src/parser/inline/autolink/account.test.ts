@@ -31,7 +31,10 @@ describe('Unit: parser/inline/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser('@0')), [['<span class="account">@0</span>'], '']);
       assert.deepStrictEqual(inspect(parser('@a')), [['<span class="account">@a</span>'], '']);
       assert.deepStrictEqual(inspect(parser('@A')), [['<span class="account">@A</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a_a-a')), [['<span class="account">@a_a-a</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a_b')), [['<span class="account">@a_b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a__b')), [['<span class="account">@a</span>'], '__b']);
+      assert.deepStrictEqual(inspect(parser('@a-b')), [['<span class="account">@a-b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a--b')), [['<span class="account">@a</span>'], '--b']);
       assert.deepStrictEqual(inspect(parser('@http://host')), [['<span class="account">@http</span>'], '://host']);
       assert.deepStrictEqual(inspect(parser('@ttp://host')), [['<span class="account">@ttp</span>'], '://host']);
     });
