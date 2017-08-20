@@ -1,10 +1,4 @@
-import Prism from 'prismjs';
-
-type Prism = typeof Prism;
-
 declare global {
-  const Prism: Prism;
-
   interface HTMLObjectElement {
     typeMustMatch: boolean;
   }

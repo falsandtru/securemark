@@ -25,6 +25,9 @@
     "*.md",
     "LICENSE"
   ],
+  "browserify-shim": {
+    "prismjs": "global:Prism"
+  },
   "dependencies": {},
   "devDependencies": {
     "@types/jquery": "^3.2.11",
@@ -33,6 +36,7 @@
     "@types/power-assert": "1.4.29",
     "@types/prismjs": "^1.6.2",
     "browserify": "^14.4.0",
+    "browserify-shim": "^3.8.14",
     "del": "^3.0.0",
     "extend": "^3.0.1",
     "gulp": "^3.9.1",
@@ -54,7 +58,6 @@
     "mocha": "^3.5.0",
     "npm-check-updates": "^2.12.1",
     "power-assert": "^1.4.4",
-    "prismjs": "^1.6.0",
     "pump": "^1.0.2",
     "run-sequence": "^2.1.0",
     "spica": "0.0.101",
