@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.0
+
+- Use DOMPurify.
+
 ## 0.33.0
 
 - Add `ins`, `del`, `sup`, and `sub` html tags.

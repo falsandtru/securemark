@@ -26,15 +26,17 @@
     "LICENSE"
   ],
   "browserify-shim": {
-    "prismjs": "global:Prism"
+    "prismjs": "global:Prism",
+    "dompurify": "global:DOMPurify"
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/jquery": "^3.2.11",
-    "@types/mathjax": "0.0.31",
-    "@types/mocha": "^2.2.41",
+    "@types/dompurify": "0.0.30",
+    "@types/jquery": "^3.2.12",
+    "@types/mathjax": "0.0.32",
+    "@types/mocha": "^2.2.42",
     "@types/power-assert": "1.4.29",
-    "@types/prismjs": "^1.6.2",
+    "@types/prismjs": "^1.6.3",
     "browserify": "^14.4.0",
     "browserify-shim": "^3.8.14",
     "del": "^3.0.0",
@@ -60,10 +62,10 @@
     "power-assert": "^1.4.4",
     "pump": "^1.0.2",
     "run-sequence": "^2.1.0",
-    "spica": "0.0.101",
+    "spica": "0.0.102",
     "tsify": "^3.0.1",
-    "typed-dom": "0.0.39",
-    "typescript": "2.5.0-dev.20170803",
+    "typed-dom": "0.0.46",
+    "typescript": "2.6.0-dev.20170819",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

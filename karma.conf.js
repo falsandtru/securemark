@@ -7,6 +7,7 @@ module.exports = function (config) {
       { pattern: 'https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js', watched: false, served: false, included: true },
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.js', watched: false, served: false, included: true },
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML,Safe', watched: false, served: false, included: true },
+      { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.0/purify.js', watched: false, served: false, included: true },
       { pattern: 'node_modules/power-assert/build/power-assert.js', watched: true, served: true, included: true },
       { pattern: 'dist/*.js', watched: true, served: true, included: true }
     ],

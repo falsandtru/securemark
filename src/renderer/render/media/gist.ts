@@ -1,6 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse } from '../../parser';
 import { Cache } from 'spica/cache';
+import { sanitize } from 'dompurify';
 
 const cache = new Cache<string, HTMLElement>(100);
 
@@ -16,7 +17,8 @@ export function gist(url: string): HTMLElement | void {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
       success({ div, stylesheet, description }) {
-        outer.innerHTML = `<div style="position: relative; margin-bottom: -1em;">${div}</div>`;
+        if (!stylesheet.startsWith('https://assets-cdn.github.com/')) return;
+        outer.innerHTML = sanitize(`<div style="position: relative; margin-bottom: -1em;">${div}</div>`);
         const gist = outer.querySelector('.gist')! as HTMLElement;
         void gist.insertBefore(
           DOM.div({ class: 'gist-description' }, [

@@ -14,7 +14,6 @@ export function youtube(url: string): HTMLElement | void {
           url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1) ||
           url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?')
         }`,
-        sandbox: 'allow-scripts allow-same-origin allow-presentation',
         allowfullscreen: '',
         frameborder: '0',
         style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;',

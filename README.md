@@ -59,6 +59,7 @@ https://falsandtru.github.io/securemark/
 - PrismJS
 - MathJax
 - jQuery (for Ajax)
+- DOMPurify
 
 ## Browser
 
