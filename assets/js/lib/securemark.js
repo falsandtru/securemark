@@ -76,7 +76,12 @@ require = function e(t, n, r) {
                         }))
                         throw new Error('Spica: Cache: Keys of stats and entries is not matched.');
                 }
-                Cache.prototype.put = function (key, value) {
+                Cache.prototype.put = function (key, value, log) {
+                    if (log === void 0) {
+                        log = true;
+                    }
+                    if (!log && this.store.has(key))
+                        return void this.store.set(key, value), true;
                     if (this.access(key))
                         return void this.store.set(key, value), true;
                     var _a = this.stats, LRU = _a.LRU, LFU = _a.LFU;
@@ -96,8 +101,8 @@ require = function e(t, n, r) {
                     }
                     return false;
                 };
-                Cache.prototype.set = function (key, value) {
-                    void this.put(key, value);
+                Cache.prototype.set = function (key, value, log) {
+                    void this.put(key, value, log);
                     return value;
                 };
                 Cache.prototype.get = function (key) {
@@ -233,8 +238,8 @@ require = function e(t, n, r) {
                 return t;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var TypedHTMLElement = function () {
-                function TypedHTMLElement(element_, children_) {
+            var El = function () {
+                function El(element_, children_) {
                     var _this = this;
                     this.element_ = element_;
                     this.children_ = children_;
@@ -291,14 +296,14 @@ require = function e(t, n, r) {
                         });
                     }
                 }
-                Object.defineProperty(TypedHTMLElement.prototype, 'element', {
+                Object.defineProperty(El.prototype, 'element', {
                     get: function () {
                         return this.element_;
                     },
                     enumerable: true,
                     configurable: true
                 });
-                Object.defineProperty(TypedHTMLElement.prototype, 'children', {
+                Object.defineProperty(El.prototype, 'children', {
                     get: function () {
                         switch (this.mode) {
                         case 'text':
@@ -322,12 +327,12 @@ require = function e(t, n, r) {
                                 return;
                             if (!Object.isFrozen(this.children_))
                                 throw new Error('TypedHTMLElement collections cannot be updated recursively.');
-                            void children.reduce(function (ccs, ic) {
-                                var i = ccs.indexOf(ic);
+                            void children.reduce(function (cs, c) {
+                                var i = cs.indexOf(c);
                                 if (i === -1)
-                                    return ccs;
-                                void ccs.splice(i, 1);
-                                return ccs;
+                                    return cs;
+                                void cs.splice(i, 1);
+                                return cs;
                             }, this.children_.slice()).forEach(function (child) {
                                 return void child.element.remove();
                             });
@@ -349,7 +354,7 @@ require = function e(t, n, r) {
                     enumerable: true,
                     configurable: true
                 });
-                TypedHTMLElement.prototype.observe = function (children) {
+                El.prototype.observe = function (children) {
                     var _this = this;
                     return Object.defineProperties(children, this.structkeys.reduce(function (descs, key) {
                         var current = children[key];
@@ -370,9 +375,9 @@ require = function e(t, n, r) {
                         return descs;
                     }, {}));
                 };
-                return TypedHTMLElement;
+                return El;
             }();
-            exports.TypedHTMLElement = TypedHTMLElement;
+            exports.El = El;
         },
         {}
     ],
@@ -508,31 +513,60 @@ require = function e(t, n, r) {
                 'u',
                 'var',
                 'wbr',
-                'custom'
-            ].reduce(function (obj, tag) {
-                return obj[tag] = function (attrs, children, factory) {
+                'create',
+                'any'
+            ].reduce(function (obj, prop) {
+                return obj[prop] = prop === 'create' ? function (tag, b, c, d) {
+                    if (b === void 0) {
+                        b = function () {
+                            return document.createElement(tag);
+                        };
+                    }
+                    if (c === void 0) {
+                        c = function () {
+                            return document.createElement(tag);
+                        };
+                    }
+                    if (d === void 0) {
+                        d = function () {
+                            return document.createElement(tag);
+                        };
+                    }
+                    return exports.TypedHTML['any'](b, c, d, tag);
+                } : function (attrs, children, factory, tag) {
+                    if (tag === void 0) {
+                        tag = prop;
+                    }
+                    tag = prop === 'any' ? tag : prop;
                     switch (typeof attrs) {
                     case 'undefined':
-                        return new builder_1.TypedHTMLElement(document.createElement(tag), void 0);
-                    case 'function':
-                        return new builder_1.TypedHTMLElement(attrs(), void 0);
-                    case 'string':
-                        return new builder_1.TypedHTMLElement((children || function () {
+                        return new builder_1.El(define(tag, function () {
                             return document.createElement(tag);
-                        })(), attrs);
+                        }), void 0);
+                    case 'function':
+                        return new builder_1.El(define(tag, attrs), void 0);
+                    case 'string':
+                        return new builder_1.El(define(tag, children || function () {
+                            return document.createElement(tag);
+                        }), attrs);
                     case 'object':
                         factory = typeof children === 'function' ? children : factory || function () {
                             return document.createElement(tag);
                         };
-                        return [Object.keys(attrs)[0]].every(function (key) {
+                        return Object.keys(attrs).slice(-1).every(function (key) {
                             return key === void 0 || typeof attrs[key] === 'object';
-                        }) ? new builder_1.TypedHTMLElement(factory(), attrs) : new builder_1.TypedHTMLElement(define(factory(), attrs), children === factory ? void 0 : children);
+                        }) ? new builder_1.El(define(tag, factory), attrs) : new builder_1.El(define(tag, factory, attrs), children === factory ? void 0 : children);
                     default:
                         throw new TypeError('Invalid arguments: [' + attrs + ', ' + children + ', ' + factory + ']');
                     }
                 }, obj;
             }, {});
-            function define(el, attrs) {
+            function define(tag, factory, attrs) {
+                var el = factory();
+                if (tag !== el.tagName && tag !== el.tagName.toLowerCase())
+                    throw new Error('Tag name must be "' + tag + '" but "' + el.tagName.toLowerCase() + '".');
+                if (!attrs)
+                    return el;
                 return Object.keys(attrs).reduce(function (el, name) {
                     return void el.setAttribute(name, attrs[name] || ''), el;
                 }, el);
@@ -2744,9 +2778,9 @@ require = function e(t, n, r) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                var Prism = typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null;
+                var prismjs_1 = typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null;
                 function code(target) {
-                    void Prism.highlightElement(target, false);
+                    void prismjs_1.highlightElement(target, false);
                 }
                 exports.code = code;
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
@@ -2760,25 +2794,29 @@ require = function e(t, n, r) {
             var math_1 = require('../../parser/inline/math');
             function math(target) {
                 if (target instanceof HTMLDivElement)
-                    return void MathJax.Hub.Queue([
-                        'Typeset',
-                        MathJax.Hub,
-                        target
-                    ]);
+                    return void queue(target);
                 void target.setAttribute('data-src', target.textContent);
                 var expr = target.textContent;
                 if (math_1.cache.has(expr))
                     return void (target.innerHTML = math_1.cache.get(expr).innerHTML);
+                void queue(target, function () {
+                    return void math_1.cache.set(expr, target.cloneNode(true));
+                });
+            }
+            exports.math = math;
+            function queue(target, callback) {
+                if (callback === void 0) {
+                    callback = function () {
+                        return void 0;
+                    };
+                }
                 void MathJax.Hub.Queue([
                     'Typeset',
                     MathJax.Hub,
                     target,
-                    function () {
-                        return void math_1.cache.set(expr, target.cloneNode(true));
-                    }
+                    callback
                 ]);
             }
-            exports.math = math;
         },
         { '../../parser/inline/math': 50 }
     ],
@@ -2812,50 +2850,55 @@ require = function e(t, n, r) {
     ],
     67: [
         function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var typed_dom_1 = require('typed-dom');
-            var parser_1 = require('../../parser');
-            var cache_1 = require('spica/cache');
-            var cache = new cache_1.Cache(100);
-            function gist(url) {
-                if (!url.startsWith('https://gist.github.com/'))
-                    return;
-                if (cache.has(url))
-                    return cache.get(url).cloneNode(true);
-                return typed_dom_1.default.div({
-                    class: 'media',
-                    style: 'position: relative;'
-                }, [typed_dom_1.default.em('loading ' + url)], function () {
-                    var outer = document.createElement('div');
-                    void $.ajax(url + '.json', {
-                        dataType: 'jsonp',
-                        timeout: 10 * 1000,
-                        success: function (_a) {
-                            var div = _a.div, stylesheet = _a.stylesheet, description = _a.description;
-                            outer.innerHTML = '<div style="position: relative; margin-bottom: -1em;">' + div + '</div>';
-                            var gist = outer.querySelector('.gist');
-                            void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, function () {
-                                    return parser_1.parse(url).querySelector('a');
-                                })]).element, gist.firstChild);
-                            void cache.set(url, outer.cloneNode(true));
-                            if (document.head.querySelector('link[rel="stylesheet"][href="' + stylesheet + '"]'))
-                                return;
-                            void document.head.appendChild(typed_dom_1.default.link({
-                                rel: 'stylesheet',
-                                href: stylesheet,
-                                crossorigin: 'anonymous'
-                            }).element);
-                        },
-                        error: function (_a) {
-                            var statusText = _a.statusText;
-                            outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
-                        }
-                    });
-                    return outer;
-                }).element;
-            }
-            exports.gist = gist;
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                var typed_dom_1 = require('typed-dom');
+                var parser_1 = require('../../parser');
+                var cache_1 = require('spica/cache');
+                var dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                var cache = new cache_1.Cache(100);
+                function gist(url) {
+                    if (!url.startsWith('https://gist.github.com/'))
+                        return;
+                    if (cache.has(url))
+                        return cache.get(url).cloneNode(true);
+                    return typed_dom_1.default.div({
+                        class: 'media',
+                        style: 'position: relative;'
+                    }, [typed_dom_1.default.em('loading ' + url)], function () {
+                        var outer = document.createElement('div');
+                        void $.ajax(url + '.json', {
+                            dataType: 'jsonp',
+                            timeout: 10 * 1000,
+                            success: function (_a) {
+                                var div = _a.div, stylesheet = _a.stylesheet, description = _a.description;
+                                if (!stylesheet.startsWith('https://assets-cdn.github.com/'))
+                                    return;
+                                outer.innerHTML = dompurify_1.sanitize('<div style="position: relative; margin-bottom: -1em;">' + div + '</div>');
+                                var gist = outer.querySelector('.gist');
+                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, function () {
+                                        return parser_1.parse(url).querySelector('a');
+                                    })]).element, gist.firstChild);
+                                void cache.set(url, outer.cloneNode(true));
+                                if (document.head.querySelector('link[rel="stylesheet"][href="' + stylesheet + '"]'))
+                                    return;
+                                void document.head.appendChild(typed_dom_1.default.link({
+                                    rel: 'stylesheet',
+                                    href: stylesheet,
+                                    crossorigin: 'anonymous'
+                                }).element);
+                            },
+                            error: function (_a) {
+                                var statusText = _a.statusText;
+                                outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
+                            }
+                        });
+                        return outer;
+                    }).element;
+                }
+                exports.gist = gist;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
             '../../parser': 62,
@@ -2920,44 +2963,47 @@ require = function e(t, n, r) {
     ],
     70: [
         function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var typed_dom_1 = require('typed-dom');
-            var parser_1 = require('../../parser');
-            var cache_1 = require('spica/cache');
-            var cache = new cache_1.Cache(100);
-            function slideshare(url) {
-                if (!url.startsWith('https://www.slideshare.net/'))
-                    return;
-                if (cache.has(url))
-                    return cache.get(url).cloneNode(true);
-                return typed_dom_1.default.div({
-                    class: 'media',
-                    style: 'position: relative;'
-                }, [typed_dom_1.default.em('loading ' + url)], function () {
-                    var outer = document.createElement('div');
-                    void $.ajax('https://www.slideshare.net/api/oembed/2?url=' + url + '&format=json', {
-                        dataType: 'jsonp',
-                        timeout: 10 * 1000,
-                        success: function (_a) {
-                            var html = _a.html;
-                            outer.innerHTML = '<div style="position: relative; padding-top: 83%;">' + html + '</div>';
-                            var iframe = outer.querySelector('iframe');
-                            void iframe.setAttribute('style', 'position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100%; height: 100%;');
-                            iframe.parentElement.style.paddingTop = +iframe.height / +iframe.width * 100 + '%';
-                            void outer.appendChild(iframe.nextElementSibling);
-                            void outer.lastElementChild.removeAttribute('style');
-                            void cache.set(url, outer.cloneNode(true));
-                        },
-                        error: function (_a) {
-                            var statusText = _a.statusText;
-                            outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
-                        }
-                    });
-                    return outer;
-                }).element;
-            }
-            exports.slideshare = slideshare;
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                var typed_dom_1 = require('typed-dom');
+                var parser_1 = require('../../parser');
+                var cache_1 = require('spica/cache');
+                var dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                var cache = new cache_1.Cache(100);
+                function slideshare(url) {
+                    if (!url.startsWith('https://www.slideshare.net/'))
+                        return;
+                    if (cache.has(url))
+                        return cache.get(url).cloneNode(true);
+                    return typed_dom_1.default.div({
+                        class: 'media',
+                        style: 'position: relative;'
+                    }, [typed_dom_1.default.em('loading ' + url)], function () {
+                        var outer = document.createElement('div');
+                        void $.ajax('https://www.slideshare.net/api/oembed/2?url=' + url + '&format=json', {
+                            dataType: 'jsonp',
+                            timeout: 10 * 1000,
+                            success: function (_a) {
+                                var html = _a.html;
+                                outer.innerHTML = dompurify_1.sanitize('<div style="position: relative; padding-top: 83%;">' + html + '</div>', { ADD_TAGS: ['iframe'] });
+                                var iframe = outer.querySelector('iframe');
+                                void iframe.setAttribute('style', 'position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100%; height: 100%;');
+                                iframe.parentElement.style.paddingTop = +iframe.height / +iframe.width * 100 + '%';
+                                void outer.appendChild(iframe.nextElementSibling);
+                                void outer.lastElementChild.removeAttribute('style');
+                                void cache.set(url, outer.cloneNode(true));
+                            },
+                            error: function (_a) {
+                                var statusText = _a.statusText;
+                                outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
+                            }
+                        });
+                        return outer;
+                    }).element;
+                }
+                exports.slideshare = slideshare;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
             '../../parser': 62,
@@ -2967,53 +3013,56 @@ require = function e(t, n, r) {
     ],
     71: [
         function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var typed_dom_1 = require('typed-dom');
-            var parser_1 = require('../../parser');
-            var cache_1 = require('spica/cache');
-            var widgetScriptRequested = false;
-            var cache = new cache_1.Cache(100);
-            function twitter(url) {
-                if (!url.startsWith('https://twitter.com/'))
-                    return;
-                if (cache.has(url)) {
-                    var el = cache.get(url).cloneNode(true);
-                    window.twttr && void window.twttr.widgets.load(el);
-                    return el;
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                var typed_dom_1 = require('typed-dom');
+                var parser_1 = require('../../parser');
+                var cache_1 = require('spica/cache');
+                var dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                var widgetScriptRequested = false;
+                var cache = new cache_1.Cache(100);
+                function twitter(url) {
+                    if (!url.startsWith('https://twitter.com/'))
+                        return;
+                    if (cache.has(url)) {
+                        var el = cache.get(url).cloneNode(true);
+                        window.twttr && void window.twttr.widgets.load(el);
+                        return el;
+                    }
+                    return typed_dom_1.default.div({
+                        class: 'media',
+                        style: 'position: relative;'
+                    }, [typed_dom_1.default.em('loading ' + url)], function () {
+                        var outer = document.createElement('div');
+                        void $.ajax('https://publish.twitter.com/oembed?url=' + url.replace('?', '&'), {
+                            dataType: 'jsonp',
+                            timeout: 10 * 1000,
+                            success: function (_a) {
+                                var html = _a.html;
+                                outer.innerHTML = dompurify_1.sanitize('<div style="margin-top: -10px; margin-bottom: -10px;">' + html + '</div>', { ADD_TAGS: ['script'] });
+                                void cache.set(url, outer.cloneNode(true));
+                                if (widgetScriptRequested)
+                                    return;
+                                if (window.twttr)
+                                    return void window.twttr.widgets.load(outer);
+                                widgetScriptRequested = true;
+                                var script = outer.querySelector('script').cloneNode(true);
+                                if (!script.getAttribute('src').startsWith('//platform.twitter.com/'))
+                                    return;
+                                script.async = true;
+                                void document.head.appendChild(script);
+                            },
+                            error: function (_a) {
+                                var statusText = _a.statusText;
+                                outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
+                            }
+                        });
+                        return outer;
+                    }).element;
                 }
-                return typed_dom_1.default.div({
-                    class: 'media',
-                    style: 'position: relative;'
-                }, [typed_dom_1.default.em('loading ' + url)], function () {
-                    var outer = document.createElement('div');
-                    void $.ajax('https://publish.twitter.com/oembed?url=' + url.replace('?', '&'), {
-                        dataType: 'jsonp',
-                        timeout: 10 * 1000,
-                        success: function (_a) {
-                            var html = _a.html;
-                            outer.innerHTML = '<div style="margin-top: -10px; margin-bottom: -10px;">' + html + '</div>';
-                            void cache.set(url, outer.cloneNode(true));
-                            if (widgetScriptRequested)
-                                return;
-                            if (window.twttr)
-                                return void window.twttr.widgets.load(outer);
-                            widgetScriptRequested = true;
-                            $.ajax(outer.querySelector('script').src, {
-                                dataType: 'script',
-                                cache: true,
-                                timeout: 10 * 1000
-                            });
-                        },
-                        error: function (_a) {
-                            var statusText = _a.statusText;
-                            outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
-                        }
-                    });
-                    return outer;
-                }).element;
-            }
-            exports.twitter = twitter;
+                exports.twitter = twitter;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
             '../../parser': 62,
@@ -3034,7 +3083,6 @@ require = function e(t, n, r) {
                     style: 'position: relative;'
                 }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
                             src: 'https://www.youtube.com/embed/' + (url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1) || url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?')),
-                            sandbox: 'allow-scripts allow-same-origin allow-presentation',
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
