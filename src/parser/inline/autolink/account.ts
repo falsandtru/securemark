@@ -1,7 +1,7 @@
 ﻿import { Result } from '../../../combinator/parser';
 import { AutolinkParser } from '../../inline';
 
-const syntax = /^@[a-zA-Z0-9]+(?:[_\-][0-9a-zA-Z]+)*(?!@)/;
+const syntax = /^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/;
 const escape = /^[0-9a-zA-Z@]@/;
 
 export const account: AutolinkParser.AccountParser = function (source: string): Result<HTMLSpanElement | Text, [never]> {
