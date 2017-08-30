@@ -1777,7 +1777,7 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var syntax = /^@[a-zA-Z0-9]+(?:[_\-][0-9a-zA-Z]+)*(?!@)/;
+            var syntax = /^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/;
             var escape = /^[0-9a-zA-Z@]@/;
             exports.account = function (source) {
                 if (source.search(escape) === 0) {
