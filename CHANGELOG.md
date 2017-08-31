@@ -3,6 +3,7 @@
 ## 0.34.0
 
 - Disallow `_` in account names.
+- Improve Japanese text parsing.
 - Use DOMPurify.
 
 ## 0.33.0
