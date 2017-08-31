@@ -2535,6 +2535,8 @@ require = function e(t, n, r) {
                         }
                     case '\u3001':
                     case '\u3002':
+                    case '\uFF01':
+                    case '\uFF1F':
                         switch (source[1]) {
                         case '\n':
                             return [
