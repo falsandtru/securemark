@@ -105,14 +105,22 @@ require = function e(t, n, r) {
                     void this.put(key, value, log);
                     return value;
                 };
-                Cache.prototype.get = function (key) {
+                Cache.prototype.get = function (key, log) {
+                    if (log === void 0) {
+                        log = true;
+                    }
+                    if (!log)
+                        return this.store.get(key);
                     void this.access(key);
                     return this.store.get(key);
                 };
                 Cache.prototype.has = function (key) {
                     return this.store.has(key);
                 };
-                Cache.prototype.delete = function (key) {
+                Cache.prototype.delete = function (key, log) {
+                    if (log === void 0) {
+                        log = true;
+                    }
                     if (!this.store.has(key))
                         return false;
                     var _a = this.stats, LRU = _a.LRU, LFU = _a.LFU;
@@ -120,25 +128,32 @@ require = function e(t, n, r) {
                                 LFU,
                                 LRU
                             ]; _i < _b.length; _i++) {
-                        var log = _b[_i];
-                        var index = equal_1.findIndex(key, log);
+                        var stat = _b[_i];
+                        var index = equal_1.findIndex(key, stat);
                         if (index === -1)
                             continue;
                         var val = this.store.get(key);
-                        void this.store.delete(log.splice(index, 1)[0]);
+                        void this.store.delete(stat.splice(index, 1)[0]);
+                        if (!log)
+                            return true;
                         void this.callback(key, val);
                         return true;
                     }
                     return false;
                 };
-                Cache.prototype.clear = function () {
+                Cache.prototype.clear = function (log) {
                     var _this = this;
+                    if (log === void 0) {
+                        log = true;
+                    }
                     var entries = Array.from(this);
                     this.store = new Map();
                     this.stats = {
                         LRU: [],
                         LFU: []
                     };
+                    if (!log)
+                        return;
                     return void entries.forEach(function (_a) {
                         var key = _a[0], val = _a[1];
                         return void _this.callback(key, val);
@@ -607,6 +622,7 @@ require = function e(t, n, r) {
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             var noop_1 = require('./noop');
+            exports.currentTargets = new WeakMap();
             function bind(target, type, listener, option) {
                 if (option === void 0) {
                     option = false;
@@ -622,6 +638,7 @@ require = function e(t, n, r) {
                     if (typeof option === 'object' && option.passive) {
                         ev.preventDefault = noop_1.noop;
                     }
+                    void exports.currentTargets.set(ev, ev.currentTarget);
                     void listener(ev);
                 }
             }
