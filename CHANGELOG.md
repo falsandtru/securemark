@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.1
+
+- Fix media rendering.
+
 ## 0.34.0
 
 - Add escape function.

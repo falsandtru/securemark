@@ -16,6 +16,7 @@ export function gist(url: string): HTMLElement | void {
     void $.ajax(`${url}.json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
+      cache: true,
       success({ div, stylesheet, description }) {
         if (!stylesheet.startsWith('https://assets-cdn.github.com/')) return;
         outer.innerHTML = sanitize(`<div style="position: relative; margin-bottom: -1em;">${div}</div>`);

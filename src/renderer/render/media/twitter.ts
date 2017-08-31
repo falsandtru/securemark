@@ -27,16 +27,19 @@ export function twitter(url: string): HTMLElement | void {
     void $.ajax(`https://publish.twitter.com/oembed?url=${url.replace('?', '&')}`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
+      cache: true,
       success({ html }): void {
         outer.innerHTML = sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${html}</div>`, { ADD_TAGS: ['script'] });
         void cache.set(url, outer.cloneNode(true) as HTMLElement);
-        if (widgetScriptRequested) return;
         if (window.twttr) return void window.twttr.widgets.load(outer);
+        if (widgetScriptRequested) return;
         widgetScriptRequested = true;
-        const script = outer.querySelector('script')!.cloneNode(true) as HTMLScriptElement;
+        const script = outer.querySelector('script')!;
         if (!script.getAttribute('src')!.startsWith('//platform.twitter.com/')) return;
-        script.async = true;
-        void document.head.appendChild(script);
+        void $.ajax(script.src, {
+          dataType: 'script',
+          cache: true,
+        });
       },
       error({ statusText }) {
         outer.innerHTML = parse(`*${escape(url)}\\\n-> ${escape(statusText)}*`).querySelector('p')!.innerHTML;

@@ -16,6 +16,7 @@ export function slideshare(url: string): HTMLElement | void {
     void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${url}&format=json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
+      cache: true,
       success({ html }) {
         outer.innerHTML = sanitize(`<div style="position: relative; padding-top: 83%;">${html}</div>`, { ADD_TAGS: ['iframe'] });
         const iframe = outer.querySelector('iframe')!;
