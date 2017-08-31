@@ -1,5 +1,5 @@
 ﻿import DOM from 'typed-dom';
-import { parse } from '../../parser';
+import { parse, escape } from '../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
 
@@ -26,7 +26,7 @@ export function slideshare(url: string): HTMLElement | void {
         void cache.set(url, outer.cloneNode(true) as HTMLElement);
       },
       error({ statusText }) {
-        outer.innerHTML = parse(`*${url}\\\n-> ${statusText}*`).querySelector('p')!.innerHTML;
+        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;

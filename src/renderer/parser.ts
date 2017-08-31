@@ -16,3 +16,9 @@ export function parse(source: string): DocumentFragment {
     return (loop(block)(source) || [[]])[0];
   }
 }
+
+const symbols = /[`#&*|\\()\[\]{}]/g;
+
+export function escape(source: string): string {
+  return source.replace(symbols, '\\$&');
+}

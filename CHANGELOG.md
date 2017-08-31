@@ -2,6 +2,7 @@
 
 ## 0.34.0
 
+- Add escape function.
 - Disallow `_` in account names.
 - Remove local text parsing rules.
 - Use DOMPurify.

@@ -1,5 +1,5 @@
 ﻿import DOM from 'typed-dom';
-import { parse } from '../../parser';
+import { parse, escape } from '../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
 
@@ -23,7 +23,7 @@ export function gist(url: string): HTMLElement | void {
         void gist.insertBefore(
           DOM.div({ class: 'gist-description' }, [
             DOM.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, () =>
-              parse(url).querySelector('a')!),
+              parse(escape(url)).querySelector('a')!),
           ]).element,
           gist.firstChild);
         void cache.set(url, outer.cloneNode(true) as HTMLElement);
@@ -35,7 +35,7 @@ export function gist(url: string): HTMLElement | void {
         }).element);
       },
       error({ statusText }) {
-        outer.innerHTML = parse(`*${url}\\\n-> ${statusText}*`).querySelector('p')!.innerHTML;
+        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;
