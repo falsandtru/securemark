@@ -2880,6 +2880,7 @@ require = function e(t, n, r) {
                         void $.ajax(url + '.json', {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
+                            cache: true,
                             success: function (_a) {
                                 var div = _a.div, stylesheet = _a.stylesheet, description = _a.description;
                                 if (!stylesheet.startsWith('https://assets-cdn.github.com/'))
@@ -2993,6 +2994,7 @@ require = function e(t, n, r) {
                         void $.ajax('https://www.slideshare.net/api/oembed/2?url=' + url + '&format=json', {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
+                            cache: true,
                             success: function (_a) {
                                 var html = _a.html;
                                 outer.innerHTML = dompurify_1.sanitize('<div style="position: relative; padding-top: 83%;">' + html + '</div>', { ADD_TAGS: ['iframe'] });
@@ -3047,20 +3049,23 @@ require = function e(t, n, r) {
                         void $.ajax('https://publish.twitter.com/oembed?url=' + url.replace('?', '&'), {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
+                            cache: true,
                             success: function (_a) {
                                 var html = _a.html;
                                 outer.innerHTML = dompurify_1.sanitize('<div style="margin-top: -10px; margin-bottom: -10px;">' + html + '</div>', { ADD_TAGS: ['script'] });
                                 void cache.set(url, outer.cloneNode(true));
-                                if (widgetScriptRequested)
-                                    return;
                                 if (window.twttr)
                                     return void window.twttr.widgets.load(outer);
+                                if (widgetScriptRequested)
+                                    return;
                                 widgetScriptRequested = true;
-                                var script = outer.querySelector('script').cloneNode(true);
+                                var script = outer.querySelector('script');
                                 if (!script.getAttribute('src').startsWith('//platform.twitter.com/'))
                                     return;
-                                script.async = true;
-                                void document.head.appendChild(script);
+                                void $.ajax(script.src, {
+                                    dataType: 'script',
+                                    cache: true
+                                });
                             },
                             error: function (_a) {
                                 var statusText = _a.statusText;
