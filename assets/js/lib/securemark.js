@@ -765,6 +765,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var parser_1 = require('./renderer/parser');
             exports.parse = parser_1.parse;
+            exports.escape = parser_1.escape;
             var bind_1 = require('./renderer/bind');
             exports.bind = bind_1.bind;
             var render_1 = require('./renderer/render');
@@ -2533,22 +2534,6 @@ require = function e(t, n, r) {
                                 source.slice(2)
                             ];
                         }
-                    case '\u3001':
-                    case '\u3002':
-                    case '\uFF01':
-                    case '\uFF1F':
-                        switch (source[1]) {
-                        case '\n':
-                            return [
-                                [document.createTextNode(source.slice(0, 1))],
-                                source.slice(2)
-                            ];
-                        default:
-                            return [
-                                [document.createTextNode(source.slice(0, 1))],
-                                source.slice(1)
-                            ];
-                        }
                     case '\n':
                         return [
                             [document.createTextNode(' ')],
@@ -2732,6 +2717,11 @@ require = function e(t, n, r) {
                 }
             }
             exports.parse = parse;
+            var symbols = /[`#&*|\\()\[\]{}]/g;
+            function escape(source) {
+                return source.replace(symbols, '\\$&');
+            }
+            exports.escape = escape;
         },
         {
             '../combinator/loop': 13,
@@ -2880,7 +2870,7 @@ require = function e(t, n, r) {
                                 outer.innerHTML = dompurify_1.sanitize('<div style="position: relative; margin-bottom: -1em;">' + div + '</div>');
                                 var gist = outer.querySelector('.gist');
                                 void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, function () {
-                                        return parser_1.parse(url).querySelector('a');
+                                        return parser_1.parse(parser_1.escape(url)).querySelector('a');
                                     })]).element, gist.firstChild);
                                 void cache.set(url, outer.cloneNode(true));
                                 if (document.head.querySelector('link[rel="stylesheet"][href="' + stylesheet + '"]'))
@@ -2893,7 +2883,7 @@ require = function e(t, n, r) {
                             },
                             error: function (_a) {
                                 var statusText = _a.statusText;
-                                outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -2952,7 +2942,7 @@ require = function e(t, n, r) {
                             return el;
                         })]),
                     typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, function () {
-                            return parser_1.parse('**' + url + '**').querySelector('strong');
+                            return parser_1.parse('**' + parser_1.escape(url) + '**').querySelector('strong');
                         })])
                 ]).element;
             }
@@ -2998,7 +2988,7 @@ require = function e(t, n, r) {
                             },
                             error: function (_a) {
                                 var statusText = _a.statusText;
-                                outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -3057,7 +3047,7 @@ require = function e(t, n, r) {
                             },
                             error: function (_a) {
                                 var statusText = _a.statusText;
-                                outer.innerHTML = parser_1.parse('*' + url + '\\\n-> ' + statusText + '*').querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
                             }
                         });
                         return outer;
