@@ -56,13 +56,6 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('\\\\\\\n')), [['\\', '<br>'], '']);
     });
 
-    it('locale Japanese', () => {
-      assert.deepStrictEqual(inspect(parser('、\n')), [['、'], '']);
-      assert.deepStrictEqual(inspect(parser('。\n')), [['。'], '']);
-      assert.deepStrictEqual(inspect(parser('、\n、')), [['、', '、'], '']);
-      assert.deepStrictEqual(inspect(parser('。\n。')), [['。', '。'], '']);
-    });
-
     it('url', () => {
       assert.deepStrictEqual(inspect(parser('http:')), [['http', ':'], '']);
       assert.deepStrictEqual(inspect(parser('https:')), [['https', ':'], '']);
