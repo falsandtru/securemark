@@ -1825,8 +1825,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../../combinator/combine');
             var loop_1 = require('../../../combinator/loop');
-            var text_1 = require('../../source/text');
-            var squash_1 = require('../../squash');
+            var escapable_1 = require('../../source/escapable');
             var link_1 = require('../link');
             var syntax = /^(?:!?h)?ttps?:\/\/\S/;
             var closer = /^['"`[\](){}<>]|^\\?(?:\s|$)|^[~^+*,.;:!?]*(?:[\s\])}<>|]|$)/;
@@ -1841,10 +1840,10 @@ require = function e(t, n, r) {
                     return;
                 var flag = source.startsWith('!h');
                 source = flag ? source.slice(1) : source;
-                var _a = loop_1.loop(combine_1.combine([text_1.text]), closer)(source) || [
+                var _a = loop_1.loop(combine_1.combine([escapable_1.escsource]), closer)(source) || [
                         [],
                         ''
-                    ], cs = _a[0], rest = _a[1];
+                    ], rest = _a[1];
                 var attribute = source.startsWith('ttp') ? ' nofollow' : '';
                 var uri = '' + (source.startsWith('ttp') ? 'h' : '') + source.slice(0, source.length - rest.length);
                 return !flag ? link_1.link('[](' + uri + attribute + ')' + rest) : link_1.link('[![](' + uri + ')](' + uri + ')' + rest);
@@ -1853,8 +1852,7 @@ require = function e(t, n, r) {
         {
             '../../../combinator/combine': 12,
             '../../../combinator/loop': 13,
-            '../../source/text': 56,
-            '../../squash': 58,
+            '../../source/escapable': 55,
             '../link': 49
         }
     ],
@@ -2211,7 +2209,7 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var inline_1 = require('../inline');
-            var text_1 = require('../source/text');
+            var escapable_1 = require('../source/escapable');
             var squash_1 = require('../squash');
             var url_1 = require('../string/url');
             var syntax = /^\[[^\n]*?\]\n?\(/;
@@ -2236,7 +2234,7 @@ require = function e(t, n, r) {
                     if (children.textContent !== children.textContent.trim())
                         return;
                 }
-                var _c = loop_1.loop(text_1.text, /^\)|^\s(?!nofollow)/)('?' + next.replace(/^\]\n?\(/, '')) || [
+                var _c = loop_1.loop(escapable_1.escsource, /^\)|^\s(?!nofollow)/)('$' + next.replace(/^\]\n?\(/, '')) || [
                         [],
                         ''
                     ], _d = _c[0], second = _d.slice(1), rest = _c[1];
@@ -2244,7 +2242,7 @@ require = function e(t, n, r) {
                     return;
                 var _e = second.reduce(function (s, c) {
                         return s + c.textContent;
-                    }, '').split(/\s/), INSECURE_URL = _e[0], attribute = _e[1];
+                    }, '').replace(/\\(.)/g, '$1').split(/\s/), INSECURE_URL = _e[0], attribute = _e[1];
                 var url = url_1.sanitize(INSECURE_URL);
                 if (INSECURE_URL !== '' && url === '')
                     return;
@@ -2265,7 +2263,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 12,
             '../../combinator/loop': 13,
             '../inline': 33,
-            '../source/text': 56,
+            '../source/escapable': 55,
             '../squash': 58,
             '../string/url': 60
         }
@@ -2323,6 +2321,7 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var text_1 = require('../source/text');
+            var escapable_1 = require('../source/escapable');
             var url_1 = require('../string/url');
             var typed_dom_1 = require('typed-dom');
             var cache_1 = require('spica/cache');
@@ -2340,7 +2339,7 @@ require = function e(t, n, r) {
                 var caption = first.reduce(function (s, c) {
                     return s + c.textContent;
                 }, '').trim();
-                var _c = loop_1.loop(text_1.text, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [
+                var _c = loop_1.loop(escapable_1.escsource, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [
                         [],
                         ''
                     ], second = _c[0].slice(0), rest = _c[1];
@@ -2348,7 +2347,7 @@ require = function e(t, n, r) {
                     return;
                 var url = url_1.sanitize(second.reduce(function (s, c) {
                     return s + c.textContent;
-                }, ''));
+                }, '').replace(/\\(.)/g, '$1'));
                 if (url === '')
                     return;
                 if (exports.cache.has(url))
@@ -2369,6 +2368,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 12,
             '../../combinator/loop': 13,
+            '../source/escapable': 55,
             '../source/text': 56,
             '../string/url': 60,
             'spica/cache': 4,
@@ -2478,7 +2478,7 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var separator = /[$\n\\]/;
+            var separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
             exports.escsource = function (source) {
                 if (source.length === 0)
                     return;
@@ -2549,6 +2549,22 @@ require = function e(t, n, r) {
                             return [
                                 [document.createTextNode(source.slice(1, 2))],
                                 source.slice(2)
+                            ];
+                        }
+                    case '\u3001':
+                    case '\u3002':
+                    case '\uFF01':
+                    case '\uFF1F':
+                        switch (source[1]) {
+                        case '\n':
+                            return [
+                                [document.createTextNode(source.slice(0, 1))],
+                                source.slice(2)
+                            ];
+                        default:
+                            return [
+                                [document.createTextNode(source.slice(0, 1))],
+                                source.slice(1)
                             ];
                         }
                     case '\n':
