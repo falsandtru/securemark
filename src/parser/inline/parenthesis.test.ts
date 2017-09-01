@@ -24,6 +24,7 @@ describe('Unit: parser/inline/parenthesis', () => {
       assert.deepStrictEqual(inspect(parser('(a)')), [['(a)'], '']);
       assert.deepStrictEqual(inspect(parser('(ab)')), [['(ab)'], '']);
       assert.deepStrictEqual(inspect(parser('(a\nb)')), [['(a b)'], '']);
+      assert.deepStrictEqual(inspect(parser('(a\\\nb)')), [['(a', '<br>', 'b)'], '']);
     });
 
     it('nest', () => {

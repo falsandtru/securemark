@@ -14,6 +14,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert.deepStrictEqual(inspect(parser('[: a]')), void 0);
       assert.deepStrictEqual(inspect(parser('[:a ]')), void 0);
       assert.deepStrictEqual(inspect(parser('[:a\nb]')), void 0);
+      assert.deepStrictEqual(inspect(parser('[:a\\\nb]')), void 0);
       assert.deepStrictEqual(inspect(parser('[][]')), void 0);
       assert.deepStrictEqual(inspect(parser('[:]]')), void 0);
       assert.deepStrictEqual(inspect(parser('[:][]')), void 0);

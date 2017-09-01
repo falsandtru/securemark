@@ -3,6 +3,7 @@
 ## 0.34.2
 
 - Revert local text parsing rules.
+- Fix newline parsing.
 
 ## 0.34.1
 

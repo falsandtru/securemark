@@ -38,7 +38,9 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![](# #)')), void 0);
       assert.deepStrictEqual(inspect(parser('![#]()')), void 0);
       assert.deepStrictEqual(inspect(parser('![a\nb](ab)')), void 0);
+      assert.deepStrictEqual(inspect(parser('![a\\\nb](ab)')), void 0);
       assert.deepStrictEqual(inspect(parser('![ab](a\nb)')), void 0);
+      assert.deepStrictEqual(inspect(parser('![ab](a\\\nb)')), void 0);
       assert.deepStrictEqual(inspect(parser('a![](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[](#)')), void 0);
     });

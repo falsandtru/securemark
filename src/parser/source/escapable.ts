@@ -1,7 +1,7 @@
 ﻿import { Result } from '../../combinator/parser';
 import { EscapableSourceParser } from '../source';
 
-const separator = /[$\n\\]/;
+const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
 
 export const escsource: EscapableSourceParser = function (source: string): Result<Text, [never]> {
   if (source.length === 0) return;

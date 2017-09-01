@@ -16,6 +16,7 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('$ a $')), void 0);
       assert.deepStrictEqual(inspect(parser('$\n$')), void 0);
       assert.deepStrictEqual(inspect(parser('$a\nb$')), void 0);
+      assert.deepStrictEqual(inspect(parser('$a\\\nb$')), void 0);
       assert.deepStrictEqual(inspect(parser('$a$0')), void 0);
       assert.deepStrictEqual(inspect(parser('$$a$$')), void 0);
       assert.deepStrictEqual(inspect(parser('a$a$')), void 0);

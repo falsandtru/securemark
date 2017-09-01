@@ -2,9 +2,8 @@
 import { combine } from '../../../combinator/combine';
 import { loop } from '../../../combinator/loop';
 import { AutolinkParser, InlineParser } from '../../inline';
-import { TextParser } from '../../source';
-import { text } from '../../source/text';
-import { squash } from '../../squash';
+import { EscapableSourceParser } from '../../source';
+import { escsource } from '../../source/escapable';
 import { link } from '../link';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;
@@ -18,8 +17,7 @@ export const url: AutolinkParser.UrlParser = function (source: string): Result<H
   source = flag
     ? source.slice(1)
     : source;
-  const [cs, rest] = loop(combine<[TextParser], HTMLElement | Text>([text]), closer)(source) || [[], ''];
-  assert(!squash(cs).querySelector('*'));
+  const [, rest] = loop(combine<[EscapableSourceParser], Text>([escsource]), closer)(source) || [[], ''];
   const attribute = source.startsWith('ttp')
     ? ' nofollow'
     : '';

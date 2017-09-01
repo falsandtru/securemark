@@ -2,7 +2,7 @@
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { LinkParser, InlineParser, inline } from '../inline';
-import { text } from '../source/text';
+import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 import { sanitize } from '../string/url';
 
@@ -23,9 +23,9 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
     if (children.textContent !== children.textContent!.trim()) return;
   }
-  const [[, ...second], rest] = loop(text, /^\)|^\s(?!nofollow)/)(`?${next.replace(/^\]\n?\(/, '')}`) || [[], ''];
+  const [[, ...second], rest] = loop(escsource, /^\)|^\s(?!nofollow)/)(`$${next.replace(/^\]\n?\(/, '')}`) || [[], ''];
   if (!rest.startsWith(')')) return;
-  const [INSECURE_URL, attribute] = second.reduce((s, c) => s + c.textContent, '').split(/\s/);
+  const [INSECURE_URL, attribute] = second.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1').split(/\s/);
   assert(attribute === void 0 || attribute === 'nofollow');
   const url = sanitize(INSECURE_URL);
   assert(url === url.trim());

@@ -10,6 +10,8 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[]')), void 0);
       assert.deepStrictEqual(inspect(parser('[#]')), void 0);
       assert.deepStrictEqual(inspect(parser('[#]]')), void 0);
+      assert.deepStrictEqual(inspect(parser('[#\n]')), void 0);
+      assert.deepStrictEqual(inspect(parser('[#\\\n]')), void 0);
       assert.deepStrictEqual(inspect(parser('[#\\]')), void 0);
     });
 
@@ -17,6 +19,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#a]')), [['<a href="#index:a" rel="noopener">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a b]')), [['<a href="#index:a-b" rel="noopener">a b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#\\]]')), [['<a href="#index:]" rel="noopener">]</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#\\\\]')), [['<a href="#index:\\" rel="noopener">\\</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#`a`]')), [['<a href="#index:`a`" rel="noopener">`a`</a>'], '']);
     });
 

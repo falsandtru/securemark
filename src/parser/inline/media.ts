@@ -4,6 +4,7 @@ import { loop } from '../../combinator/loop';
 import { MediaParser } from '../inline';
 import { TextParser } from '../source';
 import { text } from '../source/text';
+import { escsource } from '../source/escapable';
 import { sanitize } from '../string/url';
 import DOM from 'typed-dom';
 import { Cache } from 'spica/cache';
@@ -19,9 +20,9 @@ export const media: MediaParser = function (source: string): Result<HTMLImageEle
   const [[, , ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\n?\(|^\n/)(source) || [[], ''];
   if (!next.startsWith('](') && !next.startsWith(']\n(')) return;
   const caption = first.reduce((s, c) => s + c.textContent, '').trim();
-  const [[...second], rest] = loop(text, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [[], ''];
+  const [[...second], rest] = loop(escsource, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [[], ''];
   if (!rest.startsWith(')')) return;
-  const url = sanitize(second.reduce((s, c) => s + c.textContent, ''));
+  const url = sanitize(second.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));
   if (url === '') return;
   if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLImageElement], rest.slice(1)];
   const el = DOM.img({
