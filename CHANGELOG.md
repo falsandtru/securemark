@@ -8,7 +8,7 @@
 
 - Add escape function.
 - Disallow `_` in account names.
-- Remove local text parsing rules.
+- Improve Japanese text parsing.
 - Use DOMPurify.
 
 ## 0.33.0

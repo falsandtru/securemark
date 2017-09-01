@@ -19,6 +19,16 @@ export const text: TextParser = function (source: string): Result<HTMLBRElement 
             default:
               return [[document.createTextNode(source.slice(1, 2))], source.slice(2)];
           }
+        case '、':
+        case '。':
+        case '！':
+        case '？':
+          switch (source[1]) {
+            case '\n':
+              return [[document.createTextNode(source.slice(0, 1))], source.slice(2)];
+            default:
+              return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
+          }
         case '\n':
           return [[document.createTextNode(' ')], source.slice(1)];
         default:
