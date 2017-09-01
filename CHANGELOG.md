@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.2
+
+- Revert local text parsing rules.
+
 ## 0.34.1
 
 - Fix media rendering.
@@ -8,7 +12,7 @@
 
 - Add escape function.
 - Disallow `_` in account names.
-- Improve Japanese text parsing.
+- Remove local text parsing rules.
 - Use DOMPurify.
 
 ## 0.33.0

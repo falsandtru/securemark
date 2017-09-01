@@ -44,6 +44,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[ # ](#)')), void 0);
       assert.deepStrictEqual(inspect(parser('[a\nb](ab)')), void 0);
       assert.deepStrictEqual(inspect(parser('[ab](a\nb)')), void 0);
+      assert.deepStrictEqual(inspect(parser('[。\n！](ab)')), void 0);
       assert.deepStrictEqual(inspect(parser('![](#)')), void 0);
     });
 
