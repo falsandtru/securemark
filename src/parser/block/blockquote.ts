@@ -71,7 +71,7 @@ export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: str
 });
 
 function expand(el: HTMLQuoteElement): void {
-  return void Array.from(el.childNodes)
+  return void [...el.childNodes]
     .reduce<string[]>((ss, node) => {
       switch (true) {
         case node instanceof Text:

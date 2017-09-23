@@ -1,5 +1,6 @@
 ﻿import { parse } from './parser';
 import { segment } from '../parser/segment';
+import { concat } from 'spica/concat'
 
 export function bind(node: Node): (source: string) => HTMLElement[] {
   assert(node.childNodes.length === 0);
@@ -27,12 +28,12 @@ export function bind(node: Node): (source: string) => HTMLElement[] {
       .map<Pair>(s =>
         [
           s,
-          Array.from(parse(s).childNodes)
+          [...parse(s).childNodes]
             .map(e =>
               node.insertBefore(e, ref) as HTMLElement),
         ]);
     void pairs.splice(i, 0, ...ps);
     return ps
-      .reduce<HTMLElement[]>((acc, [, es]) => acc.concat(es), []);
+      .reduce<HTMLElement[]>((acc, [, es]) => concat(acc, es), []);
   };
 }

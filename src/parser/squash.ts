@@ -1,6 +1,6 @@
 ﻿export function squash(nodes: Node[] | NodeList): DocumentFragment {
   const frag = document.createDocumentFragment();
-  for (const curr of Array.from(nodes)) {
+  for (const curr of nodes) {
     const prev = frag.lastChild;
     if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
       prev.textContent += curr.textContent!;

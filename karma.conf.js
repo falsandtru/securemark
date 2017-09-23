@@ -3,7 +3,7 @@ module.exports = function (config) {
     basePath: '',
     frameworks: ['mocha'],
     files: [
-      { pattern: 'https://cdn.polyfill.io/v2/polyfill.js?features=default,String.prototype.repeat,IntersectionObserver&flags=gated', watched: false, served: false, included: true },
+      { pattern: 'https://cdn.polyfill.io/v2/polyfill.js?flags=gated&features=default,NodeList.prototype.@@iterator,IntersectionObserver', watched: false, served: false, included: true },
       { pattern: 'https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js', watched: false, served: false, included: true },
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.6.0/prism.js', watched: false, served: false, included: true },
       { pattern: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML,Safe', watched: false, served: false, included: true },
@@ -25,17 +25,20 @@ module.exports = function (config) {
       subdir: function (browser, platform) {
         return browser.toLowerCase().split(' ')[0];
       },
+			includeAllSources: true,
+      instrumenters: {
+        isparta: require('isparta')
+      },
+      instrumenter: {
+        '**/*.js': 'isparta'
+      },
       reporters: [
         { type: 'lcov' },
-        { type: 'text-summary', subdir: '.', file: 'summary.txt' }
+        { type: 'text-summary', subdir: '.', file: 'summary.txt' },
       ]
     },
     autoWatch: true,
     autoWatchBatchDelay: 500,
     browsers: ['Chrome'],
-    browserNoActivityTimeout: 100 * 1e3,
-    client: {
-      useIframe: false
-    }
   });
 };

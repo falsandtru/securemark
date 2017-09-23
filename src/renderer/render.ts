@@ -4,7 +4,7 @@ import { math } from './render/math';
 import { RenderingOptions } from '../../';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
-  void [target].concat(Array.from(target.querySelectorAll('img, pre, .math') as NodeListOf<HTMLElement>))
+  void [target, ...target.querySelectorAll<HTMLElement>('img, pre, .math')]
     .forEach(target => {
       switch (true) {
         case target.matches('img:not([src])[data-src]'): {
