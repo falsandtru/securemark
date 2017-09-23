@@ -44,31 +44,192 @@ require = function e(t, n, r) {
     4: [
         function (require, module, exports) {
             'use strict';
+            var __values = this && this.__values || function (o) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
+                if (m)
+                    return m.call(o);
+                return {
+                    next: function () {
+                        if (o && i >= o.length)
+                            o = void 0;
+                        return {
+                            value: o && o[i++],
+                            done: !o
+                        };
+                    }
+                };
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
+            var type_1 = require('./type');
+            exports.assign = template(function (key, target, source) {
+                return target[key] = source[key];
+            });
+            exports.clone = template(function (key, target, source) {
+                switch (type_1.type(source[key])) {
+                case 'Array':
+                    return target[key] = exports.clone([], source[key]);
+                case 'Object':
+                    return target[key] = exports.clone({}, source[key]);
+                default:
+                    return target[key] = source[key];
+                }
+            });
+            exports.extend = template(function (key, target, source) {
+                switch (type_1.type(source[key])) {
+                case 'Array':
+                    return target[key] = exports.extend([], source[key]);
+                case 'Object':
+                    switch (type_1.type(target[key])) {
+                    case 'Function':
+                    case 'Object':
+                        return target[key] = exports.extend(target[key], source[key]);
+                    default:
+                        return target[key] = exports.extend({}, source[key]);
+                    }
+                default:
+                    return target[key] = source[key];
+                }
+            });
+            function template(strategy) {
+                return walk;
+                function walk(target) {
+                    var sources = [];
+                    for (var _i = 1; _i < arguments.length; _i++) {
+                        sources[_i - 1] = arguments[_i];
+                    }
+                    if (target === undefined || target === null) {
+                        throw new TypeError('Spica: assign: Cannot walk on ' + target + '.');
+                    }
+                    try {
+                        for (var sources_1 = __values(sources), sources_1_1 = sources_1.next(); !sources_1_1.done; sources_1_1 = sources_1.next()) {
+                            var source = sources_1_1.value;
+                            if (source === undefined || source === null) {
+                                continue;
+                            }
+                            try {
+                                for (var _a = __values(Object.keys(Object(source))), _b = _a.next(); !_b.done; _b = _a.next()) {
+                                    var key = _b.value;
+                                    var desc = Object.getOwnPropertyDescriptor(Object(source), key);
+                                    if (desc !== undefined && desc.enumerable) {
+                                        void strategy(key, Object(target), Object(source));
+                                    }
+                                }
+                            } catch (e_1_1) {
+                                e_1 = { error: e_1_1 };
+                            } finally {
+                                try {
+                                    if (_b && !_b.done && (_c = _a.return))
+                                        _c.call(_a);
+                                } finally {
+                                    if (e_1)
+                                        throw e_1.error;
+                                }
+                            }
+                        }
+                    } catch (e_2_1) {
+                        e_2 = { error: e_2_1 };
+                    } finally {
+                        try {
+                            if (sources_1_1 && !sources_1_1.done && (_d = sources_1.return))
+                                _d.call(sources_1);
+                        } finally {
+                            if (e_2)
+                                throw e_2.error;
+                        }
+                    }
+                    return Object(target);
+                    var e_2, _d, e_1, _c;
+                }
+            }
+        },
+        { './type': 8 }
+    ],
+    5: [
+        function (require, module, exports) {
+            'use strict';
+            var __values = this && this.__values || function (o) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
+                if (m)
+                    return m.call(o);
+                return {
+                    next: function () {
+                        if (o && i >= o.length)
+                            o = void 0;
+                        return {
+                            value: o && o[i++],
+                            done: !o
+                        };
+                    }
+                };
+            };
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var assign_1 = require('./assign');
             var equal_1 = require('./equal');
             var Cache = function () {
-                function Cache(size, callback, _a) {
+                function Cache(size, callback, opts) {
                     if (callback === void 0) {
                         callback = function () {
                             return void 0;
                         };
                     }
-                    var _b = _a === void 0 ? {} : _a, _c = _b.stats, stats = _c === void 0 ? [
-                            [],
-                            []
-                        ] : _c, _d = _b.entries, entries = _d === void 0 ? [] : _d;
+                    if (opts === void 0) {
+                        opts = {};
+                    }
                     var _this = this;
                     this.size = size;
                     this.callback = callback;
+                    this.opts = {
+                        ignore: {
+                            delete: false,
+                            clear: false
+                        }
+                    };
                     if (size > 0 === false)
                         throw new Error('Spica: Cache: Cache size must be greater than 0.');
+                    void Object.freeze(assign_1.extend(this.opts, opts));
+                    var _a = opts.data || {
+                            stats: [
+                                [],
+                                []
+                            ],
+                            entries: []
+                        }, stats = _a.stats, entries = _a.entries;
                     var LFU = stats[1].slice(0, size);
                     var LRU = stats[0].slice(0, size - LFU.length);
                     this.stats = {
                         LRU: LRU,
                         LFU: LFU
                     };
-                    this.store = new Map(entries.slice(0, size));
+                    this.store = new Map(entries);
+                    void stats[1].concat(stats[0]).slice(LFU.length + LRU.length).forEach(function (k) {
+                        return void _this.store.delete(k);
+                    });
                     if (this.store.size !== LFU.length + LRU.length)
                         throw new Error('Spica: Cache: Size of stats and entries is not matched.');
                     if (!LFU.concat(LRU).every(function (k) {
@@ -117,45 +278,52 @@ require = function e(t, n, r) {
                 Cache.prototype.has = function (key) {
                     return this.store.has(key);
                 };
-                Cache.prototype.delete = function (key, log) {
-                    if (log === void 0) {
-                        log = true;
-                    }
+                Cache.prototype.delete = function (key) {
                     if (!this.store.has(key))
                         return false;
                     var _a = this.stats, LRU = _a.LRU, LFU = _a.LFU;
-                    for (var _i = 0, _b = [
-                                LFU,
-                                LRU
-                            ]; _i < _b.length; _i++) {
-                        var stat = _b[_i];
-                        var index = equal_1.findIndex(key, stat);
-                        if (index === -1)
-                            continue;
-                        var val = this.store.get(key);
-                        void this.store.delete(stat.splice(index, 1)[0]);
-                        if (!log)
+                    try {
+                        for (var _b = __values([
+                                    LFU,
+                                    LRU
+                                ]), _c = _b.next(); !_c.done; _c = _b.next()) {
+                            var stat = _c.value;
+                            var index = equal_1.findIndex(key, stat);
+                            if (index === -1)
+                                continue;
+                            var val = this.store.get(key);
+                            void this.store.delete(stat.splice(index, 1)[0]);
+                            if (this.opts.ignore.delete)
+                                return true;
+                            void this.callback(key, val);
                             return true;
-                        void this.callback(key, val);
-                        return true;
+                        }
+                    } catch (e_1_1) {
+                        e_1 = { error: e_1_1 };
+                    } finally {
+                        try {
+                            if (_c && !_c.done && (_d = _b.return))
+                                _d.call(_b);
+                        } finally {
+                            if (e_1)
+                                throw e_1.error;
+                        }
                     }
                     return false;
+                    var e_1, _d;
                 };
-                Cache.prototype.clear = function (log) {
+                Cache.prototype.clear = function () {
                     var _this = this;
-                    if (log === void 0) {
-                        log = true;
-                    }
-                    var entries = Array.from(this);
+                    var store = this.store;
                     this.store = new Map();
                     this.stats = {
                         LRU: [],
                         LFU: []
                     };
-                    if (!log)
+                    if (this.opts.ignore.clear)
                         return;
-                    return void entries.forEach(function (_a) {
-                        var key = _a[0], val = _a[1];
+                    return void __spread(store).forEach(function (_a) {
+                        var _b = __read(_a, 2), key = _b[0], val = _b[1];
                         return void _this.callback(key, val);
                     });
                 };
@@ -168,7 +336,7 @@ require = function e(t, n, r) {
                             this.stats.LRU.slice(),
                             this.stats.LFU.slice()
                         ],
-                        entries: Array.from(this)
+                        entries: __spread(this)
                     };
                 };
                 Cache.prototype.inspect = function () {
@@ -189,7 +357,7 @@ require = function e(t, n, r) {
                     if (index === -1)
                         return false;
                     var LFU = this.stats.LFU;
-                    void LFU.unshift.apply(LFU, LRU.splice(index, 1));
+                    void LFU.unshift.apply(LFU, __spread(LRU.splice(index, 1)));
                     return true;
                 };
                 Cache.prototype.accessLFU = function (key) {
@@ -199,16 +367,33 @@ require = function e(t, n, r) {
                     var index = equal_1.findIndex(key, LFU);
                     if (index === -1)
                         return false;
-                    void LFU.unshift.apply(LFU, LFU.splice(index, 1));
+                    void LFU.unshift.apply(LFU, __spread(LFU.splice(index, 1)));
                     return true;
                 };
                 return Cache;
             }();
             exports.Cache = Cache;
         },
-        { './equal': 5 }
+        {
+            './assign': 4,
+            './equal': 7
+        }
     ],
-    5: [
+    6: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            function concat(target, source) {
+                for (var i = 0, len = source.length, offset = target.length; i < len; ++i) {
+                    target[i + offset] = source[i];
+                }
+                return target;
+            }
+            exports.concat = concat;
+        },
+        {}
+    ],
+    7: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -225,7 +410,18 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    6: [
+    8: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            function type(target) {
+                return Object.prototype.toString.call(target).split(' ').pop().slice(0, -1);
+            }
+            exports.type = type;
+        },
+        {}
+    ],
+    9: [
         function (require, module, exports) {
             'use strict';
             function __export(m) {
@@ -238,9 +434,9 @@ require = function e(t, n, r) {
             var export_1 = require('./src/export');
             exports.default = export_1.default;
         },
-        { './src/export': 9 }
+        { './src/export': 12 }
     ],
-    7: [
+    10: [
         function (require, module, exports) {
             'use strict';
             var __assign = this && this.__assign || Object.assign || function (t) {
@@ -251,6 +447,32 @@ require = function e(t, n, r) {
                             t[p] = s[p];
                 }
                 return t;
+            };
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             var El = function () {
@@ -306,7 +528,7 @@ require = function e(t, n, r) {
                         if (!element_.id.match(/^[\w\-]+$/))
                             return;
                         style.innerHTML = style.innerHTML.replace(/^\s*\$scope(?!\w)/gm, '#' + element_.id);
-                        void Array.from(style.querySelectorAll('*')).forEach(function (el) {
+                        void __spread(style.querySelectorAll('*')).forEach(function (el) {
                             return void el.remove();
                         });
                     }
@@ -396,7 +618,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    8: [
+    11: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -587,9 +809,9 @@ require = function e(t, n, r) {
                 }, el);
             }
         },
-        { './builder': 7 }
+        { './builder': 10 }
     ],
-    9: [
+    12: [
         function (require, module, exports) {
             'use strict';
             function __export(m) {
@@ -604,11 +826,11 @@ require = function e(t, n, r) {
             __export(require('./util/dom'));
         },
         {
-            './dom/html': 8,
-            './util/dom': 10
+            './dom/html': 11,
+            './util/dom': 13
         }
     ],
-    10: [
+    13: [
         function (require, module, exports) {
             'use strict';
             var __assign = this && this.__assign || Object.assign || function (t) {
@@ -619,6 +841,32 @@ require = function e(t, n, r) {
                             t[p] = s[p];
                 }
                 return t;
+            };
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             var noop_1 = require('./noop');
@@ -660,11 +908,11 @@ require = function e(t, n, r) {
                 if (option === void 0) {
                     option = {};
                 }
-                return bind(target, type, function (ev) {
+                return bind(target instanceof Document ? target.documentElement : target, type, function (ev) {
                     var cx = ev.target.closest(selector);
                     if (!cx)
                         return;
-                    void Array.from(target.querySelectorAll(selector)).filter(function (el) {
+                    void __spread(target.querySelectorAll(selector)).filter(function (el) {
                         return el === cx;
                     }).forEach(function (el) {
                         return void once(el, type, function (ev) {
@@ -688,9 +936,9 @@ require = function e(t, n, r) {
                 return supportEventListenerOptions ? option : typeof option === 'boolean' ? option : option.capture;
             }
         },
-        { './noop': 11 }
+        { './noop': 14 }
     ],
-    11: [
+    14: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -701,38 +949,118 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    12: [
+    15: [
         function (require, module, exports) {
             'use strict';
+            var __values = this && this.__values || function (o) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
+                if (m)
+                    return m.call(o);
+                return {
+                    next: function () {
+                        if (o && i >= o.length)
+                            o = void 0;
+                        return {
+                            value: o && o[i++],
+                            done: !o
+                        };
+                    }
+                };
+            };
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             function combine(parsers) {
                 return function (source) {
                     var rest = source;
                     var results = [];
-                    for (var _i = 0, parsers_1 = parsers; _i < parsers_1.length; _i++) {
-                        var parse = parsers_1[_i];
-                        if (rest === '')
+                    try {
+                        for (var parsers_1 = __values(parsers), parsers_1_1 = parsers_1.next(); !parsers_1_1.done; parsers_1_1 = parsers_1.next()) {
+                            var parse = parsers_1_1.value;
+                            if (rest === '')
+                                break;
+                            var r = parse(rest);
+                            if (!r)
+                                continue;
+                            void results.push.apply(results, __spread(r[0]));
+                            rest = r[1];
                             break;
-                        var r = parse(rest);
-                        if (!r)
-                            continue;
-                        void results.push.apply(results, r[0]);
-                        rest = r[1];
-                        break;
+                        }
+                    } catch (e_1_1) {
+                        e_1 = { error: e_1_1 };
+                    } finally {
+                        try {
+                            if (parsers_1_1 && !parsers_1_1.done && (_a = parsers_1.return))
+                                _a.call(parsers_1);
+                        } finally {
+                            if (e_1)
+                                throw e_1.error;
+                        }
                     }
                     return rest.length < source.length ? [
                         results,
                         rest
                     ] : void 0;
+                    var e_1, _a;
                 };
             }
             exports.combine = combine;
         },
         {}
     ],
-    13: [
+    16: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             function loop(parser, until) {
                 var check = function () {
@@ -760,8 +1088,8 @@ require = function e(t, n, r) {
                         var result = parser(rest);
                         if (!result)
                             break;
-                        var rs = result[0], r = result[1];
-                        void results.push.apply(results, rs);
+                        var _a = __read(result, 2), rs = _a[0], r = _a[1];
+                        void results.push.apply(results, __spread(rs));
                         rest = r;
                     }
                     if (rest.length === source.length)
@@ -776,7 +1104,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    14: [
+    17: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -791,13 +1119,13 @@ require = function e(t, n, r) {
             exports.caches = cache_1.caches;
         },
         {
-            './parser/cache': 32,
-            './renderer/bind': 61,
-            './renderer/parser': 62,
-            './renderer/render': 63
+            './parser/cache': 35,
+            './renderer/bind': 64,
+            './renderer/parser': 65,
+            './renderer/render': 66
         }
     ],
-    15: [
+    18: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -830,24 +1158,50 @@ require = function e(t, n, r) {
             ]);
         },
         {
-            '../combinator/combine': 12,
-            './block/blockquote': 16,
-            './block/dlist': 17,
-            './block/extension': 19,
-            './block/heading': 21,
-            './block/horizontalrule': 22,
-            './block/math': 25,
-            './block/newline': 26,
-            './block/olist': 27,
-            './block/paragraph': 28,
-            './block/pretext': 29,
-            './block/table': 30,
-            './block/ulist': 31
+            '../combinator/combine': 15,
+            './block/blockquote': 19,
+            './block/dlist': 20,
+            './block/extension': 22,
+            './block/heading': 24,
+            './block/horizontalrule': 25,
+            './block/math': 28,
+            './block/newline': 29,
+            './block/olist': 30,
+            './block/paragraph': 31,
+            './block/pretext': 32,
+            './block/table': 33,
+            './block/ulist': 34
         }
     ],
-    16: [
+    19: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -861,7 +1215,7 @@ require = function e(t, n, r) {
                 if (mode === '')
                     return;
                 source = mode === 'plain' ? source : source.slice(1);
-                var indent = (source.match(syntax) || [''])[0];
+                var _a = __read(source.match(syntax) || [''], 1), indent = _a[0];
                 if (!indent)
                     return;
                 var top = document.createElement('blockquote');
@@ -888,10 +1242,10 @@ require = function e(t, n, r) {
                         void bottom.appendChild(node_1);
                     }
                     source = source.split(/[^\S\n]/, 1).shift() === indent ? source.slice(indent.length + 1) : source.startsWith(indent + '\n') ? source.slice(indent.length) : source;
-                    var _a = loop_1.loop(combine_1.combine([unescapable_1.unescsource]), '\n|$')(source) || [
+                    var _b = __read(loop_1.loop(combine_1.combine([unescapable_1.unescsource]), '\n|$')(source) || [
                             [document.createTextNode('')],
                             source
-                        ], cs = _a[0], rest = _a[1];
+                        ], 2), cs = _b[0], rest = _b[1];
                     var node = mode === 'plain' ? document.createTextNode(squash_1.squash(cs).textContent.replace(/ /g, String.fromCharCode(160))) : squash_1.squash(cs);
                     if (bottom.childNodes.length === 0 && node.textContent.trim() === '')
                         return;
@@ -907,7 +1261,7 @@ require = function e(t, n, r) {
                 ];
             });
             function expand(el) {
-                return void Array.from(el.childNodes).reduce(function (ss, node) {
+                return void __spread(el.childNodes).reduce(function (ss, node) {
                     switch (true) {
                     case node instanceof Text:
                         void ss.push(node.textContent);
@@ -933,17 +1287,38 @@ require = function e(t, n, r) {
             }
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../block': 15,
-            '../source/unescapable': 57,
-            '../squash': 58,
-            './end': 18
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../block': 18,
+            '../source/unescapable': 60,
+            '../squash': 61,
+            './end': 21
         }
     ],
-    17: [
+    20: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -954,7 +1329,7 @@ require = function e(t, n, r) {
             var syntax = /^~\s/;
             var separator = /^[~:](?:\s|$)/;
             exports.dlist = end_1.verifyBlockEnd(function (source) {
-                var whole = (source.match(syntax) || [''])[0];
+                var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
                     return;
                 var el = document.createElement('dl');
@@ -999,15 +1374,15 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58,
-            './end': 18,
-            './indexer': 24
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61,
+            './end': 21,
+            './indexer': 27
         }
     ],
-    18: [
+    21: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1025,7 +1400,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    19: [
+    22: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1035,14 +1410,35 @@ require = function e(t, n, r) {
             exports.extension = combine_1.combine([end_1.verifyBlockEnd(placeholder_1.placeholder)]);
         },
         {
-            '../../combinator/combine': 12,
-            './end': 18,
-            './extension/placeholder': 20
+            '../../combinator/combine': 15,
+            './end': 21,
+            './extension/placeholder': 23
         }
     ],
-    20: [
+    23: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var loop_1 = require('../../../combinator/loop');
             var inline_1 = require('../../inline');
@@ -1052,10 +1448,10 @@ require = function e(t, n, r) {
             exports.placeholder = function (source) {
                 if (!source.startsWith('~~~'))
                     return;
-                var _a = source.match(syntax) || [
+                var _a = __read(source.match(syntax) || [
                         '',
                         ''
-                    ], whole = _a[0], keyword = _a[1];
+                    ], 2), whole = _a[0], keyword = _a[1];
                 if (!whole)
                     return;
                 var message = document.createElement('p');
@@ -1083,15 +1479,36 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../../combinator/loop': 13,
-            '../../inline': 33,
-            '../../source/unescapable': 57,
-            '../../squash': 58
+            '../../../combinator/loop': 16,
+            '../../inline': 36,
+            '../../source/unescapable': 60,
+            '../../squash': 61
         }
     ],
-    21: [
+    24: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1103,17 +1520,17 @@ require = function e(t, n, r) {
             exports.heading = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('#'))
                     return;
-                var _a = source.split('\n', 1).shift().match(syntax) || [
+                var _a = __read(source.split('\n', 1).shift().match(syntax) || [
                         '',
                         '',
                         ''
-                    ], whole = _a[0], level = _a[1].length, title = _a[2];
+                    ], 3), whole = _a[0], level = _a[1].length, title = _a[2];
                 if (!whole)
                     return;
-                var children = (loop_1.loop(combine_1.combine([
-                    indexer_1.indexer,
-                    inline_1.inline
-                ]))(title.trim()) || [[]])[0];
+                var _b = __read(loop_1.loop(combine_1.combine([
+                        indexer_1.indexer,
+                        inline_1.inline
+                    ]))(title.trim()) || [[]], 1), children = _b[0];
                 var el = document.createElement('h' + level);
                 void el.appendChild(squash_1.squash(children));
                 void indexer_1.defineIndex(el);
@@ -1124,22 +1541,43 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58,
-            './end': 18,
-            './indexer': 24
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61,
+            './end': 21,
+            './indexer': 27
         }
     ],
-    22: [
+    25: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var end_1 = require('./end');
             var syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;
             exports.horizontalrule = end_1.verifyBlockEnd(function (source) {
-                var whole = (source.split('\n', 1)[0].match(syntax) || [''])[0];
+                var _a = __read(source.split('\n', 1)[0].match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
                     return;
                 return [
@@ -1148,15 +1586,36 @@ require = function e(t, n, r) {
                 ];
             });
         },
-        { './end': 18 }
+        { './end': 21 }
     ],
-    23: [
+    26: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var syntax = /^\s*/;
             function indent(source) {
-                var indent = (source.split('\n', 1).shift().match(syntax) || [''])[0];
+                var _a = __read(source.split('\n', 1).shift().match(syntax) || [''], 1), indent = _a[0];
                 if (indent === '')
                     return [
                         '',
@@ -1186,9 +1645,35 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    24: [
+    27: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var inline_1 = require('../inline');
             var index_1 = require('../string/index');
@@ -1197,10 +1682,10 @@ require = function e(t, n, r) {
                 if (!source.trim().startsWith('[#') || source.search(syntax) !== 0)
                     return;
                 source = source.trim();
-                var _a = inline_1.inline(source) || [
+                var _a = __read(inline_1.inline(source) || [
                         [document.createTextNode('')],
                         ''
-                    ], el = _a[0][0], rest = _a[1];
+                    ], 2), _b = __read(_a[0], 1), el = _b[0], rest = _a[1];
                 if (!(el instanceof HTMLAnchorElement))
                     return;
                 if (rest !== '')
@@ -1214,7 +1699,7 @@ require = function e(t, n, r) {
             function defineIndex(target) {
                 var el = target.querySelector('.index') || target.cloneNode(true);
                 void el.remove();
-                void Array.from(el.querySelectorAll('code[data-src], .math[data-src]')).forEach(function (el) {
+                void __spread(el.querySelectorAll('code[data-src], .math[data-src]')).forEach(function (el) {
                     return el.textContent = el.getAttribute('data-src');
                 });
                 var text = el.textContent.trim();
@@ -1225,23 +1710,44 @@ require = function e(t, n, r) {
             exports.defineIndex = defineIndex;
         },
         {
-            '../inline': 33,
-            '../string/index': 59
+            '../inline': 36,
+            '../string/index': 62
         }
     ],
-    25: [
+    28: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var end_1 = require('./end');
             var syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
             exports.math = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('$$'))
                     return;
-                var whole = (source.match(syntax) || [
-                    '',
-                    ''
-                ])[0];
+                var _a = __read(source.match(syntax) || [
+                        '',
+                        ''
+                    ], 1), whole = _a[0];
                 if (!whole)
                     return;
                 var el = document.createElement('div');
@@ -1253,15 +1759,36 @@ require = function e(t, n, r) {
                 ];
             });
         },
-        { './end': 18 }
+        { './end': 21 }
     ],
-    26: [
+    29: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var syntax = /^[^\S\n]*\n/;
             exports.newline = function (source) {
-                var whole = (source.match(syntax) || [''])[0];
+                var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
                     return;
                 return [
@@ -1272,9 +1799,30 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    27: [
+    30: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1285,11 +1833,11 @@ require = function e(t, n, r) {
             var squash_1 = require('../squash');
             var syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
             exports.olist = end_1.verifyBlockEnd(function (source) {
-                var _a = source.match(syntax) || [
+                var _a = __read(source.match(syntax) || [
                         '',
                         '',
                         ''
-                    ], whole = _a[0], index = _a[1], flag = _a[2];
+                    ], 3), whole = _a[0], index = _a[1], flag = _a[2];
                 if (!whole || !flag)
                     return;
                 var el = document.createElement('ol');
@@ -1314,16 +1862,16 @@ require = function e(t, n, r) {
                                 return li_1.lastElementChild instanceof E;
                             }))
                             return { value: void 0 };
-                        var _a = indent_1.indent(source), block = _a[0], rest = _a[1];
+                        var _a = __read(indent_1.indent(source), 2), block = _a[0], rest = _a[1];
                         if (rest === source)
                             return { value: void 0 };
-                        var _b = combine_1.combine([
+                        var _b = __read(combine_1.combine([
                                 ulist_1.ulist,
                                 exports.olist
                             ])(indent_1.fillOListFlag(block)) || [
                                 [],
                                 block
-                            ], children = _b[0], brest = _b[1];
+                            ], 2), children = _b[0], brest = _b[1];
                         if (children.length !== 1 || brest.length !== 0)
                             return { value: void 0 };
                         void li_1.appendChild(squash_1.squash(children));
@@ -1345,18 +1893,39 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58,
-            './end': 18,
-            './indent': 23,
-            './ulist': 31
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61,
+            './end': 21,
+            './indent': 26,
+            './ulist': 34
         }
     ],
-    28: [
+    31: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1369,10 +1938,10 @@ require = function e(t, n, r) {
                     return;
                 source = source.replace(/^\s+/, '');
                 var el = document.createElement('p');
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source) || [
                         [document.createTextNode(source)],
                         ''
-                    ], cs = _a[0], rest = _a[1];
+                    ], 2), cs = _a[0], rest = _a[1];
                 void el.appendChild(squash_1.squash(cs));
                 return [
                     [el],
@@ -1381,27 +1950,48 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58,
-            './end': 18
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61,
+            './end': 21
         }
     ],
-    29: [
+    32: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var end_1 = require('./end');
             var syntax = /^(`{3,})([a-z]*)(?:[^\S\n]+([0-9a-zA-Z_\-.]+))?[^\S\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
             exports.pretext = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('```'))
                     return;
-                var _a = source.match(syntax) || [
+                var _a = __read(source.match(syntax) || [
                         '',
                         '',
                         ''
-                    ], whole = _a[0], lang = _a[2], _b = _a[3], filename = _b === void 0 ? '' : _b;
+                    ], 4), whole = _a[0], lang = _a[2], _b = _a[3], filename = _b === void 0 ? '' : _b;
                 if (!whole)
                     return;
                 var el = document.createElement('pre');
@@ -1419,11 +2009,32 @@ require = function e(t, n, r) {
                 ];
             });
         },
-        { './end': 18 }
+        { './end': 21 }
     ],
-    30: [
+    33: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var loop_1 = require('../../combinator/loop');
             var end_1 = require('./end');
@@ -1435,17 +2046,17 @@ require = function e(t, n, r) {
                 if (!source.startsWith('|') || source.search(syntax) !== 0)
                     return;
                 var table = document.createElement('table');
-                var _a = parse(source) || [
+                var _a = __read(parse(source) || [
                         [],
                         source
-                    ], headers = _a[0], hrest = _a[1];
+                    ], 2), headers = _a[0], hrest = _a[1];
                 if (hrest.length === source.length)
                     return;
                 source = hrest;
-                var _b = parse(source) || [
+                var _b = __read(parse(source) || [
                         [],
                         source
-                    ], aligns_ = _b[0], arest = _b[1];
+                    ], 2), aligns_ = _b[0], arest = _b[1];
                 if (arest.length === source.length)
                     return;
                 source = arest;
@@ -1467,10 +2078,10 @@ require = function e(t, n, r) {
                     var line = source.split('\n', 1)[0];
                     if (line.trim() === '')
                         return 'break';
-                    var _a = parse(line) || [
+                    var _a = __read(parse(line) || [
                             [],
                             line
-                        ], cols = _a[0], rest = _a[1];
+                        ], 2), cols = _a[0], rest = _a[1];
                     if (rest.length !== 0)
                         return { value: void 0 };
                     void append(headers.map(function (_, i) {
@@ -1511,7 +2122,7 @@ require = function e(t, n, r) {
                         [document.createTextNode('')],
                         source.slice(1)
                     ];
-                    var col = result[0], rest = result[1];
+                    var _a = __read(result, 2), col = _a[0], rest = _a[1];
                     source = rest;
                     void cols.push(trim(squash_1.squash(col)));
                     if (source.search(rowend) === 0)
@@ -1534,15 +2145,36 @@ require = function e(t, n, r) {
             }
         },
         {
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58,
-            './end': 18
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61,
+            './end': 21
         }
     ],
-    31: [
+    34: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1554,10 +2186,10 @@ require = function e(t, n, r) {
             var syntax = /^([-+*])(?=\s|$)/;
             var content = /^(\[[ x]\](?: +|$))?.*$/;
             exports.ulist = end_1.verifyBlockEnd(function (source) {
-                var _a = source.match(syntax) || [
+                var _a = __read(source.match(syntax) || [
                         '',
                         ''
-                    ], whole = _a[0], flag = _a[1];
+                    ], 2), whole = _a[0], flag = _a[1];
                 if (!whole)
                     return;
                 var el = document.createElement('ul');
@@ -1568,7 +2200,7 @@ require = function e(t, n, r) {
                     if (line.search(syntax) === 0) {
                         if (!line.startsWith(flag))
                             return { value: void 0 };
-                        var _a = line.slice(line.split(/\s/, 1)[0].length + 1).trim().match(content), text = _a[0], _b = _a[1], checkbox = _b === void 0 ? '' : _b;
+                        var _a = __read(line.slice(line.split(/\s/, 1)[0].length + 1).trim().match(content), 2), text = _a[0], _b = _a[1], checkbox = _b === void 0 ? '' : _b;
                         var li = el.appendChild(document.createElement('li'));
                         if (checkbox) {
                             var cb = document.createElement('span');
@@ -1588,16 +2220,16 @@ require = function e(t, n, r) {
                                 return li_1.lastElementChild instanceof E;
                             }))
                             return { value: void 0 };
-                        var _c = indent_1.indent(source), block = _c[0], rest = _c[1];
+                        var _c = __read(indent_1.indent(source), 2), block = _c[0], rest = _c[1];
                         if (rest === source)
                             return { value: void 0 };
-                        var _d = combine_1.combine([
+                        var _d = __read(combine_1.combine([
                                 exports.ulist,
                                 olist_1.olist
                             ])(indent_1.fillOListFlag(block)) || [
                                 [],
                                 block
-                            ], children = _d[0], brest = _d[1];
+                            ], 2), children = _d[0], brest = _d[1];
                         if (children.length !== 1 || brest.length !== 0)
                             return { value: void 0 };
                         void li_1.appendChild(squash_1.squash(children));
@@ -1619,16 +2251,16 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58,
-            './end': 18,
-            './indent': 23,
-            './olist': 27
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61,
+            './end': 21,
+            './indent': 26,
+            './olist': 30
         }
     ],
-    32: [
+    35: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1640,11 +2272,11 @@ require = function e(t, n, r) {
             };
         },
         {
-            './inline/math': 50,
-            './inline/media': 51
+            './inline/math': 53,
+            './inline/media': 54
         }
     ],
-    33: [
+    36: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1685,28 +2317,54 @@ require = function e(t, n, r) {
             ]);
         },
         {
-            '../combinator/combine': 12,
-            './inline/anglebracket': 34,
-            './inline/annotation': 35,
-            './inline/autolink': 36,
-            './inline/brace': 39,
-            './inline/bracket': 40,
-            './inline/code': 41,
-            './inline/emphasis': 42,
-            './inline/extension': 43,
-            './inline/html': 47,
-            './inline/htmlentity': 48,
-            './inline/link': 49,
-            './inline/math': 50,
-            './inline/media': 51,
-            './inline/parenthesis': 52,
-            './inline/strong': 53,
-            './source/text': 56
+            '../combinator/combine': 15,
+            './inline/anglebracket': 37,
+            './inline/annotation': 38,
+            './inline/autolink': 39,
+            './inline/brace': 42,
+            './inline/bracket': 43,
+            './inline/code': 44,
+            './inline/emphasis': 45,
+            './inline/extension': 46,
+            './inline/html': 50,
+            './inline/htmlentity': 51,
+            './inline/link': 52,
+            './inline/math': 53,
+            './inline/media': 54,
+            './inline/parenthesis': 55,
+            './inline/strong': 56,
+            './source/text': 59
         }
     ],
-    34: [
+    37: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1717,28 +2375,49 @@ require = function e(t, n, r) {
             exports.anglebracket = function (source) {
                 if (!source.startsWith('<') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
                         [],
                         ''
-                    ], _b = _a[0], cs = _b.slice(1), rest = _a[1];
+                    ], 2), _b = __read(_a[0]), cs = _b.slice(1), rest = _a[1];
                 if (!rest.startsWith('>'))
                     return;
                 return [
-                    Array.from(squash_1.squash([document.createTextNode('<')].concat(cs).concat([document.createTextNode('>')])).childNodes),
+                    __spread(squash_1.squash(__spread([document.createTextNode('<')], cs, [document.createTextNode('>')])).childNodes),
                     rest.slice(1)
                 ];
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61
         }
     ],
-    35: [
+    38: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1749,10 +2428,10 @@ require = function e(t, n, r) {
             exports.annotation = function (source) {
                 if (!source.startsWith('((') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(2)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(2)) || [
                         [],
                         ''
-                    ], cs = _a[0], rest = _a[1];
+                    ], 2), cs = _a[0], rest = _a[1];
                 if (!rest.startsWith('))'))
                     return;
                 var el = document.createElement('sup');
@@ -1767,13 +2446,13 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61
         }
     ],
-    36: [
+    39: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1786,26 +2465,47 @@ require = function e(t, n, r) {
             ]);
         },
         {
-            '../../combinator/combine': 12,
-            './autolink/account': 37,
-            './autolink/url': 38
+            '../../combinator/combine': 15,
+            './autolink/account': 40,
+            './autolink/url': 41
         }
     ],
-    37: [
+    40: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var syntax = /^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/;
             var escape = /^[0-9a-zA-Z@]@/;
             exports.account = function (source) {
                 if (source.search(escape) === 0) {
-                    var frag = (source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [source])[0];
+                    var _a = __read(source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [source], 1), frag = _a[0];
                     return [
                         [document.createTextNode(frag)],
                         source.slice(frag.length)
                     ];
                 }
-                var whole = (source.match(syntax) || [''])[0];
+                var _b = __read(source.match(syntax) || [''], 1), whole = _b[0];
                 if (!whole)
                     return;
                 var el = document.createElement('span');
@@ -1819,9 +2519,30 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    38: [
+    41: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../../combinator/combine');
             var loop_1 = require('../../../combinator/loop');
@@ -1840,25 +2561,51 @@ require = function e(t, n, r) {
                     return;
                 var flag = source.startsWith('!h');
                 source = flag ? source.slice(1) : source;
-                var _a = loop_1.loop(combine_1.combine([escapable_1.escsource]), closer)(source) || [
+                var _a = __read(loop_1.loop(combine_1.combine([escapable_1.escsource]), closer)(source) || [
                         [],
                         ''
-                    ], rest = _a[1];
+                    ], 2), rest = _a[1];
                 var attribute = source.startsWith('ttp') ? ' nofollow' : '';
                 var uri = '' + (source.startsWith('ttp') ? 'h' : '') + source.slice(0, source.length - rest.length);
                 return !flag ? link_1.link('[](' + uri + attribute + ')' + rest) : link_1.link('[![](' + uri + ')](' + uri + ')' + rest);
             };
         },
         {
-            '../../../combinator/combine': 12,
-            '../../../combinator/loop': 13,
-            '../../source/escapable': 55,
-            '../link': 49
+            '../../../combinator/combine': 15,
+            '../../../combinator/loop': 16,
+            '../../source/escapable': 58,
+            '../link': 52
         }
     ],
-    39: [
+    42: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1869,28 +2616,54 @@ require = function e(t, n, r) {
             exports.brace = function (source) {
                 if (!source.startsWith('{') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
                         [],
                         ''
-                    ], _b = _a[0], cs = _b.slice(1), rest = _a[1];
+                    ], 2), _b = __read(_a[0]), cs = _b.slice(1), rest = _a[1];
                 if (!rest.startsWith('}'))
                     return;
                 return [
-                    Array.from(squash_1.squash([document.createTextNode('{')].concat(cs).concat([document.createTextNode('}')])).childNodes),
+                    __spread(squash_1.squash(__spread([document.createTextNode('{')], cs, [document.createTextNode('}')])).childNodes),
                     rest.slice(1)
                 ];
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61
         }
     ],
-    40: [
+    43: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1901,28 +2674,49 @@ require = function e(t, n, r) {
             exports.bracket = function (source) {
                 if (!source.startsWith('[') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
                         [],
                         ''
-                    ], _b = _a[0], cs = _b.slice(1), rest = _a[1];
+                    ], 2), _b = __read(_a[0]), cs = _b.slice(1), rest = _a[1];
                 if (!rest.startsWith(']'))
                     return;
                 return [
-                    Array.from(squash_1.squash([document.createTextNode('[')].concat(cs).concat([document.createTextNode(']')])).childNodes),
+                    __spread(squash_1.squash(__spread([document.createTextNode('[')], cs, [document.createTextNode(']')])).childNodes),
                     rest.slice(1)
                 ];
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61
         }
     ],
-    41: [
+    44: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1932,16 +2726,16 @@ require = function e(t, n, r) {
             exports.code = function (source) {
                 if (!source.startsWith('`'))
                     return;
-                var _a = source.match(syntax) || [
+                var _a = __read(source.match(syntax) || [
                         '',
                         ''
-                    ], whole = _a[0], keyword = _a[1];
+                    ], 2), whole = _a[0], keyword = _a[1];
                 if (!whole)
                     return;
-                var _b = loop_1.loop(combine_1.combine([unescapable_1.unescsource]), '^' + keyword)(source.slice(keyword.length)) || [
+                var _b = __read(loop_1.loop(combine_1.combine([unescapable_1.unescsource]), '^' + keyword)(source.slice(keyword.length)) || [
                         [],
                         ''
-                    ], cs = _b[0], rest = _b[1];
+                    ], 2), cs = _b[0], rest = _b[1];
                 if (!rest.startsWith(keyword))
                     return;
                 var el = document.createElement('code');
@@ -1957,15 +2751,36 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../source/unescapable': 57,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../source/unescapable': 60,
+            '../squash': 61
         }
     ],
-    42: [
+    45: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -1977,12 +2792,12 @@ require = function e(t, n, r) {
             exports.emphasis = function (source) {
                 if (!source.startsWith('*') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), function (rest) {
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), function (rest) {
                         return rest.slice(0, 99).search(closer) === 0 && !strong_1.strong(rest);
                     })(source.slice(1)) || [
                         [],
                         ''
-                    ], cs = _a[0], rest = _a[1];
+                    ], 2), cs = _a[0], rest = _a[1];
                 if (!rest.startsWith('*'))
                     return;
                 var el = document.createElement('em');
@@ -1996,14 +2811,14 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58,
-            './strong': 53
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61,
+            './strong': 56
         }
     ],
-    43: [
+    46: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2016,14 +2831,35 @@ require = function e(t, n, r) {
             ]);
         },
         {
-            '../../combinator/combine': 12,
-            './extension/index': 44,
-            './extension/placeholder': 45
+            '../../combinator/combine': 15,
+            './extension/index': 47,
+            './extension/placeholder': 48
         }
     ],
-    44: [
+    47: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var link_1 = require('../link');
             var index_1 = require('../../string/index');
@@ -2034,19 +2870,19 @@ require = function e(t, n, r) {
                 var result = link_1.link('[](#)');
                 if (!result)
                     return;
-                var el = result[0][0];
+                var _a = __read(result, 1), _b = __read(_a[0], 1), el = _b[0];
                 void el.setAttribute('href', '#' + index_1.makeIndex(query));
                 el.textContent = query;
                 return result;
             });
         },
         {
-            '../../string/index': 59,
-            '../link': 49,
-            './template': 46
+            '../../string/index': 62,
+            '../link': 52,
+            './template': 49
         }
     ],
-    45: [
+    48: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2064,15 +2900,36 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../../combinator/loop': 13,
-            '../../inline': 33,
-            '../../squash': 58,
-            './template': 46
+            '../../../combinator/loop': 16,
+            '../../inline': 36,
+            '../../squash': 61,
+            './template': 49
         }
     ],
-    46: [
+    49: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../../combinator/combine');
             var loop_1 = require('../../../combinator/loop');
@@ -2082,11 +2939,11 @@ require = function e(t, n, r) {
             var syntax = /^\[[~#:^\[][^\s\[\]][^\n]*?\]/;
             exports.template = function (parser) {
                 return function (source) {
-                    var _a = parse(source) || [
+                    var _a = __read(parse(source) || [
                             '',
                             '',
                             ''
-                        ], flag = _a[0], query = _a[1], rest = _a[2];
+                        ], 3), flag = _a[0], query = _a[1], rest = _a[2];
                     if (!flag)
                         return;
                     var result = parser(flag, query);
@@ -2105,10 +2962,10 @@ require = function e(t, n, r) {
                 if (cache.has(source))
                     return cache.get(source);
                 void cache.set(source, void 0);
-                var _a = loop_1.loop(combine_1.combine([text_1.text]), /^[\]\n]/)(source) || [
+                var _a = __read(loop_1.loop(combine_1.combine([text_1.text]), /^[\]\n]/)(source) || [
                         [],
                         source
-                    ], _b = _a[0], cs = _b.slice(1), rest = _a[1];
+                    ], 2), _b = __read(_a[0]), cs = _b.slice(1), rest = _a[1];
                 if (!rest.startsWith(']'))
                     return;
                 var txt = squash_1.squash(cs).textContent;
@@ -2122,16 +2979,37 @@ require = function e(t, n, r) {
             }
         },
         {
-            '../../../combinator/combine': 12,
-            '../../../combinator/loop': 13,
-            '../../source/text': 56,
-            '../../squash': 58,
-            'spica/cache': 4
+            '../../../combinator/combine': 15,
+            '../../../combinator/loop': 16,
+            '../../source/text': 59,
+            '../../squash': 61,
+            'spica/cache': 5
         }
     ],
-    47: [
+    50: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -2142,11 +3020,11 @@ require = function e(t, n, r) {
             exports.html = function (source) {
                 if (!source.startsWith('<'))
                     return;
-                var _a = source.match(syntax) || [
+                var _a = __read(source.match(syntax) || [
                         '',
                         '',
                         ''
-                    ], whole = _a[0], opentag = _a[1], tagname = _a[2];
+                    ], 3), whole = _a[0], opentag = _a[1], tagname = _a[2];
                 if (!whole)
                     return;
                 if (inlinetags.indexOf(tagname) === -1)
@@ -2156,10 +3034,10 @@ require = function e(t, n, r) {
                         [document.createElement(tagname)],
                         source.slice(opentag.length)
                     ];
-                var _b = loop_1.loop(combine_1.combine([inline_1.inline]), '^</' + tagname + '>')(source.slice(opentag.length)) || [
+                var _b = __read(loop_1.loop(combine_1.combine([inline_1.inline]), '^</' + tagname + '>')(source.slice(opentag.length)) || [
                         [],
                         source.slice(opentag.length)
-                    ], cs = _b[0], rest = _b[1];
+                    ], 2), cs = _b[0], rest = _b[1];
                 var el = document.createElement(tagname);
                 void el.appendChild(squash_1.squash(cs));
                 if (el.textContent.trim() === '')
@@ -2172,21 +3050,42 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61
         }
     ],
-    48: [
+    51: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var syntax = /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i;
             exports.htmlentity = function (source) {
                 if (!source.startsWith('&'))
                     return;
-                var whole = (source.match(syntax) || [''])[0];
+                var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
                     return;
                 return [
@@ -2202,9 +3101,30 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    49: [
+    52: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -2216,10 +3136,10 @@ require = function e(t, n, r) {
             exports.link = function (source) {
                 if (!source.startsWith('[') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), /^\]\n?\(|^\n/)(' ' + source.slice(1)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), /^\]\n?\(|^\n/)(' ' + source.slice(1)) || [
                         [],
                         ''
-                    ], _b = _a[0], first = _b.slice(1), next = _a[1];
+                    ], 2), _b = __read(_a[0]), first = _b.slice(1), next = _a[1];
                 if (!next.startsWith('](') && !next.startsWith(']\n('))
                     return;
                 var children = squash_1.squash(first);
@@ -2234,15 +3154,15 @@ require = function e(t, n, r) {
                     if (children.textContent !== children.textContent.trim())
                         return;
                 }
-                var _c = loop_1.loop(escapable_1.escsource, /^\)|^\s(?!nofollow)/)('$' + next.replace(/^\]\n?\(/, '')) || [
+                var _c = __read(loop_1.loop(escapable_1.escsource, /^\)|^\s(?!nofollow)/)('$' + next.replace(/^\]\n?\(/, '')) || [
                         [],
                         ''
-                    ], _d = _c[0], second = _d.slice(1), rest = _c[1];
+                    ], 2), _d = __read(_c[0]), second = _d.slice(1), rest = _c[1];
                 if (!rest.startsWith(')'))
                     return;
-                var _e = second.reduce(function (s, c) {
+                var _e = __read(second.reduce(function (s, c) {
                         return s + c.textContent;
-                    }, '').replace(/\\(.)/g, '$1').split(/\s/), INSECURE_URL = _e[0], attribute = _e[1];
+                    }, '').replace(/\\(.)/g, '$1').split(/\s/), 2), INSECURE_URL = _e[0], attribute = _e[1];
                 var url = url_1.sanitize(INSECURE_URL);
                 if (INSECURE_URL !== '' && url === '')
                     return;
@@ -2260,17 +3180,43 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../source/escapable': 55,
-            '../squash': 58,
-            '../string/url': 60
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../source/escapable': 58,
+            '../squash': 61,
+            '../string/url': 63
         }
     ],
-    50: [
+    53: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -2283,15 +3229,15 @@ require = function e(t, n, r) {
             exports.math = function (source) {
                 if (!source.startsWith('$') || source.startsWith('$$') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([escapable_1.escsource]), closer)(source.slice(1)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([escapable_1.escsource]), closer)(source.slice(1)) || [
                         [],
                         ''
-                    ], cs = _a[0], rest = _a[1];
+                    ], 2), cs = _a[0], rest = _a[1];
                 if (!rest.startsWith('$'))
                     return;
                 var el = document.createElement('span');
                 void el.setAttribute('class', 'math');
-                void el.appendChild(squash_1.squash([document.createTextNode('$')].concat(cs, [document.createTextNode('$')])));
+                void el.appendChild(squash_1.squash(__spread([document.createTextNode('$')], cs, [document.createTextNode('$')])));
                 if (el.textContent.slice(1, -1) !== el.textContent.slice(1, -1).trim())
                     return;
                 if (exports.cache.has(el.textContent))
@@ -2307,16 +3253,37 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../source/escapable': 55,
-            '../squash': 58,
-            'spica/cache': 4
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../source/escapable': 58,
+            '../squash': 61,
+            'spica/cache': 5
         }
     ],
-    51: [
+    54: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -2330,19 +3297,19 @@ require = function e(t, n, r) {
             exports.media = function (source) {
                 if (!source.startsWith('![') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([text_1.text]), /^\]\n?\(|^\n/)(source) || [
+                var _a = __read(loop_1.loop(combine_1.combine([text_1.text]), /^\]\n?\(|^\n/)(source) || [
                         [],
                         ''
-                    ], _b = _a[0], first = _b.slice(2), next = _a[1];
+                    ], 2), _b = __read(_a[0]), first = _b.slice(2), next = _a[1];
                 if (!next.startsWith('](') && !next.startsWith(']\n('))
                     return;
                 var caption = first.reduce(function (s, c) {
                     return s + c.textContent;
                 }, '').trim();
-                var _c = loop_1.loop(escapable_1.escsource, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [
+                var _c = __read(loop_1.loop(escapable_1.escsource, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [
                         [],
                         ''
-                    ], second = _c[0].slice(0), rest = _c[1];
+                    ], 2), _d = __read(_c[0]), second = _d.slice(0), rest = _c[1];
                 if (!rest.startsWith(')'))
                     return;
                 var url = url_1.sanitize(second.reduce(function (s, c) {
@@ -2366,18 +3333,44 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../source/escapable': 55,
-            '../source/text': 56,
-            '../string/url': 60,
-            'spica/cache': 4,
-            'typed-dom': 6
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../source/escapable': 58,
+            '../source/text': 59,
+            '../string/url': 63,
+            'spica/cache': 5,
+            'typed-dom': 9
         }
     ],
-    52: [
+    55: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -2388,28 +3381,49 @@ require = function e(t, n, r) {
             exports.parenthesis = function (source) {
                 if (!source.startsWith('(') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), closer)(' ' + source.slice(1)) || [
                         [],
                         ''
-                    ], _b = _a[0], cs = _b.slice(1), rest = _a[1];
+                    ], 2), _b = __read(_a[0]), cs = _b.slice(1), rest = _a[1];
                 if (!rest.startsWith(')'))
                     return;
                 return [
-                    Array.from(squash_1.squash([document.createTextNode('(')].concat(cs).concat([document.createTextNode(')')])).childNodes),
+                    __spread(squash_1.squash(__spread([document.createTextNode('(')], cs, [document.createTextNode(')')])).childNodes),
                     rest.slice(1)
                 ];
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61
         }
     ],
-    53: [
+    56: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
@@ -2420,10 +3434,10 @@ require = function e(t, n, r) {
             exports.strong = function (source) {
                 if (!source.startsWith('**') || source.search(syntax) !== 0)
                     return;
-                var _a = loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(2)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), closer)(source.slice(2)) || [
                         [],
                         ''
-                    ], cs = _a[0], rest = _a[1];
+                    ], 2), cs = _a[0], rest = _a[1];
                 if (!rest.startsWith('**'))
                     return;
                 var el = document.createElement('strong');
@@ -2437,15 +3451,36 @@ require = function e(t, n, r) {
             };
         },
         {
-            '../../combinator/combine': 12,
-            '../../combinator/loop': 13,
-            '../inline': 33,
-            '../squash': 58
+            '../../combinator/combine': 15,
+            '../../combinator/loop': 16,
+            '../inline': 36,
+            '../squash': 61
         }
     ],
-    54: [
+    57: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var pretext_1 = require('../parser/block/pretext');
             var extension_1 = require('../parser/block/extension');
@@ -2454,13 +3489,13 @@ require = function e(t, n, r) {
             function segment(source) {
                 var segments = [];
                 while (source.length > 0) {
-                    var _a = combine_1.combine([
+                    var _a = __read(combine_1.combine([
                             pretext_1.pretext,
                             extension_1.extension
                         ])(source) || [
                             [],
                             source.slice((source.match(syntax) || [source])[0].length)
-                        ], rest = _a[1];
+                        ], 2), rest = _a[1];
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
                 }
@@ -2469,12 +3504,12 @@ require = function e(t, n, r) {
             exports.segment = segment;
         },
         {
-            '../combinator/combine': 12,
-            '../parser/block/extension': 19,
-            '../parser/block/pretext': 29
+            '../combinator/combine': 15,
+            '../parser/block/extension': 22,
+            '../parser/block/pretext': 32
         }
     ],
-    55: [
+    58: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2520,7 +3555,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    56: [
+    59: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2588,7 +3623,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    57: [
+    60: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2618,29 +3653,57 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    58: [
+    61: [
         function (require, module, exports) {
             'use strict';
+            var __values = this && this.__values || function (o) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
+                if (m)
+                    return m.call(o);
+                return {
+                    next: function () {
+                        if (o && i >= o.length)
+                            o = void 0;
+                        return {
+                            value: o && o[i++],
+                            done: !o
+                        };
+                    }
+                };
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             function squash(nodes) {
                 var frag = document.createDocumentFragment();
-                for (var _i = 0, _a = Array.from(nodes); _i < _a.length; _i++) {
-                    var curr = _a[_i];
-                    var prev = frag.lastChild;
-                    if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
-                        prev.textContent += curr.textContent;
-                        curr.textContent = '';
-                    } else {
-                        void frag.appendChild(curr);
+                try {
+                    for (var nodes_1 = __values(nodes), nodes_1_1 = nodes_1.next(); !nodes_1_1.done; nodes_1_1 = nodes_1.next()) {
+                        var curr = nodes_1_1.value;
+                        var prev = frag.lastChild;
+                        if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
+                            prev.textContent += curr.textContent;
+                            curr.textContent = '';
+                        } else {
+                            void frag.appendChild(curr);
+                        }
+                    }
+                } catch (e_1_1) {
+                    e_1 = { error: e_1_1 };
+                } finally {
+                    try {
+                        if (nodes_1_1 && !nodes_1_1.done && (_a = nodes_1.return))
+                            _a.call(nodes_1);
+                    } finally {
+                        if (e_1)
+                            throw e_1.error;
                     }
                 }
                 return frag;
+                var e_1, _a;
             }
             exports.squash = squash;
         },
         {}
     ],
-    59: [
+    62: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2651,7 +3714,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    60: [
+    63: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2671,17 +3734,44 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    61: [
+    64: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var parser_1 = require('./parser');
             var segment_1 = require('../parser/segment');
+            var concat_1 = require('spica/concat');
             function bind(node) {
                 var pairs = [];
                 return function (source) {
                     var os = pairs.map(function (_a) {
-                        var s = _a[0];
+                        var _b = __read(_a, 1), s = _b[0];
                         return s;
                     });
                     if (source === os.join(''))
@@ -2698,41 +3788,42 @@ require = function e(t, n, r) {
                             break;
                     }
                     void pairs.splice(i, os.length - j - i).forEach(function (_a) {
-                        var es = _a[1];
+                        var _b = __read(_a, 2), es = _b[1];
                         return void es.forEach(function (e) {
                             return void e.remove();
                         });
                     });
                     var ref = pairs.slice(i).reduce(function (e, _a) {
-                        var es = _a[1];
+                        var _b = __read(_a, 2), es = _b[1];
                         return e || es[0];
                     }, null);
                     var ps = ns.slice(i, ns.length - j).map(function (s) {
                         return [
                             s,
-                            Array.from(parser_1.parse(s).childNodes).map(function (e) {
+                            __spread(parser_1.parse(s).childNodes).map(function (e) {
                                 return node.insertBefore(e, ref);
                             })
                         ];
                     });
-                    void pairs.splice.apply(pairs, [
+                    void pairs.splice.apply(pairs, __spread([
                         i,
                         0
-                    ].concat(ps));
+                    ], ps));
                     return ps.reduce(function (acc, _a) {
-                        var es = _a[1];
-                        return acc.concat(es);
+                        var _b = __read(_a, 2), es = _b[1];
+                        return concat_1.concat(acc, es);
                     }, []);
                 };
             }
             exports.bind = bind;
         },
         {
-            '../parser/segment': 54,
-            './parser': 62
+            '../parser/segment': 57,
+            './parser': 65,
+            'spica/concat': 6
         }
     ],
-    62: [
+    65: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2757,14 +3848,40 @@ require = function e(t, n, r) {
             exports.escape = escape;
         },
         {
-            '../combinator/loop': 13,
-            '../parser/block': 15,
-            '../parser/segment': 54
+            '../combinator/loop': 16,
+            '../parser/block': 18,
+            '../parser/segment': 57
         }
     ],
-    63: [
+    66: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var media_1 = require('./render/media');
             var code_1 = require('./render/code');
@@ -2773,7 +3890,7 @@ require = function e(t, n, r) {
                 if (opts === void 0) {
                     opts = {};
                 }
-                void [target].concat(Array.from(target.querySelectorAll('img, pre, .math'))).forEach(function (target) {
+                void __spread([target], target.querySelectorAll('img, pre, .math')).forEach(function (target) {
                     switch (true) {
                     case target.matches('img:not([src])[data-src]'): {
                             var content = media_1.media(target, opts.media);
@@ -2793,26 +3910,26 @@ require = function e(t, n, r) {
             exports.render = render;
         },
         {
-            './render/code': 64,
-            './render/math': 65,
-            './render/media': 66
+            './render/code': 67,
+            './render/math': 68,
+            './render/media': 69
         }
     ],
-    64: [
+    67: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                var prismjs_1 = typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null;
+                var Prism = typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null;
                 function code(target) {
-                    void prismjs_1.highlightElement(target, false);
+                    void Prism.highlightElement(target, false);
                 }
                 exports.code = code;
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {}
     ],
-    65: [
+    68: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2843,9 +3960,9 @@ require = function e(t, n, r) {
                 ]);
             }
         },
-        { '../../parser/inline/math': 50 }
+        { '../../parser/inline/math': 53 }
     ],
-    66: [
+    69: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2865,15 +3982,15 @@ require = function e(t, n, r) {
             exports.media = media;
         },
         {
-            './media/gist': 67,
-            './media/image': 68,
-            './media/pdf': 69,
-            './media/slideshare': 70,
-            './media/twitter': 71,
-            './media/youtube': 72
+            './media/gist': 70,
+            './media/image': 71,
+            './media/pdf': 72,
+            './media/slideshare': 73,
+            './media/twitter': 74,
+            './media/youtube': 75
         }
     ],
-    67: [
+    70: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -2927,12 +4044,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 62,
-            'spica/cache': 4,
-            'typed-dom': 6
+            '../../parser': 65,
+            'spica/cache': 5,
+            'typed-dom': 9
         }
     ],
-    68: [
+    71: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2949,11 +4066,11 @@ require = function e(t, n, r) {
             exports.image = image;
         },
         {
-            '../../../parser/inline/media': 51,
-            'typed-dom': 6
+            '../../../parser/inline/media': 54,
+            'typed-dom': 9
         }
     ],
-    69: [
+    72: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2983,11 +4100,11 @@ require = function e(t, n, r) {
             exports.pdf = pdf;
         },
         {
-            '../../parser': 62,
-            'typed-dom': 6
+            '../../parser': 65,
+            'typed-dom': 9
         }
     ],
-    70: [
+    73: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -3033,12 +4150,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 62,
-            'spica/cache': 4,
-            'typed-dom': 6
+            '../../parser': 65,
+            'spica/cache': 5,
+            'typed-dom': 9
         }
     ],
-    71: [
+    74: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -3095,12 +4212,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 62,
-            'spica/cache': 4,
-            'typed-dom': 6
+            '../../parser': 65,
+            'spica/cache': 5,
+            'typed-dom': 9
         }
     ],
-    72: [
+    75: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3120,7 +4237,7 @@ require = function e(t, n, r) {
             }
             exports.youtube = youtube;
         },
-        { 'typed-dom': 6 }
+        { 'typed-dom': 9 }
     ],
     'securemark': [
         function (require, module, exports) {
@@ -3133,7 +4250,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             __export(require('./src/export'));
         },
-        { './src/export': 14 }
+        { './src/export': 17 }
     ]
 }, {}, [
     1,
