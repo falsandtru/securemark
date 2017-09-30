@@ -77,14 +77,18 @@ require = function e(t, n, r) {
             exports.extend = template(function (key, target, source) {
                 switch (type_1.type(source[key])) {
                 case 'Array':
-                    return target[key] = exports.extend([], source[key]);
+                    switch (type_1.type(target[key])) {
+                    case 'Array':
+                        return target[key] = exports.extend([], source[key]);
+                    default:
+                        return target[key] = source[key];
+                    }
                 case 'Object':
                     switch (type_1.type(target[key])) {
-                    case 'Function':
                     case 'Object':
                         return target[key] = exports.extend(target[key], source[key]);
                     default:
-                        return target[key] = exports.extend({}, source[key]);
+                        return target[key] = source[key];
                     }
                 default:
                     return target[key] = source[key];
@@ -147,21 +151,6 @@ require = function e(t, n, r) {
     5: [
         function (require, module, exports) {
             'use strict';
-            var __values = this && this.__values || function (o) {
-                var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
-                if (m)
-                    return m.call(o);
-                return {
-                    next: function () {
-                        if (o && i >= o.length)
-                            o = void 0;
-                        return {
-                            value: o && o[i++],
-                            done: !o
-                        };
-                    }
-                };
-            };
             var __read = this && this.__read || function (o, n) {
                 var m = typeof Symbol === 'function' && o[Symbol.iterator];
                 if (!m)
@@ -187,6 +176,21 @@ require = function e(t, n, r) {
                 for (var ar = [], i = 0; i < arguments.length; i++)
                     ar = ar.concat(__read(arguments[i]));
                 return ar;
+            };
+            var __values = this && this.__values || function (o) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
+                if (m)
+                    return m.call(o);
+                return {
+                    next: function () {
+                        if (o && i >= o.length)
+                            o = void 0;
+                        return {
+                            value: o && o[i++],
+                            done: !o
+                        };
+                    }
+                };
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             var assign_1 = require('./assign');
@@ -227,12 +231,12 @@ require = function e(t, n, r) {
                         LFU: LFU
                     };
                     this.store = new Map(entries);
-                    void stats[1].concat(stats[0]).slice(LFU.length + LRU.length).forEach(function (k) {
+                    void __spread(stats[1], stats[0]).slice(LFU.length + LRU.length).forEach(function (k) {
                         return void _this.store.delete(k);
                     });
                     if (this.store.size !== LFU.length + LRU.length)
                         throw new Error('Spica: Cache: Size of stats and entries is not matched.');
-                    if (!LFU.concat(LRU).every(function (k) {
+                    if (!__spread(LFU, LRU).every(function (k) {
                             return _this.store.has(k);
                         }))
                         throw new Error('Spica: Cache: Keys of stats and entries is not matched.');
@@ -415,7 +419,10 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function type(target) {
-                return Object.prototype.toString.call(target).split(' ').pop().slice(0, -1);
+                var type = Object.prototype.toString.call(target).split(' ').pop().slice(0, -1);
+                if (typeof target !== 'object' && target instanceof Object === false || target === null)
+                    return type.toLowerCase();
+                return type;
             }
             exports.type = type;
         },
@@ -475,48 +482,45 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
+            var ElChildrenType;
+            (function (ElChildrenType) {
+                ElChildrenType.Void = 'void';
+                ElChildrenType.Text = 'text';
+                ElChildrenType.Collection = 'collection';
+                ElChildrenType.Struct = 'struct';
+            }(ElChildrenType || (ElChildrenType = {})));
             var El = function () {
                 function El(element_, children_) {
                     var _this = this;
                     this.element_ = element_;
                     this.children_ = children_;
-                    this.mode = this.children_ === void 0 ? 'void' : typeof this.children_ === 'string' ? 'text' : Array.isArray(this.children_) ? 'collection' : 'struct';
-                    this.structkeys = this.mode === 'struct' ? Object.keys(this.children_) : [];
+                    this.type = this.children_ === void 0 ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Struct;
+                    this.structkeys = this.type === 'struct' ? Object.keys(this.children_) : [];
                     this.tag;
-                    switch (this.mode) {
-                    case 'void':
+                    switch (this.type) {
+                    case ElChildrenType.Void:
                         return;
-                    case 'text':
+                    case ElChildrenType.Text:
                         void clear();
                         this.children_ = document.createTextNode('');
                         void this.element_.appendChild(this.children_);
                         this.children = children_;
                         return;
-                    case 'collection':
+                    case ElChildrenType.Collection:
                         void clear();
-                        if (element_.id) {
-                            void children_.forEach(function (_a) {
-                                var element = _a.element;
-                                return element instanceof HTMLStyleElement && void scope(element);
-                            });
-                        }
-                        this.children_ = Object.freeze([]);
+                        this.children_ = [];
                         this.children = children_;
+                        void scope(this.element_.id, this.children_);
                         return;
-                    case 'struct':
+                    case ElChildrenType.Struct:
                         void clear();
-                        if (element_.id) {
-                            void Object.keys(children_).map(function (k) {
-                                return children_[k];
-                            }).forEach(function (_a) {
-                                var element = _a.element;
-                                return element instanceof HTMLStyleElement && void scope(element);
-                            });
-                        }
-                        this.children_ = this.observe(__assign({}, children_));
+                        this.children_ = observe(this.element_, __assign({}, children_));
                         void this.structkeys.forEach(function (k) {
                             return void _this.element_.appendChild(children_[k].element);
                         });
+                        void scope(this.element_.id, this.structkeys.map(function (k) {
+                            return _this.children_[k];
+                        }));
                         return;
                     }
                     function clear() {
@@ -524,13 +528,41 @@ require = function e(t, n, r) {
                             void element_.removeChild(element_.firstChild);
                         }
                     }
-                    function scope(style) {
-                        if (!element_.id.match(/^[\w\-]+$/))
+                    function scope(id, children) {
+                        if (!id.match(/^[\w\-]+$/))
                             return;
-                        style.innerHTML = style.innerHTML.replace(/^\s*\$scope(?!\w)/gm, '#' + element_.id);
-                        void __spread(style.querySelectorAll('*')).forEach(function (el) {
-                            return void el.remove();
+                        return void children.map(function (_a) {
+                            var element = _a.element;
+                            return element;
+                        }).forEach(function (element) {
+                            return element instanceof HTMLStyleElement && void parse(element, id);
                         });
+                        function parse(style, id) {
+                            style.innerHTML = style.innerHTML.replace(/^\s*\$scope(?!\w)/gm, '#' + id);
+                            void __spread(style.querySelectorAll('*')).forEach(function (el) {
+                                return void el.remove();
+                            });
+                        }
+                    }
+                    function observe(element, children) {
+                        return Object.defineProperties(children, Object.keys(children).reduce(function (descs, key) {
+                            var current = children[key];
+                            descs[key] = {
+                                configurable: true,
+                                enumerable: true,
+                                get: function () {
+                                    return current;
+                                },
+                                set: function (newChild) {
+                                    var oldChild = current;
+                                    if (newChild === oldChild)
+                                        return;
+                                    current = newChild;
+                                    void element.replaceChild(newChild.element, oldChild.element);
+                                }
+                            };
+                            return descs;
+                        }, {}));
                     }
                 }
                 Object.defineProperty(El.prototype, 'element', {
@@ -542,8 +574,8 @@ require = function e(t, n, r) {
                 });
                 Object.defineProperty(El.prototype, 'children', {
                     get: function () {
-                        switch (this.mode) {
-                        case 'text':
+                        switch (this.type) {
+                        case ElChildrenType.Text:
                             return this.children_.data;
                         default:
                             return this.children_;
@@ -551,26 +583,24 @@ require = function e(t, n, r) {
                     },
                     set: function (children) {
                         var _this = this;
-                        switch (this.mode) {
-                        case 'void':
+                        switch (this.type) {
+                        case ElChildrenType.Void:
                             return;
-                        case 'text':
+                        case ElChildrenType.Text:
                             if (children === this.children_.data)
                                 return;
                             this.children_.data = children;
                             return;
-                        case 'collection':
+                        case ElChildrenType.Collection:
                             if (children === this.children_)
                                 return;
-                            if (!Object.isFrozen(this.children_))
-                                throw new Error('TypedHTMLElement collections cannot be updated recursively.');
                             void children.reduce(function (cs, c) {
                                 var i = cs.indexOf(c);
                                 if (i === -1)
                                     return cs;
                                 void cs.splice(i, 1);
                                 return cs;
-                            }, this.children_.slice()).forEach(function (child) {
+                            }, __spread(this.children_)).forEach(function (child) {
                                 return void child.element.remove();
                             });
                             this.children_ = [];
@@ -579,7 +609,7 @@ require = function e(t, n, r) {
                             });
                             void Object.freeze(this.children_);
                             return;
-                        case 'struct':
+                        case ElChildrenType.Struct:
                             if (children === this.children_)
                                 return;
                             void this.structkeys.forEach(function (k) {
@@ -591,27 +621,6 @@ require = function e(t, n, r) {
                     enumerable: true,
                     configurable: true
                 });
-                El.prototype.observe = function (children) {
-                    var _this = this;
-                    return Object.defineProperties(children, this.structkeys.reduce(function (descs, key) {
-                        var current = children[key];
-                        descs[key] = {
-                            configurable: true,
-                            enumerable: true,
-                            get: function () {
-                                return current;
-                            },
-                            set: function (newChild) {
-                                var oldChild = current;
-                                if (newChild === oldChild)
-                                    return;
-                                current = newChild;
-                                void _this.element_.replaceChild(newChild.element, oldChild.element);
-                            }
-                        };
-                        return descs;
-                    }, {}));
-                };
                 return El;
             }();
             exports.El = El;
