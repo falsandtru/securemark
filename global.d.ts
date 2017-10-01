@@ -1,4 +1,7 @@
 declare global {
+  interface Element {
+    cloneNode(deep?: boolean): this;
+  }
   interface HTMLObjectElement {
     typeMustMatch: boolean;
   }
