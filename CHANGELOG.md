@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.3
+
+- Fix pretext parser.
+
 ## 0.34.2
 
 - Revert local text parsing rules.
