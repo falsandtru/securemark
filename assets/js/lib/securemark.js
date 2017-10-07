@@ -1987,21 +1987,18 @@ require = function e(t, n, r) {
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             var end_1 = require('./end');
-            var syntax = /^(`{3,})([a-z]*)(?:[^\S\n]+([0-9a-zA-Z_\-.]+))?[^\S\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
+            var syntax = /^(`{3,})[^\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
             exports.pretext = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('```'))
                     return;
-                var _a = __read(source.match(syntax) || [
-                        '',
-                        '',
-                        ''
-                    ], 4), whole = _a[0], lang = _a[2], _b = _a[3], filename = _b === void 0 ? '' : _b;
+                var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
                     return;
+                var _b = __read(source.split('\n', 1)[0].match(/^(?:`{3,})([a-z]*)(?:\s+([0-9a-zA-Z_\-.]+))?(?=\s|$)/), 3), lang = _b[1], _c = _b[2], filename = _c === void 0 ? '' : _c;
                 var el = document.createElement('pre');
                 if (lang) {
                     void el.setAttribute('class', 'language-' + lang.toLowerCase());
-                    void el.setAttribute('data-lang', '' + lang.toLowerCase());
+                    void el.setAttribute('data-lang', lang.toLowerCase());
                 }
                 if (filename) {
                     void el.setAttribute('data-file', filename);
