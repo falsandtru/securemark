@@ -4026,7 +4026,7 @@ require = function e(t, n, r) {
                                 outer.innerHTML = dompurify_1.sanitize('<div style="position: relative; margin-bottom: -1em;">' + div + '</div>');
                                 var gist = outer.querySelector('.gist');
                                 void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, function () {
-                                        return parser_1.parse(parser_1.escape(url)).querySelector('a');
+                                        return parser_1.parse(parser_1.escape(url)).querySelector('a').cloneNode(true);
                                     })]).element, gist.firstChild);
                                 void cache.set(url, outer.cloneNode(true));
                                 if (document.head.querySelector('link[rel="stylesheet"][href="' + stylesheet + '"]'))
