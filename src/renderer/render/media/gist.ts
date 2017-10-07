@@ -24,7 +24,7 @@ export function gist(url: string): HTMLElement | void {
         void gist.insertBefore(
           DOM.div({ class: 'gist-description' }, [
             DOM.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, () =>
-              parse(escape(url)).querySelector('a')!),
+              parse(escape(url)).querySelector('a')!.cloneNode(true)),
           ]).element,
           gist.firstChild);
         void cache.set(url, outer.cloneNode(true) as HTMLElement);
