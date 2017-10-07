@@ -513,7 +513,7 @@ require = function e(t, n, r) {
                     case ElChildrenType.Struct:
                         void clear();
                         this.children_ = observe(this.element_, __assign({}, children_));
-                        void scope(this.element_.id, Object.values(this.children_));
+                        void scope(this.element_.id, this.children_);
                         return;
                     }
                     function clear() {
@@ -524,7 +524,7 @@ require = function e(t, n, r) {
                     function scope(id, children) {
                         if (!id.match(/^[\w\-]+$/))
                             return;
-                        return void children.map(function (_a) {
+                        return void Object.values(children).map(function (_a) {
                             var element = _a.element;
                             return element;
                         }).forEach(function (element) {
@@ -540,8 +540,8 @@ require = function e(t, n, r) {
                     function observe(element, children) {
                         return Object.defineProperties(children, Object.keys(children).reduce(function (descs, key) {
                             var current = children[key];
-                            if (current.element.parentElement)
-                                throw new Error('TypedDOM: Cannot add child used in another dom.');
+                            if (!isOrphan(current))
+                                throw new Error('TypedDOM: Cannot add a child element used in another dom.');
                             void element.appendChild(current.element);
                             descs[key] = {
                                 configurable: true,
@@ -553,8 +553,8 @@ require = function e(t, n, r) {
                                     var oldChild = current;
                                     if (newChild === oldChild)
                                         return;
-                                    if (newChild.element.parentElement)
-                                        throw new Error('TypedDOM: Cannot add child used in another dom.');
+                                    if (!isOrphan(newChild))
+                                        throw new Error('TypedDOM: Cannot add a child element used in another dom.');
                                     current = newChild;
                                     void element.replaceChild(newChild.element, oldChild.element);
                                 }
@@ -598,8 +598,8 @@ require = function e(t, n, r) {
                             }, __spread(children));
                             this.children_ = [];
                             void children.forEach(function (child, i) {
-                                if (child.element.parentElement)
-                                    throw new Error('TypedDOM: Cannot add child used in another dom.');
+                                if (!isOrphan(child))
+                                    throw new Error('TypedDOM: Cannot add a child element used in another dom.');
                                 _this.children_[i] = child;
                                 void _this.element_.appendChild(child.element);
                             });
@@ -618,6 +618,10 @@ require = function e(t, n, r) {
                 return El;
             }();
             exports.El = El;
+            function isOrphan(_a) {
+                var element = _a.element;
+                return element.parentNode === null || element.parentNode instanceof DocumentFragment;
+            }
         },
         {}
     ],
