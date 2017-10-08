@@ -489,12 +489,16 @@ require = function e(t, n, r) {
                 ElChildrenType.Collection = 'collection';
                 ElChildrenType.Struct = 'struct';
             }(ElChildrenType || (ElChildrenType = {})));
+            var memory = new WeakSet();
             var El = function () {
                 function El(element_, children_) {
                     this.element_ = element_;
                     this.children_ = children_;
                     this.type = this.children_ === void 0 ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Struct;
                     this.tag;
+                    if (memory.has(element_.parentElement))
+                        throw new Error('TypedDOM: Cannot use a child element of another typed dom.');
+                    void memory.add(element_);
                     switch (this.type) {
                     case ElChildrenType.Void:
                         return;
@@ -541,7 +545,7 @@ require = function e(t, n, r) {
                         return Object.defineProperties(children, Object.keys(children).reduce(function (descs, key) {
                             var current = children[key];
                             if (!isOrphan(current))
-                                throw new Error('TypedDOM: Cannot add a child element used in another dom.');
+                                throw new Error('TypedDOM: Cannot add a child element used in another typed dom.');
                             void element.appendChild(current.element);
                             descs[key] = {
                                 configurable: true,
@@ -554,7 +558,7 @@ require = function e(t, n, r) {
                                     if (newChild === oldChild)
                                         return;
                                     if (!isOrphan(newChild))
-                                        throw new Error('TypedDOM: Cannot add a child element used in another dom.');
+                                        throw new Error('TypedDOM: Cannot add a child element used in another typed dom.');
                                     current = newChild;
                                     void element.replaceChild(newChild.element, oldChild.element);
                                 }
@@ -599,7 +603,7 @@ require = function e(t, n, r) {
                             this.children_ = [];
                             void children.forEach(function (child, i) {
                                 if (!isOrphan(child))
-                                    throw new Error('TypedDOM: Cannot add a child element used in another dom.');
+                                    throw new Error('TypedDOM: Cannot add a child element used in another typed dom.');
                                 _this.children_[i] = child;
                                 void _this.element_.appendChild(child.element);
                             });
@@ -620,7 +624,7 @@ require = function e(t, n, r) {
             exports.El = El;
             function isOrphan(_a) {
                 var element = _a.element;
-                return element.parentNode === null || element.parentNode instanceof DocumentFragment;
+                return element.parentNode === null || element.parentNode instanceof DocumentFragment || !memory.has(element.parentElement);
             }
         },
         {}
@@ -4026,7 +4030,7 @@ require = function e(t, n, r) {
                                 outer.innerHTML = dompurify_1.sanitize('<div style="position: relative; margin-bottom: -1em;">' + div + '</div>');
                                 var gist = outer.querySelector('.gist');
                                 void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, function () {
-                                        return parser_1.parse(parser_1.escape(url)).querySelector('a').cloneNode(true);
+                                        return parser_1.parse(parser_1.escape(url)).querySelector('a');
                                     })]).element, gist.firstChild);
                                 void cache.set(url, outer.cloneNode(true));
                                 if (document.head.querySelector('link[rel="stylesheet"][href="' + stylesheet + '"]'))
@@ -4098,7 +4102,7 @@ require = function e(t, n, r) {
                             return el;
                         })]),
                     typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, function () {
-                            return parser_1.parse('**' + parser_1.escape(url) + '**').querySelector('strong').cloneNode(true);
+                            return parser_1.parse('**' + parser_1.escape(url) + '**').querySelector('strong');
                         })])
                 ]).element;
             }
