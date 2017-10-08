@@ -24,7 +24,7 @@ export function pdf(url: string): HTMLElement | void {
       DOM.strong({
         style: 'word-wrap: break-word;',
       }, () =>
-        parse(`**${escape(url)}**`).querySelector('strong')!.cloneNode(true)),
+        parse(`**${escape(url)}**`).querySelector('strong')!),
     ]),
   ]).element;
 }
