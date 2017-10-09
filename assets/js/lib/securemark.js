@@ -496,8 +496,7 @@ require = function e(t, n, r) {
                     this.children_ = children_;
                     this.type = this.children_ === void 0 ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Struct;
                     this.tag;
-                    if (memory.has(element_.parentElement))
-                        throw new Error('TypedDOM: Cannot use a child element of another typed dom.');
+                    void throwErrorIfNotUsable(this);
                     void memory.add(element_);
                     switch (this.type) {
                     case ElChildrenType.Void:
@@ -542,24 +541,22 @@ require = function e(t, n, r) {
                         }
                     }
                     function observe(element, children) {
-                        return Object.defineProperties(children, Object.keys(children).reduce(function (descs, key) {
-                            var current = children[key];
-                            if (!isOrphan(current))
-                                throw new Error('TypedDOM: Cannot add a child element used in another typed dom.');
-                            void element.appendChild(current.element);
-                            descs[key] = {
+                        return Object.defineProperties(children, Object.entries(children).reduce(function (descs, _a) {
+                            var _b = __read(_a, 2), name = _b[0], child = _b[1];
+                            void throwErrorIfNotUsable(child);
+                            void element.appendChild(child.element);
+                            descs[name] = {
                                 configurable: true,
                                 enumerable: true,
                                 get: function () {
-                                    return current;
+                                    return child;
                                 },
                                 set: function (newChild) {
-                                    var oldChild = current;
+                                    var oldChild = child;
                                     if (newChild === oldChild)
                                         return;
-                                    if (!isOrphan(newChild))
-                                        throw new Error('TypedDOM: Cannot add a child element used in another typed dom.');
-                                    current = newChild;
+                                    newChild.element_.parentElement === element || void throwErrorIfNotUsable(newChild);
+                                    child = newChild;
                                     void element.replaceChild(newChild.element, oldChild.element);
                                 }
                             };
@@ -602,8 +599,7 @@ require = function e(t, n, r) {
                             }, __spread(children));
                             this.children_ = [];
                             void children.forEach(function (child, i) {
-                                if (!isOrphan(child))
-                                    throw new Error('TypedDOM: Cannot add a child element used in another typed dom.');
+                                child.element_.parentElement === _this.element_ || void throwErrorIfNotUsable(child);
                                 _this.children_[i] = child;
                                 void _this.element_.appendChild(child.element);
                             });
@@ -622,9 +618,11 @@ require = function e(t, n, r) {
                 return El;
             }();
             exports.El = El;
-            function isOrphan(_a) {
+            function throwErrorIfNotUsable(_a) {
                 var element = _a.element;
-                return element.parentNode === null || element.parentNode instanceof DocumentFragment || !memory.has(element.parentElement);
+                if (element.parentElement === null || !memory.has(element.parentElement))
+                    return;
+                throw new Error('TypedDOM: Cannot add an element used in another typed dom.');
             }
         },
         {}
