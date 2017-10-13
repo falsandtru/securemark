@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.4
+
+- Improve error messages.
+
 ## 0.34.3
 
 - Fix pretext parser.

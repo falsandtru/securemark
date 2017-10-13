@@ -26,8 +26,9 @@ export function slideshare(url: string): HTMLElement | void {
         void outer.lastElementChild!.removeAttribute('style');
         void cache.set(url, outer.cloneNode(true) as HTMLElement);
       },
-      error({ statusText }) {
-        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${escape(statusText)}*`).querySelector('p')!.innerHTML;
+      error({ status, statusText }) {
+        assert(Number.isSafeInteger(status));
+        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;

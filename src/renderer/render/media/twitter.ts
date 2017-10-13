@@ -41,8 +41,9 @@ export function twitter(url: string): HTMLElement | void {
           cache: true,
         });
       },
-      error({ statusText }) {
-        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${escape(statusText)}*`).querySelector('p')!.innerHTML;
+      error({ status, statusText }) {
+        assert(Number.isSafeInteger(status));
+        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;

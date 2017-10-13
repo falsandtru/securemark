@@ -35,8 +35,9 @@ export function gist(url: string): HTMLElement | void {
           crossorigin: 'anonymous',
         }).element);
       },
-      error({ statusText }) {
-        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${escape(statusText)}*`).querySelector('p')!.innerHTML;
+      error({ status, statusText }) {
+        assert(Number.isSafeInteger(status));
+        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;
