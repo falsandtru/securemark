@@ -4040,8 +4040,8 @@ require = function e(t, n, r) {
                                 }).element);
                             },
                             error: function (_a) {
-                                var statusText = _a.statusText;
-                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
+                                var status = _a.status, statusText = _a.statusText;
+                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + status + ': ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -4146,8 +4146,8 @@ require = function e(t, n, r) {
                                 void cache.set(url, outer.cloneNode(true));
                             },
                             error: function (_a) {
-                                var statusText = _a.statusText;
-                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
+                                var status = _a.status, statusText = _a.statusText;
+                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + status + ': ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -4208,8 +4208,8 @@ require = function e(t, n, r) {
                                 });
                             },
                             error: function (_a) {
-                                var statusText = _a.statusText;
-                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
+                                var status = _a.status, statusText = _a.statusText;
+                                outer.innerHTML = parser_1.parse('*' + parser_1.escape(url) + '\\\n-> ' + status + ': ' + parser_1.escape(statusText) + '*').querySelector('p').innerHTML;
                             }
                         });
                         return outer;
