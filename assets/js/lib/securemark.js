@@ -630,138 +630,219 @@ require = function e(t, n, r) {
     11: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var builder_1 = require('./builder');
-            exports.TypedHTML = [
-                'a',
-                'applet',
-                'area',
-                'audio',
-                'base',
-                'basefont',
-                'blockquote',
-                'body',
-                'br',
-                'button',
-                'canvas',
-                'caption',
-                'col',
-                'colgroup',
-                'data',
-                'datalist',
-                'del',
-                'dir',
-                'div',
-                'dl',
-                'embed',
-                'fieldset',
-                'font',
-                'form',
-                'frame',
-                'frameset',
-                'h1',
-                'h2',
-                'h3',
-                'h4',
-                'h5',
-                'h6',
-                'head',
-                'hr',
-                'html',
-                'iframe',
-                'img',
-                'input',
-                'ins',
-                'isindex',
-                'label',
-                'legend',
-                'li',
-                'link',
-                'listing',
-                'map',
-                'marquee',
-                'menu',
-                'meta',
-                'meter',
-                'nextid',
-                'object',
-                'ol',
-                'optgroup',
-                'option',
-                'output',
-                'p',
-                'param',
-                'picture',
-                'pre',
-                'progress',
-                'q',
-                'script',
-                'select',
-                'source',
-                'span',
-                'style',
-                'table',
-                'tbody',
-                'td',
-                'template',
-                'textarea',
-                'tfoot',
-                'th',
-                'thead',
-                'time',
-                'title',
-                'tr',
-                'track',
-                'ul',
-                'video',
-                'x-ms-webview',
-                'xmp',
-                'abbr',
-                'acronym',
-                'address',
-                'article',
-                'aside',
-                'b',
-                'bdo',
-                'big',
-                'center',
-                'cite',
-                'code',
-                'dd',
-                'dfn',
-                'dt',
-                'em',
-                'figcaption',
-                'figure',
-                'footer',
-                'header',
-                'hgroup',
-                'i',
-                'kbd',
-                'keygen',
-                'mark',
-                'nav',
-                'nobr',
-                'noframes',
-                'noscript',
-                'plaintext',
-                'rt',
-                'ruby',
-                's',
-                'samp',
-                'section',
-                'small',
-                'strike',
-                'strong',
-                'sub',
-                'sup',
-                'tt',
-                'u',
-                'var',
-                'wbr',
+            exports.tags = {
+                'a': 0,
+                'applet': 0,
+                'area': 0,
+                'audio': 0,
+                'base': 0,
+                'basefont': 0,
+                'blockquote': 0,
+                'body': 0,
+                'br': 0,
+                'button': 0,
+                'canvas': 0,
+                'caption': 0,
+                'col': 0,
+                'colgroup': 0,
+                'data': 0,
+                'datalist': 0,
+                'del': 0,
+                'dir': 0,
+                'div': 0,
+                'dl': 0,
+                'embed': 0,
+                'fieldset': 0,
+                'font': 0,
+                'form': 0,
+                'frame': 0,
+                'frameset': 0,
+                'h1': 0,
+                'h2': 0,
+                'h3': 0,
+                'h4': 0,
+                'h5': 0,
+                'h6': 0,
+                'head': 0,
+                'hr': 0,
+                'html': 0,
+                'iframe': 0,
+                'img': 0,
+                'input': 0,
+                'ins': 0,
+                'isindex': 0,
+                'label': 0,
+                'legend': 0,
+                'li': 0,
+                'link': 0,
+                'listing': 0,
+                'map': 0,
+                'marquee': 0,
+                'menu': 0,
+                'meta': 0,
+                'meter': 0,
+                'nextid': 0,
+                'object': 0,
+                'ol': 0,
+                'optgroup': 0,
+                'option': 0,
+                'output': 0,
+                'p': 0,
+                'param': 0,
+                'picture': 0,
+                'pre': 0,
+                'progress': 0,
+                'q': 0,
+                'script': 0,
+                'select': 0,
+                'source': 0,
+                'span': 0,
+                'style': 0,
+                'table': 0,
+                'tbody': 0,
+                'td': 0,
+                'template': 0,
+                'textarea': 0,
+                'tfoot': 0,
+                'th': 0,
+                'thead': 0,
+                'time': 0,
+                'title': 0,
+                'tr': 0,
+                'track': 0,
+                'ul': 0,
+                'video': 0,
+                'x-ms-webview': 0,
+                'xmp': 0,
+                'abbr': 0,
+                'acronym': 0,
+                'address': 0,
+                'article': 0,
+                'aside': 0,
+                'b': 0,
+                'bdo': 0,
+                'big': 0,
+                'center': 0,
+                'circle': 0,
+                'cite': 0,
+                'clippath': 0,
+                'code': 0,
+                'dd': 0,
+                'defs': 0,
+                'desc': 0,
+                'dfn': 0,
+                'dt': 0,
+                'ellipse': 0,
+                'em': 0,
+                'feblend': 0,
+                'fecolormatrix': 0,
+                'fecomponenttransfer': 0,
+                'fecomposite': 0,
+                'feconvolvematrix': 0,
+                'fediffuselighting': 0,
+                'fedisplacementmap': 0,
+                'fedistantlight': 0,
+                'feflood': 0,
+                'fefunca': 0,
+                'fefuncb': 0,
+                'fefuncg': 0,
+                'fefuncr': 0,
+                'fegaussianblur': 0,
+                'feimage': 0,
+                'femerge': 0,
+                'femergenode': 0,
+                'femorphology': 0,
+                'feoffset': 0,
+                'fepointlight': 0,
+                'fespecularlighting': 0,
+                'fespotlight': 0,
+                'fetile': 0,
+                'feturbulence': 0,
+                'figcaption': 0,
+                'figure': 0,
+                'filter': 0,
+                'footer': 0,
+                'foreignobject': 0,
+                'g': 0,
+                'header': 0,
+                'hgroup': 0,
+                'i': 0,
+                'image': 0,
+                'kbd': 0,
+                'keygen': 0,
+                'line': 0,
+                'lineargradient': 0,
+                'mark': 0,
+                'marker': 0,
+                'mask': 0,
+                'metadata': 0,
+                'nav': 0,
+                'nobr': 0,
+                'noframes': 0,
+                'noscript': 0,
+                'path': 0,
+                'pattern': 0,
+                'plaintext': 0,
+                'polygon': 0,
+                'polyline': 0,
+                'radialgradient': 0,
+                'rect': 0,
+                'rt': 0,
+                'ruby': 0,
+                's': 0,
+                'samp': 0,
+                'section': 0,
+                'small': 0,
+                'stop': 0,
+                'strike': 0,
+                'strong': 0,
+                'sub': 0,
+                'sup': 0,
+                'svg': 0,
+                'switch': 0,
+                'symbol': 0,
+                'text': 0,
+                'textpath': 0,
+                'tspan': 0,
+                'tt': 0,
+                'u': 0,
+                'use': 0,
+                'var': 0,
+                'view': 0,
+                'wbr': 0
+            };
+            exports.TypedHTML = __spread(Object.keys(exports.tags), [
                 'create',
                 'any'
-            ].reduce(function (obj, prop) {
+            ]).reduce(function (obj, prop) {
                 return obj[prop] = prop === 'create' ? function (tag, b, c, d) {
                     if (b === void 0) {
                         b = function () {
@@ -881,6 +962,26 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var noop_1 = require('./noop');
             exports.currentTargets = new WeakMap();
+            function listen(target, a, b, c, d) {
+                if (c === void 0) {
+                    c = false;
+                }
+                if (d === void 0) {
+                    d = {};
+                }
+                return typeof b === 'string' ? delegate(target, a, b, c, d) : bind(target, a, b, c);
+            }
+            exports.listen = listen;
+            function once(target, a, b, c, d) {
+                if (c === void 0) {
+                    c = false;
+                }
+                if (d === void 0) {
+                    d = {};
+                }
+                return typeof b === 'string' ? delegate(target, a, b, c, __assign({}, typeof d === 'boolean' ? { capture: d } : d, { once: true })) : bind(target, a, b, __assign({}, typeof c === 'boolean' ? { capture: c } : c, { once: true }));
+            }
+            exports.once = once;
             function bind(target, type, listener, option) {
                 if (option === void 0) {
                     option = false;
@@ -893,27 +994,22 @@ require = function e(t, n, r) {
                     return void unbind();
                 };
                 function handler(ev) {
-                    if (typeof option === 'object' && option.passive) {
-                        ev.preventDefault = noop_1.noop;
+                    if (typeof option === 'object') {
+                        if (option.passive) {
+                            ev.preventDefault = noop_1.noop;
+                        }
+                        if (option.once) {
+                            void unbind();
+                        }
                     }
                     void exports.currentTargets.set(ev, ev.currentTarget);
                     void listener(ev);
                 }
+                function adjustEventListenerOptions(option) {
+                    return supportEventListenerOptions ? option : typeof option === 'boolean' ? option : !!option.capture;
+                }
             }
             exports.bind = bind;
-            function once(target, type, listener, option) {
-                if (option === void 0) {
-                    option = false;
-                }
-                var unbind = bind(target, type, function (ev) {
-                    void unbind();
-                    void listener(ev);
-                }, option);
-                return function () {
-                    return void unbind();
-                };
-            }
-            exports.once = once;
             function delegate(target, selector, type, listener, option) {
                 if (option === void 0) {
                     option = {};
@@ -941,9 +1037,6 @@ require = function e(t, n, r) {
                     }
                 });
             } catch (e) {
-            }
-            function adjustEventListenerOptions(option) {
-                return supportEventListenerOptions ? option : typeof option === 'boolean' ? option : option.capture;
             }
         },
         { './noop': 14 }
