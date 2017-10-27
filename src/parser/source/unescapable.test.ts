@@ -7,7 +7,7 @@ describe('Unit: parser/source/unescapable', () => {
     const parser = loop(unescsource);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
     });
 
     it('ab', () => {

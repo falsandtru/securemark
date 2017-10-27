@@ -7,9 +7,9 @@ describe('Unit: parser/block/newline', () => {
     const parser = loop(newline);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser(' ')), void 0);
-      assert.deepStrictEqual(inspect(parser('a')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser(' ')), undefined);
+      assert.deepStrictEqual(inspect(parser('a')), undefined);
     });
 
     it('valid', () => {

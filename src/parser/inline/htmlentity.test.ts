@@ -7,21 +7,21 @@ describe('Unit: parser/inline/htmlentity', () => {
     const parser = loop(htmlentity);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('&')), void 0);
-      assert.deepStrictEqual(inspect(parser('&amp')), void 0);
-      assert.deepStrictEqual(inspect(parser('&;')), void 0);
-      assert.deepStrictEqual(inspect(parser('& ;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&\n;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&#;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&#g;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&#x;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&#-1;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&&amp;;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&*&amp*')), void 0);
-      assert.deepStrictEqual(inspect(parser('&<;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&<>;')), void 0);
-      assert.deepStrictEqual(inspect(parser('&>;')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('&')), undefined);
+      assert.deepStrictEqual(inspect(parser('&amp')), undefined);
+      assert.deepStrictEqual(inspect(parser('&;')), undefined);
+      assert.deepStrictEqual(inspect(parser('& ;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&\n;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#g;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#x;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#-1;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&&amp;;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&*&amp*')), undefined);
+      assert.deepStrictEqual(inspect(parser('&<;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&<>;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&>;')), undefined);
     });
 
     it('entity', () => {

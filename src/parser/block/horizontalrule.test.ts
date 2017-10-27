@@ -7,13 +7,13 @@ describe('Unit: parser/block/horizontalrule', () => {
     const parser = loop(horizontalrule);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('-')), void 0);
-      assert.deepStrictEqual(inspect(parser('--')), void 0);
-      assert.deepStrictEqual(inspect(parser('--\n-')), void 0);
-      assert.deepStrictEqual(inspect(parser('---\na')), void 0);
-      assert.deepStrictEqual(inspect(parser('***')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('-')), undefined);
+      assert.deepStrictEqual(inspect(parser('--')), undefined);
+      assert.deepStrictEqual(inspect(parser('--\n-')), undefined);
+      assert.deepStrictEqual(inspect(parser('---\na')), undefined);
+      assert.deepStrictEqual(inspect(parser('***')), undefined);
     });
 
     it('valid', () => {

@@ -7,15 +7,15 @@ describe('Unit: parser/block/table', () => {
     const parser = loop(table);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('|')), void 0);
-      assert.deepStrictEqual(inspect(parser('||')), void 0);
-      assert.deepStrictEqual(inspect(parser('|h')), void 0);
-      assert.deepStrictEqual(inspect(parser('|h|')), void 0);
-      assert.deepStrictEqual(inspect(parser('|h|\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('|h|\n|')), void 0);
-      assert.deepStrictEqual(inspect(parser('|h|\n||')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('|')), undefined);
+      assert.deepStrictEqual(inspect(parser('||')), undefined);
+      assert.deepStrictEqual(inspect(parser('|h')), undefined);
+      assert.deepStrictEqual(inspect(parser('|h|')), undefined);
+      assert.deepStrictEqual(inspect(parser('|h|\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('|h|\n|')), undefined);
+      assert.deepStrictEqual(inspect(parser('|h|\n||')), undefined);
     });
 
     it('valid', () => {

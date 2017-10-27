@@ -7,18 +7,18 @@ describe('Unit: parser/block/math', () => {
     const parser = loop(math);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$\n$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$\na$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$ a\n$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$\n\n$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$\n\n\n$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$\na\n\n$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$\n\na\n$$')), void 0);
-      assert.deepStrictEqual(inspect(parser(' $$\na\n$$')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\n$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\na$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$ a\n$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\n\n$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\n\n\n$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\na\n\n$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\n\na\n$$')), undefined);
+      assert.deepStrictEqual(inspect(parser(' $$\na\n$$')), undefined);
     });
 
     it('ab', () => {

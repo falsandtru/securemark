@@ -7,18 +7,18 @@ describe('Unit: parser/inline/extension/placeholder', () => {
     const parser = loop(placeholder);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('[]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[a]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[ab]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[:]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[: a]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[:a ]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[:a\nb]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[:a\\\nb]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[][]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[:]]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[:][]')), void 0);
-      assert.deepStrictEqual(inspect(parser('[:][:]')), void 0);
+      assert.deepStrictEqual(inspect(parser('[]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[a]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[ab]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[: a]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:a ]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:a\nb]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:a\\\nb]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[][]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:][]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:][:]')), undefined);
     });
 
     it('ab', () => {

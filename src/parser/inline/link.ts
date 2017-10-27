@@ -26,7 +26,7 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
   const [[, ...second], rest] = loop(escsource, /^\)|^\s(?!nofollow)/)(`$${next.replace(/^\]\n?\(/, '')}`) || [[], ''];
   if (!rest.startsWith(')')) return;
   const [INSECURE_URL, attribute] = second.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1').split(/\s/);
-  assert(attribute === void 0 || attribute === 'nofollow');
+  assert(attribute === undefined || attribute === 'nofollow');
   const url = sanitize(INSECURE_URL);
   assert(url === url.trim());
   if (INSECURE_URL !== '' && url === '') return;

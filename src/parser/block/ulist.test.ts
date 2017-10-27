@@ -7,21 +7,21 @@ describe('Unit: parser/block/ulist', () => {
     const parser = loop(ulist);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('--')), void 0);
-      assert.deepStrictEqual(inspect(parser('-0')), void 0);
-      assert.deepStrictEqual(inspect(parser('-a')), void 0);
-      assert.deepStrictEqual(inspect(parser('-[]')), void 0);
-      assert.deepStrictEqual(inspect(parser('-[ ]')), void 0);
-      assert.deepStrictEqual(inspect(parser('-[x]')), void 0);
-      assert.deepStrictEqual(inspect(parser('-\n*')), void 0);
-      assert.deepStrictEqual(inspect(parser('-\n0')), void 0);
-      assert.deepStrictEqual(inspect(parser('-\n -')), void 0);
-      assert.deepStrictEqual(inspect(parser('-\n -\n 0')), void 0);
-      assert.deepStrictEqual(inspect(parser('- 0\n  - 0\n - 0')), void 0);
-      assert.deepStrictEqual(inspect(parser(' -')), void 0);
-      assert.deepStrictEqual(inspect(parser('-\n+')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('--')), undefined);
+      assert.deepStrictEqual(inspect(parser('-0')), undefined);
+      assert.deepStrictEqual(inspect(parser('-a')), undefined);
+      assert.deepStrictEqual(inspect(parser('-[]')), undefined);
+      assert.deepStrictEqual(inspect(parser('-[ ]')), undefined);
+      assert.deepStrictEqual(inspect(parser('-[x]')), undefined);
+      assert.deepStrictEqual(inspect(parser('-\n*')), undefined);
+      assert.deepStrictEqual(inspect(parser('-\n0')), undefined);
+      assert.deepStrictEqual(inspect(parser('-\n -')), undefined);
+      assert.deepStrictEqual(inspect(parser('-\n -\n 0')), undefined);
+      assert.deepStrictEqual(inspect(parser('- 0\n  - 0\n - 0')), undefined);
+      assert.deepStrictEqual(inspect(parser(' -')), undefined);
+      assert.deepStrictEqual(inspect(parser('-\n+')), undefined);
     });
 
     it('single', () => {

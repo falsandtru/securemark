@@ -7,7 +7,7 @@ describe('Unit: parser/inline', () => {
     const parser = loop(inline);
 
     it('empty', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
     });
 
     it('nest', () => {

@@ -7,15 +7,15 @@ describe('Unit: parser/block/blockquote', () => {
     const parser = loop(blockquote);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('>')), void 0);
-      assert.deepStrictEqual(inspect(parser('>a')), void 0);
-      assert.deepStrictEqual(inspect(parser('> ')), void 0);
-      assert.deepStrictEqual(inspect(parser('> a\n>>')), void 0);
-      assert.deepStrictEqual(inspect(parser(' >')), void 0);
-      assert.deepStrictEqual(inspect(parser(' >a')), void 0);
-      assert.deepStrictEqual(inspect(parser('>>')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('>')), undefined);
+      assert.deepStrictEqual(inspect(parser('>a')), undefined);
+      assert.deepStrictEqual(inspect(parser('> ')), undefined);
+      assert.deepStrictEqual(inspect(parser('> a\n>>')), undefined);
+      assert.deepStrictEqual(inspect(parser(' >')), undefined);
+      assert.deepStrictEqual(inspect(parser(' >a')), undefined);
+      assert.deepStrictEqual(inspect(parser('>>')), undefined);
     });
 
     it('ab', () => {
@@ -48,9 +48,9 @@ describe('Unit: parser/block/blockquote', () => {
     });
 
     it('markdown', () => {
-      assert.deepStrictEqual(inspect(parser('|')), void 0);
-      assert.deepStrictEqual(inspect(parser('|>')), void 0);
-      assert.deepStrictEqual(inspect(parser('|> ')), void 0);
+      assert.deepStrictEqual(inspect(parser('|')), undefined);
+      assert.deepStrictEqual(inspect(parser('|>')), undefined);
+      assert.deepStrictEqual(inspect(parser('|> ')), undefined);
       assert.deepStrictEqual(inspect(parser('|> a')), [['<blockquote><p>a</p></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('|>  a \n b  c ')), [['<blockquote><p>a   b  c</p></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('|> a\\\nb')), [['<blockquote><p>a<br>b</p></blockquote>'], '']);

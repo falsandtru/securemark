@@ -7,10 +7,10 @@ describe('Unit: parser/inline/parenthesis', () => {
     const parser = loop(parenthesis);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('(')), void 0);
-      assert.deepStrictEqual(inspect(parser('(\\)')), void 0);
-      assert.deepStrictEqual(inspect(parser('a(a)')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('(')), undefined);
+      assert.deepStrictEqual(inspect(parser('(\\)')), undefined);
+      assert.deepStrictEqual(inspect(parser('a(a)')), undefined);
     });
 
     it('empty', () => {

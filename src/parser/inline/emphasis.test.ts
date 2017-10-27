@@ -7,14 +7,14 @@ describe('Unit: parser/inline/emphasis', () => {
     const parser = loop(emphasis);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('*')), void 0);
-      assert.deepStrictEqual(inspect(parser('**')), void 0);
-      assert.deepStrictEqual(inspect(parser('* *')), void 0);
-      assert.deepStrictEqual(inspect(parser('*\n*')), void 0);
-      assert.deepStrictEqual(inspect(parser('*<wbr>*')), void 0);
-      assert.deepStrictEqual(inspect(parser('**a**')), void 0);
-      assert.deepStrictEqual(inspect(parser('a*a*')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('*')), undefined);
+      assert.deepStrictEqual(inspect(parser('**')), undefined);
+      assert.deepStrictEqual(inspect(parser('* *')), undefined);
+      assert.deepStrictEqual(inspect(parser('*\n*')), undefined);
+      assert.deepStrictEqual(inspect(parser('*<wbr>*')), undefined);
+      assert.deepStrictEqual(inspect(parser('**a**')), undefined);
+      assert.deepStrictEqual(inspect(parser('a*a*')), undefined);
     });
 
     it('ab', () => {

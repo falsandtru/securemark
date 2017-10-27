@@ -7,18 +7,18 @@ describe('Unit: parser/block/dlist', () => {
     const parser = loop(dlist);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('~~')), void 0);
-      assert.deepStrictEqual(inspect(parser('~0')), void 0);
-      assert.deepStrictEqual(inspect(parser('~a')), void 0);
-      assert.deepStrictEqual(inspect(parser('~')), void 0);
-      assert.deepStrictEqual(inspect(parser('~:')), void 0);
-      assert.deepStrictEqual(inspect(parser('~a:b')), void 0);
-      assert.deepStrictEqual(inspect(parser('~a\n:b')), void 0);
-      assert.deepStrictEqual(inspect(parser('~a\n: b')), void 0);
-      assert.deepStrictEqual(inspect(parser(' ')), void 0);
-      assert.deepStrictEqual(inspect(parser(' ~')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~0')), undefined);
+      assert.deepStrictEqual(inspect(parser('~a')), undefined);
+      assert.deepStrictEqual(inspect(parser('~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~:')), undefined);
+      assert.deepStrictEqual(inspect(parser('~a:b')), undefined);
+      assert.deepStrictEqual(inspect(parser('~a\n:b')), undefined);
+      assert.deepStrictEqual(inspect(parser('~a\n: b')), undefined);
+      assert.deepStrictEqual(inspect(parser(' ')), undefined);
+      assert.deepStrictEqual(inspect(parser(' ~')), undefined);
     });
 
     it('single', () => {

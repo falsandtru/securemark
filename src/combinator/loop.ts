@@ -28,6 +28,6 @@ export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, unti
     if (rest.length === source.length) return;
     return !until || check(rest)
       ? [results, rest]
-      : void 0;
+      : undefined;
   };
 }

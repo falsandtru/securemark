@@ -7,7 +7,7 @@ describe('Unit: parser/text/text', () => {
     const parser = loop(text);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
     });
 
     it('ab', () => {

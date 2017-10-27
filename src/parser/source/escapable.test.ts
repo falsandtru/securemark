@@ -7,7 +7,7 @@ describe('Unit: parser/source/escsource', () => {
     const parser = loop(escsource);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
     });
 
     it('ab', () => {

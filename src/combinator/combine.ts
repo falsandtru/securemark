@@ -17,6 +17,6 @@ export function combine<P extends Parser<R, any>[], R>(parsers: P): Parser<R, P>
     }
     return rest.length < source.length
       ? [results, rest]
-      : void 0;
+      : undefined;
   };
 }

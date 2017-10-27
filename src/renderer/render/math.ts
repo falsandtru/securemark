@@ -10,6 +10,6 @@ export function math(target: HTMLElement): void {
     void cache.set(expr, target.cloneNode(true) as HTMLElement));
 }
 
-function queue(target: HTMLElement, callback = () => void 0): void {
+function queue(target: HTMLElement, callback = () => undefined): void {
   void MathJax.Hub.Queue(['Typeset', MathJax.Hub, target, callback]);
 }

@@ -7,16 +7,16 @@ describe('Unit: parser/inline/annotation', () => {
     const parser = loop(annotation);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('(')), void 0);
-      assert.deepStrictEqual(inspect(parser('((')), void 0);
-      assert.deepStrictEqual(inspect(parser('()')), void 0);
-      assert.deepStrictEqual(inspect(parser('(())')), void 0);
-      assert.deepStrictEqual(inspect(parser('(( ))')), void 0);
-      assert.deepStrictEqual(inspect(parser('((\n))')), void 0);
-      assert.deepStrictEqual(inspect(parser('((\\))')), void 0);
-      assert.deepStrictEqual(inspect(parser('((<wbr>))')), void 0);
-      assert.deepStrictEqual(inspect(parser('a((a))')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('(')), undefined);
+      assert.deepStrictEqual(inspect(parser('((')), undefined);
+      assert.deepStrictEqual(inspect(parser('()')), undefined);
+      assert.deepStrictEqual(inspect(parser('(())')), undefined);
+      assert.deepStrictEqual(inspect(parser('(( ))')), undefined);
+      assert.deepStrictEqual(inspect(parser('((\n))')), undefined);
+      assert.deepStrictEqual(inspect(parser('((\\))')), undefined);
+      assert.deepStrictEqual(inspect(parser('((<wbr>))')), undefined);
+      assert.deepStrictEqual(inspect(parser('a((a))')), undefined);
     });
 
     it('ab', () => {

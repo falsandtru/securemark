@@ -25,7 +25,7 @@ const cache = new Cache<string, [string, string, string] | undefined>(9);
 function parse(source: string): [string, string, string] | undefined {
   if (!source.startsWith('[') || source.search(syntax) !== 0) return;
   if (cache.has(source)) return cache.get(source);
-  void cache.set(source, void 0);
+  void cache.set(source, undefined);
   const [[, ...cs], rest] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^[\]\n]/)(source) || [[], source];
   if (!rest.startsWith(']')) return;
   const txt = squash(cs).textContent!;

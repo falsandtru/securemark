@@ -7,16 +7,16 @@ describe('Unit: parser/block/heading', () => {
     const parser = loop(heading);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('#')), void 0);
-      assert.deepStrictEqual(inspect(parser('# ')), void 0);
-      assert.deepStrictEqual(inspect(parser('#\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('#a\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('#a \n')), void 0);
-      assert.deepStrictEqual(inspect(parser('#a\n#')), void 0);
-      assert.deepStrictEqual(inspect(parser('# a []\n()')), void 0);
-      assert.deepStrictEqual(inspect(parser('####### a')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('#')), undefined);
+      assert.deepStrictEqual(inspect(parser('# ')), undefined);
+      assert.deepStrictEqual(inspect(parser('#\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('#a\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('#a \n')), undefined);
+      assert.deepStrictEqual(inspect(parser('#a\n#')), undefined);
+      assert.deepStrictEqual(inspect(parser('# a []\n()')), undefined);
+      assert.deepStrictEqual(inspect(parser('####### a')), undefined);
     });
 
     it('ab', () => {

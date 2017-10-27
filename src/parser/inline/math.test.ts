@@ -7,21 +7,21 @@ describe('Unit: parser/inline/math', () => {
     const parser = loop(math);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$ $')), void 0);
-      assert.deepStrictEqual(inspect(parser('$ a$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$a $')), void 0);
-      assert.deepStrictEqual(inspect(parser('$ a $')), void 0);
-      assert.deepStrictEqual(inspect(parser('$\n$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$a\nb$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$a\\\nb$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$a$0')), void 0);
-      assert.deepStrictEqual(inspect(parser('$$a$$')), void 0);
-      assert.deepStrictEqual(inspect(parser('a$a$')), void 0);
-      assert.deepStrictEqual(inspect(parser('$0-$1')), void 0);
-      assert.deepStrictEqual(inspect(parser('$0 - $1')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$ $')), undefined);
+      assert.deepStrictEqual(inspect(parser('$ a$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$a $')), undefined);
+      assert.deepStrictEqual(inspect(parser('$ a $')), undefined);
+      assert.deepStrictEqual(inspect(parser('$\n$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$a\nb$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$a\\\nb$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$a$0')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$a$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('a$a$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$0-$1')), undefined);
+      assert.deepStrictEqual(inspect(parser('$0 - $1')), undefined);
     });
 
     it('ab', () => {

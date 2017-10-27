@@ -25,5 +25,5 @@ export const html: HTMLParser = function (source: string): Result<HTMLElement, S
   const closetag = `</${tagname}>`;
   return rest.slice(0, closetag.length) === closetag
     ? [[el], rest.slice(closetag.length)]
-    : void 0;
+    : undefined;
 };

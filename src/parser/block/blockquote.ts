@@ -13,7 +13,7 @@ type SubParsers = [UnescapableSourceParser] | [BlockParser];
 const syntax = /^>+(?=\s|$)/;
 
 export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: string): Result<HTMLQuoteElement, SubParsers> {
-  const mode = void 0
+  const mode = undefined
     || source.startsWith('>') && 'plain'
     || source.startsWith('|>') && 'markdown'
     || '';

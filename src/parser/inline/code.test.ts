@@ -7,15 +7,15 @@ describe('Unit: parser/inline/code', () => {
     const parser = loop(code);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('`')), void 0);
-      assert.deepStrictEqual(inspect(parser('``')), void 0);
-      assert.deepStrictEqual(inspect(parser('` `')), void 0);
-      assert.deepStrictEqual(inspect(parser('` `` `')), void 0);
-      assert.deepStrictEqual(inspect(parser('`\n`')), void 0);
-      assert.deepStrictEqual(inspect(parser('`a\nb`')), void 0);
-      assert.deepStrictEqual(inspect(parser('`a\\\nb`')), void 0);
-      assert.deepStrictEqual(inspect(parser('a`b`')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('`')), undefined);
+      assert.deepStrictEqual(inspect(parser('``')), undefined);
+      assert.deepStrictEqual(inspect(parser('` `')), undefined);
+      assert.deepStrictEqual(inspect(parser('` `` `')), undefined);
+      assert.deepStrictEqual(inspect(parser('`\n`')), undefined);
+      assert.deepStrictEqual(inspect(parser('`a\nb`')), undefined);
+      assert.deepStrictEqual(inspect(parser('`a\\\nb`')), undefined);
+      assert.deepStrictEqual(inspect(parser('a`b`')), undefined);
     });
 
     it('ab', () => {

@@ -7,17 +7,17 @@ describe('Unit: parser/inline/autolink/url', () => {
     const parser = loop(url);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('http')), void 0);
-      assert.deepStrictEqual(inspect(parser('ttp')), void 0);
-      assert.deepStrictEqual(inspect(parser('http:')), void 0);
-      assert.deepStrictEqual(inspect(parser('ttp:')), void 0);
-      assert.deepStrictEqual(inspect(parser('http://')), void 0);
-      assert.deepStrictEqual(inspect(parser('ttp://')), void 0);
-      assert.deepStrictEqual(inspect(parser('_http://')), void 0);
-      assert.deepStrictEqual(inspect(parser('_ttp://')), void 0);
-      assert.deepStrictEqual(inspect(parser('0!ttp://host')), void 0);
-      assert.deepStrictEqual(inspect(parser('#')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('http')), undefined);
+      assert.deepStrictEqual(inspect(parser('ttp')), undefined);
+      assert.deepStrictEqual(inspect(parser('http:')), undefined);
+      assert.deepStrictEqual(inspect(parser('ttp:')), undefined);
+      assert.deepStrictEqual(inspect(parser('http://')), undefined);
+      assert.deepStrictEqual(inspect(parser('ttp://')), undefined);
+      assert.deepStrictEqual(inspect(parser('_http://')), undefined);
+      assert.deepStrictEqual(inspect(parser('_ttp://')), undefined);
+      assert.deepStrictEqual(inspect(parser('0!ttp://host')), undefined);
+      assert.deepStrictEqual(inspect(parser('#')), undefined);
     });
 
     it('escape', () => {

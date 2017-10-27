@@ -7,14 +7,14 @@ describe('Unit: parser/block/pretext', () => {
     const parser = loop(pretext);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), void 0);
-      assert.deepStrictEqual(inspect(parser('\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('```')), void 0);
-      assert.deepStrictEqual(inspect(parser('```\n')), void 0);
-      assert.deepStrictEqual(inspect(parser('```\n```')), void 0);
-      assert.deepStrictEqual(inspect(parser('```\na```')), void 0);
-      assert.deepStrictEqual(inspect(parser('``` a\n```')), void 0);
-      assert.deepStrictEqual(inspect(parser(' ```\n```')), void 0);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('```')), undefined);
+      assert.deepStrictEqual(inspect(parser('```\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('```\n```')), undefined);
+      assert.deepStrictEqual(inspect(parser('```\na```')), undefined);
+      assert.deepStrictEqual(inspect(parser('``` a\n```')), undefined);
+      assert.deepStrictEqual(inspect(parser(' ```\n```')), undefined);
     });
 
     it('ab', () => {
