@@ -199,7 +199,7 @@ require = function e(t, n, r) {
                 function Cache(size, callback, opts) {
                     if (callback === void 0) {
                         callback = function () {
-                            return void 0;
+                            return undefined;
                         };
                     }
                     if (opts === void 0) {
@@ -494,7 +494,7 @@ require = function e(t, n, r) {
                 function El(element_, children_) {
                     this.element_ = element_;
                     this.children_ = children_;
-                    this.type = this.children_ === void 0 ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Struct;
+                    this.type = this.children_ === undefined ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Struct;
                     this.tag;
                     void throwErrorIfNotUsable(this);
                     void memory.add(element_);
@@ -869,9 +869,9 @@ require = function e(t, n, r) {
                     case 'undefined':
                         return new builder_1.El(define(tag, function () {
                             return document.createElement(tag);
-                        }), void 0);
+                        }), undefined);
                     case 'function':
-                        return new builder_1.El(define(tag, attrs), void 0);
+                        return new builder_1.El(define(tag, attrs), undefined);
                     case 'string':
                         return new builder_1.El(define(tag, children || function () {
                             return document.createElement(tag);
@@ -881,8 +881,8 @@ require = function e(t, n, r) {
                             return document.createElement(tag);
                         };
                         return Object.keys(attrs).slice(-1).every(function (key) {
-                            return key === void 0 || typeof attrs[key] === 'object';
-                        }) ? new builder_1.El(define(tag, factory), attrs) : new builder_1.El(define(tag, factory, attrs), children === factory ? void 0 : children);
+                            return key === undefined || typeof attrs[key] === 'object';
+                        }) ? new builder_1.El(define(tag, factory), attrs) : new builder_1.El(define(tag, factory, attrs), children === factory ? undefined : children);
                     default:
                         throw new TypeError('TypedDOM: Invalid arguments: [' + attrs + ', ' + children + ', ' + factory + ']');
                     }
@@ -1127,7 +1127,7 @@ require = function e(t, n, r) {
                     return rest.length < source.length ? [
                         results,
                         rest
-                    ] : void 0;
+                    ] : undefined;
                     var e_1, _a;
                 };
             }
@@ -1200,7 +1200,7 @@ require = function e(t, n, r) {
                     return !until || check(rest) ? [
                         results,
                         rest
-                    ] : void 0;
+                    ] : undefined;
                 };
             }
             exports.loop = loop;
@@ -1314,7 +1314,7 @@ require = function e(t, n, r) {
             var squash_1 = require('../squash');
             var syntax = /^>+(?=\s|$)/;
             exports.blockquote = end_1.verifyBlockEnd(function (source) {
-                var mode = void 0 || source.startsWith('>') && 'plain' || source.startsWith('|>') && 'markdown' || '';
+                var mode = undefined || source.startsWith('>') && 'plain' || source.startsWith('|>') && 'markdown' || '';
                 if (mode === '')
                     return;
                 source = mode === 'plain' ? source : source.slice(1);
@@ -1495,7 +1495,7 @@ require = function e(t, n, r) {
                     if (!result)
                         return result;
                     if (result[1].split('\n', 1).shift().trim() !== '')
-                        return void 0;
+                        return undefined;
                     return result;
                 };
             }
@@ -3061,7 +3061,7 @@ require = function e(t, n, r) {
                     return;
                 if (cache.has(source))
                     return cache.get(source);
-                void cache.set(source, void 0);
+                void cache.set(source, undefined);
                 var _a = __read(loop_1.loop(combine_1.combine([text_1.text]), /^[\]\n]/)(source) || [
                         [],
                         source
@@ -3146,7 +3146,7 @@ require = function e(t, n, r) {
                 return rest.slice(0, closetag.length) === closetag ? [
                     [el],
                     rest.slice(closetag.length)
-                ] : void 0;
+                ] : undefined;
             };
         },
         {
@@ -4049,7 +4049,7 @@ require = function e(t, n, r) {
             function queue(target, callback) {
                 if (callback === void 0) {
                     callback = function () {
-                        return void 0;
+                        return undefined;
                     };
                 }
                 void MathJax.Hub.Queue([
@@ -4077,7 +4077,7 @@ require = function e(t, n, r) {
                     opts = {};
                 }
                 var url = target.getAttribute('data-src');
-                return void 0 || (opts.twitter || twitter_1.twitter)(url) || (opts.youtube || youtube_1.youtube)(url) || (opts.gist || gist_1.gist)(url) || (opts.slideshare || slideshare_1.slideshare)(url) || (opts.pdf || pdf_1.pdf)(url) || (opts.image || image_1.image)(url, target.getAttribute('alt') || '');
+                return undefined || (opts.twitter || twitter_1.twitter)(url) || (opts.youtube || youtube_1.youtube)(url) || (opts.gist || gist_1.gist)(url) || (opts.slideshare || slideshare_1.slideshare)(url) || (opts.pdf || pdf_1.pdf)(url) || (opts.image || image_1.image)(url, target.getAttribute('alt') || '');
             }
             exports.media = media;
         },
