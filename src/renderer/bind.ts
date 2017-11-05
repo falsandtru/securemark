@@ -2,8 +2,8 @@
 import { segment } from '../parser/segment';
 import { concat } from 'spica/concat'
 
-export function bind(node: Node): (source: string) => HTMLElement[] {
-  assert(node.childNodes.length === 0);
+export function bind(el: HTMLElement | DocumentFragment): (source: string) => HTMLElement[] {
+  assert(el.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
   return (source: string) => {
@@ -28,9 +28,9 @@ export function bind(node: Node): (source: string) => HTMLElement[] {
       .map<Pair>(s =>
         [
           s,
-          [...parse(s).childNodes]
+          [...parse(s).children as HTMLCollectionOf<HTMLElement>]
             .map(e =>
-              node.insertBefore(e, ref) as HTMLElement),
+              el.insertBefore(e, ref)),
         ]);
     void pairs.splice(i, 0, ...ps);
     return ps
