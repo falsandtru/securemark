@@ -13,7 +13,7 @@ describe('Unit: renderer/parser', () => {
       assert(escape('*a\\\nb*') === '\\*a\\\\\nb\\*');
     });
 
-    it('autolonk', () => {
+    it('autolink', () => {
       assert(parse(escape('https://a')).firstElementChild!.innerHTML === '<a href="https://a" rel="noopener" target="_blank">https://a</a>');
       assert(parse(escape('!https://host')).firstElementChild!.innerHTML === '<a href="https://host" rel="noopener" target="_blank"><img data-src="https://host" alt=""></a>');
       assert(parse(escape('@a')).firstElementChild!.innerHTML === '<span class="account">@a</span>');
