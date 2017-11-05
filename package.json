@@ -32,7 +32,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/dompurify": "0.0.31",
-    "@types/jquery": "^3.2.15",
+    "@types/jquery": "^3.2.16",
     "@types/mathjax": "0.0.32",
     "@types/mocha": "^2.2.44",
     "@types/power-assert": "1.4.29",
@@ -63,10 +63,10 @@
     "power-assert": "^1.4.4",
     "pump": "^1.0.2",
     "run-sequence": "^2.2.0",
-    "spica": "0.0.117",
+    "spica": "0.0.127",
     "tsify": "^3.0.3",
     "typed-dom": "0.0.63",
-    "typescript": "2.7.0-dev.20171026",
+    "typescript": "2.7.0-dev.20171104",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.9.0"
