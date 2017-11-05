@@ -69,7 +69,7 @@ require = function e(t, n, r) {
                 case 'Array':
                     return target[key] = exports.clone([], source[key]);
                 case 'Object':
-                    return target[key] = exports.clone({}, source[key]);
+                    return target[key] = source[key] instanceof Object ? exports.clone({}, source[key]) : source[key];
                 default:
                     return target[key] = source[key];
                 }
@@ -77,18 +77,13 @@ require = function e(t, n, r) {
             exports.extend = template(function (key, target, source) {
                 switch (type_1.type(source[key])) {
                 case 'Array':
-                    switch (type_1.type(target[key])) {
-                    case 'Array':
-                        return target[key] = exports.extend([], source[key]);
-                    default:
-                        return target[key] = source[key];
-                    }
+                    return target[key] = exports.extend([], source[key]);
                 case 'Object':
                     switch (type_1.type(target[key])) {
                     case 'Object':
-                        return target[key] = exports.extend(target[key], source[key]);
+                        return target[key] = source[key] instanceof Object ? exports.extend(target[key], source[key]) : source[key];
                     default:
-                        return target[key] = source[key];
+                        return target[key] = source[key] instanceof Object ? exports.extend({}, source[key]) : source[key];
                     }
                 default:
                     return target[key] = source[key];
@@ -4293,7 +4288,7 @@ require = function e(t, n, r) {
                                     return;
                                 widgetScriptRequested = true;
                                 var script = outer.querySelector('script');
-                                if (!script.getAttribute('src').startsWith('//platform.twitter.com/'))
+                                if (!script.getAttribute('src').startsWith('https://platform.twitter.com/'))
                                     return;
                                 void $.ajax(script.src, {
                                     dataType: 'script',
