@@ -35,7 +35,7 @@ export function twitter(url: string): HTMLElement | void {
         if (widgetScriptRequested) return;
         widgetScriptRequested = true;
         const script = outer.querySelector('script')!;
-        if (!script.getAttribute('src')!.startsWith('//platform.twitter.com/')) return;
+        if (!script.getAttribute('src')!.startsWith('https://platform.twitter.com/')) return;
         void $.ajax(script.src, {
           dataType: 'script',
           cache: true,

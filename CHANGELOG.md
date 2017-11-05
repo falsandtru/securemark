@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.5
+
+- Update Tweet renderer.
+
 ## 0.34.4
 
 - Improve error messages.
