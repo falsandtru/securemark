@@ -3862,7 +3862,7 @@ require = function e(t, n, r) {
             var parser_1 = require('./parser');
             var segment_1 = require('../parser/segment');
             var concat_1 = require('spica/concat');
-            function bind(node) {
+            function bind(el) {
                 var pairs = [];
                 return function (source) {
                     var os = pairs.map(function (_a) {
@@ -3895,8 +3895,8 @@ require = function e(t, n, r) {
                     var ps = ns.slice(i, ns.length - j).map(function (s) {
                         return [
                             s,
-                            __spread(parser_1.parse(s).childNodes).map(function (e) {
-                                return node.insertBefore(e, ref);
+                            __spread(parser_1.parse(s).children).map(function (e) {
+                                return el.insertBefore(e, ref);
                             })
                         ];
                     });
