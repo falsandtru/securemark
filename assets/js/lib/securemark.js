@@ -498,20 +498,19 @@ require = function e(t, n, r) {
                         return;
                     case ElChildrenType.Text:
                         void clear();
-                        this.children_ = document.createTextNode('');
-                        void this.element_.appendChild(this.children_);
+                        this.children_ = element_.appendChild(document.createTextNode(''));
                         this.children = children_;
                         return;
                     case ElChildrenType.Collection:
                         void clear();
                         this.children_ = [];
                         this.children = children_;
-                        void scope(this.element_.id, this.children_);
+                        void scope(element_.id, this.children_);
                         return;
                     case ElChildrenType.Struct:
                         void clear();
-                        this.children_ = observe(this.element_, __assign({}, children_));
-                        void scope(this.element_.id, this.children_);
+                        this.children_ = observe(element_, __assign({}, children_));
+                        void scope(element_.id, this.children_);
                         return;
                     }
                     function clear() {
