@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.7
+
+- Refactoring.
+
 ## 0.34.6
 
 - Fix emphasis parser.
