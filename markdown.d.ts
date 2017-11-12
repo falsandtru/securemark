@@ -264,6 +264,7 @@ export namespace MarkdownParser {
       // `abc`
       Markdown<'code'>,
       Parser<HTMLElement, [
+        SourceParser.BackquoteParser,
         SourceParser.UnescapableSourceParser
       ]> {
     }
@@ -317,6 +318,13 @@ export namespace MarkdownParser {
       // abc
       Markdown<'text'>,
       Parser<HTMLBRElement | Text, [
+        never
+      ]> {
+    }
+    export interface BackquoteParser extends
+      // `
+      Markdown<'backquote'>,
+      Parser<Text, [
         never
       ]> {
     }

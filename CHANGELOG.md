@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.6
+
+- Fix code parser.
+
 ## 0.34.5
 
 - Update Tweet renderer.
