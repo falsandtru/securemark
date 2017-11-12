@@ -15,7 +15,6 @@ import { math } from './inline/math';
 import { media } from './inline/media';
 import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
-import { TextParser } from './source';
 import { text } from './source/text';
 
 export import InlineParser = MarkdownParser.InlineParser;
@@ -34,6 +33,7 @@ export import MathInlineParser = InlineParser.MathInlineParser;
 export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
+import TextParser = MarkdownParser.SourceParser.TextParser;
 
 export const inline: InlineParser = combine<[
   BraceParser,
