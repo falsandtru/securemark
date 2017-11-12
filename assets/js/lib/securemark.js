@@ -1242,9 +1242,9 @@ require = function e(t, n, r) {
         },
         {
             './parser/cache': 37,
-            './renderer/bind': 67,
-            './renderer/parser': 68,
-            './renderer/render': 69
+            './renderer/bind': 68,
+            './renderer/parser': 69,
+            './renderer/render': 70
         }
     ],
     20: [
@@ -1411,7 +1411,7 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../block': 20,
             '../source/unescapable': 63,
-            '../squash': 64,
+            '../squash': 65,
             './end': 23
         }
     ],
@@ -1495,7 +1495,7 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64,
+            '../squash': 65,
             './end': 23,
             './indexer': 29
         }
@@ -1600,7 +1600,7 @@ require = function e(t, n, r) {
             '../../../combinator': 15,
             '../../inline': 38,
             '../../source/unescapable': 63,
-            '../../squash': 64
+            '../../squash': 65
         }
     ],
     26: [
@@ -1660,7 +1660,7 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64,
+            '../squash': 65,
             './end': 23,
             './indexer': 29
         }
@@ -1827,7 +1827,7 @@ require = function e(t, n, r) {
         },
         {
             '../inline': 38,
-            '../string/index': 65
+            '../string/index': 66
         }
     ],
     30: [
@@ -2010,7 +2010,7 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64,
+            '../squash': 65,
             './end': 23,
             './indent': 28,
             './ulist': 36
@@ -2065,7 +2065,7 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64,
+            '../squash': 65,
             './end': 23
         }
     ],
@@ -2256,7 +2256,7 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64,
+            '../squash': 65,
             './end': 23
         }
     ],
@@ -2361,7 +2361,7 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64,
+            '../squash': 65,
             './end': 23,
             './indent': 28,
             './olist': 32
@@ -2476,10 +2476,11 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^<[\s\S]*?>/;
             var closer = /^>/;
             exports.anglebracket = function (source) {
-                if (!source.startsWith('<') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '<', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('<', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '>')(source) || [
                         [],
@@ -2496,7 +2497,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     40: [
@@ -2527,10 +2529,11 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^\(\([\s\S]+?\)\)/;
             var closer = /^\)\)/;
             exports.annotation = function (source) {
-                if (!source.startsWith('((') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '((', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('((', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '))')(source) || [
                         [],
@@ -2552,7 +2555,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     41: [
@@ -2711,10 +2715,11 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^{[\s\S]*?}/;
             var closer = /^}/;
             exports.brace = function (source) {
-                if (!source.startsWith('{') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '{', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('{', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '}')(source) || [
                         [],
@@ -2731,7 +2736,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     45: [
@@ -2767,10 +2773,11 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^\[[\s\S]*?\]/;
             var closer = /^\]/;
             exports.bracket = function (source) {
-                if (!source.startsWith('[') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '[', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), ']')(source) || [
                         [],
@@ -2787,7 +2794,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     46: [
@@ -2819,9 +2827,10 @@ require = function e(t, n, r) {
             var unescapable_1 = require('../source/unescapable');
             var backquote_1 = require('../source/backquote');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^(`+)[^\n]+?\1/;
             exports.code = function (source) {
-                if (!source.startsWith('`'))
+                if (!validation_1.validate(source, '`'))
                     return;
                 var _a = __read(source.match(syntax) || [
                         '',
@@ -2854,7 +2863,8 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../source/backquote': 60,
             '../source/unescapable': 63,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     47: [
@@ -2886,10 +2896,11 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var strong_1 = require('./strong');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^\*[\s\S]+?\*/;
             var closer = /^\*/;
             exports.emphasis = function (source) {
-                if (!source.startsWith('*') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '*', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('*', combinator_1.loop(combinator_1.combine([
                         combinator_1.loop(inline_1.inline, closer),
@@ -2913,7 +2924,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64,
+            '../source/validation': 64,
+            '../squash': 65,
             './strong': 58
         }
     ],
@@ -2976,7 +2988,7 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../string/index': 65,
+            '../../string/index': 66,
             '../link': 54,
             './template': 51
         }
@@ -3001,7 +3013,7 @@ require = function e(t, n, r) {
         {
             '../../../combinator': 15,
             '../../inline': 38,
-            '../../squash': 64,
+            '../../squash': 65,
             './template': 51
         }
     ],
@@ -3033,6 +3045,7 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../../combinator');
             var text_1 = require('../../source/text');
             var squash_1 = require('../../squash');
+            var validation_1 = require('../../source/validation');
             var syntax = /^\[[~#:^\[][^\s\[\]][^\n]*?\]/;
             exports.template = function (parser) {
                 return function (source) {
@@ -3053,7 +3066,7 @@ require = function e(t, n, r) {
                 };
             };
             function parse(source) {
-                if (!source.startsWith('[') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '[', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([text_1.text]), /^[\]\n]/), ']')(source) || [
                         [],
@@ -3074,7 +3087,8 @@ require = function e(t, n, r) {
         {
             '../../../combinator': 15,
             '../../source/text': 62,
-            '../../squash': 64
+            '../../source/validation': 64,
+            '../../squash': 65
         }
     ],
     52: [
@@ -3105,10 +3119,11 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^(<([a-z]+)>)/;
             var inlinetags = Object.freeze('ins|del|sup|sub|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             exports.html = function (source) {
-                if (!source.startsWith('<'))
+                if (!validation_1.validate(source, '<'))
                     return;
                 var _a = __read(source.match(syntax) || [
                         '',
@@ -3142,7 +3157,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     53: [
@@ -3170,9 +3186,10 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
+            var validation_1 = require('../source/validation');
             var syntax = /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i;
             exports.htmlentity = function (source) {
-                if (!source.startsWith('&'))
+                if (!validation_1.validate(source, '&'))
                     return;
                 var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
@@ -3188,7 +3205,7 @@ require = function e(t, n, r) {
                 return parser.textContent;
             }
         },
-        {}
+        { '../source/validation': 64 }
     ],
     54: [
         function (require, module, exports) {
@@ -3219,10 +3236,11 @@ require = function e(t, n, r) {
             var inline_1 = require('../inline');
             var escapable_1 = require('../source/escapable');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var url_1 = require('../string/url');
             var syntax = /^\[[^\n]*?\]\n?\(/;
             exports.link = function (source) {
-                if (!source.startsWith('[') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '[', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), /^\]\n?\(|^\n/), ']')(source) || [
                         [],
@@ -3271,8 +3289,9 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../inline': 38,
             '../source/escapable': 61,
-            '../squash': 64,
-            '../string/url': 66
+            '../source/validation': 64,
+            '../squash': 65,
+            '../string/url': 67
         }
     ],
     55: [
@@ -3308,12 +3327,15 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var escapable_1 = require('../source/escapable');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var cache_1 = require('spica/cache');
             exports.cache = new cache_1.Cache(100);
             var syntax = /^\$\S[^\n]*?\$(?!\d)/;
             var closer = /^\$(?!\d)|^\n/;
             exports.math = function (source) {
-                if (!source.startsWith('$') || source.startsWith('$$') || source.search(syntax) !== 0)
+                if (source.startsWith('$$'))
+                    return;
+                if (!validation_1.validate(source, '$', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('$', combinator_1.loop(combinator_1.combine([escapable_1.escsource]), closer), '$')(source) || [
                         [],
@@ -3341,7 +3363,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../source/escapable': 61,
-            '../squash': 64,
+            '../source/validation': 64,
+            '../squash': 65,
             'spica/cache': 5
         }
     ],
@@ -3373,13 +3396,14 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var text_1 = require('../source/text');
             var escapable_1 = require('../source/escapable');
+            var validation_1 = require('../source/validation');
             var url_1 = require('../string/url');
             var typed_dom_1 = require('typed-dom');
             var cache_1 = require('spica/cache');
             exports.cache = new cache_1.Cache(100);
             var syntax = /^!\[[^\n]*?\]\n?\(/;
             exports.media = function (source) {
-                if (!source.startsWith('![') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '![', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('![', combinator_1.loop(combinator_1.combine([text_1.text]), /^\]\n?\(|^\n/), ']')(source) || [
                         [],
@@ -3420,7 +3444,8 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../source/escapable': 61,
             '../source/text': 62,
-            '../string/url': 66,
+            '../source/validation': 64,
+            '../string/url': 67,
             'spica/cache': 5,
             'typed-dom': 9
         }
@@ -3458,10 +3483,11 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^\([\s\S]*?\)/;
             var closer = /^\)/;
             exports.parenthesis = function (source) {
-                if (!source.startsWith('(') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '(', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('(', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), ')')(source) || [
                         [],
@@ -3478,7 +3504,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     58: [
@@ -3509,10 +3536,11 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
+            var validation_1 = require('../source/validation');
             var syntax = /^\*\*[\s\S]+?\*\*/;
             var closer = /^\*\*/;
             exports.strong = function (source) {
-                if (!source.startsWith('**') || source.search(syntax) !== 0)
+                if (!validation_1.validate(source, '**', syntax))
                     return;
                 var _a = __read(combinator_1.bracket('**', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '**')(source) || [
                         [],
@@ -3533,7 +3561,8 @@ require = function e(t, n, r) {
         {
             '../../combinator': 15,
             '../inline': 38,
-            '../squash': 64
+            '../source/validation': 64,
+            '../squash': 65
         }
     ],
     59: [
@@ -3753,6 +3782,17 @@ require = function e(t, n, r) {
     64: [
         function (require, module, exports) {
             'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            function validate(source, start, syntax) {
+                return source.startsWith(start) && (!syntax || source.search(syntax) === 0);
+            }
+            exports.validate = validate;
+        },
+        {}
+    ],
+    65: [
+        function (require, module, exports) {
+            'use strict';
             var __values = this && this.__values || function (o) {
                 var m = typeof Symbol === 'function' && o[Symbol.iterator], i = 0;
                 if (m)
@@ -3800,7 +3840,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    65: [
+    66: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3811,7 +3851,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    66: [
+    67: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3831,7 +3871,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    67: [
+    68: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -3916,11 +3956,11 @@ require = function e(t, n, r) {
         },
         {
             '../parser/segment': 59,
-            './parser': 68,
+            './parser': 69,
             'spica/concat': 6
         }
     ],
-    68: [
+    69: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3950,7 +3990,7 @@ require = function e(t, n, r) {
             '../parser/segment': 59
         }
     ],
-    69: [
+    70: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -4007,12 +4047,12 @@ require = function e(t, n, r) {
             exports.render = render;
         },
         {
-            './render/code': 70,
-            './render/math': 71,
-            './render/media': 72
+            './render/code': 71,
+            './render/math': 72,
+            './render/media': 73
         }
     ],
-    70: [
+    71: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4026,7 +4066,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    71: [
+    72: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4059,7 +4099,7 @@ require = function e(t, n, r) {
         },
         { '../../parser/inline/math': 55 }
     ],
-    72: [
+    73: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4079,15 +4119,15 @@ require = function e(t, n, r) {
             exports.media = media;
         },
         {
-            './media/gist': 73,
-            './media/image': 74,
-            './media/pdf': 75,
-            './media/slideshare': 76,
-            './media/twitter': 77,
-            './media/youtube': 78
+            './media/gist': 74,
+            './media/image': 75,
+            './media/pdf': 76,
+            './media/slideshare': 77,
+            './media/twitter': 78,
+            './media/youtube': 79
         }
     ],
-    73: [
+    74: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4141,12 +4181,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 68,
+            '../../parser': 69,
             'spica/cache': 5,
             'typed-dom': 9
         }
     ],
-    74: [
+    75: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4167,7 +4207,7 @@ require = function e(t, n, r) {
             'typed-dom': 9
         }
     ],
-    75: [
+    76: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4197,11 +4237,11 @@ require = function e(t, n, r) {
             exports.pdf = pdf;
         },
         {
-            '../../parser': 68,
+            '../../parser': 69,
             'typed-dom': 9
         }
     ],
-    76: [
+    77: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4247,12 +4287,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 68,
+            '../../parser': 69,
             'spica/cache': 5,
             'typed-dom': 9
         }
     ],
-    77: [
+    78: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4309,12 +4349,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 68,
+            '../../parser': 69,
             'spica/cache': 5,
             'typed-dom': 9
         }
     ],
-    78: [
+    79: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
