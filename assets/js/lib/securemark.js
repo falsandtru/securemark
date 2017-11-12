@@ -1261,7 +1261,7 @@ require = function e(t, n, r) {
             var table_1 = require('./block/table');
             var blockquote_1 = require('./block/blockquote');
             var pretext_1 = require('./block/pretext');
-            var math_1 = require('./block/math');
+            var mathblock_1 = require('./block/mathblock');
             var extension_1 = require('./block/extension');
             var paragraph_1 = require('./block/paragraph');
             exports.block = combinator_1.combine([
@@ -1274,7 +1274,7 @@ require = function e(t, n, r) {
                 table_1.table,
                 blockquote_1.blockquote,
                 pretext_1.pretext,
-                math_1.math,
+                mathblock_1.mathblock,
                 extension_1.extension,
                 paragraph_1.paragraph
             ]);
@@ -1286,7 +1286,7 @@ require = function e(t, n, r) {
             './block/extension': 24,
             './block/heading': 26,
             './block/horizontalrule': 27,
-            './block/math': 30,
+            './block/mathblock': 30,
             './block/newline': 31,
             './block/olist': 32,
             './block/paragraph': 33,
@@ -1325,8 +1325,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
             var block_1 = require('../block');
             var unescapable_1 = require('../source/unescapable');
             var squash_1 = require('../squash');
@@ -1440,8 +1440,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
             var indexer_1 = require('./indexer');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
@@ -1558,12 +1558,13 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
+            var end_1 = require('../end');
             var combinator_1 = require('../../../combinator');
             var inline_1 = require('../../inline');
             var unescapable_1 = require('../../source/unescapable');
             var squash_1 = require('../../squash');
             var syntax = /^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
-            exports.placeholder = function (source) {
+            exports.placeholder = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('~~~'))
                     return;
                 var _a = __read(source.match(syntax) || [
@@ -1594,13 +1595,14 @@ require = function e(t, n, r) {
                     ],
                     source.slice(keyword.length + 1)
                 ];
-            };
+            });
         },
         {
             '../../../combinator': 15,
             '../../inline': 38,
             '../../source/unescapable': 63,
-            '../../squash': 65
+            '../../squash': 65,
+            '../end': 23
         }
     ],
     26: [
@@ -1628,8 +1630,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
             var indexer_1 = require('./indexer');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
@@ -1857,7 +1859,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var end_1 = require('./end');
             var syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
-            exports.math = end_1.verifyBlockEnd(function (source) {
+            exports.mathblock = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('$$'))
                     return;
                 var _a = __read(source.match(syntax) || [
@@ -1940,8 +1942,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
             var ulist_1 = require('./ulist');
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
@@ -2041,8 +2043,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var closer = /^[^\S\n]*\\?(?=\n[^\S\n]*\\?\n|\n?$)/;
@@ -2145,8 +2147,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
@@ -2285,8 +2287,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
             var olist_1 = require('./olist');
             var indent_1 = require('./indent');
             var inline_1 = require('../inline');
@@ -2371,15 +2373,15 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var math_1 = require('./inline/math');
+            var mathinline_1 = require('./inline/mathinline');
             var media_1 = require('./inline/media');
             exports.caches = {
-                math: math_1.cache,
+                math: mathinline_1.cache,
                 media: { image: media_1.cache }
             };
         },
         {
-            './inline/math': 55,
+            './inline/mathinline': 55,
             './inline/media': 56
         }
     ],
@@ -2399,7 +2401,7 @@ require = function e(t, n, r) {
             var emphasis_1 = require('./inline/emphasis');
             var strong_1 = require('./inline/strong');
             var code_1 = require('./inline/code');
-            var math_1 = require('./inline/math');
+            var mathinline_1 = require('./inline/mathinline');
             var media_1 = require('./inline/media');
             var htmlentity_1 = require('./inline/htmlentity');
             var autolink_1 = require('./inline/autolink');
@@ -2416,7 +2418,7 @@ require = function e(t, n, r) {
                 emphasis_1.emphasis,
                 strong_1.strong,
                 code_1.code,
-                math_1.math,
+                mathinline_1.mathinline,
                 media_1.media,
                 htmlentity_1.htmlentity,
                 autolink_1.autolink,
@@ -2436,7 +2438,7 @@ require = function e(t, n, r) {
             './inline/html': 52,
             './inline/htmlentity': 53,
             './inline/link': 54,
-            './inline/math': 55,
+            './inline/mathinline': 55,
             './inline/media': 56,
             './inline/parenthesis': 57,
             './inline/strong': 58,
@@ -2473,8 +2475,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
             var syntax = /^<[\s\S]*?>/;
@@ -2526,8 +2528,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
             var syntax = /^\(\([\s\S]+?\)\)/;
@@ -2667,7 +2669,7 @@ require = function e(t, n, r) {
                     return;
                 var flag = source.startsWith('!h');
                 source = flag ? source.slice(1) : source;
-                var _a = __read(combinator_1.loop(combinator_1.combine([escapable_1.escsource]), closer)(source) || [
+                var _a = __read(combinator_1.loop(escapable_1.escsource, closer)(source) || [
                         [],
                         ''
                     ], 2), rest = _a[1];
@@ -2712,8 +2714,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
             var syntax = /^{[\s\S]*?}/;
@@ -2770,8 +2772,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
             var syntax = /^\[[\s\S]*?\]/;
@@ -2892,8 +2894,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var strong_1 = require('./strong');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
@@ -2981,10 +2983,13 @@ require = function e(t, n, r) {
                 var result = link_1.link('[](#)');
                 if (!result)
                     return;
-                var _a = __read(result, 1), _b = __read(_a[0], 1), el = _b[0];
+                var _a = __read(result, 2), _b = __read(_a[0], 1), el = _b[0], rest = _a[1];
                 void el.setAttribute('href', '#' + index_1.makeIndex(query));
                 el.textContent = query;
-                return result;
+                return [
+                    [el],
+                    rest
+                ];
             });
         },
         {
@@ -2997,8 +3002,8 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../../combinator');
             var inline_1 = require('../../inline');
+            var combinator_1 = require('../../../combinator');
             var squash_1 = require('../../squash');
             var template_1 = require('./template');
             exports.placeholder = template_1.template(function (flag) {
@@ -3055,10 +3060,10 @@ require = function e(t, n, r) {
                             ''
                         ], 3), flag = _a[0], query = _a[1], rest = _a[2];
                     if (!flag)
-                        return;
+                        return undefined;
                     var result = parser(flag, query);
                     if (!result)
-                        return;
+                        return undefined;
                     return [
                         result[0],
                         rest
@@ -3116,8 +3121,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
             var syntax = /^(<([a-z]+)>)/;
@@ -3232,8 +3237,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var escapable_1 = require('../source/escapable');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
@@ -3332,7 +3337,7 @@ require = function e(t, n, r) {
             exports.cache = new cache_1.Cache(100);
             var syntax = /^\$\S[^\n]*?\$(?!\d)/;
             var closer = /^\$(?!\d)|^\n/;
-            exports.math = function (source) {
+            exports.mathinline = function (source) {
                 if (source.startsWith('$$'))
                     return;
                 if (!validation_1.validate(source, '$', syntax))
@@ -3480,8 +3485,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
             var syntax = /^\([\s\S]*?\)/;
@@ -3533,8 +3538,8 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
+            var combinator_1 = require('../../combinator');
             var squash_1 = require('../squash');
             var validation_1 = require('../source/validation');
             var syntax = /^\*\*[\s\S]+?\*\*/;
@@ -4070,16 +4075,16 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var math_1 = require('../../parser/inline/math');
+            var mathinline_1 = require('../../parser/inline/mathinline');
             function math(target) {
                 if (target instanceof HTMLDivElement)
                     return void queue(target);
                 void target.setAttribute('data-src', target.textContent);
                 var expr = target.textContent;
-                if (math_1.cache.has(expr))
-                    return void (target.innerHTML = math_1.cache.get(expr).innerHTML);
+                if (mathinline_1.cache.has(expr))
+                    return void (target.innerHTML = mathinline_1.cache.get(expr).innerHTML);
                 void queue(target, function () {
-                    return void math_1.cache.set(expr, target.cloneNode(true));
+                    return void mathinline_1.cache.set(expr, target.cloneNode(true));
                 });
             }
             exports.math = math;
@@ -4097,7 +4102,7 @@ require = function e(t, n, r) {
                 ]);
             }
         },
-        { '../../parser/inline/math': 55 }
+        { '../../parser/inline/mathinline': 55 }
     ],
     73: [
         function (require, module, exports) {
