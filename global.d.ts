@@ -1,5 +1,4 @@
 declare global {
-  interface HTMLCollectionOf<T extends Element> extends Iterable<T> { }
   interface HTMLObjectElement {
     typeMustMatch: boolean;
   }
