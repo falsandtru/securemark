@@ -2,6 +2,7 @@
 
 ## 0.34.6
 
+- Fix emphasis parser.
 - Fix code parser.
 
 ## 0.34.5

@@ -1,22 +1,12 @@
 ﻿import { Parser, Result } from './parser';
 
-export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, until?: string | RegExp | ((rest: string) => boolean)): Parser<R, P> {
-  const check = ((): (rest: string) => boolean => {
-    switch (typeof until) {
-      case 'undefined':
-        return () => false;
-      case 'function':
-        return until as any;
-      default:
-        return rest => rest.slice(0, 99).search(until as string | RegExp) === 0;
-    }
-  })();
+export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, until?: string | RegExp): Parser<R, P> {
   return (source: string): Result<R, P> => {
     let rest = source;
     const results: R[] = [];
     while (true) {
       if (rest === '') break;
-      if (check(rest)) break;
+      if (until && rest.slice(0, 99).search(until) === 0) break;
       const result = parser(rest);
       if (!result) break;
       const [rs, r] = result;
@@ -25,9 +15,8 @@ export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, unti
       assert(rest.endsWith(r));
       rest = r;
     }
-    if (rest.length === source.length) return;
-    return !until || check(rest)
-      ? [results, rest]
-      : undefined;
+    return rest.length === source.length
+      ? undefined
+      : [results, rest];
   };
 }

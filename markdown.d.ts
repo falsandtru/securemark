@@ -250,7 +250,8 @@ export namespace MarkdownParser {
       // *abc*
       Markdown<'emphasis'>,
       Parser<HTMLElement, [
-        InlineParser
+        InlineParser,
+        StrongParser
       ]> {
     }
     export interface StrongParser extends
