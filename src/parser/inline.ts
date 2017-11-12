@@ -11,7 +11,7 @@ import { anglebracket } from './inline/anglebracket';
 import { emphasis } from './inline/emphasis';
 import { strong } from './inline/strong';
 import { code } from './inline/code';
-import { math } from './inline/math';
+import { mathinline } from './inline/mathinline';
 import { media } from './inline/media';
 import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
@@ -33,26 +33,8 @@ export import MathInlineParser = InlineParser.MathInlineParser;
 export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
-import TextParser = MarkdownParser.SourceParser.TextParser;
 
-export const inline: InlineParser = combine<[
-  BraceParser,
-  AnnotationParser,
-  ParenthesisParser,
-  LinkParser,
-  ExtensionParser,
-  BracketParser,
-  HTMLParser,
-  AngleBracketParser,
-  EmphasisParser,
-  StrongParser,
-  CodeParser,
-  MathInlineParser,
-  MediaParser,
-  HTMLEntityParser,
-  AutolinkParser,
-  TextParser
-], HTMLElement | Text>([
+export const inline: InlineParser = combine<HTMLElement | Text, InlineParser.InnerParsers>([
   brace,
   annotation,
   parenthesis,
@@ -64,7 +46,7 @@ export const inline: InlineParser = combine<[
   emphasis,
   strong,
   code,
-  math,
+  mathinline,
   media,
   htmlentity,
   autolink,

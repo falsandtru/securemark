@@ -1,5 +1,5 @@
-﻿import { loop } from '../../../combinator';
-import { index } from './index';
+﻿import { index } from './index';
+import { loop } from '../../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/extension/index', () => {

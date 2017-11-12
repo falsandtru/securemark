@@ -1,6 +1,5 @@
-﻿import { Result, combine, loop, bracket } from '../../combinator';
-import { MediaParser } from '../inline';
-import { TextParser } from '../source';
+﻿import { MediaParser } from '../inline';
+import { combine, loop, bracket } from '../../combinator';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
 import { validate } from '../source/validation';
@@ -10,13 +9,11 @@ import { Cache } from 'spica/cache';
 
 export const cache = new Cache<string, HTMLImageElement>(100);
 
-type SubParsers = [TextParser];
-
 const syntax = /^!\[[^\n]*?\]\n?\(/;
 
-export const media: MediaParser = function (source: string): Result<HTMLImageElement, SubParsers> {
+export const media: MediaParser = function (source: string): [[HTMLImageElement], string] | undefined {
   if (!validate(source, '![', syntax)) return;
-  const [first, next] = bracket('![', loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
+  const [first, next] = bracket('![', loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([text]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
   if (!next.startsWith('(') && !next.startsWith('\n(')) return;
   const caption = first.reduce((s, c) => s + c.textContent, '').trim();
   const [second, rest] = bracket('(', loop(escsource, /^\)|^\s/), ')')(next.slice(next.indexOf('('))) || [[], source];

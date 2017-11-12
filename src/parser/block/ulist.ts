@@ -1,17 +1,15 @@
-﻿import { Result, combine, loop } from '../../combinator';
-import { UListParser, OListParser } from '../block';
+﻿import { UListParser } from '../block';
 import { verifyBlockEnd } from './end';
+import { combine, loop } from '../../combinator';
 import { olist } from './olist';
 import { indent, fillOListFlag } from './indent';
-import { InlineParser, inline } from '../inline';
+import { inline } from '../inline';
 import { squash } from '../squash';
-
-type SubParsers = [InlineParser] | [UListParser, OListParser];
 
 const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
 
-export const ulist: UListParser = verifyBlockEnd(function (source: string): Result<HTMLUListElement, SubParsers> {
+export const ulist: UListParser = verifyBlockEnd(function (source: string): [[HTMLUListElement], string] | undefined {
   const [whole, flag] = source.match(syntax) || ['', ''];
   if (!whole) return;
   const el = document.createElement('ul');
@@ -30,7 +28,7 @@ export const ulist: UListParser = verifyBlockEnd(function (source: string): Resu
         void cb.appendChild(document.createTextNode(`${checkbox.trim()} `));
         void li.appendChild(cb);
       }
-      void li.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(text.slice(checkbox.length)) || [[]])[0]));
+      void li.appendChild(squash((loop(combine<HTMLElement | Text, UListParser.InnerParsers>([inline]))(text.slice(checkbox.length)) || [[]])[0]));
       source = source.slice(line.length + 1);
       continue;
     }
@@ -39,7 +37,7 @@ export const ulist: UListParser = verifyBlockEnd(function (source: string): Resu
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
-      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(fillOListFlag(block)) || [[], block];
+      const [children, brest] = combine<HTMLElement | Text, UListParser.InnerParsers>([ulist, olist])(fillOListFlag(block)) || [[], block];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

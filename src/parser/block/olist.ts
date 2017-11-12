@@ -1,16 +1,14 @@
-﻿import { Result, combine, loop } from '../../combinator';
-import { UListParser, OListParser } from '../block';
+﻿import { OListParser } from '../block';
 import { verifyBlockEnd } from './end';
+import { combine, loop } from '../../combinator';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './indent';
-import { InlineParser, inline } from '../inline';
+import { inline } from '../inline';
 import { squash } from '../squash';
-
-type SubParsers = [InlineParser] | [UListParser, OListParser];
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
 
-export const olist: OListParser = verifyBlockEnd(function (source: string): Result<HTMLOListElement, SubParsers> {
+export const olist: OListParser = verifyBlockEnd(function (source: string): [[HTMLOListElement], string] | undefined {
   const [whole, index, flag] = source.match(syntax) || ['', '', ''];
   if (!whole || !flag) return;
   const el = document.createElement('ol');
@@ -22,7 +20,7 @@ export const olist: OListParser = verifyBlockEnd(function (source: string): Resu
     if (line.search(syntax) === 0) {
       const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
       const li = el.appendChild(document.createElement('li'));
-      void li.appendChild(squash((loop(combine<SubParsers, HTMLElement | Text>([inline]))(text) || [[]])[0]));
+      void li.appendChild(squash((loop(combine<HTMLElement | Text, OListParser.InnerParsers>([inline]))(text) || [[]])[0]));
       source = source.slice(line.length + 1);
       continue;
     }
@@ -31,7 +29,7 @@ export const olist: OListParser = verifyBlockEnd(function (source: string): Resu
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block, rest] = indent(source);
       if (rest === source) return;
-      const [children, brest] = combine<SubParsers, HTMLElement | Text>([ulist, olist])(fillOListFlag(block)) || [[], block];
+      const [children, brest] = combine<HTMLElement | Text, OListParser.InnerParsers>([ulist, olist])(fillOListFlag(block)) || [[], block];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

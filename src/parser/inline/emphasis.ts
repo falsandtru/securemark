@@ -1,17 +1,15 @@
-﻿import { Result, combine, loop, bracket } from '../../combinator';
-import { EmphasisParser, StrongParser, InlineParser, inline } from '../inline';
+﻿import { EmphasisParser, inline } from '../inline';
+import { combine, loop, bracket } from '../../combinator';
 import { strong } from './strong';
 import { squash } from '../squash';
 import { validate } from '../source/validation';
 
-type SubParsers = [InlineParser, StrongParser];
-
 const syntax = /^\*[\s\S]+?\*/;
 const closer = /^\*/;
 
-export const emphasis: EmphasisParser = function (source: string): Result<HTMLElement, SubParsers> {
+export const emphasis: EmphasisParser = function (source: string): [[HTMLElement], string] | undefined {
   if (!validate(source, '*', syntax)) return;
-  const [cs, rest] = bracket('*', loop(combine<SubParsers, HTMLElement | Text>([loop(inline, closer), strong])), '*')(source) || [[], source];
+  const [cs, rest] = bracket('*', loop(combine<HTMLElement | Text, EmphasisParser.InnerParsers>([loop(inline, closer), strong])), '*')(source) || [[], source];
   if (rest === source) return;
   const el = document.createElement('em');
   void el.appendChild(squash(cs));

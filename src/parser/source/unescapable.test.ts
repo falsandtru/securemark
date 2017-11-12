@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { unescsource } from './unescapable';
+﻿import { unescsource } from './unescapable';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/source/unescapable', () => {

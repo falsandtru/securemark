@@ -13,7 +13,7 @@ describe('Unit: combinator/combine', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     }
-    const ab = combine<[typeof a, typeof b], string>([a, b]);
+    const ab = combine<string, [typeof a, typeof b]>([a, b]);
 
     it('a', () => {
       const parser = a;

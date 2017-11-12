@@ -1,5 +1,5 @@
-﻿import { loop } from '../../../combinator';
-import { url } from './url';
+﻿import { url } from './url';
+import { loop } from '../../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/autolink/url', () => {

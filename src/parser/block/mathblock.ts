@@ -1,13 +1,9 @@
-﻿import { Result } from '../../combinator';
-import { MathBlockParser } from '../block';
+﻿import { MathBlockParser } from '../block';
 import { verifyBlockEnd } from './end';
-import { EscapableSourceParser } from '../source';
-
-type SubParsers = [EscapableSourceParser];
 
 const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
 
-export const math: MathBlockParser = verifyBlockEnd(function (source: string): Result<HTMLDivElement, SubParsers> {
+export const mathblock: MathBlockParser = verifyBlockEnd(function (source: string): [[HTMLDivElement], string] | undefined {
   if (!source.startsWith('$$')) return;
   const [whole] = source.match(syntax) || ['', ''];
   if (!whole) return;

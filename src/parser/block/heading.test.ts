@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { heading } from './heading';
+﻿import { heading } from './heading';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/heading', () => {

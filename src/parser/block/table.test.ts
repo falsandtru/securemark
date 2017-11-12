@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { table } from './table';
+﻿import { table } from './table';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/table', () => {

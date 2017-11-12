@@ -1,17 +1,15 @@
-﻿import { Result, combine, loop, bracket } from '../../combinator';
-import { LinkParser, InlineParser, inline } from '../inline';
+﻿import { LinkParser, inline } from '../inline';
+import { combine, loop, bracket } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 import { validate } from '../source/validation';
 import { sanitize } from '../string/url';
 
-type SubParsers = [InlineParser];
-
 const syntax = /^\[[^\n]*?\]\n?\(/;
 
-export const link: LinkParser = function (source: string): Result<HTMLAnchorElement, SubParsers> {
+export const link: LinkParser = function (source: string): [[HTMLAnchorElement], string] | undefined {
   if (!validate(source, '[', syntax)) return;
-  const [first, next] = bracket('[', loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
+  const [first, next] = bracket('[', loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
   if (!next.startsWith('(') && !next.startsWith('\n(')) return;
   const children = squash(first);
   if (children.querySelector('a, .annotation')) return;

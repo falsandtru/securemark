@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { parenthesis } from './parenthesis';
+﻿import { parenthesis } from './parenthesis';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/inline/parenthesis', () => {

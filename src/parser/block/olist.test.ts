@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { olist } from './olist';
+﻿import { olist } from './olist';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/olist', () => {

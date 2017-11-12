@@ -1,19 +1,17 @@
 ﻿import { Markdown } from '../../../../markdown.d';
-import { Parser, Result, loop } from '../../../combinator';
-import { PreTextParser } from '../../block';
+import { verifyBlockEnd } from '../end';
+import { Parser, loop } from '../../../combinator';
 import { inline } from '../../inline';
 import { unescsource } from '../../source/unescapable';
 import { squash } from '../../squash';
 
 export interface PlaceholderParser extends
   Markdown<'extensionblock' & 'extensionblock/placeholder'>,
-  Parser<HTMLElement, SubParsers> {
+  Parser<HTMLElement, never[]> {
 }
-type SubParsers = [PreTextParser];
-
 const syntax = /^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
 
-export const placeholder: PlaceholderParser = function (source: string): Result<HTMLElement, SubParsers> {
+export const placeholder: PlaceholderParser = verifyBlockEnd(function (source: string): [HTMLElement[], string] | undefined {
   if (!source.startsWith('~~~')) return;
   const [whole, keyword] = source.match(syntax) || ['', ''];
   if (!whole) return;
@@ -31,4 +29,4 @@ export const placeholder: PlaceholderParser = function (source: string): Result<
   const quote = document.createElement('pre');
   void quote.appendChild(document.createTextNode(`${keyword}\n${lines.join('')}${keyword}`));
   return [[message, quote], source.slice(keyword.length + 1)];
-};
+});

@@ -1,5 +1,5 @@
-﻿import { loop } from '../../../combinator';
-import { placeholder } from './placeholder';
+﻿import { placeholder } from './placeholder';
+import { loop } from '../../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/extension/placeholder', () => {

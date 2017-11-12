@@ -1,11 +1,10 @@
-﻿import { Result } from '../../combinator';
-import { IndexerParser } from '../block';
-import { ExtensionParser, inline } from '../inline';
+﻿import { IndexerParser } from '../block';
+import { inline } from '../inline';
 import { makeIndex } from '../string/index';
 
 const syntax = /^\s+\[#\S+?\]$/;
 
-export const indexer: IndexerParser = function (source: string): Result<HTMLElement, [ExtensionParser.IndexParser]> {
+export const indexer: IndexerParser = function (source: string): [[HTMLElement], string] | undefined {
   assert(!source.match(/\n/));
   if (!source.trim().startsWith('[#') || source.search(syntax) !== 0) return;
   assert(source.endsWith(']'));

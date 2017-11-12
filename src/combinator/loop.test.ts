@@ -14,7 +14,7 @@ describe('Unit: combinator/loop', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     }
-    const ab = combine<[typeof a, typeof b], string>([a, b]);
+    const ab = combine<string, [typeof a, typeof b]>([a, b]);
 
     it('ab', () => {
       const parser = loop(ab, /aaa|$/);

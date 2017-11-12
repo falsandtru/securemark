@@ -1,26 +1,24 @@
-﻿import { Result, combine, loop, bracket } from '../../../combinator';
-import { TextParser } from '../../source';
+﻿import { TextParser } from '../../source';
+import { combine, loop, bracket } from '../../../combinator';
 import { text } from '../../source/text';
 import { squash } from '../../squash';
 import { validate } from '../../source/validation';
 
-type SubParsers = [TextParser];
-
 const syntax = /^\[[~#:^\[][^\s\[\]][^\n]*?\]/;
 
-export const template = function <T extends Result<HTMLElement, any>>(parser: (flag: string, query: string) => T) {
-  return function (source: string): T | undefined {
+export const template = function <T extends [[HTMLElement], string] | undefined>(parser: (flag: string, query: string) => T): (source: string) => T {
+  return function (source: string): T {
     const [flag, query, rest] = parse(source) || ['', '', ''];
-    if (!flag) return;
+    if (!flag) return undefined as T;
     const result = parser(flag, query);
-    if (!result) return;
-    return [result[0], rest] as typeof result;
+    if (!result) return undefined as T;
+    return [result[0], rest] as T;
   };
 };
 
 function parse(source: string): [string, string, string] | undefined {
   if (!validate(source, '[', syntax)) return;
-  const [cs, rest] = bracket('[', loop(combine<SubParsers, HTMLElement | Text>([text]), /^[\]\n]/), ']')(source) || [[], source];
+  const [cs, rest] = bracket('[', loop(combine<HTMLElement | Text, [TextParser]>([text]), /^[\]\n]/), ']')(source) || [[], source];
   if (rest === source) return;
   const txt = squash(cs).textContent!;
   if (txt === '' || txt !== txt.trim()) return;

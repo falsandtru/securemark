@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { ulist } from './ulist';
+﻿import { ulist } from './ulist';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/ulist', () => {

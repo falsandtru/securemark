@@ -1,16 +1,14 @@
-﻿import { Result, combine, loop, bracket } from '../../combinator';
-import { AnnotationParser, InlineParser, inline } from '../inline';
+﻿import { AnnotationParser, inline } from '../inline';
+import { combine, loop, bracket } from '../../combinator';
 import { squash } from '../squash';
 import { validate } from '../source/validation';
-
-type SubParsers = [InlineParser];
 
 const syntax = /^\(\([\s\S]+?\)\)/;
 const closer = /^\)\)/;
 
-export const annotation: AnnotationParser = function (source: string): Result<HTMLElement, SubParsers> {
+export const annotation: AnnotationParser = function (source: string): [[HTMLElement], string] | undefined {
   if (!validate(source, '((', syntax)) return;
-  const [cs, rest] = bracket('((', loop(combine<SubParsers, HTMLElement | Text>([inline]), closer), '))')(source) || [[], source];
+  const [cs, rest] = bracket('((', loop(combine<HTMLElement | Text, AnnotationParser.InnerParsers>([inline]), closer), '))')(source) || [[], source];
   if (rest === source) return;
   const el = document.createElement('sup');
   void el.setAttribute('class', 'annotation');

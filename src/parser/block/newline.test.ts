@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { newline } from './newline';
+﻿import { newline } from './newline';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/newline', () => {

@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { pretext} from './pretext';
+﻿import { pretext} from './pretext';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/pretext', () => {

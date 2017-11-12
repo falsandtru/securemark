@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { paragraph } from './paragraph';
+﻿import { paragraph } from './paragraph';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/paragraph', () => {

@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { strong } from './strong';
+﻿import { strong } from './strong';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/inline/strong', () => {

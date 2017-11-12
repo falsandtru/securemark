@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { annotation } from './annotation';
+﻿import { annotation } from './annotation';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/inline/annotation', () => {

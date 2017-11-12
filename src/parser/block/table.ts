@@ -1,15 +1,13 @@
-﻿import { Result, loop } from '../../combinator';
-import { TableParser } from '../block';
+﻿import { TableParser } from '../block';
 import { verifyBlockEnd } from './end';
-import { InlineParser, inline } from '../inline';
+import { loop } from '../../combinator';
+import { inline } from '../inline';
 import { squash } from '../squash';
-
-type SubParsers = [InlineParser];
 
 const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
 const align = /^:?-+:?$/;
 
-export const table: TableParser = verifyBlockEnd(function (source: string): Result<HTMLTableElement, SubParsers> {
+export const table: TableParser = verifyBlockEnd(function (source: string): [[HTMLTableElement], string] | undefined {
   if (!source.startsWith('|') || source.search(syntax) !== 0) return;
   const table = document.createElement('table');
   const [headers, hrest] = parse(source) || [[], source];

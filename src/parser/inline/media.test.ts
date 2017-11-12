@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { media } from './media';
+﻿import { media } from './media';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/inline/media', () => {

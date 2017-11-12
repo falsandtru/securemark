@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { extension } from './extension';
+﻿import { extension } from './extension';
+import { loop } from '../../combinator';
 
 describe('Unit: parser/block/extension', () => {
   describe('extension', () => {

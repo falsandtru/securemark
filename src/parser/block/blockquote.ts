@@ -1,16 +1,13 @@
-﻿import { Result, combine, loop } from '../../combinator';
-import { BlockquoteParser } from '../block';
+﻿import { BlockquoteParser } from '../block';
 import { verifyBlockEnd } from './end';
-import { BlockParser, block } from '../block';
-import { UnescapableSourceParser } from '../source';
+import { combine, loop } from '../../combinator';
+import { block } from '../block';
 import { unescsource } from '../source/unescapable';
 import { squash } from '../squash';
 
-type SubParsers = [UnescapableSourceParser] | [BlockParser];
-
 const syntax = /^>+(?=\s|$)/;
 
-export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: string): Result<HTMLQuoteElement, SubParsers> {
+export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: string): [[HTMLQuoteElement], string] | undefined {
   const mode = undefined
     || source.startsWith('>') && 'plain'
     || source.startsWith('|>') && 'markdown'
@@ -54,7 +51,7 @@ export const blockquote: BlockquoteParser = verifyBlockEnd(function (source: str
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs, rest] = loop(combine<SubParsers, HTMLElement | Text>([unescsource]), '\n|$')(source) || [[document.createTextNode('')], source];
+    const [cs, rest] = loop(combine<HTMLElement | Text, BlockquoteParser.InnerParsers>([unescsource]), '\n|$')(source) || [[document.createTextNode('')], source];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs);

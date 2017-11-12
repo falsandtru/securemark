@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { indexer } from './indexer';
+﻿import { indexer } from './indexer';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/indexer', () => {

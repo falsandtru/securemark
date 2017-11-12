@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { blockquote } from './blockquote';
+﻿import { blockquote } from './blockquote';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/block/blockquote', () => {

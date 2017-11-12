@@ -1,5 +1,5 @@
-﻿import { loop } from '../../combinator';
-import { code } from './code';
+﻿import { code } from './code';
+import { loop } from '../../combinator';
 import { inspect } from '../debug.test';
 
 describe('Unit: parser/inline/code', () => {
