@@ -1,10 +1,10 @@
 ﻿import { Result } from '../../../combinator/parser';
+import { bracket } from '../../../combinator/bracket';
 import { combine } from '../../../combinator/combine';
 import { loop } from '../../../combinator/loop';
 import { TextParser } from '../../source';
 import { text } from '../../source/text';
 import { squash } from '../../squash';
-import { Cache } from 'spica/cache';
 
 type SubParsers = [TextParser];
 
@@ -20,16 +20,11 @@ export const template = function <T extends Result<HTMLElement, any>>(parser: (f
   };
 };
 
-const cache = new Cache<string, [string, string, string] | undefined>(9);
-
 function parse(source: string): [string, string, string] | undefined {
   if (!source.startsWith('[') || source.search(syntax) !== 0) return;
-  if (cache.has(source)) return cache.get(source);
-  void cache.set(source, undefined);
-  const [[, ...cs], rest] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^[\]\n]/)(source) || [[], source];
-  if (!rest.startsWith(']')) return;
+  const [cs, rest] = bracket('[', loop(combine<SubParsers, HTMLElement | Text>([text]), /^[\]\n]/), ']')(source) || [[], source];
+  if (rest === source) return;
   const txt = squash(cs).textContent!;
   if (txt === '' || txt !== txt.trim()) return;
-  assert(cache.has(source));
-  return cache.set(source, [txt[0], txt.slice(1), rest.slice(1)]);
+  return [txt[0], txt.slice(1), rest];
 }

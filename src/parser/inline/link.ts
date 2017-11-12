@@ -1,4 +1,5 @@
 ﻿import { Result } from '../../combinator/parser';
+import { bracket } from '../../combinator/bracket';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { LinkParser, InlineParser, inline } from '../inline';
@@ -12,8 +13,8 @@ const syntax = /^\[[^\n]*?\]\n?\(/;
 
 export const link: LinkParser = function (source: string): Result<HTMLAnchorElement, SubParsers> {
   if (!source.startsWith('[') || source.search(syntax) !== 0) return;
-  const [[, ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\n?\(|^\n/)(` ${source.slice(1)}`) || [[], ''];
-  if (!next.startsWith('](') && !next.startsWith(']\n(')) return;
+  const [first, next] = bracket('[', loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
+  if (!next.startsWith('(') && !next.startsWith('\n(')) return;
   const children = squash(first);
   if (children.querySelector('a, .annotation')) return;
   if (children.querySelector('img')) {
@@ -23,8 +24,8 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
     if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
     if (children.textContent !== children.textContent!.trim()) return;
   }
-  const [[, ...second], rest] = loop(escsource, /^\)|^\s(?!nofollow)/)(`$${next.replace(/^\]\n?\(/, '')}`) || [[], ''];
-  if (!rest.startsWith(')')) return;
+  const [second, rest] = bracket('(', loop(escsource, /^\)|^\s(?!nofollow)/), ')')(next.slice(next.indexOf('('))) || [[], source];
+  if (rest === source) return;
   const [INSECURE_URL, attribute] = second.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1').split(/\s/);
   assert(attribute === undefined || attribute === 'nofollow');
   const url = sanitize(INSECURE_URL);
@@ -41,5 +42,5 @@ export const link: LinkParser = function (source: string): Result<HTMLAnchorElem
       ? children
       : document.createTextNode((INSECURE_URL || el.href).replace(/^h(?=ttps?:\/\/)/, attribute === 'nofollow' ? '' : 'h')));
   assert(el.querySelector('img') || el.textContent!.trim());
-  return [[el], rest.slice(1)];
+  return [[el], rest];
 };

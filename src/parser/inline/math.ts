@@ -1,7 +1,8 @@
 ﻿import { Result } from '../../combinator/parser';
-import { MathInlineParser } from '../inline';
+import { bracket } from '../../combinator/bracket';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
+import { MathInlineParser } from '../inline';
 import { EscapableSourceParser } from '../source';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
@@ -16,8 +17,8 @@ const closer = /^\$(?!\d)|^\n/;
 
 export const math: MathInlineParser = function (source: string): Result<HTMLSpanElement, SubParsers> {
   if (!source.startsWith('$') || source.startsWith('$$') || source.search(syntax) !== 0) return;
-  const [cs, rest] = loop(combine<SubParsers, Text>([escsource]), closer)(source.slice(1)) || [[], ''];
-  if (!rest.startsWith('$')) return;
+  const [cs, rest] = bracket('$', loop(combine<SubParsers, Text>([escsource]), closer), '$')(source) || [[], ''];
+  if (rest === source) return;
   const el = document.createElement('span');
   void el.setAttribute('class', 'math');
   void el.appendChild(squash([document.createTextNode('$'), ...cs, document.createTextNode('$')]));

@@ -1,4 +1,5 @@
 ﻿import { Result } from '../../combinator/parser';
+import { bracket } from '../../combinator/bracket';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { MediaParser } from '../inline';
@@ -17,17 +18,17 @@ const syntax = /^!\[[^\n]*?\]\n?\(/;
 
 export const media: MediaParser = function (source: string): Result<HTMLImageElement, SubParsers> {
   if (!source.startsWith('![') || source.search(syntax) !== 0) return;
-  const [[, , ...first], next] = loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\n?\(|^\n/)(source) || [[], ''];
-  if (!next.startsWith('](') && !next.startsWith(']\n(')) return;
+  const [first, next] = bracket('![', loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
+  if (!next.startsWith('(') && !next.startsWith('\n(')) return;
   const caption = first.reduce((s, c) => s + c.textContent, '').trim();
-  const [[...second], rest] = loop(escsource, /^\)|^\s/)(next.replace(/^\]\n?\(/, '')) || [[], ''];
-  if (!rest.startsWith(')')) return;
+  const [second, rest] = bracket('(', loop(escsource, /^\)|^\s/), ')')(next.slice(next.indexOf('('))) || [[], source];
+  if (rest === source) return;
   const url = sanitize(second.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));
   if (url === '') return;
-  if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLImageElement], rest.slice(1)];
+  if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLImageElement], rest];
   const el = DOM.img({
     'data-src': url,
     alt: caption,
   }).element;
-  return [[el], rest.slice(1)];
+  return [[el], rest];
 };

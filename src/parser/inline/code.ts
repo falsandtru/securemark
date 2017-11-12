@@ -1,4 +1,5 @@
 ﻿import { Result } from '../../combinator/parser';
+import { bracket } from '../../combinator/bracket';
 import { combine } from '../../combinator/combine';
 import { loop } from '../../combinator/loop';
 import { CodeParser } from '../inline';
@@ -15,12 +16,12 @@ export const code: CodeParser = function (source: string): Result<HTMLElement, S
   if (!source.startsWith('`')) return;
   const [whole, keyword] = source.match(syntax) || ['', ''];
   if (!whole) return;
-  const [cs, rest] = loop(combine<SubParsers, Text>([loop(backquote), unescsource]), `^${keyword}(?!\`)`)(source.slice(keyword.length)) || [[], ''];
-  if (!rest.startsWith(keyword)) return;
+  const [cs, rest] = bracket(keyword, loop(combine<SubParsers, Text>([loop(backquote), unescsource]), `^${keyword}(?!\`)`), keyword)(source) || [[], source];
+  if (rest === source) return;
   const el = document.createElement('code');
   void el.appendChild(squash(cs));
   el.textContent = el.textContent!.trim();
   if (el.textContent! === '') return;
-  void el.setAttribute('data-src', source.slice(0, source.length - rest.length + keyword.length));
-  return [[el], rest.slice(keyword.length)];
+  void el.setAttribute('data-src', source.slice(0, source.length - rest.length));
+  return [[el], rest];
 };
