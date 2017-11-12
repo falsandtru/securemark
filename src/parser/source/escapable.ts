@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { EscapableSourceParser } from '../source';
 
 const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;

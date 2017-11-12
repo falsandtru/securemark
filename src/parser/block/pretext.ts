@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { PreTextParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { UnescapableSourceParser } from '../source';

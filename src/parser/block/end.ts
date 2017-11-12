@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 
 export function verifyBlockEnd<a extends Result<any, any>>(parser: (source: string) => a): (source: string) => a {
   return (source: string) => {

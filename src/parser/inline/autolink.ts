@@ -1,4 +1,4 @@
-﻿import { combine } from '../../combinator/combine';
+﻿import { combine } from '../../combinator';
 import { AutolinkParser } from '../inline';
 import { url } from './autolink/url';
 import { account } from './autolink/account';

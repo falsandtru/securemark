@@ -1,7 +1,7 @@
 ﻿import { PreTextParser, ExtensionBlockParser } from '../parser/block';
 import { pretext } from '../parser/block/pretext';
 import { extension } from '../parser/block/extension';
-import { combine } from '../combinator/combine';
+import { combine } from '../combinator';
 
 const syntax = /^(?:[^\S\n]*\n)+|^(?:[^\n]*\n)+?[^\S\n]*\n/;
 assert(!''.match(syntax));

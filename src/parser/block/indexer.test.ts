@@ -1,4 +1,4 @@
-﻿import { loop } from '../../combinator/loop';
+﻿import { loop } from '../../combinator';
 import { indexer } from './indexer';
 import { inspect } from '../debug.test';
 

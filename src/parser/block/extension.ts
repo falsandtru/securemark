@@ -1,4 +1,4 @@
-﻿import { combine } from '../../combinator/combine';
+﻿import { combine } from '../../combinator';
 import { ExtensionBlockParser } from '../block';
 import { placeholder } from './extension/placeholder';
 import { verifyBlockEnd } from './end';

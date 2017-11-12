@@ -1,4 +1,4 @@
-﻿import { combine } from '../../combinator/combine';
+﻿import { combine } from '../../combinator';
 import { ExtensionParser } from '../inline';
 import { index } from './extension/index';
 import { placeholder } from './extension/placeholder';

@@ -1,7 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
-import { bracket } from '../../combinator/bracket';
-import { combine } from '../../combinator/combine';
-import { loop } from '../../combinator/loop';
+﻿import { Result, combine, loop, bracket } from '../../combinator';
 import { LinkParser, InlineParser, inline } from '../inline';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';

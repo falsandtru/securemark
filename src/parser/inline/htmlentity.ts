@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { HTMLEntityParser } from '../inline';
 
 type SubParsers = [never];

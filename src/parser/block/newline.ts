@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { NewlineParser } from '../block';
 
 const syntax = /^[^\S\n]*\n/;

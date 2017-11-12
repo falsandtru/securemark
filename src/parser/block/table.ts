@@ -1,5 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
-import { loop } from '../../combinator/loop';
+﻿import { Result, loop } from '../../combinator';
 import { TableParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { InlineParser, inline } from '../inline';

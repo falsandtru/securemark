@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { combine } from '../combinator/combine';
+import { combine } from '../combinator';
 import { brace } from './inline/brace';
 import { annotation } from './inline/annotation';
 import { parenthesis } from './inline/parenthesis';

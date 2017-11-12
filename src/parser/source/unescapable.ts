@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { UnescapableSourceParser } from '../source';
 
 const separator = /`|<\/code>|\n/i;

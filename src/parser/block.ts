@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { combine } from '../combinator/combine';
+import { combine } from '../combinator';
 import { newline } from './block/newline';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';

@@ -1,4 +1,4 @@
-﻿import { Result } from '../../../combinator/parser';
+﻿import { Result } from '../../../combinator';
 import { AutolinkParser } from '../../inline';
 
 const syntax = /^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/;

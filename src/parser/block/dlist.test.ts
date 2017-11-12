@@ -1,4 +1,4 @@
-﻿import { loop } from '../../combinator/loop';
+﻿import { loop } from '../../combinator';
 import { dlist } from './dlist';
 import { inspect } from '../debug.test';
 

@@ -1,6 +1,4 @@
-﻿import { Result } from '../../../combinator/parser';
-import { combine } from '../../../combinator/combine';
-import { loop } from '../../../combinator/loop';
+﻿import { Result, combine, loop } from '../../../combinator';
 import { AutolinkParser, InlineParser } from '../../inline';
 import { EscapableSourceParser } from '../../source';
 import { escsource } from '../../source/escapable';

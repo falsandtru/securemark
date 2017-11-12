@@ -1,4 +1,4 @@
-﻿import { loop } from '../../../combinator/loop';
+﻿import { loop } from '../../../combinator';
 import { url } from './url';
 import { inspect } from '../../debug.test';
 

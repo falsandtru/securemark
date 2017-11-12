@@ -1,5 +1,4 @@
-﻿import { Result } from '../../../combinator/parser';
-import { loop } from '../../../combinator/loop';
+﻿import { Result, loop } from '../../../combinator';
 import { ExtensionParser, inline } from '../../inline';
 import { TextParser } from '../../source';
 import { squash } from '../../squash';

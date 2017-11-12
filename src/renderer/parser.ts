@@ -1,4 +1,4 @@
-import { loop } from '../combinator/loop';
+import { loop } from '../combinator';
 import { block } from '../parser/block';
 import { segment } from '../parser/segment';
 

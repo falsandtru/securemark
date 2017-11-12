@@ -1,6 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
-import { combine } from '../../combinator/combine';
-import { loop } from '../../combinator/loop';
+﻿import { Result, combine, loop } from '../../combinator';
 import { HTMLParser, InlineParser, inline } from '../inline';
 import { squash } from '../squash';
 

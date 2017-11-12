@@ -1,4 +1,4 @@
-﻿import { loop } from '../../combinator/loop';
+﻿import { loop } from '../../combinator';
 import { blockquote } from './blockquote';
 import { inspect } from '../debug.test';
 

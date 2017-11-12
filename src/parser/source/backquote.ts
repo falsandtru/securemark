@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { BackquoteParser } from '../source';
 
 export const backquote: BackquoteParser = function (source: string): Result<Text, [never]> {

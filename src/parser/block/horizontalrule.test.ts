@@ -1,4 +1,4 @@
-﻿import { loop } from '../../combinator/loop';
+﻿import { loop } from '../../combinator';
 import { horizontalrule } from './horizontalrule';
 import { inspect } from '../debug.test';
 

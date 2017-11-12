@@ -1,7 +1,4 @@
-﻿import { Result } from '../../../combinator/parser';
-import { bracket } from '../../../combinator/bracket';
-import { combine } from '../../../combinator/combine';
-import { loop } from '../../../combinator/loop';
+﻿import { Result, combine, loop, bracket } from '../../../combinator';
 import { TextParser } from '../../source';
 import { text } from '../../source/text';
 import { squash } from '../../squash';

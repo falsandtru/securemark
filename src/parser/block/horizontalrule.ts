@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { HorizontalRuleParser } from '../block';
 import { verifyBlockEnd } from './end';
 

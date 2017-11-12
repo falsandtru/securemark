@@ -1,4 +1,4 @@
-﻿import { Result } from '../../../combinator/parser';
+﻿import { Result } from '../../../combinator';
 import { ExtensionParser } from '../../inline';
 import { TextParser } from '../../source';
 import { link } from '../link';

@@ -1,4 +1,4 @@
-﻿import { loop } from '../../combinator/loop';
+﻿import { loop } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { inspect } from '../debug.test';
 

@@ -1,7 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
-import { bracket as bkt } from '../../combinator/bracket';
-import { combine } from '../../combinator/combine';
-import { loop } from '../../combinator/loop';
+﻿import { Result, combine, loop, bracket as brkt } from '../../combinator';
 import { BracketParser, InlineParser, inline } from '../inline';
 import { squash } from '../squash';
 
@@ -12,7 +9,7 @@ const closer = /^\]/;
 
 export const bracket: BracketParser = function (source: string): Result<HTMLElement | Text, SubParsers> {
   if (!source.startsWith('[') || source.search(syntax) !== 0) return;
-  const [cs, rest] = bkt('[', loop(combine<SubParsers, HTMLElement | Text>([inline]), closer), ']')(source) || [[], source];
+  const [cs, rest] = brkt('[', loop(combine<SubParsers, HTMLElement | Text>([inline]), closer), ']')(source) || [[], source];
   if (rest === source) return;
   return [[...squash([document.createTextNode('['), ...cs, document.createTextNode(']')]).childNodes] as Array<HTMLElement | Text>, rest];
 };

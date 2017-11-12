@@ -1,6 +1,5 @@
 ﻿import { Markdown } from '../../../../markdown.d';
-import { Parser, Result } from '../../../combinator/parser';
-import { loop } from '../../../combinator/loop';
+import { Parser, Result, loop } from '../../../combinator';
 import { PreTextParser } from '../../block';
 import { inline } from '../../inline';
 import { unescsource } from '../../source/unescapable';

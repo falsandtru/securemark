@@ -1,6 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
-import { combine } from '../../combinator/combine';
-import { loop } from '../../combinator/loop';
+﻿import { Result, combine, loop } from '../../combinator';
 import { UListParser, OListParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { olist } from './olist';

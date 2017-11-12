@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { IndexerParser } from '../block';
 import { ExtensionParser, inline } from '../inline';
 import { makeIndex } from '../string/index';

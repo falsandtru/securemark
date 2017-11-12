@@ -1,4 +1,4 @@
-﻿import { Result } from '../../combinator/parser';
+﻿import { Result } from '../../combinator';
 import { MathBlockParser } from '../block';
 import { verifyBlockEnd } from './end';
 import { EscapableSourceParser } from '../source';
