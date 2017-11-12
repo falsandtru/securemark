@@ -1160,27 +1160,13 @@ require = function e(t, n, r) {
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             function loop(parser, until) {
-                var check = function () {
-                    switch (typeof until) {
-                    case 'undefined':
-                        return function () {
-                            return false;
-                        };
-                    case 'function':
-                        return until;
-                    default:
-                        return function (rest) {
-                            return rest.slice(0, 99).search(until) === 0;
-                        };
-                    }
-                }();
                 return function (source) {
                     var rest = source;
                     var results = [];
                     while (true) {
                         if (rest === '')
                             break;
-                        if (check(rest))
+                        if (until && rest.slice(0, 99).search(until) === 0)
                             break;
                         var result = parser(rest);
                         if (!result)
@@ -1189,12 +1175,10 @@ require = function e(t, n, r) {
                         void results.push.apply(results, __spread(rs));
                         rest = r;
                     }
-                    if (rest.length === source.length)
-                        return;
-                    return !until || check(rest) ? [
+                    return rest.length === source.length ? undefined : [
                         results,
                         rest
-                    ] : undefined;
+                    ];
                 };
             }
             exports.loop = loop;
@@ -1217,9 +1201,9 @@ require = function e(t, n, r) {
         },
         {
             './parser/cache': 35,
-            './renderer/bind': 64,
-            './renderer/parser': 65,
-            './renderer/render': 66
+            './renderer/bind': 65,
+            './renderer/parser': 66,
+            './renderer/render': 67
         }
     ],
     18: [
@@ -1387,8 +1371,8 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../block': 18,
-            '../source/unescapable': 60,
-            '../squash': 61,
+            '../source/unescapable': 61,
+            '../squash': 62,
             './end': 21
         }
     ],
@@ -1474,7 +1458,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61,
+            '../squash': 62,
             './end': 21,
             './indexer': 27
         }
@@ -1578,8 +1562,8 @@ require = function e(t, n, r) {
         {
             '../../../combinator/loop': 16,
             '../../inline': 36,
-            '../../source/unescapable': 60,
-            '../../squash': 61
+            '../../source/unescapable': 61,
+            '../../squash': 62
         }
     ],
     24: [
@@ -1641,7 +1625,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61,
+            '../squash': 62,
             './end': 21,
             './indexer': 27
         }
@@ -1808,7 +1792,7 @@ require = function e(t, n, r) {
         },
         {
             '../inline': 36,
-            '../string/index': 62
+            '../string/index': 63
         }
     ],
     28: [
@@ -1993,7 +1977,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61,
+            '../squash': 62,
             './end': 21,
             './indent': 26,
             './ulist': 34
@@ -2050,7 +2034,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61,
+            '../squash': 62,
             './end': 21
         }
     ],
@@ -2241,7 +2225,7 @@ require = function e(t, n, r) {
         {
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61,
+            '../squash': 62,
             './end': 21
         }
     ],
@@ -2348,7 +2332,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61,
+            '../squash': 62,
             './end': 21,
             './indent': 26,
             './olist': 30
@@ -2427,7 +2411,7 @@ require = function e(t, n, r) {
             './inline/media': 54,
             './inline/parenthesis': 55,
             './inline/strong': 56,
-            './source/text': 59
+            './source/text': 60
         }
     ],
     37: [
@@ -2485,7 +2469,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61
+            '../squash': 62
         }
     ],
     38: [
@@ -2543,7 +2527,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61
+            '../squash': 62
         }
     ],
     39: [
@@ -2667,7 +2651,7 @@ require = function e(t, n, r) {
         {
             '../../../combinator/combine': 15,
             '../../../combinator/loop': 16,
-            '../../source/escapable': 58,
+            '../../source/escapable': 59,
             '../link': 52
         }
     ],
@@ -2726,7 +2710,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61
+            '../squash': 62
         }
     ],
     43: [
@@ -2784,7 +2768,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61
+            '../squash': 62
         }
     ],
     44: [
@@ -2815,6 +2799,7 @@ require = function e(t, n, r) {
             var combine_1 = require('../../combinator/combine');
             var loop_1 = require('../../combinator/loop');
             var unescapable_1 = require('../source/unescapable');
+            var backquote_1 = require('../source/backquote');
             var squash_1 = require('../squash');
             var syntax = /^(`+)[^\n]+?\1/;
             exports.code = function (source) {
@@ -2826,7 +2811,10 @@ require = function e(t, n, r) {
                     ], 2), whole = _a[0], keyword = _a[1];
                 if (!whole)
                     return;
-                var _b = __read(loop_1.loop(combine_1.combine([unescapable_1.unescsource]), '^' + keyword)(source.slice(keyword.length)) || [
+                var _b = __read(loop_1.loop(combine_1.combine([
+                        loop_1.loop(backquote_1.backquote),
+                        unescapable_1.unescsource
+                    ]), '^' + keyword + '(?!`)')(source.slice(keyword.length)) || [
                         [],
                         ''
                     ], 2), cs = _b[0], rest = _b[1];
@@ -2847,8 +2835,9 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
-            '../source/unescapable': 60,
-            '../squash': 61
+            '../source/backquote': 58,
+            '../source/unescapable': 61,
+            '../squash': 62
         }
     ],
     45: [
@@ -2886,9 +2875,10 @@ require = function e(t, n, r) {
             exports.emphasis = function (source) {
                 if (!source.startsWith('*') || source.search(syntax) !== 0)
                     return;
-                var _a = __read(loop_1.loop(combine_1.combine([inline_1.inline]), function (rest) {
-                        return rest.slice(0, 99).search(closer) === 0 && !strong_1.strong(rest);
-                    })(source.slice(1)) || [
+                var _a = __read(loop_1.loop(combine_1.combine([
+                        loop_1.loop(inline_1.inline, closer),
+                        strong_1.strong
+                    ]))(source.slice(1)) || [
                         [],
                         ''
                     ], 2), cs = _a[0], rest = _a[1];
@@ -2908,7 +2898,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61,
+            '../squash': 62,
             './strong': 56
         }
     ],
@@ -2971,7 +2961,7 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../string/index': 62,
+            '../../string/index': 63,
             '../link': 52,
             './template': 49
         }
@@ -2996,7 +2986,7 @@ require = function e(t, n, r) {
         {
             '../../../combinator/loop': 16,
             '../../inline': 36,
-            '../../squash': 61,
+            '../../squash': 62,
             './template': 49
         }
     ],
@@ -3075,8 +3065,8 @@ require = function e(t, n, r) {
         {
             '../../../combinator/combine': 15,
             '../../../combinator/loop': 16,
-            '../../source/text': 59,
-            '../../squash': 61,
+            '../../source/text': 60,
+            '../../squash': 62,
             'spica/cache': 5
         }
     ],
@@ -3147,7 +3137,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61
+            '../squash': 62
         }
     ],
     51: [
@@ -3277,9 +3267,9 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../source/escapable': 58,
-            '../squash': 61,
-            '../string/url': 63
+            '../source/escapable': 59,
+            '../squash': 62,
+            '../string/url': 64
         }
     ],
     53: [
@@ -3349,8 +3339,8 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
-            '../source/escapable': 58,
-            '../squash': 61,
+            '../source/escapable': 59,
+            '../squash': 62,
             'spica/cache': 5
         }
     ],
@@ -3429,9 +3419,9 @@ require = function e(t, n, r) {
         {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
-            '../source/escapable': 58,
-            '../source/text': 59,
-            '../string/url': 63,
+            '../source/escapable': 59,
+            '../source/text': 60,
+            '../string/url': 64,
             'spica/cache': 5,
             'typed-dom': 9
         }
@@ -3491,7 +3481,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61
+            '../squash': 62
         }
     ],
     56: [
@@ -3548,7 +3538,7 @@ require = function e(t, n, r) {
             '../../combinator/combine': 15,
             '../../combinator/loop': 16,
             '../inline': 36,
-            '../squash': 61
+            '../squash': 62
         }
     ],
     57: [
@@ -3607,6 +3597,24 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            exports.backquote = function (source) {
+                switch (source[0]) {
+                case '`':
+                    return [
+                        [document.createTextNode(source.slice(0, 1))],
+                        source.slice(1)
+                    ];
+                default:
+                    return;
+                }
+            };
+        },
+        {}
+    ],
+    59: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
             var separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
             exports.escsource = function (source) {
                 if (source.length === 0)
@@ -3649,7 +3657,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    59: [
+    60: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3717,7 +3725,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    60: [
+    61: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3747,7 +3755,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    61: [
+    62: [
         function (require, module, exports) {
             'use strict';
             var __values = this && this.__values || function (o) {
@@ -3797,7 +3805,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    62: [
+    63: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3808,7 +3816,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    63: [
+    64: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3828,7 +3836,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    64: [
+    65: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -3913,11 +3921,11 @@ require = function e(t, n, r) {
         },
         {
             '../parser/segment': 57,
-            './parser': 65,
+            './parser': 66,
             'spica/concat': 6
         }
     ],
-    65: [
+    66: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3947,7 +3955,7 @@ require = function e(t, n, r) {
             '../parser/segment': 57
         }
     ],
-    66: [
+    67: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -4004,12 +4012,12 @@ require = function e(t, n, r) {
             exports.render = render;
         },
         {
-            './render/code': 67,
-            './render/math': 68,
-            './render/media': 69
+            './render/code': 68,
+            './render/math': 69,
+            './render/media': 70
         }
     ],
-    67: [
+    68: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4023,7 +4031,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    68: [
+    69: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4056,7 +4064,7 @@ require = function e(t, n, r) {
         },
         { '../../parser/inline/math': 53 }
     ],
-    69: [
+    70: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4076,15 +4084,15 @@ require = function e(t, n, r) {
             exports.media = media;
         },
         {
-            './media/gist': 70,
-            './media/image': 71,
-            './media/pdf': 72,
-            './media/slideshare': 73,
-            './media/twitter': 74,
-            './media/youtube': 75
+            './media/gist': 71,
+            './media/image': 72,
+            './media/pdf': 73,
+            './media/slideshare': 74,
+            './media/twitter': 75,
+            './media/youtube': 76
         }
     ],
-    70: [
+    71: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4138,12 +4146,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 65,
+            '../../parser': 66,
             'spica/cache': 5,
             'typed-dom': 9
         }
     ],
-    71: [
+    72: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4164,7 +4172,7 @@ require = function e(t, n, r) {
             'typed-dom': 9
         }
     ],
-    72: [
+    73: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4194,11 +4202,11 @@ require = function e(t, n, r) {
             exports.pdf = pdf;
         },
         {
-            '../../parser': 65,
+            '../../parser': 66,
             'typed-dom': 9
         }
     ],
-    73: [
+    74: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4244,12 +4252,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 65,
+            '../../parser': 66,
             'spica/cache': 5,
             'typed-dom': 9
         }
     ],
-    74: [
+    75: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -4306,12 +4314,12 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../parser': 65,
+            '../../parser': 66,
             'spica/cache': 5,
             'typed-dom': 9
         }
     ],
-    75: [
+    76: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
