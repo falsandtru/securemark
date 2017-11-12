@@ -1,6 +1,7 @@
 ﻿import { Result, combine, loop } from '../../combinator';
 import { HTMLParser, InlineParser, inline } from '../inline';
 import { squash } from '../squash';
+import { validate } from '../source/validation';
 
 type SubParsers = [InlineParser];
 
@@ -11,7 +12,7 @@ assert(inlinetags.every(t => ['script', 'style', 'link', 'a', 'img'].indexOf(t) 
 assert(inlinetags.every(t => ['strong', 'em', 'code', 's', 'u'].indexOf(t) === -1));
 
 export const html: HTMLParser = function (source: string): Result<HTMLElement, SubParsers> {
-  if (!source.startsWith('<')) return;
+  if (!validate(source, '<')) return;
   const [whole, opentag, tagname] = source.match(syntax) || ['', '', ''];
   if (!whole) return;
   if (inlinetags.indexOf(tagname) === -1) return;

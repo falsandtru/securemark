@@ -2,6 +2,7 @@
 import { LinkParser, InlineParser, inline } from '../inline';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
+import { validate } from '../source/validation';
 import { sanitize } from '../string/url';
 
 type SubParsers = [InlineParser];
@@ -9,7 +10,7 @@ type SubParsers = [InlineParser];
 const syntax = /^\[[^\n]*?\]\n?\(/;
 
 export const link: LinkParser = function (source: string): Result<HTMLAnchorElement, SubParsers> {
-  if (!source.startsWith('[') || source.search(syntax) !== 0) return;
+  if (!validate(source, '[', syntax)) return;
   const [first, next] = bracket('[', loop(combine<SubParsers, HTMLElement | Text>([inline]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
   if (!next.startsWith('(') && !next.startsWith('\n(')) return;
   const children = squash(first);

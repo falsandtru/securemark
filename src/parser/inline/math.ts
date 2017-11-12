@@ -3,6 +3,7 @@ import { MathInlineParser } from '../inline';
 import { EscapableSourceParser } from '../source';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
+import { validate } from '../source/validation';
 import { Cache } from 'spica/cache';
 
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
@@ -13,7 +14,8 @@ const syntax = /^\$\S[^\n]*?\$(?!\d)/;
 const closer = /^\$(?!\d)|^\n/;
 
 export const math: MathInlineParser = function (source: string): Result<HTMLSpanElement, SubParsers> {
-  if (!source.startsWith('$') || source.startsWith('$$') || source.search(syntax) !== 0) return;
+  if (source.startsWith('$$')) return;
+  if (!validate(source, '$', syntax)) return;
   const [cs, rest] = bracket('$', loop(combine<SubParsers, Text>([escsource]), closer), '$')(source) || [[], ''];
   if (rest === source) return;
   const el = document.createElement('span');

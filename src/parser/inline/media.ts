@@ -3,6 +3,7 @@ import { MediaParser } from '../inline';
 import { TextParser } from '../source';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
+import { validate } from '../source/validation';
 import { sanitize } from '../string/url';
 import DOM from 'typed-dom';
 import { Cache } from 'spica/cache';
@@ -14,7 +15,7 @@ type SubParsers = [TextParser];
 const syntax = /^!\[[^\n]*?\]\n?\(/;
 
 export const media: MediaParser = function (source: string): Result<HTMLImageElement, SubParsers> {
-  if (!source.startsWith('![') || source.search(syntax) !== 0) return;
+  if (!validate(source, '![', syntax)) return;
   const [first, next] = bracket('![', loop(combine<SubParsers, HTMLElement | Text>([text]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
   if (!next.startsWith('(') && !next.startsWith('\n(')) return;
   const caption = first.reduce((s, c) => s + c.textContent, '').trim();

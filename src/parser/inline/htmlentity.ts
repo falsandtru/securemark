@@ -1,12 +1,13 @@
 ﻿import { Result } from '../../combinator';
 import { HTMLEntityParser } from '../inline';
+import { validate } from '../source/validation';
 
 type SubParsers = [never];
 
 const syntax = /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i;
 
 export const htmlentity: HTMLEntityParser = function (source: string): Result<Text, SubParsers> {
-  if (!source.startsWith('&')) return;
+  if (!validate(source, '&')) return;
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;
   return [[document.createTextNode(parse(whole))], source.slice(whole.length)];

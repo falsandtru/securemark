@@ -2,6 +2,7 @@
 import { TextParser } from '../../source';
 import { text } from '../../source/text';
 import { squash } from '../../squash';
+import { validate } from '../../source/validation';
 
 type SubParsers = [TextParser];
 
@@ -18,7 +19,7 @@ export const template = function <T extends Result<HTMLElement, any>>(parser: (f
 };
 
 function parse(source: string): [string, string, string] | undefined {
-  if (!source.startsWith('[') || source.search(syntax) !== 0) return;
+  if (!validate(source, '[', syntax)) return;
   const [cs, rest] = bracket('[', loop(combine<SubParsers, HTMLElement | Text>([text]), /^[\]\n]/), ']')(source) || [[], source];
   if (rest === source) return;
   const txt = squash(cs).textContent!;
