@@ -28,8 +28,8 @@ export const olist: OListParser = verifyBlockEnd(function (source: string): [[HT
       const li = el.lastElementChild!;
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block, rest] = indent(source);
-      if (rest === source) return;
-      const [children, brest] = combine<HTMLElement | Text, OListParser.InnerParsers>([ulist, olist])(fillOListFlag(block)) || [[], block];
+      if (rest.length === source.length) return;
+      const [children, brest = block] = combine<HTMLElement | Text, OListParser.InnerParsers>([ulist, olist])(fillOListFlag(block)) || [[]];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

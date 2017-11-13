@@ -10,9 +10,8 @@ assert(!' '.match(syntax));
 export function segment(source: string): string[] {
   const segments: string[] = [];
   while (source.length > 0) {
-    const [, rest] = combine<HTMLElement, [PretextParser, ExtensionBlockParser]>([pretext, extension])(source) || [[], source.slice((source.match(syntax) || [source])[0].length)];
-    assert(rest.length < source.length);
-    assert(source.endsWith(rest));
+    const [, rest = source.slice((source.match(syntax) || [source])[0].length)] = combine<HTMLElement, [PretextParser, ExtensionBlockParser]>([pretext, extension])(source) || [[]];
+    assert(source.slice(1).endsWith(rest));
     void segments.push(source.slice(0, source.length - rest.length));
     source = rest;
   }

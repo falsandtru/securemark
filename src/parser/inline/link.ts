@@ -12,8 +12,8 @@ export const link: LinkParser = function (source: string) {
   return transform(
     bracket(
       '[',
-      loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^\]\n?\(|^\n/),
-      /\]\n?/),
+      loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^]\n?\(|^\n/),
+      /^]\n?/),
     (ns, rest) => {
       const children = squash(ns);
       if (children.querySelector('a, .annotation')) return;

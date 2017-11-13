@@ -5,21 +5,25 @@ export function bracket<R, P extends Parser<any, any>[]>(start: string | RegExp,
     const l = match(lmr_, start);
     if (l === undefined) return;
     const mr_ = lmr_.slice(l.length);
-    const [rs, r_] = parser(mr_) || [[], mr_];
-    if (!mr_.endsWith(r_)) return;
+    const [rs, r_ = mr_] = parser(mr_) || [[]];
+    assert(mr_.endsWith(r_));
     const r = match(r_, end);
     if (r === undefined) return;
-    if (r_ === mr_ && l + r === '') return;
-    return [rs, r_.slice(r.length)];
+    assert(l + r !== '' && mr_.endsWith(r_));
+    return l + r !== '' && r_.length - r.length < lmr_.length
+      ? [rs, r_.slice(r.length)]
+      : undefined;
   };
 
   function match(source: string, pattern: string | RegExp): string | undefined {
-    return typeof pattern === 'string'
-      ? source.startsWith(pattern)
-        ? pattern
-        : undefined
-      : source.slice(0, 9).search(pattern) === 0
-        ? source.slice(0, 9).match(pattern)![0]
+    if (typeof pattern !== 'string') {
+      const result = source.slice(0, 9).match(pattern);
+      return result
+        ? match(source, result[0])
         : undefined;
+    }
+    return source.startsWith(pattern)
+      ? pattern
+      : undefined;
   }
 }
