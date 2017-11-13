@@ -8,7 +8,11 @@ const closer = /^\]/;
 
 export const bracket: BracketParser = function (source: string): [(HTMLElement | Text)[], string] | undefined {
   if (!validate(source, '[', syntax)) return;
-  const [cs, rest] = brkt('[', loop(combine<HTMLElement | Text, BracketParser.InnerParsers>([inline]), closer), ']')(source) || [[], source];
+  const [cs, rest] = brkt(
+    '[',
+    loop(combine<HTMLElement | Text, BracketParser.InnerParsers>([inline]), closer),
+    ']',
+  )(source) || [[], source];
   if (rest === source) return;
   return [[...squash([document.createTextNode('['), ...cs, document.createTextNode(']')]).childNodes] as Array<HTMLElement | Text>, rest];
 };

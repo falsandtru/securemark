@@ -18,7 +18,11 @@ export const template = function <T extends [[HTMLElement], string] | undefined>
 
 function parse(source: string): [string, string, string] | undefined {
   if (!validate(source, '[', syntax)) return;
-  const [cs, rest] = bracket('[', loop(combine<HTMLElement | Text, [TextParser]>([text]), /^[\]\n]/), ']')(source) || [[], source];
+  const [cs, rest] = bracket(
+    '[',
+    loop(combine<HTMLElement | Text, [TextParser]>([text]), /^[\]\n]/),
+    ']',
+  )(source) || [[], source];
   if (rest === source) return;
   const txt = squash(cs).textContent!;
   if (txt === '' || txt !== txt.trim()) return;

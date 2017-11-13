@@ -11,7 +11,11 @@ export const code: CodeParser = function (source: string): [[HTMLElement], strin
   if (!validate(source, '`')) return;
   const [whole, keyword] = source.match(syntax) || ['', ''];
   if (!whole) return;
-  const [cs, rest] = bracket(keyword, loop(combine<Text, CodeParser.InnerParsers>([loop(backquote), unescsource]), `^${keyword}(?!\`)`), keyword)(source) || [[], source];
+  const [cs, rest] = bracket(
+    keyword,
+    loop(combine<Text, CodeParser.InnerParsers>([loop(backquote), unescsource]), `^${keyword}(?!\`)`),
+    keyword,
+  )(source) || [[], source];
   if (rest === source) return;
   const el = document.createElement('code');
   void el.appendChild(squash(cs));

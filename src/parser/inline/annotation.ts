@@ -8,7 +8,11 @@ const closer = /^\)\)/;
 
 export const annotation: AnnotationParser = function (source: string): [[HTMLElement], string] | undefined {
   if (!validate(source, '((', syntax)) return;
-  const [cs, rest] = bracket('((', loop(combine<HTMLElement | Text, AnnotationParser.InnerParsers>([inline]), closer), '))')(source) || [[], source];
+  const [cs, rest] = bracket(
+    '((',
+    loop(combine<HTMLElement | Text, AnnotationParser.InnerParsers>([inline]), closer),
+    '))',
+  )(source) || [[], source];
   if (rest === source) return;
   const el = document.createElement('sup');
   void el.setAttribute('class', 'annotation');

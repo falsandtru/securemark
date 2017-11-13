@@ -13,7 +13,11 @@ const closer = /^\$(?!\d)|^\n/;
 export const mathinline: MathInlineParser = function (source: string): [[HTMLSpanElement], string] | undefined {
   if (source.startsWith('$$')) return;
   if (!validate(source, '$', syntax)) return;
-  const [cs, rest] = bracket('$', loop(combine<Text, MathInlineParser.InnerParsers>([escsource]), closer), '$')(source) || [[], ''];
+  const [cs, rest] = bracket(
+    '$',
+    loop(combine<Text, MathInlineParser.InnerParsers>([escsource]), closer),
+    '$',
+  )(source) || [[], ''];
   if (rest === source) return;
   const el = document.createElement('span');
   void el.setAttribute('class', 'math');

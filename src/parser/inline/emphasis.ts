@@ -9,7 +9,11 @@ const closer = /^\*/;
 
 export const emphasis: EmphasisParser = function (source: string): [[HTMLElement], string] | undefined {
   if (!validate(source, '*', syntax)) return;
-  const [cs, rest] = bracket('*', loop(combine<HTMLElement | Text, EmphasisParser.InnerParsers>([loop(inline, closer), strong])), '*')(source) || [[], source];
+  const [cs, rest] = bracket(
+    '*',
+    loop(combine<HTMLElement | Text, EmphasisParser.InnerParsers>([loop(inline, closer), strong])),
+    '*',
+  )(source) || [[], source];
   if (rest === source) return;
   const el = document.createElement('em');
   void el.appendChild(squash(cs));

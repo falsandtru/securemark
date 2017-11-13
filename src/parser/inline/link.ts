@@ -9,7 +9,11 @@ const syntax = /^\[[^\n]*?\]\n?\(/;
 
 export const link: LinkParser = function (source: string): [[HTMLAnchorElement], string] | undefined {
   if (!validate(source, '[', syntax)) return;
-  const [first, next] = bracket('[', loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^\]\n?\(|^\n/), ']')(source) || [[], source];
+  const [first, next] = bracket(
+    '[',
+    loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^\]\n?\(|^\n/),
+    ']',
+  )(source) || [[], source];
   if (!next.startsWith('(') && !next.startsWith('\n(')) return;
   const children = squash(first);
   if (children.querySelector('a, .annotation')) return;
@@ -20,7 +24,11 @@ export const link: LinkParser = function (source: string): [[HTMLAnchorElement],
     if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
     if (children.textContent !== children.textContent!.trim()) return;
   }
-  const [second, rest] = bracket('(', loop(escsource, /^\)|^\s(?!nofollow)/), ')')(next.slice(next.indexOf('('))) || [[], source];
+  const [second, rest] = bracket(
+    '(',
+    loop(escsource, /^\)|^\s(?!nofollow)/),
+    ')',
+  )(next.slice(next.indexOf('('))) || [[], source];
   if (rest === source) return;
   const [INSECURE_URL, attribute] = second.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1').split(/\s/);
   assert(attribute === undefined || attribute === 'nofollow');
