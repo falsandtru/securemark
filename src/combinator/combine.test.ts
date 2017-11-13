@@ -23,6 +23,7 @@ describe('Unit: combinator/combine', () => {
       assert.deepStrictEqual(parser('ab'), [['A'], 'b']);
       assert.deepStrictEqual(parser('ba'), undefined);
       assert.deepStrictEqual(parser('aab'), [['A'], 'ab']);
+      assert.deepStrictEqual(parser('abb'), [['A'], 'bb']);
       assert.deepStrictEqual(parser('bba'), undefined);
     });
 
@@ -34,6 +35,7 @@ describe('Unit: combinator/combine', () => {
       assert.deepStrictEqual(parser('ab'), undefined);
       assert.deepStrictEqual(parser('ba'), [['B'], 'a']);
       assert.deepStrictEqual(parser('aab'), undefined);
+      assert.deepStrictEqual(parser('abb'), undefined);
       assert.deepStrictEqual(parser('bba'), [['B'], 'ba']);
     });
 
@@ -45,6 +47,7 @@ describe('Unit: combinator/combine', () => {
       assert.deepStrictEqual(parser('ab'), [['A'], 'b']);
       assert.deepStrictEqual(parser('ba'), [['B'], 'a']);
       assert.deepStrictEqual(parser('aab'), [['A'], 'ab']);
+      assert.deepStrictEqual(parser('abb'), [['A'], 'bb']);
       assert.deepStrictEqual(parser('bba'), [['B'], 'ba']);
     });
 

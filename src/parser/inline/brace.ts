@@ -1,21 +1,21 @@
 ﻿import { BraceParser, inline } from '../inline';
-import { combine, loop, bracket } from '../../combinator';
+import { combine, loop, bracket, transform } from '../../combinator';
 import { squash } from '../squash';
 import { validate } from '../source/validation';
 
 const syntax = /^{[\s\S]*?}/;
 const closer = /^}/;
 
-export const brace: BraceParser = function (source: string): [(HTMLElement | Text)[], string] | undefined {
+export const brace: BraceParser = function (source: string) {
   if (!validate(source, '{', syntax)) return;
-  const [cs, rest] = bracket(
-    '{',
-    loop(combine<HTMLElement | Text, BraceParser.InnerParsers>([inline]), closer),
-    '}',
-  )(source) || [[], source];
-  if (rest === source) return;
-  return [
-    [...squash([document.createTextNode('{'), ...cs, document.createTextNode('}')]).childNodes as NodeListOf<HTMLElement | Text>],
-    rest
-  ];
+  return transform(
+    bracket(
+      '{',
+      loop(combine<HTMLElement | Text, BraceParser.InnerParsers>([inline]), closer),
+      '}'),
+    (ns, rest) => [
+      [...squash([document.createTextNode('{'), ...ns, document.createTextNode('}')]).childNodes as NodeListOf<HTMLElement | Text>],
+      rest
+    ])
+    (source);
 };

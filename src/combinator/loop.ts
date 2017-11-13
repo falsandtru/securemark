@@ -6,7 +6,7 @@ export function loop<P extends Parser<any, any>[], R>(parser: Parser<R, P>, unti
     const results: R[] = [];
     while (true) {
       if (rest === '') break;
-      if (until && rest.slice(0, 99).search(until) === 0) break;
+      if (until && rest.slice(0, 9).search(until) === 0) break;
       const result = parser(rest);
       if (!result) break;
       const [rs, r] = result;
