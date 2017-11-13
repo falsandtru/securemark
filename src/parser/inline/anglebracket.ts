@@ -14,5 +14,8 @@ export const anglebracket: AngleBracketParser = function (source: string): [(HTM
     '>',
   )(source) || [[], source];
   if (rest === source) return;
-  return [[...squash([document.createTextNode('<'), ...cs, document.createTextNode('>')]).childNodes] as Array<HTMLElement | Text>, rest];
+  return [
+    [...squash([document.createTextNode('<'), ...cs, document.createTextNode('>')]).childNodes as NodeListOf<HTMLElement | Text>],
+    rest
+  ];
 };
