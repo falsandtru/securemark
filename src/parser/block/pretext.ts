@@ -3,7 +3,7 @@ import { verifyBlockEnd } from './end';
 
 const syntax = /^(`{3,})[^\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
 
-export const pretext: PretextParser = verifyBlockEnd(function (source: string): [[HTMLPreElement], string] | undefined {
+export const pretext: PretextParser = verifyBlockEnd((source: string): [[HTMLPreElement], string] | undefined => {
   if (!source.startsWith('```')) return;
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;

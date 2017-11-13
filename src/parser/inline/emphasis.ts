@@ -7,7 +7,7 @@ import { validate } from '../source/validation';
 const syntax = /^\*[\s\S]+?\*/;
 const closer = /^\*/;
 
-export const emphasis: EmphasisParser = function (source: string) {
+export const emphasis: EmphasisParser = (source: string) => {
   if (!validate(source, '*', syntax)) return;
   return transform(
     bracket(

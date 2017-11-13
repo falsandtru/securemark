@@ -6,7 +6,7 @@ import { validate } from '../source/validation';
 const syntax = /^<[\s\S]*?>/;
 const closer = /^>/;
 
-export const anglebracket: AngleBracketParser = function (source: string) {
+export const anglebracket: AngleBracketParser = (source: string) => {
   if (!validate(source, '<', syntax)) return;
   return transform(
     bracket(

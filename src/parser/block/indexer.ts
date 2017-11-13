@@ -4,7 +4,7 @@ import { makeIndex } from '../string/index';
 
 const syntax = /^\s+\[#\S+?\]$/;
 
-export const indexer: IndexerParser = function (source: string): [[HTMLElement], string] | undefined {
+export const indexer: IndexerParser = (source: string): [[HTMLElement], string] | undefined => {
   assert(!source.match(/\n/));
   if (!source.trim().startsWith('[#') || source.search(syntax) !== 0) return;
   assert(source.endsWith(']'));

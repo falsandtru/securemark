@@ -7,7 +7,7 @@ import { squash } from '../squash';
 
 const syntax = /^(#{1,6})[^\S\n]+?([^\n]+)/;
 
-export const heading: HeadingParser = verifyBlockEnd(function (source: string): [[HTMLHeadingElement], string] | undefined {
+export const heading: HeadingParser = verifyBlockEnd((source: string): [[HTMLHeadingElement], string] | undefined => {
   if (!source.startsWith('#')) return;
   const [whole, { length: level }, title] = source.split('\n', 1).shift()!.match(syntax) || ['', '', ''];
   if (!whole) return;

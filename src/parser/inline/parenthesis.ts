@@ -6,7 +6,7 @@ import { validate } from '../source/validation';
 const syntax = /^\([\s\S]*?\)/;
 const closer = /^\)/;
 
-export const parenthesis: ParenthesisParser = function (source: string) {
+export const parenthesis: ParenthesisParser = (source: string) => {
   if (!validate(source, '(', syntax)) return;
   return transform(
     bracket(

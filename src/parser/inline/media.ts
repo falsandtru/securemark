@@ -11,7 +11,7 @@ export const cache = new Cache<string, HTMLImageElement>(100);
 
 const syntax = /^!\[[^\n]*?\]\n?\(/;
 
-export const media: MediaParser = function (source: string) {
+export const media: MediaParser = (source: string) => {
   if (!validate(source, '![', syntax)) return;
   return transform(
     bracket(

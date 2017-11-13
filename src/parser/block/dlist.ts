@@ -8,7 +8,7 @@ import { squash } from '../squash';
 const syntax = /^~\s/;
 const separator = /^[~:](?:\s|$)/;
 
-export const dlist: DListParser = verifyBlockEnd(function (source: string): [[HTMLDListElement], string] | undefined {
+export const dlist: DListParser = verifyBlockEnd((source: string): [[HTMLDListElement], string] | undefined => {
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;
   const el = document.createElement('dl');
