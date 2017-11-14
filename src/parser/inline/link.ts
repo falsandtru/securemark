@@ -18,7 +18,7 @@ export const link: LinkParser = (source: string) => {
       const children = squash(ns);
       if (children.querySelector('a, .annotation')) return;
       if (children.querySelector('img')) {
-        if (children.childNodes.length > 1) return;
+        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img')) return;
       }
       else {
         if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
@@ -27,7 +27,7 @@ export const link: LinkParser = (source: string) => {
       return transform(
         bracket(
           '(',
-          loop(escsource, /^\)|^\s(?!nofollow)/),
+          loop(escsource, /^\)|^\s(?!nofollow)|^\n/),
           ')'),
         (ns, rest) => {
           const [INSECURE_URL, attribute] = ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1').split(/\s/);

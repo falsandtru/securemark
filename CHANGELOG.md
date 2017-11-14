@@ -2,7 +2,7 @@
 
 ## 0.34.9
 
-- Optimization.
+- Fix link parser.
 
 ## 0.34.8
 

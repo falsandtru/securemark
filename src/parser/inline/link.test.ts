@@ -47,6 +47,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[ab](a\nb)')), undefined);
       assert.deepStrictEqual(inspect(parser('[ab](a\\\nb)')), undefined);
       assert.deepStrictEqual(inspect(parser('[。\n！](ab)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[](#\nnofollow)')), undefined);
       assert.deepStrictEqual(inspect(parser('![](#)')), undefined);
     });
 
@@ -68,7 +69,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[![](#)#](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[#![](#)](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[![](#)![](#)](#)')), undefined);
-      assert.deepStrictEqual(inspect(parser('[![a](b)](c)')), [['<a href="c" rel="noopener"><img data-src="b" alt="a"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[![a](b)](#)')), [['<a href="#" rel="noopener"><img data-src="b" alt="a"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[*![a](b)c*](#)')), undefined);
     });
 
     it('nest', () => {
