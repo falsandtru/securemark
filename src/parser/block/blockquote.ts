@@ -51,7 +51,7 @@ export const blockquote: BlockquoteParser = verifyBlockEnd((source: string): [[H
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs, rest] = loop(combine<HTMLElement | Text, BlockquoteParser.InnerParsers>([unescsource]), '\n|$')(source) || [[document.createTextNode('')], source];
+    const [cs, rest = source] = loop(combine<HTMLElement | Text, BlockquoteParser.InnerParsers>([unescsource]), '\n|$')(source) || [[document.createTextNode('')]];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs);

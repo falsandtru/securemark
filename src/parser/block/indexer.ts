@@ -10,9 +10,9 @@ export const indexer: IndexerParser = (source: string): [[HTMLElement], string] 
   assert(source.endsWith(']'));
   source = source.trim();
   assert(source.startsWith('[#'));
-  const [[el], rest] = inline(source) || [[document.createTextNode('')], ''];
+  const [[el], rest = undefined] = inline(source) || [[document.createTextNode('')]];
+  if (rest === undefined) return;
   if (!(el instanceof HTMLAnchorElement)) return;
-  if (rest !== '') return;
   assert(el.matches(`a[href^="#${makeIndex('')}"]`));
   void el.setAttribute('class', 'index');
   return [[el], ''];

@@ -13,7 +13,8 @@ export const heading: HeadingParser = verifyBlockEnd((source: string): [[HTMLHea
   if (!whole) return;
   assert(level > 0 && level < 7);
   assert(title.length > 0);
-  const [children] = loop(combine<HTMLElement | Text, HeadingParser.InnerParsers>([indexer, inline]))(title.trim()) || [[]];
+  const [children, rest = undefined] = loop(combine<HTMLElement | Text, HeadingParser.InnerParsers>([indexer, inline]))(title.trim()) || [[]];
+  if (rest === undefined) return;
   const el = document.createElement(<'h1'>`h${level}`);
   void el.appendChild(squash(children));
   void defineIndex(el);
