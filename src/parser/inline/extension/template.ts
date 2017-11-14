@@ -2,7 +2,7 @@
 import { Result, combine, loop, bracket } from '../../../combinator';
 import { text } from '../../source/text';
 import { squash } from '../../squash';
-import { match } from '../../source/validation';
+import { match, isTightVisible, isSingleLine } from '../../source/validation';
 
 const syntax = /^\[[~#:^\[][^\s\[\]][^\n]*?\]/;
 
@@ -25,6 +25,7 @@ function parse(source: string): [string, string, string] | undefined {
   )(source) || [[]];
   if (rest === undefined) return;
   const txt = squash(cs).textContent!;
-  if (txt === '' || txt !== txt.trim()) return;
+  if (!isTightVisible(txt)) return;
+  if (!isSingleLine(txt)) return;
   return [txt[0], txt.slice(1), rest];
 }

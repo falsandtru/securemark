@@ -1,7 +1,7 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
 import { squash } from '../squash';
-import { match } from '../source/validation';
+import { match, isVisible } from '../source/validation';
 
 const syntax = /^<([a-z]+)>/;
 const inlinetags = Object.freeze('ins|del|sup|sub|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
@@ -25,7 +25,7 @@ export const html: HTMLParser = (source: string) => {
     (ns, rest) => {
       const el = document.createElement(tagname);
       void el.appendChild(squash(ns));
-      if (el.textContent!.trim() === '') return;
+      if (!isVisible(el.textContent!)) return;
       return [[el], rest];
     })
     (source);

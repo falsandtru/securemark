@@ -2,7 +2,7 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { strong } from './strong';
 import { squash } from '../squash';
-import { match } from '../source/validation';
+import { match, isVisible } from '../source/validation';
 
 const syntax = /^\*[\s\S]+?\*/;
 const closer = /^\*/;
@@ -17,7 +17,7 @@ export const emphasis: EmphasisParser = (source: string) => {
     (ns, rest) => {
       const el = document.createElement('em');
       void el.appendChild(squash(ns));
-      if (el.textContent!.trim() === '') return;
+      if (!isVisible(el.textContent!)) return;
       return [[el], rest];
     })
     (source);

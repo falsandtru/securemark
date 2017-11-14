@@ -2,7 +2,7 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
-import { match } from '../source/validation';
+import { match, isSingleLine } from '../source/validation';
 import { sanitize } from '../string/url';
 import DOM from 'typed-dom';
 import { Cache } from 'spica/cache';
@@ -19,7 +19,7 @@ export const media: MediaParser = (source: string) => {
       loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([text]), /^]\n?|^\n/),
       /^]\n?/),
     (ns, rest) => {
-      if (source.slice(0, source.length - rest.length).trim().includes('\n')) return;
+      if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
       const caption = ns.reduce((s, c) => s + c.textContent, '').trim();
       return transform(
         bracket(

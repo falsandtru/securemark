@@ -2,7 +2,7 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
-import { match } from '../source/validation';
+import { match, isSingleLine } from '../source/validation';
 import { sanitize } from '../string/url';
 
 const syntax = /^\[[^\n]*?\]\n?\(/;
@@ -15,7 +15,7 @@ export const link: LinkParser = (source: string) => {
       loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^]\n?|^\n/),
       /^]\n?/),
     (ns, rest) => {
-      if (source.slice(0, source.length - rest.length).trim().includes('\n')) return;
+      if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
       const children = squash(ns);
       if (children.querySelector('a, .annotation')) return;
       if (children.querySelector('img')) {
