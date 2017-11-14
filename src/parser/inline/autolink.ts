@@ -8,5 +8,5 @@ export const autolink: AutolinkParser = combine<HTMLAnchorElement | HTMLImageEle
   AutolinkParser.AccountParser
 ]>([
   url,
-  account
+  account,
 ]);

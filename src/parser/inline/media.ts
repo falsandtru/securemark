@@ -16,7 +16,7 @@ export const media: MediaParser = (source: string) => {
   return transform(
     bracket(
       '![',
-      loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([text]), /^]\n?\(|^\n/),
+      loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([text]), /^]\n?|^\n/),
       /^]\n?/),
     (ns, rest) => {
       const caption = ns.reduce((s, c) => s + c.textContent, '').trim();

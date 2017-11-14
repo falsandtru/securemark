@@ -12,7 +12,7 @@ export const link: LinkParser = (source: string) => {
   return transform(
     bracket(
       '[',
-      loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^]\n?\(|^\n/),
+      loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^]\n?|^\n/),
       /^]\n?/),
     (ns, rest) => {
       const children = squash(ns);
