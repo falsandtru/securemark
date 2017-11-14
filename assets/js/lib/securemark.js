@@ -1097,24 +1097,21 @@ require = function e(t, n, r) {
                     if (l === undefined)
                         return;
                     var mr_ = lmr_.slice(l.length);
-                    var _a = __read(parser(mr_) || [
-                            [],
-                            mr_
-                        ], 2), rs = _a[0], r_ = _a[1];
-                    if (!mr_.endsWith(r_))
-                        return;
+                    var _a = __read(parser(mr_) || [[]], 2), rs = _a[0], _b = _a[1], r_ = _b === void 0 ? mr_ : _b;
                     var r = match(r_, end);
                     if (r === undefined)
                         return;
-                    if (r_ === mr_ && l + r === '')
-                        return;
-                    return [
+                    return l + r !== '' && r_.length - r.length < lmr_.length ? [
                         rs,
                         r_.slice(r.length)
-                    ];
+                    ] : undefined;
                 };
                 function match(source, pattern) {
-                    return typeof pattern === 'string' ? source.startsWith(pattern) ? pattern : undefined : source.slice(0, 9).search(pattern) === 0 ? source.slice(0, 9).match(pattern)[0] : undefined;
+                    if (typeof pattern !== 'string') {
+                        var result = source.slice(0, 9).match(pattern);
+                        return result ? match(source, result[0]) : undefined;
+                    }
+                    return source.startsWith(pattern) ? pattern : undefined;
                 }
             }
             exports.bracket = bracket;
@@ -1178,6 +1175,8 @@ require = function e(t, n, r) {
                             var r = parse(rest);
                             if (!r)
                                 continue;
+                            if (r[1].length >= rest.length)
+                                return;
                             void results.push.apply(results, __spread(r[0]));
                             rest = r[1];
                             break;
@@ -1287,16 +1286,13 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             function transform(parser, f) {
                 return function (source) {
-                    var _a = __read(parser(source) || [
-                            [],
-                            source
-                        ], 2), rs = _a[0], rest = _a[1];
-                    if (rest === source)
+                    var _a = __read(parser(source) || [[]], 2), rs = _a[0], _b = _a[1], rest = _b === void 0 ? undefined : _b;
+                    if (rest === undefined)
+                        return;
+                    if (rest.length >= source.length)
                         return;
                     var result = f(rs, rest);
-                    if (!result || !rest.endsWith(result[1]))
-                        return;
-                    return result;
+                    return result && result[1].length <= rest.length ? result : undefined;
                 };
             }
             exports.transform = transform;
@@ -1939,10 +1935,7 @@ require = function e(t, n, r) {
             exports.mathblock = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('$$'))
                     return;
-                var _a = __read(source.match(syntax) || [
-                        '',
-                        ''
-                    ], 1), whole = _a[0];
+                var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
                     return;
                 var el = document.createElement('div');
@@ -2057,15 +2050,12 @@ require = function e(t, n, r) {
                             }))
                             return { value: void 0 };
                         var _a = __read(indent_1.indent(source), 2), block = _a[0], rest = _a[1];
-                        if (rest === source)
+                        if (rest.length === source.length)
                             return { value: void 0 };
                         var _b = __read(combinator_1.combine([
                                 ulist_1.ulist,
                                 exports.olist
-                            ])(indent_1.fillOListFlag(block)) || [
-                                [],
-                                block
-                            ], 2), children = _b[0], brest = _b[1];
+                            ])(indent_1.fillOListFlag(block)) || [[]], 2), children = _b[0], _c = _b[1], brest = _c === void 0 ? block : _c;
                         if (children.length !== 1 || brest.length !== 0)
                             return { value: void 0 };
                         void li_1.appendChild(squash_1.squash(children));
@@ -2234,17 +2224,11 @@ require = function e(t, n, r) {
                 if (!source.startsWith('|') || source.search(syntax) !== 0)
                     return;
                 var table = document.createElement('table');
-                var _a = __read(parse(source) || [
-                        [],
-                        source
-                    ], 2), headers = _a[0], hrest = _a[1];
+                var _a = __read(parse(source) || [[]], 2), headers = _a[0], _b = _a[1], hrest = _b === void 0 ? source : _b;
                 if (hrest.length === source.length)
                     return;
                 source = hrest;
-                var _b = __read(parse(source) || [
-                        [],
-                        source
-                    ], 2), aligns_ = _b[0], arest = _b[1];
+                var _c = __read(parse(source) || [[]], 2), aligns_ = _c[0], _d = _c[1], arest = _d === void 0 ? source : _d;
                 if (arest.length === source.length)
                     return;
                 source = arest;
@@ -2266,10 +2250,7 @@ require = function e(t, n, r) {
                     var line = source.split('\n', 1)[0];
                     if (line.trim() === '')
                         return 'break';
-                    var _a = __read(parse(line) || [
-                            [],
-                            line
-                        ], 2), cols = _a[0], rest = _a[1];
+                    var _a = __read(parse(line) || [[]], 2), cols = _a[0], _b = _a[1], rest = _b === void 0 ? line : _b;
                     if (rest.length !== 0)
                         return { value: void 0 };
                     void append(headers.map(function (_, i) {
@@ -2408,15 +2389,12 @@ require = function e(t, n, r) {
                             }))
                             return { value: void 0 };
                         var _c = __read(indent_1.indent(source), 2), block = _c[0], rest = _c[1];
-                        if (rest === source)
+                        if (rest.length === source.length)
                             return { value: void 0 };
                         var _d = __read(combinator_1.combine([
                                 exports.ulist,
                                 olist_1.olist
-                            ])(indent_1.fillOListFlag(block)) || [
-                                [],
-                                block
-                            ], 2), children = _d[0], brest = _d[1];
+                            ])(indent_1.fillOListFlag(block)) || [[]], 2), children = _d[0], _e = _d[1], brest = _e === void 0 ? block : _e;
                         if (children.length !== 1 || brest.length !== 0)
                             return { value: void 0 };
                         void li_1.appendChild(squash_1.squash(children));
@@ -2717,10 +2695,9 @@ require = function e(t, n, r) {
                     return;
                 var flag = source.startsWith('!h');
                 source = flag ? source.slice(1) : source;
-                var _a = __read(combinator_1.loop(escapable_1.escsource, closer)(source) || [
-                        [],
-                        ''
-                    ], 2), rest = _a[1];
+                var _a = __read(combinator_1.loop(escapable_1.escsource, closer)(source) || [[]], 2), _b = _a[1], rest = _b === void 0 ? source : _b;
+                if (rest.length === source.length)
+                    return;
                 var attribute = source.startsWith('ttp') ? ' nofollow' : '';
                 var uri = '' + (source.startsWith('ttp') ? 'h' : '') + source.slice(0, source.length - rest.length);
                 return !flag ? link_1.link('[](' + uri + attribute + ')' + rest) : link_1.link('[![](' + uri + ')](' + uri + ')' + rest);
@@ -3084,11 +3061,8 @@ require = function e(t, n, r) {
             function parse(source) {
                 if (!validation_1.validate(source, '[', syntax))
                     return;
-                var _a = __read(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([text_1.text]), /^[\]\n]/), ']')(source) || [
-                        [],
-                        source
-                    ], 2), cs = _a[0], rest = _a[1];
-                if (rest === source)
+                var _a = __read(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([text_1.text]), /^[\]\n]/), ']')(source) || [[]], 2), cs = _a[0], _b = _a[1], rest = _b === void 0 ? source : _b;
+                if (rest.length === source.length)
                     return;
                 var txt = squash_1.squash(cs).textContent;
                 if (txt === '' || txt !== txt.trim())
@@ -3143,13 +3117,13 @@ require = function e(t, n, r) {
                     return;
                 var _a = __read(source.match(syntax) || [
                         '',
-                        '',
                         ''
-                    ], 2), opentag = _a[0], tagname = _a[1];
-                if (!opentag)
+                    ], 2), whole = _a[0], tagname = _a[1];
+                if (!whole)
                     return;
                 if (inlinetags.indexOf(tagname) === -1)
                     return;
+                var opentag = '<' + tagname + '>';
                 if (tagname === 'wbr')
                     return [
                         [document.createElement(tagname)],
@@ -3255,12 +3229,12 @@ require = function e(t, n, r) {
             exports.link = function (source) {
                 if (!validation_1.validate(source, '[', syntax))
                     return;
-                return combinator_1.transform(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), /^\]\n?\(|^\n/), /\]\n?/), function (ns, rest) {
+                return combinator_1.transform(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), /^]\n?|^\n/), /^]\n?/), function (ns, rest) {
                     var children = squash_1.squash(ns);
                     if (children.querySelector('a, .annotation'))
                         return;
                     if (children.querySelector('img')) {
-                        if (children.childNodes.length > 1)
+                        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img'))
                             return;
                     } else {
                         if (children.childNodes.length > 0 && children.textContent.trim() === '')
@@ -3268,7 +3242,7 @@ require = function e(t, n, r) {
                         if (children.textContent !== children.textContent.trim())
                             return;
                     }
-                    return combinator_1.transform(combinator_1.bracket('(', combinator_1.loop(escapable_1.escsource, /^\)|^\s(?!nofollow)/), ')'), function (ns, rest) {
+                    return combinator_1.transform(combinator_1.bracket('(', combinator_1.loop(escapable_1.escsource, /^\)|^\s(?!nofollow)|^\n/), ')'), function (ns, rest) {
                         var _a = __read(ns.reduce(function (s, c) {
                                 return s + c.textContent;
                             }, '').replace(/\\(.)/g, '$1').split(/\s/), 2), INSECURE_URL = _a[0], attribute = _a[1];
@@ -3385,7 +3359,7 @@ require = function e(t, n, r) {
             exports.media = function (source) {
                 if (!validation_1.validate(source, '![', syntax))
                     return;
-                return combinator_1.transform(combinator_1.bracket('![', combinator_1.loop(combinator_1.combine([text_1.text]), /^\]\n?\(|^\n/), /\]\n?/), function (ns, rest) {
+                return combinator_1.transform(combinator_1.bracket('![', combinator_1.loop(combinator_1.combine([text_1.text]), /^]\n?|^\n/), /^]\n?/), function (ns, rest) {
                     var caption = ns.reduce(function (s, c) {
                         return s + c.textContent;
                     }, '').trim();
@@ -3543,10 +3517,7 @@ require = function e(t, n, r) {
                     var _a = __read(combinator_1.combine([
                             pretext_1.pretext,
                             extension_1.extension
-                        ])(source) || [
-                            [],
-                            source.slice((source.match(syntax) || [source])[0].length)
-                        ], 2), rest = _a[1];
+                        ])(source) || [[]], 2), _b = _a[1], rest = _b === void 0 ? source.slice((source.match(syntax) || [source])[0].length) : _b;
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
                 }
