@@ -2,13 +2,13 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
-import { validate } from '../source/validation';
+import { match } from '../source/validation';
 import { sanitize } from '../string/url';
 
 const syntax = /^\[[^\n]*?\]\n?\(/;
 
 export const link: LinkParser = (source: string) => {
-  if (!validate(source, '[', syntax)) return;
+  if (!match(source, '[', syntax)) return;
   return transform(
     bracket(
       '[',

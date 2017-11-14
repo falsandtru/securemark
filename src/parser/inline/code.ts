@@ -3,12 +3,12 @@ import { combine, loop, bracket, transform } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { backquote } from '../source/backquote';
 import { squash } from '../squash';
-import { validate } from '../source/validation';
+import { match } from '../source/validation';
 
 const syntax = /^(`+)[^\n]+?\1/;
 
 export const code: CodeParser = (source: string) => {
-  if (!validate(source, '`')) return;
+  if (!match(source, '`')) return;
   const [whole, keyword] = source.match(syntax) || ['', ''];
   if (!whole) return;
   return transform(

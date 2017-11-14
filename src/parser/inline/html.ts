@@ -1,7 +1,7 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
 import { squash } from '../squash';
-import { validate } from '../source/validation';
+import { match } from '../source/validation';
 
 const syntax = /^<([a-z]+)>/;
 const inlinetags = Object.freeze('ins|del|sup|sub|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
@@ -10,7 +10,7 @@ assert(inlinetags.every(tag => ['script', 'style', 'link', 'a', 'img'].indexOf(t
 assert(inlinetags.every(tag => ['strong', 'em', 'code', 's', 'u'].indexOf(tag) === -1));
 
 export const html: HTMLParser = (source: string) => {
-  if (!validate(source, '<')) return;
+  if (!match(source, '<')) return;
   const [whole, tagname] = source.match(syntax) || ['', ''];
   if (!whole) return;
   if (inlinetags.indexOf(tagname) === -1) return;

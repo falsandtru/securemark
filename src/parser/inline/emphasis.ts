@@ -2,13 +2,13 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { strong } from './strong';
 import { squash } from '../squash';
-import { validate } from '../source/validation';
+import { match } from '../source/validation';
 
 const syntax = /^\*[\s\S]+?\*/;
 const closer = /^\*/;
 
 export const emphasis: EmphasisParser = (source: string) => {
-  if (!validate(source, '*', syntax)) return;
+  if (!match(source, '*', syntax)) return;
   return transform(
     bracket(
       '*',

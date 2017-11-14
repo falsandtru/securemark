@@ -2,7 +2,7 @@
 import { Result, combine, loop, bracket } from '../../../combinator';
 import { text } from '../../source/text';
 import { squash } from '../../squash';
-import { validate } from '../../source/validation';
+import { match } from '../../source/validation';
 
 const syntax = /^\[[~#:^\[][^\s\[\]][^\n]*?\]/;
 
@@ -17,7 +17,7 @@ export const template = <T extends Result<HTMLElement, never>>(parser: (flag: st
 };
 
 function parse(source: string): [string, string, string] | undefined {
-  if (!validate(source, '[', syntax)) return;
+  if (!match(source, '[', syntax)) return;
   const [cs, rest = source] = bracket(
     '[',
     loop(combine<HTMLElement | Text, [TextParser]>([text]), /^[\]\n]/),

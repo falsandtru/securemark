@@ -2,7 +2,7 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
-import { validate } from '../source/validation';
+import { match } from '../source/validation';
 import { sanitize } from '../string/url';
 import DOM from 'typed-dom';
 import { Cache } from 'spica/cache';
@@ -12,7 +12,7 @@ export const cache = new Cache<string, HTMLImageElement>(100);
 const syntax = /^!\[[^\n]*?\]\n?\(/;
 
 export const media: MediaParser = (source: string) => {
-  if (!validate(source, '![', syntax)) return;
+  if (!match(source, '![', syntax)) return;
   return transform(
     bracket(
       '![',

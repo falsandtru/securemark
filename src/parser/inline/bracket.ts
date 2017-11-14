@@ -1,13 +1,13 @@
 ﻿import { BracketParser, inline } from '../inline';
 import { combine, loop, bracket as brkt, transform } from '../../combinator';
 import { squash } from '../squash';
-import { validate } from '../source/validation';
+import { match } from '../source/validation';
 
 const syntax = /^\[[\s\S]*?\]/;
 const closer = /^\]/;
 
 export const bracket: BracketParser = (source: string) => {
-  if (!validate(source, '[', syntax)) return;
+  if (!match(source, '[', syntax)) return;
   return transform(
     brkt(
       '[',

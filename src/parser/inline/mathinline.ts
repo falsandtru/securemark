@@ -2,7 +2,7 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
-import { validate } from '../source/validation';
+import { match } from '../source/validation';
 import { Cache } from 'spica/cache';
 
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
@@ -12,7 +12,7 @@ const closer = /^\$(?!\d)|^\n/;
 
 export const mathinline: MathInlineParser = (source: string) => {
   if (source.startsWith('$$')) return;
-  if (!validate(source, '$', syntax)) return;
+  if (!match(source, '$', syntax)) return;
   return transform(
     bracket(
       '$',
