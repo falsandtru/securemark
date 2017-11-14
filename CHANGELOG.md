@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.34.10
+
+- Fix link parser.
+
 ## 0.34.9
 
 - Fix link parser.

@@ -15,6 +15,7 @@ export const link: LinkParser = (source: string) => {
       loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^]\n?|^\n/),
       /^]\n?/),
     (ns, rest) => {
+      if (source.slice(0, source.length - rest.length).trim().includes('\n')) return;
       const children = squash(ns);
       if (children.querySelector('a, .annotation')) return;
       if (children.querySelector('img')) {
@@ -22,7 +23,6 @@ export const link: LinkParser = (source: string) => {
       }
       else {
         if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
-        if (children.textContent !== children.textContent!.trim()) return;
       }
       return transform(
         bracket(

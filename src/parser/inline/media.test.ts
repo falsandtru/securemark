@@ -36,9 +36,11 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![](# )')), undefined);
       assert.deepStrictEqual(inspect(parser('![]( # )')), undefined);
       assert.deepStrictEqual(inspect(parser('![](# #)')), undefined);
+      assert.deepStrictEqual(inspect(parser('![]](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('![#]()')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\nb](ab)')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\\\nb](ab)')), undefined);
+      assert.deepStrictEqual(inspect(parser('![*a\\](\nb*](ab)')), undefined);
       assert.deepStrictEqual(inspect(parser('![ab](a\nb)')), undefined);
       assert.deepStrictEqual(inspect(parser('![ab](a\\\nb)')), undefined);
       assert.deepStrictEqual(inspect(parser('a![](#)')), undefined);
@@ -49,8 +51,8 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![](b)')), [['<img data-src="b" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![a](b)')), [['<img data-src="b" alt="a">'], '']);
       assert.deepStrictEqual(inspect(parser('![a b](c)')), [['<img data-src="c" alt="a b">'], '']);
-      assert.deepStrictEqual(inspect(parser('![ a](b)')), [['<img data-src="b" alt="a">'], '']);
       assert.deepStrictEqual(inspect(parser('![a ](b)')), [['<img data-src="b" alt="a">'], '']);
+      assert.deepStrictEqual(inspect(parser('![ a](b)')), [['<img data-src="b" alt="a">'], '']);
       assert.deepStrictEqual(inspect(parser('![ a ](b)')), [['<img data-src="b" alt="a">'], '']);
       assert.deepStrictEqual(inspect(parser('![]\n(b)')), [['<img data-src="b" alt="">'], '']);
     });
