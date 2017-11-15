@@ -1436,10 +1436,7 @@ require = function e(t, n, r) {
                         void bottom.appendChild(node_1);
                     }
                     source = source.split(/[^\S\n]/, 1).shift() === indent ? source.slice(indent.length + 1) : source.startsWith(indent + '\n') ? source.slice(indent.length) : source;
-                    var _b = __read(combinator_1.loop(combinator_1.combine([unescapable_1.unescsource]), '\n|$')(source) || [
-                            [document.createTextNode('')],
-                            source
-                        ], 2), cs = _b[0], rest = _b[1];
+                    var _b = __read(combinator_1.loop(combinator_1.combine([unescapable_1.unescsource]), '\n|$')(source) || [[document.createTextNode('')]], 2), cs = _b[0], _c = _b[1], rest = _c === void 0 ? source : _c;
                     var node = mode === 'plain' ? document.createTextNode(squash_1.squash(cs).textContent.replace(/ /g, String.fromCharCode(160))) : squash_1.squash(cs);
                     if (bottom.childNodes.length === 0 && node.textContent.trim() === '')
                         return;
@@ -1722,7 +1719,9 @@ require = function e(t, n, r) {
                 var _b = __read(combinator_1.loop(combinator_1.combine([
                         indexer_1.indexer,
                         inline_1.inline
-                    ]))(title.trim()) || [[]], 1), children = _b[0];
+                    ]))(title.trim()) || [[]], 2), children = _b[0], _c = _b[1], rest = _c === void 0 ? undefined : _c;
+                if (rest === undefined)
+                    return;
                 var el = document.createElement('h' + level);
                 void el.appendChild(squash_1.squash(children));
                 void indexer_1.defineIndex(el);
@@ -1808,22 +1807,22 @@ require = function e(t, n, r) {
             function indent(source) {
                 var _a = __read(source.split('\n', 1).shift().match(syntax) || [''], 1), indent = _a[0];
                 if (indent === '')
-                    return [
-                        '',
-                        source
-                    ];
+                    return;
                 var lines = [];
+                var rest = source;
                 while (true) {
-                    var line = source.split('\n', 1)[0];
+                    var line = rest.split('\n', 1)[0];
                     if (!line.startsWith(indent))
                         break;
+                    if (line.slice(indent.length).trim() === '')
+                        break;
                     void lines.push(line.slice(indent.length));
-                    source = source.slice(line.length + 1);
+                    rest = rest.slice(line.length + 1);
                 }
-                return [
+                return rest.length < source.length ? [
                     lines.join('\n'),
-                    source
-                ];
+                    rest
+                ] : undefined;
             }
             exports.indent = indent;
             ;
@@ -1873,13 +1872,10 @@ require = function e(t, n, r) {
                 if (!source.trim().startsWith('[#') || source.search(syntax) !== 0)
                     return;
                 source = source.trim();
-                var _a = __read(inline_1.inline(source) || [
-                        [document.createTextNode('')],
-                        ''
-                    ], 2), _b = __read(_a[0], 1), el = _b[0], rest = _a[1];
-                if (!(el instanceof HTMLAnchorElement))
+                var _a = __read(inline_1.inline(source) || [[document.createTextNode('')]], 2), _b = __read(_a[0], 1), el = _b[0], _c = _a[1], rest = _c === void 0 ? undefined : _c;
+                if (rest === undefined)
                     return;
-                if (rest !== '')
+                if (!(el instanceof HTMLAnchorElement))
                     return;
                 void el.setAttribute('class', 'index');
                 return [
@@ -2049,13 +2045,13 @@ require = function e(t, n, r) {
                                 return li_1.lastElementChild instanceof E;
                             }))
                             return { value: void 0 };
-                        var _a = __read(indent_1.indent(source), 2), block = _a[0], rest = _a[1];
-                        if (rest.length === source.length)
+                        var _a = __read(indent_1.indent(source) || [''], 2), block = _a[0], _b = _a[1], rest = _b === void 0 ? undefined : _b;
+                        if (rest === undefined)
                             return { value: void 0 };
-                        var _b = __read(combinator_1.combine([
+                        var _c = __read(combinator_1.combine([
                                 ulist_1.ulist,
                                 exports.olist
-                            ])(indent_1.fillOListFlag(block)) || [[]], 2), children = _b[0], _c = _b[1], brest = _c === void 0 ? block : _c;
+                            ])(indent_1.fillOListFlag(block)) || [[]], 2), children = _c[0], _d = _c[1], brest = _d === void 0 ? block : _d;
                         if (children.length !== 1 || brest.length !== 0)
                             return { value: void 0 };
                         void li_1.appendChild(squash_1.squash(children));
@@ -2388,13 +2384,13 @@ require = function e(t, n, r) {
                                 return li_1.lastElementChild instanceof E;
                             }))
                             return { value: void 0 };
-                        var _c = __read(indent_1.indent(source), 2), block = _c[0], rest = _c[1];
-                        if (rest.length === source.length)
+                        var _c = __read(indent_1.indent(source) || [''], 2), block = _c[0], _d = _c[1], rest = _d === void 0 ? undefined : _d;
+                        if (rest === undefined)
                             return { value: void 0 };
-                        var _d = __read(combinator_1.combine([
+                        var _e = __read(combinator_1.combine([
                                 exports.ulist,
                                 olist_1.olist
-                            ])(indent_1.fillOListFlag(block)) || [[]], 2), children = _d[0], _e = _d[1], brest = _e === void 0 ? block : _e;
+                            ])(indent_1.fillOListFlag(block)) || [[]], 2), children = _e[0], _f = _e[1], brest = _f === void 0 ? block : _f;
                         if (children.length !== 1 || brest.length !== 0)
                             return { value: void 0 };
                         void li_1.appendChild(squash_1.squash(children));
@@ -2537,7 +2533,7 @@ require = function e(t, n, r) {
             var syntax = /^<[\s\S]*?>/;
             var closer = /^>/;
             exports.anglebracket = function (source) {
-                if (!validation_1.validate(source, '<', syntax))
+                if (!validation_1.match(source, '<', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('<', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '>'), function (ns, rest) {
                     return [
@@ -2565,13 +2561,13 @@ require = function e(t, n, r) {
             var syntax = /^\(\([\s\S]+?\)\)/;
             var closer = /^\)\)/;
             exports.annotation = function (source) {
-                if (!validation_1.validate(source, '((', syntax))
+                if (!validation_1.match(source, '((', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('((', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '))'), function (ns, rest) {
                     var el = document.createElement('sup');
                     void el.setAttribute('class', 'annotation');
                     void el.appendChild(squash_1.squash(ns));
-                    if (el.textContent.trim() === '')
+                    if (!validation_1.isVisible(el.textContent))
                         return;
                     return [
                         [el],
@@ -2695,8 +2691,8 @@ require = function e(t, n, r) {
                     return;
                 var flag = source.startsWith('!h');
                 source = flag ? source.slice(1) : source;
-                var _a = __read(combinator_1.loop(escapable_1.escsource, closer)(source) || [[]], 2), _b = _a[1], rest = _b === void 0 ? source : _b;
-                if (rest.length === source.length)
+                var _a = __read(combinator_1.loop(escapable_1.escsource, closer)(source) || [[]], 2), _b = _a[1], rest = _b === void 0 ? undefined : _b;
+                if (rest === undefined)
                     return;
                 var attribute = source.startsWith('ttp') ? ' nofollow' : '';
                 var uri = '' + (source.startsWith('ttp') ? 'h' : '') + source.slice(0, source.length - rest.length);
@@ -2746,7 +2742,7 @@ require = function e(t, n, r) {
             var syntax = /^{[\s\S]*?}/;
             var closer = /^}/;
             exports.brace = function (source) {
-                if (!validation_1.validate(source, '{', syntax))
+                if (!validation_1.match(source, '{', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('{', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '}'), function (ns, rest) {
                     return [
@@ -2800,7 +2796,7 @@ require = function e(t, n, r) {
             var syntax = /^\[[\s\S]*?\]/;
             var closer = /^\]/;
             exports.bracket = function (source) {
-                if (!validation_1.validate(source, '[', syntax))
+                if (!validation_1.match(source, '[', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), ']'), function (ns, rest) {
                     return [
@@ -2849,7 +2845,7 @@ require = function e(t, n, r) {
             var validation_1 = require('../source/validation');
             var syntax = /^(`+)[^\n]+?\1/;
             exports.code = function (source) {
-                if (!validation_1.validate(source, '`'))
+                if (!validation_1.match(source, '`'))
                     return;
                 var _a = __read(source.match(syntax) || [
                         '',
@@ -2861,10 +2857,12 @@ require = function e(t, n, r) {
                     combinator_1.loop(backquote_1.backquote),
                     unescapable_1.unescsource
                 ]), '^' + keyword + '(?!`)'), keyword), function (ns, rest) {
+                    if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length)))
+                        return;
                     var el = document.createElement('code');
                     void el.appendChild(squash_1.squash(ns));
                     el.textContent = el.textContent.trim();
-                    if (el.textContent === '')
+                    if (!validation_1.isVisible(el.textContent))
                         return;
                     void el.setAttribute('data-src', source.slice(0, source.length - rest.length));
                     return [
@@ -2894,7 +2892,7 @@ require = function e(t, n, r) {
             var syntax = /^\*[\s\S]+?\*/;
             var closer = /^\*/;
             exports.emphasis = function (source) {
-                if (!validation_1.validate(source, '*', syntax))
+                if (!validation_1.match(source, '*', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('*', combinator_1.loop(combinator_1.combine([
                     combinator_1.loop(inline_1.inline, closer),
@@ -2902,7 +2900,7 @@ require = function e(t, n, r) {
                 ])), '*'), function (ns, rest) {
                     var el = document.createElement('em');
                     void el.appendChild(squash_1.squash(ns));
-                    if (el.textContent.trim() === '')
+                    if (!validation_1.isVisible(el.textContent))
                         return;
                     return [
                         [el],
@@ -3059,13 +3057,15 @@ require = function e(t, n, r) {
                 };
             };
             function parse(source) {
-                if (!validation_1.validate(source, '[', syntax))
+                if (!validation_1.match(source, '[', syntax))
                     return;
-                var _a = __read(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([text_1.text]), /^[\]\n]/), ']')(source) || [[]], 2), cs = _a[0], _b = _a[1], rest = _b === void 0 ? source : _b;
-                if (rest.length === source.length)
+                var _a = __read(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([text_1.text]), /^[\]\n]/), ']')(source) || [[]], 2), cs = _a[0], _b = _a[1], rest = _b === void 0 ? undefined : _b;
+                if (rest === undefined)
                     return;
                 var txt = squash_1.squash(cs).textContent;
-                if (txt === '' || txt !== txt.trim())
+                if (!validation_1.isTightVisible(txt))
+                    return;
+                if (!validation_1.isSingleLine(txt))
                     return;
                 return [
                     txt[0],
@@ -3113,7 +3113,7 @@ require = function e(t, n, r) {
             var syntax = /^<([a-z]+)>/;
             var inlinetags = Object.freeze('ins|del|sup|sub|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             exports.html = function (source) {
-                if (!validation_1.validate(source, '<'))
+                if (!validation_1.match(source, '<'))
                     return;
                 var _a = __read(source.match(syntax) || [
                         '',
@@ -3132,7 +3132,7 @@ require = function e(t, n, r) {
                 return combinator_1.transform(combinator_1.bracket('<' + tagname + '>', combinator_1.loop(combinator_1.combine([inline_1.inline]), '^</' + tagname + '>'), '</' + tagname + '>'), function (ns, rest) {
                     var el = document.createElement(tagname);
                     void el.appendChild(squash_1.squash(ns));
-                    if (el.textContent.trim() === '')
+                    if (!validation_1.isVisible(el.textContent))
                         return;
                     return [
                         [el],
@@ -3176,7 +3176,7 @@ require = function e(t, n, r) {
             var validation_1 = require('../source/validation');
             var syntax = /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i;
             exports.htmlentity = function (source) {
-                if (!validation_1.validate(source, '&'))
+                if (!validation_1.match(source, '&'))
                     return;
                 var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
@@ -3227,9 +3227,11 @@ require = function e(t, n, r) {
             var url_1 = require('../string/url');
             var syntax = /^\[[^\n]*?\]\n?\(/;
             exports.link = function (source) {
-                if (!validation_1.validate(source, '[', syntax))
+                if (!validation_1.match(source, '[', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), /^]\n?|^\n/), /^]\n?/), function (ns, rest) {
+                    if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length).trim()))
+                        return;
                     var children = squash_1.squash(ns);
                     if (children.querySelector('a, .annotation'))
                         return;
@@ -3238,8 +3240,6 @@ require = function e(t, n, r) {
                             return;
                     } else {
                         if (children.childNodes.length > 0 && children.textContent.trim() === '')
-                            return;
-                        if (children.textContent !== children.textContent.trim())
                             return;
                     }
                     return combinator_1.transform(combinator_1.bracket('(', combinator_1.loop(escapable_1.escsource, /^\)|^\s(?!nofollow)|^\n/), ')'), function (ns, rest) {
@@ -3309,19 +3309,19 @@ require = function e(t, n, r) {
             var validation_1 = require('../source/validation');
             var cache_1 = require('spica/cache');
             exports.cache = new cache_1.Cache(100);
-            var syntax = /^\$\S[^\n]*?\$(?!\d)/;
+            var syntax = /^\$[^\s$][^\n]*?\$(?!\d)/;
             var closer = /^\$(?!\d)|^\n/;
             exports.mathinline = function (source) {
-                if (source.startsWith('$$'))
-                    return;
-                if (!validation_1.validate(source, '$', syntax))
+                if (!validation_1.match(source, '$', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('$', combinator_1.loop(combinator_1.combine([escapable_1.escsource]), closer), '$'), function (ns, rest) {
+                    if (!validation_1.isTightVisible(source.slice(1, source.length - rest.length - 1)))
+                        return;
+                    if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length)))
+                        return;
                     var el = document.createElement('span');
                     void el.setAttribute('class', 'math');
                     void el.appendChild(squash_1.squash(__spread([document.createTextNode('$')], ns, [document.createTextNode('$')])));
-                    if (el.textContent.slice(1, -1) !== el.textContent.slice(1, -1).trim())
-                        return;
                     if (exports.cache.has(el.textContent))
                         return [
                             [exports.cache.get(el.textContent).cloneNode(true)],
@@ -3357,9 +3357,11 @@ require = function e(t, n, r) {
             exports.cache = new cache_1.Cache(100);
             var syntax = /^!\[[^\n]*?\]\n?\(/;
             exports.media = function (source) {
-                if (!validation_1.validate(source, '![', syntax))
+                if (!validation_1.match(source, '![', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('![', combinator_1.loop(combinator_1.combine([text_1.text]), /^]\n?|^\n/), /^]\n?/), function (ns, rest) {
+                    if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length).trim()))
+                        return;
                     var caption = ns.reduce(function (s, c) {
                         return s + c.textContent;
                     }, '').trim();
@@ -3433,7 +3435,7 @@ require = function e(t, n, r) {
             var syntax = /^\([\s\S]*?\)/;
             var closer = /^\)/;
             exports.parenthesis = function (source) {
-                if (!validation_1.validate(source, '(', syntax))
+                if (!validation_1.match(source, '(', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('(', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), ')'), function (ns, rest) {
                     return [
@@ -3461,12 +3463,12 @@ require = function e(t, n, r) {
             var syntax = /^\*\*[\s\S]+?\*\*/;
             var closer = /^\*\*/;
             exports.strong = function (source) {
-                if (!validation_1.validate(source, '**', syntax))
+                if (!validation_1.match(source, '**', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('**', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '**'), function (ns, rest) {
                     var el = document.createElement('strong');
                     void el.appendChild(squash_1.squash(ns));
-                    if (el.textContent.trim() === '')
+                    if (!validation_1.isVisible(el.textContent))
                         return;
                     return [
                         [el],
@@ -3697,10 +3699,22 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function validate(source, start, syntax) {
+            function match(source, start, syntax) {
                 return source.startsWith(start) && (!syntax || source.search(syntax) === 0);
             }
-            exports.validate = validate;
+            exports.match = match;
+            function isVisible(source) {
+                return source.trim() !== '';
+            }
+            exports.isVisible = isVisible;
+            function isTightVisible(source) {
+                return isVisible(source) && source === source.trim();
+            }
+            exports.isTightVisible = isTightVisible;
+            function isSingleLine(source) {
+                return !source.includes('\n');
+            }
+            exports.isSingleLine = isSingleLine;
         },
         {}
     ],
