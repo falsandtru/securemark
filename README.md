@@ -63,8 +63,11 @@ https://falsandtru.github.io/securemark/
 
 ## Browser
 
+Requires es6 and modern DOM API support.
+
 - Chrome
 - Firefox
 - Edge
 - Safari
-- https://cdn.polyfill.io
+
+Polyfill: https://cdn.polyfill.io
