@@ -6,14 +6,14 @@ import { match, isVisible } from '../source/validation';
 const syntax = /^<([a-z]+)>/;
 const inlinetags = Object.freeze('ins|del|sup|sub|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
 assert(inlinetags.every(tag => /[a-z]+/.test(tag)));
-assert(inlinetags.every(tag => ['script', 'style', 'link', 'a', 'img'].indexOf(tag) === -1));
-assert(inlinetags.every(tag => ['strong', 'em', 'code', 's', 'u'].indexOf(tag) === -1));
+assert(inlinetags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
+assert(inlinetags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
 
 export const html: HTMLParser = (source: string) => {
   if (!match(source, '<')) return;
   const [whole, tagname] = source.match(syntax) || ['', ''];
   if (!whole) return;
-  if (inlinetags.indexOf(tagname) === -1) return;
+  if (!inlinetags.includes(tagname)) return;
   const opentag = `<${tagname}>`;
   assert(whole.startsWith(opentag));
   if (tagname === 'wbr') return [[document.createElement(tagname)], source.slice(opentag.length)];

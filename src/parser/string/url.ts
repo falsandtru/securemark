@@ -10,7 +10,7 @@ function isAcceptedProtocol(url: string): boolean {
   parser.setAttribute('href', url);
   return [
     'http:',
-    'https:'
+    'https:',
   ]
-    .indexOf(parser.protocol) !== -1;
+    .includes(parser.protocol);
 }
