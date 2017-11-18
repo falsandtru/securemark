@@ -31,9 +31,11 @@ describe('Unit: parser/block/pretext', () => {
     it('attribute', () => {
       assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="language-abc" data-lang="abc">a</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```abc \na\n```')), [['<pre class="language-abc" data-lang="abc">a</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```a b.c\n\n```')), [['<pre class="language-a" data-lang="a" data-file="b.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```a  b.c  \n\n```')), [['<pre class="language-a" data-lang="a" data-file="b.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```a b c\n\n```')), [['<pre class="language-a" data-lang="a" data-file="b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` b\n\n```')), [['<pre data-file="b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` b c \n\n```')), [['<pre data-file="b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` b.c\n\n```')), [['<pre data-file="b.c"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```  b.c \n\n```')), [['<pre data-file="b.c"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```"0A ~/.\\ b\n\n```')), [['<pre class="language-&quot;0a" data-lang="&quot;0A" data-file="~/.\\ b"></pre>'], '']);
     });
 
   });

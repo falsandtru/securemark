@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.35.0
+
+- Extend pretext syntax to allow any language and filename.
+
 ## 0.34.10
 
 - Fix link parser.
