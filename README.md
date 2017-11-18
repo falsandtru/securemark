@@ -6,7 +6,7 @@
 
 Secure markdown renderer working on browsers for user input data.
 
-## Feature
+## Features
 
 - Secure dom rendering.
 - Declarative syntax.
@@ -17,11 +17,11 @@ Secure markdown renderer working on browsers for user input data.
 - LaTeX support with MathJax.
 - Large document support.
 
-## Demo
+## Demos
 
 https://falsandtru.github.io/securemark/
 
-## API
+## APIs
 
 [index.d.ts](index.d.ts)
 
@@ -54,14 +54,14 @@ https://falsandtru.github.io/securemark/
 - PDF
 - Images
 
-## Dependency
+## Dependencies
 
 - PrismJS
 - MathJax
 - jQuery (for Ajax)
 - DOMPurify
 
-## Browser
+## Browsers
 
 Requires es6 and modern DOM API support.
 
