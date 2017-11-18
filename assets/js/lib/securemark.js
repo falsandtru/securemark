@@ -626,207 +626,9 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var builder_1 = require('./builder');
-            exports.tags = {
-                'a': 0,
-                'applet': 0,
-                'area': 0,
-                'audio': 0,
-                'base': 0,
-                'basefont': 0,
-                'blockquote': 0,
-                'body': 0,
-                'br': 0,
-                'button': 0,
-                'canvas': 0,
-                'caption': 0,
-                'col': 0,
-                'colgroup': 0,
-                'data': 0,
-                'datalist': 0,
-                'del': 0,
-                'dir': 0,
-                'div': 0,
-                'dl': 0,
-                'embed': 0,
-                'fieldset': 0,
-                'font': 0,
-                'form': 0,
-                'frame': 0,
-                'frameset': 0,
-                'h1': 0,
-                'h2': 0,
-                'h3': 0,
-                'h4': 0,
-                'h5': 0,
-                'h6': 0,
-                'head': 0,
-                'hr': 0,
-                'html': 0,
-                'iframe': 0,
-                'img': 0,
-                'input': 0,
-                'ins': 0,
-                'isindex': 0,
-                'label': 0,
-                'legend': 0,
-                'li': 0,
-                'link': 0,
-                'listing': 0,
-                'map': 0,
-                'marquee': 0,
-                'menu': 0,
-                'meta': 0,
-                'meter': 0,
-                'nextid': 0,
-                'object': 0,
-                'ol': 0,
-                'optgroup': 0,
-                'option': 0,
-                'output': 0,
-                'p': 0,
-                'param': 0,
-                'picture': 0,
-                'pre': 0,
-                'progress': 0,
-                'q': 0,
-                'script': 0,
-                'select': 0,
-                'source': 0,
-                'span': 0,
-                'style': 0,
-                'table': 0,
-                'tbody': 0,
-                'td': 0,
-                'template': 0,
-                'textarea': 0,
-                'tfoot': 0,
-                'th': 0,
-                'thead': 0,
-                'time': 0,
-                'title': 0,
-                'tr': 0,
-                'track': 0,
-                'ul': 0,
-                'video': 0,
-                'x-ms-webview': 0,
-                'xmp': 0,
-                'abbr': 0,
-                'acronym': 0,
-                'address': 0,
-                'article': 0,
-                'aside': 0,
-                'b': 0,
-                'bdo': 0,
-                'big': 0,
-                'center': 0,
-                'circle': 0,
-                'cite': 0,
-                'clippath': 0,
-                'code': 0,
-                'dd': 0,
-                'defs': 0,
-                'desc': 0,
-                'dfn': 0,
-                'dt': 0,
-                'ellipse': 0,
-                'em': 0,
-                'feblend': 0,
-                'fecolormatrix': 0,
-                'fecomponenttransfer': 0,
-                'fecomposite': 0,
-                'feconvolvematrix': 0,
-                'fediffuselighting': 0,
-                'fedisplacementmap': 0,
-                'fedistantlight': 0,
-                'feflood': 0,
-                'fefunca': 0,
-                'fefuncb': 0,
-                'fefuncg': 0,
-                'fefuncr': 0,
-                'fegaussianblur': 0,
-                'feimage': 0,
-                'femerge': 0,
-                'femergenode': 0,
-                'femorphology': 0,
-                'feoffset': 0,
-                'fepointlight': 0,
-                'fespecularlighting': 0,
-                'fespotlight': 0,
-                'fetile': 0,
-                'feturbulence': 0,
-                'figcaption': 0,
-                'figure': 0,
-                'filter': 0,
-                'footer': 0,
-                'foreignobject': 0,
-                'g': 0,
-                'header': 0,
-                'hgroup': 0,
-                'i': 0,
-                'image': 0,
-                'kbd': 0,
-                'keygen': 0,
-                'line': 0,
-                'lineargradient': 0,
-                'mark': 0,
-                'marker': 0,
-                'mask': 0,
-                'metadata': 0,
-                'nav': 0,
-                'nobr': 0,
-                'noframes': 0,
-                'noscript': 0,
-                'path': 0,
-                'pattern': 0,
-                'plaintext': 0,
-                'polygon': 0,
-                'polyline': 0,
-                'radialgradient': 0,
-                'rect': 0,
-                'rt': 0,
-                'ruby': 0,
-                's': 0,
-                'samp': 0,
-                'section': 0,
-                'small': 0,
-                'stop': 0,
-                'strike': 0,
-                'strong': 0,
-                'sub': 0,
-                'sup': 0,
-                'svg': 0,
-                'switch': 0,
-                'symbol': 0,
-                'text': 0,
-                'textpath': 0,
-                'tspan': 0,
-                'tt': 0,
-                'u': 0,
-                'use': 0,
-                'var': 0,
-                'view': 0,
-                'wbr': 0
-            };
-            exports.TypedHTML = Object.keys(exports.tags).reduce(function (obj, tag) {
-                return obj[tag] = builder(tag), obj;
-            }, {
-                create: function (tag, a, b, c) {
-                    if (a === void 0) {
-                        a = function () {
-                            return document.createElement(tag);
-                        };
-                    }
-                    if (b === void 0) {
-                        b = function () {
-                            return document.createElement(tag);
-                        };
-                    }
-                    if (c === void 0) {
-                        c = function () {
-                            return document.createElement(tag);
-                        };
-                    }
-                    return (exports.TypedHTML[tag] = exports.TypedHTML[tag] || builder(tag))(a, b, c);
+            exports.TypedHTML = new Proxy({}, {
+                get: function (obj, tag) {
+                    return obj[tag] ? obj[tag] : obj[tag] = builder('' + tag);
                 }
             });
             function builder(tag) {
@@ -2125,18 +1927,26 @@ require = function e(t, n, r) {
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             var end_1 = require('./end');
+            var combinator_1 = require('../../combinator');
+            var escapable_1 = require('../source/escapable');
+            var squash_1 = require('../squash');
             var syntax = /^(`{3,})[^\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
             exports.pretext = end_1.verifyBlockEnd(function (source) {
                 if (!source.startsWith('```'))
                     return;
-                var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
+                var _a = __read(source.match(syntax) || [
+                        '',
+                        ''
+                    ], 2), whole = _a[0], keyword = _a[1];
                 if (!whole)
                     return;
-                var _b = __read(source.split('\n', 1)[0].match(/^(?:`{3,})([a-z]*)(?:\s+([0-9a-zA-Z_\-.]+))?(?=\s|$)/), 3), lang = _b[1], _c = _b[2], filename = _c === void 0 ? '' : _c;
+                var _b = __read(source.split('\n', 1)[0].match(/^(?:`{3,})(\S*)/), 2), lang = _b[1];
+                var _c = __read(combinator_1.loop(escapable_1.escsource, /^\s/)(source.split('\n', 1)[0].slice(keyword.length + lang.length).trim()) || [[]], 1), ts = _c[0];
+                var filename = squash_1.squash(ts).textContent;
                 var el = document.createElement('pre');
                 if (lang) {
                     void el.setAttribute('class', 'language-' + lang.toLowerCase());
-                    void el.setAttribute('data-lang', lang.toLowerCase());
+                    void el.setAttribute('data-lang', lang);
                 }
                 if (filename) {
                     void el.setAttribute('data-file', filename);
@@ -2148,7 +1958,12 @@ require = function e(t, n, r) {
                 ];
             });
         },
-        { './end': 24 }
+        {
+            '../../combinator': 15,
+            '../source/escapable': 62,
+            '../squash': 66,
+            './end': 24
+        }
     ],
     36: [
         function (require, module, exports) {
@@ -3086,7 +2901,7 @@ require = function e(t, n, r) {
                     ], 2), whole = _a[0], tagname = _a[1];
                 if (!whole)
                     return;
-                if (inlinetags.indexOf(tagname) === -1)
+                if (!inlinetags.includes(tagname))
                     return;
                 var opentag = '<' + tagname + '>';
                 if (tagname === 'wbr')
@@ -3759,7 +3574,7 @@ require = function e(t, n, r) {
                 return [
                     'http:',
                     'https:'
-                ].indexOf(parser.protocol) !== -1;
+                ].includes(parser.protocol);
             }
         },
         {}
