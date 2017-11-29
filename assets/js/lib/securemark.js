@@ -3823,7 +3823,7 @@ require = function e(t, n, r) {
                 Object.defineProperty(exports, '__esModule', { value: true });
                 var Prism = typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null;
                 function code(target) {
-                    void Prism.highlightElement(target, false);
+                    void Prism.highlightElement(target, true);
                 }
                 exports.code = code;
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
