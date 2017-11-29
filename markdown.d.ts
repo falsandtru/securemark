@@ -10,6 +10,17 @@ export interface MarkdownParser extends
   ]> {
 }
 export namespace MarkdownParser {
+  export interface SegmentParser extends
+    Markdown<'segment'> {
+  }
+  export namespace SegmentParser {
+    export type InnerParsers = [
+      BlockParser.PretextParser,
+      BlockParser.ExtensionBlockParser,
+      SourceParser.NonemptyLineParser,
+      SourceParser.EmptyLineParser
+    ];
+  }
   export interface BlockParser extends
     Markdown<'block'>,
     Parser<HTMLElement, BlockParser.InnerParsers> {
@@ -411,6 +422,20 @@ export namespace MarkdownParser {
       Parser<Text, EscapableSourceParser.InnerParsers> {
     }
     export namespace EscapableSourceParser {
+      export type InnerParsers = never[];
+    }
+    export interface NonemptyLineParser extends
+      Markdown<'nonemptyline'>,
+      Parser<Text, NonemptyLineParser.InnerParsers> {
+    }
+    export namespace NonemptyLineParser {
+      export type InnerParsers = never[];
+    }
+    export interface EmptyLineParser extends
+      Markdown<'emptyline'>,
+      Parser<Text, EmptyLineParser.InnerParsers> {
+    }
+    export namespace EmptyLineParser {
       export type InnerParsers = never[];
     }
     export interface BackquoteParser extends
