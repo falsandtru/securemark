@@ -8,4 +8,3 @@ export const backquote: BackquoteParser = (source: string): [[Text], string] | u
       return;
   }
 };
-

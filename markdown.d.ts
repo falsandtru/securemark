@@ -397,14 +397,6 @@ export namespace MarkdownParser {
     export namespace TextParser {
       export type InnerParsers = never[];
     }
-    export interface BackquoteParser extends
-      // `
-      Markdown<'backquote'>,
-      Parser<Text, BackquoteParser.InnerParsers> {
-    }
-    export namespace BackquoteParser {
-      export type InnerParsers = never[];
-    }
     export interface UnescapableSourceParser extends
       // abc
       Markdown<'unescsource'>,
@@ -419,6 +411,14 @@ export namespace MarkdownParser {
       Parser<Text, EscapableSourceParser.InnerParsers> {
     }
     export namespace EscapableSourceParser {
+      export type InnerParsers = never[];
+    }
+    export interface BackquoteParser extends
+      // `
+      Markdown<'backquote'>,
+      Parser<Text, BackquoteParser.InnerParsers> {
+    }
+    export namespace BackquoteParser {
       export type InnerParsers = never[];
     }
   }
