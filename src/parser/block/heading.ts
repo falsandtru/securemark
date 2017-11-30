@@ -1,13 +1,13 @@
 ﻿import { HeadingParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
-import { indexer, defineIndex } from './indexer';
+import { indexer, defineIndex } from './util/indexer';
 import { inline } from '../inline';
 import { squash } from '../squash';
 
 const syntax = /^(#{1,6})[^\S\n]+?([^\n]+)/;
 
-export const heading: HeadingParser = verifyBlockEnd((source: string): [[HTMLHeadingElement], string] | undefined => {
+export const heading: HeadingParser = verify((source: string): [[HTMLHeadingElement], string] | undefined => {
   if (!source.startsWith('#')) return;
   const [whole, { length: level }, title] = source.split('\n', 1).shift()!.match(syntax) || ['', '', ''];
   if (!whole) return;

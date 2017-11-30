@@ -1,8 +1,8 @@
 ﻿import { indexer } from './indexer';
-import { loop } from '../../combinator';
-import { inspect } from '../debug.test';
+import { loop } from '../../../combinator';
+import { inspect } from '../../debug.test';
 
-describe('Unit: parser/block/indexer', () => {
+describe('Unit: parser/block/util/indexer', () => {
   describe('indexer', () => {
     const parser = loop(indexer);
 

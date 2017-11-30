@@ -1,12 +1,12 @@
 ﻿import { ParagraphParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
 import { inline } from '../inline';
 import { squash } from '../squash';
 
 const closer = /^[^\S\n]*\\?(?=\n[^\S\n]*\\?\n|\n?$)/;
 
-export const paragraph: ParagraphParser = verifyBlockEnd((source: string): [[HTMLParagraphElement], string] | undefined => {
+export const paragraph: ParagraphParser = verify((source: string): [[HTMLParagraphElement], string] | undefined => {
   if (source.startsWith('\n')) return;
   source = source.replace(/^\s+/, '');
   const el = document.createElement('p');

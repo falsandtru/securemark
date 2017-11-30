@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 import { loop } from '../../combinator';
 import { inline } from '../inline';
 import { squash } from '../squash';
@@ -7,7 +7,7 @@ import { squash } from '../squash';
 const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
 const align = /^:?-+:?$/;
 
-export const table: TableParser = verifyBlockEnd((source: string): [[HTMLTableElement], string] | undefined => {
+export const table: TableParser = verify((source: string): [[HTMLTableElement], string] | undefined => {
   if (!source.startsWith('|') || source.search(syntax) !== 0) return;
   const table = document.createElement('table');
   const [headers, hrest = source] = parse(source) || [[]];

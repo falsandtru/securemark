@@ -1,14 +1,14 @@
 ﻿import { DListParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
-import { indexer, defineIndex } from './indexer';
+import { indexer, defineIndex } from './util/indexer';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../squash';
 
 const syntax = /^~\s/;
 const separator = /^[~:](?:\s|$)/;
 
-export const dlist: DListParser = verifyBlockEnd((source: string): [[HTMLDListElement], string] | undefined => {
+export const dlist: DListParser = verify((source: string): [[HTMLDListElement], string] | undefined => {
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;
   const el = document.createElement('dl');

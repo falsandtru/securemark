@@ -1,15 +1,15 @@
 ﻿import { UListParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
 import { olist } from './olist';
-import { indent, fillOListFlag } from './indent';
+import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
 import { squash } from '../squash';
 
 const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
 
-export const ulist: UListParser = verifyBlockEnd((source: string): [[HTMLUListElement], string] | undefined => {
+export const ulist: UListParser = verify((source: string): [[HTMLUListElement], string] | undefined => {
   const [whole, flag] = source.match(syntax) || ['', ''];
   if (!whole) return;
   const el = document.createElement('ul');

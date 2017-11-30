@@ -1,6 +1,6 @@
-﻿import { IndexerParser } from '../block';
-import { inline } from '../inline';
-import { makeIndex } from '../string/index';
+﻿import { IndexerParser } from '../../block';
+import { inline } from '../../inline';
+import { makeIndex } from '../../string/index';
 
 const syntax = /^\s+\[#\S+?\]$/;
 

@@ -1,14 +1,14 @@
 ﻿import { OListParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
 import { ulist } from './ulist';
-import { indent, fillOListFlag } from './indent';
+import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
 import { squash } from '../squash';
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
 
-export const olist: OListParser = verifyBlockEnd((source: string): [[HTMLOListElement], string] | undefined => {
+export const olist: OListParser = verify((source: string): [[HTMLOListElement], string] | undefined => {
   const [whole, index, flag] = source.match(syntax) || ['', '', ''];
   if (!whole || !flag) return;
   const el = document.createElement('ol');

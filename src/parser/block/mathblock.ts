@@ -1,9 +1,9 @@
 ﻿import { MathBlockParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 
 const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
 
-export const mathblock: MathBlockParser = verifyBlockEnd((source: string): [[HTMLDivElement], string] | undefined => {
+export const mathblock: MathBlockParser = verify((source: string): [[HTMLDivElement], string] | undefined => {
   if (!source.startsWith('$$')) return;
   const [whole] = source.match(syntax) || [''];
   if (!whole) return;

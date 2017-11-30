@@ -1,5 +1,5 @@
 ﻿import { BlockquoteParser } from '../block';
-import { verifyBlockEnd } from './end';
+import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
 import { block } from '../block';
 import { unescsource } from '../source/unescapable';
@@ -7,7 +7,7 @@ import { squash } from '../squash';
 
 const syntax = /^>+(?=\s|$)/;
 
-export const blockquote: BlockquoteParser = verifyBlockEnd((source: string): [[HTMLQuoteElement], string] | undefined => {
+export const blockquote: BlockquoteParser = verify((source: string): [[HTMLQuoteElement], string] | undefined => {
   const mode = undefined
     || source.startsWith('>') && 'plain'
     || source.startsWith('|>') && 'markdown'
