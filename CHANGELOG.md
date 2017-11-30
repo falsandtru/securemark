@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.35.1
+
+- Refactoring.
+
 ## 0.35.0
 
 - Extend pretext syntax to allow any language and filename.
