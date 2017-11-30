@@ -1142,16 +1142,16 @@ require = function e(t, n, r) {
             '../combinator': 15,
             './block/blockquote': 22,
             './block/dlist': 23,
-            './block/extension': 25,
-            './block/heading': 27,
-            './block/horizontalrule': 28,
-            './block/mathblock': 31,
-            './block/newline': 32,
-            './block/olist': 33,
-            './block/paragraph': 34,
-            './block/pretext': 35,
-            './block/table': 36,
-            './block/ulist': 37
+            './block/extension': 24,
+            './block/heading': 26,
+            './block/horizontalrule': 27,
+            './block/mathblock': 28,
+            './block/newline': 29,
+            './block/olist': 30,
+            './block/paragraph': 31,
+            './block/pretext': 32,
+            './block/table': 33,
+            './block/ulist': 34
         }
     ],
     22: [
@@ -1184,13 +1184,13 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
             var block_1 = require('../block');
             var unescapable_1 = require('../source/unescapable');
             var squash_1 = require('../squash');
             var syntax = /^>+(?=\s|$)/;
-            exports.blockquote = end_1.verifyBlockEnd(function (source) {
+            exports.blockquote = verification_1.verify(function (source) {
                 var mode = undefined || source.startsWith('>') && 'plain' || source.startsWith('|>') && 'markdown' || '';
                 if (mode === '')
                     return;
@@ -1268,7 +1268,7 @@ require = function e(t, n, r) {
             '../block': 21,
             '../source/unescapable': 66,
             '../squash': 68,
-            './end': 24
+            './util/verification': 37
         }
     ],
     23: [
@@ -1296,14 +1296,14 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
-            var indexer_1 = require('./indexer');
+            var indexer_1 = require('./util/indexer');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var syntax = /^~\s/;
             var separator = /^[~:](?:\s|$)/;
-            exports.dlist = end_1.verifyBlockEnd(function (source) {
+            exports.dlist = verification_1.verify(function (source) {
                 var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
                     return;
@@ -1352,44 +1352,24 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../inline': 39,
             '../squash': 68,
-            './end': 24,
-            './indexer': 30
+            './util/indexer': 36,
+            './util/verification': 37
         }
     ],
     24: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function verifyBlockEnd(parser) {
-                return function (source) {
-                    var result = parser(source);
-                    if (!result)
-                        return result;
-                    if (result[1].split('\n', 1).shift().trim() !== '')
-                        return undefined;
-                    return result;
-                };
-            }
-            exports.verifyBlockEnd = verifyBlockEnd;
-        },
-        {}
-    ],
-    25: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
             var combinator_1 = require('../../combinator');
             var placeholder_1 = require('./extension/placeholder');
-            var end_1 = require('./end');
-            exports.extension = combinator_1.combine([end_1.verifyBlockEnd(placeholder_1.placeholder)]);
+            exports.extension = combinator_1.combine([placeholder_1.placeholder]);
         },
         {
             '../../combinator': 15,
-            './end': 24,
-            './extension/placeholder': 26
+            './extension/placeholder': 25
         }
     ],
-    26: [
+    25: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -1414,13 +1394,13 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('../end');
+            var verification_1 = require('../util/verification');
             var combinator_1 = require('../../../combinator');
             var inline_1 = require('../../inline');
             var unescapable_1 = require('../../source/unescapable');
             var squash_1 = require('../../squash');
             var syntax = /^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
-            exports.placeholder = end_1.verifyBlockEnd(function (source) {
+            exports.placeholder = verification_1.verify(function (source) {
                 if (!source.startsWith('~~~'))
                     return;
                 var _a = __read(source.match(syntax) || [
@@ -1458,10 +1438,10 @@ require = function e(t, n, r) {
             '../../inline': 39,
             '../../source/unescapable': 66,
             '../../squash': 68,
-            '../end': 24
+            '../util/verification': 37
         }
     ],
-    27: [
+    26: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -1486,13 +1466,13 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
-            var indexer_1 = require('./indexer');
+            var indexer_1 = require('./util/indexer');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var syntax = /^(#{1,6})[^\S\n]+?([^\n]+)/;
-            exports.heading = end_1.verifyBlockEnd(function (source) {
+            exports.heading = verification_1.verify(function (source) {
                 if (!source.startsWith('#'))
                     return;
                 var _a = __read(source.split('\n', 1).shift().match(syntax) || [
@@ -1521,9 +1501,48 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../inline': 39,
             '../squash': 68,
-            './end': 24,
-            './indexer': 30
+            './util/indexer': 36,
+            './util/verification': 37
         }
+    ],
+    27: [
+        function (require, module, exports) {
+            'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var verification_1 = require('./util/verification');
+            var syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;
+            exports.horizontalrule = verification_1.verify(function (source) {
+                var _a = __read(source.split('\n', 1)[0].match(syntax) || [''], 1), whole = _a[0];
+                if (!whole)
+                    return;
+                return [
+                    [document.createElement('hr')],
+                    source.slice(whole.length + 1)
+                ];
+            });
+        },
+        { './util/verification': 37 }
     ],
     28: [
         function (require, module, exports) {
@@ -1550,171 +1569,9 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
-            var syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;
-            exports.horizontalrule = end_1.verifyBlockEnd(function (source) {
-                var _a = __read(source.split('\n', 1)[0].match(syntax) || [''], 1), whole = _a[0];
-                if (!whole)
-                    return;
-                return [
-                    [document.createElement('hr')],
-                    source.slice(whole.length + 1)
-                ];
-            });
-        },
-        { './end': 24 }
-    ],
-    29: [
-        function (require, module, exports) {
-            'use strict';
-            var __read = this && this.__read || function (o, n) {
-                var m = typeof Symbol === 'function' && o[Symbol.iterator];
-                if (!m)
-                    return o;
-                var i = m.call(o), r, ar = [], e;
-                try {
-                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-                        ar.push(r.value);
-                } catch (error) {
-                    e = { error: error };
-                } finally {
-                    try {
-                        if (r && !r.done && (m = i['return']))
-                            m.call(i);
-                    } finally {
-                        if (e)
-                            throw e.error;
-                    }
-                }
-                return ar;
-            };
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var syntax = /^\s*/;
-            function indent(source) {
-                var _a = __read(source.split('\n', 1).shift().match(syntax) || [''], 1), indent = _a[0];
-                if (indent === '')
-                    return;
-                var lines = [];
-                var rest = source;
-                while (true) {
-                    var line = rest.split('\n', 1)[0];
-                    if (!line.startsWith(indent))
-                        break;
-                    if (line.slice(indent.length).trim() === '')
-                        break;
-                    void lines.push(line.slice(indent.length));
-                    rest = rest.slice(line.length + 1);
-                }
-                return rest.length < source.length ? [
-                    lines.join('\n'),
-                    rest
-                ] : undefined;
-            }
-            exports.indent = indent;
-            ;
-            function fillOListFlag(source) {
-                return source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, function (str) {
-                    return str + '.';
-                });
-            }
-            exports.fillOListFlag = fillOListFlag;
-        },
-        {}
-    ],
-    30: [
-        function (require, module, exports) {
-            'use strict';
-            var __read = this && this.__read || function (o, n) {
-                var m = typeof Symbol === 'function' && o[Symbol.iterator];
-                if (!m)
-                    return o;
-                var i = m.call(o), r, ar = [], e;
-                try {
-                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-                        ar.push(r.value);
-                } catch (error) {
-                    e = { error: error };
-                } finally {
-                    try {
-                        if (r && !r.done && (m = i['return']))
-                            m.call(i);
-                    } finally {
-                        if (e)
-                            throw e.error;
-                    }
-                }
-                return ar;
-            };
-            var __spread = this && this.__spread || function () {
-                for (var ar = [], i = 0; i < arguments.length; i++)
-                    ar = ar.concat(__read(arguments[i]));
-                return ar;
-            };
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var inline_1 = require('../inline');
-            var index_1 = require('../string/index');
-            var syntax = /^\s+\[#\S+?\]$/;
-            exports.indexer = function (source) {
-                if (!source.trim().startsWith('[#') || source.search(syntax) !== 0)
-                    return;
-                source = source.trim();
-                var _a = __read(inline_1.inline(source) || [[document.createTextNode('')]], 2), _b = __read(_a[0], 1), el = _b[0], _c = _a[1], rest = _c === void 0 ? undefined : _c;
-                if (rest === undefined)
-                    return;
-                if (!(el instanceof HTMLAnchorElement))
-                    return;
-                void el.setAttribute('class', 'index');
-                return [
-                    [el],
-                    ''
-                ];
-            };
-            function defineIndex(target) {
-                var el = target.querySelector('.index') || target.cloneNode(true);
-                void el.remove();
-                void __spread(el.querySelectorAll('code[data-src], .math[data-src]')).forEach(function (el) {
-                    return el.textContent = el.getAttribute('data-src');
-                });
-                var text = el.textContent.trim();
-                if (text === '')
-                    return;
-                void target.setAttribute('id', index_1.makeIndex(text));
-            }
-            exports.defineIndex = defineIndex;
-        },
-        {
-            '../inline': 39,
-            '../string/index': 69
-        }
-    ],
-    31: [
-        function (require, module, exports) {
-            'use strict';
-            var __read = this && this.__read || function (o, n) {
-                var m = typeof Symbol === 'function' && o[Symbol.iterator];
-                if (!m)
-                    return o;
-                var i = m.call(o), r, ar = [], e;
-                try {
-                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
-                        ar.push(r.value);
-                } catch (error) {
-                    e = { error: error };
-                } finally {
-                    try {
-                        if (r && !r.done && (m = i['return']))
-                            m.call(i);
-                    } finally {
-                        if (e)
-                            throw e.error;
-                    }
-                }
-                return ar;
-            };
-            Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
-            exports.mathblock = end_1.verifyBlockEnd(function (source) {
+            exports.mathblock = verification_1.verify(function (source) {
                 if (!source.startsWith('$$'))
                     return;
                 var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
@@ -1729,9 +1586,9 @@ require = function e(t, n, r) {
                 ];
             });
         },
-        { './end': 24 }
+        { './util/verification': 37 }
     ],
-    32: [
+    29: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -1769,7 +1626,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    33: [
+    30: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -1794,14 +1651,14 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
             var ulist_1 = require('./ulist');
-            var indent_1 = require('./indent');
+            var indent_1 = require('./util/indent');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
-            exports.olist = end_1.verifyBlockEnd(function (source) {
+            exports.olist = verification_1.verify(function (source) {
                 var _a = __read(source.match(syntax) || [
                         '',
                         '',
@@ -1862,12 +1719,12 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../inline': 39,
             '../squash': 68,
-            './end': 24,
-            './indent': 29,
-            './ulist': 37
+            './ulist': 34,
+            './util/indent': 35,
+            './util/verification': 37
         }
     ],
-    34: [
+    31: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -1892,12 +1749,12 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var closer = /^[^\S\n]*\\?(?=\n[^\S\n]*\\?\n|\n?$)/;
-            exports.paragraph = end_1.verifyBlockEnd(function (source) {
+            exports.paragraph = verification_1.verify(function (source) {
                 if (source.startsWith('\n'))
                     return;
                 source = source.replace(/^\s+/, '');
@@ -1917,10 +1774,10 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../inline': 39,
             '../squash': 68,
-            './end': 24
+            './util/verification': 37
         }
     ],
-    35: [
+    32: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -1945,12 +1802,12 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
             var escapable_1 = require('../source/escapable');
             var squash_1 = require('../squash');
             var syntax = /^(`{3,})[^\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
-            exports.pretext = end_1.verifyBlockEnd(function (source) {
+            exports.pretext = verification_1.verify(function (source) {
                 if (!source.startsWith('```'))
                     return;
                 var _a = __read(source.match(syntax) || [
@@ -1981,10 +1838,10 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../source/escapable': 63,
             '../squash': 68,
-            './end': 24
+            './util/verification': 37
         }
     ],
-    36: [
+    33: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -2009,13 +1866,13 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
             var align = /^:?-+:?$/;
-            exports.table = end_1.verifyBlockEnd(function (source) {
+            exports.table = verification_1.verify(function (source) {
                 if (!source.startsWith('|') || source.search(syntax) !== 0)
                     return;
                 var table = document.createElement('table');
@@ -2112,10 +1969,10 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../inline': 39,
             '../squash': 68,
-            './end': 24
+            './util/verification': 37
         }
     ],
-    37: [
+    34: [
         function (require, module, exports) {
             'use strict';
             var __read = this && this.__read || function (o, n) {
@@ -2140,15 +1997,15 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var end_1 = require('./end');
+            var verification_1 = require('./util/verification');
             var combinator_1 = require('../../combinator');
             var olist_1 = require('./olist');
-            var indent_1 = require('./indent');
+            var indent_1 = require('./util/indent');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
             var syntax = /^([-+*])(?=\s|$)/;
             var content = /^(\[[ x]\](?: +|$))?.*$/;
-            exports.ulist = end_1.verifyBlockEnd(function (source) {
+            exports.ulist = verification_1.verify(function (source) {
                 var _a = __read(source.match(syntax) || [
                         '',
                         ''
@@ -2214,10 +2071,151 @@ require = function e(t, n, r) {
             '../../combinator': 15,
             '../inline': 39,
             '../squash': 68,
-            './end': 24,
-            './indent': 29,
-            './olist': 33
+            './olist': 30,
+            './util/indent': 35,
+            './util/verification': 37
         }
+    ],
+    35: [
+        function (require, module, exports) {
+            'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var syntax = /^\s*/;
+            function indent(source) {
+                var _a = __read(source.split('\n', 1).shift().match(syntax) || [''], 1), indent = _a[0];
+                if (indent === '')
+                    return;
+                var lines = [];
+                var rest = source;
+                while (true) {
+                    var line = rest.split('\n', 1)[0];
+                    if (!line.startsWith(indent))
+                        break;
+                    if (line.slice(indent.length).trim() === '')
+                        break;
+                    void lines.push(line.slice(indent.length));
+                    rest = rest.slice(line.length + 1);
+                }
+                return rest.length < source.length ? [
+                    lines.join('\n'),
+                    rest
+                ] : undefined;
+            }
+            exports.indent = indent;
+            ;
+            function fillOListFlag(source) {
+                return source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, function (str) {
+                    return str + '.';
+                });
+            }
+            exports.fillOListFlag = fillOListFlag;
+        },
+        {}
+    ],
+    36: [
+        function (require, module, exports) {
+            'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
+            var __spread = this && this.__spread || function () {
+                for (var ar = [], i = 0; i < arguments.length; i++)
+                    ar = ar.concat(__read(arguments[i]));
+                return ar;
+            };
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var inline_1 = require('../../inline');
+            var index_1 = require('../../string/index');
+            var syntax = /^\s+\[#\S+?\]$/;
+            exports.indexer = function (source) {
+                if (!source.trim().startsWith('[#') || source.search(syntax) !== 0)
+                    return;
+                source = source.trim();
+                var _a = __read(inline_1.inline(source) || [[document.createTextNode('')]], 2), _b = __read(_a[0], 1), el = _b[0], _c = _a[1], rest = _c === void 0 ? undefined : _c;
+                if (rest === undefined)
+                    return;
+                if (!(el instanceof HTMLAnchorElement))
+                    return;
+                void el.setAttribute('class', 'index');
+                return [
+                    [el],
+                    ''
+                ];
+            };
+            function defineIndex(target) {
+                var el = target.querySelector('.index') || target.cloneNode(true);
+                void el.remove();
+                void __spread(el.querySelectorAll('code[data-src], .math[data-src]')).forEach(function (el) {
+                    return el.textContent = el.getAttribute('data-src');
+                });
+                var text = el.textContent.trim();
+                if (text === '')
+                    return;
+                void target.setAttribute('id', index_1.makeIndex(text));
+            }
+            exports.defineIndex = defineIndex;
+        },
+        {
+            '../../inline': 39,
+            '../../string/index': 69
+        }
+    ],
+    37: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            function verify(parser) {
+                return function (source) {
+                    var result = parser(source);
+                    if (!result)
+                        return result;
+                    if (result[1].split('\n', 1).shift().trim() !== '')
+                        return undefined;
+                    return result;
+                };
+            }
+            exports.verify = verify;
+        },
+        {}
     ],
     38: [
         function (require, module, exports) {
@@ -3331,8 +3329,8 @@ require = function e(t, n, r) {
         },
         {
             '../combinator': 15,
-            './block/extension': 25,
-            './block/pretext': 35,
+            './block/extension': 24,
+            './block/pretext': 32,
             './source/emptyline': 62,
             './source/nonemptyline': 64
         }
