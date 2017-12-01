@@ -1,6 +1,6 @@
 ﻿import { html } from './html';
 import { loop } from '../../combinator';
-import { inspect } from '../debug.test';
+import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/html', () => {
   describe('html', () => {

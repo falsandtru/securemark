@@ -1,6 +1,6 @@
 ﻿import { account } from './account';
 import { loop } from '../../../combinator';
-import { inspect } from '../../debug.test';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/account', () => {
   describe('account', () => {

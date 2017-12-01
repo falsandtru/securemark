@@ -1,6 +1,6 @@
 import { text } from './text';
 import { loop } from '../../combinator';
-import { inspect } from '../debug.test';
+import { inspect } from '../../debug.test';
 
 describe('Unit: parser/text/text', () => {
   describe('text', () => {

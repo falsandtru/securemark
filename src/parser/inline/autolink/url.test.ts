@@ -1,6 +1,6 @@
 ﻿import { url } from './url';
 import { loop } from '../../../combinator';
-import { inspect } from '../../debug.test';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/url', () => {
   describe('url', () => {

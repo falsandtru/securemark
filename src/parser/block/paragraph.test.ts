@@ -1,6 +1,6 @@
 ﻿import { paragraph } from './paragraph';
 import { loop } from '../../combinator';
-import { inspect } from '../debug.test';
+import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/paragraph', () => {
   describe('paragraph', () => {
@@ -25,6 +25,10 @@ describe('Unit: parser/block/paragraph', () => {
     it('break', () => {
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\nb')), [['<p>a<br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n\nb')), [['<p>a</p>'], '\nb']);
+      assert.deepStrictEqual(inspect(parser('a\n\\\nb')), [['<p>a b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\na\n')), [['<p>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\na\\\n')), [['<p>a</p>'], '']);
     });
 
   });

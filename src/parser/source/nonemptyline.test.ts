@@ -1,6 +1,6 @@
 ﻿import { nonemptyline } from './nonemptyline';
 import { loop } from '../../combinator';
-import { inspect } from '../debug.test';
+import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/nonemptyline', () => {
   describe('nonemptyline', () => {

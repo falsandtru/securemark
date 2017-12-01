@@ -61,24 +61,15 @@ function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: strin
 
 const rowseparator = /^\||^[^\S\n]*(?=\n|$)/;
 const rowend = /^\|?[^\S\n]*(?=\n|$)/;
-function parse(source: string): [DocumentFragment[], string] | undefined {
+function parse(row: string): [DocumentFragment[], string] | undefined {
   const cols = [];
   while (true) {
-    if (source[0] !== '|') return;
-    const result = loop(inline, rowseparator)(source.slice(1)) || [[document.createTextNode('')], source.slice(1)];
-    const [col, rest] = result;
-    assert(rest.length < source.length);
-    source = rest;
-    void cols.push(trim(squash(col)));
-    if (source.search(rowend) === 0) return [cols, source.slice(source.split('\n')[0].length + 1)];
+    if (row[0] !== '|') return;
+    const [, rest] = loop(inline, rowseparator)(row.slice(1)) || [[], row.slice(1)];
+    const [col] = loop(inline)(row.slice(1, row.length - rest.length).trim()) || [[]];
+    assert(rest.length < row.length);
+    row = rest;
+    void cols.push(squash(col));
+    if (row.search(rowend) === 0) return [cols, row.slice(row.split('\n')[0].length + 1)];
   }
-}
-
-function trim(n: DocumentFragment): DocumentFragment {
-  if (!n.firstChild || !n.lastChild) return n;
-  if (n.firstChild === n.firstElementChild) return n;
-  n.firstChild.textContent = n.firstChild.textContent!.replace(/^\s+/, '');
-  if (n.lastChild === n.lastElementChild) return n;
-  n.lastChild.textContent = n.lastChild.textContent!.replace(/\s+$/, '');
-  return n;
 }

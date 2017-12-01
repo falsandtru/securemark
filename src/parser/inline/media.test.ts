@@ -1,6 +1,6 @@
 ﻿import { media } from './media';
 import { loop } from '../../combinator';
-import { inspect } from '../debug.test';
+import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/media', () => {
   describe('media', () => {

@@ -5,9 +5,12 @@ declare abstract class Markdown<T> {
 }
 export interface MarkdownParser extends
   Markdown<'markdown'>,
-  Parser<HTMLElement, [
+  Parser<HTMLElement, MarkdownParser.InnerParsers> {
+}
+export namespace MarkdownParser {
+  export type InnerParsers = [
     MarkdownParser.BlockParser
-  ]> {
+  ];
 }
 export namespace MarkdownParser {
   export interface SegmentParser extends

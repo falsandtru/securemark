@@ -9,7 +9,7 @@ const syntax = /^(#{1,6})[^\S\n]+?([^\n]+)/;
 
 export const heading: HeadingParser = verify((source: string): [[HTMLHeadingElement], string] | undefined => {
   if (!source.startsWith('#')) return;
-  const [whole, { length: level }, title] = source.split('\n', 1).shift()!.match(syntax) || ['', '', ''];
+  const [whole, { length: level }, title] = source.split('\n', 1)[0].match(syntax) || ['', '', ''];
   if (!whole) return;
   assert(level > 0 && level < 7);
   assert(title.length > 0);

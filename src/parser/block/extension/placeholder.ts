@@ -9,11 +9,11 @@ export interface PlaceholderParser extends
   Markdown<'extensionblock' & 'extensionblock/placeholder'>,
   Parser<HTMLElement, never[]> {
 }
-const syntax = /^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
+const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
 
 export const placeholder: PlaceholderParser = verify((source: string): [HTMLElement[], string] | undefined => {
   if (!source.startsWith('~~~')) return;
-  const [whole, keyword] = source.match(syntax) || ['', ''];
+  const [whole, keyword, notes] = source.match(syntax) || ['', '', ''];
   if (!whole) return;
   const message = document.createElement('p');
   void message.appendChild(squash(loop(inline)("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.")![0]));
@@ -27,6 +27,6 @@ export const placeholder: PlaceholderParser = verify((source: string): [HTMLElem
     if (source === '') return;
   }
   const quote = document.createElement('pre');
-  void quote.appendChild(document.createTextNode(`${keyword}\n${lines.join('')}${keyword}`));
+  void quote.appendChild(document.createTextNode(`${keyword}${notes}\n${lines.join('')}${keyword}`));
   return [[message, quote], source.slice(keyword.length + 1)];
 });

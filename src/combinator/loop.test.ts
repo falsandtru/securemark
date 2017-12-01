@@ -1,6 +1,7 @@
 ﻿import { Parser, Result } from './parser';
 import { combine } from './combine';
 import { loop } from './loop';
+import { inspect } from '../debug.test';
 
 describe('Unit: combinator/loop', () => {
   describe('loop', () => {
@@ -18,17 +19,17 @@ describe('Unit: combinator/loop', () => {
 
     it('ab', () => {
       const parser = loop(ab, /aaa|$/);
-      assert.deepStrictEqual(parser(''), undefined);
-      assert.deepStrictEqual(parser('a'), [['A'], '']);
-      assert.deepStrictEqual(parser('b'), [['B'], '']);
-      assert.deepStrictEqual(parser('ab'), [['A', 'B'], '']);
-      assert.deepStrictEqual(parser('ba'), [['B', 'A'], '']);
-      assert.deepStrictEqual(parser('aab'), [['A', 'A', 'B'], '']);
-      assert.deepStrictEqual(parser('bba'), [['B', 'B', 'A'], '']);
-      assert.deepStrictEqual(parser('aaa'), undefined);
-      assert.deepStrictEqual(parser('bbb'), [['B', 'B', 'B'], '']);
-      assert.deepStrictEqual(parser('aaab'), undefined);
-      assert.deepStrictEqual(parser('baaa'), [['B'], 'aaa']);
+      assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('a')), [['A'], '']);
+      assert.deepStrictEqual(inspect(parser('b')), [['B'], '']);
+      assert.deepStrictEqual(inspect(parser('ab')), [['A', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser('ba')), [['B', 'A'], '']);
+      assert.deepStrictEqual(inspect(parser('aab')), [['A', 'A', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser('bba')), [['B', 'B', 'A'], '']);
+      assert.deepStrictEqual(inspect(parser('aaa')), undefined);
+      assert.deepStrictEqual(inspect(parser('bbb')), [['B', 'B', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser('aaab')), undefined);
+      assert.deepStrictEqual(inspect(parser('baaa')), [['B'], 'aaa']);
     });
 
   });

@@ -46,12 +46,12 @@ export const blockquote: BlockquoteParser = verify((source: string): [[HTMLQuote
         : document.createTextNode('\n');
       void bottom.appendChild(node);
     }
-    source = source.split(/[^\S\n]/, 1).shift()! === indent
+    source = source.split(/[^\S\n]/, 1)[0] === indent
       ? source.slice(indent.length + 1)
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs, rest = source] = loop(combine<HTMLElement | Text, BlockquoteParser.InnerParsers>([unescsource]), '\n|$')(source) || [[document.createTextNode('')]];
+    const [cs, rest = source] = loop(combine<HTMLElement | Text, BlockquoteParser.InnerParsers>([unescsource]), '\n|$')(source) || [[]];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs);

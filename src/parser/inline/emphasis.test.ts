@@ -1,6 +1,6 @@
 ﻿import { emphasis } from './emphasis';
 import { loop } from '../../combinator';
-import { inspect } from '../debug.test';
+import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/emphasis', () => {
   describe('emphasis', () => {
