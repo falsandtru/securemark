@@ -1221,8 +1221,8 @@ require = function e(t, n, r) {
                         var node_1 = mode === 'plain' ? document.createElement('br') : document.createTextNode('\n');
                         void bottom.appendChild(node_1);
                     }
-                    source = source.split(/[^\S\n]/, 1).shift() === indent ? source.slice(indent.length + 1) : source.startsWith(indent + '\n') ? source.slice(indent.length) : source;
-                    var _b = __read(combinator_1.loop(combinator_1.combine([unescapable_1.unescsource]), '\n|$')(source) || [[document.createTextNode('')]], 2), cs = _b[0], _c = _b[1], rest = _c === void 0 ? source : _c;
+                    source = source.split(/[^\S\n]/, 1)[0] === indent ? source.slice(indent.length + 1) : source.startsWith(indent + '\n') ? source.slice(indent.length) : source;
+                    var _b = __read(combinator_1.loop(combinator_1.combine([unescapable_1.unescsource]), '\n|$')(source) || [[]], 2), cs = _b[0], _c = _b[1], rest = _c === void 0 ? source : _c;
                     var node = mode === 'plain' ? document.createTextNode(squash_1.squash(cs).textContent.replace(/ /g, String.fromCharCode(160))) : squash_1.squash(cs);
                     if (bottom.childNodes.length === 0 && node.textContent.trim() === '')
                         return;
@@ -1399,14 +1399,15 @@ require = function e(t, n, r) {
             var inline_1 = require('../../inline');
             var unescapable_1 = require('../../source/unescapable');
             var squash_1 = require('../../squash');
-            var syntax = /^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
+            var syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
             exports.placeholder = verification_1.verify(function (source) {
                 if (!source.startsWith('~~~'))
                     return;
                 var _a = __read(source.match(syntax) || [
                         '',
+                        '',
                         ''
-                    ], 2), whole = _a[0], keyword = _a[1];
+                    ], 3), whole = _a[0], keyword = _a[1], notes = _a[2];
                 if (!whole)
                     return;
                 var message = document.createElement('p');
@@ -1423,7 +1424,7 @@ require = function e(t, n, r) {
                         return;
                 }
                 var quote = document.createElement('pre');
-                void quote.appendChild(document.createTextNode(keyword + '\n' + lines.join('') + keyword));
+                void quote.appendChild(document.createTextNode('' + keyword + notes + '\n' + lines.join('') + keyword));
                 return [
                     [
                         message,
@@ -1475,7 +1476,7 @@ require = function e(t, n, r) {
             exports.heading = verification_1.verify(function (source) {
                 if (!source.startsWith('#'))
                     return;
-                var _a = __read(source.split('\n', 1).shift().match(syntax) || [
+                var _a = __read(source.split('\n', 1)[0].match(syntax) || [
                         '',
                         '',
                         ''
@@ -1613,7 +1614,7 @@ require = function e(t, n, r) {
                 return ar;
             };
             Object.defineProperty(exports, '__esModule', { value: true });
-            var syntax = /^[^\S\n]*\n/;
+            var syntax = /^[^\S\n]*?\\?\n/;
             exports.newline = function (source) {
                 var _a = __read(source.match(syntax) || [''], 1), whole = _a[0];
                 if (!whole)
@@ -1753,20 +1754,19 @@ require = function e(t, n, r) {
             var combinator_1 = require('../../combinator');
             var inline_1 = require('../inline');
             var squash_1 = require('../squash');
-            var closer = /^[^\S\n]*\\?(?=\n[^\S\n]*\\?\n|\n?$)/;
+            var separator = /^\s*$/m;
+            var emptyline = /^\s*?\\?\n/mg;
             exports.paragraph = verification_1.verify(function (source) {
-                if (source.startsWith('\n'))
+                if (source.split('\n', 1)[0].trim() === '')
                     return;
-                source = source.replace(/^\s+/, '');
+                var block = source.split(separator, 1)[0];
+                var rest = source.slice(block.length);
+                var _a = __read(combinator_1.loop(combinator_1.combine([inline_1.inline]))(block.replace(emptyline, '').trim()) || [[]], 1), cs = _a[0];
                 var el = document.createElement('p');
-                var _a = __read(combinator_1.loop(combinator_1.combine([inline_1.inline]), closer)(source) || [
-                        [document.createTextNode(source)],
-                        ''
-                    ], 2), cs = _a[0], rest = _a[1];
                 void el.appendChild(squash_1.squash(cs));
                 return [
                     [el],
-                    rest.slice(rest.split('\n').shift().length + 1)
+                    rest
                 ];
             });
         },
@@ -1934,35 +1934,24 @@ require = function e(t, n, r) {
             }
             var rowseparator = /^\||^[^\S\n]*(?=\n|$)/;
             var rowend = /^\|?[^\S\n]*(?=\n|$)/;
-            function parse(source) {
+            function parse(row) {
                 var cols = [];
                 while (true) {
-                    if (source[0] !== '|')
+                    if (row[0] !== '|')
                         return;
-                    var result = combinator_1.loop(inline_1.inline, rowseparator)(source.slice(1)) || [
-                        [document.createTextNode('')],
-                        source.slice(1)
-                    ];
-                    var _a = __read(result, 2), col = _a[0], rest = _a[1];
-                    source = rest;
-                    void cols.push(trim(squash_1.squash(col)));
-                    if (source.search(rowend) === 0)
+                    var _a = __read(combinator_1.loop(inline_1.inline, rowseparator)(row.slice(1)) || [
+                            [],
+                            row.slice(1)
+                        ], 2), rest = _a[1];
+                    var _b = __read(combinator_1.loop(inline_1.inline)(row.slice(1, row.length - rest.length).trim()) || [[]], 1), col = _b[0];
+                    row = rest;
+                    void cols.push(squash_1.squash(col));
+                    if (row.search(rowend) === 0)
                         return [
                             cols,
-                            source.slice(source.split('\n')[0].length + 1)
+                            row.slice(row.split('\n')[0].length + 1)
                         ];
                 }
-            }
-            function trim(n) {
-                if (!n.firstChild || !n.lastChild)
-                    return n;
-                if (n.firstChild === n.firstElementChild)
-                    return n;
-                n.firstChild.textContent = n.firstChild.textContent.replace(/^\s+/, '');
-                if (n.lastChild === n.lastElementChild)
-                    return n;
-                n.lastChild.textContent = n.lastChild.textContent.replace(/\s+$/, '');
-                return n;
             }
         },
         {
@@ -2103,7 +2092,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             var syntax = /^\s*/;
             function indent(source) {
-                var _a = __read(source.split('\n', 1).shift().match(syntax) || [''], 1), indent = _a[0];
+                var _a = __read(source.split('\n', 1)[0].match(syntax) || [''], 1), indent = _a[0];
                 if (indent === '')
                     return;
                 var lines = [];
@@ -2208,7 +2197,7 @@ require = function e(t, n, r) {
                     var result = parser(source);
                     if (!result)
                         return result;
-                    if (result[1].split('\n', 1).shift().trim() !== '')
+                    if (result[1].split('\n', 1)[0].trim() !== '')
                         return undefined;
                     return result;
                 };
@@ -3821,7 +3810,7 @@ require = function e(t, n, r) {
                 Object.defineProperty(exports, '__esModule', { value: true });
                 var Prism = typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null;
                 function code(target) {
-                    void Prism.highlightElement(target, true);
+                    void Prism.highlightElement(target, false);
                 }
                 exports.code = code;
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
