@@ -3306,8 +3306,8 @@ require = function e(t, n, r) {
                     var _a = __read(combinator_1.combine([
                             pretext_1.pretext,
                             extension_1.extension,
-                            combinator_1.loop(nonemptyline_1.nonemptyline),
-                            combinator_1.loop(emptyline_1.emptyline)
+                            nonemptyline_1.nonemptylines,
+                            emptyline_1.emptylines
                         ])(source) || [[]], 2), _b = _a[1], rest = _b === void 0 ? '' : _b;
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
@@ -3345,14 +3345,36 @@ require = function e(t, n, r) {
     62: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.emptyline = function (source) {
+            var syntax = /^(?:[^\S\n]*(?:\n|$))*/;
+            exports.emptylines = function (source) {
                 if (source.length === 0)
                     return;
-                var line = source.slice(0, source.split('\n', 1)[0].length + 1);
-                return line.trim() !== '' ? undefined : [
-                    [document.createTextNode(line)],
-                    source.slice(line.length)
+                var _a = __read(source.match(syntax) || [], 1), _b = _a[0], whole = _b === void 0 ? '' : _b;
+                return whole === '' ? undefined : [
+                    [],
+                    source.slice(whole.length)
                 ];
             };
         },
@@ -3407,14 +3429,36 @@ require = function e(t, n, r) {
     64: [
         function (require, module, exports) {
             'use strict';
+            var __read = this && this.__read || function (o, n) {
+                var m = typeof Symbol === 'function' && o[Symbol.iterator];
+                if (!m)
+                    return o;
+                var i = m.call(o), r, ar = [], e;
+                try {
+                    while ((n === void 0 || n-- > 0) && !(r = i.next()).done)
+                        ar.push(r.value);
+                } catch (error) {
+                    e = { error: error };
+                } finally {
+                    try {
+                        if (r && !r.done && (m = i['return']))
+                            m.call(i);
+                    } finally {
+                        if (e)
+                            throw e.error;
+                    }
+                }
+                return ar;
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.nonemptyline = function (source) {
+            var syntax = /^(?:[^\S\n]*?\S[^\n]*(?:\n|$))*/;
+            exports.nonemptylines = function (source) {
                 if (source.length === 0)
                     return;
-                var line = source.slice(0, source.split('\n', 1)[0].length + 1);
-                return line.trim() === '' ? undefined : [
-                    [document.createTextNode(line)],
-                    source.slice(line.length)
+                var _a = __read(source.match(syntax) || [], 1), _b = _a[0], whole = _b === void 0 ? '' : _b;
+                return whole === '' ? undefined : [
+                    [],
+                    source.slice(whole.length)
                 ];
             };
         },
@@ -3779,19 +3823,21 @@ require = function e(t, n, r) {
                     opts = {};
                 }
                 void __spread([target], target.querySelectorAll('img, pre, .math')).forEach(function (target) {
-                    switch (true) {
-                    case target.matches('img:not([src])[data-src]'): {
-                            var content = media_1.media(target, opts.media);
-                            var scope = content instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
-                            return void scope.parentElement.replaceChild(content, scope);
+                    return void new Promise(function () {
+                        switch (true) {
+                        case target.matches('img:not([src])[data-src]'): {
+                                var content = media_1.media(target, opts.media);
+                                var scope = content instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
+                                return void scope.parentElement.replaceChild(content, scope);
+                            }
+                        case target.matches('pre') && target.children.length === 0:
+                            return void (opts.code || code_1.code)(target);
+                        case target.matches('.math') && target.children.length === 0:
+                            return void (opts.math || math_1.math)(target);
+                        default:
+                            return;
                         }
-                    case target.matches('pre') && target.children.length === 0:
-                        return void (opts.code || code_1.code)(target);
-                    case target.matches('.math') && target.children.length === 0:
-                        return void (opts.math || math_1.math)(target);
-                    default:
-                        return;
-                    }
+                    });
                 });
                 return target;
             }
