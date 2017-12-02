@@ -23,7 +23,7 @@ export function bind(el: HTMLElement | DocumentFragment): (source: string) => HT
         void es
           .forEach((e) =>
             void e.remove()));
-    const ref = pairs.slice(i).reduce<HTMLElement | null>((e, [, es]) => e || es[0], null);
+    const ref = pairs.slice(i).reduce((e, [, es]) => e || es[0], null);
     const ps = ns.slice(i, ns.length - j)
       .map<Pair>(s =>
         [
@@ -32,8 +32,10 @@ export function bind(el: HTMLElement | DocumentFragment): (source: string) => HT
             .map(e =>
               el.insertBefore(e, ref)),
         ]);
+    assert(ps.every(([, es]) => es.length <= 1));
     void pairs.splice(i, 0, ...ps);
     return ps
-      .reduce<HTMLElement[]>((acc, [, es]) => concat(acc, es), []);
+      .reduce((acc, [, es]) =>
+        concat(acc, es), []);
   };
 }
