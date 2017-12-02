@@ -1,9 +1,11 @@
 ﻿import { EmptyLineParser } from '../source';
 
-export const emptyline: EmptyLineParser = (source: string): [[Text], string] | undefined => {
+const syntax = /^(?:[^\S\n]*(?:\n|$))*/;
+
+export const emptylines: EmptyLineParser = (source: string) => {
   if (source.length === 0) return;
-  const line = source.slice(0, source.split('\n', 1)[0].length + 1);
-  return line.trim() !== ''
+  const [whole = ''] = source.match(syntax) || [];
+  return whole === ''
     ? undefined
-    : [[document.createTextNode(line)], source.slice(line.length)];
+    : [[], source.slice(whole.length)];
 };

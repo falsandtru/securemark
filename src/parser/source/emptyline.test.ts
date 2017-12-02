@@ -1,10 +1,9 @@
-﻿import { emptyline } from './emptyline';
-import { loop } from '../../combinator';
+﻿import { emptylines } from './emptyline';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/emptyline', () => {
   describe('emptyline', () => {
-    const parser = loop(emptyline);
+    const parser = emptylines;
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -14,10 +13,14 @@ describe('Unit: parser/source/emptyline', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser(' ')), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('\n')), [['\n'], '']);
-      assert.deepStrictEqual(inspect(parser(' \n')), [[' \n'], '']);
-      assert.deepStrictEqual(inspect(parser('\n\n')), [['\n', '\n'], '']);
+      assert.deepStrictEqual(inspect(parser(' ')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' \n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' \n\n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' \n  \n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('\n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('\n\n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('\n ')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('\n \n')), [[], '']);
     });
 
   });

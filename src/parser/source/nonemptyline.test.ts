@@ -1,10 +1,9 @@
-﻿import { nonemptyline } from './nonemptyline';
-import { loop } from '../../combinator';
+﻿import { nonemptylines } from './nonemptyline';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/nonemptyline', () => {
   describe('nonemptyline', () => {
-    const parser = loop(nonemptyline);
+    const parser = nonemptylines;
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -15,9 +14,14 @@ describe('Unit: parser/source/nonemptyline', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
-      assert.deepStrictEqual(inspect(parser('ab\n')), [['ab\n'], '']);
-      assert.deepStrictEqual(inspect(parser('ab \n')), [['ab \n'], '']);
+      assert.deepStrictEqual(inspect(parser('a')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('a ')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' a')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' a ')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' a\n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' a \n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('ab')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('a\nb')), [[], '']);
     });
 
   });
