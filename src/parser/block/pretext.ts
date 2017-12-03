@@ -4,20 +4,19 @@ import { loop } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 
-const syntax = /^(`{3,})[^\n]*\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
+const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
 
 export const pretext: PretextParser = verify((source: string): [[HTMLPreElement], string] | undefined => {
   if (!source.startsWith('```')) return;
-  const [whole, keyword] = source.match(syntax) || ['', ''];
+  const [whole, , notes] = source.match(syntax) || ['', '', ''];
   if (!whole) return;
-  const [, lang] = source.split('\n', 1)[0].match(/^(?:`{3,})(\S*)/);
-  const [ts] = loop(escsource, /^\s/)(source.split('\n', 1)[0].slice(keyword.length + lang.length).trim()) || [[]];
-  const filename = squash(ts).textContent!;
   const el = document.createElement('pre');
+  const lang = notes.split(/\s/, 1)[0];
   if (lang) {
     void el.setAttribute('class', `language-${lang.toLowerCase()}`);
     void el.setAttribute('data-lang', lang);
   }
+  const filename = squash((loop(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0]).textContent!;
   if (filename) {
     void el.setAttribute('data-file', filename);
   }
