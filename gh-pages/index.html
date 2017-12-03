@@ -191,13 +191,17 @@
     }, 300);
   });
   async function display() {
-    var since = Date.now();
+    var time = Date.now();
     var elapsed = 0;
+    var resource = 300;
     for (var el of parse(document.getElementById('editor').value)) {
       observer.observe(el);
-      elapsed += Date.now() - since;
-      await new Promise(setTimeout);
-      since = Date.now();
+      const diff = Date.now() - time;
+      elapsed += diff;
+      resource = resource > 0
+        ? resource - diff
+        : (await new Promise(setTimeout), 100);
+      time = Date.now();
     }
     return elapsed;
   }
