@@ -1,14 +1,15 @@
 ﻿import { parse } from './parser';
 import { segment } from '../parser/segment';
-import { concat } from 'spica/concat'
 
-export function bind(el: HTMLElement | DocumentFragment): (source: string) => HTMLElement[] {
+export function bind(el: HTMLElement | DocumentFragment): (source: string) => Iterable<HTMLElement> {
   assert(el.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
-  return (source: string) => {
+  let available = true;
+  return function* (source: string): Iterable<HTMLElement> {
+    if (!available) throw new Error('Securemark: Previous parse iteration is not done.');
     const os = pairs.map(([s]) => s);
-    if (source === os.join('')) return [];
+    if (source === os.join('')) return;
     const ns = segment(source);
     let i = 0;
     for (; i < os.length; ++i) {
@@ -24,18 +25,18 @@ export function bind(el: HTMLElement | DocumentFragment): (source: string) => HT
           .forEach((e) =>
             void e.remove()));
     const ref = pairs.slice(i).reduce((e, [, es]) => e || es[0], null);
-    const ps = ns.slice(i, ns.length - j)
-      .map<Pair>(s =>
-        [
-          s,
-          [...parse(s).children as HTMLCollectionOf<HTMLElement>]
-            .map(e =>
-              el.insertBefore(e, ref)),
-        ]);
-    assert(ps.every(([, es]) => es.length <= 1));
+    const ps: Pair[] = [];
+    for (const seg of ns.slice(i, ns.length - j)) {
+      const es = [...parse(seg).children as HTMLCollectionOf<HTMLElement>]
+        .map(e =>
+          el.insertBefore(e, ref));
+      void ps.push([seg, es]);
+      assert(es.length <= 1);
+      for (const e of es) {
+        yield e;
+      }
+    }
     void pairs.splice(i, 0, ...ps);
-    return ps
-      .reduce((acc, [, es]) =>
-        concat(acc, es), []);
+    available = true;
   };
 }

@@ -2,8 +2,8 @@
 
 describe('Unit: renderer/bind', () => {
   describe('bind', () => {
-    function inspect(es: HTMLElement[]) {
-      return es.map(e => e.outerHTML);
+    function inspect(iter: Iterable<HTMLElement>) {
+      return [...iter].map(e => e.outerHTML);
     }
 
     it('target', () => {

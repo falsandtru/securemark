@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.36.0
+
+- Support progressive parsing.
+- Refine bind function.
+
 ## 0.35.3
 
 - Optimization.

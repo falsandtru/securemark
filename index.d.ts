@@ -7,7 +7,7 @@
 
 export function parse(source: string): DocumentFragment;
 export function escape(source: string): string;
-export function bind(el: HTMLElement): (source: string) => HTMLElement[];
+export function bind(el: HTMLElement): (source: string) => Iterable<HTMLElement>;
 export function render(el: HTMLElement, opts?: RenderingOptions): void;
 
 export interface RenderingOptions {
