@@ -181,23 +181,28 @@
   }, {
     rootMargin: '100px',
   });
-  display();
+  (async () => log(await display()))();
   var timer = 0;
   document.getElementById('editor').addEventListener('keyup', function () {
     clearTimeout(timer);
-    timer = setTimeout(function () {
-      var time = Date.now();
-      display();
-      var partial = Date.now() - time;
-      document.getElementById('time').textContent = partial;
+    timer = setTimeout(async function () {
+      log(await display());
+      share();
     }, 300);
   });
-  function display() {
-    parse(document.getElementById('editor').value)
-      .forEach(function (el) {
-        observer.observe(el);
-      });
-    share();
+  async function display() {
+    var since = Date.now();
+    var elapsed = 0;
+    for (var el of parse(document.getElementById('editor').value)) {
+      observer.observe(el);
+      elapsed += Date.now() - since;
+      await new Promise(setTimeout);
+      since = Date.now();
+    }
+    return elapsed;
+  }
+  function log(time) {
+    document.getElementById('time').textContent = time;
   }
   function share() {
     document.getElementById('share').href = '#' + encodeURIComponent(document.getElementById('editor').value);
