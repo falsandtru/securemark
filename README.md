@@ -11,8 +11,8 @@ Secure markdown renderer working on browsers for user input data.
 - Secure dom rendering.
 - Declarative syntax.
 - Recursive parsing.
-- Progressive parsing.
 - Incremental update.
+- Progressive rendering.
 - Unblinking rendering.
 - Syntax highlight with PrismJS.
 - LaTeX support with MathJax.

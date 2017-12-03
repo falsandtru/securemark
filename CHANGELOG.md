@@ -2,7 +2,7 @@
 
 ## 0.36.0
 
-- Support progressive parsing.
+- Support progressive rendering.
 - Refine bind function.
 
 ## 0.35.3
