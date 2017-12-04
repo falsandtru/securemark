@@ -193,14 +193,13 @@
   async function display() {
     var time = Date.now();
     var elapsed = 0;
-    var resource = 300;
+    var resource = 1000;
     for (var el of parse(document.getElementById('editor').value)) {
       observer.observe(el);
-      const diff = Date.now() - time;
-      elapsed += diff;
-      resource = resource > 0
-        ? resource - diff
-        : (await new Promise(setTimeout), 100);
+      elapsed += Date.now() - time;
+      resource = resource > 0 || elapsed < 300
+        ? resource - el.outerHTML.length
+        : (await new Promise(setTimeout), 1000);
       time = Date.now();
     }
     return elapsed;
