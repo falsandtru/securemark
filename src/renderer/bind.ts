@@ -1,8 +1,9 @@
-﻿import { parse } from './parser';
+﻿import { parse_ } from './parser';
 import { segment } from '../parser/segment';
+import { concat } from 'spica/concat';
 
-export function bind(el: HTMLElement | DocumentFragment): (source: string) => Iterable<HTMLElement> {
-  assert(el.childNodes.length === 0);
+export function bind(target: HTMLElement | DocumentFragment): (source: string) => Iterable<HTMLElement> {
+  assert(target.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
   let available = true;
@@ -19,19 +20,20 @@ export function bind(el: HTMLElement | DocumentFragment): (source: string) => It
     for (; i + j < os.length && i + j < ns.length; ++j) {
       if (os[os.length - j - 1] !== ns[ns.length - j - 1]) break;
     }
-    void pairs.splice(i, os.length - j - i)
-      .forEach(([, es]) =>
-        void es
-          .forEach((e) =>
-            void e.remove()));
-    const ref = pairs.slice(i).reduce((e, [, es]) => e || es[0], null);
+    available = false;
+    for (const [, es] of pairs.splice(i, os.length - j - i)) {
+      for (const el of es) {
+        void el.remove();
+      }
+    }
+    const [, [ref = null] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     const ps: Pair[] = [];
     for (const seg of ns.slice(i, ns.length - j)) {
-      const es = [...parse(seg).children as HTMLCollectionOf<HTMLElement>]
-        .map(e =>
-          el.insertBefore(e, ref));
+      const es = parse_(seg)
+        .reduce((acc, el) =>
+          (void target.insertBefore(el, ref), concat(acc, [el]))
+        , []);
       void ps.push([seg, es]);
-      assert(es.length <= 1);
       yield* es;
     }
     void pairs.splice(i, 0, ...ps);

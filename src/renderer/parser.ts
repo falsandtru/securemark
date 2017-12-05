@@ -4,17 +4,18 @@ import { segment } from '../parser/segment';
 
 export function parse(source: string): DocumentFragment {
   return segment(source)
-    .reduce((doc, source) =>
-      parse_(source)
-        .reduce((doc, el) => (
-          void doc.appendChild(el),
-          doc)
-        , doc)
+    .reduce((frag, seg) =>
+      parse_(seg)
+        .reduce((doc, el) =>
+          (void doc.appendChild(el), doc)
+        , frag)
     , document.createDocumentFragment());
+}
 
-  function parse_(source: string): HTMLElement[] {
-    return (loop(block)(source) || [[]])[0];
-  }
+export function parse_(source: string): HTMLElement[] {
+  assert.deepStrictEqual([source], segment(source));
+  assert.deepStrictEqual(block(source), loop(block)(source));
+  return (block(source) || [[]])[0];
 }
 
 const symbols = /[`#&*|\\()\[\]{}]/g;

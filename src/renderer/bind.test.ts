@@ -6,27 +6,33 @@ describe('Unit: renderer/bind', () => {
       return [...iter].map(e => e.outerHTML);
     }
 
-    it('target', () => {
-      assert(bind(document.createElement('div')));
-      assert(bind(document.createDocumentFragment()));
-    });
-
     it('empty', () => {
       const el = document.createElement('div');
-      bind(el);
+      const update = bind(el);
+
+      // init with empty
+      assert.deepStrictEqual(inspect(update('')), []);
+      assert(el.innerHTML === '');
+      // update with no changes
+      assert.deepStrictEqual(inspect(update('')), []);
       assert(el.innerHTML === '');
     });
 
     it('update', () => {
       const el = document.createElement('div');
       const update = bind(el);
-      // init
+
+      // init with nonempty
       assert.deepStrictEqual(inspect(update('0')), ['<p>0</p>']);
+      assert(el.innerHTML === '<p>0</p>');
+      // update with no changes
+      assert.deepStrictEqual(inspect(update('0')), []);
       assert(el.innerHTML === '<p>0</p>');
       // clear
       assert.deepStrictEqual(inspect(update('')), []);
       assert(el.innerHTML === '');
-      // change from empty
+
+      // format
       assert.deepStrictEqual(inspect(update('1\n\n0\n\n9\n\n')), ['<p>1</p>', '<p>0</p>', '<p>9</p>']);
       assert(el.innerHTML === '<p>1</p><p>0</p><p>9</p>');
       // change top segments
@@ -51,10 +57,10 @@ describe('Unit: renderer/bind', () => {
       // format
       assert.deepStrictEqual(inspect(update('1\n\n0\n\n9\n\n')), []);
       assert(el.innerHTML === '<p>1</p><p>0</p><p>9</p>');
-      // repeat a top segment
+      // repeat the top segment
       assert.deepStrictEqual(inspect(update('1\n\n1\n\n0\n\n9\n\n')), ['<p>1</p>']);
       assert(el.innerHTML === '<p>1</p><p>1</p><p>0</p><p>9</p>');
-      // repeat a bottom segment
+      // repeat the bottom segment
       assert.deepStrictEqual(inspect(update('1\n\n1\n\n0\n\n9\n\n9\n\n')), ['<p>9</p>']);
       assert(el.innerHTML === '<p>1</p><p>1</p><p>0</p><p>9</p><p>9</p>');
 
@@ -67,6 +73,13 @@ describe('Unit: renderer/bind', () => {
       // unrepeat
       assert.deepStrictEqual(inspect(update('1\n\n0\n\n9\n\n'.repeat(1))), []);
       assert(el.innerHTML === '<p>1</p><p>0</p><p>9</p>');
+    });
+
+    it('non-reentrant', () => {
+      const update = bind(document.createElement('div'));
+      for (const _ of update('1')) {
+        assert.throws(() => [...update('')]);
+      }
     });
 
   });
