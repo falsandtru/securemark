@@ -3803,9 +3803,9 @@ require = function e(t, n, r) {
                 var pairs = [];
                 var available = true;
                 return function (source) {
-                    var os, ns, i, j, ref, ps, _a, _b, seg, es, es_1, es_1_1, e, e_1_1, e_2_1, e_2, _c, e_1, _d;
-                    return __generator(this, function (_e) {
-                        switch (_e.label) {
+                    var os, ns, i, j, ref, ps, _a, _b, seg, es, e_1_1, e_1, _c;
+                    return __generator(this, function (_d) {
+                        switch (_d.label) {
                         case 0:
                             if (!available)
                                 throw new Error('Securemark: Previous parse iteration is not done.');
@@ -3837,21 +3837,21 @@ require = function e(t, n, r) {
                                 return e || es[0];
                             }, null);
                             ps = [];
-                            _e.label = 1;
+                            _d.label = 1;
                         case 1:
-                            _e.trys.push([
+                            _d.trys.push([
                                 1,
-                                12,
-                                13,
-                                14
+                                6,
+                                7,
+                                8
                             ]);
                             _a = __values(ns.slice(i, ns.length - j)), _b = _a.next();
-                            _e.label = 2;
+                            _d.label = 2;
                         case 2:
                             if (!!_b.done)
                                 return [
                                     3,
-                                    11
+                                    5
                                 ];
                             seg = _b.value;
                             es = __spread(parser_1.parse(seg).children).map(function (e) {
@@ -3861,85 +3861,41 @@ require = function e(t, n, r) {
                                 seg,
                                 es
                             ]);
-                            _e.label = 3;
+                            return [
+                                5,
+                                __values(es)
+                            ];
                         case 3:
-                            _e.trys.push([
-                                3,
-                                8,
-                                9,
-                                10
-                            ]);
-                            es_1 = __values(es), es_1_1 = es_1.next();
-                            _e.label = 4;
+                            _d.sent();
+                            _d.label = 4;
                         case 4:
-                            if (!!es_1_1.done)
-                                return [
-                                    3,
-                                    7
-                                ];
-                            e = es_1_1.value;
-                            return [
-                                4,
-                                e
-                            ];
-                        case 5:
-                            _e.sent();
-                            _e.label = 6;
-                        case 6:
-                            es_1_1 = es_1.next();
-                            return [
-                                3,
-                                4
-                            ];
-                        case 7:
-                            return [
-                                3,
-                                10
-                            ];
-                        case 8:
-                            e_1_1 = _e.sent();
-                            e_1 = { error: e_1_1 };
-                            return [
-                                3,
-                                10
-                            ];
-                        case 9:
-                            try {
-                                if (es_1_1 && !es_1_1.done && (_d = es_1.return))
-                                    _d.call(es_1);
-                            } finally {
-                                if (e_1)
-                                    throw e_1.error;
-                            }
-                            return [7];
-                        case 10:
                             _b = _a.next();
                             return [
                                 3,
                                 2
                             ];
-                        case 11:
+                        case 5:
                             return [
                                 3,
-                                14
+                                8
                             ];
-                        case 12:
-                            e_2_1 = _e.sent();
-                            e_2 = { error: e_2_1 };
+                        case 6:
+                            e_1_1 = _d.sent();
+                            e_1 = { error: e_1_1 };
                             return [
                                 3,
-                                14
+                                8
                             ];
-                        case 13:
+                        case 7:
                             try {
                                 if (_b && !_b.done && (_c = _a.return))
                                     _c.call(_a);
                             } finally {
-                                if (e_2)
-                                    throw e_2.error;
+                                if (e_1)
+                                    throw e_1.error;
                             }
                             return [7];
-                        case 14:
+                        case 8:
                             void pairs.splice.apply(pairs, __spread([
                                 i,
                                 0
