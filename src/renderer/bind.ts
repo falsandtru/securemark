@@ -32,9 +32,7 @@ export function bind(el: HTMLElement | DocumentFragment): (source: string) => It
           el.insertBefore(e, ref));
       void ps.push([seg, es]);
       assert(es.length <= 1);
-      for (const e of es) {
-        yield e;
-      }
+      yield* es;
     }
     void pairs.splice(i, 0, ...ps);
     available = true;
