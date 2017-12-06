@@ -10,10 +10,10 @@ const align = /^:?-+:?$/;
 export const table: TableParser = verify((source: string): [[HTMLTableElement], string] | undefined => {
   if (!source.startsWith('|') || source.search(syntax) !== 0) return;
   const table = document.createElement('table');
-  const [headers, hrest = source] = parse(source) || [[]];
+  const [headers = [], hrest = source] = parse(source) || [];
   if (hrest.length === source.length) return;
   source = hrest;
-  const [aligns_, arest = source] = parse(source) || [[]];
+  const [aligns_ = [], arest = source] = parse(source) || [];
   if (arest.length === source.length) return;
   source = arest;
   if (aligns_.some(e => !e.textContent || e.textContent!.search(align) !== 0)) return;
@@ -38,7 +38,7 @@ export const table: TableParser = verify((source: string): [[HTMLTableElement], 
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
-    const [cols, rest = line] = parse(line) || [[]];
+    const [cols = [], rest = line] = parse(line) || [];
     if (rest.length !== 0) return;
     void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
     source = source.slice(line.length + 1);
@@ -65,8 +65,8 @@ function parse(row: string): [DocumentFragment[], string] | undefined {
   const cols = [];
   while (true) {
     if (row[0] !== '|') return;
-    const [, rest] = loop(inline, rowseparator)(row.slice(1)) || [[], row.slice(1)];
-    const [col] = loop(inline)(row.slice(1, row.length - rest.length).trim()) || [[]];
+    const [, rest = row.slice(1)] = loop(inline, rowseparator)(row.slice(1)) || [];
+    const [col = []] = loop(inline)(row.slice(1, row.length - rest.length).trim()) || [];
     assert(rest.length < row.length);
     row = rest;
     void cols.push(squash(col));

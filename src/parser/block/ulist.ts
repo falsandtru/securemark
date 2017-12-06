@@ -10,7 +10,7 @@ const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
 
 export const ulist: UListParser = verify((source: string): [[HTMLUListElement], string] | undefined => {
-  const [whole, flag] = source.match(syntax) || ['', ''];
+  const [whole = '', flag = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = document.createElement('ul');
   while (true) {
@@ -35,9 +35,9 @@ export const ulist: UListParser = verify((source: string): [[HTMLUListElement], 
     else {
       const li = el.lastElementChild!;
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
-      const [block, rest = undefined] = indent(source) || [''];
+      const [block = '', rest = undefined] = indent(source) || [];
       if (rest === undefined) return;
-      const [children, brest = block] = combine<HTMLElement | Text, UListParser.InnerParsers>([ulist, olist])(fillOListFlag(block)) || [[]];
+      const [children = [], brest = block] = combine<HTMLElement | Text, UListParser.InnerParsers>([ulist, olist])(fillOListFlag(block)) || [];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

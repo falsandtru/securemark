@@ -11,7 +11,7 @@ assert(inlinetags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)
 
 export const html: HTMLParser = (source: string) => {
   if (!match(source, '<')) return;
-  const [whole, tagname] = source.match(syntax) || ['', ''];
+  const [whole = '', tagname = ''] = source.match(syntax) || [];
   if (!whole) return;
   if (!inlinetags.includes(tagname)) return;
   const opentag = `<${tagname}>`;

@@ -5,10 +5,10 @@ const escape = /^[0-9a-zA-Z@]@/;
 
 export const account: AutolinkParser.AccountParser = (source: string): [[HTMLSpanElement | Text], string] | undefined => {
   if (source.search(escape) === 0) {
-    const [frag] = source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [source];
+    const [frag = source] = source.match(/^[0-9a-zA-Z@].*?(?!@|h?ttps?:)/) || [];
     return [[document.createTextNode(frag)], source.slice(frag.length)];
   }
-  const [whole] = source.match(syntax) || [''];
+  const [whole = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = document.createElement('span');
   void el.setAttribute('class', 'account');

@@ -13,7 +13,7 @@ const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
 
 export const placeholder: PlaceholderParser = verify((source: string): [HTMLElement[], string] | undefined => {
   if (!source.startsWith('~~~')) return;
-  const [whole, keyword, notes] = source.match(syntax) || ['', '', ''];
+  const [whole = '', keyword = '', notes = ''] = source.match(syntax) || [];
   if (!whole) return;
   const message = document.createElement('p');
   void message.appendChild(squash(loop(inline)("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.")![0]));

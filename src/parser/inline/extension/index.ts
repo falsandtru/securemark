@@ -5,9 +5,8 @@ import { template } from './template';
 
 export const index: ExtensionParser.IndexParser = template((flag: string, query: string): [[HTMLAnchorElement], string] | undefined => {
   if (flag !== '#') return;
-  const result = link(`[](#)`);
-  if (!result) return;
-  const [[el], rest] = result;
+  const [[el = undefined] = [], rest = ''] = link(`[](#)`) || [];
+  if (!el) return;
   void el.setAttribute('href', `#${makeIndex(query)}`);
   el.textContent = query;
   return [[el], rest];

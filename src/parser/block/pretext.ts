@@ -8,7 +8,7 @@ const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
 
 export const pretext: PretextParser = verify((source: string): [[HTMLPreElement], string] | undefined => {
   if (!source.startsWith('```')) return;
-  const [whole, , notes] = source.match(syntax) || ['', '', ''];
+  const [whole = '', , notes = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = document.createElement('pre');
   const lang = notes.split(/\s/, 1)[0];

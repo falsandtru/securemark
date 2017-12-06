@@ -16,7 +16,7 @@ export const blockquote: BlockquoteParser = verify((source: string): [[HTMLQuote
   source = mode === 'plain'
     ? source
     : source.slice(1);
-  let [indent] = source.match(syntax) || [''];
+  let [indent = ''] = source.match(syntax) || [];
   if (!indent) return;
   const top = document.createElement('blockquote');
   let bottom = indent.split('').slice(1)
@@ -51,7 +51,7 @@ export const blockquote: BlockquoteParser = verify((source: string): [[HTMLQuote
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs, rest = source] = loop(combine<HTMLElement | Text, BlockquoteParser.InnerParsers>([unescsource]), '\n|$')(source) || [[]];
+    const [cs = [], rest = source] = loop(combine<HTMLElement | Text, BlockquoteParser.InnerParsers>([unescsource]), '\n|$')(source) || [];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs);

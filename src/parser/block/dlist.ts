@@ -9,7 +9,7 @@ const syntax = /^~\s/;
 const separator = /^[~:](?:\s|$)/;
 
 export const dlist: DListParser = verify((source: string): [[HTMLDListElement], string] | undefined => {
-  const [whole] = source.match(syntax) || [''];
+  const [whole = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = document.createElement('dl');
   while (true) {

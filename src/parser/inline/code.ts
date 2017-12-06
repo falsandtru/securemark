@@ -9,7 +9,7 @@ const syntax = /^(`+)[^\n]+?\1/;
 
 export const code: CodeParser = (source: string) => {
   if (!match(source, '`')) return;
-  const [whole, keyword] = source.match(syntax) || ['', ''];
+  const [whole = '', keyword = ''] = source.match(syntax) || [];
   if (!whole) return;
   return transform(
     bracket(
