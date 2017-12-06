@@ -21,13 +21,13 @@ export function bind(target: HTMLElement | DocumentFragment): (source: string) =
       if (os[os.length - j - 1] !== ns[ns.length - j - 1]) break;
     }
     available = false;
-    for (const [, es] of pairs.splice(i, os.length - j - i)) {
+    for (const [, es] of pairs.splice(i, pairs.length - j - i)) {
       for (const el of es) {
         void el.remove();
       }
     }
-    const [, [ref = null] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     const ps: Pair[] = [];
+    const [, [ref = null] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     for (const seg of ns.slice(i, ns.length - j)) {
       const es = parse_(seg)
         .reduce((acc, el) =>
