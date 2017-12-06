@@ -192,14 +192,14 @@
   });
   async function display() {
     var time = Date.now();
+    var resource = 100;
     var elapsed = 0;
-    var resource = 1000;
     for (var el of parse(document.getElementById('editor').value)) {
       observer.observe(el);
       elapsed += Date.now() - time;
-      resource = resource > 0 || elapsed < 300
-        ? resource - el.outerHTML.length
-        : (await new Promise(setTimeout), 1000);
+      resource = resource > 0
+        ? resource - (Date.now() - time)
+        : (await new Promise(setTimeout), 300);
       time = Date.now();
     }
     return elapsed;
