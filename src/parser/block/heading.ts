@@ -1,7 +1,7 @@
 ﻿import { HeadingParser } from '../block';
 import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
-import { indexer, defineIndex } from './util/indexer';
+import { index, defineIndex } from './util/index';
 import { inline } from '../inline';
 import { squash } from '../squash';
 
@@ -13,7 +13,7 @@ export const heading: HeadingParser = verify((source: string): [[HTMLHeadingElem
   if (!whole) return;
   assert(level > 0 && level < 7);
   assert(title.length > 0);
-  const [children = [], rest = undefined] = loop(combine<HTMLElement | Text, HeadingParser.InnerParsers>([indexer, inline]))(title.trim()) || [];
+  const [children = [], rest = undefined] = loop(combine<HTMLElement | Text, HeadingParser.InnerParsers>([index, inline]))(title.trim()) || [];
   if (rest === undefined) return;
   const el = document.createElement(<'h1'>`h${level}`);
   void el.appendChild(squash(children));

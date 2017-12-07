@@ -65,7 +65,7 @@ export namespace MarkdownParser {
     }
     export namespace HeadingParser {
       export type InnerParsers = [
-        IndexerParser,
+        IndexParser,
         InlineParser
       ];
     }
@@ -103,7 +103,7 @@ export namespace MarkdownParser {
     }
     export namespace DListParser {
       export type InnerParsers = [
-        IndexerParser,
+        IndexParser,
         InlineParser
       ];
     }
@@ -176,9 +176,9 @@ export namespace MarkdownParser {
         InlineParser
       ];
     }
-    export interface IndexerParser extends
+    export interface IndexParser extends
       // [#index]
-      Markdown<'indexer'>,
+      Markdown<'index'>,
       Parser<HTMLElement, IndexerParser.InnerParsers> {
     }
     export namespace IndexerParser {
