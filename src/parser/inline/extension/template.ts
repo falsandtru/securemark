@@ -1,10 +1,8 @@
-﻿import { TextParser } from '../../source';
+﻿import { InlineParser, inline } from '../../inline';
 import { Result, combine, loop, bracket } from '../../../combinator';
-import { text } from '../../source/text';
-import { squash } from '../../squash';
-import { match, isTightVisible, isSingleLine } from '../../source/validation';
+import { match, isSingleLine } from '../../source/validation';
 
-const syntax = /^\[[~#:^\[][^\s\[\]][^\n]*?\]/;
+const syntax = /^\[[~#:^\[][^\n]*?\]/;
 
 export const template = <T extends Result<HTMLElement, never>>(parser: (flag: string, query: string) => T): (source: string) => T => {
   return function (source: string): T {
@@ -18,14 +16,15 @@ export const template = <T extends Result<HTMLElement, never>>(parser: (flag: st
 
 function parse(source: string): [string, string, string] | undefined {
   if (!match(source, '[', syntax)) return;
-  const [cs = [], rest = undefined] = bracket(
+  const [, rest = undefined] = bracket(
     '[',
-    loop(combine<HTMLElement | Text, [TextParser]>([text]), /^[\]\n]/),
+    loop(combine<HTMLElement | Text, [InlineParser]>([inline]), /^[\]\n]/),
     ']',
   )(source) || [];
   if (rest === undefined) return;
-  const txt = squash(cs).textContent!;
-  if (!isTightVisible(txt)) return;
-  if (!isSingleLine(txt)) return;
-  return [txt[0], txt.slice(1), rest];
+  const text = source.slice(1, source.length - rest.length - 1);
+  const flag = text[0];
+  const query = text.slice(flag.length);
+  if (!isSingleLine(query)) return;
+  return [flag, query, rest];
 }

@@ -1,31 +1,38 @@
 ﻿import { placeholder } from './placeholder';
 import { loop } from '../../../combinator';
-import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/extension/placeholder', () => {
   describe('placeholder', () => {
     const parser = loop(placeholder);
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('[]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[a]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[ab]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[:]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[: a]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[:a ]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[:a\nb]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[:a\\\nb]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[][]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[:]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[:][]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[:][:]')), undefined);
+      assert(!parser('[]'));
+      assert(!parser('[a]'));
+      assert(!parser('[ab]'));
+      assert(!parser('[:a\nb]'));
+      assert(!parser('[:a\\\nb]'));
+      assert(!parser('[:\n]'));
+      assert(!parser('[:\\\n]'));
+      assert(!parser('[:\\]'));
+      assert(!parser('[[]'));
+      assert(!parser('[]]'));
     });
 
-    it('ab', () => {
+    it('valid', () => {
+      assert(parser('[:]'));
+      assert(parser('[: ]'));
       assert(parser('[:a]'));
       assert(parser('[:a b]'));
+      assert(parser('[: a]'));
+      assert(parser('[:a ]'));
+      assert(parser('[:\\ ]'));
+      assert(parser('[:\\ a]'));
+      assert(parser('[:a\\ ]'));
       assert(parser('[:\\]]'));
       assert(parser('[:`a`]'));
+      assert(parser('[[]]'));
+      assert(parser('[[ ]]'));
+      assert(parser('[[a]]'));
     });
 
   });

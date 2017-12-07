@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.37.1
+
+- Fix index parser.
+
 ## 0.37.0
 
 - Compile to es2016.
