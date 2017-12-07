@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.37.0
+
+- Compile to es2016.
+
 ## 0.36.1
 
 - Optimization.
