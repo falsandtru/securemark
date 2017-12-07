@@ -3783,7 +3783,7 @@ require = function e(t, n, r) {
                 var pairs = [];
                 var available = true;
                 return function (source) {
-                    var os, ns, i, j, _a, _b, _c, es, es_1, es_1_1, el, _d, _e, _f, _g, ref, ps, _h, _j, seg, es, e_1_1, e_2, _k, e_3, _l, e_1, _m;
+                    var os, ns, i, j, _a, _b, _c, es, es_1, es_1_1, el, ps, _d, _e, _f, _g, ref, _h, _j, seg, es, e_1_1, e_2, _k, e_3, _l, e_1, _m;
                     return __generator(this, function (_o) {
                         switch (_o.label) {
                         case 0:
@@ -3808,7 +3808,7 @@ require = function e(t, n, r) {
                             }
                             available = false;
                             try {
-                                for (_a = __values(pairs.splice(i, os.length - j - i)), _b = _a.next(); !_b.done; _b = _a.next()) {
+                                for (_a = __values(pairs.splice(i, pairs.length - j - i)), _b = _a.next(); !_b.done; _b = _a.next()) {
                                     _c = __read(_b.value, 2), es = _c[1];
                                     try {
                                         for (es_1 = __values(es), es_1_1 = es_1.next(); !es_1_1.done; es_1_1 = es_1.next()) {
@@ -3838,11 +3838,11 @@ require = function e(t, n, r) {
                                         throw e_2.error;
                                 }
                             }
+                            ps = [];
                             _d = __read(pairs.slice(i).find(function (_a) {
                                 var _b = __read(_a, 2), _c = __read(_b[1], 1), el = _c[0];
                                 return !!el;
                             }) || [], 2), _e = _d[1], _f = __read(_e === void 0 ? [] : _e, 1), _g = _f[0], ref = _g === void 0 ? null : _g;
-                            ps = [];
                             _o.label = 1;
                         case 1:
                             _o.trys.push([
