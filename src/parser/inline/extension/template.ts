@@ -1,5 +1,5 @@
-﻿import { InlineParser, inline } from '../../inline';
-import { Result, combine, loop, bracket } from '../../../combinator';
+﻿import { Result, loop, bracket } from '../../../combinator';
+import { inline } from '../../inline';
 import { match, isSingleLine } from '../../source/validation';
 
 const syntax = /^\[[~#:^\[][^\n]*?\]/;
@@ -18,7 +18,7 @@ function parse(source: string): [string, string, string] | undefined {
   if (!match(source, '[', syntax)) return;
   const [, rest = undefined] = bracket(
     '[',
-    loop(combine<HTMLElement | Text, [InlineParser]>([inline]), /^[\]\n]/),
+    loop(inline, /^[\]\n]/),
     ']',
   )(source) || [];
   if (rest === undefined) return;
