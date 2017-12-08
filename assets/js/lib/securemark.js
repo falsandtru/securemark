@@ -1902,8 +1902,8 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../../inline');
             const combinator_1 = require('../../../combinator');
+            const inline_1 = require('../../inline');
             const validation_1 = require('../../source/validation');
             const syntax = /^\[[~#:^\[][^\n]*?\]/;
             exports.template = parser => {
@@ -1923,7 +1923,7 @@ require = function e(t, n, r) {
             function parse(source) {
                 if (!validation_1.match(source, '[', syntax))
                     return;
-                const [, rest = undefined] = combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), /^[\]\n]/), ']')(source) || [];
+                const [, rest = undefined] = combinator_1.bracket('[', combinator_1.loop(inline_1.inline, /^[\]\n]/), ']')(source) || [];
                 if (rest === undefined)
                     return;
                 const text = source.slice(1, source.length - rest.length - 1);
