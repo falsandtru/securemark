@@ -954,7 +954,7 @@ require = function e(t, n, r) {
             const inline_1 = require('../../inline');
             const unescapable_1 = require('../../source/unescapable');
             const squash_1 = require('../../squash');
-            const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
+            const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
             exports.placeholder = verification_1.verify(source => {
                 if (!source.startsWith('~~~'))
                     return;
@@ -981,7 +981,7 @@ require = function e(t, n, r) {
                         message,
                         quote
                     ],
-                    source.slice(keyword.length + 1)
+                    source.slice(source.split('\n', 1)[0].length + 1)
                 ];
             });
         },
@@ -1037,7 +1037,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const verification_1 = require('./util/verification');
-            const syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;
+            const syntax = /^(?:\s*-){3,}\s*$/;
             exports.horizontalrule = verification_1.verify(source => {
                 const [whole = ''] = source.split('\n', 1)[0].match(syntax) || [];
                 if (!whole)
@@ -1055,7 +1055,7 @@ require = function e(t, n, r) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const verification_1 = require('./util/verification');
-            const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?=\n|$)/;
+            const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?:\n|$)/;
             exports.mathblock = verification_1.verify(source => {
                 if (!source.startsWith('$$'))
                     return;
@@ -1067,7 +1067,7 @@ require = function e(t, n, r) {
                 void el.appendChild(document.createTextNode(whole));
                 return [
                     [el],
-                    source.slice(whole.length + 1)
+                    source.slice(whole.length)
                 ];
             });
         },
@@ -1077,7 +1077,7 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const syntax = /^[^\S\n]*?\\?\n/;
+            const syntax = /^(?:[^\S\n]*?\\?\n)+/;
             exports.newline = source => {
                 const [whole = ''] = source.match(syntax) || [];
                 if (!whole)
@@ -1193,7 +1193,7 @@ require = function e(t, n, r) {
             const combinator_1 = require('../../combinator');
             const escapable_1 = require('../source/escapable');
             const squash_1 = require('../squash');
-            const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
+            const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?:\n|$)/;
             exports.pretext = verification_1.verify(source => {
                 if (!source.startsWith('```'))
                     return;
@@ -1213,7 +1213,7 @@ require = function e(t, n, r) {
                 void el.appendChild(document.createTextNode(whole.slice(whole.indexOf('\n') + 1, whole.lastIndexOf('\n'))));
                 return [
                     [el],
-                    source.slice(whole.length + 1)
+                    source.slice(whole.length)
                 ];
             });
         },
