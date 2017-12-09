@@ -10,8 +10,8 @@ export function youtube(url: string): HTMLElement {
     }, [
       DOM.iframe({
         src: `https://www.youtube.com/embed/${
-          url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1) ||
-          url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?')
+          url.startsWith('https://www.youtube.com/') && url.replace(/.+?=/, '').replace(/&/, '?') ||
+          url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1)
         }`,
         allowfullscreen: '',
         frameborder: '0',

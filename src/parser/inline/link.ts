@@ -17,9 +17,9 @@ export const link: LinkParser = (source: string) => {
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
       const children = squash(ns);
-      if (children.querySelector('a, .annotation')) return;
-      if (children.querySelector('img')) {
-        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img')) return;
+      if (children.querySelector('a, .annotation') && !children.querySelector('.media')) return;
+      if (children.querySelector('img, .media')) {
+        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img, .media')) return;
       }
       else {
         if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;

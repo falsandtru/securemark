@@ -358,7 +358,7 @@ export namespace MarkdownParser {
     export interface MediaParser extends
       // ![abc](url)
       Markdown<'media'>,
-      Parser<HTMLImageElement, MediaParser.InnerParsers> {
+      Parser<HTMLElement, MediaParser.InnerParsers> {
     }
     export namespace MediaParser {
       export type InnerParsers = [

@@ -7,7 +7,7 @@ import { sanitize } from '../string/url';
 import DOM from 'typed-dom';
 import { Cache } from 'spica/cache';
 
-export const cache = new Cache<string, HTMLVideoElement | HTMLAudioElement | HTMLImageElement>(100);
+export const cache = new Cache<string, HTMLElement>(100);
 
 const syntax = /^!\[[^\n]*?\]\n?\(/;
 

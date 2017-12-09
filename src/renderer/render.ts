@@ -9,11 +9,11 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLEl
       void new Promise(() => {
         switch (true) {
           case target.matches('img:not([src])[data-src]'): {
-            const content = media(target as HTMLImageElement, opts.media);
-            const scope = content instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement
+            const el = media(target as HTMLImageElement, opts.media);
+            const scope = el instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement
               ? target.closest('a')!
               : target;
-            return void scope.parentElement!.replaceChild(content, scope);
+            return void scope.parentElement!.replaceChild(el, scope);
           }
           case target.matches('pre')
             && target.children.length === 0:

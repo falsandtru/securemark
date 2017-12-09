@@ -15,7 +15,7 @@ export function media(target: HTMLImageElement, opts: RenderingOptions['media'] 
   switch(true) {
     case url.startsWith('https://twitter.com/'):
       return (opts.twitter || twitter)(url);
-    case url.startsWith('https://youtu.be/') || url.startsWith('https://www.youtube.com/watch?v='):
+    case url.startsWith('https://www.youtube.com/') || url.startsWith('https://youtu.be/'):
       return (opts.youtube || youtube)(url);
     case url.startsWith('https://gist.github.com/'):
       return (opts.gist || gist)(url);

@@ -1,9 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse, escape } from '../../parser';
-import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
-
-const cache = new Cache<string, HTMLElement>(100);
+import { cache } from '../../../parser/inline/media';
 
 export function slideshare(url: string): HTMLElement {
   if (cache.has(url)) return cache.get(url)!.cloneNode(true) as HTMLElement;

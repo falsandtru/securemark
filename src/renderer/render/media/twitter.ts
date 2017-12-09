@@ -1,7 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse, escape } from '../../parser';
-import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
+import { Cache } from 'spica/cache';
 
 declare global {
   interface Window {
