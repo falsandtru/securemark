@@ -2030,10 +2030,10 @@ require = function e(t, n, r) {
                     if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length).trim()))
                         return;
                     const children = squash_1.squash(ns);
-                    if (children.querySelector('a, .annotation'))
+                    if (children.querySelector('a, .annotation') && !children.querySelector('.media'))
                         return;
-                    if (children.querySelector('img')) {
-                        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img'))
+                    if (children.querySelector('img, .media')) {
+                        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img, .media'))
                             return;
                     } else {
                         if (children.childNodes.length > 0 && children.textContent.trim() === '')
@@ -2629,9 +2629,9 @@ require = function e(t, n, r) {
                 ].forEach(target => void new Promise(() => {
                     switch (true) {
                     case target.matches('img:not([src])[data-src]'): {
-                            const content = media_1.media(target, opts.media);
-                            const scope = content instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
-                            return void scope.parentElement.replaceChild(content, scope);
+                            const el = media_1.media(target, opts.media);
+                            const scope = el instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
+                            return void scope.parentElement.replaceChild(el, scope);
                         }
                     case target.matches('pre') && target.children.length === 0:
                         return void (opts.code || code_1.code)(target);
@@ -2709,7 +2709,7 @@ require = function e(t, n, r) {
                 switch (true) {
                 case url.startsWith('https://twitter.com/'):
                     return (opts.twitter || twitter_1.twitter)(url);
-                case url.startsWith('https://youtu.be/') || url.startsWith('https://www.youtube.com/watch?v='):
+                case url.startsWith('https://www.youtube.com/') || url.startsWith('https://youtu.be/'):
                     return (opts.youtube || youtube_1.youtube)(url);
                 case url.startsWith('https://gist.github.com/'):
                     return (opts.gist || gist_1.gist)(url);
@@ -2773,12 +2773,11 @@ require = function e(t, n, r) {
                 Object.defineProperty(exports, '__esModule', { value: true });
                 const typed_dom_1 = require('typed-dom');
                 const parser_1 = require('../../parser');
-                const cache_1 = require('spica/cache');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const cache = new cache_1.Cache(100);
+                const media_1 = require('../../../parser/inline/media');
                 function gist(url) {
-                    if (cache.has(url))
-                        return cache.get(url).cloneNode(true);
+                    if (media_1.cache.has(url))
+                        return media_1.cache.get(url).cloneNode(true);
                     return typed_dom_1.default.div({
                         class: 'media',
                         style: 'position: relative;'
@@ -2794,7 +2793,7 @@ require = function e(t, n, r) {
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
                                 void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(parser_1.escape(url)).querySelector('a'))]).element, gist.firstChild);
-                                void cache.set(url, outer.cloneNode(true));
+                                void media_1.cache.set(url, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
                                 void document.head.appendChild(typed_dom_1.default.link({
@@ -2814,8 +2813,8 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
+            '../../../parser/inline/media': 57,
             '../../parser': 72,
-            'spica/cache': 5,
             'typed-dom': 9
         }
     ],
@@ -2877,12 +2876,11 @@ require = function e(t, n, r) {
                 Object.defineProperty(exports, '__esModule', { value: true });
                 const typed_dom_1 = require('typed-dom');
                 const parser_1 = require('../../parser');
-                const cache_1 = require('spica/cache');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const cache = new cache_1.Cache(100);
+                const media_1 = require('../../../parser/inline/media');
                 function slideshare(url) {
-                    if (cache.has(url))
-                        return cache.get(url).cloneNode(true);
+                    if (media_1.cache.has(url))
+                        return media_1.cache.get(url).cloneNode(true);
                     return typed_dom_1.default.div({
                         class: 'media',
                         style: 'position: relative;'
@@ -2899,7 +2897,7 @@ require = function e(t, n, r) {
                                 iframe.parentElement.style.paddingTop = `${ +iframe.height / +iframe.width * 100 }%`;
                                 void outer.appendChild(iframe.nextElementSibling);
                                 void outer.lastElementChild.removeAttribute('style');
-                                void cache.set(url, outer.cloneNode(true));
+                                void media_1.cache.set(url, outer.cloneNode(true));
                             },
                             error({status, statusText}) {
                                 outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
@@ -2912,8 +2910,8 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
+            '../../../parser/inline/media': 57,
             '../../parser': 72,
-            'spica/cache': 5,
             'typed-dom': 9
         }
     ],
@@ -2924,8 +2922,8 @@ require = function e(t, n, r) {
                 Object.defineProperty(exports, '__esModule', { value: true });
                 const typed_dom_1 = require('typed-dom');
                 const parser_1 = require('../../parser');
-                const cache_1 = require('spica/cache');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                const cache_1 = require('spica/cache');
                 let widgetScriptRequested = false;
                 const cache = new cache_1.Cache(100);
                 function twitter(url) {
@@ -3008,7 +3006,7 @@ require = function e(t, n, r) {
                     class: 'media',
                     style: 'position: relative;'
                 }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
-                            src: `https://www.youtube.com/embed/${ url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1) || url.startsWith('https://www.youtube.com/watch?v=') && url.replace(/.+?=/, '').replace(/&/, '?') }`,
+                            src: `https://www.youtube.com/embed/${ url.startsWith('https://www.youtube.com/') && url.replace(/.+?=/, '').replace(/&/, '?') || url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1) }`,
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
