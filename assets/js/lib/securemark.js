@@ -2125,7 +2125,6 @@ require = function e(t, n, r) {
             const escapable_1 = require('../source/escapable');
             const validation_1 = require('../source/validation');
             const url_1 = require('../string/url');
-            const typed_dom_1 = require('typed-dom');
             const cache_1 = require('spica/cache');
             exports.cache = new cache_1.Cache(100);
             const syntax = /^!\[[^\n]*?\]\n?\(/;
@@ -2145,10 +2144,9 @@ require = function e(t, n, r) {
                                 [exports.cache.get(url).cloneNode(true)],
                                 rest
                             ];
-                        const el = typed_dom_1.default.img({
-                            'data-src': url,
-                            alt: caption
-                        }).element;
+                        const el = document.createElement('img');
+                        void el.setAttribute('data-src', url);
+                        void el.setAttribute('alt', caption);
                         return [
                             [el],
                             rest
@@ -2163,8 +2161,7 @@ require = function e(t, n, r) {
             '../source/text': 65,
             '../source/validation': 67,
             '../string/url': 70,
-            'spica/cache': 5,
-            'typed-dom': 9
+            'spica/cache': 5
         }
     ],
     58: [
