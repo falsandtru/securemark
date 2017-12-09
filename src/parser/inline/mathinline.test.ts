@@ -18,6 +18,8 @@ describe('Unit: parser/inline/mathinline', () => {
       assert.deepStrictEqual(inspect(parser('$a\nb$')), undefined);
       assert.deepStrictEqual(inspect(parser('$a\\\nb$')), undefined);
       assert.deepStrictEqual(inspect(parser('$a$0')), undefined);
+      assert.deepStrictEqual(inspect(parser('$a$$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$a$$b$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$a$$')), undefined);
       assert.deepStrictEqual(inspect(parser('a$a$')), undefined);
       assert.deepStrictEqual(inspect(parser('$0-$1')), undefined);

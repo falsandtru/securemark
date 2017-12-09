@@ -4,6 +4,7 @@
 
 - Support video and audio media.
 - Refine rendering options.
+- Fix math parser.
 
 ## 0.37.1
 

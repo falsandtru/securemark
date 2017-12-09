@@ -8,7 +8,7 @@ import { Cache } from 'spica/cache';
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
 const syntax = /^\$[^\s$][^\n]*?\$(?!\d)/;
-const closer = /^\$(?!\d)|^\n/;
+const closer = /^\$|^\n/;
 
 export const mathinline: MathInlineParser = (source: string) => {
   if (!match(source, '$', syntax)) return;
@@ -16,7 +16,7 @@ export const mathinline: MathInlineParser = (source: string) => {
     bracket(
       '$',
       loop(combine<Text, MathInlineParser.InnerParsers>([escsource]), closer),
-      '$'),
+      /^\$(?![$\d])/),
     (ns, rest) => {
       if (!isTightVisible(source.slice(1, source.length - rest.length - 1))) return;
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;
