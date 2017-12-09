@@ -14,13 +14,13 @@ export interface RenderingOptions {
   code?: (target: HTMLElement) => void;
   math?: (target: HTMLElement) => void;
   media?: {
-    twitter?: (url: string) => HTMLElement | void;
-    youtube?: (url: string) => HTMLElement | void;
-    gist?: (url: string) => HTMLElement | void;
-    slideshare?: (url: string) => HTMLElement | void;
-    pdf?: (url: string) => HTMLElement | void;
-    video?: (url: string, alt: string) => HTMLVideoElement | void;
-    audio?: (url: string, alt: string) => HTMLAudioElement | void;
+    twitter?: (url: string) => HTMLElement;
+    youtube?: (url: string) => HTMLElement;
+    gist?: (url: string) => HTMLElement;
+    slideshare?: (url: string) => HTMLElement;
+    pdf?: (url: string) => HTMLElement;
+    video?: (url: string, alt: string) => HTMLVideoElement;
+    audio?: (url: string, alt: string) => HTMLAudioElement;
     image?: (url: string, alt: string) => HTMLImageElement;
   };
 }

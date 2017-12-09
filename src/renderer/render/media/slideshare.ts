@@ -5,8 +5,7 @@ import { sanitize } from 'dompurify';
 
 const cache = new Cache<string, HTMLElement>(100);
 
-export function slideshare(url: string): HTMLElement | void {
-  if (!url.startsWith('https://www.slideshare.net/')) return;
+export function slideshare(url: string): HTMLElement {
   if (cache.has(url)) return cache.get(url)!.cloneNode(true) as HTMLElement;
   return DOM.div({
     class: 'media',

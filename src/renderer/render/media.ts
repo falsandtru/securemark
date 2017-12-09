@@ -11,13 +11,23 @@ import { RenderingOptions } from '../../../';
 export function media(target: HTMLImageElement, opts: RenderingOptions['media'] = {}): HTMLElement {
   assert(target.matches(':not([src])[data-src]'));
   const url = target.getAttribute('data-src')!;
-  return undefined
-    || (opts.twitter || twitter)(url)
-    || (opts.youtube || youtube)(url)
-    || (opts.gist || gist)(url)
-    || (opts.slideshare || slideshare)(url)
-    || (opts.pdf || pdf)(url)
-    || (opts.video || video)(url, target.getAttribute('alt') || '')
-    || (opts.audio || audio)(url, target.getAttribute('alt') || '')
-    || (opts.image || image)(url, target.getAttribute('alt') || '');
+  const alt = target.getAttribute('alt') || '';
+  switch(true) {
+    case url.startsWith('https://twitter.com/'):
+      return (opts.twitter || twitter)(url);
+    case url.startsWith('https://youtu.be/') || url.startsWith('https://www.youtube.com/watch?v='):
+      return (opts.youtube || youtube)(url);
+    case url.startsWith('https://gist.github.com/'):
+      return (opts.gist || gist)(url);
+    case url.startsWith('https://www.slideshare.net/'):
+      return (opts.slideshare || slideshare)(url);
+    case url.split('/').length > 3 && ['.pdf'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+      return (opts.pdf || pdf)(url);
+    case url.split('/').length > 3 && ['.webm', '.ogv'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+      return (opts.video || video)(url, alt);
+    case url.split('/').length > 3 && ['.oga', '.ogg'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+      return (opts.audio || audio)(url, alt);
+    default:
+      return (opts.image || image)(url, alt);
+  }
 }

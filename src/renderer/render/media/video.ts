@@ -1,13 +1,15 @@
 ﻿import DOM from 'typed-dom';
+import { cache } from '../../../parser/inline/media';
 
-export function video(url: string, alt: string): HTMLElement | void {
-  if (!['.webm', '.ogv'].some(ext => url.split(/[?#]/, 1).shift()!.endsWith(ext)) || url.split('/').length < 4) return;
-  return DOM.video({
-    class: 'media',
-    src: url,
-    alt,
-    muted: '',
-    controls: '',
-    style: 'max-width: 100%;',
-  }).element;
+export function video(url: string, alt: string): HTMLVideoElement {
+  return cache.has(url)
+    ? cache.get(url)!.cloneNode(true) as HTMLVideoElement
+    : cache.set(url, DOM.video({
+        class: 'media',
+        src: url,
+        alt,
+        muted: '',
+        controls: '',
+        style: 'max-width: 100%;',
+      }).element.cloneNode(true) as HTMLVideoElement);
 }

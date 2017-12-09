@@ -3,6 +3,7 @@
 ## 0.38.0
 
 - Support video and audio media.
+- Refine rendering options.
 
 ## 0.37.1
 

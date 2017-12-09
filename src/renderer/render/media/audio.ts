@@ -1,12 +1,14 @@
 ﻿import DOM from 'typed-dom';
+import { cache } from '../../../parser/inline/media';
 
-export function audio(url: string, alt: string): HTMLElement | void {
-  if (!['.oga', '.ogg'].some(ext => url.split(/[?#]/, 1).shift()!.endsWith(ext)) || url.split('/').length < 4) return;
-  return DOM.video({
-    class: 'media',
-    src: url,
-    alt,
-    controls: '',
-    style: 'width: 100%;',
-  }).element;
+export function audio(url: string, alt: string): HTMLAudioElement {
+  return cache.has(url)
+    ? cache.get(url)!.cloneNode(true) as HTMLAudioElement
+    : cache.set(url, DOM.audio({
+        class: 'media',
+        src: url,
+        alt,
+        controls: '',
+        style: 'width: 100%;',
+      }).element.cloneNode(true) as HTMLAudioElement);
 }

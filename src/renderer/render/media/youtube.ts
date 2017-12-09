@@ -1,7 +1,6 @@
 ﻿import DOM from 'typed-dom';
 
-export function youtube(url: string): HTMLElement | void {
-  if (!url.startsWith('https://youtu.be/') && !url.startsWith('https://www.youtube.com/watch?v=')) return;
+export function youtube(url: string): HTMLElement {
   return DOM.div({
     class: 'media',
     style: 'position: relative;',

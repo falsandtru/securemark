@@ -1,8 +1,7 @@
 ﻿import DOM from 'typed-dom';
 import { parse, escape } from '../../parser';
 
-export function pdf(url: string): HTMLElement | void {
-  if (!url.split(/[?#]/, 1).shift()!.endsWith('.pdf') || url.split('/').length < 4) return;
+export function pdf(url: string): HTMLElement {
   return DOM.div({
     class: 'media',
     style: 'position: relative;',
