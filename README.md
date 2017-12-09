@@ -52,7 +52,9 @@ https://falsandtru.github.io/securemark/
 - YouTube
 - Gist
 - SlideShare
-- PDF
+- PDF (.pdf)
+- Video (.webm, .ogv)
+- Audio (.oga, .ogg)
 - Images
 
 ## Dependencies

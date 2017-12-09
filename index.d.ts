@@ -19,6 +19,8 @@ export interface RenderingOptions {
     gist?: (url: string) => HTMLElement | void;
     slideshare?: (url: string) => HTMLElement | void;
     pdf?: (url: string) => HTMLElement | void;
+    video?: (url: string, alt: string) => HTMLVideoElement | void;
+    audio?: (url: string, alt: string) => HTMLAudioElement | void;
     image?: (url: string, alt: string) => HTMLImageElement;
   };
 }
