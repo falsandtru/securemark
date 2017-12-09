@@ -1745,10 +1745,10 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             const unescapable_1 = require('../source/unescapable');
-            const backquote_1 = require('../source/backquote');
+            const char_1 = require('../source/char');
             const squash_1 = require('../squash');
             const validation_1 = require('../source/validation');
-            const syntax = /^(`+)[^\n]+?\1/;
+            const syntax = /^(`+)[^\n]+?\1(?!`)/;
             exports.code = source => {
                 if (!validation_1.match(source, '`'))
                     return;
@@ -1756,9 +1756,9 @@ require = function e(t, n, r) {
                 if (!whole)
                     return;
                 return combinator_1.transform(combinator_1.bracket(keyword, combinator_1.loop(combinator_1.combine([
-                    combinator_1.loop(backquote_1.backquote),
+                    combinator_1.loop(char_1.char('`')),
                     unescapable_1.unescsource
-                ]), `^${ keyword }(?!\`)`), keyword), (ns, rest) => {
+                ]), `^${ keyword }(?!\`)|^\n`), keyword), (ns, rest) => {
                     if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length)))
                         return;
                     const el = document.createElement('code');
@@ -1776,7 +1776,7 @@ require = function e(t, n, r) {
         },
         {
             '../../combinator': 15,
-            '../source/backquote': 61,
+            '../source/char': 61,
             '../source/unescapable': 66,
             '../source/validation': 67,
             '../squash': 68
@@ -2079,11 +2079,11 @@ require = function e(t, n, r) {
             const cache_1 = require('spica/cache');
             exports.cache = new cache_1.Cache(100);
             const syntax = /^\$[^\s$][^\n]*?\$(?!\d)/;
-            const closer = /^\$(?!\d)|^\n/;
+            const closer = /^\$|^\n/;
             exports.mathinline = source => {
                 if (!validation_1.match(source, '$', syntax))
                     return;
-                return combinator_1.transform(combinator_1.bracket('$', combinator_1.loop(combinator_1.combine([escapable_1.escsource]), closer), '$'), (ns, rest) => {
+                return combinator_1.transform(combinator_1.bracket('$', combinator_1.loop(combinator_1.combine([escapable_1.escsource]), closer), /^\$(?![$\d])/), (ns, rest) => {
                     if (!validation_1.isTightVisible(source.slice(1, source.length - rest.length - 1)))
                         return;
                     if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length)))
@@ -2263,17 +2263,21 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.backquote = source => {
-                switch (source[0]) {
-                case '`':
-                    return [
-                        [document.createTextNode(source.slice(0, 1))],
-                        source.slice(1)
-                    ];
-                default:
-                    return;
-                }
-            };
+            function char(char) {
+                return source => {
+                    switch (source[0]) {
+                    case char:
+                        return [
+                            [document.createTextNode(source.slice(0, 1))],
+                            source.slice(1)
+                        ];
+                    default:
+                        return;
+                    }
+                };
+            }
+            exports.char = char;
+            ;
         },
         {}
     ],
