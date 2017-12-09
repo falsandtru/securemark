@@ -9,7 +9,7 @@ export interface PlaceholderParser extends
   Markdown<'extensionblock' & 'extensionblock/placeholder'>,
   Parser<HTMLElement, never[]> {
 }
-const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?=\n|$)/;
+const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
 
 export const placeholder: PlaceholderParser = verify((source: string): [HTMLElement[], string] | undefined => {
   if (!source.startsWith('~~~')) return;
@@ -28,5 +28,5 @@ export const placeholder: PlaceholderParser = verify((source: string): [HTMLElem
   }
   const quote = document.createElement('pre');
   void quote.appendChild(document.createTextNode(`${keyword}${notes}\n${lines.join('')}${keyword}`));
-  return [[message, quote], source.slice(keyword.length + 1)];
+  return [[message, quote], source.slice(source.split('\n', 1)[0].length + 1)];
 });

@@ -1,7 +1,7 @@
 ﻿import { HorizontalRuleParser } from '../block';
 import { verify } from './util/verification';
 
-const syntax = /^\s*-\s*-\s*(?:-\s*)+(?:\n|$)/;
+const syntax = /^(?:\s*-){3,}\s*$/;
 
 export const horizontalrule: HorizontalRuleParser = verify((source: string): [[HTMLHRElement], string] | undefined => {
   const [whole = ''] = source.split('\n', 1)[0].match(syntax) || [];

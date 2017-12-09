@@ -1,10 +1,9 @@
 ﻿import { newline } from './newline';
-import { loop } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/newline', () => {
   describe('newline', () => {
-    const parser = loop(newline);
+    const parser = newline;
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -20,6 +19,7 @@ describe('Unit: parser/block/newline', () => {
       assert.deepStrictEqual(inspect(parser('\n\n\n')), [[], '']);
       assert.deepStrictEqual(inspect(parser('\n\n\na')), [[], 'a']);
       assert.deepStrictEqual(inspect(parser('\\\n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' \n  \\\n')), [[], '']);
     });
 
   });

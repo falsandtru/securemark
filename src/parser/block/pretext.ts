@@ -4,7 +4,7 @@ import { loop } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 
-const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?=\n|$)/;
+const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?:\n|$)/;
 
 export const pretext: PretextParser = verify((source: string): [[HTMLPreElement], string] | undefined => {
   if (!source.startsWith('```')) return;
@@ -21,5 +21,5 @@ export const pretext: PretextParser = verify((source: string): [[HTMLPreElement]
     void el.setAttribute('data-file', filename);
   }
   void el.appendChild(document.createTextNode(whole.slice(whole.indexOf('\n') + 1, whole.lastIndexOf('\n'))));
-  return [[el], source.slice(whole.length + 1)];
+  return [[el], source.slice(whole.length)];
 });
