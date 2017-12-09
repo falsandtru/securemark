@@ -2700,23 +2700,73 @@ require = function e(t, n, r) {
             const gist_1 = require('./media/gist');
             const slideshare_1 = require('./media/slideshare');
             const pdf_1 = require('./media/pdf');
+            const video_1 = require('./media/video');
+            const audio_1 = require('./media/audio');
             const image_1 = require('./media/image');
             function media(target, opts = {}) {
                 const url = target.getAttribute('data-src');
-                return undefined || (opts.twitter || twitter_1.twitter)(url) || (opts.youtube || youtube_1.youtube)(url) || (opts.gist || gist_1.gist)(url) || (opts.slideshare || slideshare_1.slideshare)(url) || (opts.pdf || pdf_1.pdf)(url) || (opts.image || image_1.image)(url, target.getAttribute('alt') || '');
+                const alt = target.getAttribute('alt') || '';
+                switch (true) {
+                case url.startsWith('https://twitter.com/'):
+                    return (opts.twitter || twitter_1.twitter)(url);
+                case url.startsWith('https://youtu.be/') || url.startsWith('https://www.youtube.com/watch?v='):
+                    return (opts.youtube || youtube_1.youtube)(url);
+                case url.startsWith('https://gist.github.com/'):
+                    return (opts.gist || gist_1.gist)(url);
+                case url.startsWith('https://www.slideshare.net/'):
+                    return (opts.slideshare || slideshare_1.slideshare)(url);
+                case url.split('/').length > 3 && ['.pdf'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+                    return (opts.pdf || pdf_1.pdf)(url);
+                case url.split('/').length > 3 && [
+                        '.webm',
+                        '.ogv'
+                    ].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+                    return (opts.video || video_1.video)(url, alt);
+                case url.split('/').length > 3 && [
+                        '.oga',
+                        '.ogg'
+                    ].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+                    return (opts.audio || audio_1.audio)(url, alt);
+                default:
+                    return (opts.image || image_1.image)(url, alt);
+                }
             }
             exports.media = media;
         },
         {
-            './media/gist': 77,
-            './media/image': 78,
-            './media/pdf': 79,
-            './media/slideshare': 80,
-            './media/twitter': 81,
-            './media/youtube': 82
+            './media/audio': 77,
+            './media/gist': 78,
+            './media/image': 79,
+            './media/pdf': 80,
+            './media/slideshare': 81,
+            './media/twitter': 82,
+            './media/video': 83,
+            './media/youtube': 84
         }
     ],
     77: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const typed_dom_1 = require('typed-dom');
+            const media_1 = require('../../../parser/inline/media');
+            function audio(url, alt) {
+                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.audio({
+                    class: 'media',
+                    src: url,
+                    alt,
+                    controls: '',
+                    style: 'width: 100%;'
+                }).element.cloneNode(true));
+            }
+            exports.audio = audio;
+        },
+        {
+            '../../../parser/inline/media': 57,
+            'typed-dom': 9
+        }
+    ],
+    78: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -2727,8 +2777,6 @@ require = function e(t, n, r) {
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const cache = new cache_1.Cache(100);
                 function gist(url) {
-                    if (!url.startsWith('https://gist.github.com/'))
-                        return;
                     if (cache.has(url))
                         return cache.get(url).cloneNode(true);
                     return typed_dom_1.default.div({
@@ -2771,7 +2819,7 @@ require = function e(t, n, r) {
             'typed-dom': 9
         }
     ],
-    78: [
+    79: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2792,15 +2840,13 @@ require = function e(t, n, r) {
             'typed-dom': 9
         }
     ],
-    79: [
+    80: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
             const parser_1 = require('../../parser');
             function pdf(url) {
-                if (!url.split(/[?#]/, 1).shift().endsWith('.pdf') || url.split('/').length < 4)
-                    return;
                 return typed_dom_1.default.div({
                     class: 'media',
                     style: 'position: relative;'
@@ -2824,7 +2870,7 @@ require = function e(t, n, r) {
             'typed-dom': 9
         }
     ],
-    80: [
+    81: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -2835,8 +2881,6 @@ require = function e(t, n, r) {
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const cache = new cache_1.Cache(100);
                 function slideshare(url) {
-                    if (!url.startsWith('https://www.slideshare.net/'))
-                        return;
                     if (cache.has(url))
                         return cache.get(url).cloneNode(true);
                     return typed_dom_1.default.div({
@@ -2873,7 +2917,7 @@ require = function e(t, n, r) {
             'typed-dom': 9
         }
     ],
-    81: [
+    82: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -2885,8 +2929,6 @@ require = function e(t, n, r) {
                 let widgetScriptRequested = false;
                 const cache = new cache_1.Cache(100);
                 function twitter(url) {
-                    if (!url.startsWith('https://twitter.com/'))
-                        return;
                     if (cache.has(url)) {
                         const el = cache.get(url).cloneNode(true);
                         window.twttr && void window.twttr.widgets.load(el);
@@ -2933,14 +2975,35 @@ require = function e(t, n, r) {
             'typed-dom': 9
         }
     ],
-    82: [
+    83: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const typed_dom_1 = require('typed-dom');
+            const media_1 = require('../../../parser/inline/media');
+            function video(url, alt) {
+                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.video({
+                    class: 'media',
+                    src: url,
+                    alt,
+                    muted: '',
+                    controls: '',
+                    style: 'max-width: 100%;'
+                }).element.cloneNode(true));
+            }
+            exports.video = video;
+        },
+        {
+            '../../../parser/inline/media': 57,
+            'typed-dom': 9
+        }
+    ],
+    84: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
             function youtube(url) {
-                if (!url.startsWith('https://youtu.be/') && !url.startsWith('https://www.youtube.com/watch?v='))
-                    return;
                 return typed_dom_1.default.div({
                     class: 'media',
                     style: 'position: relative;'
