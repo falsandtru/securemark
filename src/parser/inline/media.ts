@@ -4,7 +4,6 @@ import { text } from '../source/text';
 import { escsource } from '../source/escapable';
 import { match, isSingleLine } from '../source/validation';
 import { sanitize } from '../string/url';
-import DOM from 'typed-dom';
 import { Cache } from 'spica/cache';
 
 export const cache = new Cache<string, HTMLElement>(100);
@@ -29,11 +28,10 @@ export const media: MediaParser = (source: string) => {
         (ns, rest) => {
           const url = sanitize(ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));
           if (url === '') return;
-          if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLImageElement], rest];
-          const el = DOM.img({
-            'data-src': url,
-            alt: caption,
-          }).element;
+          if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLElement], rest];
+          const el = document.createElement('img');
+          void el.setAttribute('data-src', url);
+          void el.setAttribute('alt', caption);
           return [[el], rest];
         })
         (rest) as [[HTMLImageElement], string];
