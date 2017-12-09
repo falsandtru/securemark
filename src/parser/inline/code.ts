@@ -1,11 +1,11 @@
 ﻿import { CodeParser } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
 import { unescsource } from '../source/unescapable';
-import { backquote } from '../source/backquote';
+import { char } from '../source/char';
 import { squash } from '../squash';
 import { match, isVisible, isSingleLine } from '../source/validation';
 
-const syntax = /^(`+)[^\n]+?\1/;
+const syntax = /^(`+)[^\n]+?\1(?!`)/;
 
 export const code: CodeParser = (source: string) => {
   if (!match(source, '`')) return;
@@ -14,7 +14,7 @@ export const code: CodeParser = (source: string) => {
   return transform(
     bracket(
       keyword,
-      loop(combine<Text, CodeParser.InnerParsers>([loop(backquote), unescsource]), `^${keyword}(?!\`)`),
+      loop(combine<Text, CodeParser.InnerParsers>([loop(char('`')), unescsource]), `^${keyword}(?!\`)|^\n`),
       keyword),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;
