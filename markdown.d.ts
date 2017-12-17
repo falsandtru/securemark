@@ -179,7 +179,7 @@ export namespace MarkdownParser {
     export interface IndexParser extends
       // [#index]
       Markdown<'index'>,
-      Parser<HTMLElement, IndexerParser.InnerParsers> {
+      Parser<HTMLAnchorElement, IndexerParser.InnerParsers> {
     }
     export namespace IndexerParser {
       export type InnerParsers = [
@@ -269,7 +269,7 @@ export namespace MarkdownParser {
       }
       export namespace IndexerParser {
         export type InnerParsers = [
-          SourceParser.TextParser
+          InlineParser
         ];
       }
       export interface PlaceholderParser extends

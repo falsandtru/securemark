@@ -20,6 +20,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#\n]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#\\\n]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#\\]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#[]()]')), undefined);
     });
 
     it('ab', () => {
@@ -29,8 +30,8 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#[]]')), [['<a href="#index:[]" rel="noopener">[]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#\\]]')), [['<a href="#index:]" rel="noopener">]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#\\\\]')), [['<a href="#index:\\" rel="noopener">\\</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#*a*]')), [['<a href="#index:*a*" rel="noopener">*a*</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[#`a`]')), [['<a href="#index:`a`" rel="noopener">`a`</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#*a*]')), [['<a href="#index:a" rel="noopener"><em>a</em></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#`a`]')), [['<a href="#index:`a`" rel="noopener"><code data-src="`a`">a</code></a>'], '']);
     });
 
   });

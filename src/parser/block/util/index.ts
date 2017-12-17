@@ -4,16 +4,18 @@ import { makeIndex } from '../../string/index';
 
 const syntax = /^\s+\[#\S+?\]$/;
 
-export const index: IndexParser = (source: string): [[HTMLElement], string] | undefined => {
+export const index: IndexParser = (source: string): [[HTMLAnchorElement], string] | undefined => {
   assert(!source.match(/\n/));
   if (!source.trim().startsWith('[#') || source.search(syntax) !== 0) return;
   assert(source.endsWith(']'));
   source = source.trim();
   assert(source.startsWith('[#'));
-  const [[el = undefined] = []] = inline(source) || [];
+  const [[el = undefined] = [], rest = ''] = inline(source) || [];
   if (!(el instanceof HTMLAnchorElement)) return;
+  if (rest !== '') return;
+  assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
   void el.setAttribute('class', 'index');
-  return [[el], ''];
+  return [[el], rest];
 };
 
 export function defineIndex(target: HTMLElement): void {

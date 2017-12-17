@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.1
+
+- Fix index parser.
+
 ## 0.38.0
 
 - Support video and audio media.
