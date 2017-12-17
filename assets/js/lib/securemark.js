@@ -1417,13 +1417,15 @@ require = function e(t, n, r) {
                 if (!source.trim().startsWith('[#') || source.search(syntax) !== 0)
                     return;
                 source = source.trim();
-                const [[el = undefined] = []] = inline_1.inline(source) || [];
+                const [[el = undefined] = [], rest = ''] = inline_1.inline(source) || [];
                 if (!(el instanceof HTMLAnchorElement))
+                    return;
+                if (rest !== '')
                     return;
                 void el.setAttribute('class', 'index');
                 return [
                     [el],
-                    ''
+                    rest
                 ];
             };
             function defineIndex(target) {
@@ -1841,23 +1843,23 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
             const link_1 = require('../link');
-            const text_1 = require('../../source/text');
-            const squash_1 = require('../../squash');
             const validation_1 = require('../../source/validation');
-            const index_1 = require('../../string/index');
+            const index_1 = require('../../block/util/index');
             const template_1 = require('./template');
-            exports.index = template_1.template((flag, query) => {
+            exports.index = template_1.template((flag, query, frag) => {
                 if (flag !== '#')
                     return;
-                const [[el = undefined] = [], rest = ''] = link_1.link(`[](#)`) || [];
+                if (frag.textContent === flag)
+                    return;
+                const [[el = undefined] = [], rest = ''] = link_1.link(`[${ query }]()`) || [];
                 if (!el)
                     return;
-                el.textContent = squash_1.squash((combinator_1.loop(text_1.text)(query) || [[]])[0]).textContent;
                 if (!validation_1.isTightVisible(el.textContent))
                     return;
-                void el.setAttribute('href', `#${ index_1.makeIndex(el.textContent) }`);
+                void index_1.defineIndex(el);
+                void el.setAttribute('href', `#${ el.id }`);
+                void el.removeAttribute('id');
                 return [
                     [el],
                     rest
@@ -1865,11 +1867,8 @@ require = function e(t, n, r) {
             });
         },
         {
-            '../../../combinator': 15,
-            '../../source/text': 65,
+            '../../block/util/index': 36,
             '../../source/validation': 67,
-            '../../squash': 68,
-            '../../string/index': 69,
             '../link': 55,
             './template': 52
         }
@@ -1904,14 +1903,15 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
             const inline_1 = require('../../inline');
+            const squash_1 = require('../../squash');
             const validation_1 = require('../../source/validation');
             const syntax = /^\[[~#:^\[][^\n]*?\]/;
             exports.template = parser => {
                 return function (source) {
-                    const [flag = '', query = '', rest = ''] = parse(source) || [];
-                    if (!flag)
+                    const [flag = '', query = '', frag = undefined, rest = ''] = parse(source) || [];
+                    if (!frag)
                         return undefined;
-                    const result = parser(flag, query);
+                    const result = parser(flag, query, frag);
                     if (!result)
                         return undefined;
                     return [
@@ -1923,7 +1923,7 @@ require = function e(t, n, r) {
             function parse(source) {
                 if (!validation_1.match(source, '[', syntax))
                     return;
-                const [, rest = undefined] = combinator_1.bracket('[', combinator_1.loop(inline_1.inline, /^[\]\n]/), ']')(source) || [];
+                const [ns = [], rest = undefined] = combinator_1.bracket('[', combinator_1.loop(inline_1.inline, /^[\]\n]/), ']')(source) || [];
                 if (rest === undefined)
                     return;
                 const text = source.slice(1, source.length - rest.length - 1);
@@ -1934,6 +1934,7 @@ require = function e(t, n, r) {
                 return [
                     flag,
                     query,
+                    squash_1.squash(ns),
                     rest
                 ];
             }
@@ -1941,7 +1942,8 @@ require = function e(t, n, r) {
         {
             '../../../combinator': 15,
             '../../inline': 39,
-            '../../source/validation': 67
+            '../../source/validation': 67,
+            '../../squash': 68
         }
     ],
     53: [
