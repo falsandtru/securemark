@@ -19,8 +19,8 @@ export const url: AutolinkParser.UrlParser = (source: string) => {
   const attribute = source.startsWith('ttp')
     ? ' nofollow'
     : '';
-  const uri = `${source.startsWith('ttp') ? 'h' : ''}${source.slice(0, source.length - rest.length)}`;
+  const url = `${source.startsWith('ttp') ? 'h' : ''}${source.slice(0, source.length - rest.length)}`;
   return !flag
-    ? link(`[](${uri}${attribute})${rest}`)
-    : link(`[![](${uri})](${uri})${rest}`);
+    ? link(`[](${url}${attribute})${rest}`)
+    : link(`[![](${url})](${url})${rest}`);
 };
