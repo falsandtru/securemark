@@ -2,6 +2,7 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
+import { parenthesis } from '../source/parenthesis';
 import { match, isSingleLine } from '../source/validation';
 import { sanitize } from '../string/url';
 import { Cache } from 'spica/cache';
@@ -23,7 +24,7 @@ export const media: MediaParser = (source: string) => {
       return transform(
         bracket(
           '(',
-          loop(escsource, /^\)|^\s/),
+          loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([parenthesis, escsource]), /^\)|^\s/),
           ')'),
         (ns, rest) => {
           const url = sanitize(ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));

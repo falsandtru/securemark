@@ -250,6 +250,9 @@ export namespace MarkdownParser {
     export namespace LinkParser {
       export type InnerParsers = [
         InlineParser
+      ] | [
+        SourceParser.ParenthesisParser,
+        SourceParser.EscapableSourceParser
       ];
     }
     export interface ExtensionParser extends
@@ -363,6 +366,9 @@ export namespace MarkdownParser {
     export namespace MediaParser {
       export type InnerParsers = [
         SourceParser.TextParser
+      ] | [
+        SourceParser.ParenthesisParser,
+        SourceParser.EscapableSourceParser
       ];
     }
     export interface HTMLEntityParser extends
@@ -390,6 +396,9 @@ export namespace MarkdownParser {
       export namespace UrlParser {
         export type InnerParsers = [
           InlineParser
+        ] | [
+          SourceParser.ParenthesisParser,
+          SourceParser.EscapableSourceParser
         ];
       }
       export interface AccountParser extends
@@ -439,6 +448,14 @@ export namespace MarkdownParser {
       Parser<Text, EmptyLineParser.InnerParsers> {
     }
     export namespace EmptyLineParser {
+      export type InnerParsers = never[];
+    }
+    export interface ParenthesisParser extends
+      // ()
+      Markdown<'parenthesis'>,
+      Parser<Text, ParenthesisParser.InnerParsers> {
+    }
+    export namespace ParenthesisParser {
       export type InnerParsers = never[];
     }
     export interface BackquoteParser extends

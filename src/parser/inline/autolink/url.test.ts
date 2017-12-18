@@ -81,8 +81,7 @@ describe('Unit: parser/inline/autolink/url', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('http://a')), [['<a href="http://a" rel="noopener" target="_blank">http://a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('http://a.b')), [['<a href="http://a.b" rel="noopener" target="_blank">http://a.b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://a?b=c+d&#')), [['<a href="http://a?b=c+d&amp;#" rel="noopener" target="_blank">http://a?b=c+d&amp;#</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('http://a|b')), [['<a href="http://a" rel="noopener" target="_blank">http://a</a>'], '|b']);
+      assert.deepStrictEqual(inspect(parser('http://a?b=c+d&#()')), [['<a href="http://a?b=c+d&amp;#()" rel="noopener" target="_blank">http://a?b=c+d&amp;#()</a>'], '']);
     });
 
     it('protocol', () => {

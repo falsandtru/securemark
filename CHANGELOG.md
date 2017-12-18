@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.2
+
+- Fix url parser.
+
 ## 0.38.1
 
 - Fix index parser.
