@@ -9,7 +9,7 @@ import { squash } from '../squash';
 const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
 
-export const ulist: UListParser = verify((source: string): [[HTMLUListElement], string] | undefined => {
+export const ulist: UListParser = verify((source: string) => {
   const [whole = '', flag = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = document.createElement('ul');

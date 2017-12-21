@@ -8,7 +8,7 @@ import { squash } from '../squash';
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
 
-export const olist: OListParser = verify((source: string): [[HTMLOListElement], string] | undefined => {
+export const olist: OListParser = verify((source: string) => {
   const [whole = '', index = '', flag = ''] = source.match(syntax) || [];
   if (!whole || !flag) return;
   const el = document.createElement('ol');

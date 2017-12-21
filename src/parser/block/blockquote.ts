@@ -7,7 +7,7 @@ import { squash } from '../squash';
 
 const syntax = /^>+(?=\s|$)/;
 
-export const blockquote: BlockquoteParser = verify((source: string): [[HTMLQuoteElement], string] | undefined => {
+export const blockquote: BlockquoteParser = verify((source: string) => {
   const mode = undefined
     || source.startsWith('>') && 'plain'
     || source.startsWith('|>') && 'markdown'
