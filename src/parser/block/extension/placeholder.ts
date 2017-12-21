@@ -1,7 +1,7 @@
 ﻿import { Markdown } from '../../../../markdown.d';
 import { verify } from '../util/verification';
 import { Parser, loop } from '../../../combinator';
-import { inline } from '../../inline';
+import { block } from '../../block';
 import { unescsource } from '../../source/unescapable';
 import { squash } from '../../squash';
 
@@ -15,8 +15,7 @@ export const placeholder: PlaceholderParser = verify((source: string) => {
   if (!source.startsWith('~~~')) return;
   const [whole = '', keyword = '', notes = ''] = source.match(syntax) || [];
   if (!whole) return;
-  const message = document.createElement('p');
-  void message.appendChild(squash(loop(inline)("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.")![0]));
+  const [[message]] = block("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.")!;
   source = source.slice(source.indexOf('\n') + 1);
   const lines: string[] = [];
   while (true) {
