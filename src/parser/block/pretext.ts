@@ -16,9 +16,9 @@ export const pretext: PretextParser = verify((source: string) => {
     void el.setAttribute('class', `language-${lang.toLowerCase()}`);
     void el.setAttribute('data-lang', lang);
   }
-  const filename = squash((loop(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0]).textContent!;
-  if (filename) {
-    void el.setAttribute('data-file', filename);
+  const filepath = squash((loop(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0]).textContent!;
+  if (filepath) {
+    void el.setAttribute('data-file', filepath);
   }
   void el.appendChild(document.createTextNode(body));
   return [[el], source.slice(whole.length)];
