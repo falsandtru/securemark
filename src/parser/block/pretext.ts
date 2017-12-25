@@ -4,7 +4,7 @@ import { loop } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 
-const syntax = /^(`{3,})([^\n]*)\n([\s\S]*?)\n\1[^\S\n]*(?:\n|$)/;
+const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
 
 export const pretext: PretextParser = verify((source: string) => {
   if (!source.startsWith('```')) return;
