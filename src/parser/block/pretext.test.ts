@@ -26,6 +26,7 @@ describe('Unit: parser/block/pretext', () => {
       assert.deepStrictEqual(inspect(parser('```\n`\n```')), [['<pre>`</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n````\n```')), [['<pre>````</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('````\n```\n````')), [['<pre>```</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n\n```\n')), [['<pre></pre>'], '']);
     });
 
     it('attribute', () => {

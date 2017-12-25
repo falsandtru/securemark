@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.38.3
+
+- Fix pretext parser.
+
 ## 0.38.2
 
 - Fix url parser.

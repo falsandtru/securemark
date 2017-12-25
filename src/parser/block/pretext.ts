@@ -4,11 +4,11 @@ import { loop } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 
-const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?:\n|$)/;
+const syntax = /^(`{3,})([^\n]*)\n([\s\S]*?)\n\1[^\S\n]*(?:\n|$)/;
 
 export const pretext: PretextParser = verify((source: string) => {
   if (!source.startsWith('```')) return;
-  const [whole = '', , notes = ''] = source.match(syntax) || [];
+  const [whole = '', , notes = '', body = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = document.createElement('pre');
   const lang = notes.split(/\s/, 1)[0];
@@ -20,6 +20,6 @@ export const pretext: PretextParser = verify((source: string) => {
   if (filename) {
     void el.setAttribute('data-file', filename);
   }
-  void el.appendChild(document.createTextNode(whole.slice(whole.indexOf('\n') + 1, whole.lastIndexOf('\n'))));
+  void el.appendChild(document.createTextNode(body));
   return [[el], source.slice(whole.length)];
 });
