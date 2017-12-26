@@ -951,7 +951,7 @@ require = function e(t, n, r) {
             Object.defineProperty(exports, '__esModule', { value: true });
             const verification_1 = require('../util/verification');
             const combinator_1 = require('../../../combinator');
-            const inline_1 = require('../../inline');
+            const block_1 = require('../../block');
             const unescapable_1 = require('../../source/unescapable');
             const squash_1 = require('../../squash');
             const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
@@ -961,8 +961,7 @@ require = function e(t, n, r) {
                 const [whole = '', keyword = '', notes = ''] = source.match(syntax) || [];
                 if (!whole)
                     return;
-                const message = document.createElement('p');
-                void message.appendChild(squash_1.squash(combinator_1.loop(inline_1.inline)('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.')[0]));
+                const [[message]] = block_1.block('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.');
                 source = source.slice(source.indexOf('\n') + 1);
                 const lines = [];
                 while (true) {
@@ -987,7 +986,7 @@ require = function e(t, n, r) {
         },
         {
             '../../../combinator': 15,
-            '../../inline': 39,
+            '../../block': 21,
             '../../source/unescapable': 67,
             '../../squash': 69,
             '../util/verification': 37
@@ -1193,11 +1192,11 @@ require = function e(t, n, r) {
             const combinator_1 = require('../../combinator');
             const escapable_1 = require('../source/escapable');
             const squash_1 = require('../squash');
-            const syntax = /^(`{3,})([^\n]*)\n(?:[^\n]*\n)+?\1[^\S\n]*(?:\n|$)/;
+            const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
             exports.pretext = verification_1.verify(source => {
                 if (!source.startsWith('```'))
                     return;
-                const [whole = '', , notes = ''] = source.match(syntax) || [];
+                const [whole = '', , notes = '', body = ''] = source.match(syntax) || [];
                 if (!whole)
                     return;
                 const el = document.createElement('pre');
@@ -1206,11 +1205,11 @@ require = function e(t, n, r) {
                     void el.setAttribute('class', `language-${ lang.toLowerCase() }`);
                     void el.setAttribute('data-lang', lang);
                 }
-                const filename = squash_1.squash((combinator_1.loop(escapable_1.escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0]).textContent;
-                if (filename) {
-                    void el.setAttribute('data-file', filename);
+                const filepath = squash_1.squash((combinator_1.loop(escapable_1.escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0]).textContent;
+                if (filepath) {
+                    void el.setAttribute('data-file', filepath);
                 }
-                void el.appendChild(document.createTextNode(whole.slice(whole.indexOf('\n') + 1, whole.lastIndexOf('\n'))));
+                void el.appendChild(document.createTextNode(body));
                 return [
                     [el],
                     source.slice(whole.length)
@@ -2390,7 +2389,10 @@ require = function e(t, n, r) {
             exports.parenthesis = source => {
                 if (!validation_1.match(source, '(', syntax))
                     return;
-                return combinator_1.transform(combinator_1.bracket('(', combinator_1.loop(escapable_1.escsource, closer), ')'), (_, rest) => [
+                return combinator_1.transform(combinator_1.bracket('(', combinator_1.loop(combinator_1.combine([
+                    exports.parenthesis,
+                    escapable_1.escsource
+                ]), closer), ')'), (_, rest) => [
                     [document.createTextNode(source.slice(0, source.length - rest.length))],
                     rest
                 ])(source);
