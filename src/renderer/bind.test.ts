@@ -79,7 +79,7 @@ describe('Unit: renderer/bind', () => {
       const el = document.createElement('div');
       const update = bind(el);
 
-      for (const _ of update('0\n\n0')) {
+      for (const _ of update('0\n\n1')) {
         assert.deepStrictEqual(inspect(update('1')), ['<p>1</p>']);
         assert(el.innerHTML === '<p>1</p>');
       }
