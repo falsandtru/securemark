@@ -3,6 +3,7 @@
 ## 0.39.0
 
 - Improve bind function to be reentrant.
+- Remove extended syntax of link and media.
 
 ## 0.38.3
 

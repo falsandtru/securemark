@@ -6,7 +6,7 @@ import { squash } from '../squash';
 import { match, isSingleLine } from '../source/validation';
 import { sanitize } from '../string/url';
 
-const syntax = /^\[[^\n]*?\]\n?\(/;
+const syntax = /^\[[^\n]*?\]\(/;
 
 export const link: LinkParser = (source: string) => {
   if (!match(source, '[', syntax)) return;
@@ -14,7 +14,7 @@ export const link: LinkParser = (source: string) => {
     bracket(
       '[',
       loop(combine<HTMLElement | Text, LinkParser.InnerParsers>([inline]), /^]\n?|^\n/),
-      /^]\n?/),
+      ']'),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
       const children = squash(ns);

@@ -9,7 +9,7 @@ import { Cache } from 'spica/cache';
 
 export const cache = new Cache<string, HTMLElement>(100);
 
-const syntax = /^!\[[^\n]*?\]\n?\(/;
+const syntax = /^!\[[^\n]*?\]\(/;
 
 export const media: MediaParser = (source: string) => {
   if (!match(source, '![', syntax)) return;
@@ -17,7 +17,7 @@ export const media: MediaParser = (source: string) => {
     bracket(
       '![',
       loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([text]), /^]\n?|^\n/),
-      /^]\n?/),
+      ']'),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
       const caption = ns.reduce((s, c) => s + c.textContent, '').trim();
