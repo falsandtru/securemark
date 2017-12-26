@@ -75,11 +75,15 @@ describe('Unit: renderer/bind', () => {
       assert(el.innerHTML === '<p>1</p><p>0</p><p>9</p>');
     });
 
-    it('non-reentrant', () => {
-      const update = bind(document.createElement('div'));
-      for (const _ of update('1')) {
-        assert.throws(() => [...update('')]);
+    it('reentrant', () => {
+      const el = document.createElement('div');
+      const update = bind(el);
+
+      for (const _ of update('0\n\n0')) {
+        assert.deepStrictEqual(inspect(update('1')), ['<p>1</p>']);
+        assert(el.innerHTML === '<p>1</p>');
       }
+      assert(el.innerHTML === '<p>1</p>');
     });
 
   });

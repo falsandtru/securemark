@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.39.0
+
+- Improve bind function to be reentrant.
+
 ## 0.38.3
 
 - Fix pretext parser.
