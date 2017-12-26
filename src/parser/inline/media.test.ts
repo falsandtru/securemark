@@ -60,6 +60,8 @@ describe('Unit: parser/inline/media', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('![](#())')), [['<img data-src="#()" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](#(()))')), [['<img data-src="#(())" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](#(a(b)()(c)d))')), [['<img data-src="#(a(b)()(c)d)" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![\\[](#)')), [['<img data-src="#" alt="[">'], '']);
       assert.deepStrictEqual(inspect(parser('![<wbr>"]("?"#")')), [['<img data-src="&quot;?&quot;#&quot;" alt="<wbr>&quot;">'], '']);
     });

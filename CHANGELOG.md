@@ -3,6 +3,7 @@
 ## 0.38.3
 
 - Fix pretext parser.
+- Fix link and media parsers.
 
 ## 0.38.2
 

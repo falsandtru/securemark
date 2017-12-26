@@ -78,6 +78,8 @@ describe('Unit: parser/inline/link', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('[](#())')), [['<a href="#()" rel="noopener">#()</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](#(()))')), [['<a href="#(())" rel="noopener">#(())</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](#(a(b)()(c)d))')), [['<a href="#(a(b)()(c)d)" rel="noopener">#(a(b)()(c)d)</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[](#)](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[((#))](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[<wbr>](#)')), undefined);

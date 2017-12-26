@@ -456,7 +456,10 @@ export namespace MarkdownParser {
       Parser<Text, ParenthesisParser.InnerParsers> {
     }
     export namespace ParenthesisParser {
-      export type InnerParsers = never[];
+      export type InnerParsers = [
+        ParenthesisParser,
+        EscapableSourceParser
+      ];
     }
     export interface BackquoteParser extends
       // `
