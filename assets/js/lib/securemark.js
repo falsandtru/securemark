@@ -463,7 +463,14 @@ require = function e(t, n, r) {
                                 throw new Error(`TypedDOM: Tag name must be "${ tag }", but got "${ el.tagName.toLowerCase() }".`);
                             if (!attrs)
                                 return el;
-                            void Object.keys(attrs).forEach(name => void el.setAttribute(name, attrs[name]));
+                            void Object.entries(attrs).forEach(([name, value]) => typeof value === 'string' ? void el.setAttribute(name, value) : void el.addEventListener(name.slice(2), value, {
+                                passive: [
+                                    'wheel',
+                                    'mousewheel',
+                                    'touchstart',
+                                    'touchmove'
+                                ].includes(name.slice(2))
+                            }));
                             return el;
                             function factory_() {
                                 switch (ns) {
