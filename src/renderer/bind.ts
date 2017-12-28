@@ -5,7 +5,7 @@ export function bind(target: HTMLElement | DocumentFragment): (source: string) =
   assert(target.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
-  let revision: {} = [];
+  let revision: object = [];
   return function* (source: string): Iterable<HTMLElement> {
     const rev = revision = [];
     const cs = pairs.map(([s]) => s);
