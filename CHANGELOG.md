@@ -5,6 +5,7 @@
 - Fix url parser.
   - Support IPv6 addresses.
   - Fix rules of trailing symbols detection.
+- Fix escape function.
 
 ## 0.39.0
 

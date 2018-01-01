@@ -18,8 +18,8 @@ export function parse_(source: string): HTMLElement[] {
   return (block(source) || [[]])[0];
 }
 
-const symbols = /[`#&*|\\()\[\]{}]/g;
+const symbols = /^[#~:|>`$-+*\s]|^[0-9a-z]+\.|[*`$&()\[\]{}]|\\./gim;
 
 export function escape(source: string): string {
-  return source.replace(symbols, '\\$&');
+  return source.replace(symbols, str => str[0] === '\\' ? str : `\\${str}`);
 }
