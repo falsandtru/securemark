@@ -50,7 +50,7 @@ describe('Unit: parser/inline/autolink/url', () => {
       assert.deepStrictEqual(inspect(parser('http://host?')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '?']);
       assert.deepStrictEqual(inspect(parser('http://host!?')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '!?']);
       assert.deepStrictEqual(inspect(parser('http://host+')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '+']);
-      assert.deepStrictEqual(inspect(parser('http://host-')), [['<a href="http://host-" rel="noopener" target="_blank">http://host-</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host-')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '-']);
       assert.deepStrictEqual(inspect(parser('http://host*')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '*']);
       assert.deepStrictEqual(inspect(parser('http://host~')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '~']);
       assert.deepStrictEqual(inspect(parser('http://host^')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '^']);
@@ -80,6 +80,7 @@ describe('Unit: parser/inline/autolink/url', () => {
 
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('http://a')), [['<a href="http://a" rel="noopener" target="_blank">http://a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://a:80')), [['<a href="http://a:80" rel="noopener" target="_blank">http://a:80</a>'], '']);
       assert.deepStrictEqual(inspect(parser('http://a.b')), [['<a href="http://a.b" rel="noopener" target="_blank">http://a.b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('http://a?b=c+d&#(a(b)()(c)d)')), [['<a href="http://a?b=c+d&amp;#(a(b)()(c)d)" rel="noopener" target="_blank">http://a?b=c+d&amp;#(a(b)()(c)d)</a>'], '']);
       assert.deepStrictEqual(inspect(parser('http://[::]')), [['<a href="http://[::]" rel="noopener" target="_blank">http://[::]</a>'], '']);

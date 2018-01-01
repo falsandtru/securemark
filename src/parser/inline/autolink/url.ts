@@ -6,7 +6,7 @@ import { char } from '../../source/char';
 import { link } from '../link';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;
-const closer = /^['"`\[\](){}<>/]|^\\?(?:\s|$)|^[~^+*,.;:!?]*(?:[\s\])}<>|]|$)/;
+const closer = /^['"`|\[\](){}<>/]|^\\?(?:\s|$)|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)/;
 const escape = /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:\/\/\S/;
 
 export const url: AutolinkParser.UrlParser = (source: string) => {
