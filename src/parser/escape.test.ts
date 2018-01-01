@@ -1,13 +1,7 @@
-﻿import { parse, escape } from './parser';
+﻿import { escape } from './escape';
+import { parse } from './parse';
 
-describe('Unit: renderer/parser', () => {
-  describe('parse', () => {
-    it('result', () => {
-      assert(parse('') instanceof DocumentFragment);
-    });
-
-  });
-
+describe('Unit: parser/escape', () => {
   describe('escape', () => {
     it('ab', () => {
       assert(escape('*a\\\nb*') === '\\*a\\\nb\\*');

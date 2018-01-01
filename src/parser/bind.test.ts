@@ -1,6 +1,6 @@
 ﻿import { bind } from './bind';
 
-describe('Unit: renderer/bind', () => {
+describe('Unit: parser/bind', () => {
   describe('bind', () => {
     function inspect(iter: Iterable<HTMLElement>) {
       return [...iter].map(e => e.outerHTML);

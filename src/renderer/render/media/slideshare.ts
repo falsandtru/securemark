@@ -1,5 +1,6 @@
 ﻿import DOM from 'typed-dom';
-import { parse, escape } from '../../parser';
+import { parse } from '../../../parser/parse';
+import { escape } from '../../../parser/escape';
 import { sanitize } from 'dompurify';
 import { cache } from '../../../parser/inline/media';
 

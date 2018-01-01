@@ -1,5 +1,5 @@
-﻿import { parse_ } from './parser';
-import { segment } from '../parser/segment';
+﻿import { segment } from './segment';
+import { parse_ } from './parse';
 
 export function bind(target: HTMLElement | DocumentFragment): (source: string) => Iterable<HTMLElement> {
   assert(target.childNodes.length === 0);

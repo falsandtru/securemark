@@ -1,6 +1,6 @@
 import { loop } from '../combinator';
-import { block } from '../parser/block';
-import { segment } from '../parser/segment';
+import { block } from './block';
+import { segment } from './segment';
 
 export function parse(source: string): DocumentFragment {
   return segment(source)
