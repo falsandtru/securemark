@@ -1,6 +1,7 @@
-﻿import { BackquoteParser } from '../source';
+﻿import { CharParser } from '../source';
 
-export function char(char: '`'): BackquoteParser;
+export function char(char: '`'): CharParser.BackquoteParser;
+export function char(char: '/'): CharParser.SlashParser;
 export function char(char: string) {
   return (source: string): [[Text], string] | undefined => {
     assert(char.length === 1);

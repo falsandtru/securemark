@@ -7,4 +7,4 @@ export import UnescapableSourceParser = SourceParser.UnescapableSourceParser;
 export import NonemptyLineParser = SourceParser.NonemptyLineParser;
 export import EmptyLineParser = SourceParser.EmptyLineParser;
 export import ParenthesisParser = SourceParser.ParenthesisParser;
-export import BackquoteParser = SourceParser.BackquoteParser;
+export import CharParser = SourceParser.CharParser;

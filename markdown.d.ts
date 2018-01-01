@@ -344,7 +344,7 @@ export namespace MarkdownParser {
     }
     export namespace CodeParser {
       export type InnerParsers = [
-        SourceParser.BackquoteParser,
+        SourceParser.CharParser.BackquoteParser,
         SourceParser.UnescapableSourceParser
       ];
     }
@@ -395,11 +395,20 @@ export namespace MarkdownParser {
       }
       export namespace UrlParser {
         export type InnerParsers = [
-          InlineParser
-        ] | [
+          IPV6Parser, SourceParser.CharParser.SlashParser,
           SourceParser.ParenthesisParser,
           SourceParser.EscapableSourceParser
         ];
+        export interface IPV6Parser extends
+          // //[::]
+          Markdown<'url/ipv6'>,
+          Parser<Text, IPV6Parser.InnerParsers> {
+        }
+        export namespace IPV6Parser {
+          export type InnerParsers = [
+            SourceParser.EscapableSourceParser
+          ];
+        }
       }
       export interface AccountParser extends
         // @account
@@ -461,13 +470,23 @@ export namespace MarkdownParser {
         EscapableSourceParser
       ];
     }
-    export interface BackquoteParser extends
-      // `
-      Markdown<'backquote'>,
-      Parser<Text, BackquoteParser.InnerParsers> {
-    }
-    export namespace BackquoteParser {
-      export type InnerParsers = never[];
+    export namespace CharParser {
+      export interface BackquoteParser extends
+        // `
+        Markdown<'char:backquote'>,
+        Parser<Text, BackquoteParser.InnerParsers> {
+      }
+      export namespace BackquoteParser {
+        export type InnerParsers = never[];
+      }
+      export interface SlashParser extends
+        // /
+        Markdown<'char:slash'>,
+        Parser<Text, SlashParser.InnerParsers> {
+      }
+      export namespace SlashParser {
+        export type InnerParsers = never[];
+      }
     }
   }
 }

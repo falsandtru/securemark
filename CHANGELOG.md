@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.39.1
+
+- Fix url parser.
+  - Support IPv6 addresses.
+
 ## 0.39.0
 
 - Improve bind function to be reentrant.

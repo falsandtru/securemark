@@ -66,7 +66,8 @@ describe('Unit: parser/inline/media', () => {
     });
 
     it('external', () => {
-      assert.deepStrictEqual(inspect(parser('![](//example.com)')), [['<img data-src="//example.com" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](//host)')), [['<img data-src="//host" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![](//[::])')), [['<img data-src="//[::]" alt="">'], '']);
     });
 
   });

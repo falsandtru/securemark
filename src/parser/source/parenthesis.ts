@@ -3,8 +3,8 @@ import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { match } from '../source/validation';
 
-const syntax = /^\([\s\S]*?\)/;
-const closer = /^\)|^\n/;
+const syntax = /^\(\S*?\)/;
+const closer = /^\)|^\s/;
 
 export const parenthesis: ParenthesisParser = (source: string) => {
   if (!match(source, '(', syntax)) return;

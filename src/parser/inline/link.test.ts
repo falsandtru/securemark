@@ -93,7 +93,8 @@ describe('Unit: parser/inline/link', () => {
     });
 
     it('external', () => {
-      assert.deepStrictEqual(inspect(parser('[](http://host)')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](//host)')), [['<a href="//host" rel="noopener" target="_blank">//host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](//[::])')), [['<a href="//[::]" rel="noopener" target="_blank">//[::]</a>'], '']);
     });
 
     it('nofollow', () => {
