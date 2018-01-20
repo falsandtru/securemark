@@ -1,5 +1,5 @@
-﻿import DOM from 'typed-dom';
-import { cache } from '../../../parser/inline/media';
+﻿import { cache } from '../../../parser/inline/media';
+import DOM from 'typed-dom';
 
 export function image(url: string, alt: string): HTMLImageElement {
   return cache.has(url)

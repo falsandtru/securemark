@@ -1,4 +1,5 @@
-﻿import { twitter } from './media/twitter';
+﻿import { RenderingOptions } from '../../../';
+import { twitter } from './media/twitter';
 import { youtube } from './media/youtube';
 import { gist } from './media/gist';
 import { slideshare } from './media/slideshare';
@@ -6,7 +7,6 @@ import { pdf } from './media/pdf';
 import { video } from './media/video';
 import { audio } from './media/audio';
 import { image } from './media/image';
-import { RenderingOptions } from '../../../';
 
 export function media(target: HTMLImageElement, opts: RenderingOptions['media'] = {}): HTMLElement {
   assert(target.matches(':not([src])[data-src]'));

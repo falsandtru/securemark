@@ -1,8 +1,7 @@
-﻿import DOM from 'typed-dom';
-import { parse } from '../../../parser/parse';
-import { escape } from '../../../parser/escape';
-import { sanitize } from 'dompurify';
+﻿import { parse, escape } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
+import { sanitize } from 'dompurify';
+import DOM from 'typed-dom';
 
 export function slideshare(url: string): HTMLElement {
   if (cache.has(url)) return cache.get(url)!.cloneNode(true) as HTMLElement;

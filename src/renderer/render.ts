@@ -1,7 +1,7 @@
-﻿import { media } from './render/media';
+﻿import { RenderingOptions } from '../../';
+import { media } from './render/media';
 import { code } from './render/code';
 import { math } from './render/math';
-import { RenderingOptions } from '../../';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
   void [target, ...target.querySelectorAll<HTMLElement>('img, pre, .math')]

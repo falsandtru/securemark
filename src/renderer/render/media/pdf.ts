@@ -1,6 +1,5 @@
-﻿import DOM from 'typed-dom';
-import { parse } from '../../../parser/parse';
-import { escape } from '../../../parser/escape';
+﻿import { parse, escape } from '../../../parser';
+import DOM from 'typed-dom';
 
 export function pdf(url: string): HTMLElement {
   return DOM.div({
