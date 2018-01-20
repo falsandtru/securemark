@@ -719,8 +719,6 @@ require = function e(t, n, r) {
             exports.escape = escape_1.escape;
             var bind_1 = require('./parser/bind');
             exports.bind = bind_1.bind;
-            var render_1 = require('./renderer/render');
-            exports.render = render_1.render;
             var cache_1 = require('./parser/cache');
             exports.caches = cache_1.caches;
         },
@@ -728,8 +726,7 @@ require = function e(t, n, r) {
             './parser/bind': 20,
             './parser/cache': 38,
             './parser/escape': 39,
-            './parser/parse': 61,
-            './renderer/render': 74
+            './parser/parse': 61
         }
     ],
     20: [
@@ -2680,6 +2677,15 @@ require = function e(t, n, r) {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            var render_1 = require('./renderer/render');
+            exports.render = render_1.render;
+        },
+        { './renderer/render': 75 }
+    ],
+    75: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
             const media_1 = require('./render/media');
             const code_1 = require('./render/code');
             const math_1 = require('./render/math');
@@ -2707,12 +2713,12 @@ require = function e(t, n, r) {
             exports.render = render;
         },
         {
-            './render/code': 75,
-            './render/math': 76,
-            './render/media': 77
+            './render/code': 76,
+            './render/math': 77,
+            './render/media': 78
         }
     ],
-    75: [
+    76: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -2726,7 +2732,7 @@ require = function e(t, n, r) {
         },
         {}
     ],
-    76: [
+    77: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2752,7 +2758,7 @@ require = function e(t, n, r) {
         },
         { '../../parser/inline/mathinline': 57 }
     ],
-    77: [
+    78: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2795,22 +2801,22 @@ require = function e(t, n, r) {
             exports.media = media;
         },
         {
-            './media/audio': 78,
-            './media/gist': 79,
-            './media/image': 80,
-            './media/pdf': 81,
-            './media/slideshare': 82,
-            './media/twitter': 83,
-            './media/video': 84,
-            './media/youtube': 85
+            './media/audio': 79,
+            './media/gist': 80,
+            './media/image': 81,
+            './media/pdf': 82,
+            './media/slideshare': 83,
+            './media/twitter': 84,
+            './media/video': 85,
+            './media/youtube': 86
         }
     ],
-    78: [
+    79: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
             const media_1 = require('../../../parser/inline/media');
+            const typed_dom_1 = require('typed-dom');
             function audio(url, alt) {
                 return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.audio({
                     class: 'media',
@@ -2827,16 +2833,15 @@ require = function e(t, n, r) {
             'typed-dom': 8
         }
     ],
-    79: [
+    80: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const typed_dom_1 = require('typed-dom');
-                const parse_1 = require('../../../parser/parse');
-                const escape_1 = require('../../../parser/escape');
-                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                const parser_1 = require('../../../parser');
                 const media_1 = require('../../../parser/inline/media');
+                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                const typed_dom_1 = require('typed-dom');
                 function gist(url) {
                     if (media_1.cache.has(url))
                         return media_1.cache.get(url).cloneNode(true);
@@ -2854,7 +2859,7 @@ require = function e(t, n, r) {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, () => parse_1.parse(escape_1.escape(url)).querySelector('a'))]).element, gist.firstChild);
+                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'text-decoration: none; color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(parser_1.escape(url)).querySelector('a'))]).element, gist.firstChild);
                                 void media_1.cache.set(url, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
@@ -2865,7 +2870,7 @@ require = function e(t, n, r) {
                                 }).element);
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parse_1.parse(`*${ escape_1.escape(url) }\\\n-> ${ status }: ${ escape_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -2875,18 +2880,17 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../../parser/escape': 39,
+            '../../../parser': 19,
             '../../../parser/inline/media': 58,
-            '../../../parser/parse': 61,
             'typed-dom': 8
         }
     ],
-    80: [
+    81: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
             const media_1 = require('../../../parser/inline/media');
+            const typed_dom_1 = require('typed-dom');
             function image(url, alt) {
                 return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.img({
                     class: 'media',
@@ -2902,13 +2906,12 @@ require = function e(t, n, r) {
             'typed-dom': 8
         }
     ],
-    81: [
+    82: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const parser_1 = require('../../../parser');
             const typed_dom_1 = require('typed-dom');
-            const parse_1 = require('../../../parser/parse');
-            const escape_1 = require('../../../parser/escape');
             function pdf(url) {
                 return typed_dom_1.default.div({
                     class: 'media',
@@ -2923,27 +2926,25 @@ require = function e(t, n, r) {
                             el.typeMustMatch = true;
                             return el;
                         })]),
-                    typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parse_1.parse(`**${ escape_1.escape(url) }**`).querySelector('strong'))])
+                    typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parser_1.parse(`**${ parser_1.escape(url) }**`).querySelector('strong'))])
                 ]).element;
             }
             exports.pdf = pdf;
         },
         {
-            '../../../parser/escape': 39,
-            '../../../parser/parse': 61,
+            '../../../parser': 19,
             'typed-dom': 8
         }
     ],
-    82: [
+    83: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const typed_dom_1 = require('typed-dom');
-                const parse_1 = require('../../../parser/parse');
-                const escape_1 = require('../../../parser/escape');
-                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                const parser_1 = require('../../../parser');
                 const media_1 = require('../../../parser/inline/media');
+                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                const typed_dom_1 = require('typed-dom');
                 function slideshare(url) {
                     if (media_1.cache.has(url))
                         return media_1.cache.get(url).cloneNode(true);
@@ -2966,7 +2967,7 @@ require = function e(t, n, r) {
                                 void media_1.cache.set(url, outer.cloneNode(true));
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parse_1.parse(`*${ escape_1.escape(url) }\\\n-> ${ status }: ${ escape_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -2976,22 +2977,20 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../../parser/escape': 39,
+            '../../../parser': 19,
             '../../../parser/inline/media': 58,
-            '../../../parser/parse': 61,
             'typed-dom': 8
         }
     ],
-    83: [
+    84: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const typed_dom_1 = require('typed-dom');
-                const parse_1 = require('../../../parser/parse');
-                const escape_1 = require('../../../parser/escape');
-                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                const parser_1 = require('../../../parser');
                 const cache_1 = require('spica/cache');
+                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                const typed_dom_1 = require('typed-dom');
                 let widgetScriptRequested = false;
                 const cache = new cache_1.Cache(100);
                 function twitter(url) {
@@ -3026,7 +3025,7 @@ require = function e(t, n, r) {
                                 });
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parse_1.parse(`*${ escape_1.escape(url) }\\\n-> ${ status }: ${ escape_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -3036,18 +3035,17 @@ require = function e(t, n, r) {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../../parser/escape': 39,
-            '../../../parser/parse': 61,
+            '../../../parser': 19,
             'spica/cache': 5,
             'typed-dom': 8
         }
     ],
-    84: [
+    85: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
             const media_1 = require('../../../parser/inline/media');
+            const typed_dom_1 = require('typed-dom');
             function video(url, alt) {
                 return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.video({
                     class: 'media',
@@ -3065,7 +3063,7 @@ require = function e(t, n, r) {
             'typed-dom': 8
         }
     ],
-    85: [
+    86: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3088,15 +3086,19 @@ require = function e(t, n, r) {
     'securemark': [
         function (require, module, exports) {
             'use strict';
-            function __export(m) {
-                for (var p in m)
-                    if (!exports.hasOwnProperty(p))
-                        exports[p] = m[p];
-            }
             Object.defineProperty(exports, '__esModule', { value: true });
-            __export(require('./src/export'));
+            var parser_1 = require('./src/parser');
+            exports.parse = parser_1.parse;
+            exports.escape = parser_1.escape;
+            exports.bind = parser_1.bind;
+            exports.caches = parser_1.caches;
+            var renderer_1 = require('./src/renderer');
+            exports.render = renderer_1.render;
         },
-        { './src/export': 19 }
+        {
+            './src/parser': 19,
+            './src/renderer': 74
+        }
     ]
 }, {}, [
     1,
