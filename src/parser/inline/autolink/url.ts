@@ -1,12 +1,12 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { combine, loop } from '../../../combinator';
+import { combine, loop, bracket } from '../../../combinator';
 import { escsource } from '../../source/escapable';
 import { parenthesis } from '../../source/parenthesis';
 import { char } from '../../source/char';
 import { link } from '../link';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;
-const closer = /^['"`|\[\](){}<>/]|^\\?(?:\s|$)|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)/;
+const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
 const escape = /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:\/\/\S/;
 
 export const url: AutolinkParser.UrlParser = (source: string) => {
@@ -16,7 +16,7 @@ export const url: AutolinkParser.UrlParser = (source: string) => {
   source = flag
     ? source.slice(1)
     : source;
-  const [, rest = undefined] = loop(combine<HTMLElement | Text, AutolinkParser.UrlParser.InnerParsers>([ipv6, char('/'), parenthesis, loop(escsource, closer)]))(source) || [];
+  const [, rest = undefined] = loop(combine<HTMLElement | Text, AutolinkParser.UrlParser.InnerParsers>([bracket('[', ipv6, ']'), char('/'), parenthesis, loop(escsource, closer)]))(source) || [];
   if (rest === undefined) return;
   const attribute = source.startsWith('ttp')
     ? ' nofollow'
@@ -28,8 +28,7 @@ export const url: AutolinkParser.UrlParser = (source: string) => {
 };
 
 const ipv6: AutolinkParser.UrlParser.IPV6Parser = (source: string) => {
-  if (!source.startsWith('//[')) return;
-  const [whole = ''] = source.match(/^\/\/\[[:\w]+\]/) || [];
+  const [whole = ''] = source.match(/^[:0-9a-z]+/i) || [];
   if (!whole) return;
   return [[document.createTextNode(whole)], source.slice(whole.length)];
 };

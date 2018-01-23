@@ -15,7 +15,7 @@ export const heading: HeadingParser = verify((source: string) => {
   assert(title.length > 0);
   const [children = [], rest = undefined] = loop(combine<HTMLElement | Text, HeadingParser.InnerParsers>([index, inline]))(title.trim()) || [];
   if (rest === undefined) return;
-  const el = document.createElement(<'h1'>`h${level}`);
+  const el = document.createElement(`h${level}` as 'h1');
   void el.appendChild(squash(children));
   void defineIndex(el);
   return [[el], source.slice(whole.length + 1)];
