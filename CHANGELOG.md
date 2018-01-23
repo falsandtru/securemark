@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.40.0
+
+- Improve url parser.
+  - Allow escaped whitespace.
+
 ## 0.39.1
 
 - Fix url parser.

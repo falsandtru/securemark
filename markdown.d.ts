@@ -395,12 +395,12 @@ export namespace MarkdownParser {
       }
       export namespace UrlParser {
         export type InnerParsers = [
-          IPV6Parser, SourceParser.CharParser.SlashParser,
+          IPV6Parser,
           SourceParser.ParenthesisParser,
           SourceParser.EscapableSourceParser
         ];
         export interface IPV6Parser extends
-          // //[::]
+          // [::]
           Markdown<'url/ipv6'>,
           Parser<Text, IPV6Parser.InnerParsers> {
         }
@@ -477,14 +477,6 @@ export namespace MarkdownParser {
         Parser<Text, BackquoteParser.InnerParsers> {
       }
       export namespace BackquoteParser {
-        export type InnerParsers = never[];
-      }
-      export interface SlashParser extends
-        // /
-        Markdown<'char:slash'>,
-        Parser<Text, SlashParser.InnerParsers> {
-      }
-      export namespace SlashParser {
         export type InnerParsers = never[];
       }
     }
