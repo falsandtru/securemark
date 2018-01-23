@@ -40,7 +40,7 @@ https://falsandtru.github.io/securemark/
 - HorizontalRule (---)
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
 - Inline html tags (\<smal>, \<ruby>, \<code>, ...)
-- Autolink (https://host, ttps://host, !https://host/image.png, @account)
+- Autolink (https://host, ttps://host, !https://host/image.png, @account, #hashtag)
 - Index (# title [#section], ~ term [#term], [#some words])
 - Media (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
 - Syntex highlight (```lang filename)

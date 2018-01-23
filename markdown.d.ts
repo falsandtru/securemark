@@ -386,7 +386,8 @@ export namespace MarkdownParser {
     export namespace AutolinkParser {
       export type InnerParsers = [
         AutolinkParser.UrlParser,
-        AutolinkParser.AccountParser
+        AutolinkParser.AccountParser,
+        AutolinkParser.HashtagParser
       ];
       export interface UrlParser extends
         // https://host
@@ -417,6 +418,16 @@ export namespace MarkdownParser {
       }
       export namespace AccountParser {
         export type InnerParsers = never[];
+      }
+      export interface HashtagParser extends
+        // #hash
+        Markdown<'hash'>,
+        Parser<HTMLSpanElement | Text, HashtagParser.InnerParsers> {
+      }
+      export namespace HashtagParser {
+        export type InnerParsers = [
+          SourceParser.TextParser
+        ];
       }
     }
   }

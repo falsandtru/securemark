@@ -38,17 +38,22 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('0aAttp://host')), [['0a', 'Attp', ':', '/', '/', 'host'], '']);
       assert.deepStrictEqual(inspect(parser('_http://host')), [['_', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('_ttp://host')), [['_', '<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('**http://host**')), [['<strong><a href="http://host" rel="noopener" target="_blank">http://host</a></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('*http://host*')), [['<em><a href="http://host" rel="noopener" target="_blank">http://host</a></em>'], '']);
       assert.deepStrictEqual(inspect(parser('0!http://host')), [['0!http', ':', '/', '/', 'host'], '']);
+      assert.deepStrictEqual(inspect(parser('(http://host)')), [['(', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', ')'], '']);
     });
 
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('a@b')), [['a@', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('_@a')), [['_', '<span class="account">@a</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('**@a**')), [['<strong><span class="account">@a</span></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('*@a*')), [['<em><span class="account">@a</span></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('(@a)')), [['(', '<span class="account">@a</span>', ')'], '']);
+    });
+
+    it('hashtag', () => {
+      assert.deepStrictEqual(inspect(parser('*#a*')), [['<em><span class="hashtag">#a</span></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('(#a)')), [['(', '<span class="hashtag">#a</span>', ')'], '']);
     });
 
   });

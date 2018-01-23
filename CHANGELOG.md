@@ -2,6 +2,7 @@
 
 ## 0.40.0
 
+- Add hashtag syntax.
 - Improve url parser.
   - Allow escaped whitespace.
 - Improve account parser.
