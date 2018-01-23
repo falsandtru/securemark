@@ -14,8 +14,9 @@ export const hashtag: AutolinkParser.HashtagParser = (source: string) => {
   const [ts = [], rest = undefined] = loop(combine<HTMLElement | Text, AutolinkParser.HashtagParser.InnerParsers>([text]), closer)(line) || [];
   assert(ts.every(txt => txt instanceof Text));
   if (rest === undefined) return;
-  const el = document.createElement('span');
+  const el = document.createElement('a');
   void el.setAttribute('class', 'hashtag');
+  void el.setAttribute('rel', 'noopener');
   void el.appendChild(document.createTextNode(squash(ts).textContent!));
   if (el.textContent!.length < 2) return;
   return [[el], rest + source.slice(line.length)];

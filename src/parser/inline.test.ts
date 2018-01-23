@@ -46,14 +46,14 @@ describe('Unit: parser/inline', () => {
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('a@b')), [['a@', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('_@a')), [['_', '<span class="account">@a</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('*@a*')), [['<em><span class="account">@a</span></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('(@a)')), [['(', '<span class="account">@a</span>', ')'], '']);
+      assert.deepStrictEqual(inspect(parser('_@a')), [['_', '<a class="account" rel="noopener">@a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('*@a*')), [['<em><a class="account" rel="noopener">@a</a></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('(@a)')), [['(', '<a class="account" rel="noopener">@a</a>', ')'], '']);
     });
 
     it('hashtag', () => {
-      assert.deepStrictEqual(inspect(parser('*#a*')), [['<em><span class="hashtag">#a</span></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('(#a)')), [['(', '<span class="hashtag">#a</span>', ')'], '']);
+      assert.deepStrictEqual(inspect(parser('*#a*')), [['<em><a class="hashtag" rel="noopener">#a</a></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('(#a)')), [['(', '<a class="hashtag" rel="noopener">#a</a>', ')'], '']);
     });
 
   });

@@ -7,6 +7,7 @@
   - Allow escaped whitespace.
 - Improve account parser.
   - Don't escape url after `@` symbol.
+  - Use anchor element.
 
 ## 0.39.1
 

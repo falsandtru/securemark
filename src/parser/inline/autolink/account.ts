@@ -8,8 +8,9 @@ export const account: AutolinkParser.AccountParser = (source: string) => {
   if (flag) return [[document.createTextNode(flag)], source.slice(flag.length)];
   const [whole = ''] = source.match(syntax) || [];
   if (!whole) return;
-  const el = document.createElement('span');
+  const el = document.createElement('a');
   void el.setAttribute('class', 'account');
+  void el.setAttribute('rel', 'noopener');
   void el.appendChild(document.createTextNode(whole));
   return [[el], source.slice(whole.length)];
 };
