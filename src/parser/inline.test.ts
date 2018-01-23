@@ -45,11 +45,7 @@ describe('Unit: parser/inline', () => {
 
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('a@b')), [['a@', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('a@http://host')), [['a@ht', 'tp', ':', '/', '/', 'host'], '']);
-      assert.deepStrictEqual(inspect(parser('a@ttp://host')), [['a@t', 'tp', ':', '/', '/', 'host'], '']);
       assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('a@@http://host')), [['a@@ht', 'tp', ':', '/', '/', 'host'], '']);
-      assert.deepStrictEqual(inspect(parser('a@@ttp://host')), [['a@@t', 'tp', ':', '/', '/', 'host'], '']);
       assert.deepStrictEqual(inspect(parser('_@a')), [['_', '<span class="account">@a</span>'], '']);
       assert.deepStrictEqual(inspect(parser('**@a**')), [['<strong><span class="account">@a</span></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('*@a*')), [['<em><span class="account">@a</span></em>'], '']);

@@ -4,6 +4,8 @@
 
 - Improve url parser.
   - Allow escaped whitespace.
+- Improve account parser.
+  - Don't escape url after `@` symbol.
 
 ## 0.39.1
 
