@@ -1,9 +1,9 @@
 ﻿import { Parser, Result } from './parser';
-import { combine } from './combine';
+import { subsequence } from './subsequence';
 import { inspect } from '../debug.test';
 
-describe('Unit: combinator/combine', () => {
-  describe('combine', () => {
+describe('Unit: combinator/subsequence', () => {
+  describe('subsequence', () => {
     const a: Parser<string, never> = (source: string): Result<string, never> => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1)]
@@ -14,17 +14,17 @@ describe('Unit: combinator/combine', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     }
-    const ab = combine<string, [typeof a, typeof b]>([a, b]);
+    const ab = subsequence<string, [typeof a, typeof b]>([a, b]);
 
     it('ab', () => {
       const parser = ab;
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), [['A'], '']);
       assert.deepStrictEqual(inspect(parser('b')), [['B'], '']);
-      assert.deepStrictEqual(inspect(parser('ab')), [['A'], 'b']);
+      assert.deepStrictEqual(inspect(parser('ab')), [['A', 'B'], '']);
       assert.deepStrictEqual(inspect(parser('ba')), [['B'], 'a']);
       assert.deepStrictEqual(inspect(parser('aab')), [['A'], 'ab']);
-      assert.deepStrictEqual(inspect(parser('abb')), [['A'], 'bb']);
+      assert.deepStrictEqual(inspect(parser('abb')), [['A', 'B'], 'b']);
       assert.deepStrictEqual(inspect(parser('bba')), [['B'], 'ba']);
     });
 

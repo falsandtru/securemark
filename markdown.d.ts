@@ -173,9 +173,19 @@ export namespace MarkdownParser {
     }
     export namespace ParagraphParser {
       export type InnerParsers = [
-        ParagraphParser.HashtagParser,
-        InlineParser
+        ParagraphParser.ReferenceParser,
+        Parser<HTMLElement | Text, [HashtagParser, InlineParser]>
       ];
+      export interface ReferenceParser extends
+        // >0a
+        Markdown<'reference'>,
+        Parser<HTMLSpanElement, ReferenceParser.InnerParsers> {
+      }
+      export namespace ReferenceParser {
+        export type InnerParsers = [
+          SourceParser.UnescapableSourceParser
+        ];
+      }
       export interface HashtagParser extends
         // #tag
         Markdown<'hashtag'>,

@@ -2,6 +2,7 @@
 
 ## 0.41.0
 
+- Add reference syntax.
 - Refine hashtag syntax.
 
 ## 0.40.0

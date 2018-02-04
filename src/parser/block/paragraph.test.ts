@@ -31,6 +31,17 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('\\\na\\\n')), [['<p>a</p>'], '']);
     });
 
+    it('reference', () => {
+      assert.deepStrictEqual(inspect(parser('>a')), [['<p><span class="reference">&gt;a</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n')), [['<p><span class="reference">&gt;a</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><span class="reference">&gt;a</span><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><span class="reference">&gt;a</span><br><span class="reference">&gt;b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>a')), [['<p><span class="reference">&gt;&gt;a</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>a\n>b')), [['<p><span class="reference">&gt;&gt;a</span><br><span class="reference">&gt;b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a &gt;b</p>'], '']);
+    });
+
     it('hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#a')), [['<p><a class="hashtag" rel="noopener">#a</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('#a\nb\n#c')), [['<p><a class="hashtag" rel="noopener">#a</a> b <a class="hashtag" rel="noopener">#c</a></p>'], '']);
