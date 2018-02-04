@@ -32,9 +32,9 @@
   "dependencies": {},
   "devDependencies": {
     "@types/dompurify": "0.0.31",
-    "@types/jquery": "^3.2.18",
+    "@types/jquery": "^3.3.0",
     "@types/mathjax": "0.0.32",
-    "@types/mocha": "^2.2.46",
+    "@types/mocha": "^2.2.48",
     "@types/power-assert": "^1.4.29",
     "@types/prismjs": "^1.9.0",
     "browserify": "^15.2.0",
@@ -65,12 +65,12 @@
     "semver": "^5.5.0",
     "spica": "0.0.141",
     "tsify": "^3.0.4",
-    "typed-dom": "0.0.76",
-    "typescript": "2.7.0-dev.20180119",
-    "uglify-es": "^3.3.7",
+    "typed-dom": "0.0.77",
+    "typescript": "2.8.0-dev.20180204",
+    "uglify-es": "^3.3.9",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
-    "watchify": "^3.9.0"
+    "watchify": "^3.10.0"
   },
   "scripts": {
     "test": "gulp test",
