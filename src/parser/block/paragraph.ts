@@ -1,6 +1,7 @@
 ﻿import { ParagraphParser } from '../block';
 import { verify } from './util/verification';
 import { combine, loop } from '../../combinator';
+import { hashtag } from './paragraph/hashtag';
 import { inline } from '../inline';
 import { squash } from '../squash';
 
@@ -12,7 +13,7 @@ export const paragraph: ParagraphParser = verify((source: string) => {
   const block = source.split(separator, 1)[0];
   assert(block.length > 0);
   const rest = source.slice(block.length);
-  const [cs = []] = loop(combine<HTMLElement | Text, ParagraphParser.InnerParsers>([inline]))(block.replace(emptyline, '').trim()) || [];
+  const [cs = []] = loop(combine<HTMLElement | Text, ParagraphParser.InnerParsers>([hashtag, inline]))(block.replace(emptyline, '').trim()) || [];
   const el = document.createElement('p');
   void el.appendChild(squash(cs));
   return [[el], rest];

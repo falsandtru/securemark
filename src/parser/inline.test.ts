@@ -51,11 +51,6 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('(@a)')), [['(', '<a class="account" rel="noopener">@a</a>', ')'], '']);
     });
 
-    it('hashtag', () => {
-      assert.deepStrictEqual(inspect(parser('*#a*')), [['<em><a class="hashtag" rel="noopener">#a</a></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('(#a)')), [['(', '<a class="hashtag" rel="noopener">#a</a>', ')'], '']);
-    });
-
   });
 
 });

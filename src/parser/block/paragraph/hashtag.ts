@@ -1,18 +1,17 @@
-﻿import { AutolinkParser } from '../../inline';
+﻿import { ParagraphParser } from '../../block';
 import { combine, loop } from '../../../combinator';
-import { text } from '../../source/text';
+import { unescsource } from '../../source/unescapable';
 import { squash } from '../../squash';
-import { closer } from './url';
 
 const escape = /^\S#+/;
+const closer = /^\s/;
 
-export const hashtag: AutolinkParser.HashtagParser = (source: string) => {
+export const hashtag: ParagraphParser.HashtagParser = (source: string) => {
   const [flag = undefined] = source.match(escape) || [];
   if (flag) return [[document.createTextNode(flag)], source.slice(flag.length)];
   if (!source.startsWith('#')) return;
   const line = source.split('\n', 1)[0];
-  const [ts = [], rest = undefined] = loop(combine<HTMLElement | Text, AutolinkParser.HashtagParser.InnerParsers>([text]), closer)(line) || [];
-  assert(ts.every(txt => txt instanceof Text));
+  const [ts = [], rest = undefined] = loop(combine<Text, ParagraphParser.HashtagParser.InnerParsers>([unescsource]), closer)(line) || [];
   if (rest === undefined) return;
   const el = document.createElement('a');
   void el.setAttribute('class', 'hashtag');

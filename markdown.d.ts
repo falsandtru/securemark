@@ -173,8 +173,19 @@ export namespace MarkdownParser {
     }
     export namespace ParagraphParser {
       export type InnerParsers = [
+        ParagraphParser.HashtagParser,
         InlineParser
       ];
+      export interface HashtagParser extends
+        // #tag
+        Markdown<'hashtag'>,
+        Parser<HTMLAnchorElement | Text, HashtagParser.InnerParsers> {
+      }
+      export namespace HashtagParser {
+        export type InnerParsers = [
+          SourceParser.UnescapableSourceParser
+        ];
+      }
     }
     export interface IndexParser extends
       // [#index]
@@ -386,8 +397,7 @@ export namespace MarkdownParser {
     export namespace AutolinkParser {
       export type InnerParsers = [
         AutolinkParser.UrlParser,
-        AutolinkParser.AccountParser,
-        AutolinkParser.HashtagParser
+        AutolinkParser.AccountParser
       ];
       export interface UrlParser extends
         // https://host
@@ -414,20 +424,10 @@ export namespace MarkdownParser {
       export interface AccountParser extends
         // @account
         Markdown<'account'>,
-        Parser<HTMLSpanElement | Text, AccountParser.InnerParsers> {
+        Parser<HTMLAnchorElement | Text, AccountParser.InnerParsers> {
       }
       export namespace AccountParser {
         export type InnerParsers = never[];
-      }
-      export interface HashtagParser extends
-        // #hash
-        Markdown<'hash'>,
-        Parser<HTMLSpanElement | Text, HashtagParser.InnerParsers> {
-      }
-      export namespace HashtagParser {
-        export type InnerParsers = [
-          SourceParser.TextParser
-        ];
       }
     }
   }

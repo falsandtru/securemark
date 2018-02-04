@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.41.0
+
+- Refine hashtag syntax.
+
 ## 0.40.0
 
 - Add hashtag syntax.
