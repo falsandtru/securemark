@@ -1,5 +1,5 @@
 ﻿import { parse, escape } from '../../../parser';
-import DOM from 'typed-dom';
+import DOM, { html } from 'typed-dom';
 
 export function pdf(url: string): HTMLElement {
   return DOM.div({
@@ -14,7 +14,7 @@ export function pdf(url: string): HTMLElement {
         data: url,
         style: 'width: 100%; height: 100%; min-height: 400px;',
       }, () => {
-        const el = document.createElement('object');
+        const el = html('object');
         el.typeMustMatch = true;
         return el;
       }),

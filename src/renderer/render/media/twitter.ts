@@ -1,7 +1,7 @@
 ﻿import { parse, escape } from '../../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
-import DOM from 'typed-dom';
+import DOM, { html } from 'typed-dom';
 
 declare global {
   interface Window {
@@ -22,7 +22,7 @@ export function twitter(url: string): HTMLElement {
     class: 'media',
     style: 'position: relative;',
   }, [DOM.em(`loading ${url}`)], () => {
-    const outer = document.createElement('div');
+    const outer = html('div');
     void $.ajax(`https://publish.twitter.com/oembed?url=${url.replace('?', '&')}`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,

@@ -4,6 +4,7 @@ import { Parser, loop } from '../../../combinator';
 import { block } from '../../block';
 import { unescsource } from '../../source/unescapable';
 import { squash } from '../../squash';
+import { html } from 'typed-dom';
 
 export interface PlaceholderParser extends
   Markdown<'extensionblock' & 'extensionblock/placeholder'>,
@@ -25,7 +26,5 @@ export const placeholder: PlaceholderParser = verify(source => {
     source = source.slice(line.length + 1);
     if (source === '') return;
   }
-  const quote = document.createElement('pre');
-  void quote.appendChild(document.createTextNode(`${keyword}${notes}\n${lines.join('')}${keyword}`));
-  return [[message, quote], source.slice(source.split('\n', 1)[0].length + 1)];
+  return [[message, html('pre', `${keyword}${notes}\n${lines.join('')}${keyword}`)], source.slice(source.split('\n', 1)[0].length + 1)];
 });

@@ -4,6 +4,7 @@ import { combine, loop } from '../../combinator';
 import { block } from '../block';
 import { unescsource } from '../source/unescapable';
 import { squash } from '../squash';
+import { html } from 'typed-dom';
 
 const syntax = /^>+(?=\s|$)/;
 
@@ -18,10 +19,10 @@ export const blockquote: BlockquoteParser = verify((source: string) => {
     : source.slice(1);
   let [indent = ''] = source.match(syntax) || [];
   if (!indent) return;
-  const top = document.createElement('blockquote');
+  const top = html('blockquote');
   let bottom = indent.split('').slice(1)
     .reduce(p =>
-      p.appendChild(document.createElement('blockquote'))
+      p.appendChild(html('blockquote'))
     , top);
   while (true) {
     if (source.split('\n', 1).shift()!.trim() === '') break;
@@ -29,7 +30,7 @@ export const blockquote: BlockquoteParser = verify((source: string) => {
     if (diff > 0) {
       bottom = source.slice(0, diff).split('')
         .reduce(p =>
-          p.appendChild(document.createElement('blockquote'))
+          p.appendChild(html('blockquote'))
         , bottom);
     }
     if (diff < 0) {
@@ -42,7 +43,7 @@ export const blockquote: BlockquoteParser = verify((source: string) => {
     indent = indent[0].repeat(indent.length + diff);
     if (bottom.lastChild instanceof Text) {
       const node = mode === 'plain'
-        ? document.createElement('br')
+        ? html('br')
         : document.createTextNode('\n');
       void bottom.appendChild(node);
     }

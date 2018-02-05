@@ -1,5 +1,6 @@
 ﻿import { HTMLEntityParser } from '../inline';
 import { match } from '../source/validation';
+import { html } from 'typed-dom';
 
 const syntax = /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i;
 
@@ -10,7 +11,7 @@ export const htmlentity: HTMLEntityParser = source => {
   return [[document.createTextNode(parse(whole))], source.slice(whole.length)];
 };
 
-const parser = document.createElement('span');
+const parser = html('span');
 function parse(str: string): string {
   parser.innerHTML = str;
   return parser.textContent!;

@@ -4,6 +4,7 @@ import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 import { match, isTightVisible, isSingleLine } from '../source/validation';
 import { Cache } from 'spica/cache';
+import { html } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
@@ -20,9 +21,7 @@ export const mathinline: MathInlineParser = source => {
     (ns, rest) => {
       if (!isTightVisible(source.slice(1, source.length - rest.length - 1))) return;
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;
-      const el = document.createElement('span');
-      void el.setAttribute('class', 'math');
-      void el.appendChild(squash([document.createTextNode('$'), ...ns, document.createTextNode('$')]));
+      const el = html('span', { class: 'math' }, `$${squash(ns).textContent}$`);
       if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true) as HTMLSpanElement], rest];
       void el.setAttribute('data-src', el.textContent!);
       return [[el], rest];

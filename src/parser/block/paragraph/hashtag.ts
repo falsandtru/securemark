@@ -2,21 +2,19 @@
 import { combine, loop } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { squash } from '../../squash';
+import { match } from '../../source/validation';
+import { html } from 'typed-dom';
 
+const syntax = /^#\S+/;
 const escape = /^\S#+/;
 const closer = /^\s/;
 
 export const hashtag: ParagraphParser.HashtagParser = source => {
   const [flag = undefined] = source.match(escape) || [];
   if (flag) return [[document.createTextNode(flag)], source.slice(flag.length)];
-  if (!source.startsWith('#')) return;
+  if (!match(source, '#', syntax)) return;
   const line = source.split('\n', 1)[0];
   const [ts = [], rest = undefined] = loop(combine<Text, ParagraphParser.HashtagParser.InnerParsers>([unescsource]), closer)(line) || [];
   if (rest === undefined) return;
-  const el = document.createElement('a');
-  void el.setAttribute('class', 'hashtag');
-  void el.setAttribute('rel', 'noopener');
-  void el.appendChild(document.createTextNode(squash(ts).textContent!));
-  if (el.textContent!.length < 2) return;
-  return [[el], rest + source.slice(line.length)];
+  return [[html('a', { class: 'hashtag', rel: 'noopener' }, squash(ts).textContent!)], rest + source.slice(line.length)];
 };

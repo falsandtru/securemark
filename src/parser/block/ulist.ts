@@ -5,6 +5,7 @@ import { olist } from './olist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
 import { squash } from '../squash';
+import { html } from 'typed-dom';
 
 const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
@@ -12,7 +13,7 @@ const content = /^(\[[ x]\](?: +|$))?.*$/;
 export const ulist: UListParser = verify(source => {
   const [whole = '', flag = ''] = source.match(syntax) || [];
   if (!whole) return;
-  const el = document.createElement('ul');
+  const el = html('ul');
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
@@ -21,12 +22,9 @@ export const ulist: UListParser = verify(source => {
       const [text, checkbox = ''] = line.slice(line.split(/\s/, 1)[0].length + 1).trim().match(content)!;
       assert(checkbox === '' || checkbox.slice(0, 3) === '[ ]' || checkbox.slice(0, 3) === '[x]');
       assert(checkbox.slice(3).trim() === '');
-      const li = el.appendChild(document.createElement('li'));
+      const li = el.appendChild(html('li'));
       if (checkbox) {
-        const cb = document.createElement('span');
-        void cb.setAttribute('class', 'checkbox');
-        void cb.appendChild(document.createTextNode(`${checkbox.trim()} `));
-        void li.appendChild(cb);
+        void li.appendChild(html('span', { class: 'checkbox' }, `${checkbox.trim()} `));
       }
       void li.appendChild(squash((loop(combine<HTMLElement | Text, UListParser.InnerParsers>([inline]))(text.slice(checkbox.length)) || [[]])[0]));
       source = source.slice(line.length + 1);

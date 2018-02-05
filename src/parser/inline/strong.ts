@@ -1,7 +1,7 @@
 ﻿import { StrongParser, inline } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
-import { squash } from '../squash';
 import { match, isVisible } from '../source/validation';
+import { html } from 'typed-dom';
 
 const syntax = /^\*\*[\s\S]+?\*\*/;
 const closer = /^\*\*/;
@@ -14,8 +14,7 @@ export const strong: StrongParser = source => {
       loop(combine<HTMLElement | Text, StrongParser.InnerParsers>([inline]), closer),
       '**'),
     (ns, rest) => {
-      const el = document.createElement('strong');
-      void el.appendChild(squash(ns));
+      const el = html('strong', ns);
       if (!isVisible(el.textContent!)) return;
       return [[el], rest];
     })

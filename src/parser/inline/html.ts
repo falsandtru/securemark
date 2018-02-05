@@ -1,7 +1,7 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
-import { squash } from '../squash';
 import { match, isVisible } from '../source/validation';
+import { html as htm } from 'typed-dom';
 
 const syntax = /^<([a-z]+)>/;
 const inlinetags = Object.freeze('ins|del|sup|sub|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
@@ -16,15 +16,14 @@ export const html: HTMLParser = source => {
   if (!inlinetags.includes(tagname)) return;
   const opentag = `<${tagname}>`;
   assert(whole.startsWith(opentag));
-  if (tagname === 'wbr') return [[document.createElement(tagname)], source.slice(opentag.length)];
+  if (tagname === 'wbr') return [[htm(tagname)], source.slice(opentag.length)];
   return transform(
     bracket(
       `<${tagname}>`,
       loop(combine<HTMLElement | Text, HTMLParser.InnerParsers>([inline]), `^</${tagname}>`),
       `</${tagname}>`),
     (ns, rest) => {
-      const el = document.createElement(tagname);
-      void el.appendChild(squash(ns));
+      const el = htm(tagname as 'wbr', ns);
       if (!isVisible(el.textContent!)) return;
       return [[el], rest];
     })

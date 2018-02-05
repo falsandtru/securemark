@@ -1,4 +1,5 @@
 ﻿import { AutolinkParser } from '../../inline';
+import { html } from 'typed-dom';
 
 const syntax = /^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/;
 const escape = /^[0-9a-zA-Z@]@.*?(?!@)/;
@@ -8,9 +9,5 @@ export const account: AutolinkParser.AccountParser = source => {
   if (flag) return [[document.createTextNode(flag)], source.slice(flag.length)];
   const [whole = ''] = source.match(syntax) || [];
   if (!whole) return;
-  const el = document.createElement('a');
-  void el.setAttribute('class', 'account');
-  void el.setAttribute('rel', 'noopener');
-  void el.appendChild(document.createTextNode(whole));
-  return [[el], source.slice(whole.length)];
+  return [[html('a', { class: 'account', rel: 'noopener' }, whole)], source.slice(whole.length)];
 };

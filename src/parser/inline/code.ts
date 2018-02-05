@@ -4,6 +4,7 @@ import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
 import { squash } from '../squash';
 import { match, isVisible, isSingleLine } from '../source/validation';
+import { html } from 'typed-dom';
 
 const syntax = /^(`+)[^\n]+?\1(?!`)/;
 
@@ -18,11 +19,8 @@ export const code: CodeParser = source => {
       keyword),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;
-      const el = document.createElement('code');
-      void el.appendChild(squash(ns));
-      el.textContent = el.textContent!.trim();
+      const el = html('code', { 'data-src': source.slice(0, source.length - rest.length) }, squash(ns).textContent!.trim());
       if (!isVisible(el.textContent!)) return;
-      void el.setAttribute('data-src', source.slice(0, source.length - rest.length));
       return [[el], rest];
     })
     (source);

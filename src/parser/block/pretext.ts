@@ -3,6 +3,7 @@ import { verify } from './util/verification';
 import { loop } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
+import { html } from 'typed-dom';
 
 const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
 
@@ -10,7 +11,7 @@ export const pretext: PretextParser = verify(source => {
   if (!source.startsWith('```')) return;
   const [whole = '', , notes = '', body = ''] = source.match(syntax) || [];
   if (!whole) return;
-  const el = document.createElement('pre');
+  const el = html('pre');
   const lang = notes.split(/\s/, 1)[0];
   if (lang) {
     void el.setAttribute('class', `language-${lang.toLowerCase()}`);

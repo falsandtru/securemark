@@ -4,6 +4,7 @@ import { combine, loop } from '../../combinator';
 import { index, defineIndex } from './util/index';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../squash';
+import { html } from 'typed-dom';
 
 const syntax = /^~\s/;
 const separator = /^[~:](?:\s|$)/;
@@ -11,13 +12,13 @@ const separator = /^[~:](?:\s|$)/;
 export const dlist: DListParser = verify(source => {
   const [whole = ''] = source.match(syntax) || [];
   if (!whole) return;
-  const el = document.createElement('dl');
+  const el = html('dl');
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
     switch (line.slice(0, 2).trim()) {
       case '~': {
-        const dt = el.appendChild(document.createElement('dt'));
+        const dt = el.appendChild(html('dt'));
         void dt.appendChild(squash((loop(combine<HTMLElement | Text, DListParser.InnerParsers>([index, inline]))(line.slice(1).trim()) || [[]])[0]));
         void defineIndex(dt);
         source = source.slice(line.length + 1);
@@ -26,7 +27,7 @@ export const dlist: DListParser = verify(source => {
       default: {
         assert(el.lastElementChild);
         const dd = line.slice(0, 2).trim() === ':' || el.lastElementChild!.tagName.toLowerCase() !== 'dd'
-          ? el.appendChild(document.createElement('dd'))
+          ? el.appendChild(html('dd'))
           : el.lastElementChild!;
         const texts = [line.slice(line.slice(0, 2).trim() === ':' ? 1 : 0)];
         source = source.slice(line.length + 1);
@@ -43,7 +44,7 @@ export const dlist: DListParser = verify(source => {
   }
   assert(el.firstElementChild!.tagName.toLowerCase() === 'dt');
   if (el.lastElementChild && el.lastElementChild!.tagName.toLowerCase() === 'dt') {
-    void el.appendChild(document.createElement('dd'));
+    void el.appendChild(html('dd'));
   }
   assert(el.children.length > 0);
   return [[el], source];

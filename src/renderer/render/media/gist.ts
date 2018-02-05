@@ -1,7 +1,7 @@
 ﻿import { parse, escape } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
-import DOM from 'typed-dom';
+import DOM, { html } from 'typed-dom';
 
 export function gist(url: string): HTMLElement {
   if (cache.has(url)) return cache.get(url)!.cloneNode(true) as HTMLElement;
@@ -9,7 +9,7 @@ export function gist(url: string): HTMLElement {
     class: 'media',
     style: 'position: relative;',
   }, [DOM.em(`loading ${url}`)], () => {
-    const outer = document.createElement('div');
+    const outer = html('div');
     void $.ajax(`${url}.json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,

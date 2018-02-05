@@ -1,8 +1,8 @@
 ﻿import { EmphasisParser, inline } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
 import { strong } from './strong';
-import { squash } from '../squash';
 import { match, isVisible } from '../source/validation';
+import { html } from 'typed-dom';
 
 const syntax = /^\*[\s\S]+?\*/;
 const closer = /^\*/;
@@ -15,8 +15,7 @@ export const emphasis: EmphasisParser = source => {
       loop(combine<HTMLElement | Text, EmphasisParser.InnerParsers>([loop(inline, closer), strong])),
       '*'),
     (ns, rest) => {
-      const el = document.createElement('em');
-      void el.appendChild(squash(ns));
+      const el = html('em', ns);
       if (!isVisible(el.textContent!)) return;
       return [[el], rest];
     })

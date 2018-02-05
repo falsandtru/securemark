@@ -5,6 +5,7 @@ import { parenthesis } from '../source/parenthesis';
 import { squash } from '../squash';
 import { match, isSingleLine } from '../source/validation';
 import { sanitize } from '../string/url';
+import { html } from 'typed-dom';
 
 const syntax = /^\[[^\n]*?\]\(/;
 
@@ -36,9 +37,10 @@ export const link: LinkParser = source => {
           const url = sanitize(INSECURE_URL);
           assert(url === url.trim());
           if (INSECURE_URL !== '' && url === '') return;
-          const el = document.createElement('a');
-          void el.setAttribute('href', url);
-          void el.setAttribute('rel', attribute === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener');
+          const el = html('a', {
+            href: url,
+            rel: attribute === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener',
+          });
           if (location.protocol !== el.protocol || location.host !== el.host) {
             void el.setAttribute('target', '_blank');
           }

@@ -6,6 +6,7 @@ import { parenthesis } from '../source/parenthesis';
 import { match, isSingleLine } from '../source/validation';
 import { sanitize } from '../string/url';
 import { Cache } from 'spica/cache';
+import { html } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(100);
 
@@ -30,10 +31,7 @@ export const media: MediaParser = source => {
           const url = sanitize(ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));
           if (url === '') return;
           if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLElement], rest];
-          const el = document.createElement('img');
-          void el.setAttribute('data-src', url);
-          void el.setAttribute('alt', caption);
-          return [[el], rest];
+          return [[html('img', { 'data-src': url, alt: caption })], rest];
         })
         (rest) as [[HTMLImageElement], string];
     })(source);

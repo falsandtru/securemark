@@ -1,4 +1,5 @@
 ﻿import { bind } from './bind';
+import { html } from 'typed-dom';
 
 describe('Unit: parser/bind', () => {
   describe('bind', () => {
@@ -7,7 +8,7 @@ describe('Unit: parser/bind', () => {
     }
 
     it('empty', () => {
-      const el = document.createElement('div');
+      const el = html('div');
       const update = bind(el);
 
       // init with empty
@@ -19,7 +20,7 @@ describe('Unit: parser/bind', () => {
     });
 
     it('update', () => {
-      const el = document.createElement('div');
+      const el = html('div');
       const update = bind(el);
 
       // init with nonempty
@@ -76,7 +77,7 @@ describe('Unit: parser/bind', () => {
     });
 
     it('reentrant', () => {
-      const el = document.createElement('div');
+      const el = html('div');
       const update = bind(el);
 
       for (const _ of update('0\n\n1')) {
