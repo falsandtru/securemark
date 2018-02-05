@@ -30,8 +30,8 @@ describe('Unit: parser/inline', () => {
     it('uri', () => {
       assert.deepStrictEqual(inspect(parser(' http://host')), [[' ', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser(' ttp://host')), [[' ', '<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('\nhttp://host')), [[' ', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('\nttp://host')), [[' ', '<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('\nhttp://host')), [['<span class="newline"> </span>', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('\nttp://host')), [['<span class="newline"> </span>', '<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('0http://host')), [['0http', ':', '/', '/', 'host'], '']);
       assert.deepStrictEqual(inspect(parser('0ttp://host')), [['0ttp', ':', '/', '/', 'host'], '']);
       assert.deepStrictEqual(inspect(parser('0aAhttp://host')), [['0a', 'Ahttp', ':', '/', '/', 'host'], '']);

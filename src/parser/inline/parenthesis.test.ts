@@ -16,14 +16,14 @@ describe('Unit: parser/inline/parenthesis', () => {
     it('empty', () => {
       assert.deepStrictEqual(inspect(parser('()')), [['()'], '']);
       assert.deepStrictEqual(inspect(parser('( )')), [['( )'], '']);
-      assert.deepStrictEqual(inspect(parser('(\n)')), [['( )'], '']);
+      assert.deepStrictEqual(inspect(parser('(\n)')), [['(', '<span class="newline"> </span>', ')'], '']);
       assert.deepStrictEqual(inspect(parser('(<wbr>)')), [['(', '<wbr>', ')'], '']);
     });
 
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('(a)')), [['(a)'], '']);
       assert.deepStrictEqual(inspect(parser('(ab)')), [['(ab)'], '']);
-      assert.deepStrictEqual(inspect(parser('(a\nb)')), [['(a b)'], '']);
+      assert.deepStrictEqual(inspect(parser('(a\nb)')), [['(a', '<span class="newline"> </span>', 'b)'], '']);
       assert.deepStrictEqual(inspect(parser('(a\\\nb)')), [['(a', '<br>', 'b)'], '']);
     });
 

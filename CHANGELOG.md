@@ -4,6 +4,7 @@
 
 - Add reference syntax.
 - Refine hashtag syntax.
+- Markup newline characters.
 
 ## 0.40.0
 

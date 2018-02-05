@@ -2,7 +2,7 @@
 
 export function char(char: '`'): CharParser.BackquoteParser;
 export function char(char: string) {
-  return (source: string): [[Text], string] | undefined => {
+  return (source: string) => {
     assert(char.length === 1);
     switch (source[0]) {
       case char:

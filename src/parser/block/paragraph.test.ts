@@ -17,7 +17,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a ')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a \n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n')), [['<p>a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\nb')), [['<p>a b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\nb')), [['<p>a<span class="newline"> </span>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n\n')), [['<p>a</p>'], '\n']);
       assert.deepStrictEqual(inspect(parser(' a')), [['<p>a</p>'], '']);
     });
@@ -26,7 +26,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\nb')), [['<p>a<br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n\nb')), [['<p>a</p>'], '\nb']);
-      assert.deepStrictEqual(inspect(parser('a\n\\\nb')), [['<p>a b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n\\\nb')), [['<p>a<span class="newline"> </span>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na\\\n')), [['<p>a</p>'], '']);
     });
@@ -39,12 +39,13 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('>>a')), [['<p><span class="reference">&gt;&gt;a</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>a\n>b')), [['<p><span class="reference">&gt;&gt;a</span><br><span class="reference">&gt;b</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a &gt;b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="newline"> </span>&gt;b</p>'], '']);
     });
 
     it('hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#a')), [['<p><a class="hashtag" rel="noopener">#a</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('#a\nb\n#c')), [['<p><a class="hashtag" rel="noopener">#a</a> b <a class="hashtag" rel="noopener">#c</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('#a\nb\n#c')), [['<p><a class="hashtag" rel="noopener">#a</a><span class="newline"> </span>b<span class="newline"> </span><a class="hashtag" rel="noopener">#c</a></p>'], '']);
     });
 
   });

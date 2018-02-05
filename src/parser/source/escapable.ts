@@ -2,7 +2,7 @@
 
 const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
 
-export const escsource: EscapableSourceParser = (source: string): [[Text], string] | undefined => {
+export const escsource: EscapableSourceParser = (source: string) => {
   if (source.length === 0) return;
   const i = source.search(separator);
   switch (i) {

@@ -3,7 +3,11 @@ import { TextParser } from '../source';
 const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:|[0-9a-zA-Z@]?@[0-9a-zA-Z]|[、。]/;
 const linebreaks = /^(?:(?:\\?\s)*?\\?\n)+/;
 
-export const text: TextParser = (source: string): [[HTMLBRElement | Text], string] | undefined => {
+const newline = document.createElement('span');
+void newline.setAttribute('class', 'newline');
+void newline.appendChild(document.createTextNode(' '));
+
+export const text: TextParser = (source: string) => {
   if (source.length === 0) return;
   const i = source.search(separator);
   switch (i) {
@@ -29,7 +33,7 @@ export const text: TextParser = (source: string): [[HTMLBRElement | Text], strin
               return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
           }
         case '\n':
-          return [[document.createTextNode(' ')], source.slice(1)];
+          return [[newline.cloneNode(true) as HTMLSpanElement], source.slice(1)];
         default:
           return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
       }

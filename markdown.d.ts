@@ -445,7 +445,7 @@ export namespace MarkdownParser {
     export interface TextParser extends
       // abc
       Markdown<'text'>,
-      Parser<HTMLBRElement | Text, TextParser.InnerParsers> {
+      Parser<HTMLBRElement | HTMLSpanElement | Text, TextParser.InnerParsers> {
     }
     export namespace TextParser {
       export type InnerParsers = never[];
