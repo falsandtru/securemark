@@ -1,8 +1,9 @@
-﻿import { CharParser } from '../source';
+﻿import { Parser } from '../../combinator';
+import { CharParser } from '../source';
 
 export function char(char: '`'): CharParser.BackquoteParser;
-export function char(char: string) {
-  return (source: string) => {
+export function char(char: string): Parser<Text, never[]> {
+  return source => {
     assert(char.length === 1);
     switch (source[0]) {
       case char:

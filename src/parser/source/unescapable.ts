@@ -2,7 +2,7 @@
 
 const separator = /`|<\/code>|\s/i;
 
-export const unescsource: UnescapableSourceParser = (source: string) => {
+export const unescsource: UnescapableSourceParser = source => {
   if (source.length === 0) return;
   const i = source.search(separator);
   switch (i) {

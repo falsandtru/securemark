@@ -6,7 +6,7 @@ import { match, isVisible } from '../source/validation';
 const syntax = /^\(\([\s\S]+?\)\)/;
 const closer = /^\)\)/;
 
-export const annotation: AnnotationParser = (source: string) => {
+export const annotation: AnnotationParser = source => {
   if (!match(source, '((', syntax)) return;
   return transform(
     bracket(

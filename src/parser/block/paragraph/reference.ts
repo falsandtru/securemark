@@ -7,7 +7,7 @@ import { match } from '../../source/validation';
 const syntax = /^>+[^>\s]\S*\s*?(?=\n|$)/;
 const closer = /^\s/;
 
-export const reference: ParagraphParser.ReferenceParser = (source: string) => {
+export const reference: ParagraphParser.ReferenceParser = source => {
   if (!match(source, '>', syntax)) return;
   const line = source.split('\n', 1)[0];
   const [ts = [], rest = undefined] = loop(combine<Text, ParagraphParser.HashtagParser.InnerParsers>([unescsource]), closer)(line) || [];

@@ -8,7 +8,7 @@ import { sanitize } from '../string/url';
 
 const syntax = /^\[[^\n]*?\]\(/;
 
-export const link: LinkParser = (source: string) => {
+export const link: LinkParser = source => {
   if (!match(source, '[', syntax)) return;
   return transform(
     bracket(

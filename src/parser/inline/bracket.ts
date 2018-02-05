@@ -6,7 +6,7 @@ import { match } from '../source/validation';
 const syntax = /^\[[\s\S]*?\]/;
 const closer = /^\]/;
 
-export const bracket: BracketParser = (source: string) => {
+export const bracket: BracketParser = source => {
   if (!match(source, '[', syntax)) return;
   return transform(
     brkt(

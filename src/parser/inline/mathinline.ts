@@ -10,7 +10,7 @@ export const cache = new Cache<string, HTMLElement>(100); // for rerendering in 
 const syntax = /^\$[^\s$][^\n]*?\$(?!\d)/;
 const closer = /^\$|^\n/;
 
-export const mathinline: MathInlineParser = (source: string) => {
+export const mathinline: MathInlineParser = source => {
   if (!match(source, '$', syntax)) return;
   return transform(
     bracket(

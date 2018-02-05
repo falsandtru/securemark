@@ -7,7 +7,7 @@ import { match, isVisible, isSingleLine } from '../source/validation';
 
 const syntax = /^(`+)[^\n]+?\1(?!`)/;
 
-export const code: CodeParser = (source: string) => {
+export const code: CodeParser = source => {
   if (!match(source, '`')) return;
   const [whole = '', keyword = ''] = source.match(syntax) || [];
   if (!whole) return;

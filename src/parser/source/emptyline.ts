@@ -2,7 +2,7 @@
 
 const syntax = /^(?:[^\S\n]*(?:\n|$))*/;
 
-export const emptylines: EmptyLineParser = (source: string) => {
+export const emptylines: EmptyLineParser = source => {
   if (source.length === 0) return;
   const [whole = ''] = source.match(syntax) || [];
   return whole === ''

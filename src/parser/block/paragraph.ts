@@ -9,7 +9,7 @@ import { squash } from '../squash';
 const separator = /^\s*$/m;
 const emptyline = /^\s*?\\?\n/mg;
 
-export const paragraph: ParagraphParser = verify((source: string) => {
+export const paragraph: ParagraphParser = verify(source => {
   if (source.split('\n', 1)[0].trim() === '') return;
   const block = source.split(separator, 1)[0];
   assert(block.length > 0);

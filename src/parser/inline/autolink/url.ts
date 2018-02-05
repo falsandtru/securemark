@@ -8,7 +8,7 @@ const syntax = /^(?:!?h)?ttps?:\/\/\S/;
 export const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
 const escape = /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:\/\/\S/;
 
-export const url: AutolinkParser.UrlParser = (source: string) => {
+export const url: AutolinkParser.UrlParser = source => {
   if (source.search(escape) === 0) return [[document.createTextNode(source.slice(0, source.indexOf(':')))], source.slice(source.indexOf(':'))];
   if (source.search(syntax) !== 0) return;
   const flag = source.startsWith('!h');
@@ -28,7 +28,7 @@ export const url: AutolinkParser.UrlParser = (source: string) => {
     : link(`[![](${url})](${url})${rest}`) as any;
 };
 
-const ipv6: AutolinkParser.UrlParser.IPV6Parser = (source: string) => {
+const ipv6: AutolinkParser.UrlParser.IPV6Parser = source => {
   const [whole = ''] = source.match(/^[:0-9a-z]+/i) || [];
   if (!whole) return;
   return [[document.createTextNode(whole)], source.slice(whole.length)];

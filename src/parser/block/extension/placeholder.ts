@@ -11,7 +11,7 @@ export interface PlaceholderParser extends
 }
 const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
 
-export const placeholder: PlaceholderParser = verify((source: string) => {
+export const placeholder: PlaceholderParser = verify(source => {
   if (!source.startsWith('~~~')) return;
   const [whole = '', keyword = '', notes = ''] = source.match(syntax) || [];
   if (!whole) return;

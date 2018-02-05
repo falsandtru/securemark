@@ -6,7 +6,7 @@ import { squash } from '../squash';
 
 const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
 
-export const pretext: PretextParser = verify((source: string) => {
+export const pretext: PretextParser = verify(source => {
   if (!source.startsWith('```')) return;
   const [whole = '', , notes = '', body = ''] = source.match(syntax) || [];
   if (!whole) return;

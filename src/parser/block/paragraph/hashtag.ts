@@ -6,7 +6,7 @@ import { squash } from '../../squash';
 const escape = /^\S#+/;
 const closer = /^\s/;
 
-export const hashtag: ParagraphParser.HashtagParser = (source: string) => {
+export const hashtag: ParagraphParser.HashtagParser = source => {
   const [flag = undefined] = source.match(escape) || [];
   if (flag) return [[document.createTextNode(flag)], source.slice(flag.length)];
   if (!source.startsWith('#')) return;

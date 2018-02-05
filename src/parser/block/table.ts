@@ -7,7 +7,7 @@ import { squash } from '../squash';
 const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
 const align = /^:?-+:?$/;
 
-export const table: TableParser = verify((source: string) => {
+export const table: TableParser = verify(source => {
   if (!source.startsWith('|') || source.search(syntax) !== 0) return;
   const table = document.createElement('table');
   const [headers = [], hrest = source] = parse(source) || [];

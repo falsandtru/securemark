@@ -9,7 +9,7 @@ assert(inlinetags.every(tag => /[a-z]+/.test(tag)));
 assert(inlinetags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
 assert(inlinetags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
 
-export const html: HTMLParser = (source: string) => {
+export const html: HTMLParser = source => {
   if (!match(source, '<')) return;
   const [whole = '', tagname = ''] = source.match(syntax) || [];
   if (!whole) return;

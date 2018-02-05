@@ -2,7 +2,7 @@
 
 export function subsequence<R, P extends Parser<R, any>[]>(parsers: P): Parser<R, P> {
   assert(parsers.every(f => !!f));
-  return (source: string) => {
+  return source => {
     let rest = source;
     const results: R[] = [];
     for (const parse of parsers) {

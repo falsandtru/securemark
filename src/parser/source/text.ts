@@ -7,7 +7,7 @@ const newline = document.createElement('span');
 void newline.setAttribute('class', 'newline');
 void newline.appendChild(document.createTextNode(' '));
 
-export const text: TextParser = (source: string) => {
+export const text: TextParser = source => {
   if (source.length === 0) return;
   const i = source.search(separator);
   switch (i) {
