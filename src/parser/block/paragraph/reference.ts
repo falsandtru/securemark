@@ -1,5 +1,5 @@
 ﻿import { ParagraphParser } from '../../block';
-import { combine, loop } from '../../../combinator';
+import { SubParsers, combine, loop } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { squash } from '../../squash';
 import { match } from '../../source/validation';
@@ -11,7 +11,7 @@ const closer = /^\s/;
 export const reference: ParagraphParser.ReferenceParser = source => {
   if (!match(source, '>', syntax)) return;
   const line = source.split('\n', 1)[0];
-  const [ts = [], rest = undefined] = loop(combine<Text, ParagraphParser.HashtagParser.InnerParsers>([unescsource]), closer)(line) || [];
+  const [ts = [], rest = undefined] = loop(combine<SubParsers<ParagraphParser.HashtagParser>>([unescsource]), closer)(line) || [];
   if (rest === undefined) return;
   return [[html('span', { class: 'reference' }, squash(ts).textContent!)], source.slice(line.length + 1)];
 };

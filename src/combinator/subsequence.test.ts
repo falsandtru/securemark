@@ -14,7 +14,7 @@ describe('Unit: combinator/subsequence', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     }
-    const ab = subsequence<string, [typeof a, typeof b]>([a, b]);
+    const ab = subsequence<[typeof a, typeof b]>([a, b]);
 
     it('ab', () => {
       const parser = ab;

@@ -1,6 +1,6 @@
 ﻿import { UListParser } from '../block';
 import { verify } from './util/verification';
-import { combine, loop } from '../../combinator';
+import { SubParsers, combine, loop } from '../../combinator';
 import { olist } from './olist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
@@ -26,7 +26,7 @@ export const ulist: UListParser = verify(source => {
       if (checkbox) {
         void li.appendChild(html('span', { class: 'checkbox' }, `${checkbox.trim()} `));
       }
-      void li.appendChild(squash((loop(combine<HTMLElement | Text, UListParser.InnerParsers>([inline]))(text.slice(checkbox.length)) || [[]])[0]));
+      void li.appendChild(squash((loop(combine<SubParsers<UListParser>>([inline]))(text.slice(checkbox.length)) || [[]])[0]));
       source = source.slice(line.length + 1);
       continue;
     }
@@ -35,7 +35,7 @@ export const ulist: UListParser = verify(source => {
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block = '', rest = undefined] = indent(source) || [];
       if (rest === undefined) return;
-      const [children = [], brest = block] = combine<HTMLElement | Text, UListParser.InnerParsers>([ulist, olist])(fillOListFlag(block)) || [];
+      const [children = [], brest = block] = combine<SubParsers<UListParser>>([ulist, olist])(fillOListFlag(block)) || [];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;

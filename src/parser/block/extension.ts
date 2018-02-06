@@ -1,7 +1,7 @@
 ﻿import { ExtensionBlockParser } from '../block';
-import { combine } from '../../combinator';
+import { SubParsers, combine } from '../../combinator';
 import { placeholder } from './extension/placeholder';
 
-export const extension: ExtensionBlockParser = combine<HTMLElement, ExtensionBlockParser.InnerParsers>([
+export const extension: ExtensionBlockParser = combine<SubParsers<ExtensionBlockParser>>([
   placeholder,
 ]);

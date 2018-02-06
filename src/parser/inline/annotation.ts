@@ -1,5 +1,5 @@
 ﻿import { AnnotationParser, inline } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { SubParsers, combine, loop, bracket, transform } from '../../combinator';
 import { match, isVisible } from '../source/validation';
 import { html } from 'typed-dom';
 
@@ -11,7 +11,7 @@ export const annotation: AnnotationParser = source => {
   return transform(
     bracket(
       '((',
-      loop(combine<HTMLElement | Text, AnnotationParser.InnerParsers>([inline]), closer),
+      loop(combine<SubParsers<AnnotationParser>>([inline]), closer),
       '))'),
     (ns, rest) => {
       const el = html('sup', { class: 'annotation' }, ns);

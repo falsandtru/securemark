@@ -1,5 +1,5 @@
 ﻿import { BracketParser, inline } from '../inline';
-import { combine, loop, bracket as brkt, transform } from '../../combinator';
+import { SubParsers, combine, loop, bracket as brkt, transform } from '../../combinator';
 import { squash } from '../squash';
 import { match } from '../source/validation';
 
@@ -11,7 +11,7 @@ export const bracket: BracketParser = source => {
   return transform(
     brkt(
       '[',
-      loop(combine<HTMLElement | Text, BracketParser.InnerParsers>([inline]), closer),
+      loop(combine<SubParsers<BracketParser>>([inline]), closer),
       ']'),
     (ns, rest) => [
       [...squash([document.createTextNode('['), ...ns, document.createTextNode(']')]).childNodes as NodeListOf<HTMLElement | Text>],

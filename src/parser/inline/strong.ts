@@ -1,5 +1,5 @@
 ﻿import { StrongParser, inline } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { SubParsers, combine, loop, bracket, transform } from '../../combinator';
 import { match, isVisible } from '../source/validation';
 import { html } from 'typed-dom';
 
@@ -11,7 +11,7 @@ export const strong: StrongParser = source => {
   return transform(
     bracket(
       '**',
-      loop(combine<HTMLElement | Text, StrongParser.InnerParsers>([inline]), closer),
+      loop(combine<SubParsers<StrongParser>>([inline]), closer),
       '**'),
     (ns, rest) => {
       const el = html('strong', ns);

@@ -1,5 +1,5 @@
 ﻿import { MediaParser } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { SubParsers, Data, combine, loop, bracket, transform } from '../../combinator';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
 import { parenthesis } from '../source/parenthesis';
@@ -17,7 +17,7 @@ export const media: MediaParser = source => {
   return transform(
     bracket(
       '![',
-      loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([text]), /^]\n?|^\n/),
+      loop(combine<Data<typeof text>, SubParsers<MediaParser>>([text]), /^]\n?|^\n/),
       ']'),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
@@ -25,7 +25,7 @@ export const media: MediaParser = source => {
       return transform(
         bracket(
           '(',
-          loop(combine<HTMLElement | Text, MediaParser.InnerParsers>([parenthesis, escsource]), /^\)|^\s/),
+          loop(combine<Data<typeof text>, SubParsers<MediaParser>>([parenthesis, escsource]), /^\)|^\s/),
           ')'),
         (ns, rest) => {
           const url = sanitize(ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));
@@ -33,6 +33,6 @@ export const media: MediaParser = source => {
           if (cache.has(url)) return [[cache.get(url)!.cloneNode(true) as HTMLElement], rest];
           return [[html('img', { 'data-src': url, alt: caption })], rest];
         })
-        (rest) as [[HTMLImageElement], string];
+        (rest);
     })(source);
 };
