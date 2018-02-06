@@ -1,7 +1,7 @@
-﻿import { Parser, Result } from './parser';
+﻿import { Parser } from './parser';
 
-export function bracket<R, P extends Parser<any, any>[]>(start: string | RegExp, parser: Parser<R, P>, end: string | RegExp): Parser<R, P> {
-  return (lmr_: string): Result<R, P> => {
+export function bracket<P extends Parser<any, any>[], R>(start: string | RegExp, parser: Parser<R, P>, end: string | RegExp): Parser<R, P> {
+  return lmr_ => {
     const l = match(lmr_, start);
     if (l === undefined) return;
     const mr_ = lmr_.slice(l.length);

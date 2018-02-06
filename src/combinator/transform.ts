@@ -1,7 +1,7 @@
 ﻿import { Parser, Result } from './parser';
 
 export function transform<R, S, P extends Parser<any, any>[]>(parser: Parser<R, P>, f: (rs: R[], rest: string) => Result<S, P>): Parser<S, P> {
-  return (source: string): Result<S, P> => {
+  return source => {
     const [rs = [], rest = undefined] = parser(source) || [];
     if (rest === undefined) return;
     assert(source.slice(1).endsWith(rest));
