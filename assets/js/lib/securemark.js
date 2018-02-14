@@ -591,12 +591,8 @@ require = function () {
                 if (typeof attrs === 'string' || Array.isArray(attrs))
                     return html(tag, {}, attrs);
                 const el = cache.has(tag) ? cache.get(tag).cloneNode(true) : cache.set(tag, document.createElement(tag)).get(tag).cloneNode(true);
-                for (const [name, value] of Object.entries(attrs)) {
-                    void el.setAttribute(name, value);
-                }
-                for (const child of children) {
-                    void el.appendChild(child);
-                }
+                void Object.entries(attrs).forEach(([name, value]) => void el.setAttribute(name, value));
+                void children.forEach(child => void el.appendChild(child));
                 return el;
             }
             exports.html = html;
