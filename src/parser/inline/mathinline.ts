@@ -1,5 +1,5 @@
 ﻿import { MathInlineParser } from '../inline';
-import { SubParsers, combine, loop, bracket, transform } from '../../combinator';
+import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
 import { match, isTightVisible, isSingleLine } from '../source/validation';
@@ -16,7 +16,7 @@ export const mathinline: MathInlineParser = source => {
   return transform(
     bracket(
       '$',
-      loop(combine<SubParsers<MathInlineParser>>([escsource]), closer),
+      loop(combine<MathInlineParser>([escsource]), closer),
       /^\$(?![$\d])/),
     (ns, rest) => {
       if (!isTightVisible(source.slice(1, source.length - rest.length - 1))) return;

@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { SubParsers, combine } from '../combinator';
+import { combine } from '../combinator';
 import { brace } from './inline/brace';
 import { annotation } from './inline/annotation';
 import { parenthesis } from './inline/parenthesis';
@@ -34,7 +34,7 @@ export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 
-export const inline: InlineParser = combine<SubParsers<InlineParser>>([
+export const inline: InlineParser = combine<InlineParser>([
   brace,
   annotation,
   parenthesis,

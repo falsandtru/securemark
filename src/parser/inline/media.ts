@@ -1,5 +1,5 @@
 ﻿import { MediaParser } from '../inline';
-import { SubParsers, Data, combine, loop, bracket, transform } from '../../combinator';
+import { combine, loop, bracket, transform } from '../../combinator';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
 import { parenthesis } from '../source/parenthesis';
@@ -17,7 +17,7 @@ export const media: MediaParser = source => {
   return transform(
     bracket(
       '![',
-      loop(combine<Data<typeof text>, SubParsers<MediaParser>>([text]), /^]\n?|^\n/),
+      loop(combine<MediaParser>([text]), /^]\n?|^\n/),
       ']'),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
@@ -25,7 +25,7 @@ export const media: MediaParser = source => {
       return transform(
         bracket(
           '(',
-          loop(combine<Data<typeof text>, SubParsers<MediaParser>>([parenthesis, escsource]), /^\)|^\s/),
+          loop(combine<MediaParser>([parenthesis, escsource]), /^\)|^\s/),
           ')'),
         (ns, rest) => {
           const url = sanitize(ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));

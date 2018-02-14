@@ -1,5 +1,5 @@
 ﻿import { CodeParser } from '../inline';
-import { SubParsers, combine, loop, bracket, transform } from '../../combinator';
+import { combine, loop, bracket, transform } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
 import { squash } from '../squash';
@@ -15,7 +15,7 @@ export const code: CodeParser = source => {
   return transform(
     bracket(
       keyword,
-      loop(combine<SubParsers<CodeParser>>([loop(char('`')), unescsource]), `^${keyword}(?!\`)|^\n`),
+      loop(combine<CodeParser>([loop(char('`')), unescsource]), `^${keyword}(?!\`)|^\n`),
       keyword),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;

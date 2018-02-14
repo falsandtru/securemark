@@ -1,5 +1,5 @@
 ﻿import { ParenthesisParser } from '../source';
-import { SubParsers, combine, loop, bracket, transform } from '../../combinator';
+import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { match } from '../source/validation';
 
@@ -11,7 +11,7 @@ export const parenthesis: ParenthesisParser = source => {
   return transform(
     bracket(
       '(',
-      loop(combine<SubParsers<ParenthesisParser>>([parenthesis, escsource]), closer),
+      loop(combine<ParenthesisParser>([parenthesis, escsource]), closer),
       ')'),
     (_, rest) => [
       [document.createTextNode(source.slice(0, source.length - rest.length))],

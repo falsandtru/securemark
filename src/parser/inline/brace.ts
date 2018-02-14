@@ -1,5 +1,5 @@
 ﻿import { BraceParser, inline } from '../inline';
-import { SubParsers, combine, loop, bracket, transform } from '../../combinator';
+import { combine, loop, bracket, transform } from '../../combinator';
 import { squash } from '../squash';
 import { match } from '../source/validation';
 
@@ -11,7 +11,7 @@ export const brace: BraceParser = source => {
   return transform(
     bracket(
       '{',
-      loop(combine<SubParsers<BraceParser>>([inline]), closer),
+      loop(combine<BraceParser>([inline]), closer),
       '}'),
     (ns, rest) => [
       [...squash([document.createTextNode('{'), ...ns, document.createTextNode('}')]).childNodes as NodeListOf<HTMLElement | Text>],

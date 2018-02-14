@@ -1,6 +1,6 @@
 ﻿import { OListParser } from '../block';
 import { verify } from './util/verification';
-import { SubParsers, combine, loop } from '../../combinator';
+import { combine, loop } from '../../combinator';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
@@ -22,7 +22,7 @@ export const olist: OListParser = verify(source => {
     if (line.search(syntax) === 0) {
       const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
       const li = el.appendChild(html('li'));
-      void li.appendChild(squash((loop(combine<SubParsers<OListParser>>([inline]))(text) || [[]])[0]));
+      void li.appendChild(squash((loop(combine<OListParser>([inline]))(text) || [[]])[0]));
       source = source.slice(line.length + 1);
       continue;
     }
@@ -31,7 +31,7 @@ export const olist: OListParser = verify(source => {
       if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
       const [block = '', rest = undefined] = indent(source) || [];
       if (rest === undefined) return;
-      const [children = [], brest = block] = combine<SubParsers<OListParser>>([ulist, olist])(fillOListFlag(block)) || [];
+      const [children = [], brest = block] = combine<OListParser>([ulist, olist])(fillOListFlag(block)) || [];
       if (children.length !== 1 || brest.length !== 0) return;
       void li.appendChild(squash(children));
       source = rest;
