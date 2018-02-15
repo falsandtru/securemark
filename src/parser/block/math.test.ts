@@ -1,10 +1,10 @@
-﻿import { mathblock } from './mathblock';
+﻿import { math } from './math';
 import { loop } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/block/mathblock', () => {
-  describe('mathblock', () => {
-    const parser = loop(mathblock);
+describe('Unit: parser/block/math', () => {
+  describe('math', () => {
+    const parser = loop(math);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

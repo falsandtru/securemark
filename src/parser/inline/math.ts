@@ -1,4 +1,4 @@
-﻿import { MathInlineParser } from '../inline';
+﻿import { MathParser } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { squash } from '../squash';
@@ -11,12 +11,12 @@ export const cache = new Cache<string, HTMLElement>(100); // for rerendering in 
 const syntax = /^\$[^\s$][^\n]*?\$(?!\d)/;
 const closer = /^\$|^\n/;
 
-export const mathinline: MathInlineParser = source => {
+export const math: MathParser = source => {
   if (!match(source, '$', syntax)) return;
   return transform(
     bracket(
       '$',
-      loop(combine<MathInlineParser>([escsource]), closer),
+      loop(combine<MathParser>([escsource]), closer),
       /^\$(?![$\d])/),
     (ns, rest) => {
       if (!isTightVisible(source.slice(1, source.length - rest.length - 1))) return;

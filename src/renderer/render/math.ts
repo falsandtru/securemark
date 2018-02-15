@@ -1,4 +1,4 @@
-﻿import { cache } from '../../parser/inline/mathinline';
+﻿import { cache } from '../../parser/inline/math';
 
 export function math(target: HTMLElement): void {
   assert(target.children.length === 0);

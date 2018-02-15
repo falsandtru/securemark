@@ -9,7 +9,7 @@ import { dlist } from './block/dlist';
 import { table } from './block/table';
 import { blockquote } from './block/blockquote';
 import { pretext } from './block/pretext';
-import { mathblock } from './block/mathblock';
+import { math } from './block/math';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 
@@ -23,8 +23,8 @@ export import DListParser = BlockParser.DListParser;
 export import TableParser = BlockParser.TableParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import PretextParser = BlockParser.PretextParser;
-export import MathBlockParser = BlockParser.MathBlockParser;
-export import ExtensionBlockParser = BlockParser.ExtensionBlockParser;
+export import MathParser = BlockParser.MathParser;
+export import ExtensionParser = BlockParser.ExtensionParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 export import IndexParser = BlockParser.IndexParser;
 
@@ -38,7 +38,7 @@ export const block: BlockParser = combine<BlockParser>([
   table,
   blockquote,
   pretext,
-  mathblock,
+  math,
   extension,
   paragraph
 ]);
