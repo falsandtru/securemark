@@ -1,7 +1,7 @@
 ﻿import { Parser, SubParsers } from './parser';
 
-export function subsequence<P extends Parser<any, any>>(parsers: SubParsers<P>): P;
-export function subsequence<S extends Parser<any, any>[], R>(parsers: S): Parser<R, S> {
+export function subsequence<P extends Parser<any, any>>(parsers: SubParsers<P>): SubParsers<P> extends Array<infer Q> ? Q extends Parser<infer R, any> ? Parser<R, SubParsers<P>> : never : never;
+export function subsequence<S extends Parser<R, any>[], R>(parsers: S): Parser<R, S> {
   assert(parsers.every(f => !!f));
   return source => {
     let rest = source;
