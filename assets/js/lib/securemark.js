@@ -1345,7 +1345,13 @@ require = function () {
                     ]))
                 ])(block.replace(emptyline, '').trim()) || [];
                 const el = typed_dom_1.html('p', cs);
-                void [...el.children].forEach(el => el.matches('.reference') && el.nextSibling && el.parentElement.insertBefore(typed_dom_1.html('br'), el.nextSibling));
+                for (const child of el.children) {
+                    if (child instanceof HTMLBRElement)
+                        continue;
+                    if (!child.matches('.reference') || !child.nextSibling)
+                        break;
+                    void child.parentElement.insertBefore(typed_dom_1.html('br'), child.nextSibling);
+                }
                 return [
                     [el],
                     rest
