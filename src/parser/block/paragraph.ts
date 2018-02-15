@@ -16,9 +16,10 @@ export const paragraph: ParagraphParser = verify(source => {
   const rest = source.slice(block.length);
   const [cs = []] = subsequence<ParagraphParser>([loop(reference), loop(combine<[ParagraphParser.HashtagParser, InlineParser]>([hashtag, inline]))])(block.replace(emptyline, '').trim()) || [];
   const el = html('p', cs);
-  void [...el.children]
-    .forEach(el =>
-      el.matches('.reference') && el.nextSibling &&
-      el.parentElement!.insertBefore(html('br'), el.nextSibling));
+  for (const child of el.children) {
+    if (child instanceof HTMLBRElement) continue;
+    if (!child.matches('.reference') || !child.nextSibling) break;
+    void child.parentElement!.insertBefore(html('br'), child.nextSibling);
+  }
   return [[el], rest];
 });

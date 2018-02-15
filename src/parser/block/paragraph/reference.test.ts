@@ -11,6 +11,8 @@ describe('Unit: parser/block/paragraph/reference', () => {
       assert.deepStrictEqual(inspect(parser('>')), undefined);
       assert.deepStrictEqual(inspect(parser('> ')), undefined);
       assert.deepStrictEqual(inspect(parser('>>')), undefined);
+      assert.deepStrictEqual(inspect(parser('>0 a')), undefined);
+      assert.deepStrictEqual(inspect(parser('> 0')), undefined);
     });
 
     it('valid', () => {
@@ -22,6 +24,10 @@ describe('Unit: parser/block/paragraph/reference', () => {
       assert.deepStrictEqual(inspect(parser('>\\')), [['<span class="reference">&gt;\\</span>'], '']);
       assert.deepStrictEqual(inspect(parser('>\\ ')), [['<span class="reference">&gt;\\</span>'], '']);
       assert.deepStrictEqual(inspect(parser('>\\\n')), [['<span class="reference">&gt;\\</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0')), [['<span class="reference">&gt;&gt;0</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0\n>1')), [['<span class="reference">&gt;0</span>', '<span class="reference">&gt;1</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0\n>>1')), [['<span class="reference">&gt;0</span>', '<span class="reference">&gt;&gt;1</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<span class="reference">&gt;&gt;0</span>', '<span class="reference">&gt;1</span>'], '']);
     });
 
   });

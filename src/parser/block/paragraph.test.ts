@@ -36,6 +36,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('>a\n')), [['<p><span class="reference">&gt;a</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><span class="reference">&gt;a</span><br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><span class="reference">&gt;a</span><br><span class="reference">&gt;b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n>b\nc')), [['<p><span class="reference">&gt;a</span><br><span class="reference">&gt;b</span><br>c</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>a')), [['<p><span class="reference">&gt;&gt;a</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>a\n>b')), [['<p><span class="reference">&gt;&gt;a</span><br><span class="reference">&gt;b</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);

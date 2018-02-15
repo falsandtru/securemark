@@ -13,5 +13,6 @@ export const reference: ParagraphParser.ReferenceParser = source => {
   const line = source.split('\n', 1)[0];
   const [ts = [], rest = undefined] = loop(combine<ParagraphParser.HashtagParser>([unescsource]), closer)(line) || [];
   if (rest === undefined) return;
+  assert(rest.trim() === '');
   return [[html('span', { class: 'reference' }, squash(ts).textContent!)], source.slice(line.length + 1)];
 };
