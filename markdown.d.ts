@@ -132,7 +132,10 @@ export namespace MarkdownParser {
       Markdown<'paragraph'>,
       Parser<HTMLParagraphElement, [
         ParagraphParser.ReferenceParser,
-        Parser<HTMLElement | Text, [ParagraphParser.HashtagParser, InlineParser]>
+        Parser<HTMLElement | Text, [
+          ParagraphParser.HashtagParser,
+          InlineParser
+        ]>
       ]> {
     }
     export namespace ParagraphParser {
