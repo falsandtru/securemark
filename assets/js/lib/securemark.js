@@ -907,7 +907,7 @@ require = function () {
             const table_1 = require('./block/table');
             const blockquote_1 = require('./block/blockquote');
             const pretext_1 = require('./block/pretext');
-            const mathblock_1 = require('./block/mathblock');
+            const math_1 = require('./block/math');
             const extension_1 = require('./block/extension');
             const paragraph_1 = require('./block/paragraph');
             exports.block = combinator_1.combine([
@@ -920,7 +920,7 @@ require = function () {
                 table_1.table,
                 blockquote_1.blockquote,
                 pretext_1.pretext,
-                mathblock_1.mathblock,
+                math_1.math,
                 extension_1.extension,
                 paragraph_1.paragraph
             ]);
@@ -932,7 +932,7 @@ require = function () {
             './block/extension': 27,
             './block/heading': 29,
             './block/horizontalrule': 30,
-            './block/mathblock': 31,
+            './block/math': 31,
             './block/newline': 32,
             './block/olist': 33,
             './block/paragraph': 34,
@@ -1219,7 +1219,7 @@ require = function () {
             const verification_1 = require('./util/verification');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?:\n|$)/;
-            exports.mathblock = verification_1.verify(source => {
+            exports.math = verification_1.verify(source => {
                 if (!source.startsWith('$$'))
                     return;
                 const [whole = ''] = source.match(syntax) || [];
@@ -1714,15 +1714,15 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const mathinline_1 = require('./inline/mathinline');
+            const math_1 = require('./inline/math');
             const media_1 = require('./inline/media');
             exports.caches = {
-                math: mathinline_1.cache,
+                math: math_1.cache,
                 media: { image: media_1.cache }
             };
         },
         {
-            './inline/mathinline': 62,
+            './inline/math': 62,
             './inline/media': 63
         }
     ],
@@ -1754,7 +1754,7 @@ require = function () {
             const emphasis_1 = require('./inline/emphasis');
             const strong_1 = require('./inline/strong');
             const code_1 = require('./inline/code');
-            const mathinline_1 = require('./inline/mathinline');
+            const math_1 = require('./inline/math');
             const media_1 = require('./inline/media');
             const htmlentity_1 = require('./inline/htmlentity');
             const autolink_1 = require('./inline/autolink');
@@ -1771,7 +1771,7 @@ require = function () {
                 emphasis_1.emphasis,
                 strong_1.strong,
                 code_1.code,
-                mathinline_1.mathinline,
+                math_1.math,
                 media_1.media,
                 htmlentity_1.htmlentity,
                 autolink_1.autolink,
@@ -1791,7 +1791,7 @@ require = function () {
             './inline/html': 59,
             './inline/htmlentity': 60,
             './inline/link': 61,
-            './inline/mathinline': 62,
+            './inline/math': 62,
             './inline/media': 63,
             './inline/parenthesis': 64,
             './inline/strong': 65,
@@ -2364,7 +2364,7 @@ require = function () {
             exports.cache = new cache_1.Cache(100);
             const syntax = /^\$[^\s$][^\n]*?\$(?!\d)/;
             const closer = /^\$|^\n/;
-            exports.mathinline = source => {
+            exports.math = source => {
                 if (!validation_1.match(source, '$', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('$', combinator_1.loop(combinator_1.combine([escapable_1.escsource]), closer), /^\$(?![$\d])/), (ns, rest) => {
@@ -2938,15 +2938,15 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const mathinline_1 = require('../../parser/inline/mathinline');
+            const math_1 = require('../../parser/inline/math');
             function math(target) {
                 if (target instanceof HTMLDivElement)
                     return void queue(target);
                 void target.setAttribute('data-src', target.textContent);
                 const expr = target.textContent;
-                if (mathinline_1.cache.has(expr))
-                    return void (target.innerHTML = mathinline_1.cache.get(expr).innerHTML);
-                void queue(target, () => void mathinline_1.cache.set(expr, target.cloneNode(true)));
+                if (math_1.cache.has(expr))
+                    return void (target.innerHTML = math_1.cache.get(expr).innerHTML);
+                void queue(target, () => void math_1.cache.set(expr, target.cloneNode(true)));
             }
             exports.math = math;
             function queue(target, callback = () => undefined) {
@@ -2958,7 +2958,7 @@ require = function () {
                 ]);
             }
         },
-        { '../../parser/inline/mathinline': 62 }
+        { '../../parser/inline/math': 62 }
     ],
     83: [
         function (require, module, exports) {
