@@ -1,9 +1,9 @@
 ﻿import { media } from './media';
-import DOM from 'typed-dom';
+import { html } from 'typed-dom';
 
 describe('Unit: renderer/render/media', () => {
   function image(url: string) {
-    return DOM.img({ 'data-src': url }).element;
+    return html('img', { 'data-src': url });
   }
 
   describe('media', () => {
