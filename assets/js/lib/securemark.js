@@ -3026,13 +3026,13 @@ require = function () {
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function audio(url, alt) {
-                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.audio({
+                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.html('audio', {
                     class: 'media',
                     src: url,
                     alt,
                     controls: '',
                     style: 'width: 100%;'
-                }).element.cloneNode(true));
+                }).cloneNode(true));
             }
             exports.audio = audio;
         },
@@ -3100,12 +3100,12 @@ require = function () {
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function image(url, alt) {
-                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.img({
+                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.html('img', {
                     class: 'media',
                     src: url,
                     alt,
                     style: 'max-width: 100%;'
-                }).element.cloneNode(true));
+                }).cloneNode(true));
             }
             exports.image = image;
         },
@@ -3255,14 +3255,14 @@ require = function () {
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function video(url, alt) {
-                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.default.video({
+                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.html('video', {
                     class: 'media',
                     src: url,
                     alt,
                     muted: '',
                     controls: '',
                     style: 'max-width: 100%;'
-                }).element.cloneNode(true));
+                }).cloneNode(true));
             }
             exports.video = video;
         },
