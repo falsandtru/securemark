@@ -1428,7 +1428,10 @@ require = function () {
                 if (rest === undefined)
                     return;
                 return [
-                    [typed_dom_1.html('span', { class: 'reference' }, squash_1.squash(ts).textContent)],
+                    [typed_dom_1.html('a', {
+                            class: 'reference',
+                            rel: 'noopener'
+                        }, squash_1.squash(ts).textContent)],
                     source.slice(line.length + 1)
                 ];
             };
