@@ -16,18 +16,18 @@ describe('Unit: parser/block/paragraph/reference', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('>0')), [['<span class="reference">&gt;0</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a')), [['<span class="reference">&gt;a</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>A')), [['<span class="reference">&gt;A</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a ')), [['<span class="reference">&gt;a</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n')), [['<span class="reference">&gt;a</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\\')), [['<span class="reference">&gt;\\</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\\ ')), [['<span class="reference">&gt;\\</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\\\n')), [['<span class="reference">&gt;\\</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0')), [['<span class="reference">&gt;&gt;0</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>0\n>1')), [['<span class="reference">&gt;0</span>', '<span class="reference">&gt;1</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>0\n>>1')), [['<span class="reference">&gt;0</span>', '<span class="reference">&gt;&gt;1</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<span class="reference">&gt;&gt;0</span>', '<span class="reference">&gt;1</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0')), [['<a class="reference" rel="noopener">&gt;0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a')), [['<a class="reference" rel="noopener">&gt;a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>A')), [['<a class="reference" rel="noopener">&gt;A</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a ')), [['<a class="reference" rel="noopener">&gt;a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n')), [['<a class="reference" rel="noopener">&gt;a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>\\')), [['<a class="reference" rel="noopener">&gt;\\</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>\\ ')), [['<a class="reference" rel="noopener">&gt;\\</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>\\\n')), [['<a class="reference" rel="noopener">&gt;\\</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0')), [['<a class="reference" rel="noopener">&gt;&gt;0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0\n>1')), [['<a class="reference" rel="noopener">&gt;0</a>', '<a class="reference" rel="noopener">&gt;1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0\n>>1')), [['<a class="reference" rel="noopener">&gt;0</a>', '<a class="reference" rel="noopener">&gt;&gt;1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<a class="reference" rel="noopener">&gt;&gt;0</a>', '<a class="reference" rel="noopener">&gt;1</a>'], '']);
     });
 
   });

@@ -143,7 +143,7 @@ export namespace MarkdownParser {
       export interface ReferenceParser extends
         // >0a
         Block<'paragraph/reference'>,
-        Parser<HTMLSpanElement, [
+        Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser
         ]> {
       }

@@ -32,13 +32,13 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('reference', () => {
-      assert.deepStrictEqual(inspect(parser('>a')), [['<p><span class="reference">&gt;a</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n')), [['<p><span class="reference">&gt;a</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><span class="reference">&gt;a</span><br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><span class="reference">&gt;a</span><br><span class="reference">&gt;b</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n>b\nc')), [['<p><span class="reference">&gt;a</span><br><span class="reference">&gt;b</span><br>c</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>a')), [['<p><span class="reference">&gt;&gt;a</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>a\n>b')), [['<p><span class="reference">&gt;&gt;a</span><br><span class="reference">&gt;b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a')), [['<p><a class="reference" rel="noopener">&gt;a</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n')), [['<p><a class="reference" rel="noopener">&gt;a</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><a class="reference" rel="noopener">&gt;a</a><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><a class="reference" rel="noopener">&gt;a</a><br><a class="reference" rel="noopener">&gt;b</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n>b\nc')), [['<p><a class="reference" rel="noopener">&gt;a</a><br><a class="reference" rel="noopener">&gt;b</a><br>c</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>a')), [['<p><a class="reference" rel="noopener">&gt;&gt;a</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>a\n>b')), [['<p><a class="reference" rel="noopener">&gt;&gt;a</a><br><a class="reference" rel="noopener">&gt;b</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="newline"> </span>&gt;b</p>'], '']);
