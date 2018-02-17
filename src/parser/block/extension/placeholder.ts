@@ -4,7 +4,6 @@ import { Parser, loop } from '../../../combinator';
 import { block } from '../../block';
 import { unescsource } from '../../source/unescapable';
 import { squash } from '../../squash';
-import { html } from 'typed-dom';
 
 export interface PlaceholderParser extends
   Markdown<'extensionblock' & 'extensionblock/placeholder'>,
@@ -14,7 +13,7 @@ const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
 
 export const placeholder: PlaceholderParser = verify(source => {
   if (!source.startsWith('~~~')) return;
-  const [whole = '', keyword = '', notes = ''] = source.match(syntax) || [];
+  const [whole = '', keyword = ''] = source.match(syntax) || [];
   if (!whole) return;
   const [[message]] = block("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.")!;
   source = source.slice(source.indexOf('\n') + 1);
@@ -26,5 +25,5 @@ export const placeholder: PlaceholderParser = verify(source => {
     source = source.slice(line.length + 1);
     if (source === '') return;
   }
-  return [[message, html('pre', `${keyword}${notes}\n${lines.join('')}${keyword}`)], source.slice(source.split('\n', 1)[0].length + 1)];
+  return [[message], source.slice(source.split('\n', 1)[0].length + 1)];
 });
