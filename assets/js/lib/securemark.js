@@ -879,8 +879,11 @@ require = function () {
                             seg,
                             es
                         ]);
-                        void es.forEach(el => void target.insertBefore(el, ref));
-                        yield* es;
+                        if (es.length === 0)
+                            continue;
+                        const [el] = es;
+                        void target.insertBefore(el, ref);
+                        yield el;
                         if (revision !== rev)
                             return;
                     }
@@ -1114,12 +1117,11 @@ require = function () {
             const block_1 = require('../../block');
             const unescapable_1 = require('../../source/unescapable');
             const squash_1 = require('../../squash');
-            const typed_dom_1 = require('typed-dom');
             const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
             exports.placeholder = verification_1.verify(source => {
                 if (!source.startsWith('~~~'))
                     return;
-                const [whole = '', keyword = '', notes = ''] = source.match(syntax) || [];
+                const [whole = '', keyword = ''] = source.match(syntax) || [];
                 if (!whole)
                     return;
                 const [[message]] = block_1.block('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.');
@@ -1135,10 +1137,7 @@ require = function () {
                         return;
                 }
                 return [
-                    [
-                        message,
-                        typed_dom_1.html('pre', `${ keyword }${ notes }\n${ lines.join('') }${ keyword }`)
-                    ],
+                    [message],
                     source.slice(source.split('\n', 1)[0].length + 1)
                 ];
             });
@@ -1148,8 +1147,7 @@ require = function () {
             '../../block': 24,
             '../../source/unescapable': 74,
             '../../squash': 76,
-            '../util/verification': 42,
-            'typed-dom': 10
+            '../util/verification': 42
         }
     ],
     29: [
