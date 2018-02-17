@@ -26,6 +26,7 @@ export function bind(target: HTMLElement | DocumentFragment): (source: string) =
             void el.remove()));
     const [, [ref = null] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     for (const [seg, k] of ns.slice(i, ns.length - j).map<[string, number]>((seg, k) => [seg, i + k])) {
+      assert(revision === rev);
       const es = parse_(seg);
       void pairs.splice(k, 0, [seg, es]);
       if (es.length === 0) continue;
