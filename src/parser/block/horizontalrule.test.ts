@@ -3,7 +3,7 @@ import { loop } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/horizontalrule', () => {
-  describe('newline', () => {
+  describe('horizontalrule', () => {
     const parser = loop(horizontalrule);
 
     it('invalid', () => {
