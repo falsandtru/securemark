@@ -1,4 +1,4 @@
-/*! securemark v0.40.0 https://github.com/falsandtru/securemark | (c) 2018, falsandtru | (Apache-2.0 AND MPL-2.0) License */
+/*! securemark v0.41.0 https://github.com/falsandtru/securemark | (c) 2018, falsandtru | (Apache-2.0 AND MPL-2.0) License */
 require = function () {
     function e(t, n, r) {
         function s(o, u) {
