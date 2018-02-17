@@ -28,10 +28,11 @@ export function bind(target: HTMLElement | DocumentFragment): (source: string) =
     for (const [seg, k] of ns.slice(i, ns.length - j).map<[string, number]>((seg, k) => [seg, i + k])) {
       const es = parse_(seg);
       void pairs.splice(k, 0, [seg, es]);
-      void es
-        .forEach(el =>
-          void target.insertBefore(el, ref));
-      yield* es;
+      if (es.length === 0) continue;
+      assert(es.length === 1);
+      const [el] = es;
+      void target.insertBefore(el, ref);
+      yield el;
       if (revision !== rev) return;
     }
     assert(revision === rev);
