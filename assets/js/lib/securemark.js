@@ -1667,15 +1667,14 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const inline_1 = require('../../inline');
             const index_1 = require('../../string/index');
-            const syntax = /^\s+\[#\S+?\]$/;
+            const syntax = /^\s+\[#\S+?\]\s*$/;
             exports.index = source => {
-                if (!source.trim().startsWith('[#') || source.search(syntax) !== 0)
+                if (source.search(syntax) !== 0)
                     return;
-                source = source.trim();
-                const [[el = undefined] = [], rest = ''] = inline_1.inline(source) || [];
-                if (!(el instanceof HTMLAnchorElement))
-                    return;
+                const [[el = undefined] = [], rest = ''] = inline_1.inline(source.trim()) || [];
                 if (rest !== '')
+                    return;
+                if (!(el instanceof HTMLAnchorElement))
                     return;
                 void el.setAttribute('class', 'index');
                 return [
