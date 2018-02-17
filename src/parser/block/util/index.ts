@@ -2,17 +2,14 @@
 import { inline } from '../../inline';
 import { makeIndex } from '../../string/index';
 
-const syntax = /^\s+\[#\S+?\]$/;
+const syntax = /^\s+\[#\S+?\]\s*$/;
 
 export const index: IndexParser = source => {
   assert(!source.match(/\n/));
-  if (!source.trim().startsWith('[#') || source.search(syntax) !== 0) return;
-  assert(source.endsWith(']'));
-  source = source.trim();
-  assert(source.startsWith('[#'));
-  const [[el = undefined] = [], rest = ''] = inline(source) || [];
-  if (!(el instanceof HTMLAnchorElement)) return;
+  if (source.search(syntax) !== 0) return;
+  const [[el = undefined] = [], rest = ''] = inline(source.trim()) || [];
   if (rest !== '') return;
+  if (!(el instanceof HTMLAnchorElement)) return;
   assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
   void el.setAttribute('class', 'index');
   return [[el], rest];

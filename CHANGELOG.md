@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.41.1
+
+- Improve index parser.
+  - Allow trailing whitespace.
+
 ## 0.41.0
 
 - Add reference syntax.
