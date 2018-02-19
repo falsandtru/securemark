@@ -3070,11 +3070,11 @@ require = function () {
                                 void media_1.cache.set(url, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
-                                void document.head.appendChild(typed_dom_1.default.link({
+                                void document.head.appendChild(typed_dom_1.html('link', {
                                     rel: 'stylesheet',
                                     href: stylesheet,
                                     crossorigin: 'anonymous'
-                                }).element);
+                                }));
                             },
                             error({status, statusText}) {
                                 outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
