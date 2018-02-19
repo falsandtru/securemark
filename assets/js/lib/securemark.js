@@ -851,9 +851,9 @@ require = function () {
             const parse_1 = require('./parse');
             function bind(target) {
                 const pairs = [];
-                let revision = [];
+                let revision;
                 return function* (source) {
-                    const rev = revision = [];
+                    const rev = revision = Symbol();
                     const cs = pairs.map(([s]) => s);
                     if (source === cs.join(''))
                         return;
@@ -879,13 +879,12 @@ require = function () {
                             seg,
                             es
                         ]);
-                        if (es.length === 0)
-                            continue;
-                        const [el] = es;
-                        void target.insertBefore(el, ref);
-                        yield el;
-                        if (revision !== rev)
-                            return;
+                        for (const el of es) {
+                            void target.insertBefore(el, ref);
+                            yield el;
+                            if (revision !== rev)
+                                return;
+                        }
                     }
                 };
             }
