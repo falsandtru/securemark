@@ -26,11 +26,11 @@ export function gist(url: string): HTMLElement {
           gist.firstChild);
         void cache.set(url, outer.cloneNode(true) as HTMLElement);
         if (document.head.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
-        void document.head.appendChild(DOM.link({
+        void document.head.appendChild(html('link', {
           rel: 'stylesheet',
           href: stylesheet,
           crossorigin: 'anonymous',
-        }).element);
+        }));
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
