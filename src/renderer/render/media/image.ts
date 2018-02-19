@@ -9,5 +9,5 @@ export function image(url: string, alt: string): HTMLImageElement {
         src: url,
         alt,
         style: 'max-width: 100%;',
-      }).cloneNode(true) as HTMLImageElement);
+      }).cloneNode(true));
 }

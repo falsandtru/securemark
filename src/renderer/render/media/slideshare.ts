@@ -4,7 +4,7 @@ import { sanitize } from 'dompurify';
 import DOM, { html } from 'typed-dom';
 
 export function slideshare(url: string): HTMLElement {
-  if (cache.has(url)) return cache.get(url)!.cloneNode(true) as HTMLElement;
+  if (cache.has(url)) return cache.get(url)!.cloneNode(true);
   return DOM.div({
     class: 'media',
     style: 'position: relative;',
@@ -21,7 +21,7 @@ export function slideshare(url: string): HTMLElement {
         iframe.parentElement!.style.paddingTop = `${(+iframe.height / +iframe.width) * 100}%`;
         void outer.appendChild(iframe.nextElementSibling!);
         void outer.lastElementChild!.removeAttribute('style');
-        void cache.set(url, outer.cloneNode(true) as HTMLElement);
+        void cache.set(url, outer.cloneNode(true));
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));

@@ -10,5 +10,5 @@ export function audio(url: string, alt: string): HTMLAudioElement {
         alt,
         controls: '',
         style: 'width: 100%;',
-      }).cloneNode(true) as HTMLAudioElement);
+      }).cloneNode(true));
 }

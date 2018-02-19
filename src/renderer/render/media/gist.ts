@@ -4,7 +4,7 @@ import { sanitize } from 'dompurify';
 import DOM, { html } from 'typed-dom';
 
 export function gist(url: string): HTMLElement {
-  if (cache.has(url)) return cache.get(url)!.cloneNode(true) as HTMLElement;
+  if (cache.has(url)) return cache.get(url)!.cloneNode(true);
   return DOM.div({
     class: 'media',
     style: 'position: relative;',
@@ -24,7 +24,7 @@ export function gist(url: string): HTMLElement {
               parse(escape(url)).querySelector('a')!),
           ]).element,
           gist.firstChild);
-        void cache.set(url, outer.cloneNode(true) as HTMLElement);
+        void cache.set(url, outer.cloneNode(true));
         if (document.head.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
         void document.head.appendChild(html('link', {
           rel: 'stylesheet',

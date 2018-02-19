@@ -22,7 +22,7 @@ export const math: MathParser = source => {
       if (!isTightVisible(source.slice(1, source.length - rest.length - 1))) return;
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;
       const el = html('span', { class: 'math' }, `$${squash(ns).textContent}$`);
-      if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true) as HTMLSpanElement], rest];
+      if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true)], rest];
       void el.setAttribute('data-src', el.textContent!);
       return [[el], rest];
     })

@@ -11,5 +11,5 @@ export function video(url: string, alt: string): HTMLVideoElement {
         muted: '',
         controls: '',
         style: 'max-width: 100%;',
-      }).cloneNode(true) as HTMLVideoElement);
+      }).cloneNode(true));
 }

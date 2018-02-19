@@ -14,7 +14,7 @@ const cache = new Cache<string, HTMLElement>(100);
 
 export function twitter(url: string): HTMLElement {
   if (cache.has(url)) {
-    const el = cache.get(url)!.cloneNode(true) as HTMLElement;
+    const el = cache.get(url)!.cloneNode(true);
     window.twttr && void window.twttr.widgets.load(el);
     return el;
   }
@@ -29,7 +29,7 @@ export function twitter(url: string): HTMLElement {
       cache: true,
       success({ html }): void {
         outer.innerHTML = sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${html}</div>`, { ADD_TAGS: ['script'] });
-        void cache.set(url, outer.cloneNode(true) as HTMLElement);
+        void cache.set(url, outer.cloneNode(true));
         if (window.twttr) return void window.twttr.widgets.load(outer);
         if (widgetScriptRequested) return;
         widgetScriptRequested = true;

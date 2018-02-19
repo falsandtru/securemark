@@ -17,7 +17,7 @@ export const index: IndexParser = source => {
 
 export function defineIndex(target: HTMLElement): void {
   assert(!target.hasAttribute('id'));
-  const el = target.querySelector('.index') || target.cloneNode(true) as HTMLElement;
+  const el = target.querySelector('.index') || target.cloneNode(true);
   void el.remove();
   void [...el.querySelectorAll('code[data-src], .math[data-src]')]
     .forEach(el =>
