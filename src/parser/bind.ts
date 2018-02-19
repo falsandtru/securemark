@@ -5,9 +5,9 @@ export function bind(target: HTMLElement | DocumentFragment): (source: string) =
   assert(target.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
-  let revision: object = [];
+  let revision: symbol;
   return function* (source: string): Iterable<HTMLElement> {
-    const rev = revision = [];
+    const rev = revision = Symbol();
     const cs = pairs.map(([s]) => s);
     if (source === cs.join('')) return;
     const ns = segment(source);
@@ -29,12 +29,13 @@ export function bind(target: HTMLElement | DocumentFragment): (source: string) =
       assert(revision === rev);
       const es = parse_(seg);
       void pairs.splice(k, 0, [seg, es]);
-      if (es.length === 0) continue;
-      assert(es.length === 1);
-      const [el] = es;
-      void target.insertBefore(el, ref);
-      yield el;
-      if (revision !== rev) return;
+      assert(es.length < 2);
+      for (const el of es) {
+        assert(revision === rev);
+        void target.insertBefore(el, ref);
+        yield el;
+        if (revision !== rev) return;
+      }
     }
     assert(revision === rev);
   };
