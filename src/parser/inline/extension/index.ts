@@ -4,9 +4,9 @@ import { isTightVisible } from '../../source/validation';
 import { defineIndex } from '../../block/util/index';
 import { template } from './template';
 
-export const index: ExtensionParser.IndexParser = template((flag, query, frag): [[HTMLAnchorElement], string] | undefined => {
+export const index: ExtensionParser.IndexParser = template((flag, query) => {
   if (flag !== '#') return;
-  if (frag.textContent === flag) return;
+  if (query === '') return;
   const [[el = undefined] = [], rest = ''] = link(`[${query}]()`) || [];
   if (!el) return;
   assert(rest === '');
