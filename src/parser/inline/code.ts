@@ -2,7 +2,6 @@
 import { combine, loop, bracket, transform } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
-import { squash } from '../squash';
 import { match, isVisible, isSingleLine } from '../source/validation';
 import { html } from 'typed-dom';
 
@@ -19,7 +18,7 @@ export const code: CodeParser = source => {
       keyword),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;
-      const el = html('code', { 'data-src': source.slice(0, source.length - rest.length) }, squash(ns).textContent!.trim());
+      const el = html('code', { 'data-src': source.slice(0, source.length - rest.length) }, ns.reduce((acc, n) => acc + n.textContent!, '').trim());
       if (!isVisible(el.textContent!)) return;
       return [[el], rest];
     })

@@ -16,5 +16,5 @@ export const hashtag: ParagraphParser.HashtagParser = source => {
   const line = source.split('\n', 1)[0];
   const [ts = [], rest = undefined] = loop(combine<ParagraphParser.HashtagParser>([unescsource]), closer)(line) || [];
   if (rest === undefined) return;
-  return [[html('a', { class: 'hashtag', rel: 'noopener' }, squash(ts).textContent!)], rest + source.slice(line.length)];
+  return [[html('a', { class: 'hashtag', rel: 'noopener' }, squash(ts))], rest + source.slice(line.length)];
 };

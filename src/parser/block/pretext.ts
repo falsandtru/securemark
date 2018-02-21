@@ -2,7 +2,6 @@
 import { verify } from './util/verification';
 import { loop } from '../../combinator';
 import { escsource } from '../source/escapable';
-import { squash } from '../squash';
 import { html } from 'typed-dom';
 
 const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
@@ -17,7 +16,7 @@ export const pretext: PretextParser = verify(source => {
     void el.setAttribute('class', `language-${lang.toLowerCase()}`);
     void el.setAttribute('data-lang', lang);
   }
-  const filepath = squash((loop(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0]).textContent!;
+  const filepath = ((loop(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[] as Text[]])[0]).reduce((acc, n) => acc + n.textContent!, '');
   if (filepath) {
     void el.setAttribute('data-file', filepath);
   }

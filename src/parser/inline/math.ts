@@ -1,7 +1,6 @@
 ﻿import { MathParser } from '../inline';
 import { combine, loop, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
-import { squash } from '../squash';
 import { match, isTightVisible, isSingleLine } from '../source/validation';
 import { Cache } from 'spica/cache';
 import { html } from 'typed-dom';
@@ -21,7 +20,7 @@ export const math: MathParser = source => {
     (ns, rest) => {
       if (!isTightVisible(source.slice(1, source.length - rest.length - 1))) return;
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;
-      const el = html('span', { class: 'math' }, `$${squash(ns).textContent}$`);
+      const el = html('span', { class: 'math' }, `$${ns.reduce((acc, n) => acc + n.textContent!, '')}$`);
       if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true)], rest];
       void el.setAttribute('data-src', el.textContent!);
       return [[el], rest];

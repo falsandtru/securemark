@@ -14,7 +14,7 @@ export const brace: BraceParser = source => {
       loop(combine<BraceParser>([inline]), closer),
       '}'),
     (ns, rest) => [
-      [...squash([document.createTextNode('{'), ...ns, document.createTextNode('}')]).childNodes as NodeListOf<HTMLElement | Text>],
+      squash([document.createTextNode('{'), ...ns, document.createTextNode('}')]),
       rest
     ])
     (source);

@@ -22,7 +22,7 @@ export const olist: OListParser = verify(source => {
     if (line.search(syntax) === 0) {
       const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
       const li = el.appendChild(html('li'));
-      void li.appendChild(squash((loop(combine<OListParser>([inline]))(text) || [[]])[0]));
+      void li.appendChild(squash((loop(combine<OListParser>([inline]))(text) || [[]])[0], document.createDocumentFragment()));
       source = source.slice(line.length + 1);
       continue;
     }
@@ -33,7 +33,7 @@ export const olist: OListParser = verify(source => {
       if (rest === undefined) return;
       const [children = [], brest = block] = combine<OListParser>([ulist, olist])(fillOListFlag(block)) || [];
       if (children.length !== 1 || brest.length !== 0) return;
-      void li.appendChild(squash(children));
+      void li.appendChild(squash(children, document.createDocumentFragment()));
       source = rest;
       continue;
     }

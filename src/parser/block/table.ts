@@ -57,14 +57,14 @@ function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: strin
 const rowseparator = /^\||^[^\S\n]*(?=\n|$)/;
 const rowend = /^\|?[^\S\n]*(?=\n|$)/;
 function parse(row: string): [DocumentFragment[], string] | undefined {
-  const cols = [];
+  const cols: DocumentFragment[] = [];
   while (true) {
     if (row[0] !== '|') return;
     const [, rest = row.slice(1)] = loop(inline, rowseparator)(row.slice(1)) || [];
     const [col = []] = loop(inline)(row.slice(1, row.length - rest.length).trim()) || [];
     assert(rest.length < row.length);
     row = rest;
-    void cols.push(squash(col));
+    void cols.push(squash(col, document.createDocumentFragment()));
     if (row.search(rowend) === 0) return [cols, row.slice(row.split('\n')[0].length + 1)];
   }
 }

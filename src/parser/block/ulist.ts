@@ -26,7 +26,7 @@ export const ulist: UListParser = verify(source => {
       if (checkbox) {
         void li.appendChild(html('span', { class: 'checkbox' }, `${checkbox.trim()} `));
       }
-      void li.appendChild(squash((loop(combine<UListParser>([inline]))(text.slice(checkbox.length)) || [[]])[0]));
+      void li.appendChild(squash((loop(combine<UListParser>([inline]))(text.slice(checkbox.length)) || [[]])[0], document.createDocumentFragment()));
       source = source.slice(line.length + 1);
       continue;
     }
@@ -37,7 +37,7 @@ export const ulist: UListParser = verify(source => {
       if (rest === undefined) return;
       const [children = [], brest = block] = combine<UListParser>([ulist, olist])(fillOListFlag(block)) || [];
       if (children.length !== 1 || brest.length !== 0) return;
-      void li.appendChild(squash(children));
+      void li.appendChild(squash(children, document.createDocumentFragment()));
       source = rest;
       continue;
     }

@@ -14,7 +14,7 @@ export const bracket: BracketParser = source => {
       loop(combine<BracketParser>([inline]), closer),
       ']'),
     (ns, rest) => [
-      [...squash([document.createTextNode('['), ...ns, document.createTextNode(']')]).childNodes as NodeListOf<HTMLElement | Text>],
+      squash([document.createTextNode('['), ...ns, document.createTextNode(']')]),
       rest
     ])
     (source);

@@ -3,7 +3,6 @@ import { verify } from '../util/verification';
 import { Parser, loop } from '../../../combinator';
 import { block } from '../../block';
 import { unescsource } from '../../source/unescapable';
-import { squash } from '../../squash';
 
 export interface PlaceholderParser extends
   Markdown<'extensionblock' & 'extensionblock/placeholder'>,
@@ -21,7 +20,7 @@ export const placeholder: PlaceholderParser = verify(source => {
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.startsWith(`${keyword}`) && line.trim() === `${keyword}`) break;
-    void lines.push(squash((loop(unescsource)(`${line}\n`) || [[]])[0]).textContent!);
+    void lines.push((loop(unescsource)(`${line}\n`) || [[] as Text[]])[0].reduce((acc, n) => acc + n.textContent!, ''));
     source = source.slice(line.length + 1);
     if (source === '') return;
   }

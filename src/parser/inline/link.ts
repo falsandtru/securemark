@@ -18,7 +18,7 @@ export const link: LinkParser = source => {
       ']'),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
-      const children = squash(ns);
+      const children = squash(ns, document.createDocumentFragment());
       if (children.querySelector('a, .annotation') && !children.querySelector('.media')) return;
       if (children.querySelector('img, .media')) {
         if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img, .media')) return;

@@ -54,8 +54,8 @@ export const blockquote: BlockquoteParser = verify((source: string) => {
         : source;
     const [cs = [], rest = source] = loop(combine<BlockquoteParser>([unescsource]), '\n|$')(source) || [];
     const node = mode === 'plain'
-      ? document.createTextNode(squash(cs).textContent!.replace(/ /g, String.fromCharCode(160)))
-      : squash(cs);
+      ? document.createTextNode(squash(cs, document.createDocumentFragment()).textContent!.replace(/ /g, String.fromCharCode(160)))
+      : squash(cs, document.createDocumentFragment());
     if (bottom.childNodes.length === 0 && node.textContent!.trim() === '') return;
     void bottom.appendChild(node);
     source = rest.slice(1);
