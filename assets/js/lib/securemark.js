@@ -2123,10 +2123,10 @@ require = function () {
             const validation_1 = require('../../source/validation');
             const index_1 = require('../../block/util/index');
             const template_1 = require('./template');
-            exports.index = template_1.template((flag, query, frag) => {
+            exports.index = template_1.template((flag, query) => {
                 if (flag !== '#')
                     return;
-                if (frag.textContent === flag)
+                if (query === '')
                     return;
                 const [[el = undefined] = [], rest = ''] = link_1.link(`[${ query }]()`) || [];
                 if (!el)
@@ -2158,7 +2158,7 @@ require = function () {
             const template_1 = require('./template');
             const typed_dom_1 = require('typed-dom');
             exports.placeholder = template_1.template(flag => {
-                const el = typed_dom_1.html('span', combinator_1.loop(inline_1.inline)(`++**WARNING: DON'T USE \`[${ flag } ]\` SYNTAX!!** This syntax is reserved for extensibility.++`)[0]);
+                const el = typed_dom_1.html('span', combinator_1.loop(inline_1.inline)(`**WARNING: DON'T USE \`[${ flag } ]\` SYNTAX!!** This syntax is reserved for extensibility.`)[0]);
                 return [
                     [el],
                     ''
@@ -2178,15 +2178,14 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
             const inline_1 = require('../../inline');
-            const squash_1 = require('../../squash');
             const validation_1 = require('../../source/validation');
             const syntax = /^\[[~#:^\[][^\n]*?\]/;
             exports.template = parser => {
                 return function (source) {
-                    const [flag = '', query = '', frag = undefined, rest = ''] = parse(source) || [];
-                    if (!frag)
+                    const [flag = '', query = '', rest = ''] = parse(source) || [];
+                    if (flag === '')
                         return undefined;
-                    const result = parser(flag, query, frag);
+                    const result = parser(flag, query);
                     if (!result)
                         return undefined;
                     return [
@@ -2198,7 +2197,7 @@ require = function () {
             function parse(source) {
                 if (!validation_1.match(source, '[', syntax))
                     return;
-                const [ns = [], rest = undefined] = combinator_1.bracket('[', combinator_1.loop(inline_1.inline, /^[\]\n]/), ']')(source) || [];
+                const [, rest = undefined] = combinator_1.bracket('[', combinator_1.loop(inline_1.inline, /^[\]\n]/), ']')(source) || [];
                 if (rest === undefined)
                     return;
                 const text = source.slice(1, source.length - rest.length - 1);
@@ -2209,7 +2208,6 @@ require = function () {
                 return [
                     flag,
                     query,
-                    squash_1.squash(ns),
                     rest
                 ];
             }
@@ -2217,8 +2215,7 @@ require = function () {
         {
             '../../../combinator': 16,
             '../../inline': 45,
-            '../../source/validation': 75,
-            '../../squash': 76
+            '../../source/validation': 75
         }
     ],
     59: [
