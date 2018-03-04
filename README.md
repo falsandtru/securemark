@@ -17,6 +17,7 @@ Secure markdown renderer working on browsers for user input data.
 - Syntax highlight with PrismJS.
 - LaTeX support with MathJax.
 - Large document support.
+- Table of contents.
 
 ## Demos
 

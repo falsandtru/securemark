@@ -2,6 +2,7 @@
 
 ## 0.42.0
 
+- Add toc function.
 - Extend bind function signature.
 
 ## 0.41.1
