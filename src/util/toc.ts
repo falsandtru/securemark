@@ -1,13 +1,13 @@
 ﻿import { html } from "typed-dom";
 import { concat } from 'spica/concat';
 
-interface Tree extends Array<HTMLHeadingElement | [HTMLHeadingElement, Tree]> { }
-
 export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement {
   const hs = [...source.children]
     .filter((el): el is HTMLHeadingElement =>
       el instanceof HTMLHeadingElement);
   return parse(cons(hs));
+
+  interface Tree extends Array<HTMLHeadingElement | [HTMLHeadingElement, Tree]> { }
 
   function parse(node: Tree): HTMLUListElement {
     return html('ul', node.map(node =>

@@ -6,7 +6,7 @@ describe('Unit: util/toc', () => {
   describe('toc', () => {
     it('empty', () => {
       assert.strictEqual(
-        toc(html('section', [])).outerHTML,
+        toc(parse('')).outerHTML,
         html('ul').outerHTML);
     });
 
