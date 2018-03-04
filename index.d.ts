@@ -6,9 +6,9 @@
 */
 
 export function parse(source: string): DocumentFragment;
+export function bind(target: HTMLElement): (source: string) => Iterable<HTMLElement>;
 export function escape(source: string): string;
-export function bind(el: HTMLElement): (source: string) => Iterable<HTMLElement>;
-export function render(el: HTMLElement, opts?: RenderingOptions): void;
+export function render(target: HTMLElement, opts?: RenderingOptions): void;
 
 export interface RenderingOptions {
   code?: (target: HTMLElement) => void;

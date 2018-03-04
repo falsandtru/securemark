@@ -1,4 +1,4 @@
 export { parse } from './parser/parse';
-export { escape } from './parser/escape';
 export { bind } from './parser/bind';
+export { escape } from './parser/escape';
 export { caches } from './parser/cache';
