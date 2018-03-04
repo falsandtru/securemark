@@ -1,7 +1,7 @@
 ﻿import { segment } from './segment';
 import { parse_ } from './parse';
 
-export function bind(target: HTMLElement | DocumentFragment): (source: string) => Iterable<HTMLElement> {
+export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement> {
   assert(target.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];

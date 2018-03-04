@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.42.0
+
+- Extend bind function signature.
+
 ## 0.41.1
 
 - Improve index parser.
