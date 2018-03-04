@@ -981,7 +981,7 @@ require = function () {
                     }
                     source = source.split(/[^\S\n]/, 1)[0] === indent ? source.slice(indent.length + 1) : source.startsWith(`${ indent }\n`) ? source.slice(indent.length) : source;
                     const [cs = [], rest = source] = combinator_1.loop(combinator_1.combine([unescapable_1.unescsource]), '\n|$')(source) || [];
-                    const node = mode === 'plain' ? document.createTextNode(squash_1.squash(cs).textContent.replace(/ /g, String.fromCharCode(160))) : squash_1.squash(cs);
+                    const node = mode === 'plain' ? document.createTextNode(squash_1.squash(cs, document.createDocumentFragment()).textContent.replace(/ /g, String.fromCharCode(160))) : squash_1.squash(cs, document.createDocumentFragment());
                     if (bottom.childNodes.length === 0 && node.textContent.trim() === '')
                         return;
                     void bottom.appendChild(node);
@@ -1055,7 +1055,7 @@ require = function () {
                             void dt.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([
                                 index_1.index,
                                 inline_1.inline
-                            ]))(line.slice(1).trim()) || [[]])[0]));
+                            ]))(line.slice(1).trim()) || [[]])[0], document.createDocumentFragment()));
                             void index_1.defineIndex(dt);
                             source = source.slice(line.length + 1);
                             continue;
@@ -1071,7 +1071,7 @@ require = function () {
                                 void texts.push(line);
                                 source = source.slice(line.length + 1);
                             }
-                            void dd.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(texts.join('\n').trim()) || [[]])[0]));
+                            void dd.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(texts.join('\n').trim()) || [[]])[0], document.createDocumentFragment()));
                             continue;
                         }
                     }
@@ -1115,7 +1115,6 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const block_1 = require('../../block');
             const unescapable_1 = require('../../source/unescapable');
-            const squash_1 = require('../../squash');
             const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
             exports.placeholder = verification_1.verify(source => {
                 if (!source.startsWith('~~~'))
@@ -1130,7 +1129,7 @@ require = function () {
                     const line = source.split('\n', 1)[0];
                     if (line.startsWith(`${ keyword }`) && line.trim() === `${ keyword }`)
                         break;
-                    void lines.push(squash_1.squash((combinator_1.loop(unescapable_1.unescsource)(`${ line }\n`) || [[]])[0]).textContent);
+                    void lines.push((combinator_1.loop(unescapable_1.unescsource)(`${ line }\n`) || [[]])[0].reduce((acc, n) => acc + n.textContent, ''));
                     source = source.slice(line.length + 1);
                     if (source === '')
                         return;
@@ -1145,7 +1144,6 @@ require = function () {
             '../../../combinator': 16,
             '../../block': 24,
             '../../source/unescapable': 74,
-            '../../squash': 76,
             '../util/verification': 42
         }
     ],
@@ -1277,7 +1275,7 @@ require = function () {
                     if (line.search(syntax) === 0) {
                         const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
                         const li = el.appendChild(typed_dom_1.html('li'));
-                        void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text) || [[]])[0]));
+                        void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text) || [[]])[0], document.createDocumentFragment()));
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
@@ -1296,7 +1294,7 @@ require = function () {
                         ])(indent_1.fillOListFlag(block)) || [];
                         if (children.length !== 1 || brest.length !== 0)
                             return;
-                        void li.appendChild(squash_1.squash(children));
+                        void li.appendChild(squash_1.squash(children, document.createDocumentFragment()));
                         source = rest;
                         continue;
                     }
@@ -1393,7 +1391,7 @@ require = function () {
                     [typed_dom_1.html('a', {
                             class: 'hashtag',
                             rel: 'noopener'
-                        }, squash_1.squash(ts).textContent)],
+                        }, squash_1.squash(ts))],
                     rest + source.slice(line.length)
                 ];
             };
@@ -1428,7 +1426,7 @@ require = function () {
                     [typed_dom_1.html('a', {
                             class: 'reference',
                             rel: 'noopener'
-                        }, squash_1.squash(ts).textContent)],
+                        }, squash_1.squash(ts))],
                     source.slice(line.length + 1)
                 ];
             };
@@ -1448,7 +1446,6 @@ require = function () {
             const verification_1 = require('./util/verification');
             const combinator_1 = require('../../combinator');
             const escapable_1 = require('../source/escapable');
-            const squash_1 = require('../squash');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
             exports.pretext = verification_1.verify(source => {
@@ -1463,7 +1460,7 @@ require = function () {
                     void el.setAttribute('class', `language-${ lang.toLowerCase() }`);
                     void el.setAttribute('data-lang', lang);
                 }
-                const filepath = squash_1.squash((combinator_1.loop(escapable_1.escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0]).textContent;
+                const filepath = (combinator_1.loop(escapable_1.escsource, /^\s/)(notes.slice(lang.length).trim()) || [[]])[0].reduce((acc, n) => acc + n.textContent, '');
                 if (filepath) {
                     void el.setAttribute('data-file', filepath);
                 }
@@ -1477,7 +1474,6 @@ require = function () {
         {
             '../../combinator': 16,
             '../source/escapable': 70,
-            '../squash': 76,
             './util/verification': 42,
             'typed-dom': 10
         }
@@ -1539,7 +1535,7 @@ require = function () {
                     const [, rest = row.slice(1)] = combinator_1.loop(inline_1.inline, rowseparator)(row.slice(1)) || [];
                     const [col = []] = combinator_1.loop(inline_1.inline)(row.slice(1, row.length - rest.length).trim()) || [];
                     row = rest;
-                    void cols.push(squash_1.squash(col));
+                    void cols.push(squash_1.squash(col, document.createDocumentFragment()));
                     if (row.search(rowend) === 0)
                         return [
                             cols,
@@ -1586,7 +1582,7 @@ require = function () {
                         if (checkbox) {
                             void li.appendChild(typed_dom_1.html('span', { class: 'checkbox' }, `${ checkbox.trim() } `));
                         }
-                        void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text.slice(checkbox.length)) || [[]])[0]));
+                        void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text.slice(checkbox.length)) || [[]])[0], document.createDocumentFragment()));
                         source = source.slice(line.length + 1);
                         continue;
                     } else {
@@ -1605,7 +1601,7 @@ require = function () {
                         ])(indent_1.fillOListFlag(block)) || [];
                         if (children.length !== 1 || brest.length !== 0)
                             return;
-                        void li.appendChild(squash_1.squash(children));
+                        void li.appendChild(squash_1.squash(children, document.createDocumentFragment()));
                         source = rest;
                         continue;
                     }
@@ -1817,11 +1813,11 @@ require = function () {
                 if (!validation_1.match(source, '<', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('<', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '>'), (ns, rest) => [
-                    [...squash_1.squash([
-                            document.createTextNode('<'),
-                            ...ns,
-                            document.createTextNode('>')
-                        ]).childNodes],
+                    squash_1.squash([
+                        document.createTextNode('<'),
+                        ...ns,
+                        document.createTextNode('>')
+                    ]),
                     rest
                 ])(source);
             };
@@ -1973,11 +1969,11 @@ require = function () {
                 if (!validation_1.match(source, '{', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('{', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), '}'), (ns, rest) => [
-                    [...squash_1.squash([
-                            document.createTextNode('{'),
-                            ...ns,
-                            document.createTextNode('}')
-                        ]).childNodes],
+                    squash_1.squash([
+                        document.createTextNode('{'),
+                        ...ns,
+                        document.createTextNode('}')
+                    ]),
                     rest
                 ])(source);
             };
@@ -2003,11 +1999,11 @@ require = function () {
                 if (!validation_1.match(source, '[', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), ']'), (ns, rest) => [
-                    [...squash_1.squash([
-                            document.createTextNode('['),
-                            ...ns,
-                            document.createTextNode(']')
-                        ]).childNodes],
+                    squash_1.squash([
+                        document.createTextNode('['),
+                        ...ns,
+                        document.createTextNode(']')
+                    ]),
                     rest
                 ])(source);
             };
@@ -2026,7 +2022,6 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const unescapable_1 = require('../source/unescapable');
             const char_1 = require('../source/char');
-            const squash_1 = require('../squash');
             const validation_1 = require('../source/validation');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^(`+)[^\n]+?\1(?!`)/;
@@ -2042,7 +2037,7 @@ require = function () {
                 ]), `^${ keyword }(?!\`)|^\n`), keyword), (ns, rest) => {
                     if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length)))
                         return;
-                    const el = typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, squash_1.squash(ns).textContent.trim());
+                    const el = typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, ns.reduce((acc, n) => acc + n.textContent, '').trim());
                     if (!validation_1.isVisible(el.textContent))
                         return;
                     return [
@@ -2057,7 +2052,6 @@ require = function () {
             '../source/char': 68,
             '../source/unescapable': 74,
             '../source/validation': 75,
-            '../squash': 76,
             'typed-dom': 10
         }
     ],
@@ -2308,7 +2302,7 @@ require = function () {
                 return combinator_1.transform(combinator_1.bracket('[', combinator_1.loop(combinator_1.combine([inline_1.inline]), /^]\n?|^\n/), ']'), (ns, rest) => {
                     if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length).trim()))
                         return;
-                    const children = squash_1.squash(ns);
+                    const children = squash_1.squash(ns, document.createDocumentFragment());
                     if (children.querySelector('a, .annotation') && !children.querySelector('.media'))
                         return;
                     if (children.querySelector('img, .media')) {
@@ -2359,7 +2353,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             const escapable_1 = require('../source/escapable');
-            const squash_1 = require('../squash');
             const validation_1 = require('../source/validation');
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
@@ -2374,7 +2367,7 @@ require = function () {
                         return;
                     if (!validation_1.isSingleLine(source.slice(0, source.length - rest.length)))
                         return;
-                    const el = typed_dom_1.html('span', { class: 'math' }, `$${ squash_1.squash(ns).textContent }$`);
+                    const el = typed_dom_1.html('span', { class: 'math' }, `$${ ns.reduce((acc, n) => acc + n.textContent, '') }$`);
                     if (exports.cache.has(el.textContent))
                         return [
                             [exports.cache.get(el.textContent).cloneNode(true)],
@@ -2392,7 +2385,6 @@ require = function () {
             '../../combinator': 16,
             '../source/escapable': 70,
             '../source/validation': 75,
-            '../squash': 76,
             'spica/cache': 5,
             'typed-dom': 10
         }
@@ -2466,11 +2458,11 @@ require = function () {
                 if (!validation_1.match(source, '(', syntax))
                     return;
                 return combinator_1.transform(combinator_1.bracket('(', combinator_1.loop(combinator_1.combine([inline_1.inline]), closer), ')'), (ns, rest) => [
-                    [...squash_1.squash([
-                            document.createTextNode('('),
-                            ...ns,
-                            document.createTextNode(')')
-                        ]).childNodes],
+                    squash_1.squash([
+                        document.createTextNode('('),
+                        ...ns,
+                        document.createTextNode(')')
+                    ]),
                     rest
                 ])(source);
             };
@@ -2828,18 +2820,36 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function squash(nodes) {
-                const frag = document.createDocumentFragment();
-                for (const curr of nodes) {
-                    const prev = frag.lastChild;
+            var Types;
+            (function (Types) {
+                Types[Types['Array'] = 0] = 'Array';
+                Types[Types['Node'] = 1] = 'Node';
+            }(Types || (Types = {})));
+            function squash(nodes, container = []) {
+                const obj = Array.isArray(container) ? {
+                    type: 0,
+                    value: container
+                } : {
+                    type: 1,
+                    value: container
+                };
+                void nodes.reduce((prev, curr) => {
                     if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
                         prev.textContent += curr.textContent;
                         curr.textContent = '';
-                    } else {
-                        void frag.appendChild(curr);
+                        return prev;
                     }
-                }
-                return frag;
+                    switch (obj.type) {
+                    case 0:
+                        void obj.value.push(curr);
+                        break;
+                    case 1:
+                        void obj.value.appendChild(curr);
+                        break;
+                    }
+                    return curr;
+                }, undefined);
+                return container;
             }
             exports.squash = squash;
         },
