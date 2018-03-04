@@ -1,2 +1,2 @@
-﻿export { parse, escape, bind, caches } from './src/parser';
-export { render } from './src/renderer';
+export * from './src/parser';
+export * from './src/renderer';
