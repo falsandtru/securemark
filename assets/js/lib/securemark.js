@@ -1272,6 +1272,7 @@ require = function () {
             const indent_1 = require('./util/indent');
             const inline_1 = require('../inline');
             const squash_1 = require('../squash');
+            const validation_1 = require('../source/validation');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
             exports.olist = verification_1.verify(source => {
@@ -1286,32 +1287,26 @@ require = function () {
                     const line = source.split('\n', 1)[0];
                     if (line.trim() === '')
                         break;
-                    if (line.search(syntax) === 0) {
-                        const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
-                        const li = el.appendChild(typed_dom_1.html('li'));
-                        void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text) || [[]])[0], document.createDocumentFragment()));
-                        source = source.slice(line.length + 1);
+                    if (!validation_1.match(line, '', syntax))
+                        return;
+                    const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
+                    const li = el.appendChild(typed_dom_1.html('li'));
+                    void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text) || [[]])[0], document.createDocumentFragment()));
+                    source = source.slice(line.length + 1);
+                    const [block = '', rest = undefined] = indent_1.indent(source) || [];
+                    if (rest === undefined)
                         continue;
-                    } else {
-                        const li = el.lastElementChild;
-                        if (!li.firstChild || [
-                                HTMLUListElement,
-                                HTMLOListElement
-                            ].some(E => li.lastElementChild instanceof E))
-                            return;
-                        const [block = '', rest = undefined] = indent_1.indent(source) || [];
-                        if (rest === undefined)
-                            return;
-                        const [children = [], brest = block] = combinator_1.combine([
-                            ulist_1.ulist,
-                            exports.olist
-                        ])(indent_1.fillOListFlag(block)) || [];
-                        if (children.length !== 1 || brest.length !== 0)
-                            return;
-                        void li.appendChild(squash_1.squash(children, document.createDocumentFragment()));
-                        source = rest;
-                        continue;
-                    }
+                    if (!li.firstChild)
+                        return;
+                    const [children = [], brest = block] = combinator_1.combine([
+                        ulist_1.ulist,
+                        exports.olist
+                    ])(indent_1.fillOListFlag(block)) || [];
+                    if (children.length !== 1 || brest.length !== 0)
+                        return;
+                    void li.appendChild(squash_1.squash(children, document.createDocumentFragment()));
+                    source = rest;
+                    continue;
                 }
                 return [
                     [el],
@@ -1322,6 +1317,7 @@ require = function () {
         {
             '../../combinator': 17,
             '../inline': 46,
+            '../source/validation': 76,
             '../squash': 77,
             './ulist': 40,
             './util/indent': 41,
@@ -1576,6 +1572,7 @@ require = function () {
             const indent_1 = require('./util/indent');
             const inline_1 = require('../inline');
             const squash_1 = require('../squash');
+            const validation_1 = require('../source/validation');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^([-+*])(?=\s|$)/;
             const content = /^(\[[ x]\](?: +|$))?.*$/;
@@ -1588,37 +1585,29 @@ require = function () {
                     const line = source.split('\n', 1)[0];
                     if (line.trim() === '')
                         break;
-                    if (line.search(syntax) === 0) {
-                        if (!line.startsWith(flag))
-                            return;
-                        const [text, checkbox = ''] = line.slice(line.split(/\s/, 1)[0].length + 1).trim().match(content);
-                        const li = el.appendChild(typed_dom_1.html('li'));
-                        if (checkbox) {
-                            void li.appendChild(typed_dom_1.html('span', { class: 'checkbox' }, `${ checkbox.trim() } `));
-                        }
-                        void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text.slice(checkbox.length)) || [[]])[0], document.createDocumentFragment()));
-                        source = source.slice(line.length + 1);
-                        continue;
-                    } else {
-                        const li = el.lastElementChild;
-                        if (!li.firstChild || [
-                                HTMLUListElement,
-                                HTMLOListElement
-                            ].some(E => li.lastElementChild instanceof E))
-                            return;
-                        const [block = '', rest = undefined] = indent_1.indent(source) || [];
-                        if (rest === undefined)
-                            return;
-                        const [children = [], brest = block] = combinator_1.combine([
-                            exports.ulist,
-                            olist_1.olist
-                        ])(indent_1.fillOListFlag(block)) || [];
-                        if (children.length !== 1 || brest.length !== 0)
-                            return;
-                        void li.appendChild(squash_1.squash(children, document.createDocumentFragment()));
-                        source = rest;
-                        continue;
+                    if (!validation_1.match(line, flag, syntax))
+                        return;
+                    const [text, checkbox = ''] = line.slice(line.split(/\s/, 1)[0].length + 1).trim().match(content);
+                    const li = el.appendChild(typed_dom_1.html('li'));
+                    if (checkbox) {
+                        void li.appendChild(typed_dom_1.html('span', { class: 'checkbox' }, `${ checkbox.trim() } `));
                     }
+                    void li.appendChild(squash_1.squash((combinator_1.loop(combinator_1.combine([inline_1.inline]))(text.slice(checkbox.length)) || [[]])[0], document.createDocumentFragment()));
+                    source = source.slice(line.length + 1);
+                    const [block = '', rest = undefined] = indent_1.indent(source) || [];
+                    if (rest === undefined)
+                        continue;
+                    if (!li.firstChild)
+                        return;
+                    const [children = [], brest = block] = combinator_1.combine([
+                        exports.ulist,
+                        olist_1.olist
+                    ])(indent_1.fillOListFlag(block)) || [];
+                    if (children.length !== 1 || brest.length !== 0)
+                        return;
+                    void li.appendChild(squash_1.squash(children, document.createDocumentFragment()));
+                    source = rest;
+                    continue;
                 }
                 return [
                     [el],
@@ -1629,6 +1618,7 @@ require = function () {
         {
             '../../combinator': 17,
             '../inline': 46,
+            '../source/validation': 76,
             '../squash': 77,
             './olist': 34,
             './util/indent': 41,
