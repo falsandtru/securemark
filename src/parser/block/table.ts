@@ -1,6 +1,6 @@
 ﻿import { TableParser } from '../block';
 import { verify } from './util/verification';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inline } from '../inline';
 import { squash } from '../squash';
 import { html } from 'typed-dom';
@@ -60,8 +60,8 @@ function parse(row: string): [DocumentFragment[], string] | undefined {
   const cols: DocumentFragment[] = [];
   while (true) {
     if (row[0] !== '|') return;
-    const [, rest = row.slice(1)] = loop(inline, rowseparator)(row.slice(1)) || [];
-    const [col = []] = loop(inline)(row.slice(1, row.length - rest.length).trim()) || [];
+    const [, rest = row.slice(1)] = some(inline, rowseparator)(row.slice(1)) || [];
+    const [col = []] = some(inline)(row.slice(1, row.length - rest.length).trim()) || [];
     assert(rest.length < row.length);
     row = rest;
     void cols.push(squash(col, document.createDocumentFragment()));

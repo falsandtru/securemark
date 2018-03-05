@@ -1,5 +1,5 @@
 ﻿import { MathParser } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { combine, some, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { match, isTightVisible, isSingleLine } from '../source/validation';
 import { Cache } from 'spica/cache';
@@ -15,7 +15,7 @@ export const math: MathParser = source => {
   return transform(
     bracket(
       '$',
-      loop(combine<MathParser>([escsource]), closer),
+      some(combine<MathParser>([escsource]), closer),
       /^\$(?![$\d])/),
     (ns, rest) => {
       if (!isTightVisible(source.slice(1, source.length - rest.length - 1))) return;

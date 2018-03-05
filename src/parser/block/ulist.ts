@@ -1,6 +1,6 @@
 ﻿import { UListParser } from '../block';
 import { verify } from './util/verification';
-import { combine, loop } from '../../combinator';
+import { combine, some } from '../../combinator';
 import { olist } from './olist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
@@ -26,7 +26,7 @@ export const ulist: UListParser = verify(source => {
     if (checkbox) {
       void li.appendChild(html('span', { class: 'checkbox' }, `${checkbox.trim()} `));
     }
-    void li.appendChild(squash((loop(combine<UListParser>([inline]))(text.slice(checkbox.length)) || [[]])[0], document.createDocumentFragment()));
+    void li.appendChild(squash((some(combine<UListParser>([inline]))(text.slice(checkbox.length)) || [[]])[0], document.createDocumentFragment()));
     source = source.slice(line.length + 1);
     const [block = '', rest = undefined] = indent(source) || [];
     if (rest === undefined) continue;

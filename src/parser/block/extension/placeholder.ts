@@ -1,6 +1,6 @@
 ﻿import { Markdown } from '../../../../markdown.d';
 import { verify } from '../util/verification';
-import { Parser, loop } from '../../../combinator';
+import { Parser, some } from '../../../combinator';
 import { block } from '../../block';
 import { unescsource } from '../../source/unescapable';
 
@@ -20,7 +20,7 @@ export const placeholder: PlaceholderParser = verify(source => {
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.startsWith(`${keyword}`) && line.trim() === `${keyword}`) break;
-    void lines.push((loop(unescsource)(`${line}\n`) || [[] as Text[]])[0].reduce((acc, n) => acc + n.textContent!, ''));
+    void lines.push((some(unescsource)(`${line}\n`) || [[] as Text[]])[0].reduce((acc, n) => acc + n.textContent!, ''));
     source = source.slice(line.length + 1);
     if (source === '') return;
   }

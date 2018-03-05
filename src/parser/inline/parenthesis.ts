@@ -1,5 +1,5 @@
 ﻿import { ParenthesisParser, inline } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { combine, some, bracket, transform } from '../../combinator';
 import { squash } from '../squash';
 import { match } from '../source/validation';
 
@@ -11,7 +11,7 @@ export const parenthesis: ParenthesisParser = source => {
   return transform(
     bracket(
       '(',
-      loop(combine<ParenthesisParser>([inline]), closer),
+      some(combine<ParenthesisParser>([inline]), closer),
       ')'),
     (ns, rest) => [
       squash([document.createTextNode('('), ...ns, document.createTextNode(')')]),

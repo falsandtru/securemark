@@ -1,10 +1,10 @@
 ﻿import { annotation } from './annotation';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/annotation', () => {
   describe('annotation', () => {
-    const parser = loop(annotation);
+    const parser = some(annotation);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

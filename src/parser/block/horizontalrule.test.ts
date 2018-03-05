@@ -1,10 +1,10 @@
 ﻿import { horizontalrule } from './horizontalrule';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/horizontalrule', () => {
   describe('horizontalrule', () => {
-    const parser = loop(horizontalrule);
+    const parser = some(horizontalrule);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

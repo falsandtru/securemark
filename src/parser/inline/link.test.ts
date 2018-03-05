@@ -1,10 +1,10 @@
 ﻿import { link } from './link';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/link', () => {
   describe('link', () => {
-    const parser = loop(link);
+    const parser = some(link);
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('[](javascript:alert)')), undefined);

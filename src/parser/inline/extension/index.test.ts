@@ -1,10 +1,10 @@
 ﻿import { index } from './index';
-import { loop } from '../../../combinator';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/extension/index', () => {
   describe('index', () => {
-    const parser = loop(index);
+    const parser = some(index);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('[]')), undefined);

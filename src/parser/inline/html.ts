@@ -1,5 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { combine, some, bracket, transform } from '../../combinator';
 import { match, isVisible } from '../source/validation';
 import { html as htm } from 'typed-dom';
 
@@ -20,7 +20,7 @@ export const html: HTMLParser = source => {
   return transform(
     bracket(
       `<${tagname}>`,
-      loop(combine<HTMLParser>([inline]), `^</${tagname}>`),
+      some(combine<HTMLParser>([inline]), `^</${tagname}>`),
       `</${tagname}>`),
     (ns, rest) => {
       const el = htm(tagname as 'wbr', ns);

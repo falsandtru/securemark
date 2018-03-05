@@ -1,10 +1,10 @@
 ﻿import { account } from './account';
-import { loop } from '../../../combinator';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/account', () => {
   describe('account', () => {
-    const parser = loop(account);
+    const parser = some(account);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

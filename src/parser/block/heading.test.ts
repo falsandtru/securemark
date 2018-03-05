@@ -1,10 +1,10 @@
 ﻿import { heading } from './heading';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/heading', () => {
   describe('heading', () => {
-    const parser = loop(heading);
+    const parser = some(heading);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

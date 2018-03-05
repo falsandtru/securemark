@@ -1,10 +1,10 @@
 ﻿import { paragraph } from './paragraph';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/paragraph', () => {
   describe('paragraph', () => {
-    const parser = loop(paragraph);
+    const parser = some(paragraph);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

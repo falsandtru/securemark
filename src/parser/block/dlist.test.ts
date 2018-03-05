@@ -1,10 +1,10 @@
 ﻿import { dlist } from './dlist';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/dlist', () => {
   describe('dlist', () => {
-    const parser = loop(dlist);
+    const parser = some(dlist);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

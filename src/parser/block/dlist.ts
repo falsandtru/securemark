@@ -1,6 +1,6 @@
 ﻿import { DListParser } from '../block';
 import { verify } from './util/verification';
-import { combine, loop } from '../../combinator';
+import { combine, some } from '../../combinator';
 import { index, defineIndex } from './util/index';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../squash';
@@ -19,7 +19,7 @@ export const dlist: DListParser = verify(source => {
     switch (line.slice(0, 2).trim()) {
       case '~': {
         const dt = el.appendChild(html('dt'));
-        void dt.appendChild(squash((loop(combine<DListParser>([index, inline]))(line.slice(1).trim()) || [[]])[0], document.createDocumentFragment()));
+        void dt.appendChild(squash((some(combine<DListParser>([index, inline]))(line.slice(1).trim()) || [[]])[0], document.createDocumentFragment()));
         void defineIndex(dt);
         source = source.slice(line.length + 1);
         continue;
@@ -37,7 +37,7 @@ export const dlist: DListParser = verify(source => {
           void texts.push(line);
           source = source.slice(line.length + 1);
         }
-        void dd.appendChild(squash((loop(combine<[InlineParser]>([inline]))(texts.join('\n').trim()) || [[]])[0], document.createDocumentFragment()));
+        void dd.appendChild(squash((some(combine<[InlineParser]>([inline]))(texts.join('\n').trim()) || [[]])[0], document.createDocumentFragment()));
         continue;
       }
     }

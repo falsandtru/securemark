@@ -1,10 +1,10 @@
 ﻿import { url } from './url';
-import { loop } from '../../../combinator';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/url', () => {
   describe('url', () => {
-    const parser = loop(url);
+    const parser = some(url);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

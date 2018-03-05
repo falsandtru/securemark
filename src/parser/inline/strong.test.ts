@@ -1,10 +1,10 @@
 ﻿import { strong } from './strong';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/strong', () => {
   describe('strong', () => {
-    const parser = loop(strong);
+    const parser = some(strong);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

@@ -1,10 +1,10 @@
 ﻿import { math } from './math';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/math', () => {
   describe('math', () => {
-    const parser = loop(math);
+    const parser = some(math);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

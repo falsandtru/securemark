@@ -1,9 +1,9 @@
 ﻿import { placeholder } from './placeholder';
-import { loop } from '../../../combinator';
+import { some } from '../../../combinator';
 
 describe('Unit: parser/inline/extension/placeholder', () => {
   describe('placeholder', () => {
-    const parser = loop(placeholder);
+    const parser = some(placeholder);
 
     it('invalid', () => {
       assert(!parser('[]'));

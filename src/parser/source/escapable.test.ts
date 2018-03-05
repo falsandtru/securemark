@@ -1,10 +1,10 @@
 ﻿import { escsource } from './escapable';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/escsource', () => {
   describe('escsource', () => {
-    const parser = loop(escsource);
+    const parser = some(escsource);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

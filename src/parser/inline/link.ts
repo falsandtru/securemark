@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { combine, some, bracket, transform } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { parenthesis } from '../source/parenthesis';
 import { squash } from '../squash';
@@ -14,7 +14,7 @@ export const link: LinkParser = source => {
   return transform(
     bracket(
       '[',
-      loop(combine<LinkParser>([inline]), /^]\n?|^\n/),
+      some(combine<LinkParser>([inline]), /^]\n?|^\n/),
       ']'),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
@@ -29,7 +29,7 @@ export const link: LinkParser = source => {
       return transform(
         bracket(
           '(',
-          loop(combine<LinkParser>([parenthesis, escsource]), /^\)|^\s(?!nofollow)|^\n/),
+          some(combine<LinkParser>([parenthesis, escsource]), /^\)|^\s(?!nofollow)|^\n/),
           ')'),
         (ns, rest) => {
           const [INSECURE_URL, attribute] = ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1').split(/\s/);

@@ -1,6 +1,6 @@
 ﻿import { OListParser } from '../block';
 import { verify } from './util/verification';
-import { combine, loop } from '../../combinator';
+import { combine, some } from '../../combinator';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
@@ -23,7 +23,7 @@ export const olist: OListParser = verify(source => {
     if (!match(line, '', syntax)) return;
     const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
     const li = el.appendChild(html('li'));
-    void li.appendChild(squash((loop(combine<OListParser>([inline]))(text) || [[]])[0], document.createDocumentFragment()));
+    void li.appendChild(squash((some(combine<OListParser>([inline]))(text) || [[]])[0], document.createDocumentFragment()));
     source = source.slice(line.length + 1);
     const [block = '', rest = undefined] = indent(source) || [];
     if (rest === undefined) continue;

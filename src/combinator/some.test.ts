@@ -1,10 +1,10 @@
 ﻿import { Parser, Result } from './parser';
 import { combine } from './combine';
-import { loop } from './loop';
+import { some } from './some';
 import { inspect } from '../debug.test';
 
-describe('Unit: combinator/loop', () => {
-  describe('loop', () => {
+describe('Unit: combinator/some', () => {
+  describe('some', () => {
     const a: Parser<string, never> = (source: string): Result<string, never> => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1)]
@@ -18,7 +18,7 @@ describe('Unit: combinator/loop', () => {
     const ab = combine<[typeof a, typeof b]>([a, b]);
 
     it('ab', () => {
-      const parser = loop(ab, /aaa|$/);
+      const parser = some(ab, /aaa|$/);
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), [['A'], '']);
       assert.deepStrictEqual(inspect(parser('b')), [['B'], '']);

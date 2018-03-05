@@ -1,5 +1,5 @@
 ﻿import { CodeParser } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { combine, some, bracket, transform } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
 import { match, isVisible, isSingleLine } from '../source/validation';
@@ -14,7 +14,7 @@ export const code: CodeParser = source => {
   return transform(
     bracket(
       keyword,
-      loop(combine<CodeParser>([loop(char('`')), unescsource]), `^${keyword}(?!\`)|^\n`),
+      some(combine<CodeParser>([some(char('`')), unescsource]), `^${keyword}(?!\`)|^\n`),
       keyword),
     (ns, rest) => {
       if (!isSingleLine(source.slice(0, source.length - rest.length))) return;

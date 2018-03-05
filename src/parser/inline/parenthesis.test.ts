@@ -1,10 +1,10 @@
 ﻿import { parenthesis } from './parenthesis';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/parenthesis', () => {
   describe('parenthesis', () => {
-    const parser = loop(parenthesis);
+    const parser = some(parenthesis);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

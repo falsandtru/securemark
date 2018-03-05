@@ -1,6 +1,6 @@
 ﻿import { ParagraphParser } from '../block';
 import { verify } from './util/verification';
-import { combine, subsequence, loop } from '../../combinator';
+import { combine, subsequence, some } from '../../combinator';
 import { reference } from './paragraph/reference';
 import { hashtag } from './paragraph/hashtag';
 import { inline, InlineParser } from '../inline';
@@ -14,7 +14,7 @@ export const paragraph: ParagraphParser = verify(source => {
   const block = source.split(separator, 1)[0];
   assert(block.length > 0);
   const rest = source.slice(block.length);
-  const [cs = []] = subsequence<ParagraphParser>([loop(reference), loop(combine<[ParagraphParser.HashtagParser, InlineParser]>([hashtag, inline]))])(block.replace(emptyline, '').trim()) || [];
+  const [cs = []] = subsequence<ParagraphParser>([some(reference), some(combine<[ParagraphParser.HashtagParser, InlineParser]>([hashtag, inline]))])(block.replace(emptyline, '').trim()) || [];
   const el = html('p', cs);
   for (const child of el.children) {
     if (child instanceof HTMLBRElement) continue;

@@ -1,10 +1,10 @@
 ﻿import { hashtag } from './hashtag';
-import { loop } from '../../../combinator';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/paragraph/hashtag', () => {
   describe('hashtag', () => {
-    const parser = loop(hashtag);
+    const parser = some(hashtag);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

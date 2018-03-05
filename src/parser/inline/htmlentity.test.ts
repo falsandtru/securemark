@@ -1,10 +1,10 @@
 ﻿import { htmlentity } from './htmlentity';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/htmlentity', () => {
   describe('htmlentity', () => {
-    const parser = loop(htmlentity);
+    const parser = some(htmlentity);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

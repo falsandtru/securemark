@@ -1,6 +1,6 @@
 ﻿import { PretextParser } from '../block';
 import { verify } from './util/verification';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { html } from 'typed-dom';
 
@@ -16,7 +16,7 @@ export const pretext: PretextParser = verify(source => {
     void el.setAttribute('class', `language-${lang.toLowerCase()}`);
     void el.setAttribute('data-lang', lang);
   }
-  const filepath = ((loop(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[] as Text[]])[0]).reduce((acc, n) => acc + n.textContent!, '');
+  const filepath = ((some(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[] as Text[]])[0]).reduce((acc, n) => acc + n.textContent!, '');
   if (filepath) {
     void el.setAttribute('data-file', filepath);
   }

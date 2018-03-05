@@ -1,10 +1,10 @@
 ﻿import { media } from './media';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/media', () => {
   describe('media', () => {
-    const parser = loop(media);
+    const parser = some(media);
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('![](javascript:alert)')), undefined);

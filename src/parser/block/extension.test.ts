@@ -1,10 +1,10 @@
 ﻿import { extension } from './extension';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/extension', () => {
   describe('extension', () => {
-    const parser = loop(extension);
+    const parser = some(extension);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

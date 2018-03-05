@@ -1,10 +1,10 @@
 ﻿import { emphasis } from './emphasis';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/emphasis', () => {
   describe('emphasis', () => {
-    const parser = loop(emphasis);
+    const parser = some(emphasis);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

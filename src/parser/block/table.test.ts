@@ -1,10 +1,10 @@
 ﻿import { table } from './table';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/table', () => {
   describe('table', () => {
-    const parser = loop(table);
+    const parser = some(table);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

@@ -1,5 +1,5 @@
 ﻿import { EmphasisParser, inline } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { combine, some, bracket, transform } from '../../combinator';
 import { strong } from './strong';
 import { match, isVisible } from '../source/validation';
 import { html } from 'typed-dom';
@@ -12,7 +12,7 @@ export const emphasis: EmphasisParser = source => {
   return transform(
     bracket(
       '*',
-      loop(combine<EmphasisParser>([loop(inline, closer), strong])),
+      some(combine<EmphasisParser>([some(inline, closer), strong])),
       '*'),
     (ns, rest) => {
       const el = html('em', ns);

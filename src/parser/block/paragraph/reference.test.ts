@@ -1,10 +1,10 @@
 ﻿import { reference } from './reference';
-import { loop } from '../../../combinator';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/paragraph/reference', () => {
   describe('reference', () => {
-    const parser = loop(reference);
+    const parser = some(reference);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

@@ -1,10 +1,10 @@
 ﻿import { html } from './html';
-import { loop } from '../../combinator';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/html', () => {
   describe('html', () => {
-    const parser = loop(html);
+    const parser = some(html);
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('<script>')), undefined);

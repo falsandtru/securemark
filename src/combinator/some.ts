@@ -1,7 +1,7 @@
 ﻿import { Parser } from './parser';
 
-export function loop<P extends Parser<any, any>>(parser: P, until?: string | RegExp): P;
-export function loop<S extends Parser<any, any>[], R>(parser: Parser<R, S>, until?: string | RegExp): Parser<R, S> {
+export function some<P extends Parser<any, any>>(parser: P, until?: string | RegExp): P;
+export function some<S extends Parser<any, any>[], R>(parser: Parser<R, S>, until?: string | RegExp): Parser<R, S> {
   assert(parser);
   return source => {
     let rest = source;

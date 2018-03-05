@@ -1,4 +1,4 @@
-import { loop } from '../combinator';
+import { some } from '../combinator';
 import { block } from './block';
 import { segment } from './segment';
 
@@ -14,7 +14,7 @@ export function parse(source: string): DocumentFragment {
 
 export function parse_(source: string): HTMLElement[] {
   assert.deepStrictEqual([source], segment(source));
-  assert.deepStrictEqual(block(source), loop(block)(source));
+  assert.deepStrictEqual(block(source), some(block)(source));
   return (block(source) || [[]])[0];
 }
 

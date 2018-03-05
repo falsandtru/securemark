@@ -1,6 +1,6 @@
 ﻿import { BlockquoteParser } from '../block';
 import { verify } from './util/verification';
-import { combine, loop } from '../../combinator';
+import { combine, some } from '../../combinator';
 import { block } from '../block';
 import { unescsource } from '../source/unescapable';
 import { squash } from '../squash';
@@ -52,7 +52,7 @@ export const blockquote: BlockquoteParser = verify((source: string) => {
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs = [], rest = source] = loop(combine<BlockquoteParser>([unescsource]), '\n|$')(source) || [];
+    const [cs = [], rest = source] = some(combine<BlockquoteParser>([unescsource]), '\n|$')(source) || [];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs, document.createDocumentFragment()).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs, document.createDocumentFragment());
@@ -87,7 +87,7 @@ function expand(el: HTMLQuoteElement): void {
     }, []);
 
   function parse(source: string): DocumentFragment {
-    return (loop(block)(source) || [[] as HTMLElement[]])[0]
+    return (some(block)(source) || [[] as HTMLElement[]])[0]
       .reduce((frag, node) => (
         frag.appendChild(node),
         frag

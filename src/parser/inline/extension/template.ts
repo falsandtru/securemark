@@ -1,4 +1,4 @@
-﻿import { Result, loop, bracket } from '../../../combinator';
+﻿import { Result, some, bracket } from '../../../combinator';
 import { inline } from '../../inline';
 import { match, isSingleLine } from '../../source/validation';
 
@@ -18,7 +18,7 @@ function parse(source: string): [string, string, string] | undefined {
   if (!match(source, '[', syntax)) return;
   const [, rest = undefined] = bracket(
     '[',
-    loop(inline, /^[\]\n]/),
+    some(inline, /^[\]\n]/),
     ']',
   )(source) || [];
   if (rest === undefined) return;

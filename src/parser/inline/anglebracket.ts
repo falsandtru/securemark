@@ -1,5 +1,5 @@
 ﻿import { AngleBracketParser, inline } from '../inline';
-import { combine, loop, bracket, transform } from '../../combinator';
+import { combine, some, bracket, transform } from '../../combinator';
 import { squash } from '../squash';
 import { match } from '../source/validation';
 
@@ -11,7 +11,7 @@ export const anglebracket: AngleBracketParser = source => {
   return transform(
     bracket(
       '<',
-      loop(combine<AngleBracketParser>([inline]), closer),
+      some(combine<AngleBracketParser>([inline]), closer),
       '>'),
     (ns, rest) => [
       squash([document.createTextNode('<'), ...ns, document.createTextNode('>')]),
