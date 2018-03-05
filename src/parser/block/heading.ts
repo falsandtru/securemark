@@ -1,7 +1,7 @@
 ﻿import { HeadingParser } from '../block';
 import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
-import { index, defineIndex } from './util/index';
+import { indexer, defineIndex } from './util/indexer';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
@@ -13,7 +13,7 @@ export const heading: HeadingParser = verify(source => {
   if (!whole) return;
   assert(level > 0 && level < 7);
   assert(title.length > 0);
-  const [children = [], rest = undefined] = some(combine<HeadingParser>([index, inline]))(title.trim()) || [];
+  const [children = [], rest = undefined] = some(combine<HeadingParser>([indexer, inline]))(title.trim()) || [];
   if (rest === undefined) return;
   const el = html(`h${level}` as 'h1', children);
   void defineIndex(el);

@@ -42,11 +42,11 @@ https://falsandtru.github.io/securemark/
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
 - Inline html tags (\<smal>, \<ruby>, \<code>, ...)
 - Autolink (https://host, ttps://host, !https://host/image.png, @account)
-- Hashtag (#tag)
-- Index (# title [#section], ~ term [#term], [#some words])
 - Media (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
 - Syntex highlight (```lang filename)
 - LaTeX ($expr$, $$expr$$)
+- Index (# title [#section], ~ term [#term], [#some words])
+- Hashtag (#tag)
 
 ## Media
 

@@ -52,3 +52,5 @@ export const inline: InlineParser = combine<InlineParser>([
   autolink,
   text
 ]);
+
+export { index } from './inline/extension/index';

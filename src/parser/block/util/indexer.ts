@@ -1,15 +1,15 @@
-﻿import { IndexParser } from '../../block';
-import { inline } from '../../inline';
+﻿import { IndexerParser } from '../../block';
+import { index } from '../../inline';
 import { makeIndex } from '../../string/index';
 
 const syntax = /^\s+\[#\S+?\]\s*$/;
 
-export const index: IndexParser = source => {
+export const indexer: IndexerParser = source => {
   assert(!source.match(/\n/));
   if (source.search(syntax) !== 0) return;
-  const [[el = undefined] = [], rest = ''] = inline(source.trim()) || [];
+  const [[el = undefined] = [], rest = ''] = index(source.trim()) || [];
+  if (!el) return;
   if (rest !== '') return;
-  if (!(el instanceof HTMLAnchorElement)) return;
   assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
   void el.setAttribute('class', 'index');
   return [[el], rest];

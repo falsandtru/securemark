@@ -1,7 +1,7 @@
 ﻿import { DListParser } from '../block';
 import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
-import { index, defineIndex } from './util/index';
+import { indexer, defineIndex } from './util/indexer';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../squash';
 import { html } from 'typed-dom';
@@ -19,7 +19,7 @@ export const dlist: DListParser = verify(source => {
     switch (line.slice(0, 2).trim()) {
       case '~': {
         const dt = el.appendChild(html('dt'));
-        void dt.appendChild(squash((some(combine<DListParser>([index, inline]))(line.slice(1).trim()) || [[]])[0], document.createDocumentFragment()));
+        void dt.appendChild(squash((some(combine<DListParser>([indexer, inline]))(line.slice(1).trim()) || [[]])[0], document.createDocumentFragment()));
         void defineIndex(dt);
         source = source.slice(line.length + 1);
         continue;

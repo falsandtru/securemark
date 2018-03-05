@@ -1,10 +1,10 @@
-﻿import { index } from './index';
+﻿import { indexer } from './indexer';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/util/indexer', () => {
   describe('indexer', () => {
-    const parser = some(index);
+    const parser = some(indexer);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

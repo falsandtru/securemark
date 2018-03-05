@@ -1,12 +1,10 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { link } from '../link';
-import { isTightVisible } from '../../source/validation';
-import { defineIndex } from '../../block/util/index';
 import { template } from './template';
+import { link } from '../link';
+import { defineIndex } from '../../block/util/indexer';
+import { isTightVisible } from '../../source/validation';
 
-export const index: ExtensionParser.IndexParser = template((flag, query) => {
-  if (flag !== '#') return;
-  if (query === '') return;
+export const index: ExtensionParser.IndexParser = template('#', query => {
   const [[el = undefined] = [], rest = ''] = link(`[${query}]()`) || [];
   if (!el) return;
   assert(rest === '');
@@ -14,5 +12,5 @@ export const index: ExtensionParser.IndexParser = template((flag, query) => {
   void defineIndex(el);
   void el.setAttribute('href', `#${el.id}`);
   void el.removeAttribute('id');
-  return [[el], rest];
+  return [[el], ''];
 });
