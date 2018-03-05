@@ -61,6 +61,7 @@ export namespace MarkdownParser {
       Parser<HTMLUListElement, [
         InlineParser
       ] | [
+        //InlineParser,
         UListParser,
         OListParser
       ]> {
@@ -71,6 +72,7 @@ export namespace MarkdownParser {
       Parser<HTMLOListElement, [
         InlineParser
       ] | [
+        //InlineParser,
         UListParser,
         OListParser
       ]> {

@@ -5,6 +5,7 @@ import { ulist } from './ulist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
 import { squash } from '../squash';
+import { match } from '../source/validation';
 import { html } from 'typed-dom';
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
@@ -19,24 +20,19 @@ export const olist: OListParser = verify(source => {
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.trim() === '') break;
-    if (line.search(syntax) === 0) {
-      const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
-      const li = el.appendChild(html('li'));
-      void li.appendChild(squash((loop(combine<OListParser>([inline]))(text) || [[]])[0], document.createDocumentFragment()));
-      source = source.slice(line.length + 1);
-      continue;
-    }
-    else {
-      const li = el.lastElementChild!;
-      if (!li.firstChild || [HTMLUListElement, HTMLOListElement].some(E => li.lastElementChild instanceof E)) return;
-      const [block = '', rest = undefined] = indent(source) || [];
-      if (rest === undefined) return;
-      const [children = [], brest = block] = combine<OListParser>([ulist, olist])(fillOListFlag(block)) || [];
-      if (children.length !== 1 || brest.length !== 0) return;
-      void li.appendChild(squash(children, document.createDocumentFragment()));
-      source = rest;
-      continue;
-    }
+    if (!match(line, '', syntax)) return;
+    const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();
+    const li = el.appendChild(html('li'));
+    void li.appendChild(squash((loop(combine<OListParser>([inline]))(text) || [[]])[0], document.createDocumentFragment()));
+    source = source.slice(line.length + 1);
+    const [block = '', rest = undefined] = indent(source) || [];
+    if (rest === undefined) continue;
+    if (!li.firstChild) return;
+    const [children = [], brest = block] = combine<OListParser>([ulist, olist])(fillOListFlag(block)) || [];
+    if (children.length !== 1 || brest.length !== 0) return;
+    void li.appendChild(squash(children, document.createDocumentFragment()));
+    source = rest;
+    continue;
   }
   assert(el.children.length > 0);
   return [[el], source];
