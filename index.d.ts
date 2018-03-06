@@ -8,6 +8,7 @@
 export function parse(source: string): DocumentFragment;
 export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement>;
 export function escape(source: string): string;
+export function figure(source: DocumentFragment | HTMLElement): void;
 export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement;
 export function render(target: HTMLElement, opts?: RenderingOptions): void;
 
