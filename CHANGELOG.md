@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.43.0
+
+- Refine horizontalrule syntax.
+
 ## 0.42.1
 
 - Fix the copyright notice.

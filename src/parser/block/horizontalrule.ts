@@ -2,7 +2,7 @@
 import { verify } from './util/verification';
 import { html } from 'typed-dom';
 
-const syntax = /^(?:\s*-){3,}\s*$/;
+const syntax = /^-{3,}[^\S\n]*?(?:\n|$)/;
 
 export const horizontalrule: HorizontalRuleParser = verify(source => {
   const [whole = ''] = source.split('\n', 1)[0].match(syntax) || [];
