@@ -1,6 +1,5 @@
 ﻿import { IndexerParser } from '../../block';
 import { index } from '../../inline';
-import { makeIndex } from '../../string/index';
 
 const syntax = /^\s+\[#\S+?\]\s*$/;
 
@@ -25,4 +24,9 @@ export function defineIndex(target: HTMLElement): void {
   const text = el.textContent!.trim();
   if (text === '') return;
   void target.setAttribute('id', makeIndex(text));
+}
+
+function makeIndex(text: string): string {
+  assert(!text.includes('\n'));
+  return `index:${text.trim().replace(/\s+/g, '-')}`;
 }
