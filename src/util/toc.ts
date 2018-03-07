@@ -12,8 +12,8 @@ export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement {
   function parse(node: Tree): HTMLUListElement {
     return html('ul', node.map(node =>
       node instanceof Element
-        ? html('li', [html('a', { href: `#${node.id}` }, node.textContent!)])
-        : html('li', [html('a', { href: `#${node[0].id}` }, node[0].textContent!), parse(node[1])])));
+        ? html('li', [html('a', { href: `#${node.id}`, rel: 'noopener' }, node.textContent!)])
+        : html('li', [html('a', { href: `#${node[0].id}`, rel: 'noopener' }, node[0].textContent!), parse(node[1])])));
   }
 
   function cons(hs: HTMLHeadingElement[]): Tree {

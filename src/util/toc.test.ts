@@ -14,7 +14,7 @@ describe('Unit: util/toc', () => {
       assert.strictEqual(
         toc(parse('# 1')).outerHTML,
         html('ul', [
-          html('li', [html('a', { href: '#index:1' }, '1')]),
+          html('li', [html('a', { href: '#index:1', rel: 'noopener' }, '1')]),
         ]).outerHTML);
     });
 
@@ -22,7 +22,7 @@ describe('Unit: util/toc', () => {
       assert.strictEqual(
         toc(parse('# 1\n\na')).outerHTML,
         html('ul', [
-          html('li', [html('a', { href: '#index:1' }, '1')]),
+          html('li', [html('a', { href: '#index:1', rel: 'noopener' }, '1')]),
         ]).outerHTML);
     });
 
@@ -30,8 +30,8 @@ describe('Unit: util/toc', () => {
       assert.strictEqual(
         toc(parse('# 1\n\n# 2')).outerHTML,
         html('ul', [
-          html('li', [html('a', { href: '#index:1' }, '1')]),
-          html('li', [html('a', { href: '#index:2' }, '2')]),
+          html('li', [html('a', { href: '#index:1', rel: 'noopener' }, '1')]),
+          html('li', [html('a', { href: '#index:2', rel: 'noopener' }, '2')]),
         ]).outerHTML);
     });
 
@@ -40,9 +40,9 @@ describe('Unit: util/toc', () => {
         toc(parse('# 1\n\n## 2')).outerHTML,
         html('ul', [
           html('li', [
-            html('a', { href: '#index:1' }, '1'),
+            html('a', { href: '#index:1', rel: 'noopener' }, '1'),
             html('ul', [
-              html('li', [html('a', { href: '#index:2' }, '2')]),
+              html('li', [html('a', { href: '#index:2', rel: 'noopener' }, '2')]),
             ]),
           ]),
         ]).outerHTML);
@@ -53,12 +53,12 @@ describe('Unit: util/toc', () => {
         toc(parse('# 1\n\n## 2\n\n# 3')).outerHTML,
         html('ul', [
           html('li', [
-            html('a', { href: '#index:1' }, '1'),
+            html('a', { href: '#index:1', rel: 'noopener' }, '1'),
             html('ul', [
-              html('li', [html('a', { href: '#index:2' }, '2')]),
+              html('li', [html('a', { href: '#index:2', rel: 'noopener' }, '2')]),
             ]),
           ]),
-          html('li', [html('a', { href: '#index:3' }, '3')]),
+          html('li', [html('a', { href: '#index:3', rel: 'noopener' }, '3')]),
         ]).outerHTML);
     });
 
@@ -67,15 +67,15 @@ describe('Unit: util/toc', () => {
         toc(parse('# 1\n\n## 2\n\n### 3\n\n## 4')).outerHTML,
         html('ul', [
           html('li', [
-            html('a', { href: '#index:1' }, '1'),
+            html('a', { href: '#index:1', rel: 'noopener' }, '1'),
             html('ul', [
               html('li', [
-                html('a', { href: '#index:2' }, '2'),
+                html('a', { href: '#index:2', rel: 'noopener' }, '2'),
                 html('ul', [
-                  html('li', [html('a', { href: '#index:3' }, '3')]),
+                  html('li', [html('a', { href: '#index:3', rel: 'noopener' }, '3')]),
                 ]),
               ]),
-              html('li', [html('a', { href: '#index:4' }, '4')]),
+              html('li', [html('a', { href: '#index:4', rel: 'noopener' }, '4')]),
             ]),
           ]),
         ]).outerHTML);
@@ -86,17 +86,17 @@ describe('Unit: util/toc', () => {
         toc(parse('# 1\n\n## 2\n\n### 3\n\n# 4')).outerHTML,
         html('ul', [
           html('li', [
-            html('a', { href: '#index:1' }, '1'),
+            html('a', { href: '#index:1', rel: 'noopener' }, '1'),
             html('ul', [
               html('li', [
-                html('a', { href: '#index:2' }, '2'),
+                html('a', { href: '#index:2', rel: 'noopener' }, '2'),
                 html('ul', [
-                  html('li', [html('a', { href: '#index:3' }, '3')]),
+                  html('li', [html('a', { href: '#index:3', rel: 'noopener' }, '3')]),
                 ]),
               ]),
             ]),
           ]),
-          html('li', [html('a', { href: '#index:4' }, '4')]),
+          html('li', [html('a', { href: '#index:4', rel: 'noopener' }, '4')]),
         ]).outerHTML);
     });
 
@@ -104,8 +104,8 @@ describe('Unit: util/toc', () => {
       assert.strictEqual(
         toc(parse('## 1\n\n# 2')).outerHTML,
         html('ul', [
-          html('li', [html('a', { href: '#index:1' }, '1')]),
-          html('li', [html('a', { href: '#index:2' }, '2')]),
+          html('li', [html('a', { href: '#index:1', rel: 'noopener' }, '1')]),
+          html('li', [html('a', { href: '#index:2', rel: 'noopener' }, '2')]),
         ]).outerHTML);
     });
 
