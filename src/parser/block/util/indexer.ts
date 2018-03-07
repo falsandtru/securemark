@@ -15,15 +15,19 @@ export const indexer: IndexerParser = source => {
 };
 
 export function defineIndex(target: HTMLElement): void {
-  assert(!target.hasAttribute('id'));
+  if (target.hasAttribute('id')) return;
+  const id = text(target);
+  if (id === '') return;
+  void target.setAttribute('id', makeIndex(id));
+}
+
+export function text(target: Element): string {
   const el = target.querySelector('.index') || target.cloneNode(true);
   void el.remove();
   void [...el.querySelectorAll('code[data-src], .math[data-src]')]
     .forEach(el =>
       el.textContent = el.getAttribute('data-src'));
-  const text = el.textContent!.trim();
-  if (text === '') return;
-  void target.setAttribute('id', makeIndex(text));
+  return el.textContent!.trim();
 }
 
 function makeIndex(text: string): string {

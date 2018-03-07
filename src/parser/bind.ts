@@ -2,7 +2,6 @@
 import { parse_ } from './parse';
 
 export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement> {
-  assert(target.childNodes.length === 0);
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
   let revision: symbol;
@@ -24,7 +23,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         void es
           .forEach(el =>
             void el.remove()));
-    const [, [ref = null] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
+    const [, [ref = end()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     for (const [seg, k] of ns.slice(i, ns.length - j).map<[string, number]>((seg, k) => [seg, i + k])) {
       assert(revision === rev);
       const es = parse_(seg);
@@ -39,4 +38,13 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     }
     assert(revision === rev);
   };
+
+  function end(): Node | null {
+    if (pairs.length === 0) return target.firstChild;
+    for (let i = pairs.length - 1; i >= 0; --i) {
+      const [, es] = pairs[i];
+      if (es.length > 0) return es[es.length - 1].nextSibling;
+    }
+    return target.firstChild;
+  }
 }

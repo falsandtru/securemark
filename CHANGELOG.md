@@ -5,6 +5,7 @@
 - Add figure syntax.
 - Add label syntax.
 - Add figure function.
+- Add footnote function.
 - Refine horizontalrule syntax.
 
 ## 0.42.1
