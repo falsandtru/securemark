@@ -128,7 +128,32 @@ export namespace MarkdownParser {
       // : abc
       // ~~~
       Block<'extension'>,
-      Parser<HTMLElement, Parser<HTMLElement, ExtensionParser[]>[]> {
+      Parser<HTMLElement, [
+        ExtensionParser.FigureParser,
+        ExtensionParser.PlaceholderParser
+      ]> {
+    }
+    export namespace ExtensionParser {
+      export interface FigureParser extends
+        // ~~~figure [:type-name]
+        // !https://host/image.png
+        //
+        // caption
+        // ~~~
+        Block<'extension/figure'>,
+        Parser<HTMLElement, [
+          TableParser,
+          PretextParser,
+          MathParser,
+          InlineParser.AutolinkParser.UrlParser
+        ] | [
+          InlineParser
+        ]> {
+      }
+      export interface PlaceholderParser extends
+        Block<'extension/placeholder'>,
+        Parser<HTMLElement, never[]> {
+      }
     }
     export interface ParagraphParser extends
       // abc
@@ -224,20 +249,28 @@ export namespace MarkdownParser {
       Inline<'extension'>,
       Parser<HTMLElement, [
         ExtensionParser.IndexParser,
+        ExtensionParser.LabelParser,
         ExtensionParser.PlaceholderParser
       ]> {
     }
     export namespace ExtensionParser {
       export interface IndexParser extends
         // [#index]
-        Inline<'extension' & 'extension/index'>,
+        Inline<'extension/index'>,
         Parser<HTMLAnchorElement, [
           InlineParser
         ]> {
       }
+      export interface LabelParser extends
+        // [:type-name]
+        Inline<'extension/label'>,
+        Parser<HTMLAnchorElement, [
+          SourceParser.UnescapableSourceParser
+        ]> {
+      }
       export interface PlaceholderParser extends
         // [:abc]
-        Inline<'extension' & 'extension/placeholder'>,
+        Inline<'extension/placeholder'>,
         Parser<HTMLSpanElement, [
           SourceParser.TextParser
         ]> {

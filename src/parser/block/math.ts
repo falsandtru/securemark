@@ -8,5 +8,5 @@ export const math: MathParser = verify(source => {
   if (!source.startsWith('$$')) return;
   const [whole = ''] = source.match(syntax) || [];
   if (!whole) return;
-  return [[html('div', { class: 'math' }, whole)], source.slice(whole.length)];
+  return [[html('div', { class: 'math' }, whole.trim())], source.slice(whole.length)];
 });

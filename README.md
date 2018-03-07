@@ -45,6 +45,8 @@ https://falsandtru.github.io/securemark/
 - Media (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
 - Syntex highlight (```lang filename)
 - LaTeX ($expr$, $$expr$$)
+- Figure (~~~figure [:fig-name])
+- Label ([:fig-name])
 - Index (# title [#section], ~ term [#term], [#some words])
 - Hashtag (#tag)
 

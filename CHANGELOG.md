@@ -2,6 +2,8 @@
 
 ## 0.43.0
 
+- Add figure syntax.
+- Add label syntax.
 - Refine horizontalrule syntax.
 
 ## 0.42.1
