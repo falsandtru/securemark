@@ -10,10 +10,9 @@ describe('Unit: parser/block/paragraph/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('#')), undefined);
       assert.deepStrictEqual(inspect(parser('# ')), undefined);
-      assert.deepStrictEqual(inspect(parser('##')), [['##'], '']);
-      assert.deepStrictEqual(inspect(parser('##a')), [['##'], 'a']);
-      assert.deepStrictEqual(inspect(parser('a#b')), [['a#'], 'b']);
-      assert.deepStrictEqual(inspect(parser('a##b')), [['a##'], 'b']);
+      assert.deepStrictEqual(inspect(parser(' #b')), undefined);
+      assert.deepStrictEqual(inspect(parser('a#b')), undefined);
+      assert.deepStrictEqual(inspect(parser('a##b')), undefined);
     });
 
     it('valid', () => {

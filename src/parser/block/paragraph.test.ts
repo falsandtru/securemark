@@ -46,7 +46,7 @@ describe('Unit: parser/block/paragraph', () => {
 
     it('hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#a')), [['<p><a class="hashtag" rel="noopener">#a</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('#a\nb\n#c')), [['<p><a class="hashtag" rel="noopener">#a</a><span class="newline"> </span>b<span class="newline"> </span><a class="hashtag" rel="noopener">#c</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('#a\nb\n#c\n[#d]')), [['<p><a class="hashtag" rel="noopener">#a</a><span class="newline"> </span>b<span class="newline"> </span><a class="hashtag" rel="noopener">#c</a><span class="newline"> </span><a href="#index:d" rel="noopener">d</a></p>'], '']);
     });
 
   });

@@ -7,6 +7,7 @@
 - Add figure function.
 - Add footnote function.
 - Refine horizontalrule syntax.
+- Fix hashtag parser.
 - Remove `q` html tag.
 
 ## 0.42.1
