@@ -1461,7 +1461,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
             const unescapable_1 = require('../../source/unescapable');
-            const inline_1 = require('../../inline');
             const squash_1 = require('../../squash');
             const validation_1 = require('../../source/validation');
             const typed_dom_1 = require('typed-dom');
@@ -1469,8 +1468,6 @@ require = function () {
             const closer = /^\s/;
             exports.hashtag = source => {
                 if (!validation_1.match(source, '#', syntax))
-                    return;
-                if (inline_1.index(source))
                     return;
                 const line = source.split('\n', 1)[0];
                 const [ts = [], rest = undefined] = combinator_1.some(combinator_1.combine([unescapable_1.unescsource]), closer)(line) || [];
@@ -1487,7 +1484,6 @@ require = function () {
         },
         {
             '../../../combinator': 18,
-            '../../inline': 48,
             '../../source/unescapable': 78,
             '../../source/validation': 79,
             '../../squash': 80,
