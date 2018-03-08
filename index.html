@@ -34,6 +34,12 @@
   .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
     background: none;
   }
+  figcaption > span:first-child {
+    margin-right: .5em;
+  }
+  figcaption > span:last-child {
+    font-size: .9em;
+  }
 </style>
 
 </head>
@@ -58,7 +64,7 @@
 <article id="content">
   <p>time: <span id="time">-</span>ms</p>
   <textarea id="editor" style="float: left; width: 49%; min-height: 200px;"></textarea>
-  <div id="viewer" style="float: left; width: 49%; min-height: 200px"></div>
+  <div id="viewer" style="float: left; width: 49%; min-height: 200px"><ol></ol></div>
 </article>
 <aside></aside>
 </div>
@@ -130,14 +136,34 @@
     '\\prod_{k=1}^{\\infty} \\frac{4k^2}{4k^2 - 1}',
     '$$',
     '',
+    '## Figure',
+    '',
+    '~~~figure [:fig-name]',
+    '!https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg',
+    '',
+    'Support Table, Pretext(Code), Math, and Media((Autolink only.)).',
+    '~~~',
+    '',
+    '## Annotation',
+    '',
+    'Annotation syntax is refined footnotes((Annotations and its helper function generate footnotes *without manual numbering*.)).',
+    '',
     '## Link',
     '',
     '~ normal [#normal-link]',
     'https://google.com',
     '~ nofollow [#nofollow-link]',
     'ttps://google.com',
-    '~ index [#index-link]',
+    '',
+    '## Index and Label',
+    '',
+    '### Index',
+    '',
     '[#Title], [#Link], [#normal link], [#nofollow link], [#index link]',
+    '',
+    '### Label',
+    '',
+    '[:fig-name]',
     '',
     '## Media',
     '',
@@ -170,9 +196,10 @@
     '',
     ''
   ].join('\n');
-  var parse = require('securemark').bind(document.getElementById('viewer'));
-  var render = require('securemark').render;
-  var observer = new IntersectionObserver(function (changes) {
+  const viewer = document.getElementById('viewer');
+  const { bind, figure, footnote, render } = require('securemark');
+  const parse = bind(viewer);
+  const observer = new IntersectionObserver(function (changes) {
     changes
       .forEach(function (change) {
         observer.unobserve(change.target);
@@ -202,6 +229,8 @@
         : (await new Promise(setTimeout), 300);
       time = Date.now();
     }
+    figure(viewer);
+    footnote(viewer, viewer.lastChild);
     return elapsed;
   }
   function log(time) {
