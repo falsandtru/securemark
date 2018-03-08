@@ -3505,7 +3505,7 @@ require = function () {
                     void reference.set(el, el.appendChild(typed_dom_1.html('a', {
                         href: `#${ id }`,
                         rel: 'noopener'
-                    }, `${ i + 1 }`)));
+                    }, `[${ i + 1 }]`)));
                     return typed_dom_1.TypedHTML.li(() => typed_dom_1.html('li', { id }, [
                         ...annotation.get(el),
                         typed_dom_1.html('sup', [typed_dom_1.html('a', {
