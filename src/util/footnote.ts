@@ -12,7 +12,7 @@ export function footnote(source: DocumentFragment | HTMLElement, target: HTMLOLi
       void defineTitle(el);
       void defineId(el, i + 1);
       const id = `footnote:${i + 1}:${description(el.getAttribute('title')!)}`;
-      void reference.set(el, el.appendChild(html('a', { href: `#${id}`, rel: 'noopener' }, `${i + 1}`)));
+      void reference.set(el, el.appendChild(html('a', { href: `#${id}`, rel: 'noopener' }, `[${i + 1}]`)));
       return TypedHTML.li(() => html('li', { id }, [
         ...annotation.get(el)!,
         html('sup', [

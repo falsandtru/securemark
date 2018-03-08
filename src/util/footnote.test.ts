@@ -24,7 +24,7 @@ describe('Unit: util/footnote', () => {
         source.firstElementChild!.outerHTML,
         html('p', [
           html('sup', { class: "annotation", title: "a   b", id: "annotation:1:a___b" }, [
-            html('a', { href: "#footnote:1:a___b", rel: "noopener" }, '1')
+            html('a', { href: "#footnote:1:a___b", rel: "noopener" }, '[1]')
           ]),
         ]).outerHTML);
       assert.strictEqual(
@@ -34,7 +34,7 @@ describe('Unit: util/footnote', () => {
             document.createTextNode('a '),
             html('span', { class: 'newline' }, ' '),
             document.createTextNode(' b'),
-            html('sup', [html('a', { href: '#annotation:1:a___b', rel: 'noopener' }, '1')])
+            html('sup', [html('a', { href: '#annotation:1:a___b', rel: 'noopener' }, '[1]')])
           ]),
         ]).outerHTML);
       // idempotent
@@ -43,7 +43,7 @@ describe('Unit: util/footnote', () => {
         source.firstElementChild!.outerHTML,
         html('p', [
           html('sup', { class: "annotation", title: "a   b", id: "annotation:1:a___b" }, [
-            html('a', { href: "#footnote:1:a___b", rel: "noopener" }, '1')
+            html('a', { href: "#footnote:1:a___b", rel: "noopener" }, '[1]')
           ]),
         ]).outerHTML);
       assert.strictEqual(
@@ -53,7 +53,7 @@ describe('Unit: util/footnote', () => {
             document.createTextNode('a '),
             html('span', { class: 'newline' }, ' '),
             document.createTextNode(' b'),
-            html('sup', [html('a', { href: '#annotation:1:a___b', rel: 'noopener' }, '1')])
+            html('sup', [html('a', { href: '#annotation:1:a___b', rel: 'noopener' }, '[1]')])
           ]),
         ]).outerHTML);
     });
@@ -66,10 +66,10 @@ describe('Unit: util/footnote', () => {
         source.firstElementChild!.outerHTML,
         html('p', [
           html('sup', { class: "annotation", title: "1", id: "annotation:1:1" }, [
-            html('a', { href: "#footnote:1:1", rel: "noopener" }, '1')
+            html('a', { href: "#footnote:1:1", rel: "noopener" }, '[1]')
           ]),
           html('sup', { class: "annotation", title: "12345678901234567890", id: "annotation:2:123456789012345..." }, [
-            html('a', { href: "#footnote:2:123456789012345...", rel: "noopener" }, '2')
+            html('a', { href: "#footnote:2:123456789012345...", rel: "noopener" }, '[2]')
           ]),
         ]).outerHTML);
       assert.strictEqual(
@@ -77,11 +77,11 @@ describe('Unit: util/footnote', () => {
         html('ol', [
           html('li', { id: 'footnote:1:1' }, [
             document.createTextNode('1'),
-            html('sup', [html('a', { href: '#annotation:1:1', rel: 'noopener' }, '1')])
+            html('sup', [html('a', { href: '#annotation:1:1', rel: 'noopener' }, '[1]')])
           ]),
           html('li', { id: 'footnote:2:123456789012345...' }, [
             document.createTextNode('12345678901234567890'),
-            html('sup', [html('a', { href: '#annotation:2:123456789012345...', rel: 'noopener' }, '2')])
+            html('sup', [html('a', { href: '#annotation:2:123456789012345...', rel: 'noopener' }, '[2]')])
           ]),
         ]).outerHTML);
     });
