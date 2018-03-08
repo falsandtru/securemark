@@ -4,7 +4,7 @@ import { match, isVisible } from '../source/validation';
 import { html as htm } from 'typed-dom';
 
 const syntax = /^<([a-z]+)>/;
-const inlinetags = Object.freeze('ins|del|sup|sub|small|q|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+const inlinetags = Object.freeze('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
 assert(inlinetags.every(tag => /[a-z]+/.test(tag)));
 assert(inlinetags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
 assert(inlinetags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
