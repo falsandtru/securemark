@@ -12,22 +12,26 @@ export function media(target: HTMLImageElement, opts: RenderingOptions['media'] 
   assert(target.matches(':not([src])[data-src]'));
   const url = target.getAttribute('data-src')!;
   const alt = target.getAttribute('alt') || '';
-  switch(true) {
-    case url.startsWith('https://twitter.com/'):
-      return (opts.twitter || twitter)(url);
-    case url.startsWith('https://www.youtube.com/') || url.startsWith('https://youtu.be/'):
-      return (opts.youtube || youtube)(url);
-    case url.startsWith('https://gist.github.com/'):
-      return (opts.gist || gist)(url);
-    case url.startsWith('https://www.slideshare.net/'):
-      return (opts.slideshare || slideshare)(url);
-    case url.split('/').length > 3 && ['.pdf'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-      return (opts.pdf || pdf)(url);
-    case url.split('/').length > 3 && ['.webm', '.ogv'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-      return (opts.video || video)(url, alt);
-    case url.split('/').length > 3 && ['.oga', '.ogg'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-      return (opts.audio || audio)(url, alt);
-    default:
-      return (opts.image || image)(url, alt);
-  }
+  const el = (() => {
+    switch (true) {
+      case url.startsWith('https://twitter.com/'):
+        return (opts.twitter || twitter)(url);
+      case url.startsWith('https://www.youtube.com/') || url.startsWith('https://youtu.be/'):
+        return (opts.youtube || youtube)(url);
+      case url.startsWith('https://gist.github.com/'):
+        return (opts.gist || gist)(url);
+      case url.startsWith('https://www.slideshare.net/'):
+        return (opts.slideshare || slideshare)(url);
+      case url.split('/').length > 3 && ['.pdf'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+        return (opts.pdf || pdf)(url);
+      case url.split('/').length > 3 && ['.webm', '.ogv'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+        return (opts.video || video)(url, alt);
+      case url.split('/').length > 3 && ['.oga', '.ogg'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
+        return (opts.audio || audio)(url, alt);
+      default:
+        return (opts.image || image)(url, alt);
+    }
+  })();
+  void el.classList.add('media');
+  return el;
 }

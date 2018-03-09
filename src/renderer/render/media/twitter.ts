@@ -19,7 +19,6 @@ export function twitter(url: string): HTMLElement {
     return el;
   }
   return DOM.div({
-    class: 'media',
     style: 'position: relative;',
   }, [DOM.em(`loading ${url}`)], () => {
     const outer = html('div');

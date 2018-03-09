@@ -6,7 +6,6 @@ import DOM, { html } from 'typed-dom';
 export function gist(url: string): HTMLElement {
   if (cache.has(url)) return cache.get(url)!.cloneNode(true);
   return DOM.div({
-    class: 'media',
     style: 'position: relative;',
   }, [DOM.em(`loading ${url}`)], () => {
     const outer = html('div');

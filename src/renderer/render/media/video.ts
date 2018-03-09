@@ -5,7 +5,6 @@ export function video(url: string, alt: string): HTMLVideoElement {
   return cache.has(url)
     ? cache.get(url)!.cloneNode(true) as HTMLVideoElement
     : cache.set(url, html('video', {
-        class: 'media',
         src: url,
         alt,
         muted: '',

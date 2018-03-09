@@ -3,7 +3,6 @@ import DOM, { html } from 'typed-dom';
 
 export function pdf(url: string): HTMLElement {
   return DOM.div({
-    class: 'media',
     style: 'position: relative;',
   }, [
     DOM.div({

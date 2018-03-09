@@ -5,7 +5,6 @@ export function audio(url: string, alt: string): HTMLAudioElement {
   return cache.has(url)
     ? cache.get(url)!.cloneNode(true) as HTMLAudioElement
     : cache.set(url, html('audio',{
-        class: 'media',
         src: url,
         alt,
         controls: '',

@@ -2,7 +2,6 @@
 
 export function youtube(url: string): HTMLElement {
   return DOM.div({
-    class: 'media',
     style: 'position: relative;',
   }, [
     DOM.div({
