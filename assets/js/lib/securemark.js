@@ -1773,7 +1773,7 @@ require = function () {
             }
             exports.text = text;
             function makeIndex(text) {
-                return `index:${ text.trim().replace(/\s+/g, '-') }`;
+                return `index:${ text.trim().replace(/\s+/g, '-').toLowerCase() }`;
             }
         },
         { '../../inline': 48 }
@@ -2223,7 +2223,7 @@ require = function () {
                 if (!validation_1.isTightVisible(el.textContent))
                     return;
                 void indexer_1.defineIndex(el);
-                void el.setAttribute('href', `#${ el.id }`);
+                void el.setAttribute('href', `#${ el.id.toLowerCase() }`);
                 void el.removeAttribute('id');
                 return [
                     [el],
