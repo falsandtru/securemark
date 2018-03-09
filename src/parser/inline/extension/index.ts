@@ -10,7 +10,7 @@ export const index: ExtensionParser.IndexParser = template('#', query => {
   assert(rest === '');
   if (!isTightVisible(el.textContent!)) return;
   void defineIndex(el);
-  void el.setAttribute('href', `#${el.id}`);
+  void el.setAttribute('href', `#${el.id.toLowerCase()}`);
   void el.removeAttribute('id');
   return [[el], ''];
 });

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.43.1
+
+- Improve index parser.
+  - Standardize indexes to lower case.
+
 ## 0.43.0
 
 - Add figure syntax.

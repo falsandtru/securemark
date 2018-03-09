@@ -32,6 +32,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#\\\\]')), [['<a href="#index:\\" rel="noopener">\\</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#*a*]')), [['<a href="#index:a" rel="noopener"><em>a</em></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#`a`]')), [['<a href="#index:`a`" rel="noopener"><code data-src="`a`">a</code></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#A]')), [['<a href="#index:a" rel="noopener">A</a>'], '']);
     });
 
   });

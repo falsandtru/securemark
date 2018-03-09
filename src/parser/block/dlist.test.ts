@@ -47,7 +47,6 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a\n: b\nc')), [['<dl><dt id="index:a">a</dt><dd>b<span class="newline"> </span>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b \nc ')), [['<dl><dt id="index:a">a</dt><dd>b <span class="newline"> </span>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b\n c ')), [['<dl><dt id="index:a">a</dt><dd>b<span class="newline"> </span> c</dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a [#b]')), [['<dl><dt id="index:b">a</dt><dd></dd></dl>'], '']);
     });
 
     it('multiple', () => {
@@ -59,6 +58,12 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a\n: b\nc\n: d')), [['<dl><dt id="index:a">a</dt><dd>b<span class="newline"> </span>c</dd><dd>d</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\nc\n~ d\n: e')), [['<dl><dt id="index:a">a</dt><dd>b<span class="newline"> </span>c</dd><dt id="index:d">d</dt><dd>e</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\n~ c\n: d\n~ e\n: f')), [['<dl><dt id="index:a">a</dt><dd>b</dd><dt id="index:c">c</dt><dd>d</dd><dt id="index:e">e</dt><dd>f</dd></dl>'], '']);
+    });
+
+    it('index', () => {
+      assert.deepStrictEqual(inspect(parser('~ a [#b]')), [['<dl><dt id="index:b">a</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ A')), [['<dl><dt id="index:a">A</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a [#B]')), [['<dl><dt id="index:b">a</dt><dd></dd></dl>'], '']);
     });
 
   });
