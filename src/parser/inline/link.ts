@@ -20,8 +20,8 @@ export const link: LinkParser = source => {
       if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
       const children = squash(ns, document.createDocumentFragment());
       if (children.querySelector('a, .annotation') && !children.querySelector('.media')) return;
-      if (children.querySelector('img, .media')) {
-        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('img, .media')) return;
+      if (children.querySelector('.media')) {
+        if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('.media')) return;
       }
       else {
         if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
@@ -45,10 +45,10 @@ export const link: LinkParser = source => {
             void el.setAttribute('target', '_blank');
           }
           void el.appendChild(
-            children.textContent || children.querySelector('img')
+            children.textContent || children.querySelector('.media')
               ? children
               : document.createTextNode((INSECURE_URL || el.href).replace(/^h(?=ttps?:\/\/)/, attribute === 'nofollow' ? '' : 'h')));
-          assert(el.querySelector('img') || el.textContent!.trim());
+          assert(el.querySelector('.media') || el.textContent!.trim());
           return [[el], rest];
         })
         (rest);

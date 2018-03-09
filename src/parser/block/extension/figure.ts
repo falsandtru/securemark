@@ -17,7 +17,7 @@ export const figure: ExtensionParser.FigureParser = verify(source => {
   if (!figlabel) return;
   return transform(combine<ExtensionParser.FigureParser>([table, pretext, math, url]), ([content], rest) => {
     if (content instanceof Text) return;
-    if (content instanceof HTMLAnchorElement && !content.querySelector('img')) return;
+    if (content instanceof HTMLAnchorElement && !content.querySelector('.media')) return;
     const next = rest;
     const end = new RegExp(`^\n${bracket}[^\S\n]*(?:\n|$)`);
     return transform(brkt('', some(combine<ExtensionParser.FigureParser>([inline]), end), end), (caption, rest) => {

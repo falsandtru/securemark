@@ -97,8 +97,8 @@ describe('Unit: parser/inline/autolink/url', () => {
     });
 
     it('media', () => {
-      assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" rel="noopener" target="_blank"><img data-src="http://host" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" rel="noopener" target="_blank"><img data-src="https://host" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a>'], '']);
     });
 
   });

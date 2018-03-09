@@ -269,7 +269,7 @@ export namespace MarkdownParser {
         ]> {
       }
       export interface PlaceholderParser extends
-        // [:abc]
+        // [^abc]
         Inline<'extension/placeholder'>,
         Parser<HTMLSpanElement, [
           SourceParser.TextParser

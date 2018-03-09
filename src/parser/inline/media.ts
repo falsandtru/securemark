@@ -31,7 +31,7 @@ export const media: MediaParser = source => {
           const url = sanitize(ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));
           if (url === '') return;
           if (cache.has(url)) return [[cache.get(url)!.cloneNode(true)], rest];
-          return [[html('img', { 'data-src': url, alt: caption })], rest];
+          return [[html('img', { class: 'media', 'data-src': url, alt: caption })], rest];
         })
         (rest);
     })(source);

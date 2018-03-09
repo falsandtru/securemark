@@ -71,7 +71,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[![](#)#](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[#![](#)](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[![](#)![](#)](#)')), undefined);
-      assert.deepStrictEqual(inspect(parser('[![a](b)](#)')), [['<a href="#" rel="noopener"><img data-src="b" alt="a"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[![a](b)](#)')), [['<a href="#" rel="noopener"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[*![a](b)c*](#)')), undefined);
     });
 
