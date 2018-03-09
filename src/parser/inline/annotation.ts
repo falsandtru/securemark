@@ -16,6 +16,7 @@ export const annotation: AnnotationParser = source => {
     (ns, rest) => {
       const el = html('sup', { class: 'annotation' }, ns);
       if (!isVisible(el.textContent!)) return;
+      if (el.querySelector('.annotation, .media')) return;
       return [[el], rest];
     })
     (source);
