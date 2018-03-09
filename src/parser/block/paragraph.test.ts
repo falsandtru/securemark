@@ -8,7 +8,13 @@ describe('Unit: parser/block/paragraph', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+    });
+
+    it('empty', () => {
+      assert.deepStrictEqual(inspect(parser(' ')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('\n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('\\ ')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n')), [[], '']);
     });
 
     it('ab', () => {
@@ -18,14 +24,14 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a \n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\nb')), [['<p>a<span class="newline"> </span>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n\n')), [['<p>a</p>'], '\n']);
+      assert.deepStrictEqual(inspect(parser('a\n\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser(' a')), [['<p>a</p>'], '']);
     });
 
     it('break', () => {
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\nb')), [['<p>a<br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n\nb')), [['<p>a</p>'], '\nb']);
+      assert.deepStrictEqual(inspect(parser('a\n\nb')), [['<p>a</p>', '<p>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n\\\nb')), [['<p>a<span class="newline"> </span>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na\\\n')), [['<p>a</p>'], '']);
