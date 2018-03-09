@@ -21,7 +21,7 @@ export const figure: ExtensionParser.FigureParser = verify(source => {
     const next = rest;
     const end = new RegExp(`^\n${bracket}[^\S\n]*(?:\n|$)`);
     return transform(brkt('', some(combine<ExtensionParser.FigureParser>([inline]), end), end), (caption, rest) => {
-      [caption = []] = some(inline)(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length)).trim()) || [];
+      [caption = []] = some(inline)(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length - 1)).trim()) || [];
       return [
         [
           html('figure', { class: figlabel.getAttribute('href')!.slice(1) }, [
