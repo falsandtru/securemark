@@ -42,7 +42,7 @@ export namespace MarkdownParser {
       Block<'newline'>,
       Parser<never, [
         SourceParser.EmptyLineParser,
-        SourceParser.FakeemptyLineParser
+        SourceParser.InvisibleLineParser
       ]> {
     }
     export interface HorizontalRuleParser extends
@@ -411,8 +411,8 @@ export namespace MarkdownParser {
       Source<'nonemptyline'>,
       Parser<never, never[]> {
     }
-    export interface FakeemptyLineParser extends
-      Source<'fakeemptyline'>,
+    export interface InvisibleLineParser extends
+      Source<'invisibleline'>,
       Parser<never, never[]> {
     }
     export interface ParenthesisParser extends

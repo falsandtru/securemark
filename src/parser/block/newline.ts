@@ -1,5 +1,5 @@
 ﻿import { NewlineParser } from '../block';
 import { combine, some } from '../../combinator';
-import { emptyline, fakeemptyline } from '../source/line';
+import { emptyline, invisibleline } from '../source/line';
 
-export const newline: NewlineParser = some(combine<NewlineParser>([emptyline, fakeemptyline]));
+export const newline: NewlineParser = some(combine<NewlineParser>([emptyline, invisibleline]));
