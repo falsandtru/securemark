@@ -1,6 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { combine, some, bracket, transform } from '../../combinator';
-import { match } from '../source/validation';
+import { combine, some, surround, transform } from '../../combinator';
 import { isVisible } from './util/verification';
 import { html as htm } from 'typed-dom';
 
@@ -11,7 +10,6 @@ assert(inlinetags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes
 assert(inlinetags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
 
 export const html: HTMLParser = source => {
-  if (!match(source, '<')) return;
   const [whole = '', tagname = ''] = source.match(syntax) || [];
   if (!whole) return;
   if (!inlinetags.includes(tagname)) return;
@@ -19,7 +17,7 @@ export const html: HTMLParser = source => {
   assert(whole.startsWith(opentag));
   if (tagname === 'wbr') return [[htm(tagname)], source.slice(opentag.length)];
   return transform(
-    bracket(
+    surround(
       `<${tagname}>`,
       some(combine<HTMLParser>([inline]), `^</${tagname}>`),
       `</${tagname}>`),

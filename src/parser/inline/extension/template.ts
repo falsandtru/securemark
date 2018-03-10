@@ -1,7 +1,7 @@
-﻿import { Result, some, bracket } from '../../../combinator';
+﻿import { Result, some, surround } from '../../../combinator';
 import { line } from '../../source/line';
-import { inline } from '../../inline';
 import { match } from '../../source/validation';
+import { inline } from '../../inline';
 
 const syntax = /^\[[~#:^\[][^\n]*?\]/;
 
@@ -17,7 +17,7 @@ export const template = <T extends Result<HTMLElement, never>>(flag: string, par
 
 function parse(flag: string, source: string): [string, string] | undefined {
   if (!match(source, `[${flag}`, syntax)) return;
-  const [, rest = undefined] = line(bracket('[', some(inline, ']'), ']'), false)(source) || [];
+  const [, rest = undefined] = line(surround('[', some(inline, ']'), ']'), false)(source) || [];
   if (rest === undefined) return;
   const text = source.slice(1, source.length - rest.length - 1);
   assert(text.startsWith(flag));

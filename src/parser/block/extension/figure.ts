@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { combine, some, bracket as brkt, transform } from '../../../combinator';
+import { combine, some, surround, transform } from '../../../combinator';
 import { verify } from '../util/verification';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
@@ -21,7 +21,7 @@ export const figure: ExtensionParser.FigureParser = verify(block(source => {
     if (content instanceof HTMLAnchorElement && !content.querySelector('.media')) return;
     const next = rest;
     const end = new RegExp(`^\n${bracket}[^\S\n]*(?:\n|$)`);
-    return transform(brkt('', some(combine<ExtensionParser.FigureParser>([inline]), end), end), (caption, rest) => {
+    return transform(surround('', some(combine<ExtensionParser.FigureParser>([inline]), end), end), (caption, rest) => {
       [caption = []] = some(inline)(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length - 1)).trim()) || [];
       return [
         [

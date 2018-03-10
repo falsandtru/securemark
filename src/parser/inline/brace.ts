@@ -1,15 +1,12 @@
 ﻿import { BraceParser, inline } from '../inline';
-import { combine, some, bracket, transform } from '../../combinator';
+import { combine, some, surround, transform } from '../../combinator';
 import { squash } from '../squash';
-import { match } from '../source/validation';
 
-const syntax = /^{[\s\S]*?}/;
 const closer = /^}/;
 
-export const brace: BraceParser = source => {
-  if (!match(source, '{', syntax)) return;
-  return transform(
-    bracket(
+export const brace: BraceParser = source =>
+  transform(
+    surround(
       '{',
       some(combine<BraceParser>([inline]), closer),
       '}'),
@@ -18,4 +15,3 @@ export const brace: BraceParser = source => {
       rest
     ])
     (source);
-};

@@ -1,15 +1,12 @@
 ﻿import { AngleBracketParser, inline } from '../inline';
-import { combine, some, bracket, transform } from '../../combinator';
+import { combine, some, surround, transform } from '../../combinator';
 import { squash } from '../squash';
-import { match } from '../source/validation';
 
-const syntax = /^<[\s\S]*?>/;
 const closer = /^>/;
 
-export const anglebracket: AngleBracketParser = source => {
-  if (!match(source, '<', syntax)) return;
-  return transform(
-    bracket(
+export const anglebracket: AngleBracketParser = source =>
+  transform(
+    surround(
       '<',
       some(combine<AngleBracketParser>([inline]), closer),
       '>'),
@@ -18,4 +15,3 @@ export const anglebracket: AngleBracketParser = source => {
       rest
     ])
     (source);
-};

@@ -2,11 +2,11 @@
 import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
 import { block } from '../source/block';
+import { match } from '../source/validation';
 import { olist } from './olist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
 import { squash } from '../squash';
-import { match } from '../source/validation';
 import { html } from 'typed-dom';
 
 const syntax = /^([-+*])(?=\s|$)/;

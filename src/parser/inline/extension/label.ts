@@ -1,7 +1,7 @@
 ﻿import { ExtensionParser } from '../../inline';
 import { template } from './template';
-import { link } from '../link';
 import { match } from '../../source/validation';
+import { link } from '../link';
 
 const syntax = /^[a-z]+(?:(?:-[a-z][0-9a-z]*|-[0-9]+[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)$/;
 

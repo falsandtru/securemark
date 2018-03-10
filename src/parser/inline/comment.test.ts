@@ -26,6 +26,8 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('<# a\\ #>')), [[], '']);
       assert.deepStrictEqual(inspect(parser('<# <# #>')), [[], '']);
       assert.deepStrictEqual(inspect(parser('<## a ##>')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('<# #>a')), [[], 'a']);
+      assert.deepStrictEqual(inspect(parser('<# a #>b')), [[], 'b']);
     });
 
   });

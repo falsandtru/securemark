@@ -1,7 +1,7 @@
 ﻿import { ParenthesisParser } from '../source';
-import { combine, some, bracket, transform } from '../../combinator';
-import { escsource } from '../source/escapable';
+import { combine, some, surround, transform } from '../../combinator';
 import { match } from '../source/validation';
+import { escsource } from '../source/escapable';
 
 const syntax = /^\(\S*?\)/;
 const closer = /^\)|^\s/;
@@ -9,7 +9,7 @@ const closer = /^\)|^\s/;
 export const parenthesis: ParenthesisParser = source => {
   if (!match(source, '(', syntax)) return;
   return transform(
-    bracket(
+    surround(
       '(',
       some(combine<ParenthesisParser>([parenthesis, escsource]), closer),
       ')'),

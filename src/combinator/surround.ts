@@ -1,6 +1,6 @@
 ﻿import { Parser } from './parser';
 
-export function bracket<P extends Parser<any, any>[], R>(start: string | RegExp, parser: Parser<R, P>, end: string | RegExp): Parser<R, P> {
+export function surround<P extends Parser<any, any>[], R>(start: string | RegExp, parser: Parser<R, P>, end: string | RegExp): Parser<R, P> {
   return lmr_ => {
     const l = match(lmr_, start);
     if (l === undefined) return;

@@ -1,16 +1,13 @@
 ﻿import { StrongParser, inline } from '../inline';
-import { combine, some, bracket, transform } from '../../combinator';
-import { match } from '../source/validation';
+import { combine, some, surround, transform } from '../../combinator';
 import { isVisible } from './util/verification';
 import { html } from 'typed-dom';
 
-const syntax = /^\*\*[\s\S]+?\*\*/;
 const closer = /^\*\*/;
 
-export const strong: StrongParser = source => {
-  if (!match(source, '**', syntax)) return;
-  return transform(
-    bracket(
+export const strong: StrongParser = source =>
+  transform(
+    surround(
       '**',
       some(combine<StrongParser>([inline]), closer),
       '**'),
@@ -20,4 +17,3 @@ export const strong: StrongParser = source => {
       return [[el], rest];
     })
     (source);
-};

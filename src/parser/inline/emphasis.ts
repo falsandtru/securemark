@@ -1,17 +1,14 @@
 ﻿import { EmphasisParser, inline } from '../inline';
-import { combine, some, bracket, transform } from '../../combinator';
+import { combine, some, surround, transform } from '../../combinator';
 import { strong } from './strong';
-import { match } from '../source/validation';
 import { isVisible } from './util/verification';
 import { html } from 'typed-dom';
 
-const syntax = /^\*[\s\S]+?\*/;
 const closer = /^\*/;
 
-export const emphasis: EmphasisParser = source => {
-  if (!match(source, '*', syntax)) return;
-  return transform(
-    bracket(
+export const emphasis: EmphasisParser = source =>
+  transform(
+    surround(
       '*',
       some(combine<EmphasisParser>([some(inline, closer), strong])),
       '*'),
@@ -21,4 +18,3 @@ export const emphasis: EmphasisParser = source => {
       return [[el], rest];
     })
     (source);
-};
