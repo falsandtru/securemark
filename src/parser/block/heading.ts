@@ -1,21 +1,22 @@
 ﻿import { HeadingParser } from '../block';
+import { combine, some, transform } from '../../combinator';
 import { verify } from './util/verification';
-import { combine, some } from '../../combinator';
+import { line } from '../source/line';
 import { indexer, defineIndex } from './util/indexer';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
-const syntax = /^(#{1,6})[^\S\n]+?([^\n]+)/;
+const syntax = /^(#{1,6})\s+([^\n]+)\n?$/;
 
-export const heading: HeadingParser = verify(source => {
+export const heading: HeadingParser = verify(line(source => {
   if (!source.startsWith('#')) return;
-  const [whole = '', { length: level } = '', title = ''] = source.split('\n', 1)[0].match(syntax) || [];
+  const [whole = '', { length: level } = '', title = ''] = source.match(syntax) || [];
   if (!whole) return;
   assert(level > 0 && level < 7);
   assert(title.length > 0);
-  const [children = [], rest = undefined] = some(combine<HeadingParser>([indexer, inline]))(title.trim()) || [];
-  if (rest === undefined) return;
-  const el = html(`h${level}` as 'h1', children);
-  void defineIndex(el);
-  return [[el], source.slice(whole.length + 1)];
-});
+  return transform(some(combine<HeadingParser>([indexer, inline])), cs => {
+    const el = html(`h${level}` as 'h1', cs);
+    void defineIndex(el);
+    return [[el], ''];
+  })(title.trim());
+}, true, true));

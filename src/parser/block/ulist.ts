@@ -1,6 +1,7 @@
 ﻿import { UListParser } from '../block';
 import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
+import { block } from '../source/block';
 import { olist } from './olist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
@@ -11,7 +12,7 @@ import { html } from 'typed-dom';
 const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
 
-export const ulist: UListParser = verify(source => {
+export const ulist: UListParser = verify(block(source => {
   const [whole = '', flag = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = html('ul');
@@ -39,4 +40,4 @@ export const ulist: UListParser = verify(source => {
   }
   assert(el.children.length > 0);
   return [[el], source];
-});
+}));

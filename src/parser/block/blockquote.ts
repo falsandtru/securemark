@@ -1,6 +1,7 @@
 ﻿import { BlockquoteParser } from '../block';
-import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
+import { verify } from './util/verification';
+import { block as block_ } from '../source/block';
 import { block } from '../block';
 import { unescsource } from '../source/unescapable';
 import { squash } from '../squash';
@@ -8,7 +9,7 @@ import { html } from 'typed-dom';
 
 const syntax = /^>+(?=\s|$)/;
 
-export const blockquote: BlockquoteParser = verify((source: string) => {
+export const blockquote: BlockquoteParser = verify(block_(source => {
   const mode = undefined
     || source.startsWith('>') && 'plain'
     || source.startsWith('|>') && 'markdown'
@@ -64,7 +65,7 @@ export const blockquote: BlockquoteParser = verify((source: string) => {
     void expand(top);
   }
   return [[top], source];
-});
+}));
 
 function expand(el: HTMLQuoteElement): void {
   return void [...el.childNodes]

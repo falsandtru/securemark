@@ -1,9 +1,10 @@
 ﻿import { MediaParser } from '../inline';
 import { combine, some, bracket, transform } from '../../combinator';
+import { line } from '../source/line';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
 import { parenthesis } from '../source/parenthesis';
-import { match, isSingleLine } from '../source/validation';
+import { match } from '../source/validation';
 import { sanitize } from '../string/url';
 import { Cache } from 'spica/cache';
 import { html } from 'typed-dom';
@@ -15,18 +16,11 @@ const syntax = /^!\[[^\n]*?\]\(/;
 export const media: MediaParser = source => {
   if (!match(source, '![', syntax)) return;
   return transform(
-    bracket(
-      '![',
-      some(combine<MediaParser>([text]), /^]\n?|^\n/),
-      ']'),
+    line(bracket('![', some(combine<MediaParser>([text]), /^\]/), ']'), false),
     (ns, rest) => {
-      if (!isSingleLine(source.slice(0, source.length - rest.length).trim())) return;
       const caption = ns.reduce((s, c) => s + c.textContent, '').trim();
       return transform(
-        bracket(
-          '(',
-          some(combine<MediaParser>([parenthesis, escsource]), /^\)|^\s/),
-          ')'),
+        line(bracket('(', some(combine<MediaParser>([parenthesis, escsource]), /^\)|^\s/), ')'), false),
         (ns, rest) => {
           const url = sanitize(ns.reduce((s, c) => s + c.textContent, '').replace(/\\(.)/g, '$1'));
           if (url === '') return;

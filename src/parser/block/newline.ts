@@ -1,9 +1,5 @@
 ﻿import { NewlineParser } from '../block';
+import { combine, some } from '../../combinator';
+import { emptyline, fakeemptyline } from '../source/line';
 
-const syntax = /^(?:[^\S\n]*?\\?\n)+/;
-
-export const newline: NewlineParser = source => {
-  const [whole = ''] = source.match(syntax) || [];
-  if (!whole) return;
-  return [[], source.slice(whole.length)];
-};
+export const newline: NewlineParser = some(combine<NewlineParser>([emptyline, fakeemptyline]));

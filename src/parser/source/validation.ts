@@ -11,7 +11,3 @@ export function isTightVisible(source: string): boolean {
   return isVisible(source)
       && source === source.trim();
 }
-
-export function isSingleLine(source: string): boolean {
-  return !source.includes('\n');
-}

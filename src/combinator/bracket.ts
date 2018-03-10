@@ -9,8 +9,7 @@ export function bracket<P extends Parser<any, any>[], R>(start: string | RegExp,
     assert(mr_.endsWith(r_));
     const r = match(r_, end);
     if (r === undefined) return;
-    assert(l + r !== '' && mr_.endsWith(r_));
-    return l + r !== '' && r_.length - r.length < lmr_.length
+    return l + r !== '' || r_.length - r.length < lmr_.length
       ? [rs, r_.slice(r.length)]
       : undefined;
   };

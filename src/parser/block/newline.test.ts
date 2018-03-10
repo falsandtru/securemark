@@ -7,19 +7,15 @@ describe('Unit: parser/block/newline', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser(' ')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), undefined);
     });
 
     it('valid', () => {
+      assert.deepStrictEqual(inspect(parser(' ')), [[], '']);
       assert.deepStrictEqual(inspect(parser('\n')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('\na')), [[], 'a']);
-      assert.deepStrictEqual(inspect(parser('\n\n')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('\n\na')), [[], 'a']);
-      assert.deepStrictEqual(inspect(parser('\n\n\n')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('\n\n\na')), [[], 'a']);
+      assert.deepStrictEqual(inspect(parser('\\ ')), [[], '']);
       assert.deepStrictEqual(inspect(parser('\\\n')), [[], '']);
-      assert.deepStrictEqual(inspect(parser(' \n  \\\n')), [[], '']);
+      assert.deepStrictEqual(inspect(parser(' \n\\ \\\n')), [[], '']);
     });
 
   });

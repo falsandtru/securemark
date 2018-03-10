@@ -35,6 +35,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a\n\\\nb')), [['<p>a<span class="newline"> </span>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na\\\n')), [['<p>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\ \na\\ \n')), [['<p>a</p>'], '']);
     });
 
     it('reference', () => {

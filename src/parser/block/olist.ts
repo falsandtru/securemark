@@ -1,6 +1,7 @@
 ﻿import { OListParser } from '../block';
 import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
+import { block } from '../source/block';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './util/indent';
 import { inline } from '../inline';
@@ -10,7 +11,7 @@ import { html } from 'typed-dom';
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;
 
-export const olist: OListParser = verify(source => {
+export const olist: OListParser = verify(block(source => {
   const [whole = '', index = '', flag = ''] = source.match(syntax) || [];
   if (!whole || !flag) return;
   const el = html('ol', {
@@ -36,4 +37,4 @@ export const olist: OListParser = verify(source => {
   }
   assert(el.children.length > 0);
   return [[el], source];
-});
+}));

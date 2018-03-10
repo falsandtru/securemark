@@ -1,7 +1,7 @@
 ﻿import { ParagraphParser } from '../../block';
-import { combine, some } from '../../../combinator';
+import { combine, some, bracket, transform } from '../../../combinator';
+import { line } from '../../source/line';
 import { unescsource } from '../../source/unescapable';
-import { squash } from '../../squash';
 import { match } from '../../source/validation';
 import { html } from 'typed-dom';
 
@@ -10,9 +10,11 @@ const closer = /^\s/;
 
 export const reference: ParagraphParser.ReferenceParser = source => {
   if (!match(source, '>', syntax)) return;
-  const line = source.split('\n', 1)[0];
-  const [ts = [], rest = undefined] = some(combine<ParagraphParser.HashtagParser>([unescsource]), closer)(line) || [];
-  if (rest === undefined) return;
-  assert(rest.trim() === '');
-  return [[html('a', { class: 'reference', rel: 'noopener' }, squash(ts))], source.slice(line.length + 1)];
+  return transform(
+    line(bracket(/^>+/, some(combine<ParagraphParser.ReferenceParser>([unescsource]), closer), /^[^\S\n]*(?:\n|$)/)),
+    (ts, rest, source) =>
+      ts.length === 0
+        ? undefined
+        : [[html('a', { class: 'reference', rel: 'noopener' }, source.slice(0, source.length - rest.length).trim())], rest])
+    (source);
 };

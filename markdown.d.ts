@@ -40,7 +40,10 @@ export namespace MarkdownParser {
     interface Block<T> extends Markdown<['block', T]> { }
     export interface NewlineParser extends
       Block<'newline'>,
-      Parser<never, never[]> {
+      Parser<never, [
+        SourceParser.EmptyLineParser,
+        SourceParser.FakeemptyLineParser
+      ]> {
     }
     export interface HorizontalRuleParser extends
       // ---
@@ -392,13 +395,17 @@ export namespace MarkdownParser {
       Source<'escsource'>,
       Parser<Text, never[]> {
     }
-    export interface NonemptyLineParser extends
-      Source<'nonemptyline'>,
-      Parser<Text, never[]> {
-    }
     export interface EmptyLineParser extends
       Source<'emptyline'>,
-      Parser<Text, never[]> {
+      Parser<never, never[]> {
+    }
+    export interface NonemptyLineParser extends
+      Source<'nonemptyline'>,
+      Parser<never, never[]> {
+    }
+    export interface FakeemptyLineParser extends
+      Source<'fakeemptyline'>,
+      Parser<never, never[]> {
     }
     export interface ParenthesisParser extends
       // ()

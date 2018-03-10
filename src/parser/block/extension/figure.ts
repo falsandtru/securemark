@@ -1,6 +1,7 @@
 ﻿import { ExtensionParser } from '../../block';
-import { verify } from '../util/verification';
 import { combine, some, bracket as brkt, transform } from '../../../combinator';
+import { verify } from '../util/verification';
+import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
 import { pretext } from '../pretext';
@@ -9,7 +10,7 @@ import { html } from 'typed-dom';
 
 const syntax = /^(~{3,})figure[^\S\n]+(\[:[^\]]+\])[^\S\n]*\n/;
 
-export const figure: ExtensionParser.FigureParser = verify(source => {
+export const figure: ExtensionParser.FigureParser = verify(block(source => {
   if (!source.startsWith('~~~')) return;
   const [whole = '', bracket = '', note = ''] = source.match(syntax) || [];
   if (!whole) return;
@@ -35,4 +36,4 @@ export const figure: ExtensionParser.FigureParser = verify(source => {
       ];
     })(next);
   })(source.slice(source.indexOf('\n') + 1).replace(new RegExp(`(?=\n${bracket}[^\S\n]*(?:\n|$))`), '\n'));
-});
+}));
