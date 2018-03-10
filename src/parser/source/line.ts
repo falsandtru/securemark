@@ -25,8 +25,8 @@ export function line<S extends Parser<any, any>[], R>(parser: Parser<R, S>, enti
   };
 }
 
-export const emptyline: EmptyLineParser = line(s => s.trim() === '' ? [[], ''] : undefined, false, true);
-export const nonemptyline: NonemptyLineParser = line(s => s.trim() !== '' ? [[], ''] : undefined, false, true);
+export const emptyline: EmptyLineParser = line(s => s.trim() === '' ? [[], ''] : undefined, true, true);
+export const nonemptyline: NonemptyLineParser = line(s => s.trim() !== '' ? [[], ''] : undefined, true, true);
 
 const fake = /^(?:\\?\s)*?\\?$/;
-export const fakeemptyline: FakeemptyLineParser = line(s => s.search(fake) === 0 ? [[], ''] : undefined, false, true);
+export const fakeemptyline: FakeemptyLineParser = line(s => s.search(fake) === 0 ? [[], ''] : undefined, true, true);
