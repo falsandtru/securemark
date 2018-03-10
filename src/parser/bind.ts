@@ -43,7 +43,8 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     if (pairs.length === 0) return target.firstChild;
     for (let i = pairs.length - 1; i >= 0; --i) {
       const [, es] = pairs[i];
-      if (es.length > 0) return es[es.length - 1].nextSibling;
+      if (es.length === 0) continue;
+      return es[es.length - 1].nextSibling;
     }
     return target.firstChild;
   }
