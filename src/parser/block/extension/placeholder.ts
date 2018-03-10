@@ -17,7 +17,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = verify(block_(sour
   while (true) {
     const line = source.split('\n', 1)[0];
     if (line.startsWith(`${bracket}`) && line.trim() === `${bracket}`) break;
-    void lines.push((some(unescsource)(`${line}\n`) || [[] as Text[]])[0].reduce((acc, n) => acc + n.textContent!, ''));
+    void lines.push((some(unescsource)(`${line}\n`) || [[] as Text[]])[0].reduce((acc, n) => acc + n.textContent, ''));
     source = source.slice(line.length + 1);
     if (source === '') return;
   }

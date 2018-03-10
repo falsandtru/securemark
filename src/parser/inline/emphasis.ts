@@ -1,7 +1,8 @@
 ﻿import { EmphasisParser, inline } from '../inline';
 import { combine, some, bracket, transform } from '../../combinator';
 import { strong } from './strong';
-import { match, isVisible } from '../source/validation';
+import { match } from '../source/validation';
+import { isVisible } from './util/verification';
 import { html } from 'typed-dom';
 
 const syntax = /^\*[\s\S]+?\*/;
@@ -16,7 +17,7 @@ export const emphasis: EmphasisParser = source => {
       '*'),
     (ns, rest) => {
       const el = html('em', ns);
-      if (!isVisible(el.textContent!)) return;
+      if (!isVisible(el)) return;
       return [[el], rest];
     })
     (source);

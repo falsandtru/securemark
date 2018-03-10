@@ -1,6 +1,7 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { combine, some, bracket, transform } from '../../combinator';
-import { match, isVisible } from '../source/validation';
+import { match } from '../source/validation';
+import { isVisible } from './util/verification';
 import { html as htm } from 'typed-dom';
 
 const syntax = /^<([a-z]+)>/;
@@ -24,7 +25,7 @@ export const html: HTMLParser = source => {
       `</${tagname}>`),
     (ns, rest) => {
       const el = htm(tagname as 'wbr', ns);
-      if (!isVisible(el.textContent!)) return;
+      if (!isVisible(el)) return;
       return [[el], rest];
     })
     (source);

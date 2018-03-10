@@ -1,6 +1,7 @@
 ﻿import { StrongParser, inline } from '../inline';
 import { combine, some, bracket, transform } from '../../combinator';
-import { match, isVisible } from '../source/validation';
+import { match } from '../source/validation';
+import { isVisible } from './util/verification';
 import { html } from 'typed-dom';
 
 const syntax = /^\*\*[\s\S]+?\*\*/;
@@ -15,7 +16,7 @@ export const strong: StrongParser = source => {
       '**'),
     (ns, rest) => {
       const el = html('strong', ns);
-      if (!isVisible(el.textContent!)) return;
+      if (!isVisible(el)) return;
       return [[el], rest];
     })
     (source);

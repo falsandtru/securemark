@@ -3,7 +3,8 @@ import { combine, some, bracket, transform } from '../../combinator';
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
-import { match, isVisible } from '../source/validation';
+import { match } from '../source/validation';
+import { isVisible } from './util/verification';
 import { html } from 'typed-dom';
 
 const syntax = /^(`+)[^\n]+?\1(?!`)/;
@@ -20,8 +21,8 @@ export const code: CodeParser = source => {
         keyword),
       false),
     (ns, rest) => {
-      const el = html('code', { 'data-src': source.slice(0, source.length - rest.length) }, ns.reduce((acc, n) => acc + n.textContent!, '').trim());
-      if (!isVisible(el.textContent!)) return;
+      const el = html('code', { 'data-src': source.slice(0, source.length - rest.length) }, ns.reduce((acc, n) => acc + n.textContent, '').trim());
+      if (!isVisible(el)) return;
       return [[el], rest];
     })
     (source);

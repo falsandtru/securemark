@@ -4,9 +4,8 @@ import { combine, subsequence, some } from '../../combinator';
 import { block } from '../source/block';
 import { reference } from './paragraph/reference';
 import { hashtag } from './paragraph/hashtag';
-import { inline, InlineParser } from '../inline';
+import { InlineParser, inline, isVisible } from '../inline';
 import { squash } from '../squash';
-import { isVisible } from '../source/validation';
 import { html } from 'typed-dom';
 
 const separator = /^\s*$/m;
@@ -27,7 +26,7 @@ export const paragraph: ParagraphParser = verify(block(source => {
     if (!child.matches('.reference') || !child.nextSibling) break;
     void child.parentElement!.insertBefore(html('br'), child.nextSibling);
   }
-  return isVisible(el.textContent!) || el.querySelector('.media')
+  return isVisible(el) || el.querySelector('.media')
     ? [[el], rest]
     : [[], rest];
 }));
