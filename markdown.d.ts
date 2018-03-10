@@ -202,6 +202,7 @@ export namespace MarkdownParser {
       InlineParser.LinkParser,
       InlineParser.ExtensionParser,
       InlineParser.BracketParser,
+      InlineParser.CommentParser,
       InlineParser.HTMLParser,
       InlineParser.AngleBracketParser,
       InlineParser.EmphasisParser,
@@ -284,6 +285,13 @@ export namespace MarkdownParser {
       Inline<'bracket'>,
       Parser<HTMLElement | Text, [
         InlineParser
+      ]> {
+    }
+    export interface CommentParser extends
+      // <# comment #>
+      Inline<'comment'>,
+      Parser<never, [
+        SourceParser.UnescapableSourceParser
       ]> {
     }
     export interface HTMLParser extends

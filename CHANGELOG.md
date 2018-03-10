@@ -2,6 +2,7 @@
 
 ## 0.44.0
 
+- Add comment syntax.
 - Disallow nested annotations and media in annotations.
 
 ## 0.43.1

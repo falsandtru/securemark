@@ -6,6 +6,7 @@ import { parenthesis } from './inline/parenthesis';
 import { link } from './inline/link';
 import { extension } from './inline/extension';
 import { bracket } from './inline/bracket';
+import { comment } from './inline/comment';
 import { html } from './inline/html';
 import { anglebracket } from './inline/anglebracket';
 import { emphasis } from './inline/emphasis';
@@ -24,6 +25,7 @@ export import ParenthesisParser = InlineParser.ParenthesisParser;
 export import LinkParser = InlineParser.LinkParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import BracketParser = InlineParser.BracketParser;
+export import CommentParser = InlineParser.CommentParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import AngleBracketParser = InlineParser.AngleBracketParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
@@ -41,6 +43,7 @@ export const inline: InlineParser = combine<InlineParser>([
   link,
   extension,
   bracket,
+  comment,
   html,
   anglebracket,
   emphasis,

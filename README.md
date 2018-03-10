@@ -49,6 +49,7 @@ https://falsandtru.github.io/securemark/
 - Label ([:fig-name])
 - Index (# title [#section], ~ term [#term], [#some words])
 - Hashtag (#tag)
+- Comment (<# comment #>)
 
 ## Media
 
