@@ -1,5 +1,5 @@
 ﻿import { text } from '../parser/block/util/indexer';
-import { TypedHTML, html } from "typed-dom";
+import { TypedHTML, html } from 'typed-dom';
 
 const annotation = new WeakMap<HTMLElement, Node[]>();
 const reference = new WeakMap<HTMLElement, HTMLElement>();

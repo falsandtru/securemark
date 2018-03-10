@@ -1,4 +1,4 @@
-﻿import { html } from "typed-dom";
+﻿import { html } from 'typed-dom';
 
 export function figure(source: DocumentFragment | HTMLElement, header: (caption: HTMLElement) => string = el => capitalize(`${el.getAttribute('data-type')}. ${el.getAttribute('data-index')}.`)): void {
   return void [...source.querySelectorAll<HTMLElement>('figure[class^="label:"]')]
