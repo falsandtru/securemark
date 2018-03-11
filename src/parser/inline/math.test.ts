@@ -29,6 +29,7 @@ describe('Unit: parser/inline/math', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('$a$')), [['<span class="math" data-src="$a$">$a$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$ab$')), [['<span class="math" data-src="$ab$">$ab$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$a$b')), [['<span class="math" data-src="$a$">$a$</span>'], 'b']);
       assert.deepStrictEqual(inspect(parser('$a b$')), [['<span class="math" data-src="$a b$">$a b$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$\\a$')), [['<span class="math" data-src="$\\a$">$\\a$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('$\\$$')), [['<span class="math" data-src="$\\$$">$\\$$</span>'], '']);

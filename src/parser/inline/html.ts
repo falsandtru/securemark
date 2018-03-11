@@ -1,5 +1,6 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { combine, some, surround, transform } from '../../combinator';
+import { squash } from '../squash';
 import { isVisible } from './util/verification';
 import { html as htm } from 'typed-dom';
 
@@ -19,10 +20,10 @@ export const html: HTMLParser = source => {
   return transform(
     surround(
       `<${tagname}>`,
-      some(combine<HTMLParser>([inline]), `^</${tagname}>`),
+      some(combine<HTMLParser>([inline]), `</${tagname}>`),
       `</${tagname}>`),
     (ns, rest) => {
-      const el = htm(tagname as 'wbr', ns);
+      const el = htm(tagname as 'wbr', squash(ns));
       if (!isVisible(el)) return;
       return [[el], rest];
     })

@@ -21,6 +21,7 @@ describe('Unit: parser/inline/code', () => {
     it('ab', () => {
       assert.deepStrictEqual(inspect(parser('`a`')), [['<code data-src="`a`">a</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`ab`')), [['<code data-src="`ab`">ab</code>'], '']);
+      assert.deepStrictEqual(inspect(parser('`a`b')), [['<code data-src="`a`">a</code>'], 'b']);
     });
 
     it('escape', () => {
