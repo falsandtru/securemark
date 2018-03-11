@@ -25,12 +25,7 @@ export const paragraph: ParagraphParser = verify(block(source => {
       some(inline, /^\s#\S/),
     ]))),
   ]), cs => {
-    const el = html('p', squash(cs));
-    for (let i = 0; i < el.children.length; i += 2) {
-      const child = el.children[i];
-      if (!child.matches('.reference') || !child.nextSibling) break;
-      void child.parentElement!.insertBefore(html('br'), child.nextSibling);
-    }
+    const el = html('p', squash(cs[cs.length - 1] instanceof HTMLBRElement ? cs.slice(0, -1) : cs));
     return hasContent(el)
       ? [[el], rest]
       : [[], rest];

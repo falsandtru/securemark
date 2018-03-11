@@ -11,5 +11,5 @@ export const reference: ParagraphParser.ReferenceParser = source =>
   transform(
     line(surround(syntax, some(combine<ParagraphParser.ReferenceParser>([unescsource]), closer), /^[^\S\n]*(?:\n|$)/)),
     (ts, rest) =>
-      [[html('a', { class: 'reference', rel: 'noopener' }, ts.reduce((acc, t) => acc + t.textContent, '').trim())], rest])
+      [[html('a', { class: 'reference', rel: 'noopener' }, ts.reduce((acc, t) => acc + t.textContent, '').trim()), html('br')], rest])
     (source);
