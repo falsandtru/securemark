@@ -8,7 +8,7 @@ export function some<S extends Parser<any, any>[], R>(parser: Parser<R, S>, unti
     const results: R[] = [];
     while (true) {
       if (rest === '') break;
-      if (until && rest.slice(0, 9).search(until) === 0) break;
+      if (until && match(rest, until)) break;
       const result = parser(rest);
       if (!result) break;
       const [rs, r] = result;
@@ -21,4 +21,10 @@ export function some<S extends Parser<any, any>[], R>(parser: Parser<R, S>, unti
       ? undefined
       : [results, rest];
   };
+}
+
+function match(source: string, pattern: string | RegExp): boolean {
+  return typeof pattern === 'string'
+    ? source.startsWith(pattern)
+    : source.slice(0, 9).search(pattern) === 0;
 }

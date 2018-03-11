@@ -33,6 +33,7 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(segment('a\n\n\n\n '), ['a\n', '\n\n\n ']);
       assert.deepStrictEqual(segment('a\n\n\n\n\n '), ['a\n', '\n\n\n\n ']);
       assert.deepStrictEqual(segment('a\n\n\n\n\n\n '), ['a\n', '\n\n\n\n\n ']);
+      assert.deepStrictEqual(segment('a\n\\\nb'), ['a\n', '\\\n', 'b']);
     });
 
     it('pretext', () => {

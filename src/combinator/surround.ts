@@ -13,16 +13,14 @@ export function surround<P extends Parser<any, any>[], R>(start: string | RegExp
       ? [rs, r_.slice(r.length)]
       : undefined;
   };
+}
 
-  function match(source: string, pattern: string | RegExp): string | undefined {
-    if (typeof pattern !== 'string') {
-      const result = source.slice(0, 9).match(pattern);
-      return result
-        ? match(source, result[0])
-        : undefined;
-    }
-    return source.startsWith(pattern)
-      ? pattern
-      : undefined;
-  }
+function match(source: string, pattern: string | RegExp): string | undefined {
+  if (typeof pattern === 'string') return source.startsWith(pattern)
+    ? pattern
+    : undefined;
+  const result = source.slice(0, 9).match(pattern);
+  return result
+    ? result[0]
+    : undefined;
 }

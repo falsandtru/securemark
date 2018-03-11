@@ -15,8 +15,8 @@ export namespace MarkdownParser {
     Parser<HTMLElement, [
       BlockParser.PretextParser,
       BlockParser.ExtensionParser,
-      SourceParser.NonemptyLineParser,
-      SourceParser.EmptyLineParser
+      SourceParser.VisibleLineParser,
+      SourceParser.InvisibleLineParser
     ]> {
   }
   export interface BlockParser extends
@@ -409,6 +409,10 @@ export namespace MarkdownParser {
     }
     export interface NonemptyLineParser extends
       Source<'nonemptyline'>,
+      Parser<never, never[]> {
+    }
+    export interface VisibleLineParser extends
+      Source<'visibleline'>,
       Parser<never, never[]> {
     }
     export interface InvisibleLineParser extends

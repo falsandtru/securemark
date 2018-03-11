@@ -1,5 +1,5 @@
 ﻿import { Parser } from '../../combinator';
-import { EmptyLineParser, NonemptyLineParser, InvisibleLineParser } from '../source';
+import { EmptyLineParser, NonemptyLineParser, VisibleLineParser, InvisibleLineParser } from '../source';
 import { block } from './block';
 
 export function line<P extends Parser<any, any>>(parser: P, entire?: boolean, force?: boolean): P;
@@ -29,4 +29,5 @@ export const emptyline: EmptyLineParser = line(s => s.trim() === '' ? [[], ''] :
 export const nonemptyline: NonemptyLineParser = line(s => s.trim() !== '' ? [[], ''] : undefined, true, true);
 
 const invisible = /^(?:\\?\s)*?\\?$/;
+export const visibleline: VisibleLineParser = line(s => s.search(invisible) === -1 ? [[], ''] : undefined, true, true);
 export const invisibleline: InvisibleLineParser = line(s => s.search(invisible) === 0 ? [[], ''] : undefined, true, true);

@@ -1,6 +1,6 @@
 export { Parser, Result } from './combinator/parser';
-export { combine } from './combinator/combine';
-export { subsequence } from './combinator/subsequence';
-export { some } from './combinator/some';
-export { surround } from './combinator/surround';
-export { transform } from './combinator/transform';
+export * from './combinator/combine';
+export * from './combinator/subsequence';
+export * from './combinator/some';
+export * from './combinator/surround';
+export * from './combinator/transform';
