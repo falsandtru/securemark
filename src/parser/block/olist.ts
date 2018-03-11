@@ -2,6 +2,7 @@
 import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
 import { block } from '../source/block';
+import { firstline } from '../source/line';
 import { match } from '../source/validation';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './util/indent';
@@ -19,7 +20,7 @@ export const olist: OListParser = verify(block(source => {
     'type': Number.isFinite(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A',
   });
   while (true) {
-    const line = source.split('\n', 1)[0];
+    const line = firstline(source);
     if (line.trim() === '') break;
     if (!match(line, '', syntax)) return;
     const text = line.slice(line.split(/\s/, 1)[0].length + 1).trim();

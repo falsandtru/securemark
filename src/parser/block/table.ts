@@ -2,6 +2,7 @@
 import { verify } from './util/verification';
 import { some } from '../../combinator';
 import { block } from '../source/block';
+import { firstline } from '../source/line';
 import { inline } from '../inline';
 import { squash } from '../squash';
 import { html } from 'typed-dom';
@@ -38,7 +39,7 @@ export const table: TableParser = verify(block(source => {
         : aligns[i]));
   void table.appendChild(html('tbody'));
   while (true) {
-    const line = source.split('\n', 1)[0];
+    const line = firstline(source);
     if (line.trim() === '') break;
     const [cols = [], rest = line] = parse(line) || [];
     if (rest.length !== 0) return;
@@ -66,6 +67,6 @@ function parse(row: string): [DocumentFragment[], string] | undefined {
     assert(rest.length < row.length);
     row = rest;
     void cols.push(squash(col, document.createDocumentFragment()));
-    if (row.search(rowend) === 0) return [cols, row.slice(row.split('\n')[0].length + 1)];
+    if (row.search(rowend) === 0) return [cols, row.slice(firstline(row).length + 1)];
   }
 }

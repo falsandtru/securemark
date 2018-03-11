@@ -2,6 +2,7 @@
 import { combine, some } from '../../combinator';
 import { verify } from './util/verification';
 import { block as block_ } from '../source/block';
+import { firstline } from '../source/line';
 import { block } from '../block';
 import { unescsource } from '../source/unescapable';
 import { squash } from '../squash';
@@ -26,7 +27,7 @@ export const blockquote: BlockquoteParser = verify(block_(source => {
       p.appendChild(html('blockquote'))
     , top);
   while (true) {
-    if (source.split('\n', 1).shift()!.trim() === '') break;
+    if (firstline(source).trim() === '') break;
     const diff = (source.match(syntax) || [indent])[0].length - indent.length;
     if (diff > 0) {
       bottom = source.slice(0, diff).split('')

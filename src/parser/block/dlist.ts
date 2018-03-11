@@ -2,6 +2,7 @@
 import { combine, some } from '../../combinator';
 import { verify } from './util/verification';
 import { block } from '../source/block';
+import { firstline } from '../source/line';
 import { indexer, defineIndex } from './util/indexer';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../squash';
@@ -15,7 +16,7 @@ export const dlist: DListParser = verify(block(source => {
   if (!whole) return;
   const el = html('dl');
   while (true) {
-    const line = source.split('\n', 1)[0];
+    const line = firstline(source);
     if (line.trim() === '') break;
     switch (line.slice(0, 2).trim()) {
       case '~': {
@@ -33,7 +34,7 @@ export const dlist: DListParser = verify(block(source => {
         const texts = [line.slice(line.slice(0, 2).trim() === ':' ? 1 : 0)];
         source = source.slice(line.length + 1);
         while (true) {
-          const line = source.split('\n', 1)[0];
+          const line = firstline(source);
           if (line.trim() === '' || line.search(separator) === 0) break;
           void texts.push(line);
           source = source.slice(line.length + 1);

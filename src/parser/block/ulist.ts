@@ -2,6 +2,7 @@
 import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
 import { block } from '../source/block';
+import { firstline } from '../source/line';
 import { match } from '../source/validation';
 import { olist } from './olist';
 import { indent, fillOListFlag } from './util/indent';
@@ -17,7 +18,7 @@ export const ulist: UListParser = verify(block(source => {
   if (!whole) return;
   const el = html('ul');
   while (true) {
-    const line = source.split('\n', 1)[0];
+    const line = firstline(source);
     if (line.trim() === '') break;
     if (!match(line, flag, syntax)) return;
     const [text, checkbox = ''] = line.slice(line.split(/\s/, 1)[0].length + 1).trim().match(content)!;
