@@ -226,7 +226,7 @@
       elapsed += Date.now() - time;
       resource = resource > 0
         ? resource - (Date.now() - time)
-        : (await new Promise(setTimeout), 300);
+        : (await new Promise(requestAnimationFrame), 300);
       time = Date.now();
     }
     figure(viewer);
