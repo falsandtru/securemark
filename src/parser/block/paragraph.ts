@@ -7,7 +7,7 @@ import { line } from '../source/line';
 import { block } from '../source/block';
 import { reference } from './paragraph/reference';
 import { hashtag } from './paragraph/hashtag';
-import { inline, isVisible } from '../inline';
+import { inline, hasContent } from '../inline';
 import { squash } from '../squash';
 import { html } from 'typed-dom';
 
@@ -31,7 +31,7 @@ export const paragraph: ParagraphParser = verify(block(source => {
       if (!child.matches('.reference') || !child.nextSibling) break;
       void child.parentElement!.insertBefore(html('br'), child.nextSibling);
     }
-    return isVisible(el) || el.querySelector('.media')
+    return hasContent(el)
       ? [[el], rest]
       : [[], rest];
   })

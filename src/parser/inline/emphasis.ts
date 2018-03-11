@@ -2,7 +2,7 @@
 import { combine, some, surround, transform } from '../../combinator';
 import { strong } from './strong';
 import { squash } from '../squash';
-import { isVisible } from './util/verification';
+import { hasText } from './util/verification';
 import { html } from 'typed-dom';
 
 const closer = /^\*/;
@@ -15,7 +15,7 @@ export const emphasis: EmphasisParser = source =>
       '*'),
     (ns, rest) => {
       const el = html('em', squash(ns));
-      if (!isVisible(el)) return;
+      if (!hasText(el)) return;
       return [[el], rest];
     })
     (source);

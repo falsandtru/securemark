@@ -60,4 +60,4 @@ export { index } from './inline/extension/index';
 export { label } from './inline/extension/label';
 export { media } from './inline/media';
 export { url } from './inline/autolink/url';
-export { isVisible } from './inline/util/verification';
+export { hasContent } from './inline/util/verification';
