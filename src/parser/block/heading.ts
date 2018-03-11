@@ -6,7 +6,7 @@ import { indexer, defineIndex } from './util/indexer';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
-const syntax = /^(#{1,6})\s+([^\n]+)\n?$/;
+const syntax = /^(#{1,6})\s+([^\n]+)(?:\n|$)/;
 
 export const heading: HeadingParser = verify(line(source => {
   if (!source.startsWith('#')) return;

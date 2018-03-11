@@ -10,7 +10,7 @@ export const cache = new Cache<string, HTMLElement>(100); // for rerendering in 
 
 export const math: MathParser = source =>
   transform(
-    line(surround('$', some(combine<MathParser>([escsource]), /^\$/), /^\$(?![$\d])/), false, true),
+    line(surround('$', some(combine<MathParser>([escsource]), /^\$/), /^\$(?![$\d])/), false),
     (ns, rest) => {
       const el = html('span', { class: 'math' }, `$${ns.reduce((acc, n) => acc + n.textContent, '')}$`);
       if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true)], rest];
