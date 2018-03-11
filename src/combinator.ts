@@ -4,3 +4,4 @@ export * from './combinator/subsequence';
 export * from './combinator/some';
 export * from './combinator/surround';
 export * from './combinator/transform';
+export * from './combinator/rewrite';

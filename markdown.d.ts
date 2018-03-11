@@ -164,6 +164,7 @@ export namespace MarkdownParser {
       Parser<HTMLParagraphElement, [
         ParagraphParser.ReferenceParser,
         Parser<HTMLElement | Text, [
+          InlineParser, // SourceParser.CharParser.SpaceParser
           ParagraphParser.HashtagParser,
           InlineParser
         ]>
@@ -428,6 +429,11 @@ export namespace MarkdownParser {
       ]> {
     }
     export namespace CharParser {
+      export interface SpaceParser extends
+        // \s
+        Source<'char/space'>,
+        Parser<Text, never[]> {
+      }
       export interface BackquoteParser extends
         // `
         Source<'char/backquote'>,
