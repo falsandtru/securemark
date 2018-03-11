@@ -1,11 +1,11 @@
 ﻿import { Parser } from './parser';
 
 export function some<P extends Parser<any, any>>(parser: P, until?: string | RegExp): P;
-export function some<S extends Parser<any, any>[], R>(parser: Parser<R, S>, until?: string | RegExp): Parser<R, S> {
+export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, until?: string | RegExp): Parser<T, S> {
   assert(parser);
   return source => {
     let rest = source;
-    const results: R[] = [];
+    const results: T[] = [];
     while (true) {
       if (rest === '') break;
       if (until && match(rest, until)) break;
