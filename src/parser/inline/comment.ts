@@ -7,10 +7,7 @@ const syntax = /^<(#+)\s+(?:\S+\s+)*?\1(?=>)/;
 
 export const comment: CommentParser = source =>
   transform(
-    surround(
-      syntax,
-      combine<CommentParser>([unescsource]),
-      ''),
+    surround(syntax, combine<CommentParser>([unescsource]), ''),
     //(_, rest) =>
     (_, rest): Result<never, SubParsers<CommentParser>> =>
       [[], rest])

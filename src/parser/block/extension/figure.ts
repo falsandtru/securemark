@@ -20,8 +20,8 @@ export const figure: ExtensionParser.FigureParser = verify(block(source => {
     if (content instanceof Text) return;
     if (content instanceof HTMLAnchorElement && !content.querySelector('.media')) return;
     const next = rest;
-    const end = new RegExp(`^\n${bracket}[^\S\n]*(?:\n|$)`);
-    return transform(surround('', some(combine<ExtensionParser.FigureParser>([inline]), end), end), (caption, rest) => {
+    const closer = new RegExp(`^\n${bracket}[^\S\n]*(?:\n|$)`);
+    return transform(surround('', some(combine<ExtensionParser.FigureParser>([inline]), closer), closer), (caption, rest) => {
       [caption = []] = some(inline)(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length - 1)).trim()) || [];
       return [
         [

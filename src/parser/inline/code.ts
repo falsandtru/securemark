@@ -16,14 +16,11 @@ export const code: CodeParser = source => {
     ? cache.get(keyword)!
     : cache.set(keyword, new RegExp(`^${keyword}(?!\`)`)).get(keyword)!;
   return transform(
-    line(
-      surround(
-        keyword,
-        some(combine<CodeParser>([some(char('`')), unescsource]), closer),
-        closer),
-      false),
+    line(surround(keyword, some(combine<CodeParser>([some(char('`')), unescsource]), closer), closer), false),
     (ns, rest) => {
-      const el = html('code', { 'data-src': source.slice(0, source.length - rest.length) }, ns.reduce((acc, n) => acc + n.textContent, '').trim());
+      const el = html('code',
+        { 'data-src': source.slice(0, source.length - rest.length) },
+        ns.reduce((acc, n) => acc + n.textContent, '').trim());
       if (!hasText(el)) return;
       return [[el], rest];
     })

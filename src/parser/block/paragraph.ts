@@ -12,6 +12,7 @@ import { squash } from '../squash';
 import { html } from 'typed-dom';
 
 const separator = /^\s*$/m;
+const closer = /^\s#\S/;
 
 export const paragraph: ParagraphParser = verify(block(source => {
   if (source === '') return;
@@ -22,7 +23,7 @@ export const paragraph: ParagraphParser = verify(block(source => {
     block(some(combine<SubParsers<ParagraphParser>[1]>([
       rewrite(char('\\s'), inline),
       hashtag,
-      some(inline, /^\s#\S/),
+      some(inline, closer),
     ]))),
   ]), cs => {
     const el = html('p', squash(cs[cs.length - 1] instanceof HTMLBRElement ? cs.slice(0, -1) : cs));

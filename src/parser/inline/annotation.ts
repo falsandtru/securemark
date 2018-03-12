@@ -4,14 +4,9 @@ import { squash } from '../squash';
 import { hasText } from './util/verification';
 import { html } from 'typed-dom';
 
-const closer = /^\)\)/;
-
 export const annotation: AnnotationParser = source =>
   transform(
-    surround(
-      '((',
-      some(combine<AnnotationParser>([inline]), closer),
-      '))'),
+    surround('((', some(combine<AnnotationParser>([inline]), '))'), '))'),
     (ns, rest) => {
       const el = html('sup', { class: 'annotation' }, squash(ns));
       if (!hasText(el)) return;

@@ -28,8 +28,9 @@ export const url: AutolinkParser.UrlParser = source => {
     : link(`[![](${url})](${url})${rest}`) as any;
 };
 
+const addr = /^[:0-9a-z]+/i;
 const ipv6: AutolinkParser.UrlParser.IPV6Parser = source => {
-  const [whole = ''] = source.match(/^[:0-9a-z]+/i) || [];
+  const [whole = ''] = source.match(addr) || [];
   if (!whole) return;
   return [[document.createTextNode(whole)], source.slice(whole.length)];
 };

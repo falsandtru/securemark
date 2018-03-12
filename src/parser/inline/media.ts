@@ -12,7 +12,7 @@ export const cache = new Cache<string, HTMLElement>(100);
 
 export const media: MediaParser = source =>
   transform(
-    line(surround('![', some(combine<MediaParser>([text]), /^\]/), ']'), false),
+    line(surround('![', some(combine<MediaParser>([text]), ']'), ']'), false),
     (ns, rest) => {
       const caption = ns.reduce((s, n) => s + n.textContent, '').trim();
       return transform(

@@ -9,7 +9,7 @@ import { html } from 'typed-dom';
 
 export const link: LinkParser = source =>
   transform(
-    line(surround('[', some(combine<LinkParser>([inline]), /^]/), ']'), false),
+    line(surround('[', some(combine<LinkParser>([inline]), ']'), ']'), false),
     (ns, rest) => {
       const children = squash(ns, document.createDocumentFragment());
       if (children.querySelector('a, .annotation') && !children.querySelector('.media')) return;

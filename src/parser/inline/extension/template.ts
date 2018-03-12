@@ -17,7 +17,7 @@ export const template = <T extends Result<HTMLElement, never>>(flag: string, par
 
 function parse(flag: string, source: string): [string, string] | undefined {
   if (!match(source, `[${flag}`, syntax)) return;
-  const [, rest = undefined] = line(surround('[', some(inline, /^\]/), ']'), false)(source) || [];
+  const [, rest = undefined] = line(surround('[', some(inline, ']'), ']'), false)(source) || [];
   if (rest === undefined) return;
   const text = source.slice(1, source.length - rest.length - 1);
   assert(text.startsWith(flag));

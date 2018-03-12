@@ -6,10 +6,11 @@ import { html } from 'typed-dom';
 
 const syntax = /^(?=>+[^>\s])/;
 const closer = /^\s/;
+const tail = /^[^\S\n]*(?:\n|$)/;
 
 export const reference: ParagraphParser.ReferenceParser = source =>
   transform(
-    line(surround(syntax, some(combine<ParagraphParser.ReferenceParser>([unescsource]), closer), /^[^\S\n]*(?:\n|$)/)),
+    line(surround(syntax, some(combine<ParagraphParser.ReferenceParser>([unescsource]), closer), tail)),
     (ts, rest) =>
       [[html('a', { class: 'reference', rel: 'noopener' }, ts.reduce((acc, t) => acc + t.textContent, '').trim()), html('br')], rest])
     (source);

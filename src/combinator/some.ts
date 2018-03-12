@@ -26,5 +26,5 @@ export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, unti
 function match(source: string, pattern: string | RegExp): boolean {
   return typeof pattern === 'string'
     ? source.startsWith(pattern)
-    : source.slice(0, 9).search(pattern) === 0;
+    : source.search(pattern) === 0;
 }

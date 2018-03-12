@@ -19,6 +19,7 @@ export function indent(source: string): [string, string] | undefined {
     : undefined;
 };
 
+const flag = /^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/;
 export function fillOListFlag(source: string): string {
-  return source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, str => `${str}.`);
+  return source.replace(flag, `$&.`);
 }

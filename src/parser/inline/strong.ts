@@ -4,14 +4,9 @@ import { squash } from '../squash';
 import { hasText } from './util/verification';
 import { html } from 'typed-dom';
 
-const closer = /^\*\*/;
-
 export const strong: StrongParser = source =>
   transform(
-    surround(
-      '**',
-      some(combine<StrongParser>([inline]), closer),
-      '**'),
+    surround('**', some(combine<StrongParser>([inline]), '**'), '**'),
     (ns, rest) => {
       const el = html('strong', squash(ns));
       if (!hasText(el)) return;
