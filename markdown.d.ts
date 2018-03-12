@@ -41,14 +41,15 @@ export namespace MarkdownParser {
     export interface NewlineParser extends
       Block<'newline'>,
       Parser<never, [
-        SourceParser.EmptyLineParser,
         SourceParser.InvisibleLineParser
       ]> {
     }
     export interface HorizontalRuleParser extends
       // ---
       Block<'horizontalrule'>,
-      Parser<HTMLHRElement, never[]> {
+      Parser<HTMLHRElement, [
+        SourceParser.VisibleLineParser
+      ]> {
     }
     export interface HeadingParser extends
       // # Title
@@ -403,14 +404,6 @@ export namespace MarkdownParser {
       // abc
       Source<'escsource'>,
       Parser<Text, never[]> {
-    }
-    export interface EmptyLineParser extends
-      Source<'emptyline'>,
-      Parser<never, never[]> {
-    }
-    export interface NonemptyLineParser extends
-      Source<'nonemptyline'>,
-      Parser<never, never[]> {
     }
     export interface VisibleLineParser extends
       Source<'visibleline'>,

@@ -1,4 +1,4 @@
-﻿import { line, emptyline, nonemptyline, invisibleline } from './line';
+﻿import { line, visibleline, invisibleline } from './line';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/line', () => {
@@ -24,7 +24,7 @@ describe('Unit: parser/source/line', () => {
   });
 
   describe('emptyline', () => {
-    const parser = emptyline;
+    const parser = invisibleline;
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -45,7 +45,7 @@ describe('Unit: parser/source/line', () => {
   });
 
   describe('nonemptyline', () => {
-    const parser = nonemptyline;
+    const parser = visibleline;
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -68,7 +68,7 @@ describe('Unit: parser/source/line', () => {
 
   });
 
-  describe('fakeemptyline', () => {
+  describe('invisibleline', () => {
     const parser = invisibleline;
 
     it('invalid', () => {
