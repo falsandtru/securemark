@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.44.2
+
+- Refactoring.
+
 ## 0.44.1
 
 - Fix paragraph parser for hashtag parser.
