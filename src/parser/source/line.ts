@@ -32,6 +32,6 @@ export function firstline(source: string): string {
     : source.slice(0, i);
 }
 
-const invisible = /^(?:\\?\s)*?\\?$/;
+const invisible = /^(?:\\?[^\S\\]+)*\\?$/;
 export const contentline: ContentLineParser = line(s => s.search(invisible) !== 0 ? [[], ''] : undefined, true, true);
 export const emptyline: EmptyLineParser = line(s => s.search(invisible) === 0 ? [[], ''] : undefined, true, true);

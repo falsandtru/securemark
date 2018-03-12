@@ -9,7 +9,12 @@ import SegmentParser = MarkdownParser.SegmentParser;
 export function segment(source: string): string[] {
   const segments: string[] = [];
   while (source.length > 0) {
-    const [, rest = ''] = combine<SegmentParser>([pretext, extension, some(contentline), some(emptyline)])(source) || [];
+    const [, rest = ''] = combine<SegmentParser>([
+      pretext,
+      extension,
+      some(contentline),
+      some(emptyline)
+    ])(source) || [];
     assert(source.slice(1).endsWith(rest));
     void segments.push(source.slice(0, source.length - rest.length));
     source = rest;
