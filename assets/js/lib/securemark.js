@@ -792,7 +792,7 @@ require = function () {
             }
             exports.some = some;
             function match(source, pattern) {
-                return typeof pattern === 'string' ? source.startsWith(pattern) : source.slice(0, 9).search(pattern) === 0;
+                return typeof pattern === 'string' ? source.startsWith(pattern) : source.search(pattern) === 0;
             }
         },
         {}
@@ -850,7 +850,7 @@ require = function () {
             function match(source, pattern) {
                 if (typeof pattern === 'string')
                     return source.startsWith(pattern) ? pattern : undefined;
-                const result = source.slice(0, 9).match(pattern);
+                const result = source.match(pattern);
                 return result ? result[0] : undefined;
             }
         },
@@ -1216,8 +1216,8 @@ require = function () {
                     if (content instanceof HTMLAnchorElement && !content.querySelector('.media'))
                         return;
                     const next = rest;
-                    const end = new RegExp(`^\n${ bracket }[^\S\n]*(?:\n|$)`);
-                    return combinator_1.transform(combinator_1.surround('', combinator_1.some(combinator_1.combine([inline_1.inline]), end), end), (caption, rest) => {
+                    const closer = new RegExp(`^\n${ bracket }[^\S\n]*(?:\n|$)`);
+                    return combinator_1.transform(combinator_1.surround('', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), closer), (caption, rest) => {
                         [caption = []] = combinator_1.some(inline_1.inline)(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length - 1)).trim()) || [];
                         return [
                             [typed_dom_1.html('figure', { class: figlabel.getAttribute('href').slice(1) }, [
@@ -1469,6 +1469,7 @@ require = function () {
             const squash_1 = require('../squash');
             const typed_dom_1 = require('typed-dom');
             const separator = /^\s*$/m;
+            const closer = /^\s#\S/;
             exports.paragraph = verification_1.verify(block_1.block(source => {
                 if (source === '')
                     return;
@@ -1478,16 +1479,10 @@ require = function () {
                     block_1.block(combinator_1.some(combinator_1.combine([
                         combinator_1.rewrite(char_1.char('\\s'), inline_1.inline),
                         hashtag_1.hashtag,
-                        combinator_1.some(inline_1.inline, /^\s#\S/)
+                        combinator_1.some(inline_1.inline, closer)
                     ])))
                 ]), cs => {
-                    const el = typed_dom_1.html('p', squash_1.squash(cs));
-                    for (let i = 0; i < el.children.length; i += 2) {
-                        const child = el.children[i];
-                        if (!child.matches('.reference') || !child.nextSibling)
-                            break;
-                        void child.parentElement.insertBefore(typed_dom_1.html('br'), child.nextSibling);
-                    }
+                    const el = typed_dom_1.html('p', squash_1.squash(cs[cs.length - 1] instanceof HTMLBRElement ? cs.slice(0, -1) : cs));
                     return inline_1.hasContent(el) ? [
                         [el],
                         rest
@@ -1546,11 +1541,15 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const syntax = /^(?=>+[^>\s])/;
             const closer = /^\s/;
-            exports.reference = source => combinator_1.transform(line_1.line(combinator_1.surround(syntax, combinator_1.some(combinator_1.combine([unescapable_1.unescsource]), closer), /^[^\S\n]*(?:\n|$)/)), (ts, rest) => [
-                [typed_dom_1.html('a', {
+            const tail = /^[^\S\n]*(?:\n|$)/;
+            exports.reference = source => combinator_1.transform(line_1.line(combinator_1.surround(syntax, combinator_1.some(combinator_1.combine([unescapable_1.unescsource]), closer), tail)), (ts, rest) => [
+                [
+                    typed_dom_1.html('a', {
                         class: 'reference',
                         rel: 'noopener'
-                    }, ts.reduce((acc, t) => acc + t.textContent, '').trim())],
+                    }, ts.reduce((acc, t) => acc + t.textContent, '').trim()),
+                    typed_dom_1.html('br')
+                ],
                 rest
             ])(source);
         },
@@ -1776,8 +1775,9 @@ require = function () {
             }
             exports.indent = indent;
             ;
+            const flag = /^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/;
             function fillOListFlag(source) {
-                return source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, str => `${ str }.`);
+                return source.replace(flag, `$&.`);
             }
             exports.fillOListFlag = fillOListFlag;
         },
@@ -1956,8 +1956,7 @@ require = function () {
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
             const squash_1 = require('../squash');
-            const closer = /^>/;
-            exports.anglebracket = source => combinator_1.transform(combinator_1.surround('<', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), '>'), (ns, rest) => [
+            exports.anglebracket = source => combinator_1.transform(combinator_1.surround('<', combinator_1.some(combinator_1.combine([inline_1.inline]), '>'), '>'), (ns, rest) => [
                 squash_1.squash([
                     document.createTextNode('<'),
                     ...ns,
@@ -1981,8 +1980,7 @@ require = function () {
             const squash_1 = require('../squash');
             const verification_1 = require('./util/verification');
             const typed_dom_1 = require('typed-dom');
-            const closer = /^\)\)/;
-            exports.annotation = source => combinator_1.transform(combinator_1.surround('((', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), '))'), (ns, rest) => {
+            exports.annotation = source => combinator_1.transform(combinator_1.surround('((', combinator_1.some(combinator_1.combine([inline_1.inline]), '))'), '))'), (ns, rest) => {
                 const el = typed_dom_1.html('sup', { class: 'annotation' }, squash_1.squash(ns));
                 if (!verification_1.hasText(el))
                     return;
@@ -2080,8 +2078,9 @@ require = function () {
                 const url = `${ source.startsWith('ttp') ? 'h' : '' }${ source.slice(0, source.length - rest.length) }`.replace(/\\.?/g, str => str.length < 2 ? '' : str).replace(/\s/g, encodeURI);
                 return !flag ? link_1.link(`[](${ url }${ attribute })${ rest }`) : link_1.link(`[![](${ url })](${ url })${ rest }`);
             };
+            const addr = /^[:0-9a-z]+/i;
             const ipv6 = source => {
-                const [whole = ''] = source.match(/^[:0-9a-z]+/i) || [];
+                const [whole = ''] = source.match(addr) || [];
                 if (!whole)
                     return;
                 return [
@@ -2104,8 +2103,7 @@ require = function () {
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
             const squash_1 = require('../squash');
-            const closer = /^}/;
-            exports.brace = source => combinator_1.transform(combinator_1.surround('{', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), '}'), (ns, rest) => [
+            exports.brace = source => combinator_1.transform(combinator_1.surround('{', combinator_1.some(combinator_1.combine([inline_1.inline]), '}'), '}'), (ns, rest) => [
                 squash_1.squash([
                     document.createTextNode('{'),
                     ...ns,
@@ -2127,8 +2125,7 @@ require = function () {
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
             const squash_1 = require('../squash');
-            const closer = /^\]/;
-            exports.bracket = source => combinator_1.transform(combinator_1.surround('[', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), ']'), (ns, rest) => [
+            exports.bracket = source => combinator_1.transform(combinator_1.surround('[', combinator_1.some(combinator_1.combine([inline_1.inline]), ']'), ']'), (ns, rest) => [
                 squash_1.squash([
                     document.createTextNode('['),
                     ...ns,
@@ -2210,9 +2207,8 @@ require = function () {
             const squash_1 = require('../squash');
             const verification_1 = require('./util/verification');
             const typed_dom_1 = require('typed-dom');
-            const closer = /^\*/;
             exports.emphasis = source => combinator_1.transform(combinator_1.surround('*', combinator_1.some(combinator_1.combine([
-                combinator_1.some(inline_1.inline, closer),
+                combinator_1.some(inline_1.inline, '*'),
                 strong_1.strong
             ])), '*'), (ns, rest) => {
                 const el = typed_dom_1.html('em', squash_1.squash(ns));
@@ -2363,7 +2359,7 @@ require = function () {
             function parse(flag, source) {
                 if (!validation_1.match(source, `[${ flag }`, syntax))
                     return;
-                const [, rest = undefined] = line_1.line(combinator_1.surround('[', combinator_1.some(inline_1.inline, /^\]/), ']'), false)(source) || [];
+                const [, rest = undefined] = line_1.line(combinator_1.surround('[', combinator_1.some(inline_1.inline, ']'), ']'), false)(source) || [];
                 if (rest === undefined)
                     return;
                 const text = source.slice(1, source.length - rest.length - 1);
@@ -2458,7 +2454,7 @@ require = function () {
             const squash_1 = require('../squash');
             const url_1 = require('../string/url');
             const typed_dom_1 = require('typed-dom');
-            exports.link = source => combinator_1.transform(line_1.line(combinator_1.surround('[', combinator_1.some(combinator_1.combine([inline_1.inline]), /^]/), ']'), false), (ns, rest) => {
+            exports.link = source => combinator_1.transform(line_1.line(combinator_1.surround('[', combinator_1.some(combinator_1.combine([inline_1.inline]), ']'), ']'), false), (ns, rest) => {
                 const children = squash_1.squash(ns, document.createDocumentFragment());
                 if (children.querySelector('a, .annotation') && !children.querySelector('.media'))
                     return;
@@ -2513,8 +2509,9 @@ require = function () {
             const verification_1 = require('./util/verification');
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
+            const closer = /^\$(?![$\d])/;
             exports.cache = new cache_1.Cache(100);
-            exports.math = source => combinator_1.transform(line_1.line(combinator_1.surround('$', combinator_1.some(combinator_1.combine([escapable_1.escsource]), /^\$/), /^\$(?![$\d])/), false), (ns, rest) => {
+            exports.math = source => combinator_1.transform(line_1.line(combinator_1.surround('$', combinator_1.some(combinator_1.combine([escapable_1.escsource]), '$'), closer), false), (ns, rest) => {
                 const el = typed_dom_1.html('span', { class: 'math' }, `$${ ns.reduce((acc, n) => acc + n.textContent, '') }$`);
                 if (exports.cache.has(el.textContent))
                     return [
@@ -2552,7 +2549,7 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(100);
-            exports.media = source => combinator_1.transform(line_1.line(combinator_1.surround('![', combinator_1.some(combinator_1.combine([text_1.text]), /^\]/), ']'), false), (ns, rest) => {
+            exports.media = source => combinator_1.transform(line_1.line(combinator_1.surround('![', combinator_1.some(combinator_1.combine([text_1.text]), ']'), ']'), false), (ns, rest) => {
                 const caption = ns.reduce((s, n) => s + n.textContent, '').trim();
                 return combinator_1.transform(line_1.line(combinator_1.surround('(', combinator_1.some(combinator_1.combine([
                     parenthesis_1.parenthesis,
@@ -2595,8 +2592,7 @@ require = function () {
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
             const squash_1 = require('../squash');
-            const closer = /^\)/;
-            exports.parenthesis = source => combinator_1.transform(combinator_1.surround('(', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), ')'), (ns, rest) => [
+            exports.parenthesis = source => combinator_1.transform(combinator_1.surround('(', combinator_1.some(combinator_1.combine([inline_1.inline]), ')'), ')'), (ns, rest) => [
                 squash_1.squash([
                     document.createTextNode('('),
                     ...ns,
@@ -2620,8 +2616,7 @@ require = function () {
             const squash_1 = require('../squash');
             const verification_1 = require('./util/verification');
             const typed_dom_1 = require('typed-dom');
-            const closer = /^\*\*/;
-            exports.strong = source => combinator_1.transform(combinator_1.surround('**', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), '**'), (ns, rest) => {
+            exports.strong = source => combinator_1.transform(combinator_1.surround('**', combinator_1.some(combinator_1.combine([inline_1.inline]), '**'), '**'), (ns, rest) => {
                 const el = typed_dom_1.html('strong', squash_1.squash(ns));
                 if (!verification_1.hasText(el))
                     return;
