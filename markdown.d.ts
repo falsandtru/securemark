@@ -15,8 +15,8 @@ export namespace MarkdownParser {
     Parser<HTMLElement, [
       BlockParser.PretextParser,
       BlockParser.ExtensionParser,
-      SourceParser.VisibleLineParser,
-      SourceParser.InvisibleLineParser
+      SourceParser.ContentLineParser,
+      SourceParser.EmptyLineParser
     ]> {
   }
   export interface BlockParser extends
@@ -41,14 +41,14 @@ export namespace MarkdownParser {
     export interface NewlineParser extends
       Block<'newline'>,
       Parser<never, [
-        SourceParser.InvisibleLineParser
+        SourceParser.EmptyLineParser
       ]> {
     }
     export interface HorizontalRuleParser extends
       // ---
       Block<'horizontalrule'>,
       Parser<HTMLHRElement, [
-        SourceParser.VisibleLineParser
+        SourceParser.ContentLineParser
       ]> {
     }
     export interface HeadingParser extends
@@ -405,12 +405,12 @@ export namespace MarkdownParser {
       Source<'escsource'>,
       Parser<Text, never[]> {
     }
-    export interface VisibleLineParser extends
-      Source<'visibleline'>,
+    export interface ContentLineParser extends
+      Source<'contentline'>,
       Parser<never, never[]> {
     }
-    export interface InvisibleLineParser extends
-      Source<'invisibleline'>,
+    export interface EmptyLineParser extends
+      Source<'emptyline'>,
       Parser<never, never[]> {
     }
     export interface ParenthesisParser extends
