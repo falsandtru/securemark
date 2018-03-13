@@ -198,20 +198,17 @@ export namespace MarkdownParser {
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
-      InlineParser.BraceParser,
+      InlineParser.CommentParser,
       InlineParser.AnnotationParser,
-      InlineParser.ParenthesisParser,
       InlineParser.LinkParser,
       InlineParser.ExtensionParser,
-      InlineParser.BracketParser,
-      InlineParser.CommentParser,
       InlineParser.HTMLParser,
-      InlineParser.AngleBracketParser,
       InlineParser.EmphasisParser,
       InlineParser.StrongParser,
       InlineParser.CodeParser,
       InlineParser.MathParser,
       InlineParser.MediaParser,
+      InlineParser.BracketParser,
       InlineParser.HTMLEntityParser,
       InlineParser.AutolinkParser,
       SourceParser.TextParser
@@ -219,24 +216,10 @@ export namespace MarkdownParser {
   }
   export namespace InlineParser {
     interface Inline<T> extends Markdown<['inline', T]> { }
-    export interface BraceParser extends
-      // {abc}
-      Inline<'brace'>,
-      Parser<HTMLElement | Text, [
-        InlineParser
-      ]> {
-    }
     export interface AnnotationParser extends
       // ((abc))
       Inline<'annotation'>,
       Parser<HTMLElement, [
-        InlineParser
-      ]> {
-    }
-    export interface ParenthesisParser extends
-      // (abc)
-      Inline<'parenthesis'>,
-      Parser<HTMLElement | Text, [
         InlineParser
       ]> {
     }
@@ -282,13 +265,6 @@ export namespace MarkdownParser {
         ]> {
       }
     }
-    export interface BracketParser extends
-      // [abc]
-      Inline<'bracket'>,
-      Parser<HTMLElement | Text, [
-        InlineParser
-      ]> {
-    }
     export interface CommentParser extends
       // <# comment #>
       Inline<'comment'>,
@@ -300,13 +276,6 @@ export namespace MarkdownParser {
       // <small>abc</small>
       Inline<'html'>,
       Parser<HTMLElement, [
-        InlineParser
-      ]> {
-    }
-    export interface AngleBracketParser extends
-      // <abc>
-      Inline<'anglebracket'>,
-      Parser<HTMLElement | Text, [
         InlineParser
       ]> {
     }
@@ -349,6 +318,11 @@ export namespace MarkdownParser {
         SourceParser.ParenthesisParser,
         SourceParser.EscapableSourceParser
       ]> {
+    }
+    export interface BracketParser extends
+      // [abc]
+      Inline<'bracket'>,
+      Parser<HTMLElement | Text, InlineParser[]> {
     }
     export interface HTMLEntityParser extends
       // &copy;
