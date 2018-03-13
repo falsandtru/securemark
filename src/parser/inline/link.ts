@@ -7,7 +7,7 @@ import { squash } from '../squash';
 import { sanitize } from '../string/url';
 import { html } from 'typed-dom';
 
-export const link: LinkParser = source =>
+export const link: LinkParser = line(source =>
   transform(
     line(surround('[', some(combine<LinkParser>([inline]), ']'), ']'), false),
     (ns, rest) => {
@@ -43,4 +43,5 @@ export const link: LinkParser = source =>
         })
         (rest);
     })
-    (source);
+    (source),
+  false);

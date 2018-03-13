@@ -1,7 +1,7 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { combine, some, surround, transform } from '../../combinator';
-import { squash } from '../squash';
 import { hasText } from './util/verification';
+import { squash } from '../squash';
 import { html as htm } from 'typed-dom';
 
 const syntax = /^<([a-z]+)>/;
@@ -21,8 +21,9 @@ export const html: HTMLParser = source => {
     surround(`<${tagname}>`, some(combine<HTMLParser>([inline]), `</${tagname}>`), `</${tagname}>`),
     (ns, rest) => {
       const el = htm(tagname as 'wbr', squash(ns));
-      if (!hasText(el)) return;
-      return [[el], rest];
+      return hasText(el)
+        ? [[el], rest]
+        : undefined;
     })
     (source);
 };

@@ -7,9 +7,10 @@ import { html } from 'typed-dom';
 const syntax = /^(?=#\S)/;
 const closer = /^\s/;
 
-export const hashtag: ParagraphParser.HashtagParser = source =>
+export const hashtag: ParagraphParser.HashtagParser = line(source =>
   transform(
-    line(surround(syntax, some(combine<ParagraphParser.HashtagParser>([unescsource]), closer), ''), false),
+    surround(syntax, some(combine<ParagraphParser.HashtagParser>([unescsource]), closer), ''),
     (ts, rest) =>
       [[html('a', { class: 'hashtag', rel: 'noopener' }, ts)], rest])
-    (source);
+    (source),
+  false);

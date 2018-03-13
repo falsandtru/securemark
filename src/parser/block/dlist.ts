@@ -1,9 +1,8 @@
 ﻿import { DListParser } from '../block';
 import { combine, some } from '../../combinator';
-import { verify } from './util/verification';
 import { block } from '../source/block';
 import { firstline } from '../source/line';
-import { indexer, defineIndex } from './util/indexer';
+import { indexer, defineIndex } from './indexer';
 import { InlineParser, inline } from '../inline';
 import { squash } from '../squash';
 import { html } from 'typed-dom';
@@ -11,7 +10,7 @@ import { html } from 'typed-dom';
 const syntax = /^~\s/;
 const separator = /^[~:](?:\s|$)/;
 
-export const dlist: DListParser = verify(block(source => {
+export const dlist: DListParser = block(source => {
   const [whole = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = html('dl');
@@ -50,4 +49,4 @@ export const dlist: DListParser = verify(block(source => {
   }
   assert(el.children.length > 0);
   return [[el], source];
-}));
+});

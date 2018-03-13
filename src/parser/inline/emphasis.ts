@@ -1,16 +1,17 @@
 ﻿import { EmphasisParser, inline } from '../inline';
 import { combine, some, surround, transform } from '../../combinator';
+import { hasText } from './util/verification';
 import { strong } from './strong';
 import { squash } from '../squash';
-import { hasText } from './util/verification';
 import { html } from 'typed-dom';
 
 export const emphasis: EmphasisParser = source =>
   transform(
-    surround('*', some(combine<EmphasisParser>([some(inline, '*'), strong])), '*'),
+    surround('*', some(combine<EmphasisParser>([strong, some(inline, '*')])), '*'),
     (ns, rest) => {
       const el = html('em', squash(ns));
-      if (!hasText(el)) return;
-      return [[el], rest];
+      return hasText(el)
+        ? [[el], rest]
+        : undefined;
     })
     (source);

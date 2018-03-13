@@ -1,11 +1,10 @@
 ﻿import { UListParser } from '../block';
-import { verify } from './util/verification';
 import { combine, some } from '../../combinator';
 import { block } from '../source/block';
 import { firstline } from '../source/line';
 import { match } from '../source/validation';
 import { olist } from './olist';
-import { indent, fillOListFlag } from './util/indent';
+import { indent, fillOListFlag } from './indent';
 import { inline } from '../inline';
 import { squash } from '../squash';
 import { html } from 'typed-dom';
@@ -13,7 +12,7 @@ import { html } from 'typed-dom';
 const syntax = /^([-+*])(?=\s|$)/;
 const content = /^(\[[ x]\](?: +|$))?.*$/;
 
-export const ulist: UListParser = verify(block(source => {
+export const ulist: UListParser = block(source => {
   const [whole = '', flag = ''] = source.match(syntax) || [];
   if (!whole) return;
   const el = html('ul');
@@ -41,4 +40,4 @@ export const ulist: UListParser = verify(block(source => {
   }
   assert(el.children.length > 0);
   return [[el], source];
-}));
+});

@@ -1,4 +1,4 @@
-﻿import { text } from '../parser/block/util/indexer';
+﻿import { text } from '../parser/block/indexer';
 import { TypedHTML, html } from 'typed-dom';
 
 const annotation = new WeakMap<HTMLElement, Node[]>();

@@ -10,7 +10,7 @@ import { html } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(100);
 
-export const media: MediaParser = source =>
+export const media: MediaParser = line(source =>
   transform(
     line(surround('![', some(combine<MediaParser>([text]), ']'), ']'), false),
     (ns, rest) => {
@@ -25,4 +25,5 @@ export const media: MediaParser = source =>
         })
         (rest);
     })
-    (source);
+    (source),
+  false);

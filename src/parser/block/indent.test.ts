@@ -1,6 +1,6 @@
 ﻿import { indent } from './indent';
 
-describe('Unit: parser/block/util/indent', () => {
+describe('Unit: parser/block/indent', () => {
   describe('indent', () => {
     it('valid', () => {
       assert.deepStrictEqual(indent(''), undefined);

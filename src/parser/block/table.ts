@@ -1,5 +1,4 @@
 ﻿import { TableParser } from '../block';
-import { verify } from './util/verification';
 import { some } from '../../combinator';
 import { block } from '../source/block';
 import { firstline } from '../source/line';
@@ -10,7 +9,7 @@ import { html } from 'typed-dom';
 const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
 const align = /^:?-+:?$/;
 
-export const table: TableParser = verify(block(source => {
+export const table: TableParser = block(source => {
   if (!source.startsWith('|') || source.search(syntax) !== 0) return;
   const table = html('table');
   const [headers = [], hrest = source] = parse(source) || [];
@@ -47,7 +46,7 @@ export const table: TableParser = verify(block(source => {
     source = source.slice(line.length + 1);
   }
   return [[table], source];
-}));
+});
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
   return void cols

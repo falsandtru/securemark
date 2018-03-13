@@ -1,5 +1,4 @@
 ﻿import { ParagraphParser } from '../block';
-import { verify } from './util/verification';
 import { combine, subsequence, some, transform, rewrite } from '../../combinator';
 import { SubParsers } from '../../combinator/parser';
 import { char } from '../source/char';
@@ -14,7 +13,7 @@ import { html } from 'typed-dom';
 const separator = /^\s*$/m;
 const closer = /^\s#\S/;
 
-export const paragraph: ParagraphParser = verify(block(source => {
+export const paragraph: ParagraphParser = block(source => {
   if (source === '') return;
   assert(!source.match(/^(?:\\?\s)*?\\?\n/m));
   const rest = source.slice((source.split(separator, 1)[0] || source).length);
@@ -32,4 +31,4 @@ export const paragraph: ParagraphParser = verify(block(source => {
       : [[], rest];
   })
     (source.slice(0, source.length - rest.length).trim());
-}));
+});

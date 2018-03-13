@@ -1,7 +1,7 @@
 ﻿import { StrongParser, inline } from '../inline';
 import { combine, some, surround, transform } from '../../combinator';
-import { squash } from '../squash';
 import { hasText } from './util/verification';
+import { squash } from '../squash';
 import { html } from 'typed-dom';
 
 export const strong: StrongParser = source =>
@@ -9,7 +9,8 @@ export const strong: StrongParser = source =>
     surround('**', some(combine<StrongParser>([inline]), '**'), '**'),
     (ns, rest) => {
       const el = html('strong', squash(ns));
-      if (!hasText(el)) return;
-      return [[el], rest];
+      return hasText(el)
+        ? [[el], rest]
+        : undefined;
     })
     (source);

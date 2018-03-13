@@ -1,4 +1,4 @@
-﻿import { firstline } from '../../source/line';
+﻿import { firstline } from '../source/line';
 
 const syntax = /^\s*/;
 

@@ -3,7 +3,7 @@ import { ContentLineParser, EmptyLineParser } from '../source';
 import { block } from './block';
 
 export function line<P extends Parser<any, any>>(parser: P, entire?: boolean, force?: boolean): P;
-export function line<S extends Parser<any, any>[], R>(parser: Parser<R, S>, entire = true, force = false): Parser<R, S> {
+export function line<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, entire = true, force = false): Parser<T, S> {
   return source => {
     if (source.length === 0) return;
     if (force) {
@@ -15,7 +15,7 @@ export function line<S extends Parser<any, any>[], R>(parser: Parser<R, S>, enti
         : undefined;
     }
     const result = entire
-      ? block(parser)(source)
+      ? block(parser, false)(source)
       : parser(source);
     if (!result) return result;
     const src = source.slice(0, source.length - result[1].length);

@@ -1,5 +1,6 @@
 ﻿import { AutolinkParser } from '../../inline';
 import { combine, some, surround } from '../../../combinator';
+import { line } from '../../source/line';
 import { escsource } from '../../source/escapable';
 import { parenthesis } from '../../source/parenthesis';
 import { link } from '../link';
@@ -8,7 +9,7 @@ const syntax = /^(?:!?h)?ttps?:\/\/\S/;
 export const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
 const escape = /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:\/\/\S/;
 
-export const url: AutolinkParser.UrlParser = source => {
+export const url: AutolinkParser.UrlParser = line(source => {
   if (source.search(escape) === 0) return [[document.createTextNode(source.slice(0, source.indexOf(':')))], source.slice(source.indexOf(':'))];
   if (source.search(syntax) !== 0) return;
   const flag = source.startsWith('!h');
@@ -26,7 +27,7 @@ export const url: AutolinkParser.UrlParser = source => {
   return !flag
     ? link(`[](${url}${attribute})${rest}`)
     : link(`[![](${url})](${url})${rest}`) as any;
-};
+}, false);
 
 const addr = /^[:0-9a-z]+/i;
 const ipv6: AutolinkParser.UrlParser.IPV6Parser = source => {

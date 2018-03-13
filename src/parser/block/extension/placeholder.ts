@@ -1,6 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
 import { some } from '../../../combinator';
-import { verify } from '../util/verification';
 import { block as block_ } from '../../source/block';
 import { block } from '../../block';
 import { firstline } from '../../source/line';
@@ -8,7 +7,7 @@ import { unescsource } from '../../source/unescapable';
 
 const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
 
-export const placeholder: ExtensionParser.PlaceholderParser = verify(block_(source => {
+export const placeholder: ExtensionParser.PlaceholderParser = block_(source => {
   if (!source.startsWith('~~~')) return;
   const [whole = '', bracket = ''] = source.match(syntax) || [];
   if (!whole) return;
@@ -23,4 +22,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = verify(block_(sour
     if (source === '') return;
   }
   return [[message], source.slice(firstline(source).length + 1)];
-}));
+});

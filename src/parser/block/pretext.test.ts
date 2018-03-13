@@ -12,6 +12,8 @@ describe('Unit: parser/block/pretext', () => {
       assert.deepStrictEqual(inspect(parser('```')), undefined);
       assert.deepStrictEqual(inspect(parser('```\n')), undefined);
       assert.deepStrictEqual(inspect(parser('```\na```')), undefined);
+      assert.deepStrictEqual(inspect(parser('```\na\n```b')), undefined);
+      assert.deepStrictEqual(inspect(parser('```\na\n```\nb')), undefined);
       assert.deepStrictEqual(inspect(parser(' ```\n```')), undefined);
     });
 

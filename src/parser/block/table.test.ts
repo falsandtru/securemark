@@ -16,6 +16,7 @@ describe('Unit: parser/block/table', () => {
       assert.deepStrictEqual(inspect(parser('|h|\n')), undefined);
       assert.deepStrictEqual(inspect(parser('|h|\n|')), undefined);
       assert.deepStrictEqual(inspect(parser('|h|\n||')), undefined);
+      assert.deepStrictEqual(inspect(parser('|\n|-\na')), undefined);
     });
 
     it('valid', () => {
