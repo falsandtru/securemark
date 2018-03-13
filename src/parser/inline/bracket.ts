@@ -15,4 +15,7 @@ export const bracket: BracketParser = build(() => combine<BracketParser>([
   transform(
     surround('<', some(inline, '>'), '>'),
     (ns, rest) => [squash([document.createTextNode('<'), ...ns, document.createTextNode('>')]), rest]),
+  transform(
+    surround('"', some(inline, '"'), '"'),
+    (ns, rest) => [squash([document.createTextNode('"'), ...ns, document.createTextNode('"')]), rest]),
 ]));
