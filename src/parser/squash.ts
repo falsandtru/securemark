@@ -1,11 +1,10 @@
-﻿const enum Types {
-  Array,
-  Node,
-}
-
-export function squash<T extends Node[]>(nodes: T): T;
+﻿export function squash<T extends Node[]>(nodes: T): T;
 export function squash<T extends Node[], U extends DocumentFragment>(nodes: T, container: U): U;
 export function squash<T extends Node[], U extends T | Node>(nodes: T, container: U = [] as Node[] as U): U {
+  const enum Types {
+    Array,
+    Node,
+  }
   const obj = Array.isArray(container)
     ? { type: Types.Array as Types.Array, value: container as T, }
     : { type: Types.Node as Types.Node, value: container as Node, };

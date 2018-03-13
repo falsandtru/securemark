@@ -5,3 +5,4 @@ export * from './combinator/some';
 export * from './combinator/surround';
 export * from './combinator/transform';
 export * from './combinator/rewrite';
+export * from './combinator/build';
