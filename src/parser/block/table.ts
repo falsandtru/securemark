@@ -3,7 +3,7 @@ import { some } from '../../combinator';
 import { block } from '../source/block';
 import { firstline } from '../source/line';
 import { inline } from '../inline';
-import { squash } from '../squash';
+import { squash } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;

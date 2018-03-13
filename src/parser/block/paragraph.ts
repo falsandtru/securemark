@@ -7,7 +7,7 @@ import { block } from '../source/block';
 import { reference } from './paragraph/reference';
 import { hashtag } from './paragraph/hashtag';
 import { inline, hasContent } from '../inline';
-import { squash } from '../squash';
+import { squash } from '../util';
 import { html } from 'typed-dom';
 
 const separator = /^\s*$/m;

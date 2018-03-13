@@ -1,7 +1,7 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { combine, some, surround, transform } from '../../combinator';
 import { hasText } from './util/verification';
-import { squash } from '../squash';
+import { squash } from '../util';
 import { html as htm } from 'typed-dom';
 
 const syntax = /^<([a-z]+)>/;

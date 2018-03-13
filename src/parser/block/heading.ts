@@ -5,7 +5,7 @@ import { line } from '../source/line';
 import { hasText } from '../inline/util/verification';
 import { indexer, defineIndex } from './indexer';
 import { inline } from '../inline';
-import { squash } from '../squash';
+import { squash } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^(#{1,6})\s+([^\n]+)(?:\n|$)/;

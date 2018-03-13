@@ -3,7 +3,7 @@ import { build, combine, some, surround, transform } from '../../combinator';
 import { line } from '../source/line';
 import { escsource } from '../source/escapable';
 import { parenthesis } from '../source/parenthesis';
-import { squash } from '../squash';
+import { text, squash } from '../util';
 import { sanitize } from '../string/url';
 import { html } from 'typed-dom';
 
@@ -21,7 +21,7 @@ export const link: LinkParser = line(transform(build(() =>
     return transform(
       line(surround('(', some(combine<LinkParser>([parenthesis, escsource]), /^\)|^\s(?!nofollow)/), ')'), false),
       (ns, rest) => {
-        const [INSECURE_URL, attribute] = ns.reduce((s, n) => s + n.textContent, '').replace(/\\(.)/g, '$1').split(/\s/);
+        const [INSECURE_URL, attribute] = text(ns).replace(/\\(.)/g, '$1').split(/\s/);
         assert(attribute === undefined || attribute === 'nofollow');
         const url = sanitize(INSECURE_URL);
         assert(url === url.trim());

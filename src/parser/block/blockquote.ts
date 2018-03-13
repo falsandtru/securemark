@@ -4,7 +4,7 @@ import { block as block_ } from '../source/block';
 import { firstline } from '../source/line';
 import { block } from '../block';
 import { unescsource } from '../source/unescapable';
-import { squash } from '../squash';
+import { squash } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^>+(?=\s|$)/;

@@ -2,6 +2,7 @@
 import { some } from '../../combinator';
 import { block } from '../source/block';
 import { escsource } from '../source/escapable';
+import { text } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
@@ -16,7 +17,7 @@ export const pretext: PretextParser = block(source => {
     void el.setAttribute('class', `language-${lang.toLowerCase()}`);
     void el.setAttribute('data-lang', lang);
   }
-  const filepath = ((some(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[] as Text[]])[0]).reduce((acc, n) => acc + n.textContent, '');
+  const filepath = text((some(escsource, /^\s/)(notes.slice(lang.length).trim()) || [[] as Text[]])[0]);
   if (filepath) {
     void el.setAttribute('data-file', filepath);
   }

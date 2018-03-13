@@ -6,7 +6,7 @@ import { match } from '../source/validation';
 import { ulist } from './ulist';
 import { indent, fillOListFlag } from './indent';
 import { inline } from '../inline';
-import { squash } from '../squash';
+import { squash } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)(\.(?:\s|$)|(?=\n|$))/;

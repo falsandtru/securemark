@@ -1,6 +1,6 @@
 ﻿import { AngleBracketParser, inline } from '../inline';
 import { build, combine, some, surround, transform } from '../../combinator';
-import { squash } from '../squash';
+import { squash } from '../util';
 
 export const anglebracket: AngleBracketParser = transform(build(() =>
   surround('<', some(combine<AngleBracketParser>([inline]), '>'), '>')),

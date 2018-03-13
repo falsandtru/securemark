@@ -1,4 +1,8 @@
-﻿export function squash<T extends Node[]>(nodes: T): T;
+﻿export function text(ns: Node[]): string {
+  return ns.reduce((s, n) => s + n.textContent, '');
+}
+
+export function squash<T extends Node[]>(nodes: T): T;
 export function squash<T extends Node[], U extends DocumentFragment>(nodes: T, container: U): U;
 export function squash<T extends Node[], U extends T | Node>(nodes: T, container: U = [] as Node[] as U): U {
   const enum Types {
