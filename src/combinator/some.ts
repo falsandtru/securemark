@@ -9,12 +9,11 @@ export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, unti
     while (true) {
       if (rest === '') break;
       if (until && match(rest, until)) break;
-      const result = parser(rest);
-      if (!result) break;
-      const [rs, r] = result;
+      const [rs = [], r = undefined] = parser(rest) || [];
+      if (r === undefined) break;
+      assert(rest.slice(1).endsWith(r));
+      if (r.length >= rest.length) return;
       void results.push(...rs);
-      assert(r.length < rest.length);
-      assert(rest.endsWith(r));
       rest = r;
     }
     return rest.length === source.length

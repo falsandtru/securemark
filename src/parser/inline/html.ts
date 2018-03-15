@@ -5,22 +5,22 @@ import { squash } from '../util';
 import { html as htm } from 'typed-dom';
 
 const syntax = /^<([a-z]+)>/;
-const inlinetags = Object.freeze('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
-assert(inlinetags.every(tag => /[a-z]+/.test(tag)));
-assert(inlinetags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
-assert(inlinetags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
+const tags = Object.freeze('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+assert(tags.every(tag => /[a-z]+/.test(tag)));
+assert(tags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
+assert(tags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
 
 export const html: HTMLParser = source => {
-  const [whole = '', tagname = ''] = source.match(syntax) || [];
+  const [whole = '', tag = ''] = source.match(syntax) || [];
   if (!whole) return;
-  if (!inlinetags.includes(tagname)) return;
-  const opentag = `<${tagname}>`;
+  if (!tags.includes(tag)) return;
+  const opentag = `<${tag}>`;
   assert(whole.startsWith(opentag));
-  if (tagname === 'wbr') return [[htm(tagname)], source.slice(opentag.length)];
+  if (tag === 'wbr') return [[htm(tag)], source.slice(opentag.length)];
   return transform(
-    surround(`<${tagname}>`, some(combine<HTMLParser>([inline]), `</${tagname}>`), `</${tagname}>`),
+    surround(`<${tag}>`, some(combine<HTMLParser>([inline]), `</${tag}>`), `</${tag}>`),
     (ns, rest) => {
-      const el = htm(tagname as 'wbr', squash(ns));
+      const el = htm(tag as 'wbr', squash(ns));
       return hasText(el)
         ? [[el], rest]
         : undefined;

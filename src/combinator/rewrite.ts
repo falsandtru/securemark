@@ -7,6 +7,9 @@ export function rewrite<T, S extends Parser<any, any>[]>(a: Parser<never, any>, 
     if (!ar) return;
     const br = b(source.slice(0, source.length - ar[1].length));
     if (!br) return;
-    return [br[0], br[1] + ar[1]];
+    assert(source.slice(1).endsWith(br[1] + ar[1]));
+    return br[1].length + ar[1].length < source.length
+      ? [br[0], br[1] + ar[1]]
+      : undefined;
   };
 }
