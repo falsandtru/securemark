@@ -734,16 +734,16 @@ require = function () {
                 return source => {
                     let rest = source;
                     const results = [];
-                    for (const parse of parsers) {
+                    for (const parser of parsers) {
                         if (rest === '')
                             break;
-                        const r = parse(rest);
-                        if (!r)
+                        const [rs = [], r = undefined] = parser(rest) || [];
+                        if (r === undefined)
                             continue;
-                        if (r[1].length >= rest.length)
+                        if (r.length >= rest.length)
                             return;
-                        void results.push(...r[0]);
-                        rest = r[1];
+                        void results.push(...rs);
+                        rest = r;
                         break;
                     }
                     return rest.length < source.length ? [
@@ -768,10 +768,10 @@ require = function () {
                     const br = b(source.slice(0, source.length - ar[1].length));
                     if (!br)
                         return;
-                    return [
+                    return br[1].length + ar[1].length < source.length ? [
                         br[0],
                         br[1] + ar[1]
-                    ];
+                    ] : undefined;
                 };
             }
             exports.rewrite = rewrite;
@@ -791,10 +791,11 @@ require = function () {
                             break;
                         if (until && match(rest, until))
                             break;
-                        const result = parser(rest);
-                        if (!result)
+                        const [rs = [], r = undefined] = parser(rest) || [];
+                        if (r === undefined)
                             break;
-                        const [rs, r] = result;
+                        if (r.length >= rest.length)
+                            return;
                         void results.push(...rs);
                         rest = r;
                     }
@@ -819,16 +820,16 @@ require = function () {
                 return source => {
                     let rest = source;
                     const results = [];
-                    for (const parse of parsers) {
+                    for (const parser of parsers) {
                         if (rest === '')
                             break;
-                        const r = parse(rest);
-                        if (!r)
+                        const [rs = [], r = undefined] = parser(rest) || [];
+                        if (r === undefined)
                             continue;
-                        if (r[1].length >= rest.length)
+                        if (r.length >= rest.length)
                             return;
-                        void results.push(...r[0]);
-                        rest = r[1];
+                        void results.push(...rs);
+                        rest = r;
                     }
                     return rest.length < source.length ? [
                         results,
@@ -2353,21 +2354,21 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^<([a-z]+)>/;
-            const inlinetags = Object.freeze('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+            const tags = Object.freeze('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             exports.html = source => {
-                const [whole = '', tagname = ''] = source.match(syntax) || [];
+                const [whole = '', tag = ''] = source.match(syntax) || [];
                 if (!whole)
                     return;
-                if (!inlinetags.includes(tagname))
+                if (!tags.includes(tag))
                     return;
-                const opentag = `<${ tagname }>`;
-                if (tagname === 'wbr')
+                const opentag = `<${ tag }>`;
+                if (tag === 'wbr')
                     return [
-                        [typed_dom_1.html(tagname)],
+                        [typed_dom_1.html(tag)],
                         source.slice(opentag.length)
                     ];
-                return combinator_1.transform(combinator_1.surround(`<${ tagname }>`, combinator_1.some(combinator_1.combine([inline_1.inline]), `</${ tagname }>`), `</${ tagname }>`), (ns, rest) => {
-                    const el = typed_dom_1.html(tagname, util_1.squash(ns));
+                return combinator_1.transform(combinator_1.surround(`<${ tag }>`, combinator_1.some(combinator_1.combine([inline_1.inline]), `</${ tag }>`), `</${ tag }>`), (ns, rest) => {
+                    const el = typed_dom_1.html(tag, util_1.squash(ns));
                     return verification_1.hasText(el) ? [
                         [el],
                         rest
