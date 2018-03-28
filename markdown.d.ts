@@ -253,15 +253,13 @@ export namespace MarkdownParser {
       export interface LabelParser extends
         // [:type-name]
         Inline<'extension/label'>,
-        Parser<HTMLAnchorElement, [
-          SourceParser.UnescapableSourceParser
-        ]> {
+        Parser<HTMLAnchorElement, never[]> {
       }
       export interface PlaceholderParser extends
         // [^abc]
         Inline<'extension/placeholder'>,
         Parser<HTMLSpanElement, [
-          SourceParser.TextParser
+          InlineParser
         ]> {
       }
     }
