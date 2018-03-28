@@ -1,16 +1,6 @@
-declare global {
-  interface Node {
-    cloneNode(deep?: boolean): this;
-  }
-  interface HTMLObjectElement {
-    typeMustMatch: boolean;
-  }
+interface Node {
+  cloneNode(deep?: boolean): this;
 }
-
-import assert from 'power-assert';
-
-type Assert = typeof assert;
-
-declare global {
-  const assert: Assert;
+interface HTMLObjectElement {
+  typeMustMatch: boolean;
 }
