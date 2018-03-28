@@ -14,12 +14,8 @@ describe('Unit: parser/block/math', () => {
       assert.deepStrictEqual(inspect(parser('$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$ a\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$\n\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$\n\n\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na\n$$b')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na\n$$\nb')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$\na\n\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$\n\na\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser(' $$\na\n$$')), undefined);
     });
 

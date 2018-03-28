@@ -43,7 +43,6 @@ describe('Unit: parser/block/ulist', () => {
       // filled
       assert.deepStrictEqual(inspect(parser('- 1\n- 2')), [['<ul><li>1</li><li>2</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n- 2\n- 3')), [['<ul><li>1</li><li>2</li><li>3</li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- 1\n\n')), [['<ul><li>1</li></ul>'], '\n']);
     });
 
     it('nest', () => {

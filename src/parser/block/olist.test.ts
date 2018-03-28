@@ -47,7 +47,6 @@ describe('Unit: parser/block/olist', () => {
       // filled
       assert.deepStrictEqual(inspect(parser('1. 1\n1. 2')), [['<ol start="1" type="1"><li>1</li><li>2</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n1. 2\n1. 3')), [['<ol start="1" type="1"><li>1</li><li>2</li><li>3</li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1. 1\n\n')), [['<ol start="1" type="1"><li>1</li></ol>'], '\n']);
     });
 
     it('nest', () => {

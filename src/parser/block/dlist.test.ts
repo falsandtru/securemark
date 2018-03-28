@@ -25,12 +25,9 @@ describe('Unit: parser/block/dlist', () => {
       // pending
       assert.deepStrictEqual(inspect(parser('~\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n:')), [['<dl><dt></dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~\n\n')), [['<dl><dt></dt><dd></dd></dl>'], '\n']);
       assert.deepStrictEqual(inspect(parser('~\n:\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~\n:\n\n')), [['<dl><dt></dt><dd></dd></dl>'], '\n']);
       assert.deepStrictEqual(inspect(parser('~ \n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ \n:')), [['<dl><dt></dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ \n ')), [['<dl><dt></dt><dd></dd></dl>'], ' ']);
       assert.deepStrictEqual(inspect(parser('~ \n: ')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ \n: \n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n~\n')), [['<dl><dt></dt><dt></dt><dd></dd></dl>'], '']);
