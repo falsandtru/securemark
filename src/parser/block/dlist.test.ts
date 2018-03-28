@@ -40,6 +40,7 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~\na\n:')), [['<dl><dt></dt><dd>a</dd><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n:\nb')), [['<dl><dt></dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\na\n: b')), [['<dl><dt></dt><dd>a</dd><dd>b</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ \\\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a: b')), [['<dl><dt id="index:a:-b">a: b</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n~b')), [['<dl><dt id="index:a">a</dt><dd>~b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n:b')), [['<dl><dt id="index:a">a</dt><dd>:b</dd></dl>'], '']);
