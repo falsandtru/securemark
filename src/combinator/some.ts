@@ -16,9 +16,9 @@ export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, unti
       void results.push(...rs);
       rest = r;
     }
-    return rest.length === source.length
-      ? undefined
-      : [results, rest];
+    return rest.length < source.length
+      ? [results, rest]
+      : undefined;
   };
 }
 

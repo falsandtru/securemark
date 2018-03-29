@@ -1,52 +1,39 @@
 ﻿import { DListParser } from '../block';
-import { combine, some } from '../../combinator';
+import { combine, inits, some, surround, transform, rewrite, trim, build } from '../../combinator';
 import { block } from '../source/block';
-import { firstline } from '../source/line';
+import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
-import { InlineParser, inline } from '../inline';
-import { squash } from '../util';
+import { inline } from '../inline';
+import { unescsource } from '../source/unescapable';
+import { compress } from '../util';
+import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-const syntax = /^~\s/;
-const separator = /^[~:](?:\s|$)/;
+const syntax = /^~(?=\s|$)/;
 
-export const dlist: DListParser = block(source => {
-  const [whole = ''] = source.match(syntax) || [];
-  if (!whole) return;
-  const el = html('dl');
-  while (true) {
-    const line = firstline(source);
-    if (line.trim() === '') break;
-    switch (line.slice(0, 2).trim()) {
-      case '~': {
-        const dt = el.appendChild(html('dt'));
-        void dt.appendChild(squash((some(combine<DListParser>([indexer, inline]))(line.slice(1).trim()) || [[]])[0], document.createDocumentFragment()));
-        void defineIndex(dt);
-        source = source.slice(line.length + 1);
-        continue;
-      }
-      default: {
-        assert(el.lastElementChild);
-        const dd = line.slice(0, 2).trim() === ':' || el.lastElementChild!.tagName.toLowerCase() !== 'dd'
-          ? el.appendChild(html('dd'))
-          : el.lastElementChild!;
-        const texts = [line.slice(line.slice(0, 2).trim() === ':' ? 1 : 0)];
-        source = source.slice(line.length + 1);
-        while (true) {
-          const line = firstline(source);
-          if (line.trim() === '' || line.search(separator) === 0) break;
-          void texts.push(line);
-          source = source.slice(line.length + 1);
-        }
-        void dd.appendChild(squash((some(combine<[InlineParser]>([inline]))(texts.join('\n').trim()) || [[]])[0], document.createDocumentFragment()));
-        continue;
-      }
-    }
+export const dlist: DListParser = block(transform(build(() =>
+  some(inits<DListParser>([
+    some(term),
+    some(desc, syntax)
+  ]))),
+  (es, rest) => [
+    [html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)],
+    rest
+  ]));
+
+const term = line(transform(build(() =>
+  surround(syntax, compress(trim(some(combine<[typeof indexer, typeof inline]>([indexer, inline])))), '')),
+  (ns, rest) => {
+    const dt = html('dt', ns);
+    void defineIndex(dt);
+    return [[dt], rest];
   }
-  assert(el.firstElementChild!.tagName.toLowerCase() === 'dt');
-  if (el.lastElementChild && el.lastElementChild!.tagName.toLowerCase() === 'dt') {
-    void el.appendChild(html('dd'));
-  }
-  assert(el.children.length > 0);
-  return [[el], source];
-});
+), true, true);
+
+const desc = block(transform(build(() =>
+  rewrite(
+    surround(/^:(?=\s|$)|/, some(line(some(unescsource), true, true), /^[~:](?:\s|$)/), ''),
+    surround(/^:(?=\s|$)|/, trim(some(combine<[typeof inline]>([inline]))), ''))),
+  (ns, rest) =>
+    [[html('dd', ns)], rest]
+), false);

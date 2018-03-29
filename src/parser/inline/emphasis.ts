@@ -1,14 +1,13 @@
 ﻿import { EmphasisParser, inline } from '../inline';
-import { build, combine, some, surround, transform } from '../../combinator';
-import { hasText } from './util/verification';
+import { combine, some, surround, transform, build } from '../../combinator';
 import { strong } from './strong';
-import { squash } from '../util';
+import { compress, hasText } from '../util';
 import { html } from 'typed-dom';
 
 export const emphasis: EmphasisParser = transform(build(() =>
-  surround('*', some(combine<EmphasisParser>([strong, some(inline, '*')])), '*')),
+  surround('*', compress(some(combine<EmphasisParser>([strong, some(inline, '*')]))), '*')),
   (ns, rest) => {
-    const el = html('em', squash(ns));
+    const el = html('em', ns);
     return hasText(el)
       ? [[el], rest]
       : undefined;

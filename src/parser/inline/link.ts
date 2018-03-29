@@ -1,9 +1,9 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { build, combine, some, surround, transform } from '../../combinator';
+import { combine, some, surround, transform, build } from '../../combinator';
 import { line } from '../source/line';
 import { escsource } from '../source/escapable';
 import { parenthesis } from '../source/parenthesis';
-import { text, squash } from '../util';
+import { hasText, stringify, squash } from '../util';
 import { sanitize } from '../string/url';
 import { html } from 'typed-dom';
 
@@ -16,12 +16,12 @@ export const link: LinkParser = line(transform(build(() =>
       if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('.media')) return;
     }
     else {
-      if (children.childNodes.length > 0 && children.textContent!.trim() === '') return;
+      if (children.childNodes.length > 0 && !hasText(children)) return;
     }
     return transform(
       line(surround('(', some(combine<LinkParser>([parenthesis, escsource]), /^\)|^\s(?!nofollow)/), ')'), false),
       (ns, rest) => {
-        const [INSECURE_URL, attribute] = text(ns).replace(/\\(.)/g, '$1').split(/\s/);
+        const [INSECURE_URL, attribute] = stringify(ns).replace(/\\(.)/g, '$1').split(/\s/);
         assert(attribute === undefined || attribute === 'nofollow');
         const url = sanitize(INSECURE_URL);
         assert(url === url.trim());
@@ -37,9 +37,9 @@ export const link: LinkParser = line(transform(build(() =>
           children.textContent || children.querySelector('.media')
             ? children
             : document.createTextNode((INSECURE_URL || el.href).replace(/^h(?=ttps?:\/\/)/, attribute === 'nofollow' ? '' : 'h')));
-        assert(el.querySelector('.media') || el.textContent!.trim());
+        assert(el.querySelector('.media') || hasText(el));
         return [[el], rest];
       })
       (rest);
-  }),
-  false);
+  }
+), false);

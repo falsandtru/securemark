@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { some } from '../../combinator';
+import { some, trim } from '../../combinator';
 import { block } from '../source/block';
 import { firstline } from '../source/line';
 import { inline } from '../inline';
@@ -62,7 +62,7 @@ function parse(row: string): [DocumentFragment[], string] | undefined {
   while (true) {
     if (row[0] !== '|') return;
     const [, rest = row.slice(1)] = some(inline, rowseparator)(row.slice(1)) || [];
-    const [col = []] = some(inline)(row.slice(1, row.length - rest.length).trim()) || [];
+    const [col = []] = trim(some(inline))(row.slice(1, row.length - rest.length)) || [];
     assert(rest.length < row.length);
     row = rest;
     void cols.push(squash(col, document.createDocumentFragment()));

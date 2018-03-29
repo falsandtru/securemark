@@ -1,13 +1,12 @@
 ﻿import { StrongParser, inline } from '../inline';
-import { build, combine, some, surround, transform } from '../../combinator';
-import { hasText } from './util/verification';
-import { squash } from '../util';
+import { combine, some, surround, transform, build } from '../../combinator';
+import { compress, hasText } from '../util';
 import { html } from 'typed-dom';
 
 export const strong: StrongParser = transform(build(() =>
-  surround('**', some(combine<StrongParser>([inline]), '**'), '**')),
+  surround('**', compress(some(combine<StrongParser>([inline]), '**')), '**')),
   (ns, rest) => {
-    const el = html('strong', squash(ns));
+    const el = html('strong', ns);
     return hasText(el)
       ? [[el], rest]
       : undefined;

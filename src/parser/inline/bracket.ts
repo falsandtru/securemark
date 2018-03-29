@@ -1,21 +1,21 @@
 ﻿import { BracketParser, inline } from '../inline';
-import { build, combine, some, surround, transform } from '../../combinator';
-import { squash } from '../util';
+import { combine, some, surround, transform, build } from '../../combinator';
+import { compress } from '../util';
 
-export const bracket: BracketParser = build(() => combine<BracketParser>([
+export const bracket: BracketParser = build(() => compress(combine<BracketParser>([
   transform(
     surround('(', some(inline, ')'), ')'),
-    (ns, rest) => [squash([document.createTextNode('('), ...ns, document.createTextNode(')')]), rest]),
+    (ns, rest) => [[document.createTextNode('('), ...ns, document.createTextNode(')')], rest]),
   transform(
     surround('[', some(inline, ']'), ']'),
-    (ns, rest) => [squash([document.createTextNode('['), ...ns, document.createTextNode(']')]), rest]),
+    (ns, rest) => [[document.createTextNode('['), ...ns, document.createTextNode(']')], rest]),
   transform(
     surround('{', some(inline, '}'), '}'),
-    (ns, rest) => [squash([document.createTextNode('{'), ...ns, document.createTextNode('}')]), rest]),
+    (ns, rest) => [[document.createTextNode('{'), ...ns, document.createTextNode('}')], rest]),
   transform(
     surround('<', some(inline, '>'), '>'),
-    (ns, rest) => [squash([document.createTextNode('<'), ...ns, document.createTextNode('>')]), rest]),
+    (ns, rest) => [[document.createTextNode('<'), ...ns, document.createTextNode('>')], rest]),
   transform(
     surround('"', some(inline, '"'), '"'),
-    (ns, rest) => [squash([document.createTextNode('"'), ...ns, document.createTextNode('"')]), rest]),
-]));
+    (ns, rest) => [[document.createTextNode('"'), ...ns, document.createTextNode('"')], rest]),
+])));

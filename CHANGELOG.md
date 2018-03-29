@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.46.0
+
+- Refactoring with some small breaking changes.
+
 ## 0.45.0
 
 - Extend bracket parser for `"`.

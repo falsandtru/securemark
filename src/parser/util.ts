@@ -1,5 +1,9 @@
-﻿export function text(ns: Node[]): string {
-  return ns.reduce((s, n) => s + n.textContent, '');
+﻿import { Parser, transform } from '../combinator';
+
+export function compress<P extends Parser<Node, any>>(parser: P): P;
+export function compress<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return transform(parser, (ns, rest) =>
+    [squash(ns), rest]);
 }
 
 export function squash<T extends Node[]>(nodes: T): T;
@@ -30,4 +34,22 @@ export function squash<T extends Node[], U extends T | Node>(nodes: T, container
       return curr;
     }, undefined);
   return container;
+}
+
+export function hasContent(el: HTMLElement): boolean {
+  return hasText(el)
+      || !!el.querySelector('.media');
+}
+
+export function hasText(node: Node): boolean {
+  return node.textContent!.trim() !== '';
+}
+
+export function hasTightText(el: HTMLElement): boolean {
+  return hasText(el)
+      && el.textContent === el.textContent!.trim();
+}
+
+export function stringify(ns: Node[]): string {
+  return ns.reduce((s, n) => s + n.textContent, '');
 }

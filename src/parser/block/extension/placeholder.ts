@@ -4,7 +4,7 @@ import { block as block_ } from '../../source/block';
 import { block } from '../../block';
 import { firstline } from '../../source/line';
 import { unescsource } from '../../source/unescapable';
-import { text } from '../../util';
+import { stringify } from '../../util';
 
 const syntax = /^(~{3,})([^\n]*)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/;
 
@@ -18,7 +18,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = block_(source => {
   while (true) {
     const line = firstline(source);
     if (line.startsWith(`${bracket}`) && line.trim() === `${bracket}`) break;
-    void lines.push(text((some(unescsource)(`${line}\n`) || [[] as Text[]])[0]));
+    void lines.push(stringify((some(unescsource)(`${line}\n`) || [[]])[0]));
     source = source.slice(line.length + 1);
     if (source === '') return;
   }

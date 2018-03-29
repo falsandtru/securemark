@@ -1,9 +1,9 @@
 ﻿import { ExtensionParser } from '../../inline';
 import { line } from '../../source/line';
-import { hasTightText } from '../util/verification';
 import { template } from './template';
 import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
+import { hasTightText } from '../../util';
 
 export const index: ExtensionParser.IndexParser = line(template('#', query => {
   const [[el = undefined] = [], rest = ''] = link(`[${query}]()`) || [];

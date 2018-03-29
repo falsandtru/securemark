@@ -1,10 +1,9 @@
 ﻿import { CodeParser } from '../inline';
 import { combine, some, surround, transform } from '../../combinator';
 import { line } from '../source/line';
-import { hasText } from './util/verification';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
-import { text } from '../util';
+import { hasText, stringify } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^(`+)[^\n]+?\1(?!`)/;
@@ -21,7 +20,7 @@ export const code: CodeParser = line(source => {
     (ns, rest) => {
       const el = html('code',
         { 'data-src': source.slice(0, source.length - rest.length) },
-        text(ns).trim());
+        stringify(ns).trim());
       return hasText(el)
         ? [[el], rest]
         : undefined;

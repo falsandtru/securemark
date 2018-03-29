@@ -6,7 +6,7 @@ import { parenthesis } from '../../source/parenthesis';
 import { link } from '../link';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;
-export const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
+const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
 const escape = /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?:\/\/\S/;
 
 export const url: AutolinkParser.UrlParser = line(source => {

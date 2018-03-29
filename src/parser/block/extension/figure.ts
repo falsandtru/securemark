@@ -5,6 +5,7 @@ import { inline, label, url } from '../../inline';
 import { table } from '../table';
 import { pretext } from '../pretext';
 import { math } from '../math';
+import { compress } from '../../util';
 import { html } from 'typed-dom';
 
 const syntax = /^(~{3,})figure[^\S\n]+(\[:[^\]]+\])[^\S\n]*\n/;
@@ -20,8 +21,8 @@ export const figure: ExtensionParser.FigureParser = block(source => {
     if (content instanceof HTMLAnchorElement && !content.querySelector('.media')) return;
     const next = rest;
     const closer = new RegExp(`^\n${bracket}[^\S\n]*(?:\n|$)`);
-    return transform(surround('', some(combine<ExtensionParser.FigureParser>([inline]), closer), closer), (caption, rest) => {
-      [caption = []] = some(inline)(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length - 1)).trim()) || [];
+    return transform(surround('', some(combine<ExtensionParser.FigureParser>([inline]), closer), closer), (_, rest) => {
+      const [caption = []] = compress(some(inline))(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length - 1)).trim()) || [];
       return [
         [
           html('figure', { class: figlabel.getAttribute('href')!.slice(1) }, [

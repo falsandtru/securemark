@@ -12,7 +12,6 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~0')), undefined);
       assert.deepStrictEqual(inspect(parser('~a')), undefined);
-      assert.deepStrictEqual(inspect(parser('~')), undefined);
       assert.deepStrictEqual(inspect(parser('~:')), undefined);
       assert.deepStrictEqual(inspect(parser('~a:b')), undefined);
       assert.deepStrictEqual(inspect(parser('~a\n:b')), undefined);
@@ -23,6 +22,7 @@ describe('Unit: parser/block/dlist', () => {
 
     it('single', () => {
       // pending
+      assert.deepStrictEqual(inspect(parser('~')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n:')), [['<dl><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n:\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
