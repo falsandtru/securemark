@@ -9,10 +9,12 @@ import { line, contentline } from '../../source/line';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
 
+import FigureParser = ExtensionParser.FigureParser;
+
 const syntax = /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/;
 const cache = new Map<string, RegExp>();
 
-export const figure: ExtensionParser.FigureParser = block(source => {
+export const figure: FigureParser = block(source => {
   if (!source.startsWith('~~~')) return;
   const [whole = '', bracket = '', note = ''] = source.match(syntax) || [];
   if (!whole) return;
@@ -24,11 +26,11 @@ export const figure: ExtensionParser.FigureParser = block(source => {
   return transform(
     surround(
       syntax,
-      inits<ExtensionParser.FigureParser>([
+      inits<FigureParser>([
         transform(
           rewrite(
             union([pretext, some(contentline, closer)]),
-            union<ExtensionParser.FigureParser.ContentParser>([table, pretext, math, line(trim(url), true, true)])),
+            union([table, pretext, math, line(trim(url), true, true)])),
           ([content], rest) => {
             assert(content);
             if (content instanceof Text) return;
@@ -37,7 +39,7 @@ export const figure: ExtensionParser.FigureParser = block(source => {
           }),
         rewrite(
           sequence([line(s => s.trim() === '' ? [[], ''] : undefined, true, true), some(contentline, closer)]),
-          compress(trim(some(union<ExtensionParser.FigureParser.CaptionParser>([inline]))))),
+          compress(trim(some(union([inline]))))),
       ]),
       closer),
     (es, rest) => [

@@ -7,6 +7,6 @@ import { html } from 'typed-dom';
 const syntax = /^(?=-{3,}[^\S\n]*(?:\n|$))/;
 
 export const horizontalrule: HorizontalRuleParser = block(transform(
-  surround(syntax, union<HorizontalRuleParser>([contentline]), ''),
+  surround<HorizontalRuleParser>(syntax, union([contentline]), ''),
   (_, rest) =>
     [[html('hr')], rest]));

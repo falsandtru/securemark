@@ -22,7 +22,7 @@ export const dlist: DListParser = block(transform(build(() =>
   ]));
 
 const term: DListParser.TermParser = line(transform(build(() =>
-  surround(syntax, compress(trim(some(union<DListParser.TermParser>([indexer, inline])))), '')),
+  surround<DListParser.TermParser>(syntax, compress(trim(some(union([indexer, inline])))), '')),
   (ns, rest) => {
     const dt = html('dt', ns);
     void defineIndex(dt);
@@ -31,9 +31,9 @@ const term: DListParser.TermParser = line(transform(build(() =>
 ), true, true);
 
 const desc: DListParser.DescriptionParser = block(transform(build(() =>
-  rewrite(
+  rewrite<DListParser.DescriptionParser>(
     surround(/^:(?=\s|$)|/, some(line(erase, true, true), /^[~:](?:\s|$)/), ''),
-    surround(/^:(?=\s|$)|/, trim(some(union<DListParser.DescriptionParser>([inline]))), ''))),
+    surround(/^:(?=\s|$)|/, trim(some(union([inline]))), ''))),
   (ns, rest) =>
     [[html('dd', ns)], rest]
 ), false);

@@ -16,7 +16,7 @@ export const url: AutolinkParser.UrlParser = line(source => {
   source = flag
     ? source.slice(1)
     : source;
-  const [, rest = undefined] = some(union<AutolinkParser.UrlParser>([surround('[', ipv6, ']'), parenthesis, some(escsource, closer)]))(source) || [];
+  const [, rest = undefined] = some<AutolinkParser.UrlParser>(union([surround('[', ipv6, ']'), parenthesis, some(escsource, closer)]))(source) || [];
   if (rest === undefined) return;
   const attribute = source.startsWith('ttp')
     ? ' nofollow'

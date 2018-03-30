@@ -12,11 +12,11 @@ import { html } from 'typed-dom';
 export const cache = new Cache<string, HTMLElement>(100);
 
 export const media: MediaParser = line(transform(build(() =>
-  line(surround('![', some(union<MediaParser>([text]), ']'), ']'), false)),
+  line<MediaParser>(surround('![', some(union([text]), ']'), ']'), false)),
   (ns, rest) => {
     const caption = stringify(ns).trim();
     return transform(
-      line(surround('(', some(union<MediaParser>([parenthesis, escsource]), /^\)|^\s/), ')'), false),
+      line<MediaParser>(surround('(', some(union([parenthesis, escsource]), /^\)|^\s/), ')'), false),
       (ns, rest) => {
         const url = sanitize(stringify(ns).replace(/\\(.)/g, '$1'));
         if (url === '') return;

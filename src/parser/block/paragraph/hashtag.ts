@@ -8,7 +8,7 @@ import { html } from 'typed-dom';
 const syntax = /^(?=#\S)/;
 
 export const hashtag: ParagraphParser.HashtagParser = line(transform(
-  surround(syntax, compress(some(union<ParagraphParser.HashtagParser>([unescsource]), /^\s/)), ''),
+  surround<ParagraphParser.HashtagParser>(syntax, compress(some(union([unescsource]), /^\s/)), ''),
   (ts, rest) =>
     [[html('a', { class: 'hashtag', rel: 'noopener' }, ts)], rest]
 ), false);

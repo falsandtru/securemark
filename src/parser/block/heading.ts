@@ -14,7 +14,7 @@ export const heading: HeadingParser = block(line(source => {
   const [whole = '', { length: level } = '', title = ''] = source.match(syntax) || [];
   if (!whole) return;
   assert(level > 0 && level < 7);
-  return transform(compress(trim(some(union<HeadingParser>([indexer, inline])))), cs => {
+  return transform<HeadingParser>(compress(trim(some(union([indexer, inline])))), cs => {
     const el = html(`h${level}` as 'h1', cs);
     if (!hasText(el)) return;
     void defineIndex(el);

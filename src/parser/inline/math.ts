@@ -11,7 +11,7 @@ const closer = /^\$(?![$\d])/;
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
 export const math: MathParser = line(transform(
-  surround('$', some(union<MathParser>([escsource]), '$'), closer),
+  surround<MathParser>('$', some(union([escsource]), '$'), closer),
   (ns, rest) => {
     const el = html('span', { class: 'math' }, `$${stringify(ns)}$`);
     if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true)], rest];

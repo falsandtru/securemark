@@ -17,7 +17,7 @@ export const html: HTMLParser = source => {
   assert(whole.startsWith(opentag));
   if (tag === 'wbr') return [[htm(tag)], source.slice(opentag.length)];
   return transform(
-    surround(`<${tag}>`, compress(some(union<HTMLParser>([inline]), `</${tag}>`)), `</${tag}>`),
+    surround<HTMLParser>(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
     (ns, rest) => {
       const el = htm(tag as 'wbr', ns);
       return hasText(el)

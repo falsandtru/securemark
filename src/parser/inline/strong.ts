@@ -4,7 +4,7 @@ import { compress, hasText } from '../util';
 import { html } from 'typed-dom';
 
 export const strong: StrongParser = transform(build(() =>
-  surround('**', compress(some(union<StrongParser>([inline]), '**')), '**')),
+  surround<StrongParser>('**', compress(some(union([inline]), '**')), '**')),
   (ns, rest) => {
     const el = html('strong', ns);
     return hasText(el)

@@ -53,7 +53,7 @@ export const blockquote: BlockquoteParser = block_(source => {
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs = [], rest = source] = some(union<BlockquoteParser>([unescsource]), /^(?:\n|$)/)(source) || [];
+    const [cs = [], rest = source] = some<BlockquoteParser>(union([unescsource]), /^(?:\n|$)/)(source) || [];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs, document.createDocumentFragment()).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs, document.createDocumentFragment());

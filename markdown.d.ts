@@ -161,26 +161,16 @@ export namespace MarkdownParser {
         // ~~~
         Block<'extension/figure'>,
         Parser<HTMLElement, [
-          FigureParser.ContentParser,
-          FigureParser.CaptionParser
-        ]> {
-      }
-      export namespace FigureParser {
-        export interface ContentParser extends
-          Block<'extension/figure/content'>,
           Parser<HTMLElement, [
             TableParser,
             PretextParser,
             MathParser,
             InlineParser.AutolinkParser.UrlParser
-          ]> {
-        }
-        export interface CaptionParser extends
-          Block<'extension/figure/caption'>,
+          ]>,
           Parser<HTMLElement, [
             InlineParser
-          ]> {
-        }
+          ]>
+        ]> {
       }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,

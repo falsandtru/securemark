@@ -5,6 +5,6 @@ import { unescsource } from '../source/unescapable';
 const syntax = /^<(#+)\s+(?:\S+\s+)*?\1(?=>)/;
 
 export const comment: CommentParser = transform(
-  surround(syntax, union<CommentParser>([unescsource]), ''),
+  surround<CommentParser>(syntax, union([unescsource]), ''),
   (_, rest) =>
     [[], rest]);

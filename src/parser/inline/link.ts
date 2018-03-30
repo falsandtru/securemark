@@ -8,7 +8,7 @@ import { sanitize } from '../string/url';
 import { html } from 'typed-dom';
 
 export const link: LinkParser = line(transform(build(() =>
-  line(surround('[', some(union<LinkParser>([inline]), ']'), ']'), false)),
+  line<LinkParser>(surround('[', some(union([inline]), ']'), ']'), false)),
   (ns, rest) => {
     const children = squash(ns, document.createDocumentFragment());
     if (children.querySelector('a, .annotation') && !children.querySelector('.media')) return;
@@ -19,7 +19,7 @@ export const link: LinkParser = line(transform(build(() =>
       if (children.childNodes.length > 0 && !hasText(children)) return;
     }
     return transform(
-      line(surround('(', some(union<LinkParser>([parenthesis, escsource]), /^\)|^\s(?!nofollow)/), ')'), false),
+      line<LinkParser>(surround('(', some(union([parenthesis, escsource]), /^\)|^\s(?!nofollow)/), ')'), false),
       (ns, rest) => {
         const [INSECURE_URL, attribute] = stringify(ns).replace(/\\(.)/g, '$1').split(/\s/);
         assert(attribute === undefined || attribute === 'nofollow');
