@@ -1297,6 +1297,7 @@ require = function () {
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^(~{3,})figure[^\S\n]+(\[:[^\]]+\])[^\S\n]*\n/;
+            const cache = new Map();
             exports.figure = block_1.block(source => {
                 if (!source.startsWith('~~~'))
                     return;
@@ -1306,6 +1307,10 @@ require = function () {
                 const [[figlabel = undefined] = []] = inline_1.label(note) || [];
                 if (!figlabel)
                     return;
+                const [closer, closer_] = cache.has(bracket) ? cache.get(bracket) : cache.set(bracket, [
+                    new RegExp(`^\\n${ bracket }[^\\S\\n]*(?:\\n|$)`),
+                    new RegExp(`\\n${ bracket }[^\\S\\n]*(?:\\n|$)`)
+                ]).get(bracket);
                 return combinator_1.transform(combinator_1.combine([
                     table_1.table,
                     pretext_1.pretext,
@@ -1317,7 +1322,6 @@ require = function () {
                     if (content instanceof HTMLAnchorElement && !content.querySelector('.media'))
                         return;
                     const next = rest;
-                    const closer = new RegExp(`^\n${ bracket }[^\S\n]*(?:\n|$)`);
                     return combinator_1.transform(combinator_1.surround('', combinator_1.some(combinator_1.combine([inline_1.inline]), closer), closer), (_, rest) => {
                         const [caption = []] = util_1.compress(combinator_1.some(inline_1.inline))(next.slice(0, next.lastIndexOf(bracket, next.length - rest.length - 1)).trim()) || [];
                         return [
@@ -1328,7 +1332,7 @@ require = function () {
                             rest
                         ];
                     })(next);
-                })(source.slice(source.indexOf('\n') + 1).replace(new RegExp(`(?=\n${ bracket }[^\S\n]*(?:\n|$))`), '\n'));
+                })(source.slice(source.indexOf('\n') + 1).replace(closer_, '\n$&'));
             });
         },
         {
@@ -1541,12 +1545,14 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/;
             const closer = /^(?:\\?\n)?$/;
+            const cache = new Map();
             exports.olist = block_1.block(source => {
                 const [, index = ''] = source.match(syntax) || [];
                 if (!index)
                     return;
+                const opener = cache.has(index) ? cache.get(index) : cache.set(index, new RegExp(`^${ pattern(index) }(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index);
                 return combinator_1.transform(combinator_1.some(combinator_1.transform(combinator_1.inits([
-                    line_1.line(combinator_1.surround(new RegExp(`^${ pattern(index) }(?:\.[^\\S\\n]+|\.?(?=\\n|$))`), util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline, closer))), closer), true, true),
+                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline, closer))), closer), true, true),
                     combinator_1.indent(combinator_1.combine([
                         ulist_1.ulist,
                         exports.olist_
@@ -1811,12 +1817,14 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const syntax = /^([-+*])(?=\s|$)/;
             const closer = /^(?:\\?\n)?$/;
+            const cache = new Map();
             exports.ulist = block_1.block(source => {
                 const [, flag = ''] = source.match(syntax) || [];
                 if (!flag)
                     return;
+                const opener = cache.has(flag) ? cache.get(flag) : cache.set(flag, new RegExp(`^\\${ flag }(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag);
                 return combinator_1.transform(combinator_1.some(combinator_1.transform(combinator_1.inits([
-                    line_1.line(combinator_1.surround(new RegExp(`^\\${ flag }(?:[^\\S\\n]+|(?=\\n|$))`), util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline, closer))), closer), true, true),
+                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline, closer))), closer), true, true),
                     combinator_1.indent(combinator_1.combine([
                         exports.ulist,
                         olist_1.olist_
