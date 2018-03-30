@@ -1,5 +1,5 @@
 ﻿import { Parser, Result } from './parser';
-import { combine } from './combine';
+import { union } from './union';
 import { some } from './some';
 import { inspect } from '../debug.test';
 
@@ -15,7 +15,7 @@ describe('Unit: combinator/some', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     }
-    const ab = combine<[typeof a, typeof b]>([a, b]);
+    const ab = union<[typeof a, typeof b]>([a, b]);
 
     it('ab', () => {
       const parser = some(ab, /aaa|$/);

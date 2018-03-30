@@ -1,8 +1,8 @@
 ﻿import { BracketParser, inline } from '../inline';
-import { combine, some, surround, transform, build } from '../../combinator';
+import { union, some, surround, transform, build } from '../../combinator';
 import { compress } from '../util';
 
-export const bracket: BracketParser = build(() => compress(combine<BracketParser>([
+export const bracket: BracketParser = build(() => compress(union<BracketParser>([
   transform(
     surround('(', some(inline, ')'), ')'),
     (ns, rest) => [[document.createTextNode('('), ...ns, document.createTextNode(')')], rest]),

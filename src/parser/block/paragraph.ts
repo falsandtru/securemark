@@ -1,5 +1,5 @@
 ﻿import { ParagraphParser } from '../block';
-import { combine, subsequence, some, transform, trim, build } from '../../combinator';
+import { union, subsequence, some, transform, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { reference } from './paragraph/reference';
 import { hashtag } from './paragraph/hashtag';
@@ -10,7 +10,7 @@ import { html } from 'typed-dom';
 export const paragraph: ParagraphParser = block(transform(build(() =>
   subsequence<ParagraphParser>([
     some(reference),
-    compress(trim(some(combine([
+    compress(trim(some(union([
       hashtag,
       some(inline, /^\s(?=#\S)/), inline
     ])))),

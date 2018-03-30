@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { combine, sequence, inits, some, surround, transform, rewrite, trim } from '../../../combinator';
+import { union, sequence, inits, some, surround, transform, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
@@ -27,8 +27,8 @@ export const figure: ExtensionParser.FigureParser = block(source => {
       inits<ExtensionParser.FigureParser>([
         transform(
           rewrite(
-            combine([pretext, some(contentline, closer)]),
-            combine<ExtensionParser.FigureParser.ContentParser>([table, pretext, math, line(trim(url), true, true)])),
+            union([pretext, some(contentline, closer)]),
+            union<ExtensionParser.FigureParser.ContentParser>([table, pretext, math, line(trim(url), true, true)])),
           ([content], rest) => {
             assert(content);
             if (content instanceof Text) return;
@@ -37,7 +37,7 @@ export const figure: ExtensionParser.FigureParser = block(source => {
           }),
         rewrite(
           sequence([line(s => s.trim() === '' ? [[], ''] : undefined, true, true), some(contentline, closer)]),
-          compress(trim(some(combine<ExtensionParser.FigureParser.CaptionParser>([inline]))))),
+          compress(trim(some(union<ExtensionParser.FigureParser.CaptionParser>([inline]))))),
       ]),
       closer),
     (es, rest) => [

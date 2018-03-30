@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { combine, some, surround, transform, build } from '../../combinator';
+import { union, some, surround, transform, build } from '../../combinator';
 import { line } from '../source/line';
 import { escsource } from '../source/escapable';
 import { parenthesis } from '../source/parenthesis';
@@ -8,7 +8,7 @@ import { sanitize } from '../string/url';
 import { html } from 'typed-dom';
 
 export const link: LinkParser = line(transform(build(() =>
-  line(surround('[', some(combine<LinkParser>([inline]), ']'), ']'), false)),
+  line(surround('[', some(union<LinkParser>([inline]), ']'), ']'), false)),
   (ns, rest) => {
     const children = squash(ns, document.createDocumentFragment());
     if (children.querySelector('a, .annotation') && !children.querySelector('.media')) return;
@@ -19,7 +19,7 @@ export const link: LinkParser = line(transform(build(() =>
       if (children.childNodes.length > 0 && !hasText(children)) return;
     }
     return transform(
-      line(surround('(', some(combine<LinkParser>([parenthesis, escsource]), /^\)|^\s(?!nofollow)/), ')'), false),
+      line(surround('(', some(union<LinkParser>([parenthesis, escsource]), /^\)|^\s(?!nofollow)/), ')'), false),
       (ns, rest) => {
         const [INSECURE_URL, attribute] = stringify(ns).replace(/\\(.)/g, '$1').split(/\s/);
         assert(attribute === undefined || attribute === 'nofollow');

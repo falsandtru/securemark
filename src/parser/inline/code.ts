@@ -1,5 +1,5 @@
 ﻿import { CodeParser } from '../inline';
-import { combine, some, surround, transform } from '../../combinator';
+import { union, some, surround, transform } from '../../combinator';
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
@@ -16,7 +16,7 @@ export const code: CodeParser = line(source => {
     ? cache.get(keyword)!
     : cache.set(keyword, new RegExp(`^${keyword}(?!\`)`)).get(keyword)!;
   return transform(
-    surround(keyword, some(combine<CodeParser>([some(char('`')), unescsource]), closer), closer),
+    surround(keyword, some(union<CodeParser>([some(char('`')), unescsource]), closer), closer),
     (ns, rest) => {
       const el = html('code',
         { 'data-src': source.slice(0, source.length - rest.length) },

@@ -1,5 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { combine, some, surround, transform } from '../../combinator';
+import { union, some, surround, transform } from '../../combinator';
 import { compress, hasText } from '../util';
 import { html as htm } from 'typed-dom';
 
@@ -17,7 +17,7 @@ export const html: HTMLParser = source => {
   assert(whole.startsWith(opentag));
   if (tag === 'wbr') return [[htm(tag)], source.slice(opentag.length)];
   return transform(
-    surround(`<${tag}>`, compress(some(combine<HTMLParser>([inline]), `</${tag}>`)), `</${tag}>`),
+    surround(`<${tag}>`, compress(some(union<HTMLParser>([inline]), `</${tag}>`)), `</${tag}>`),
     (ns, rest) => {
       const el = htm(tag as 'wbr', ns);
       return hasText(el)

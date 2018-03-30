@@ -1,5 +1,5 @@
 export { Parser, Result } from './combinator/parser';
-export * from './combinator/combine';
+export * from './combinator/union';
 export * from './combinator/sequence';
 export * from './combinator/subsequence';
 export * from './combinator/inits';

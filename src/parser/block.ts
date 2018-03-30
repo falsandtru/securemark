@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { combine } from '../combinator';
+import { union } from '../combinator';
 import { newline } from './block/newline';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -28,7 +28,7 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 export import IndexerParser = BlockParser.IndexerParser;
 
-export const block: BlockParser = combine<BlockParser>([
+export const block: BlockParser = union<BlockParser>([
   newline,
   horizontalrule,
   heading,

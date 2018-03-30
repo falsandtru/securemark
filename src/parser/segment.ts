@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { combine, some } from '../combinator';
+import { union, some } from '../combinator';
 import { pretext } from './block/pretext';
 import { extension } from './block/extension';
 import { contentline, emptyline } from './source/line';
@@ -9,7 +9,7 @@ import SegmentParser = MarkdownParser.SegmentParser;
 export function segment(source: string): string[] {
   const segments: string[] = [];
   while (source.length > 0) {
-    const [, rest = ''] = combine<SegmentParser>([
+    const [, rest = ''] = union<SegmentParser>([
       pretext,
       extension,
       some(contentline),

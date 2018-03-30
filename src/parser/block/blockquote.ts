@@ -1,5 +1,5 @@
 ﻿import { BlockquoteParser } from '../block';
-import { combine, some } from '../../combinator';
+import { union, some } from '../../combinator';
 import { block as block_ } from '../source/block';
 import { firstline } from '../source/line';
 import { block } from '../block';
@@ -53,7 +53,7 @@ export const blockquote: BlockquoteParser = block_(source => {
       : source.startsWith(`${indent}\n`)
         ? source.slice(indent.length)
         : source;
-    const [cs = [], rest = source] = some(combine<BlockquoteParser>([unescsource]), /^(?:\n|$)/)(source) || [];
+    const [cs = [], rest = source] = some(union<BlockquoteParser>([unescsource]), /^(?:\n|$)/)(source) || [];
     const node = mode === 'plain'
       ? document.createTextNode(squash(cs, document.createDocumentFragment()).textContent!.replace(/ /g, String.fromCharCode(160)))
       : squash(cs, document.createDocumentFragment());

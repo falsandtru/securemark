@@ -1,5 +1,5 @@
 ﻿import { MathParser } from '../inline';
-import { combine, some, surround, transform } from '../../combinator';
+import { union, some, surround, transform } from '../../combinator';
 import { line } from '../source/line';
 import { escsource } from '../source/escapable';
 import { hasTightText, stringify } from '../util';
@@ -11,7 +11,7 @@ const closer = /^\$(?![$\d])/;
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
 export const math: MathParser = line(transform(
-  surround('$', some(combine<MathParser>([escsource]), '$'), closer),
+  surround('$', some(union<MathParser>([escsource]), '$'), closer),
   (ns, rest) => {
     const el = html('span', { class: 'math' }, `$${stringify(ns)}$`);
     if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true)], rest];

@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { combine } from '../combinator';
+import { union } from '../combinator';
 import { comment } from './inline/comment';
 import { annotation } from './inline/annotation';
 import { link } from './inline/link';
@@ -30,7 +30,7 @@ export import BracketParser = InlineParser.BracketParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 
-export const inline: InlineParser = combine<InlineParser>([
+export const inline: InlineParser = union<InlineParser>([
   comment,
   annotation,
   link,

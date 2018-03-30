@@ -1,5 +1,5 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { combine, some, surround } from '../../../combinator';
+import { union, some, surround } from '../../../combinator';
 import { line } from '../../source/line';
 import { escsource } from '../../source/escapable';
 import { parenthesis } from '../../source/parenthesis';
@@ -16,7 +16,7 @@ export const url: AutolinkParser.UrlParser = line(source => {
   source = flag
     ? source.slice(1)
     : source;
-  const [, rest = undefined] = some(combine<AutolinkParser.UrlParser>([surround('[', ipv6, ']'), parenthesis, some(escsource, closer)]))(source) || [];
+  const [, rest = undefined] = some(union<AutolinkParser.UrlParser>([surround('[', ipv6, ']'), parenthesis, some(escsource, closer)]))(source) || [];
   if (rest === undefined) return;
   const attribute = source.startsWith('ttp')
     ? ' nofollow'

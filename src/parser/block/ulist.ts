@@ -1,5 +1,5 @@
 ﻿import { UListParser } from '../block';
-import { combine, inits, some, surround, indent, transform, trim } from '../../combinator';
+import { union, inits, some, surround, indent, transform, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { olist_ } from './olist';
@@ -21,7 +21,7 @@ export const ulist: UListParser = block(source => {
     some(transform(
       inits<UListParser>([
         line(surround(opener, compress(trim(some(inline, closer))), closer), true, true),
-        indent(combine([ulist, olist_]))
+        indent(union([ulist, olist_]))
       ]),
       (ns, rest) =>
         ns.length === 1 && [HTMLUListElement, HTMLOListElement].some(C => ns[0] instanceof C)

@@ -1,5 +1,5 @@
 ﻿import { DListParser } from '../block';
-import { combine, inits, some, surround, transform, rewrite, trim, build } from '../../combinator';
+import { union, inits, some, surround, transform, rewrite, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
@@ -22,7 +22,7 @@ export const dlist: DListParser = block(transform(build(() =>
   ]));
 
 const term: DListParser.TermParser = line(transform(build(() =>
-  surround(syntax, compress(trim(some(combine<DListParser.TermParser>([indexer, inline])))), '')),
+  surround(syntax, compress(trim(some(union<DListParser.TermParser>([indexer, inline])))), '')),
   (ns, rest) => {
     const dt = html('dt', ns);
     void defineIndex(dt);
@@ -33,7 +33,7 @@ const term: DListParser.TermParser = line(transform(build(() =>
 const desc: DListParser.DescriptionParser = block(transform(build(() =>
   rewrite(
     surround(/^:(?=\s|$)|/, some(line(erase, true, true), /^[~:](?:\s|$)/), ''),
-    surround(/^:(?=\s|$)|/, trim(some(combine<DListParser.DescriptionParser>([inline]))), ''))),
+    surround(/^:(?=\s|$)|/, trim(some(union<DListParser.DescriptionParser>([inline]))), ''))),
   (ns, rest) =>
     [[html('dd', ns)], rest]
 ), false);
