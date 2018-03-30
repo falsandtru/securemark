@@ -9,14 +9,18 @@ import { html } from 'typed-dom';
 
 const syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/;
 const closer = /^(?:\\?\n)?$/;
+const cache = new Map<string, RegExp>();
 
 export const olist: OListParser = block(source => {
   const [, index = ''] = source.match(syntax) || [];
   if (!index) return;
+  const opener = cache.has(index)
+    ? cache.get(index)!
+    : cache.set(index, new RegExp(`^${pattern(index)}(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index)!;
   return transform(
     some(transform(
       inits<OListParser>([
-        line(surround(new RegExp(`^${pattern(index)}(?:\.[^\\S\\n]+|\.?(?=\\n|$))`), compress(trim(some(inline, closer))), closer), true, true),
+        line(surround(opener, compress(trim(some(inline, closer))), closer), true, true),
         indent(combine([ulist, olist_]))
       ]),
       (ns, rest) =>
