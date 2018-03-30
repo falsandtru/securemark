@@ -2,7 +2,7 @@
 import { block } from '../source/block';
 import { html } from 'typed-dom';
 
-const syntax = /^\$\$[^\S\n]*\n(?:[^\n]*?\S[^\n]*\n)+?\$\$[^\S\n]*(?:\n|$)/;
+const syntax = /^\$\$[^\S\n]*\n(?:[^\n]+\n)+?\$\$[^\S\n]*(?:\n|$)/;
 
 export const math: MathParser = block(source => {
   if (!source.startsWith('$$')) return;

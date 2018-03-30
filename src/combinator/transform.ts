@@ -2,6 +2,7 @@
 
 export function transform<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S> {
   return source => {
+    if (source === '') return;
     const [rs = [], rest = undefined] = parser(source) || [];
     if (rest === undefined) return;
     assert(source.slice(1).endsWith(rest));

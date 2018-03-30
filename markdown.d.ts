@@ -86,14 +86,24 @@ export namespace MarkdownParser {
       // : description
       Block<'dlist'>,
       Parser<HTMLDListElement, [
+        DListParser.TermParser,
+        DListParser.DescriptionParser
+      ]> {
+    }
+    export namespace DListParser {
+      export interface TermParser extends
+        Block<'dlist/term'>,
         Parser<HTMLElement, [
           IndexerParser,
           InlineParser
-        ]>,
+        ]> {
+      }
+      export interface DescriptionParser extends
+        Block<'dlist/description'>,
         Parser<HTMLElement, [
           InlineParser
-        ]>
-      ]> {
+        ]> {
+      }
     }
     export interface TableParser extends
       // |Head|
@@ -151,13 +161,26 @@ export namespace MarkdownParser {
         // ~~~
         Block<'extension/figure'>,
         Parser<HTMLElement, [
-          TableParser,
-          PretextParser,
-          MathParser,
-          InlineParser.AutolinkParser.UrlParser
-        ] | [
-          InlineParser
+          FigureParser.ContentParser,
+          FigureParser.CaptionParser
         ]> {
+      }
+      export namespace FigureParser {
+        export interface ContentParser extends
+          Block<'extension/figure/content'>,
+          Parser<HTMLElement, [
+            TableParser,
+            PretextParser,
+            MathParser,
+            InlineParser.AutolinkParser.UrlParser
+          ]> {
+        }
+        export interface CaptionParser extends
+          Block<'extension/figure/caption'>,
+          Parser<HTMLElement, [
+            InlineParser
+          ]> {
+        }
       }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,
@@ -170,9 +193,8 @@ export namespace MarkdownParser {
       Parser<HTMLParagraphElement, [
         ParagraphParser.ReferenceParser,
         Parser<HTMLElement | Text, [
-          InlineParser, // SourceParser.CharParser.SpaceParser
           ParagraphParser.HashtagParser,
-          InlineParser
+          InlineParser, InlineParser
         ]>
       ]> {
     }

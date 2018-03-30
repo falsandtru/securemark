@@ -6,7 +6,7 @@ export function block<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, sep
   return source => {
     if (source.length === 0) return;
     const result = parser(source);
-    if (!result) return result;
+    if (!result) return;
     const rest = result[1];
     if (separated && firstline(rest).trim() !== '') return;
     return rest === '' || source[source.length - rest.length - 1] === '\n'

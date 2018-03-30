@@ -1,6 +1,6 @@
 ﻿import { Parser, SubParsers } from './parser';
 
-export function combine<P extends Parser<any, any>>(parsers: SubParsers<P>): SubParsers<P> extends Array<infer Q> ? Q extends Parser<infer R, any> ? Parser<R, SubParsers<P>> : never : never;
+export function combine<P extends Parser<any, any>>(parsers: SubParsers<P>): P;
 export function combine<S extends Parser<any, any>[]>(parsers: S): S extends Array<infer P> ? P extends Parser<infer R, any> ? Parser<R, S> : never : never;
 export function combine<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
   assert(parsers.every(f => !!f));
