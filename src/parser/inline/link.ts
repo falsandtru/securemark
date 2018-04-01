@@ -30,7 +30,7 @@ export const link: LinkParser = line(transform(build(() =>
           href: url,
           rel: attribute === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener',
         });
-        if (location.protocol !== el.protocol || location.host !== el.host) {
+        if (window.location.origin !== el.origin || children.querySelector('.media')) {
           void el.setAttribute('target', '_blank');
         }
         void el.appendChild(
