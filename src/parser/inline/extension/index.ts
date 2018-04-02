@@ -13,7 +13,6 @@ export const index: ExtensionParser.IndexParser = line(transform(build(() =>
       s => union<ExtensionParser.IndexParser>([link])(`[${s}]()`)),
     ']')),
   ([el], rest) => {
-    if (!el) return;
     if (!hasTightText(el)) return;
     void defineIndex(el);
     void el.setAttribute('href', `#${el.id.toLowerCase()}`);

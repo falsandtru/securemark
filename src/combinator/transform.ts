@@ -1,7 +1,7 @@
 ﻿import { Parser, Result } from './parser';
 
 export function transform<P extends Parser<any, any>>(parser: P, f: (rs: P extends Parser<infer T, any> ? T[] : never, rest: string) => P extends Parser<infer T, infer S> ? Result<T, S> : never): P;
-export function transform<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S>;
+export function transform<T, U, S extends Parser<any, any>[] = never[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S>;
 export function transform<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S> {
   return source => {
     if (source === '') return;

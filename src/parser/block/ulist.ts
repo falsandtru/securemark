@@ -18,7 +18,7 @@ export const ulist: UListParser = block(match(syntax, ([, flag], source) => {
   return transform(
     some(transform(
       inits<UListParser>([
-        line(surround(opener, compress(trim(some(inline, closer))), closer), true, true),
+        line(surround(opener, compress(trim(some(inline, closer))), closer, false), true, true),
         indent(union([ulist, olist_]))
       ]),
       (ns, rest) =>

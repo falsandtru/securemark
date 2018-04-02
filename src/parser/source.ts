@@ -6,5 +6,4 @@ export import EscapableSourceParser = SourceParser.EscapableSourceParser;
 export import UnescapableSourceParser = SourceParser.UnescapableSourceParser;
 export import ContentLineParser = SourceParser.ContentLineParser;
 export import EmptyLineParser = SourceParser.EmptyLineParser;
-export import ParenthesisParser = SourceParser.ParenthesisParser;
 export import CharParser = SourceParser.CharParser;

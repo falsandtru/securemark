@@ -13,7 +13,6 @@ export const label: ExtensionParser.LabelParser = line(transform(build(() =>
         (`[${query}](#${makeLabel(query)})${source.slice(query.length)}`)),
     ']')),
   ([el], rest) => {
-    if (!el) return;
     void el.setAttribute('class', el.getAttribute('href')!.slice(1));
     return [[el], rest];
   }

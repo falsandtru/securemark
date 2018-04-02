@@ -18,7 +18,7 @@ export const olist: OListParser = block(match(syntax, ([, index], source) => {
   return transform(
     some(transform(
       inits<OListParser>([
-        line(surround(opener, compress(trim(some(inline, closer))), closer), true, true),
+        line(surround(opener, compress(trim(some(inline, closer))), closer, false), true, true),
         indent(union([ulist, olist_]))
       ]),
       (ns, rest) =>

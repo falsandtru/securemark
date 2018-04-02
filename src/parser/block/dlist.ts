@@ -4,7 +4,7 @@ import { block } from '../source/block';
 import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
 import { inline } from '../inline';
-import { erase } from '../source/void';
+import { unescsource } from '../source/unescapable';
 import { compress } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
@@ -22,7 +22,7 @@ export const dlist: DListParser = block(transform(build(() =>
   ]));
 
 const term: DListParser.TermParser = line(transform(build(() =>
-  surround<DListParser.TermParser>(syntax, compress(trim(some(union([indexer, inline])))), '')),
+  surround<DListParser.TermParser>(syntax, compress(trim(some(union([indexer, inline])))), '', false)),
   (ns, rest) => {
     const dt = html('dt', ns);
     void defineIndex(dt);
@@ -32,8 +32,8 @@ const term: DListParser.TermParser = line(transform(build(() =>
 
 const desc: DListParser.DescriptionParser = block(transform(build(() =>
   rewrite<DListParser.DescriptionParser>(
-    surround(/^:(?=\s|$)|/, some(line(erase, true, true), /^[~:](?:\s|$)/), ''),
-    surround(/^:(?=\s|$)|/, trim(some(union([inline]))), ''))),
+    surround(/^:(?=\s|$)|/, some(line(some(unescsource), true, true), /^[~:](?:\s|$)/), '', false),
+    surround(/^:(?=\s|$)|/, trim(some(union([inline]))), '', false))),
   (ns, rest) =>
     [[html('dd', ns)], rest]
 ), false);

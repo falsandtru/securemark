@@ -1,8 +1,8 @@
 ﻿import { MediaParser } from '../inline';
-import { union, some, surround, transform, build } from '../../combinator';
+import { union, some, surround, transform } from '../../combinator';
 import { line } from '../source/line';
 import { text } from '../source/text';
-import { parenthesis } from '../source/parenthesis';
+import { parenthesis } from './link';
 import { sanitize } from '../string/url';
 import { stringify } from '../util';
 import { Cache } from 'spica/cache';
@@ -10,8 +10,8 @@ import { html } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(100);
 
-export const media: MediaParser = line(transform(build(() =>
-  line<MediaParser>(surround('![', some(union([text]), ']'), ']'), false)),
+export const media: MediaParser = line(transform(
+  line<MediaParser>(surround('![', some(union([text]), ']'), ']', false), false),
   (ts, rest) => {
     const caption = stringify(ts).trim();
     return transform(

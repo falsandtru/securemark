@@ -199,7 +199,7 @@ export namespace MarkdownParser {
       export interface HashtagParser extends
         // #tag
         Block<'paragraph/hashtag'>,
-        Parser<HTMLAnchorElement | Text, [
+        Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser
         ]> {
       }
@@ -247,11 +247,26 @@ export namespace MarkdownParser {
         InlineParser
       ] | [
         Parser<Text, [
-          SourceParser.ParenthesisParser,
+          LinkParser.ParenthesisParser,
           SourceParser.TextParser
         ]>,
-        SourceParser.UnescapableSourceParser
+        LinkParser.AttributeParser
       ]> {
+    }
+    export namespace LinkParser {
+      export interface ParenthesisParser extends
+        // ()
+        Inline<'link/parenthesis'>,
+        Parser<Text, [
+          ParenthesisParser,
+          SourceParser.EscapableSourceParser
+        ]> {
+      }
+      export interface AttributeParser extends
+        // nofollow
+        Inline<'link/attribute'>,
+        Parser<Text, never[]> {
+      }
     }
     export interface ExtensionParser extends
       // [#abc]
@@ -333,7 +348,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         SourceParser.TextParser
       ] | [
-        SourceParser.ParenthesisParser,
+        LinkParser.ParenthesisParser,
         SourceParser.TextParser
       ]> {
     }
@@ -359,8 +374,8 @@ export namespace MarkdownParser {
         // https://host
         Inline<'url'>,
         Parser<HTMLAnchorElement | Text, [
-          SourceParser.UnescapableSourceParser,
-          SourceParser.ParenthesisParser,
+          Parser<Text, never[]>,
+          LinkParser.ParenthesisParser,
           SourceParser.EscapableSourceParser
         ]> {
       }
@@ -395,14 +410,6 @@ export namespace MarkdownParser {
     export interface EmptyLineParser extends
       Source<'emptyline'>,
       Parser<never, never[]> {
-    }
-    export interface ParenthesisParser extends
-      // ()
-      Source<'parenthesis'>,
-      Parser<Text, [
-        ParenthesisParser,
-        EscapableSourceParser
-      ]> {
     }
     export namespace CharParser {
       export interface SpaceParser extends

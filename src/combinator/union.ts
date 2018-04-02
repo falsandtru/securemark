@@ -1,7 +1,7 @@
 ﻿import { Parser, SubParsers } from './parser';
 
 export function union<P extends Parser<any, any>>(parsers: SubParsers<P>): P;
-export function union<S extends Parser<any, any>[]>(parsers: S): S extends Array<infer P> ? P extends Parser<infer R, any> ? Parser<R, S> : never : never;
+export function union<S extends Parser<any, any>[] = never[]>(parsers: S): S extends Array<infer P> ? P extends Parser<infer R, any> ? Parser<R, S> : never : never;
 export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
   assert(parsers.every(f => !!f));
   return source => {

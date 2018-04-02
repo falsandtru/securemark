@@ -1,10 +1,8 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { union, some, surround, transform } from '../../../combinator';
+import { union, some, match, surround, transform } from '../../../combinator';
 import { line } from '../../source/line';
 import { escsource } from '../../source/escapable';
-import { parenthesis } from '../../source/parenthesis';
-import { unescsource } from '../../source/unescapable';
-import { link } from '../link';
+import { link, parenthesis } from '../link';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
@@ -33,6 +31,6 @@ export const url: AutolinkParser.UrlParser = line(source => {
 }, false);
 
 const ipv6 = transform(
-  surround(/^\[(?=[:0-9a-z]+)/, some(unescsource, ']'), ']'),
+  surround('[', match(/^[:0-9a-z]+/, ([addr], source) => [[document.createTextNode(addr)], source.slice(addr.length)]), ']'),
   (ts, rest) =>
     [[document.createTextNode('['), ...ts, document.createTextNode(']')], rest]);

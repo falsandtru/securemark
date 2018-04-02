@@ -6,7 +6,6 @@ import { index } from '../inline';
 export const indexer: IndexerParser = line(transform(
   surround(/^\s+?(?=\[#)/, trim(union([index])), /$/),
   ([el], rest) => {
-    if (!el) return;
     assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
     void el.setAttribute('class', 'index');
     return [[el], rest];

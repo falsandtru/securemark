@@ -10,7 +10,5 @@ export const placeholder: ExtensionParser.PlaceholderParser = line(transform(bui
       some(union<ExtensionParser.PlaceholderParser>([inline]), ']')(source.slice(flag === '[' ? 0 : 1))),
     ']')),
   (ns, rest) =>
-    ns.length > 0
-      ? [[html('span', some(inline)(`**WARNING: DON'T USE \`[${ns[0].textContent![0]} ]\` SYNTAX!!** This syntax is reserved for extensibility.`)![0])], rest]
-      : undefined
+    [[html('span', some(inline)(`**WARNING: DON'T USE \`[${ns[0].textContent![0]} ]\` SYNTAX!!** This syntax is reserved for extensibility.`)![0])], rest]
 ), false);
