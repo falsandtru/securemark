@@ -375,14 +375,20 @@ export namespace MarkdownParser {
         Inline<'url'>,
         Parser<HTMLAnchorElement | Text, [
           Parser<Text, never[]>,
-          LinkParser.ParenthesisParser,
-          SourceParser.EscapableSourceParser
+          Parser<HTMLAnchorElement | Text, [
+            Parser<Text, never[]>,
+            LinkParser.ParenthesisParser,
+            SourceParser.EscapableSourceParser
+          ]>
         ]> {
       }
       export interface AccountParser extends
         // @account
         Inline<'account'>,
-        Parser<HTMLAnchorElement | Text, never[]> {
+        Parser<HTMLAnchorElement | Text, [
+          Parser<Text, never[]>,
+          Parser<HTMLAnchorElement, never[]>
+        ]> {
       }
     }
   }
