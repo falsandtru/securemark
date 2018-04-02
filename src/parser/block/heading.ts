@@ -13,8 +13,8 @@ export const heading: HeadingParser = block(line(match(syntax, ([, { length: lev
   transform<HeadingParser>(compress(trim(some(union([indexer, inline])))), cs => {
     assert(level > 0 && level < 7);
     const el = html(`h${level}` as 'h1', cs);
-    if (!hasText(el)) return;
     void defineIndex(el);
+    if (!hasText(el)) return;
     return [[el], ''];
   })(content)
 ), true, true));

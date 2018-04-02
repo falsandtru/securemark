@@ -14,14 +14,15 @@ export const indexer: IndexerParser = line(transform(
 
 export function defineIndex(target: HTMLElement): void {
   if (target.hasAttribute('id')) return;
-  const id = text(target);
+  const index = target.querySelector('.index');
+  const id = text(index || target);
   if (id === '') return;
+  index && void index.remove();
   void target.setAttribute('id', makeIndex(id));
 }
 
 export function text(target: Element): string {
-  const el = target.querySelector('.index') || target.cloneNode(true);
-  void el.remove();
+  const el = target.cloneNode(true);
   void [...el.querySelectorAll('code[data-src], .math[data-src]')]
     .forEach(el =>
       el.textContent = el.getAttribute('data-src'));
