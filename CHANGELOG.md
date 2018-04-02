@@ -3,6 +3,7 @@
 ## 0.46.0
 
 - Always open a media link in new tab.
+- Allow whitespace in indexer.
 - Refactoring with some small breaking changes.
 
 ## 0.45.0

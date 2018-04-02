@@ -1,18 +1,16 @@
 ﻿import { IndexerParser } from '../block';
+import { union, surround, transform, trim } from '../../combinator';
+import { line } from '../source/line';
 import { index } from '../inline';
 
-const syntax = /^[^\S\n\[]+(\[#[^\s\]]+\])[^\S\n]*(?:\n|$)/;
-
-export const indexer: IndexerParser = source => {
-  const [whole = '', idx = ''] = source.match(syntax) || [];
-  if (!whole) return;
-  assert(idx === idx.trim());
-  const [[el = undefined] = []] = index(idx) || [];
-  if (!el) return;
-  assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
-  void el.setAttribute('class', 'index');
-  return [[el], source.slice(whole.length)];
-};
+export const indexer: IndexerParser = line(transform(
+  surround(/^\s+?(?=\[#)/, trim(union([index])), /$/),
+  ([el], rest) => {
+    if (!el) return;
+    assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
+    void el.setAttribute('class', 'index');
+    return [[el], rest];
+  }));
 
 export function defineIndex(target: HTMLElement): void {
   if (target.hasAttribute('id')) return;
