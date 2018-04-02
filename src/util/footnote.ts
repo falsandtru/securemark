@@ -32,7 +32,7 @@ function defineId(target: HTMLElement, index: number): void {
   void target.setAttribute('id', `annotation:${index}:${description(target.getAttribute('title')!)}`);
 }
 
-function description(str: string): string {
-  str = str.replace(/\s/g, '_');
-  return str.slice(0, 15) + '.'.repeat(str.slice(15, 18).length);
+function description(text: string): string {
+  text = text.replace(/\s/g, '_');
+  return text.slice(0, 15) + '.'.repeat(text.slice(15, 18).length);
 }

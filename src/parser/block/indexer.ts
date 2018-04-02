@@ -12,21 +12,21 @@ export const indexer: IndexerParser = line(transform(
     return [[el], rest];
   }));
 
-export function defineIndex(target: HTMLElement): void {
-  if (target.hasAttribute('id')) return;
-  const index = target.querySelector('.index');
-  const id = text(index || target);
+export function defineIndex(source: HTMLElement): void {
+  if (source.hasAttribute('id')) return;
+  const index = source.querySelector('.index');
+  const id = text(index || source);
   if (id === '') return;
   index && void index.remove();
-  void target.setAttribute('id', makeIndex(id));
+  void source.setAttribute('id', makeIndex(id));
 }
 
-export function text(target: Element): string {
-  const el = target.cloneNode(true);
-  void [...el.querySelectorAll('code[data-src], .math[data-src]')]
+export function text(source: Element): string {
+  const target = source.cloneNode(true);
+  void [...target.querySelectorAll('code[data-src], .math[data-src]')]
     .forEach(el =>
       el.textContent = el.getAttribute('data-src'));
-  return el.textContent!.trim();
+  return target.textContent!.trim();
 }
 
 function makeIndex(text: string): string {

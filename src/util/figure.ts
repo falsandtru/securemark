@@ -65,6 +65,6 @@ export function figure(source: DocumentFragment | HTMLElement, header: (caption:
   }
 }
 
-function capitalize(str: string): string {
-  return str[0].toUpperCase() + str.slice(1);
+function capitalize(label: string): string {
+  return label[0].toUpperCase() + label.slice(1);
 }
