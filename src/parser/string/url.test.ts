@@ -7,7 +7,7 @@ describe('Unit: parser/text/url', () => {
     });
 
     it('invalid', () => {
-      assert(sanitize(' a\n b\n') === 'a%0A%20b');
+      assert(sanitize('a\n b') === 'a%0A%20b');
     });
 
     it('protocol', () => {

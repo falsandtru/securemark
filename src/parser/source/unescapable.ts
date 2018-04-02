@@ -1,6 +1,6 @@
 ﻿import { UnescapableSourceParser } from '../source';
 
-const separator = /`|<\/code>|>|\s/i;
+const separator = /`|<\/code>|[>\]\)\s]/i;
 
 export const unescsource: UnescapableSourceParser = source => {
   if (source.length === 0) return;

@@ -1,7 +1,7 @@
 ﻿import { html } from 'typed-dom';
 
 export function sanitize(url: string): string {
-  url = url.trim().replace(/\s/g, encodeURIComponent);
+  url = url.replace(/\s/g, encodeURI);
   return isAcceptedProtocol(url)
     ? url
     : '';

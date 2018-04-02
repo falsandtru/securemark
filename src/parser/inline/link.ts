@@ -1,9 +1,10 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, some, surround, transform, build } from '../../combinator';
+import { union, subsequence, some, surround, transform, build } from '../../combinator';
 import { line } from '../source/line';
-import { escsource } from '../source/escapable';
+import { text } from '../source/text';
+import { unescsource } from '../source/unescapable';
 import { parenthesis } from '../source/parenthesis';
-import { hasText, stringify, squash } from '../util';
+import { compress, hasText, hasContent, stringify, squash } from '../util';
 import { sanitize } from '../string/url';
 import { html } from 'typed-dom';
 
@@ -11,35 +12,40 @@ export const link: LinkParser = line(transform(build(() =>
   line<LinkParser>(surround('[', some(union([inline]), ']'), ']'), false)),
   (ns, rest) => {
     const children = squash(ns, document.createDocumentFragment());
-    if (children.querySelector('a, .annotation') && !children.querySelector('.media')) return;
+    if (children.querySelector('a, .annotation')) return;
     if (children.querySelector('.media')) {
-      if (children.childNodes.length > 1 || !children.firstElementChild || !children.firstElementChild.matches('.media')) return;
+      if (children.childNodes.length !== 1 || !children.firstElementChild || !children.firstElementChild.matches('.media')) return;
     }
     else {
       if (children.childNodes.length > 0 && !hasText(children)) return;
     }
     return transform(
-      line<LinkParser>(surround('(', some(union([parenthesis, escsource]), /^\)|^\s(?!nofollow)/), ')'), false),
+      line<LinkParser>(surround('(', subsequence([some(union([parenthesis, text]), /^\)|^\s/), attribute]), ')'), false),
       (ns, rest) => {
-        const [INSECURE_URL, attribute] = stringify(ns).replace(/\\(.)/g, '$1').split(/\s/);
-        assert(attribute === undefined || attribute === 'nofollow');
+        const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(.*?)(?:\n(.*))?$/) || [];
+        assert(attr === '' || attr === 'nofollow');
         const url = sanitize(INSECURE_URL);
-        assert(url === url.trim());
-        if (INSECURE_URL !== '' && url === '') return;
-        const el = html('a', {
-          href: url,
-          rel: attribute === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener',
-        });
-        if (window.location.origin !== el.origin || children.querySelector('.media')) {
+        if (url === '' && INSECURE_URL !== '') return;
+        const el = html('a',
+          {
+            href: url,
+            rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener',
+          },
+          hasContent(children)
+            ? children.childNodes
+            : sanitize(INSECURE_URL || window.location.href)
+                .replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
+        if (window.location.origin !== el.origin || el.querySelector('.media')) {
           void el.setAttribute('target', '_blank');
         }
-        void el.appendChild(
-          children.textContent || children.querySelector('.media')
-            ? children
-            : document.createTextNode((INSECURE_URL || el.href).replace(/^h(?=ttps?:\/\/)/, attribute === 'nofollow' ? '' : 'h')));
-        assert(el.querySelector('.media') || hasText(el));
+        assert(hasContent(el));
         return [[el], rest];
       })
       (rest);
   }
 ), false);
+
+const attribute = transform(
+  surround(/^\s(?=nofollow\))/, compress(some(unescsource, /^\)/)), /^(?=\))/),
+  ([text], rest) =>
+    [[document.createTextNode(`\n${text.textContent}`)], rest]);

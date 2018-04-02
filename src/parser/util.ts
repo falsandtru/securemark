@@ -36,9 +36,9 @@ export function squash<T extends Node[], U extends T | Node>(nodes: T, container
   return container;
 }
 
-export function hasContent(el: HTMLElement): boolean {
-  return hasText(el)
-      || !!el.querySelector('.media');
+export function hasContent(node: Element | DocumentFragment): boolean {
+  return hasText(node)
+      || !!node.querySelector('.media');
 }
 
 export function hasText(node: Node): boolean {

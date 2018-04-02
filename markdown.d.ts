@@ -246,8 +246,11 @@ export namespace MarkdownParser {
       Parser<HTMLAnchorElement, [
         InlineParser
       ] | [
-        SourceParser.ParenthesisParser,
-        SourceParser.EscapableSourceParser
+        Parser<Text, [
+          SourceParser.ParenthesisParser,
+          SourceParser.TextParser
+        ]>,
+        SourceParser.UnescapableSourceParser
       ]> {
     }
     export interface ExtensionParser extends
@@ -283,9 +286,7 @@ export namespace MarkdownParser {
     export interface CommentParser extends
       // <# comment #>
       Inline<'comment'>,
-      Parser<never, [
-        SourceParser.UnescapableSourceParser
-      ]> {
+      Parser<never, never> {
     }
     export interface HTMLParser extends
       // <small>abc</small>
@@ -331,7 +332,7 @@ export namespace MarkdownParser {
         SourceParser.TextParser
       ] | [
         SourceParser.ParenthesisParser,
-        SourceParser.EscapableSourceParser
+        SourceParser.TextParser
       ]> {
     }
     export interface BracketParser extends
@@ -356,19 +357,10 @@ export namespace MarkdownParser {
         // https://host
         Inline<'url'>,
         Parser<HTMLAnchorElement | Text, [
-          UrlParser.IPV6Parser,
+          SourceParser.UnescapableSourceParser,
           SourceParser.ParenthesisParser,
           SourceParser.EscapableSourceParser
         ]> {
-      }
-      export namespace UrlParser {
-        export interface IPV6Parser extends
-          // [::]
-          Inline<'url/ipv6'>,
-          Parser<Text, [
-            SourceParser.EscapableSourceParser
-          ]> {
-        }
       }
       export interface AccountParser extends
         // @account
