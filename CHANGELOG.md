@@ -4,6 +4,7 @@
 
 - Always open a media link in new tab.
 - Allow whitespace in indexer.
+- Remove local text parsing rules.
 - Refactoring with some small breaking changes.
 
 ## 0.45.0

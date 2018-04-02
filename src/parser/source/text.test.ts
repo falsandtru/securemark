@@ -28,6 +28,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser(' \n\n')), [[' ', '<span class="newline"> </span>', '<span class="newline"> </span>'], '']);
       assert.deepStrictEqual(inspect(parser('\n \n')), [['<span class="newline"> </span>', ' ', '<span class="newline"> </span>'], '']);
       assert.deepStrictEqual(inspect(parser('\n\n ')), [['<span class="newline"> </span>', '<span class="newline"> </span>', ' '], '']);
+      assert.deepStrictEqual(inspect(parser('。\n')), [['。', '<span class="newline"> </span>'], '']);
     });
 
     it('\\', () => {
@@ -47,13 +48,6 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['a', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\nb\\\n')), [['a', '<br>', 'b', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\\\\\n')), [['\\', '<br>'], '']);
-    });
-
-    it('locale Japanese', () => {
-      assert.deepStrictEqual(inspect(parser('、\n')), [['、'], '']);
-      assert.deepStrictEqual(inspect(parser('。\n')), [['。'], '']);
-      assert.deepStrictEqual(inspect(parser('、\n、')), [['、', '、'], '']);
-      assert.deepStrictEqual(inspect(parser('。\n。')), [['。', '。'], '']);
     });
 
     it('url', () => {
