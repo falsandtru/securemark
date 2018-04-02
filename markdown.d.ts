@@ -267,13 +267,15 @@ export namespace MarkdownParser {
         // [#index]
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, [
-          InlineParser
+          LinkParser
         ]> {
       }
       export interface LabelParser extends
         // [:type-name]
         Inline<'extension/label'>,
-        Parser<HTMLAnchorElement, never[]> {
+        Parser<HTMLAnchorElement, [
+          LinkParser
+        ]> {
       }
       export interface PlaceholderParser extends
         // [^abc]

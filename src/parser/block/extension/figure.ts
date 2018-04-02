@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, surround, transform, rewrite, trim } from '../../../combinator';
+import { union, sequence, inits, some, match, surround, transform, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
@@ -14,10 +14,7 @@ import FigureParser = ExtensionParser.FigureParser;
 const syntax = /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/;
 const cache = new Map<string, RegExp>();
 
-export const figure: FigureParser = block(source => {
-  if (!source.startsWith('~~~')) return;
-  const [whole = '', bracket = '', note = ''] = source.match(syntax) || [];
-  if (!whole) return;
+export const figure: FigureParser = block(match(syntax, ([, bracket, note], source) => {
   const [[figlabel = undefined] = []] = label(note) || [];
   if (!figlabel) return;
   const closer = cache.has(bracket)
@@ -56,4 +53,4 @@ export const figure: FigureParser = block(source => {
       rest
     ])
     (source);
-});
+}));

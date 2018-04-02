@@ -1,5 +1,5 @@
 ﻿import { UListParser } from '../block';
-import { union, inits, some, surround, indent, transform, trim } from '../../combinator';
+import { union, inits, some, match, surround, indent, transform, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { olist_ } from './olist';
@@ -11,9 +11,7 @@ const syntax = /^([-+*])(?=\s|$)/;
 const closer = /^(?:\\?\n)?$/;
 const cache = new Map<string, RegExp>();
 
-export const ulist: UListParser = block(source => {
-  const [, flag = ''] = source.match(syntax) || [];
-  if (!flag) return;
+export const ulist: UListParser = block(match(syntax, ([, flag], source) => {
   const opener = cache.has(flag)
     ? cache.get(flag)!
     : cache.set(flag, new RegExp(`^\\${flag}(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag)!;
@@ -30,4 +28,4 @@ export const ulist: UListParser = block(source => {
     (es, rest) =>
       [[html('ul', es)], rest])
     (source);
-});
+}));

@@ -1,5 +1,5 @@
 ﻿import { OListParser } from '../block';
-import { union, inits, some, surround, indent, transform, trim } from '../../combinator';
+import { union, inits, some, match, surround, indent, transform, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { ulist } from './ulist';
@@ -11,9 +11,7 @@ const syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/;
 const closer = /^(?:\\?\n)?$/;
 const cache = new Map<string, RegExp>();
 
-export const olist: OListParser = block(source => {
-  const [, index = ''] = source.match(syntax) || [];
-  if (!index) return;
+export const olist: OListParser = block(match(syntax, ([, index], source) => {
   const opener = cache.has(index)
     ? cache.get(index)!
     : cache.set(index, new RegExp(`^${pattern(index)}(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index)!;
@@ -30,7 +28,7 @@ export const olist: OListParser = block(source => {
     (es, rest) =>
       [[html('ol', { start: index, type: type(index) }, es)], rest])
     (source);
-});
+}));
 
 function type(index: string): string {
   return Number.isFinite(+index)
