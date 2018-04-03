@@ -1,12 +1,10 @@
 ﻿import { HorizontalRuleParser } from '../block';
-import { union, surround, transform } from '../../combinator';
+import { match } from '../../combinator';
 import { block } from '../source/block';
-import { contentline } from '../source/line';
+import { line } from '../source/line';
 import { html } from 'typed-dom';
 
-const syntax = /^(?=-{3,}[^\S\n]*(?:\n|$))/;
+const syntax = /^-{3,}[^\S\n]*(?:\n|$)/;
 
-export const horizontalrule: HorizontalRuleParser = block(transform(
-  surround<HorizontalRuleParser>(syntax, union([contentline]), ''),
-  (_, rest) =>
-    [[html('hr')], rest]));
+export const horizontalrule: HorizontalRuleParser = block(line(
+  match(syntax, ([m], s) => [[html('hr')], s.slice(m.length)])));

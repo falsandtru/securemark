@@ -1,6 +1,6 @@
 ﻿import { CommentParser } from '../inline';
-import { surround } from '../../combinator';
+import { match } from '../../combinator';
 
 const syntax = /^<(#+)\s+(?:\S+\s+)*?\1>/;
 
-export const comment: CommentParser = surround<CommentParser>(syntax, s => [[], s], '', false);
+export const comment: CommentParser = match(syntax, ([m], s) => [[], s.slice(m.length)]);
