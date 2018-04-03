@@ -14,7 +14,7 @@ import FigureParser = ExtensionParser.FigureParser;
 const syntax = /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/;
 const cache = new Map<string, RegExp>();
 
-export const figure: FigureParser = block(match(syntax, ([, bracket, note], source) => {
+export const figure: FigureParser = block(match(syntax, ([whole, bracket, note], rest) => {
   const [[figlabel = undefined] = []] = label(note) || [];
   if (!figlabel) return;
   const closer = cache.has(bracket)
@@ -52,5 +52,5 @@ export const figure: FigureParser = block(match(syntax, ([, bracket, note], sour
       ],
       rest
     ])
-    (source);
+    (whole + rest);
 }));

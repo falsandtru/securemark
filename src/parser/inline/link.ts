@@ -52,6 +52,6 @@ export const parenthesis: LinkParser.ParenthesisParser = transform(build(() =>
 const attribute: LinkParser.AttributeParser =
   surround(
     /^\s(?=\S)/,
-    match(/^nofollow/, ([attr], source) =>
-      [[document.createTextNode(`\n${attr}`)], source.slice(attr.length)]),
+    match(/^nofollow/, ([attr], rest) =>
+      [[document.createTextNode(`\n${attr}`)], rest]),
     /^(?=\))/);

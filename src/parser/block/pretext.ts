@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 
 const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
 
-export const pretext: PretextParser = block(match(syntax, ([whole, , notes, body], source) => {
+export const pretext: PretextParser = block(match(syntax, ([, , notes, body], rest) => {
   const el = html('pre', body);
   const lang = notes.split(/\s/, 1)[0];
   if (lang) {
@@ -18,5 +18,5 @@ export const pretext: PretextParser = block(match(syntax, ([whole, , notes, body
   if (filepath) {
     void el.setAttribute('data-file', filepath);
   }
-  return [[el], source.slice(whole.length)];
+  return [[el], rest];
 }));

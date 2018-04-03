@@ -5,7 +5,7 @@ import { paragraph } from '../paragraph';
 
 const syntax = /^(~{3,})([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/;
 
-export const placeholder: ExtensionParser.PlaceholderParser = block(match(syntax, ([whole], source) => {
-  const [[message]] = paragraph("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.")!;
-  return [[message], source.slice(whole.length)];
-}));
+export const placeholder: ExtensionParser.PlaceholderParser = block(match(syntax, (_, rest) => [
+  paragraph("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.\n")![0],
+  rest
+]));

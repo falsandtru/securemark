@@ -11,7 +11,7 @@ const syntax = /^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/;
 const closer = /^(?:\\?\n)?$/;
 const cache = new Map<string, RegExp>();
 
-export const olist: OListParser = block(match(syntax, ([, index], source) => {
+export const olist: OListParser = block(match(syntax, ([whole, index], rest) => {
   const opener = cache.has(index)
     ? cache.get(index)!
     : cache.set(index, new RegExp(`^${pattern(index)}(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index)!;
@@ -27,7 +27,7 @@ export const olist: OListParser = block(match(syntax, ([, index], source) => {
           : [[html('li', ns)], rest])),
     (es, rest) =>
       [[html('ol', { start: index, type: type(index) }, es)], rest])
-    (source);
+    (whole + rest);
 }));
 
 function type(index: string): string {

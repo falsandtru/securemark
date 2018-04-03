@@ -11,7 +11,7 @@ const syntax = /^([-+*])(?=\s|$)/;
 const closer = /^(?:\\?\n)?$/;
 const cache = new Map<string, RegExp>();
 
-export const ulist: UListParser = block(match(syntax, ([, flag], source) => {
+export const ulist: UListParser = block(match(syntax, ([whole, flag], rest) => {
   const opener = cache.has(flag)
     ? cache.get(flag)!
     : cache.set(flag, new RegExp(`^\\${flag}(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag)!;
@@ -27,5 +27,5 @@ export const ulist: UListParser = block(match(syntax, ([, flag], source) => {
           : [[html('li', ns)], rest])),
     (es, rest) =>
       [[html('ul', es)], rest])
-    (source);
+    (whole + rest);
 }));

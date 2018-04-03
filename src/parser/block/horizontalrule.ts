@@ -7,4 +7,4 @@ import { html } from 'typed-dom';
 const syntax = /^-{3,}[^\S\n]*(?:\n|$)/;
 
 export const horizontalrule: HorizontalRuleParser = block(line(
-  match(syntax, ([m], s) => [[html('hr')], s.slice(m.length)])));
+  match(syntax, (_, r) => [[html('hr')], r])));

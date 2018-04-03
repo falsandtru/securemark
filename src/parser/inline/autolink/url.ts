@@ -9,10 +9,10 @@ const syntax = /^(?:!?h)?ttps?:\/\/\S/;
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
 
 export const url: AutolinkParser.UrlParser = union([
-  match(/^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/, ([frag], source) =>
-    [[document.createTextNode(frag)], source.slice(frag.length)]),
-  line(match(syntax, (_, source) => {
-    if (source.search(syntax) !== 0) return;
+  match(/^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/, ([frag], rest) =>
+    [[document.createTextNode(frag)], rest]),
+  line(match(syntax, ([whole], source) => {
+    source = whole + source;
     const flag = source.startsWith('!h');
     source = flag
       ? source.slice(1)
@@ -34,6 +34,6 @@ export const url: AutolinkParser.UrlParser = union([
 ]);
 
 const ipv6 = transform(
-  surround('[', match(/^[:0-9a-z]+/, ([addr], source) => [[document.createTextNode(addr)], source.slice(addr.length)]), ']'),
+  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[document.createTextNode(addr)], rest]), ']'),
   (ts, rest) =>
     [[document.createTextNode('['), ...ts, document.createTextNode(']')], rest]);

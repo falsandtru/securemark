@@ -8,9 +8,9 @@ const syntax = /^[a-z]+(?:(?:-[a-z][0-9a-z]*|-[0-9]+[a-z][0-9a-z]*)+(?:-0(?:\.0)
 export const label: ExtensionParser.LabelParser = line(transform(build(() =>
   surround(
     '[:',
-    match(syntax, ([query], source) =>
+    match(syntax, ([query], rest) =>
       union<ExtensionParser.LabelParser>([link])
-        (`[${query}](#${makeLabel(query)})${source.slice(query.length)}`)),
+        (`[${query}](#${makeLabel(query)})${rest}`)),
     ']')),
   ([el], rest) => {
     void el.setAttribute('class', el.getAttribute('href')!.slice(1));

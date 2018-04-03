@@ -9,11 +9,11 @@ assert(tags.every(tag => /[a-z]+/.test(tag)));
 assert(tags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
 assert(tags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
 
-export const html: HTMLParser = match(syntax, ([whole, tag], source) => {
+export const html: HTMLParser = match(syntax, ([whole, tag], rest) => {
   if (!tags.includes(tag)) return;
   const opentag = `<${tag}>`;
   assert(whole.startsWith(opentag));
-  if (tag === 'wbr') return [[htm(tag)], source.slice(opentag.length)];
+  if (tag === 'wbr') return [[htm(tag)], rest];
   return transform(
     surround<HTMLParser>(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
     (ns, rest) => {
@@ -22,5 +22,5 @@ export const html: HTMLParser = match(syntax, ([whole, tag], source) => {
         ? [[el], rest]
         : undefined;
     })
-    (source);
+    (whole + rest);
 });

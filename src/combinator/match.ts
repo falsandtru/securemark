@@ -5,10 +5,12 @@ export function match<T, S extends Parser<any, any>[] = never[]>(pattern: RegExp
     const result = source.match(pattern);
     if (!result) return;
     assert(source.startsWith(result[0]));
-    const [rs = [], rest = undefined] = f(result, source) || [];
-    if (rest === undefined) return;
-    return rest.length < source.length
-      ? [rs, rest]
+    const rest = source.slice(result[0].length);
+    const [rs = [], r = undefined] = f(result, rest) || [];
+    if (r === undefined) return;
+    assert(rest.endsWith(r));
+    return r.length < source.length && r.length <= rest.length
+      ? [rs, r]
       : undefined;
   };
 }

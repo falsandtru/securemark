@@ -9,7 +9,8 @@ import { html } from 'typed-dom';
 const syntax = /^(`+)[^\n]+?\1(?!`)/;
 const cache = new Map<string, RegExp>();
 
-export const code: CodeParser = line(match(syntax, ([, bracket], source) => {
+export const code: CodeParser = line(match(syntax, ([whole, bracket], source) => {
+  source = whole + source;
   const closer = cache.has(bracket)
     ? cache.get(bracket)!
     : cache.set(bracket, new RegExp(`^${bracket}(?!\`)`)).get(bracket)!;
