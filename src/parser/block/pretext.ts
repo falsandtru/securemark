@@ -1,5 +1,5 @@
 ﻿import { PretextParser } from '../block';
-import { some, trim } from '../../combinator';
+import { some, match, trim } from '../../combinator';
 import { block } from '../source/block';
 import { escsource } from '../source/escapable';
 import { stringify } from '../util';
@@ -7,10 +7,7 @@ import { html } from 'typed-dom';
 
 const syntax = /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/;
 
-export const pretext: PretextParser = block(source => {
-  if (!source.startsWith('```')) return;
-  const [whole = '', , notes = '', body = ''] = source.match(syntax) || [];
-  if (!whole) return;
+export const pretext: PretextParser = block(match(syntax, ([whole, , notes, body], source) => {
   const el = html('pre', body);
   const lang = notes.split(/\s/, 1)[0];
   if (lang) {
@@ -22,4 +19,4 @@ export const pretext: PretextParser = block(source => {
     void el.setAttribute('data-file', filepath);
   }
   return [[el], source.slice(whole.length)];
-});
+}));
