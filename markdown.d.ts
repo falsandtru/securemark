@@ -375,7 +375,7 @@ export namespace MarkdownParser {
         Inline<'url'>,
         Parser<HTMLAnchorElement | Text, [
           Parser<Text, never[]>,
-          Parser<HTMLAnchorElement | Text, [
+          Parser<HTMLAnchorElement, [
             Parser<Text, never[]>,
             LinkParser.ParenthesisParser,
             SourceParser.EscapableSourceParser
