@@ -418,11 +418,6 @@ export namespace MarkdownParser {
       Parser<never, never[]> {
     }
     export namespace CharParser {
-      export interface SpaceParser extends
-        // \s
-        Source<'char/space'>,
-        Parser<Text, never[]> {
-      }
       export interface BackquoteParser extends
         // `
         Source<'char/backquote'>,
