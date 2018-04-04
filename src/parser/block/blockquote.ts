@@ -1,25 +1,16 @@
 ﻿import { BlockquoteParser } from '../block';
-import { union, some } from '../../combinator';
-import { block as block_ } from '../source/block';
+import { union, some, match } from '../../combinator';
+import { block } from '../source/block';
 import { firstline } from '../source/line';
-import { block } from '../block';
 import { unescsource } from '../source/unescapable';
-import { squash } from '../util';
+import { parse } from '../parse';
+import { stringify } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^>+(?=\s|$)/;
 
-export const blockquote: BlockquoteParser = block_(source => {
-  const mode = undefined
-    || source.startsWith('>') && 'plain'
-    || source.startsWith('|>') && 'markdown'
-    || '';
-  if (mode === '') return;
-  source = mode === 'plain'
-    ? source
-    : source.slice(1);
-  let [indent = ''] = source.match(syntax) || [];
-  if (!indent) return;
+export const blockquote: BlockquoteParser = block(match(/^\|?(?=(>+)(?:\s|$))/, ([flag, indent], source) => {
+  const mode = flag ? 'markdown' : 'text';
   const top = html('blockquote');
   let bottom = indent.split('').slice(1)
     .reduce(p =>
@@ -43,10 +34,9 @@ export const blockquote: BlockquoteParser = block_(source => {
     assert(indent.length + diff > 0);
     indent = indent[0].repeat(indent.length + diff);
     if (bottom.lastChild instanceof Text) {
-      const node = mode === 'plain'
-        ? html('br')
-        : document.createTextNode('\n');
-      void bottom.appendChild(node);
+      mode === 'text'
+        ? void bottom.appendChild(html('br'))
+        : bottom.lastChild.textContent += '\n';
     }
     source = source.split(/[^\S\n]/, 1)[0] === indent
       ? source.slice(indent.length + 1)
@@ -54,44 +44,35 @@ export const blockquote: BlockquoteParser = block_(source => {
         ? source.slice(indent.length)
         : source;
     const [cs = [], rest = source] = some<BlockquoteParser>(union([unescsource]), /^(?:\n|$)/)(source) || [];
-    const node = mode === 'plain'
-      ? document.createTextNode(squash(cs, document.createDocumentFragment()).textContent!.replace(/ /g, String.fromCharCode(160)))
-      : squash(cs, document.createDocumentFragment());
-    if (bottom.childNodes.length === 0 && node.textContent!.trim() === '') return;
-    void bottom.appendChild(node);
+    const text = mode === 'text'
+      ? stringify(cs).replace(/ /g, String.fromCharCode(160))
+      : stringify(cs);
+    if (bottom.childNodes.length === 0 && text.trim() === '') return;
+    void bottom.appendChild(document.createTextNode(text));
     source = rest.slice(1);
   }
-  if (mode === 'markdown') {
-    void expand(top);
-  }
+  mode === 'markdown' && void expand(top);
   return [[top], source];
-});
+}));
 
 function expand(el: HTMLQuoteElement): void {
   return void [...el.childNodes]
     .reduce<string[]>((ss, node) => {
       switch (true) {
         case node instanceof Text:
-          void ss.push(node.textContent!);
           const ref = node.nextSibling;
-          void el.removeChild(node);
+          void node.remove();
+          void ss.push(node.textContent!);
           if (ref instanceof Text) return ss;
           void el.insertBefore(parse(ss.join('')), ref);
           return [];
         case node instanceof HTMLQuoteElement:
+          assert.deepStrictEqual(ss, []);
           void expand(node as HTMLQuoteElement);
           return [];
         default:
-          void el.insertBefore(node, node.nextSibling);
+          assert.deepStrictEqual(ss, []);
           return [];
       }
     }, []);
-
-  function parse(source: string): DocumentFragment {
-    return (some(block)(source) || [[] as HTMLElement[]])[0]
-      .reduce((frag, node) => (
-        frag.appendChild(node),
-        frag
-      ), document.createDocumentFragment());
-  }
 }
