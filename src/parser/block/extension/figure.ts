@@ -39,15 +39,15 @@ export const figure: FigureParser = block(match(syntax, ([whole, bracket, note],
           compress(trim(some(union([inline]))))),
       ]),
       closer),
-    (es, rest) => [
+    ([content, ...caption], rest) => [
       [
         html('figure',
           { class: figlabel.getAttribute('href')!.slice(1) },
           [
-            es[0],
+            content,
             html('figcaption',
               { 'data-type': figlabel.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0] },
-              [html('span', es.slice(1))])
+              [html('span', caption)])
           ])
       ],
       rest
