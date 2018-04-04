@@ -3,6 +3,7 @@
 ## 0.46.1
 
 - Allow trailing newline in figure syntax.
+- Allow empty nested blockquote.
 
 ## 0.46.0
 

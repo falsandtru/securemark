@@ -12,7 +12,6 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('>')), undefined);
       assert.deepStrictEqual(inspect(parser('>a')), undefined);
       assert.deepStrictEqual(inspect(parser('> ')), undefined);
-      assert.deepStrictEqual(inspect(parser('> a\n>>')), undefined);
       assert.deepStrictEqual(inspect(parser(' >')), undefined);
       assert.deepStrictEqual(inspect(parser(' >a')), undefined);
       assert.deepStrictEqual(inspect(parser('>>')), undefined);
@@ -39,6 +38,7 @@ describe('Unit: parser/block/blockquote', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('> a\n>>')), [['<blockquote>a<blockquote></blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>> b\n> c')), [['<blockquote>a<blockquote>b</blockquote>c</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>> b\n>> c')), [['<blockquote>a<blockquote>b<br>c</blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>> b\n>>> c')), [['<blockquote>a<blockquote>b<blockquote>c</blockquote></blockquote></blockquote>'], '']);

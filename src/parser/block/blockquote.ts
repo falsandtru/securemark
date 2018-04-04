@@ -4,7 +4,7 @@ import { block } from '../source/block';
 import { firstline } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { parse } from '../parse';
-import { stringify } from '../util';
+import { hasContent, stringify } from '../util';
 import { html } from 'typed-dom';
 
 const syntax = /^>+(?=\s|$)/;
@@ -47,12 +47,13 @@ export const blockquote: BlockquoteParser = block(match(/^\|?(?=(>+)(?:\s|$))/, 
     const text = mode === 'text'
       ? stringify(cs).replace(/ /g, String.fromCharCode(160))
       : stringify(cs);
-    if (bottom.childNodes.length === 0 && text.trim() === '') return;
     void bottom.appendChild(document.createTextNode(text));
     source = rest.slice(1);
   }
   mode === 'markdown' && void expand(top);
-  return [[top], source];
+  return hasContent(top)
+    ? [[top], source]
+    : undefined;
 }));
 
 function expand(el: HTMLQuoteElement): void {
