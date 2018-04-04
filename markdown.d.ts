@@ -16,7 +16,7 @@ export namespace MarkdownParser {
       BlockParser.PretextParser,
       BlockParser.ExtensionParser,
       SourceParser.ContentLineParser,
-      SourceParser.EmptyLineParser
+      SourceParser.BlankLineParser
     ]> {
   }
   export interface BlockParser extends
@@ -41,7 +41,7 @@ export namespace MarkdownParser {
     export interface NewlineParser extends
       Block<'newline'>,
       Parser<never, [
-        SourceParser.EmptyLineParser
+        SourceParser.BlankLineParser
       ]> {
     }
     export interface HorizontalRuleParser extends
@@ -409,12 +409,16 @@ export namespace MarkdownParser {
       Source<'escsource'>,
       Parser<Text, never[]> {
     }
-    export interface ContentLineParser extends
-      Source<'contentline'>,
-      Parser<never, never[]> {
-    }
     export interface EmptyLineParser extends
       Source<'emptyline'>,
+      Parser<never, never[]> {
+    }
+    export interface BlankLineParser extends
+      Source<'blankline'>,
+      Parser<never, never[]> {
+    }
+    export interface ContentLineParser extends
+      Source<'contentline'>,
       Parser<never, never[]> {
     }
     export namespace CharParser {

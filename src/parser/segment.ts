@@ -2,7 +2,7 @@
 import { union, some } from '../combinator';
 import { pretext } from './block/pretext';
 import { extension } from './block/extension';
-import { contentline, emptyline } from './source/line';
+import { contentline, blankline } from './source/line';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 
@@ -13,7 +13,7 @@ export function segment(source: string): string[] {
       pretext,
       extension,
       some(contentline),
-      some(emptyline)
+      some(blankline)
     ])(source) || [];
     assert(source.slice(1).endsWith(rest));
     void segments.push(source.slice(0, source.length - rest.length));

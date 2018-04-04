@@ -1,4 +1,4 @@
-﻿import { line, contentline, emptyline } from './line';
+﻿import { line, blankline, contentline } from './line';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/line', () => {
@@ -23,8 +23,8 @@ describe('Unit: parser/source/line', () => {
 
   });
 
-  describe('emptyline', () => {
-    const parser = emptyline;
+  describe('blankline', () => {
+    const parser = blankline;
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
