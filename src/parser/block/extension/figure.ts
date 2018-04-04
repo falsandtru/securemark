@@ -1,11 +1,11 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, match, surround, transform, rewrite, trim } from '../../../combinator';
+import { union, inits, some, match, surround, transform, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
 import { pretext } from '../pretext';
 import { math } from '../math';
-import { line, contentline } from '../../source/line';
+import { line, emptyline, contentline } from '../../source/line';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
 
@@ -35,7 +35,7 @@ export const figure: FigureParser = block(match(syntax, ([whole, bracket, note],
             return [[content], rest];
           }),
         rewrite(
-          sequence([line(s => s.trim() === '' ? [[], ''] : undefined, true, true), some(contentline, closer)]),
+          inits([emptyline, union([emptyline, some(contentline, closer)])]),
           compress(trim(some(union([inline]))))),
       ]),
       closer),

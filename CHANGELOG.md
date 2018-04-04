@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.46.1
+
+- Allow trailing newline in figure syntax.
+
 ## 0.46.0
 
 - Always open a media link in new tab.
