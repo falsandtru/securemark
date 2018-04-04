@@ -1219,19 +1219,13 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const block_1 = require('../source/block');
             const line_1 = require('../source/line');
-            const block_2 = require('../block');
             const unescapable_1 = require('../source/unescapable');
+            const parse_1 = require('../parse');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^>+(?=\s|$)/;
-            exports.blockquote = block_1.block(source => {
-                const mode = undefined || source.startsWith('>') && 'plain' || source.startsWith('|>') && 'markdown' || '';
-                if (mode === '')
-                    return;
-                source = mode === 'plain' ? source : source.slice(1);
-                let [indent = ''] = source.match(syntax) || [];
-                if (!indent)
-                    return;
+            exports.blockquote = block_1.block(combinator_1.match(/^\|?(?=(>+)(?:\s|$))/, ([flag, indent], source) => {
+                const mode = flag ? 'markdown' : 'text';
                 const top = typed_dom_1.html('blockquote');
                 let bottom = indent.split('').slice(1).reduce(p => p.appendChild(typed_dom_1.html('blockquote')), top);
                 while (true) {
@@ -1246,52 +1240,43 @@ require = function () {
                     }
                     indent = indent[0].repeat(indent.length + diff);
                     if (bottom.lastChild instanceof Text) {
-                        const node = mode === 'plain' ? typed_dom_1.html('br') : document.createTextNode('\n');
-                        void bottom.appendChild(node);
+                        mode === 'text' ? void bottom.appendChild(typed_dom_1.html('br')) : bottom.lastChild.textContent += '\n';
                     }
                     source = source.split(/[^\S\n]/, 1)[0] === indent ? source.slice(indent.length + 1) : source.startsWith(`${ indent }\n`) ? source.slice(indent.length) : source;
                     const [cs = [], rest = source] = combinator_1.some(combinator_1.union([unescapable_1.unescsource]), /^(?:\n|$)/)(source) || [];
-                    const node = mode === 'plain' ? document.createTextNode(util_1.squash(cs, document.createDocumentFragment()).textContent.replace(/ /g, String.fromCharCode(160))) : util_1.squash(cs, document.createDocumentFragment());
-                    if (bottom.childNodes.length === 0 && node.textContent.trim() === '')
-                        return;
-                    void bottom.appendChild(node);
+                    const text = mode === 'text' ? util_1.stringify(cs).replace(/ /g, String.fromCharCode(160)) : util_1.stringify(cs);
+                    void bottom.appendChild(document.createTextNode(text));
                     source = rest.slice(1);
                 }
-                if (mode === 'markdown') {
-                    void expand(top);
-                }
-                return [
+                mode === 'markdown' && void expand(top);
+                return util_1.hasContent(top) ? [
                     [top],
                     source
-                ];
-            });
+                ] : undefined;
+            }));
             function expand(el) {
                 return void [...el.childNodes].reduce((ss, node) => {
                     switch (true) {
                     case node instanceof Text:
-                        void ss.push(node.textContent);
                         const ref = node.nextSibling;
-                        void el.removeChild(node);
+                        void node.remove();
+                        void ss.push(node.textContent);
                         if (ref instanceof Text)
                             return ss;
-                        void el.insertBefore(parse(ss.join('')), ref);
+                        void el.insertBefore(parse_1.parse(ss.join('')), ref);
                         return [];
                     case node instanceof HTMLQuoteElement:
                         void expand(node);
                         return [];
                     default:
-                        void el.insertBefore(node, node.nextSibling);
                         return [];
                     }
                 }, []);
-                function parse(source) {
-                    return (combinator_1.some(block_2.block)(source) || [[]])[0].reduce((frag, node) => (frag.appendChild(node), frag), document.createDocumentFragment());
-                }
             }
         },
         {
             '../../combinator': 19,
-            '../block': 35,
+            '../parse': 74,
             '../source/block': 76,
             '../source/line': 79,
             '../source/unescapable': 81,
@@ -1405,17 +1390,17 @@ require = function () {
                             rest
                         ];
                     }),
-                    combinator_1.rewrite(combinator_1.sequence([
-                        line_1.line(s => s.trim() === '' ? [
-                            [],
-                            ''
-                        ] : undefined, true, true),
-                        combinator_1.some(line_1.contentline, closer)
+                    combinator_1.rewrite(combinator_1.inits([
+                        line_1.emptyline,
+                        combinator_1.union([
+                            line_1.emptyline,
+                            combinator_1.some(line_1.contentline, closer)
+                        ])
                     ]), util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))))
-                ]), closer), (es, rest) => [
+                ]), closer), ([content, ...caption], rest) => [
                     [typed_dom_1.html('figure', { class: figlabel.getAttribute('href').slice(1) }, [
-                            es[0],
-                            typed_dom_1.html('figcaption', { 'data-type': figlabel.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0] }, [typed_dom_1.html('span', es.slice(1))])
+                            content,
+                            typed_dom_1.html('figcaption', { 'data-type': figlabel.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0] }, [typed_dom_1.html('span', caption)])
                         ])],
                     rest
                 ])(whole + rest);
@@ -1575,7 +1560,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             const line_1 = require('../source/line');
-            exports.newline = combinator_1.some(combinator_1.union([line_1.emptyline]));
+            exports.newline = combinator_1.some(combinator_1.union([line_1.blankline]));
         },
         {
             '../../combinator': 19,
@@ -2609,7 +2594,7 @@ require = function () {
                         pretext_1.pretext,
                         extension_1.extension,
                         combinator_1.some(line_1.contentline),
-                        combinator_1.some(line_1.emptyline)
+                        combinator_1.some(line_1.blankline)
                     ])(source) || [];
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
@@ -2748,12 +2733,16 @@ require = function () {
                 return i === -1 ? source : source.slice(0, i);
             }
             exports.firstline = firstline;
-            const invisible = /^(?:\\?[^\S\\]+)*\\?$/;
-            exports.contentline = line(s => s.search(invisible) !== 0 ? [
+            exports.emptyline = line(s => s.trim() === '' ? [
                 [],
                 ''
             ] : undefined, true, true);
-            exports.emptyline = line(s => s.search(invisible) === 0 ? [
+            const invisible = /^(?:\\?[^\S\\]+)*\\?$/;
+            exports.blankline = line(s => s.search(invisible) === 0 ? [
+                [],
+                ''
+            ] : undefined, true, true);
+            exports.contentline = line(s => s.search(invisible) !== 0 ? [
                 [],
                 ''
             ] : undefined, true, true);
