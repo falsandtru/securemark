@@ -52,9 +52,10 @@ export const table: TableParser = block(source => {
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
   return void cols
-    .reduce((tr, col, i) =>
-      (void tr.appendChild(html('td', { align: aligns[i] || '' }, [col])), tr)
-  , table.lastChild!.appendChild(html('tr')));
+    .reduce((tr, col, i) => (
+      void tr.appendChild(html('td', aligns[i] ? { style: `text-align: ${aligns[i]};` } : {}, [col])),
+      tr
+    ), table.lastChild!.appendChild(html('tr')));
 }
 
 const rowseparator = /^\||^[^\S\n]*(?=\n|$)/;

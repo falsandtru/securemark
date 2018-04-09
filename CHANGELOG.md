@@ -3,6 +3,7 @@
 ## 0.47.0
 
 - Require tables to put body contents.
+- Don't use align attribute in tables.
 
 ## 0.46.1
 
