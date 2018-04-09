@@ -120,7 +120,7 @@ export namespace MarkdownParser {
       Parser<HTMLQuoteElement, [
         SourceParser.UnescapableSourceParser
       ] | [
-        BlockParser
+        MarkdownParser
       ]> {
     }
     export interface PretextParser extends
