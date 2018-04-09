@@ -45,7 +45,9 @@ export const table: TableParser = block(source => {
     void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
     source = source.slice(line.length + 1);
   }
-  return [[table], source];
+  return table.querySelector('tbody > tr')
+    ? [[table], source]
+    : undefined;
 });
 
 function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {

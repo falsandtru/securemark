@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.47.0
+
+- Require tables to put body contents.
+
 ## 0.46.1
 
 - Allow trailing newline in figure syntax.
