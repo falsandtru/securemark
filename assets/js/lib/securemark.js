@@ -3226,7 +3226,7 @@ require = function () {
                 const cache_1 = require('spica/cache');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
-                let widgetScriptRequested = false;
+                let widgetScriptRequested = !!window.twttr;
                 const cache = new cache_1.Cache(100);
                 function twitter(url) {
                     if (cache.has(url)) {
@@ -3242,14 +3242,17 @@ require = function () {
                             cache: true,
                             success({html}) {
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`, { ADD_TAGS: ['script'] });
+                                const script = outer.querySelector('script');
+                                script && void script.remove();
                                 void cache.set(url, outer.cloneNode(true));
                                 if (window.twttr)
                                     return void window.twttr.widgets.load(outer);
-                                if (widgetScriptRequested)
+                                if (widgetScriptRequested || !script)
                                     return;
                                 widgetScriptRequested = true;
-                                const script = outer.querySelector('script');
                                 if (!script.getAttribute('src').startsWith('https://platform.twitter.com/'))
+                                    return;
+                                if (document.querySelector(`script[src="${ script.getAttribute('src') }"]`))
                                     return;
                                 void $.ajax(script.src, {
                                     dataType: 'script',
