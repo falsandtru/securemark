@@ -1791,13 +1791,13 @@ require = function () {
                     void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
                     source = source.slice(line.length + 1);
                 }
-                return [
+                return table.querySelector('tbody > tr') ? [
                     [table],
                     source
-                ];
+                ] : undefined;
             });
             function append(cols, table, aligns) {
-                return void cols.reduce((tr, col, i) => (void tr.appendChild(typed_dom_1.html('td', { align: aligns[i] || '' }, [col])), tr), table.lastChild.appendChild(typed_dom_1.html('tr')));
+                return void cols.reduce((tr, col, i) => (void tr.appendChild(typed_dom_1.html('td', aligns[i] ? { style: `text-align: ${ aligns[i] };` } : {}, [col])), tr), table.lastChild.appendChild(typed_dom_1.html('tr')));
             }
             const rowseparator = /^\||^[^\S\n]*(?=\n|$)/;
             const rowend = /^\|?[^\S\n]*(?=\n|$)/;
