@@ -7,7 +7,8 @@ export function surround<T, S extends Parser<any, any>[]>(start: string | RegExp
     if (l === undefined) return;
     const mr_ = lmr_.slice(l.length);
     const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_) || [];
-    if (strict ? r_.length >= mr_.length : r_.length > mr_.length) return;
+    if (strict && r_.length === mr_.length) return;
+    if (r_.length > mr_.length) return;
     assert(mr_.endsWith(r_));
     const r = match(r_, end);
     if (r === undefined) return;
