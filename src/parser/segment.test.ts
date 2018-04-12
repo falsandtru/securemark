@@ -65,7 +65,7 @@ describe('Unit: parser/segment', () => {
 
     it('blockquote', () => {
       assert.deepStrictEqual(segment('> ```\n\n\n```'), ['> ```\n', '\n\n', '```']);
-      assert.deepStrictEqual(segment('|> ```\n\n\n```'), ['|> ```\n', '\n\n', '```']);
+      assert.deepStrictEqual(segment('!> ```\n\n\n```'), ['!> ```\n', '\n\n', '```']);
     });
 
   });

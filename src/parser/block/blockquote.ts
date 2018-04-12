@@ -9,7 +9,7 @@ import { html } from 'typed-dom';
 
 const syntax = /^>+(?=\s|$)/;
 
-export const blockquote: BlockquoteParser = block(match(/^\|?(?=(>+)(?:\s|$))/, ([flag, indent], source) => {
+export const blockquote: BlockquoteParser = block(match(/^!?(?=(>+)(?:\s|$))/, ([flag, indent], source) => {
   const mode = flag ? 'markdown' : 'text';
   const top = html('blockquote');
   let bottom = indent.split('').slice(1)

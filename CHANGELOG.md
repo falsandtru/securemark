@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.48.0
+
+- Change markdown rendering flag of blockquote syntax.
+
 ## 0.47.0
 
 - Require tables to put body contents.

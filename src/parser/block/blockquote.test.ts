@@ -51,24 +51,24 @@ describe('Unit: parser/block/blockquote', () => {
     });
 
     it('markdown', () => {
-      assert.deepStrictEqual(inspect(parser('|')), undefined);
-      assert.deepStrictEqual(inspect(parser('|>')), undefined);
-      assert.deepStrictEqual(inspect(parser('|> ')), undefined);
-      assert.deepStrictEqual(inspect(parser('|> a')), [['<blockquote><p>a</p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> a\\')), [['<blockquote><p>a</p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> a\\\nb')), [['<blockquote><p>a<br>b</p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> **a\nb**')), [['<blockquote><p><strong>a<span class="newline"> </span>b</strong></p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|>  a \n b  c ')), [['<blockquote><p>a <span class="newline"> </span> b  c</p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|>> a')), [['<blockquote><blockquote><p>a</p></blockquote></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|>> a\n> **b**')), [['<blockquote><blockquote><p>a</p></blockquote><p><strong>b</strong></p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> - a')), [['<blockquote><ul><li>a</li></ul></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> ```\n\n```')), [['<blockquote><p>```</p></blockquote>'], '\n```']);
-      assert.deepStrictEqual(inspect(parser('|> ```\na\n```')), [['<blockquote><pre>a</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> ```\n> a\n```')), [['<blockquote><pre>a</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> ```\n> a\n> ```')), [['<blockquote><pre>a</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> ```\na\n\nb\n```')), [['<blockquote><p>```<span class="newline"> </span>a</p></blockquote>'], '\nb\n```']);
-      assert.deepStrictEqual(inspect(parser('|> ```\n> a\n> \n> b\n> ```')), [['<blockquote><pre>a\n\nb</pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('|> ```\na\n```\n\n')), [['<blockquote><pre>a</pre></blockquote>'], '\n']);
+      assert.deepStrictEqual(inspect(parser('!')), undefined);
+      assert.deepStrictEqual(inspect(parser('!>')), undefined);
+      assert.deepStrictEqual(inspect(parser('!> ')), undefined);
+      assert.deepStrictEqual(inspect(parser('!> a')), [['<blockquote><p>a</p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> a\\')), [['<blockquote><p>a</p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> a\\\nb')), [['<blockquote><p>a<br>b</p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> **a\nb**')), [['<blockquote><p><strong>a<span class="newline"> </span>b</strong></p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!>  a \n b  c ')), [['<blockquote><p>a <span class="newline"> </span> b  c</p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!>> a')), [['<blockquote><blockquote><p>a</p></blockquote></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!>> a\n> **b**')), [['<blockquote><blockquote><p>a</p></blockquote><p><strong>b</strong></p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> - a')), [['<blockquote><ul><li>a</li></ul></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\n\n```')), [['<blockquote><p>```</p></blockquote>'], '\n```']);
+      assert.deepStrictEqual(inspect(parser('!> ```\na\n```')), [['<blockquote><pre>a</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n```')), [['<blockquote><pre>a</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n> ```')), [['<blockquote><pre>a</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\na\n\nb\n```')), [['<blockquote><p>```<span class="newline"> </span>a</p></blockquote>'], '\nb\n```']);
+      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n> \n> b\n> ```')), [['<blockquote><pre>a\n\nb</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\na\n```\n\n')), [['<blockquote><pre>a</pre></blockquote>'], '\n']);
     });
 
   });
