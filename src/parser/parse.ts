@@ -4,12 +4,12 @@ import { segment } from './segment';
 
 export function parse(source: string): DocumentFragment {
   return segment(source)
-    .reduce((frag, seg) =>
-      parse_(seg)
-        .reduce((doc, el) =>
-          (void doc.appendChild(el), doc)
-        , frag)
-    , document.createDocumentFragment());
+    .reduce((parent, seg) => (
+      void parse_(seg)
+        .forEach(el =>
+          void parent.appendChild(el)),
+      parent
+    ), document.createDocumentFragment());
 }
 
 export function parse_(source: string): HTMLElement[] {

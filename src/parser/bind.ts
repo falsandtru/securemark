@@ -23,7 +23,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         void es
           .forEach(el =>
             void el.remove()));
-    const [, [ref = end()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
+    const [, [ref = bottom()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     for (const [seg, k] of ns.slice(i, ns.length - j).map<[string, number]>((seg, k) => [seg, i + k])) {
       assert(revision === rev);
       const es = parse_(seg);
@@ -39,7 +39,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     assert(revision === rev);
   };
 
-  function end(): Node | null {
+  function bottom(): Node | null {
     if (pairs.length === 0) return target.firstChild;
     for (let i = pairs.length - 1; i >= 0; --i) {
       const [, es] = pairs[i];
