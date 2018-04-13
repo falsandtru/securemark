@@ -964,7 +964,9 @@ require = function () {
                         return;
                     const mr_ = lmr_.slice(l.length);
                     const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_) || [];
-                    if (strict ? r_.length >= mr_.length : r_.length > mr_.length)
+                    if (strict && r_.length === mr_.length)
+                        return;
+                    if (r_.length > mr_.length)
                         return;
                     const r = match(r_, end);
                     if (r === undefined)
@@ -1224,7 +1226,7 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             const syntax = /^>+(?=\s|$)/;
-            exports.blockquote = block_1.block(combinator_1.match(/^\|?(?=(>+)(?:\s|$))/, ([flag, indent], source) => {
+            exports.blockquote = block_1.block(combinator_1.match(/^!?(?=(>+)(?:\s|$))/, ([flag, indent], source) => {
                 const mode = flag ? 'markdown' : 'text';
                 const top = typed_dom_1.html('blockquote');
                 let bottom = indent.split('').slice(1).reduce(p => p.appendChild(typed_dom_1.html('blockquote')), top);
@@ -1891,7 +1893,7 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const symbols = /^[~:|>`$-+*\s]|^#[^\S\n]|^[0-9a-z]+\.|[*`$&()\[\]{}]|\\./gim;
+            const symbols = /^(?:[~:|>`$-+*\s]|[0-9a-z]+\.|!>|#+\s)|[*`$&()\[\]{}]|\\./gim;
             function escape(source) {
                 return source.replace(symbols, str => str[0] === '\\' ? str : `\\${ str }`);
             }
@@ -2567,11 +2569,6 @@ require = function () {
                 return (block_1.block(source) || [[]])[0];
             }
             exports.parse_ = parse_;
-            const symbols = /^[#~:|>`$-+*\s]|^[0-9a-z]+\.|[*`$&()\[\]{}]|\\./gim;
-            function escape(source) {
-                return source.replace(symbols, str => str[0] === '\\' ? str : `\\${ str }`);
-            }
-            exports.escape = escape;
         },
         {
             '../combinator': 19,
