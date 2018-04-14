@@ -117,11 +117,7 @@ export namespace MarkdownParser {
     export interface BlockquoteParser extends
       // > abc
       Block<'blockquote'>,
-      Parser<HTMLQuoteElement, [
-        SourceParser.UnescapableSourceParser
-      ] | [
-        MarkdownParser
-      ]> {
+      Parser<HTMLQuoteElement, Parser<HTMLElement | Text, never[]>[]> {
     }
     export interface PretextParser extends
       // ```

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.49.0
+
+- Allow empty blockquote.
+- Fix nested blockquote.
+
 ## 0.48.0
 
 - Change markdown rendering flag of blockquote syntax.

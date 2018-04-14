@@ -1,79 +1,63 @@
 ﻿import { BlockquoteParser } from '../block';
-import { union, some, match } from '../../combinator';
+import { Parser, union, some, match, surround, transform, rewrite, build } from '../../combinator';
 import { block } from '../source/block';
-import { firstline } from '../source/line';
-import { unescsource } from '../source/unescapable';
+import { line } from '../source/line';
 import { parse } from '../parse';
-import { hasContent, stringify } from '../util';
+import { squash } from '../util';
+import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-const syntax = /^>+(?=\s|$)/;
+const syntax = /^!?(?=(>+)\s)/;
 
-export const blockquote: BlockquoteParser = block(match(/^!?(?=(>+)(?:\s|$))/, ([flag, indent], source) => {
-  const mode = flag ? 'markdown' : 'text';
-  const top = html('blockquote');
-  let bottom = indent.split('').slice(1)
-    .reduce(p =>
-      p.appendChild(html('blockquote'))
-    , top);
-  while (true) {
-    if (firstline(source).trim() === '') break;
-    const diff = (source.match(syntax) || [indent])[0].length - indent.length;
-    if (diff > 0) {
-      bottom = source.slice(0, diff).split('')
-        .reduce(p =>
-          p.appendChild(html('blockquote'))
-        , bottom);
-    }
-    if (diff < 0) {
-      bottom = source.slice(0, -diff).split('')
-        .reduce(p =>
-          p.parentElement! as HTMLQuoteElement
-        , bottom);
-    }
-    assert(indent.length + diff > 0);
-    indent = indent[0].repeat(indent.length + diff);
-    if (bottom.lastChild instanceof Text) {
-      mode === 'text'
-        ? void bottom.appendChild(html('br'))
-        : bottom.lastChild.textContent += '\n';
-    }
-    source = source.split(/[^\S\n]/, 1)[0] === indent
-      ? source.slice(indent.length + 1)
-      : source.startsWith(`${indent}\n`)
-        ? source.slice(indent.length)
-        : source;
-    const [cs = [], rest = source] = some<BlockquoteParser>(union([unescsource]), /^(?:\n|$)/)(source) || [];
-    const text = mode === 'text'
-      ? stringify(cs).replace(/ /g, String.fromCharCode(160))
-      : stringify(cs);
-    void bottom.appendChild(document.createTextNode(text));
-    source = rest.slice(1);
-  }
-  mode === 'markdown' && void expand(top);
-  return hasContent(top)
-    ? [[top], source]
-    : undefined;
-}));
+export const blockquote: BlockquoteParser = block(match(syntax, ([flag], source) =>
+  flag
+    ? parseMarkdown(source)
+    : parseText(source)));
 
-function expand(el: HTMLQuoteElement): void {
-  return void [...el.childNodes]
-    .reduce<string[]>((ss, node) => {
-      switch (true) {
-        case node instanceof Text:
-          const ref = node.nextSibling;
-          void node.remove();
-          void ss.push(node.textContent!);
-          if (ref instanceof Text) return ss;
-          void el.insertBefore(parse(ss.join('')), ref);
-          return [];
-        case node instanceof HTMLQuoteElement:
-          assert.deepStrictEqual(ss, []);
-          void expand(node as HTMLQuoteElement);
-          return [];
-        default:
-          assert.deepStrictEqual(ss, []);
-          return [];
-      }
-    }, []);
+const parseText: Parser<HTMLQuoteElement, Parser<HTMLElement | Text, any>[]> = transform(build(() =>
+  some(union([
+    rewrite(indent, s => parseText(unindent(s))),
+    line(s => [[document.createTextNode(unindent(s.split('\n')[0])), html('br')], ''], true, true),
+  ]))),
+  (ns, rest) => {
+    return [[html('blockquote', clean(ns))], rest];
+
+    function clean(ns: Node[]): Node[] {
+      return ns
+        .filter((n, i) => !(
+          n instanceof HTMLBRElement &&
+          (i === ns.length - 1 || ns[i + 1] instanceof HTMLQuoteElement)))
+        .map(n =>
+          n instanceof Text
+            ? document.createTextNode(n.textContent!.replace(/ /g, String.fromCharCode(160)))
+            : n);
+    }
+  });
+
+const parseMarkdown: Parser<HTMLQuoteElement, Parser<HTMLQuoteElement | Text, any>[]> = transform(build(() =>
+  some(union([
+    rewrite(indent, s => parseMarkdown(unindent(s))),
+    line(s => [[document.createTextNode(unindent(s))], ''], true, true),
+  ]))),
+  (ns, rest) => {
+    return [[html('blockquote', render(ns))], rest];
+
+    function render(ns: Node[]): Node[] {
+      return squash(ns)
+        .reduce<Node[]>((ns, node) =>
+          node instanceof Text
+            ? concat(ns, [...parse(node.textContent!).childNodes])
+            : concat(ns, [node])
+          , []);
+    }
+  });
+
+const indent = block(surround(
+  /^(?=>>+(?:\s|$))/,
+  some(line(s => [[s], ''], true, true), /^>(?:\s|$)/),
+  ''
+), false);
+
+function unindent(source: string): string {
+  return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
 }
