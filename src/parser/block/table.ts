@@ -6,11 +6,10 @@ import { inline } from '../inline';
 import { squash } from '../util';
 import { html } from 'typed-dom';
 
-const syntax = /^(\|[^\n]*)+?[^\S\n]*\n/;
 const align = /^:?-+:?$/;
 
 export const table: TableParser = block(source => {
-  if (!source.startsWith('|') || source.search(syntax) !== 0) return;
+  if (!source.startsWith('|') || source.search(/^(?:\|[^\n]*)+?[^\S\n]*\n/) !== 0) return;
   const table = html('table');
   const [headers = [], hrest = source] = parse(source) || [];
   if (hrest.length === source.length) return;

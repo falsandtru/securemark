@@ -7,12 +7,12 @@ import { squash } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
-const syntax = /^!?(?=(>+)\s)/;
-
-export const blockquote: BlockquoteParser = block(match(syntax, ([flag], source) =>
-  flag
-    ? parseMarkdown(source)
-    : parseText(source)));
+export const blockquote: BlockquoteParser = block(match(
+  /^!?(?=(>+)\s)/,
+  ([flag], source) =>
+    flag
+      ? parseMarkdown(source)
+      : parseText(source)));
 
 const parseText: Parser<HTMLQuoteElement, Parser<HTMLElement | Text, any>[]> = transform(build(() =>
   some(union([

@@ -3,7 +3,7 @@ import { match } from '../../combinator';
 import { block } from '../source/block';
 import { html } from 'typed-dom';
 
-const syntax = /^\$\$[^\S\n]*\n(?:[^\n]+\n)+?\$\$[^\S\n]*(?:\n|$)/;
-
-export const math: MathParser = block(match(syntax, ([whole], rest) =>
-  [[html('div', { class: 'math' }, whole.trim())], rest]));
+export const math: MathParser = block(match(
+  /^\$\$[^\S\n]*\n(?:[^\n]+\n)+?\$\$[^\S\n]*(?:\n|$)/,
+  ([whole], rest) =>
+    [[html('div', { class: 'math' }, whole.trim())], rest]));

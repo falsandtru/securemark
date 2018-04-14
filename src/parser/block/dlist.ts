@@ -9,12 +9,10 @@ import { compress } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-const syntax = /^~(?=\s|$)/;
-
 export const dlist: DListParser = block(transform(build(() =>
   some(inits<DListParser>([
     some(term),
-    some(desc, syntax)
+    some(desc)
   ]))),
   (es, rest) => [
     [html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)],
@@ -22,7 +20,7 @@ export const dlist: DListParser = block(transform(build(() =>
   ]));
 
 const term: DListParser.TermParser = line(transform(build(() =>
-  surround<DListParser.TermParser>(syntax, compress(trim(some(union([indexer, inline])))), '', false)),
+  surround<DListParser.TermParser>(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),
   (ns, rest) => {
     const dt = html('dt', ns);
     void defineIndex(dt);

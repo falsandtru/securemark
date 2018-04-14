@@ -6,12 +6,10 @@ import { hasTightText, stringify } from '../util';
 import { Cache } from 'spica/cache';
 import { html } from 'typed-dom';
 
-const closer = /^\$(?![$\d])/;
-
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
 export const math: MathParser = line(transform(
-  surround<MathParser>('$', some(union([escsource]), '$'), closer),
+  surround<MathParser>('$', some(union([escsource]), '$'), /^\$(?![$\d])/),
   (ns, rest) => {
     const el = html('span', { class: 'math' }, `$${stringify(ns)}$`);
     if (cache.has(el.textContent!)) return [[cache.get(el.textContent!)!.cloneNode(true)], rest];

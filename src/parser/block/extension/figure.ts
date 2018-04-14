@@ -11,46 +11,47 @@ import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 
-const syntax = /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/;
 const cache = new Map<string, RegExp>();
 
-export const figure: FigureParser = block(match(syntax, ([whole, bracket, note], rest) => {
-  const [[figlabel = undefined] = []] = label(note) || [];
-  if (!figlabel) return;
-  const closer = cache.has(bracket)
-    ? cache.get(bracket)!
-    : cache.set(bracket, new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)).get(bracket)!;
-  return transform(
-    surround(
-      syntax,
-      inits<FigureParser>([
-        transform(
+export const figure: FigureParser = block(match(
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/,
+  ([, bracket, note], rest) => {
+    const [[figlabel = undefined] = []] = label(note) || [];
+    if (!figlabel) return;
+    const closer = cache.has(bracket)
+      ? cache.get(bracket)!
+      : cache.set(bracket, new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)).get(bracket)!;
+    return transform(
+      surround(
+        '',
+        inits<FigureParser>([
+          transform(
+            rewrite(
+              union([pretext, some(contentline, closer)]),
+              union([table, pretext, math, line(trim(url), true, true)])),
+            ([content], rest) => {
+              assert(content);
+              if (content instanceof Text) return;
+              if (content instanceof HTMLAnchorElement && !content.querySelector('.media')) return;
+              return [[content], rest];
+            }),
           rewrite(
-            union([pretext, some(contentline, closer)]),
-            union([table, pretext, math, line(trim(url), true, true)])),
-          ([content], rest) => {
-            assert(content);
-            if (content instanceof Text) return;
-            if (content instanceof HTMLAnchorElement && !content.querySelector('.media')) return;
-            return [[content], rest];
-          }),
-        rewrite(
-          inits([emptyline, union([emptyline, some(contentline, closer)])]),
-          compress(trim(some(union([inline]))))),
-      ]),
-      closer),
-    ([content, ...caption], rest) => [
-      [
-        html('figure',
-          { class: figlabel.getAttribute('href')!.slice(1) },
-          [
-            content,
-            html('figcaption',
-              { 'data-type': figlabel.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0] },
-              [html('span', caption)])
-          ])
-      ],
-      rest
-    ])
-    (whole + rest);
-}));
+            inits([emptyline, union([emptyline, some(contentline, closer)])]),
+            compress(trim(some(union([inline]))))),
+        ]),
+        closer),
+      ([content, ...caption], rest) => [
+        [
+          html('figure',
+            { class: figlabel.getAttribute('href')!.slice(1) },
+            [
+              content,
+              html('figcaption',
+                { 'data-type': figlabel.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0] },
+                [html('span', caption)])
+            ])
+        ],
+        rest
+      ])
+      (rest);
+  }));
