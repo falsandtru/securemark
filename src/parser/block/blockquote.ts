@@ -1,5 +1,5 @@
 ﻿import { BlockquoteParser } from '../block';
-import { Parser, union, some, match, surround, transform, rewrite, build } from '../../combinator';
+import { Parser, union, some, surround, transform, rewrite, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { parse } from '../parse';
@@ -7,22 +7,20 @@ import { squash } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
-export const blockquote: BlockquoteParser = block(match(
-  /^!?(?=(>+)\s)/,
-  ([flag], source) =>
-    flag
-      ? parseMarkdown(source)
-      : parseText(source)));
+export const blockquote: BlockquoteParser = block(build(() => union([
+  surround(/^(?=(>+)\s)/, textquote, ''),
+  surround(/^!(?=(>+)\s)/, mdquote, ''),
+])));
 
-const parseText: Parser<HTMLQuoteElement, Parser<HTMLElement | Text, any>[]> = transform(build(() =>
+const textquote: Parser<HTMLQuoteElement, any> = transform(build(() =>
   some(union([
-    rewrite(indent, s => parseText(unindent(s))),
+    rewrite(indent, s => textquote(unindent(s))),
     line(s => [[text(unindent(s.split('\n')[0])), html('br')], ''], true, true),
   ]))),
   (ns, rest) => {
-    return [[html('blockquote', clean(ns))], rest];
+    return [[html('blockquote', adjust(ns))], rest];
 
-    function clean(ns: Node[]): Node[] {
+    function adjust(ns: Node[]): Node[] {
       return ns
         .filter((n, i) => !(
           n instanceof HTMLBRElement &&
@@ -34,15 +32,15 @@ const parseText: Parser<HTMLQuoteElement, Parser<HTMLElement | Text, any>[]> = t
     }
   });
 
-const parseMarkdown: Parser<HTMLQuoteElement, Parser<HTMLQuoteElement | Text, any>[]> = transform(build(() =>
+const mdquote: Parser<HTMLQuoteElement, any> = transform(build(() =>
   some(union([
-    rewrite(indent, s => parseMarkdown(unindent(s))),
+    rewrite(indent, s => mdquote(unindent(s))),
     line(s => [[text(unindent(s))], ''], true, true),
   ]))),
   (ns, rest) => {
-    return [[html('blockquote', render(ns))], rest];
+    return [[html('blockquote', expand(ns))], rest];
 
-    function render(ns: Node[]): Node[] {
+    function expand(ns: Node[]): Node[] {
       return squash(ns)
         .reduce<Node[]>((ns, node) =>
           node instanceof Text
