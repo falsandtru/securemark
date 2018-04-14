@@ -5,7 +5,7 @@ import { text } from '../source/text';
 import { escsource } from '../source/escapable';
 import { hasText, hasContent, stringify, squash } from '../util';
 import { sanitize } from '../string/url';
-import { html } from 'typed-dom';
+import { html, text as txt } from 'typed-dom';
 
 export const link: LinkParser = line(transform(build(() =>
   line<LinkParser>(surround('[', some(union([inline]), ']'), ']', false), false)),
@@ -47,11 +47,11 @@ export const link: LinkParser = line(transform(build(() =>
 export const parenthesis: LinkParser.ParenthesisParser = transform(build(() =>
   surround('(', some(union<LinkParser.ParenthesisParser>([parenthesis, escsource]), /^\)|^\s/), ')', false)),
   (ts, rest) =>
-    [[document.createTextNode('('), ...ts, document.createTextNode(')')], rest]);
+    [[txt('('), ...ts, txt(')')], rest]);
 
 const attribute: LinkParser.AttributeParser =
   surround(
     /^\s(?=\S)/,
     match(/^nofollow/, ([attr], rest) =>
-      [[document.createTextNode(`\n${attr}`)], rest]),
+      [[txt(`\n${attr}`)], rest]),
     /^(?=\))/);

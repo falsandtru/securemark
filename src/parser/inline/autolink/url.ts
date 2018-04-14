@@ -4,13 +4,14 @@ import { union, some, match, surround, transform } from '../../../combinator';
 import { line } from '../../source/line';
 import { escsource } from '../../source/escapable';
 import { link, parenthesis } from '../link';
+import { text } from 'typed-dom';
 
 const syntax = /^(?:!?h)?ttps?:\/\/\S/;
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
 
 export const url: AutolinkParser.UrlParser = union([
   match(/^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/, ([frag], rest) =>
-    [[document.createTextNode(frag)], rest]),
+    [[text(frag)], rest]),
   line(match(syntax, ([whole], source) => {
     source = whole + source;
     const flag = source.startsWith('!h');
@@ -34,6 +35,6 @@ export const url: AutolinkParser.UrlParser = union([
 ]);
 
 const ipv6 = transform(
-  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[document.createTextNode(addr)], rest]), ']'),
+  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),
   (ts, rest) =>
-    [[document.createTextNode('['), ...ts, document.createTextNode(']')], rest]);
+    [[text('['), ...ts, text(']')], rest]);

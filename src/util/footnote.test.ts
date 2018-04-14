@@ -1,6 +1,6 @@
 ﻿import { footnote } from './footnote';
 import { parse } from '../parser';
-import { html } from 'typed-dom';
+import { html, text } from 'typed-dom';
 
 describe('Unit: util/footnote', () => {
   describe('footnote', () => {
@@ -33,9 +33,9 @@ describe('Unit: util/footnote', () => {
         target.outerHTML,
         html('ol', [
           html('li', { id: 'footnote:1:a___b' }, [
-            document.createTextNode('a '),
+            text('a '),
             html('span', { class: 'newline' }, ' '),
-            document.createTextNode(' b'),
+            text(' b'),
             html('sup', [html('a', { href: '#annotation:1:a___b', rel: 'noopener' }, '[1]')])
           ]),
         ]).outerHTML);
@@ -54,9 +54,9 @@ describe('Unit: util/footnote', () => {
         target.outerHTML,
         html('ol', [
           html('li', { id: 'footnote:1:a___b' }, [
-            document.createTextNode('a '),
+            text('a '),
             html('span', { class: 'newline' }, ' '),
-            document.createTextNode(' b'),
+            text(' b'),
             html('sup', [html('a', { href: '#annotation:1:a___b', rel: 'noopener' }, '[1]')])
           ]),
         ]).outerHTML);
@@ -84,11 +84,11 @@ describe('Unit: util/footnote', () => {
         target.outerHTML,
         html('ol', [
           html('li', { id: 'footnote:1:1' }, [
-            document.createTextNode('1'),
+            text('1'),
             html('sup', [html('a', { href: '#annotation:1:1', rel: 'noopener' }, '[1]')])
           ]),
           html('li', { id: 'footnote:2:123456789012345...' }, [
-            document.createTextNode('12345678901234567890'),
+            text('12345678901234567890'),
             html('sup', [html('a', { href: '#annotation:2:123456789012345...', rel: 'noopener' }, '[2]')])
           ]),
         ]).outerHTML);
@@ -112,11 +112,11 @@ describe('Unit: util/footnote', () => {
         target.outerHTML,
         html('ol', [
           html('li', { id: 'footnote:1:1' }, [
-            document.createTextNode('1'),
+            text('1'),
             html('sup', [html('a', { href: '#annotation:1:1', rel: 'noopener' }, '[1]')])
           ]),
           html('li', { id: 'footnote:2:123456789012345...' }, [
-            document.createTextNode('12345678901234567890'),
+            text('12345678901234567890'),
             html('sup', [html('a', { href: '#annotation:2:123456789012345...', rel: 'noopener' }, '[2]')])
           ]),
         ]).outerHTML);

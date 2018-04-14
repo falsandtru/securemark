@@ -5,7 +5,7 @@ import { line } from '../source/line';
 import { parse } from '../parse';
 import { squash } from '../util';
 import { concat } from 'spica/concat';
-import { html } from 'typed-dom';
+import { html, text } from 'typed-dom';
 
 const syntax = /^!?(?=(>+)\s)/;
 
@@ -17,7 +17,7 @@ export const blockquote: BlockquoteParser = block(match(syntax, ([flag], source)
 const parseText: Parser<HTMLQuoteElement, Parser<HTMLElement | Text, any>[]> = transform(build(() =>
   some(union([
     rewrite(indent, s => parseText(unindent(s))),
-    line(s => [[document.createTextNode(unindent(s.split('\n')[0])), html('br')], ''], true, true),
+    line(s => [[text(unindent(s.split('\n')[0])), html('br')], ''], true, true),
   ]))),
   (ns, rest) => {
     return [[html('blockquote', clean(ns))], rest];
@@ -29,7 +29,7 @@ const parseText: Parser<HTMLQuoteElement, Parser<HTMLElement | Text, any>[]> = t
           (i === ns.length - 1 || ns[i + 1] instanceof HTMLQuoteElement)))
         .map(n =>
           n instanceof Text
-            ? document.createTextNode(n.textContent!.replace(/ /g, String.fromCharCode(160)))
+            ? text(n.textContent!.replace(/ /g, String.fromCharCode(160)))
             : n);
     }
   });
@@ -37,7 +37,7 @@ const parseText: Parser<HTMLQuoteElement, Parser<HTMLElement | Text, any>[]> = t
 const parseMarkdown: Parser<HTMLQuoteElement, Parser<HTMLQuoteElement | Text, any>[]> = transform(build(() =>
   some(union([
     rewrite(indent, s => parseMarkdown(unindent(s))),
-    line(s => [[document.createTextNode(unindent(s))], ''], true, true),
+    line(s => [[text(unindent(s))], ''], true, true),
   ]))),
   (ns, rest) => {
     return [[html('blockquote', render(ns))], rest];
