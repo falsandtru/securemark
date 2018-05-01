@@ -7,7 +7,6 @@ import { inline } from '../inline';
 import { compress } from '../util';
 import { html } from 'typed-dom';
 
-const closer = /^(?:\\?\n)?$/;
 const cache = new Map<string, RegExp>();
 
 export const olist: OListParser = block(match(
@@ -19,7 +18,7 @@ export const olist: OListParser = block(match(
     return transform(
       some(transform(
         inits<OListParser>([
-          line(surround(opener, compress(trim(some(inline, closer))), closer, false), true, true),
+          line(surround(opener, compress(trim(some(inline))), '', false), true, true),
           indent(union([ulist, olist_]))
         ]),
         (ns, rest) =>
