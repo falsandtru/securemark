@@ -2,6 +2,7 @@
 import { html } from 'typed-dom';
 
 describe('Unit: renderer/render/media', () => {
+
   function image(url: string) {
     return html('img', { 'data-src': url });
   }
@@ -53,14 +54,14 @@ describe('Unit: renderer/render/media', () => {
       media(image('http://example.pdf'), {
         pdf: () => done(false) || html('div')
       });
-      assert(media(image('http://example.com/example.pdf')).querySelector('object')!.getAttribute('type') === 'application/pdf');
-      assert(media(image('http://example.com/example.pdf')).querySelector('object')!.typeMustMatch === true);
+      assert(media(image('http://example.com/example.pdf'), {})!.querySelector('object')!.getAttribute('type') === 'application/pdf');
+      assert(media(image('http://example.com/example.pdf'), {})!.querySelector('object')!.typeMustMatch === true);
       done();
     });
 
     it('image', () => {
-      assert(media(image('/')).getAttribute('src') === '/');
-      assert(media(image('/')).getAttribute('alt') === '');
+      assert(media(image('/'), {})!.getAttribute('src') === new URL('/', location.href).href);
+      assert(media(image('/'), {})!.getAttribute('alt') === '');
     });
 
   });

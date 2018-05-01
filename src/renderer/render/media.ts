@@ -8,30 +8,52 @@ import { video } from './media/video';
 import { audio } from './media/audio';
 import { image } from './media/image';
 
-export function media(target: HTMLImageElement, opts: RenderingOptions['media'] = {}): HTMLElement {
+export function media(target: HTMLImageElement, opts: NonNullable<RenderingOptions['media']>): HTMLElement | undefined {
   assert(target.matches(':not([src])[data-src]'));
-  const url = target.getAttribute('data-src')!;
+  opts = { twitter, youtube, gist, slideshare, pdf, video, audio, image, ...opts };
+  const url = new URL(target.getAttribute('data-src')!, window.location.href);
   const alt = target.getAttribute('alt') || '';
   const el = (() => {
-    switch (true) {
-      case url.startsWith('https://twitter.com/'):
-        return (opts.twitter || twitter)(url);
-      case url.startsWith('https://www.youtube.com/') || url.startsWith('https://youtu.be/'):
-        return (opts.youtube || youtube)(url);
-      case url.startsWith('https://gist.github.com/'):
-        return (opts.gist || gist)(url);
-      case url.startsWith('https://www.slideshare.net/'):
-        return (opts.slideshare || slideshare)(url);
-      case url.split('/').length > 3 && ['.pdf'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-        return (opts.pdf || pdf)(url);
-      case url.split('/').length > 3 && ['.webm', '.ogv'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-        return (opts.video || video)(url, alt);
-      case url.split('/').length > 3 && ['.oga', '.ogg'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-        return (opts.audio || audio)(url, alt);
-      default:
-        return (opts.image || image)(url, alt);
+    switch (`${url.protocol}//${url.host}`) {
+      case 'https://twitter.com':
+        return opts.twitter
+          ? opts.twitter(url.href)
+          : undefined;
+      case 'https://www.youtube.com':
+      case 'https://youtu.be':
+        return opts.youtube
+          ? opts.youtube(url.href)
+          : undefined;
+      case 'https://gist.github.com':
+        return opts.gist
+          ? opts.gist(url.href)
+          : undefined;
+      case 'https://www.slideshare.net':
+        return opts.slideshare
+          ? opts.slideshare(url.href)
+          : undefined;
     }
+    switch (url.pathname.split(/(?=\.)/).pop()!) {
+      case '.pdf':
+        return opts.pdf
+          ? opts.pdf(url.href)
+          : undefined;
+      case '.webm':
+      case '.ogv':
+        return opts.video
+          ? opts.video(url.href, alt)
+          : undefined;
+      case '.oga':
+      case '.ogg':
+        return opts.audio
+          ? opts.audio(url.href, alt)
+          : undefined;
+    }
+    return opts.image
+      ? opts.image(url.href, alt)
+      : undefined;
   })();
+  if (!el) return;
   void el.classList.add('media');
   return el;
 }
