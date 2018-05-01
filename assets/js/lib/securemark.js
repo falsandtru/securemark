@@ -430,9 +430,9 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const uuid_1 = require('spica/uuid');
             const sqid_1 = require('spica/sqid');
-            const id = uuid_1.uuid().split('-').slice(-1).join('-');
+            const id = uuid_1.uuid().split('-').pop();
             function uid() {
-                return `${ id }-${ String(Number(sqid_1.sqid())).padStart(6, '0') }`;
+                return `id-${ id }-${ String(+sqid_1.sqid()).padStart(6, '0') }`;
             }
             exports.uid = uid;
         },
@@ -512,15 +512,17 @@ require = function () {
                 get id() {
                     return this.id_ = this.id_ || this.element_.id.trim() || identity_1.uid();
                 }
+                get query() {
+                    return this.id === this.element_.id.trim() ? `#${ this.id }` : `.${ this.id }`;
+                }
                 scope(children) {
                     const syntax = /^(\s*)\$scope(?!\w)/gm;
-                    const id = this.id;
-                    const query = id === this.element_.id.trim() ? `#${ id }` : `.${ id }`;
-                    return void children.forEach(child => child.element instanceof HTMLStyleElement && void parse(child.element));
-                    function parse(style) {
+                    return void children.forEach(child => child.element instanceof HTMLStyleElement && void parse(child.element, this.query));
+                    function parse(style, query) {
                         if (style.innerHTML.search(syntax) === -1)
                             return;
                         style.innerHTML = style.innerHTML.replace(syntax, (_, indent) => `${ indent }${ query }`);
+                        const id = query.slice(1);
                         switch (query[0]) {
                         case '.':
                             if (!(style.getAttribute('class') || '').split(' ').includes(id))
