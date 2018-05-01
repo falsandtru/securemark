@@ -1,25 +1,47 @@
 ﻿import { text } from '../parser/block/indexer';
+import { concat } from 'spica/concat';
 import { TypedHTML, html } from 'typed-dom';
 
 const annotation = new WeakMap<HTMLElement, Node[]>();
 const reference = new WeakMap<HTMLElement, HTMLElement>();
 
 export function footnote(source: DocumentFragment | HTMLElement, target: HTMLOListElement): void {
+  const footnotes = new Map<string, HTMLLIElement>();
   return void TypedHTML.ol([...source.querySelectorAll<HTMLElement>('.annotation')]
-    .map((el, i) => {
+    .reduce<HTMLLIElement[]>((acc, el, i) => {
       !annotation.has(el) && void annotation.set(el, [...el.childNodes]);
       reference.has(el) && void reference.get(el)!.remove();
       void defineTitle(el);
+      const title = el.getAttribute('title')!;
       void defineId(el, i + 1);
-      const id = `footnote:${i + 1}:${description(el.getAttribute('title')!)}`;
-      void reference.set(el, el.appendChild(html('a', { href: `#${id}`, rel: 'noopener' }, `[${i + 1}]`)));
-      return TypedHTML.li(() => html('li', { id }, [
-        ...annotation.get(el)!,
-        html('sup', [
-          html('a', { href: `#${el.id}`, rel: 'noopener' }, el.lastChild!.textContent!),
-        ]),
-      ]));
-    }), () => target).element;
+      const fn = footnotes.get(title);
+      const index = fn
+        ? +fn.getAttribute('id')!.match(/\d+/)![0]
+        : acc.length + 1;
+      const id = fn
+        ? fn.getAttribute('id')!
+        : `footnote:${index}:${description(title)}`;
+      assert(id.startsWith('footnote:'));
+      void reference.set(el, el.appendChild(html('a', { href: `#${id}`, rel: 'noopener' }, `[${index}]`)));
+      return fn
+        ? (() => {
+            void fn.lastChild!
+              .appendChild(html('a', { href: `#${el.id}`, rel: 'noopener' }, `[${i + 1}]`));
+            void [...annotation.get(el)!]
+              .forEach(node =>
+                node.parentNode === el &&
+                void el.removeChild(node));
+            return acc;
+          })()
+        : concat(acc, [html('li', { id }, [
+            ...annotation.get(el)!,
+            html('sup', [
+              html('a', { href: `#${el.id}`, rel: 'noopener' }, `[${i + 1}]`),
+            ]),
+          ])].map(el => void footnotes.set(title, el) || el));
+    }, [])
+    .map(el => TypedHTML.li(() => el)),
+    () => target).element;
 }
 
 function defineTitle(target: HTMLElement): void {

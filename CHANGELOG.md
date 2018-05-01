@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.50.0
+
+- Unify the same footnotes.
+
 ## 0.49.0
 
 - Allow empty blockquote.
