@@ -1572,12 +1572,11 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            const closer = /^(?:\\?\n)?$/;
             const cache = new Map();
             exports.olist = block_1.block(combinator_1.match(/^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/, ([whole, index], rest) => {
                 const opener = cache.has(index) ? cache.get(index) : cache.set(index, new RegExp(`^${ pattern(index) }(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index);
                 return combinator_1.transform(combinator_1.some(combinator_1.transform(combinator_1.inits([
-                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline, closer))), closer, false), true, true),
+                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), true, true),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         exports.olist_
@@ -1827,12 +1826,11 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            const closer = /^(?:\\?\n)?$/;
             const cache = new Map();
             exports.ulist = block_1.block(combinator_1.match(/^([-+*])(?=\s|$)/, ([whole, flag], rest) => {
                 const opener = cache.has(flag) ? cache.get(flag) : cache.set(flag, new RegExp(`^\\${ flag }(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag);
                 return combinator_1.transform(combinator_1.some(combinator_1.transform(combinator_1.inits([
-                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline, closer))), closer, false), true, true),
+                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), true, true),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist,
                         olist_1.olist_
@@ -2911,20 +2909,27 @@ require = function () {
             const code_1 = require('./render/code');
             const math_1 = require('./render/math');
             function render(target, opts = {}) {
+                opts = Object.assign({
+                    code: code_1.code,
+                    math: math_1.math,
+                    media: {}
+                }, opts);
                 void [
                     target,
                     ...target.querySelectorAll('img, pre, .math')
                 ].forEach(target => void new Promise(() => {
                     switch (true) {
                     case target.matches('img:not([src])[data-src]'): {
-                            const el = media_1.media(target, opts.media);
+                            const el = opts.media && media_1.media(target, opts.media);
+                            if (!el)
+                                return;
                             const scope = el instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
-                    case target.matches('pre') && target.children.length === 0:
-                        return void (opts.code || code_1.code)(target);
-                    case target.matches('.math') && target.children.length === 0:
-                        return void (opts.math || math_1.math)(target);
+                    case target.matches('pre'):
+                        return target.children.length === 0 && opts.code ? void opts.code(target) : void 0;
+                    case target.matches('.math'):
+                        return target.children.length === 0 && opts.math ? void opts.math(target) : void 0;
                     default:
                         return;
                     }
@@ -2991,35 +2996,45 @@ require = function () {
             const video_1 = require('./media/video');
             const audio_1 = require('./media/audio');
             const image_1 = require('./media/image');
-            function media(target, opts = {}) {
-                const url = target.getAttribute('data-src');
+            function media(target, opts) {
+                opts = Object.assign({
+                    twitter: twitter_1.twitter,
+                    youtube: youtube_1.youtube,
+                    gist: gist_1.gist,
+                    slideshare: slideshare_1.slideshare,
+                    pdf: pdf_1.pdf,
+                    video: video_1.video,
+                    audio: audio_1.audio,
+                    image: image_1.image
+                }, opts);
+                const url = new URL(target.getAttribute('data-src'), window.location.href);
                 const alt = target.getAttribute('alt') || '';
                 const el = (() => {
-                    switch (true) {
-                    case url.startsWith('https://twitter.com/'):
-                        return (opts.twitter || twitter_1.twitter)(url);
-                    case url.startsWith('https://www.youtube.com/') || url.startsWith('https://youtu.be/'):
-                        return (opts.youtube || youtube_1.youtube)(url);
-                    case url.startsWith('https://gist.github.com/'):
-                        return (opts.gist || gist_1.gist)(url);
-                    case url.startsWith('https://www.slideshare.net/'):
-                        return (opts.slideshare || slideshare_1.slideshare)(url);
-                    case url.split('/').length > 3 && ['.pdf'].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-                        return (opts.pdf || pdf_1.pdf)(url);
-                    case url.split('/').length > 3 && [
-                            '.webm',
-                            '.ogv'
-                        ].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-                        return (opts.video || video_1.video)(url, alt);
-                    case url.split('/').length > 3 && [
-                            '.oga',
-                            '.ogg'
-                        ].some(ext => url.split(/[?#]/, 1)[0].toLowerCase().endsWith(ext)):
-                        return (opts.audio || audio_1.audio)(url, alt);
-                    default:
-                        return (opts.image || image_1.image)(url, alt);
+                    switch (`${ url.protocol }//${ url.host }`) {
+                    case 'https://twitter.com':
+                        return opts.twitter ? opts.twitter(url.href) : undefined;
+                    case 'https://www.youtube.com':
+                    case 'https://youtu.be':
+                        return opts.youtube ? opts.youtube(url.href) : undefined;
+                    case 'https://gist.github.com':
+                        return opts.gist ? opts.gist(url.href) : undefined;
+                    case 'https://www.slideshare.net':
+                        return opts.slideshare ? opts.slideshare(url.href) : undefined;
                     }
+                    switch (url.pathname.split(/(?=\.)/).pop()) {
+                    case '.pdf':
+                        return opts.pdf ? opts.pdf(url.href) : undefined;
+                    case '.webm':
+                    case '.ogv':
+                        return opts.video ? opts.video(url.href, alt) : undefined;
+                    case '.oga':
+                    case '.ogg':
+                        return opts.audio ? opts.audio(url.href, alt) : undefined;
+                    }
+                    return opts.image ? opts.image(url.href, alt) : undefined;
                 })();
+                if (!el)
+                    return;
                 void el.classList.add('media');
                 return el;
             }
@@ -3372,28 +3387,40 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const indexer_1 = require('../parser/block/indexer');
+            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             const annotation = new WeakMap();
             const reference = new WeakMap();
             function footnote(source, target) {
-                return void typed_dom_1.TypedHTML.ol([...source.querySelectorAll('.annotation')].map((el, i) => {
+                const footnotes = new Map();
+                return void typed_dom_1.TypedHTML.ol([...source.querySelectorAll('.annotation')].reduce((acc, el, i) => {
                     !annotation.has(el) && void annotation.set(el, [...el.childNodes]);
                     reference.has(el) && void reference.get(el).remove();
                     void defineTitle(el);
+                    const title = el.getAttribute('title');
                     void defineId(el, i + 1);
-                    const id = `footnote:${ i + 1 }:${ description(el.getAttribute('title')) }`;
+                    const fn = footnotes.get(title);
+                    const index = fn ? +fn.getAttribute('id').match(/\d+/)[0] : acc.length + 1;
+                    const id = fn ? fn.getAttribute('id') : `footnote:${ index }:${ description(title) }`;
                     void reference.set(el, el.appendChild(typed_dom_1.html('a', {
                         href: `#${ id }`,
                         rel: 'noopener'
-                    }, `[${ i + 1 }]`)));
-                    return typed_dom_1.TypedHTML.li(() => typed_dom_1.html('li', { id }, [
-                        ...annotation.get(el),
-                        typed_dom_1.html('sup', [typed_dom_1.html('a', {
-                                href: `#${ el.id }`,
-                                rel: 'noopener'
-                            }, el.lastChild.textContent)])
-                    ]));
-                }), () => target).element;
+                    }, `[${ index }]`)));
+                    return fn ? (() => {
+                        void fn.lastChild.appendChild(typed_dom_1.html('a', {
+                            href: `#${ el.id }`,
+                            rel: 'noopener'
+                        }, `[${ i + 1 }]`));
+                        void [...annotation.get(el)].forEach(node => node.parentNode === el && void el.removeChild(node));
+                        return acc;
+                    })() : concat_1.concat(acc, [typed_dom_1.html('li', { id }, [
+                            ...annotation.get(el),
+                            typed_dom_1.html('sup', [typed_dom_1.html('a', {
+                                    href: `#${ el.id }`,
+                                    rel: 'noopener'
+                                }, `[${ i + 1 }]`)])
+                        ])].map(el => void footnotes.set(title, el) || el));
+                }, []).map(el => typed_dom_1.TypedHTML.li(() => el)), () => target).element;
             }
             exports.footnote = footnote;
             function defineTitle(target) {
@@ -3413,6 +3440,7 @@ require = function () {
         },
         {
             '../parser/block/indexer': 43,
+            'spica/concat': 7,
             'typed-dom': 12
         }
     ],
