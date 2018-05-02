@@ -11,13 +11,20 @@ export const link: LinkParser = line(transform(build(() =>
   line<LinkParser>(surround('[', some(union([inline]), ']'), ']', false), false)),
   (ns, rest) => {
     const children = squash(ns, document.createDocumentFragment());
-    if (children.querySelector('a, .annotation')) return;
+    if (children.querySelector('.annotation')) return;
     if (children.querySelector('.media')) {
-      if (children.childNodes.length !== 1 || !children.firstElementChild || !children.firstElementChild.matches('.media')) return;
+      void children.querySelectorAll('a > .media')
+        .forEach(el =>
+          void el.parentNode!.parentNode!.replaceChild(el, el.parentNode!))
+      if (children.childNodes.length !== 1) return;
+      if (!children.firstElementChild!.matches('.media')) return;
+      assert(!children.querySelector('a'));
     }
     else {
       if (children.childNodes.length > 0 && !hasText(children)) return;
+      if (children.querySelector('a')) return;
     }
+    assert(children.querySelector('a > .media') || !children.querySelector('a'));
     return transform(
       line<LinkParser>(surround('(', subsequence([some(union([parenthesis, text]), /^\)|^\s/), attribute]), ')', false), false),
       (ns, rest) => {
@@ -34,10 +41,10 @@ export const link: LinkParser = line(transform(build(() =>
             ? children.childNodes
             : sanitize(INSECURE_URL || window.location.href)
                 .replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
+        assert(hasContent(el));
         if (window.location.origin !== el.origin || el.querySelector('.media')) {
           void el.setAttribute('target', '_blank');
         }
-        assert(hasContent(el));
         return [[el], rest];
       })
       (rest);

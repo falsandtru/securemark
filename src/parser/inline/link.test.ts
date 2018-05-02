@@ -29,6 +29,9 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[http://host](http://evil)')), undefined);
       assert.deepStrictEqual(inspect(parser('[ http://host ](http://evil)')), undefined);
       assert.deepStrictEqual(inspect(parser('[_http://host](http://evil)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[https://host](http://host)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[](http://host).com](http://host)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[](http://host/a)b](http://host/ab)')), undefined);
     });
 
     it('invalid', () => {
@@ -85,8 +88,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[[](#)](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[((#))](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[<wbr>](#)')), undefined);
-      assert.deepStrictEqual(inspect(parser('[http://host](#)')), undefined);
       assert.deepStrictEqual(inspect(parser('[http://host](http://host)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[!http://host](#)')), [['<a href="#" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[\\[](#)')), [['<a href="#" rel="noopener">[</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[\\]](#)')), [['<a href="#" rel="noopener">]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[](#\\()')), [['<a href="#(" rel="noopener">#(</a>'], '']);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.51.0
+
+- Allow image link in link.
+
 ## 0.50.0
 
 - Unify the same footnotes.
