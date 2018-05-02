@@ -2368,13 +2368,18 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.link = line_1.line(combinator_1.transform(combinator_1.build(() => line_1.line(combinator_1.surround('[', combinator_1.some(combinator_1.union([inline_1.inline]), ']'), ']', false), false)), (ns, rest) => {
                 const children = util_1.squash(ns, document.createDocumentFragment());
-                if (children.querySelector('a, .annotation'))
+                if (children.querySelector('.annotation'))
                     return;
                 if (children.querySelector('.media')) {
-                    if (children.childNodes.length !== 1 || !children.firstElementChild || !children.firstElementChild.matches('.media'))
+                    void children.querySelectorAll('a > .media').forEach(el => void el.parentNode.parentNode.replaceChild(el, el.parentNode));
+                    if (children.childNodes.length !== 1)
+                        return;
+                    if (!children.firstElementChild.matches('.media'))
                         return;
                 } else {
                     if (children.childNodes.length > 0 && !util_1.hasText(children))
+                        return;
+                    if (children.querySelector('a'))
                         return;
                 }
                 return combinator_1.transform(line_1.line(combinator_1.surround('(', combinator_1.subsequence([
