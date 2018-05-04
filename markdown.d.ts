@@ -119,9 +119,26 @@ export namespace MarkdownParser {
     export namespace TableParser {
       export interface RowParser extends
         Block<'table/row'>,
-        Parser<HTMLElement, [
+        Parser<HTMLTableRowElement, [
+          CellParser
+        ]> {
+      }
+      export interface CellParser extends
+        Block<'table/cell'>,
+        Parser<HTMLTableDataCellElement, [
+          DataParser |
+          AlignParser
+        ]> {
+      }
+      export interface DataParser extends
+        Block<'table/data'>,
+        Parser<HTMLElement | Text, [
           InlineParser
         ]> {
+      }
+      export interface AlignParser extends
+        Block<'table/align'>,
+        Parser<Text, Parser<Text, never[]>[]> {
       }
     }
     export interface BlockquoteParser extends

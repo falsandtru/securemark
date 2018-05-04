@@ -1,6 +1,6 @@
 ﻿import { Parser, Result } from './parser';
 
-export function match<T, S extends Parser<any, any>[] = never[]>(pattern: RegExp, f: (matched: string[], source: string) => Result<T, S> | [T[], string]): Parser<T, S> {
+export function match<T, S extends Parser<any, any>[] = never[]>(pattern: RegExp, f: (matched: string[], rest: string) => Result<T, S> | [T[], string]): Parser<T, S> {
   return source => {
     const result = source.match(pattern);
     if (!result) return;
