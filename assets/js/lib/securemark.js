@@ -1751,62 +1751,54 @@ require = function () {
             const line_1 = require('../source/line');
             const inline_1 = require('../inline');
             const util_1 = require('../util');
+            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            const align = /^:?-+:?$/;
-            exports.table = block_1.block(source => {
-                if (!source.startsWith('|') || source.search(/^(?:\|[^\n]*)+?[^\S\n]*\n/) !== 0)
-                    return;
-                const table = typed_dom_1.html('table');
-                const [headers = [], hrest = source] = parse(source) || [];
-                if (hrest.length === source.length)
-                    return;
-                source = hrest;
-                const [aligns_ = [], arest = source] = parse(source) || [];
-                if (arest.length === source.length)
-                    return;
-                source = arest;
-                if (aligns_.some(e => !e.textContent || e.textContent.search(align) !== 0))
-                    return;
-                const aligns = headers.map((_, i) => (aligns_[i] || aligns_[aligns_.length - 1]).textContent).map(s => s[0] === ':' ? s[s.length - 1] === ':' ? 'center' : 'left' : s[s.length - 1] === ':' ? 'right' : '');
-                void table.appendChild(typed_dom_1.html('thead'));
-                void append(headers, table, headers.map((_, i) => i > 1 ? aligns[1] : aligns[i] === 'right' ? 'center' : aligns[i]));
-                void table.appendChild(typed_dom_1.html('tbody'));
-                while (true) {
-                    const line = line_1.firstline(source);
-                    if (line.trim() === '')
-                        break;
-                    const [cols = [], rest = line] = parse(line) || [];
-                    if (rest.length !== 0)
-                        return;
-                    void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
-                    source = source.slice(line.length + 1);
-                }
-                return table.querySelector('tbody > tr') ? [
-                    [table],
-                    source
-                ] : undefined;
-            });
-            function append(cols, table, aligns) {
-                return void cols.reduce((tr, col, i) => (void tr.appendChild(typed_dom_1.html('td', aligns[i] ? { style: `text-align: ${ aligns[i] };` } : {}, [col])), tr), table.lastChild.appendChild(typed_dom_1.html('tr')));
-            }
-            const rowseparator = /^\||^[^\S\n]*(?=\n|$)/;
-            const rowend = /^\|?[^\S\n]*(?=\n|$)/;
-            function parse(row) {
-                const cols = [];
-                while (true) {
-                    if (row[0] !== '|')
-                        return;
-                    const [, rest = row.slice(1)] = combinator_1.some(inline_1.inline, rowseparator)(row.slice(1)) || [];
-                    const [col = []] = combinator_1.trim(combinator_1.some(inline_1.inline))(row.slice(1, row.length - rest.length)) || [];
-                    row = rest;
-                    void cols.push(util_1.squash(col, document.createDocumentFragment()));
-                    if (row.search(rowend) === 0)
+            exports.table = block_1.block(combinator_1.transform(combinator_1.build(() => combinator_1.sequence([
+                row,
+                align,
+                combinator_1.some(row)
+            ])), ([head, as, ...rows], rest) => {
+                const aligns = [...as.children].map(el => el.innerHTML);
+                void align(head, [
+                    aligns[0] || '',
+                    aligns[1] || aligns[0] || ''
+                ]);
+                void rows.forEach(row => void align(row, aligns));
+                return [
+                    [typed_dom_1.html('table', [
+                            typed_dom_1.html('thead', [head]),
+                            typed_dom_1.html('tbody', rows)
+                        ])],
+                    rest
+                ];
+                function align(row, aligns) {
+                    aligns = aligns.concat(Array(Math.max(row.children.length - aligns.length, 0)).fill(aligns[aligns.length - 1] || ''));
+                    return void [...row.children].forEach((col, i) => aligns[i] && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
+                    function sanitize(align) {
                         return [
-                            cols,
-                            row.slice(line_1.firstline(row).length + 1)
-                        ];
+                            'left',
+                            'center',
+                            'right'
+                        ].includes(align) ? align : '';
+                    }
                 }
-            }
+            }));
+            const align = combinator_1.transform(combinator_1.build(() => row), ([row], rest) => {
+                return [...row.children].every(cell => !!cell.innerHTML.match(/^:?-+:?$/)) ? [
+                    [aligns()],
+                    rest
+                ] : undefined;
+                function aligns() {
+                    return typed_dom_1.html('tr', [...row.children].reduce((as, el) => el.innerHTML.startsWith(':') ? el.innerHTML.endsWith(':') ? concat_1.concat(as, ['center']) : concat_1.concat(as, ['left']) : el.innerHTML.endsWith(':') ? concat_1.concat(as, ['right']) : concat_1.concat(as, [as[as.length - 1] || '']), []).map(s => typed_dom_1.html('td', s)));
+                }
+            });
+            const row = combinator_1.transform(line_1.line(combinator_1.trim(combinator_1.surround('|', combinator_1.some(combinator_1.transform(combinator_1.surround(/^\s*/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), /^\s*\|/)), /^\s*\|?/, false), (ns, rest) => [
+                [typed_dom_1.html('td', ns)],
+                rest
+            ])), '', false)), true, true), (es, rest) => [
+                [typed_dom_1.html('tr', es)],
+                rest
+            ]);
         },
         {
             '../../combinator': 19,
@@ -1814,6 +1806,7 @@ require = function () {
             '../source/block': 76,
             '../source/line': 79,
             '../util': 83,
+            'spica/concat': 7,
             'typed-dom': 12
         }
     ],
