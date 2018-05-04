@@ -1754,11 +1754,11 @@ require = function () {
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.table = block_1.block(combinator_1.transform(combinator_1.build(() => combinator_1.sequence([
-                row,
-                align,
-                combinator_1.some(row)
+                row(cell(data)),
+                row(cell(align)),
+                combinator_1.some(row(cell(data)))
             ])), ([head, as, ...rows], rest) => {
-                const aligns = [...as.children].map(el => el.innerHTML);
+                const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc[acc.length - 1] || '']), []);
                 void align(head, [
                     aligns[0] || '',
                     aligns[1] || aligns[0] || ''
@@ -1774,31 +1774,45 @@ require = function () {
                 function align(row, aligns) {
                     aligns = aligns.concat(Array(Math.max(row.children.length - aligns.length, 0)).fill(aligns[aligns.length - 1] || ''));
                     return void [...row.children].forEach((col, i) => aligns[i] && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
-                    function sanitize(align) {
-                        return [
-                            'left',
-                            'center',
-                            'right'
-                        ].includes(align) ? align : '';
-                    }
+                }
+                function sanitize(align) {
+                    return [
+                        'left',
+                        'center',
+                        'right'
+                    ].includes(align) ? align : '';
                 }
             }));
-            const align = combinator_1.transform(combinator_1.build(() => row), ([row], rest) => {
-                return [...row.children].every(cell => !!cell.innerHTML.match(/^:?-+:?$/)) ? [
-                    [aligns()],
-                    rest
-                ] : undefined;
-                function aligns() {
-                    return typed_dom_1.html('tr', [...row.children].reduce((as, el) => el.innerHTML.startsWith(':') ? el.innerHTML.endsWith(':') ? concat_1.concat(as, ['center']) : concat_1.concat(as, ['left']) : el.innerHTML.endsWith(':') ? concat_1.concat(as, ['right']) : concat_1.concat(as, [as[as.length - 1] || '']), []).map(s => typed_dom_1.html('td', s)));
-                }
-            });
-            const row = combinator_1.transform(line_1.line(combinator_1.trim(combinator_1.surround('|', combinator_1.some(combinator_1.transform(combinator_1.surround(/^\s*/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), /^\s*\|/)), /^\s*\|?/, false), (ns, rest) => [
-                [typed_dom_1.html('td', ns)],
-                rest
-            ])), '', false)), true, true), (es, rest) => [
+            const row = parser => combinator_1.transform(line_1.line(combinator_1.surround(/(?=^\|)/, combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser]), /^\|?$/), /^\|?$/)), ''), true, true), (es, rest) => [
                 [typed_dom_1.html('tr', es)],
                 rest
             ]);
+            const cell = parser => combinator_1.transform(combinator_1.union([parser]), (ns, rest) => [
+                [typed_dom_1.html('td', ns)],
+                rest
+            ]);
+            const data = combinator_1.build(() => combinator_1.transform(combinator_1.surround(/^\|\s*/, util_1.compress(combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)])), /^\s*/, false), (ns, rest) => [
+                ns.length === 0 ? [typed_dom_1.text('')] : ns,
+                rest
+            ]));
+            const align = combinator_1.surround('|', combinator_1.union([
+                combinator_1.match(/^:-+:/, (_, rest) => [
+                    [typed_dom_1.text('center')],
+                    rest
+                ]),
+                combinator_1.match(/^:-+/, (_, rest) => [
+                    [typed_dom_1.text('left')],
+                    rest
+                ]),
+                combinator_1.match(/^-+:/, (_, rest) => [
+                    [typed_dom_1.text('right')],
+                    rest
+                ]),
+                combinator_1.match(/^-+/, (_, rest) => [
+                    [typed_dom_1.text('')],
+                    rest
+                ])
+            ]), '');
         },
         {
             '../../combinator': 19,
