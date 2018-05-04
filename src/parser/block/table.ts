@@ -1,73 +1,73 @@
 ﻿import { TableParser } from '../block';
-import { some, trim } from '../../combinator';
+import { union, sequence, some, surround, transform, trim, build } from '../../combinator';
 import { block } from '../source/block';
-import { firstline } from '../source/line';
+import { line } from '../source/line';
 import { inline } from '../inline';
-import { squash } from '../util';
+import { compress } from '../util';
+import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-const align = /^:?-+:?$/;
+export const table: TableParser = block(transform(build(() =>
+  sequence([
+    row,
+    align,
+    some(row),
+  ])),
+  ([head, as, ...rows], rest) => {
+    const aligns = [...as.children].map(el => el.innerHTML);
+    void align(head, [aligns[0] || '', aligns[1] || aligns[0] || '']);
+    void rows
+      .forEach(row => void align(row, aligns));
+    return [[html('table', [html('thead', [head]), html('tbody', rows)])], rest];
 
-export const table: TableParser = block(source => {
-  if (!source.startsWith('|') || source.search(/^(?:\|[^\n]*)+?[^\S\n]*\n/) !== 0) return;
-  const table = html('table');
-  const [headers = [], hrest = source] = parse(source) || [];
-  if (hrest.length === source.length) return;
-  source = hrest;
-  const [aligns_ = [], arest = source] = parse(source) || [];
-  if (arest.length === source.length) return;
-  source = arest;
-  if (aligns_.some(e => !e.textContent || e.textContent!.search(align) !== 0)) return;
-  const aligns = headers
-    .map((_, i) => (aligns_[i] || aligns_[aligns_.length - 1]).textContent!)
-    .map(s =>
-      s[0] === ':'
-        ? s[s.length - 1] === ':'
-          ? 'center'
-          : 'left'
-        : s[s.length - 1] === ':'
-          ? 'right'
-          : '');
-  void table.appendChild(html('thead'));
-  void append(headers, table, headers.map((_, i) =>
-    i > 1
-      ? aligns[1]
-      : aligns[i] === 'right'
-        ? 'center'
-        : aligns[i]));
-  void table.appendChild(html('tbody'));
-  while (true) {
-    const line = firstline(source);
-    if (line.trim() === '') break;
-    const [cols = [], rest = line] = parse(line) || [];
-    if (rest.length !== 0) return;
-    void append(headers.map((_, i) => cols[i] || document.createDocumentFragment()), table, aligns);
-    source = source.slice(line.length + 1);
-  }
-  return table.querySelector('tbody > tr')
-    ? [[table], source]
-    : undefined;
-});
+    function align(row: HTMLElement, aligns: string[]): void {
+      aligns = aligns.concat(Array(Math.max(row.children.length - aligns.length, 0)).fill(aligns[aligns.length - 1] || ''));
+      return void [...row.children]
+        .forEach((col, i) =>
+          aligns[i] &&
+          void col.setAttribute('style', `text-align: ${sanitize(aligns[i])};`));
 
-function append(cols: DocumentFragment[], table: HTMLTableElement, aligns: string[]): void {
-  return void cols
-    .reduce((tr, col, i) => (
-      void tr.appendChild(html('td', aligns[i] ? { style: `text-align: ${aligns[i]};` } : {}, [col])),
-      tr
-    ), table.lastChild!.appendChild(html('tr')));
-}
+      function sanitize(align: string): string {
+        return ['left', 'center', 'right'].includes(align)
+          ? align
+          : '';
+      }
+    }
+  }));
 
-const rowseparator = /^\||^[^\S\n]*(?=\n|$)/;
-const rowend = /^\|?[^\S\n]*(?=\n|$)/;
-function parse(row: string): [DocumentFragment[], string] | undefined {
-  const cols: DocumentFragment[] = [];
-  while (true) {
-    if (row[0] !== '|') return;
-    const [, rest = row.slice(1)] = some(inline, rowseparator)(row.slice(1)) || [];
-    const [col = []] = trim(some(inline))(row.slice(1, row.length - rest.length)) || [];
-    assert(rest.length < row.length);
-    row = rest;
-    void cols.push(squash(col, document.createDocumentFragment()));
-    if (row.search(rowend) === 0) return [cols, row.slice(firstline(row).length + 1)];
-  }
-}
+const align: TableParser.RowParser = transform(build(() =>
+  row),
+  ([row], rest) => {
+    return [...row.children].every(cell => !!cell.innerHTML!.match(/^:?-+:?$/))
+      ? [[aligns()], rest]
+      : undefined;
+
+    function aligns(): HTMLElement {
+      return html(
+        'tr',
+        [...row.children]
+          .reduce<string[]>((as, el) =>
+            el.innerHTML.startsWith(':')
+              ? el.innerHTML.endsWith(':')
+                ? concat(as, ['center'])
+                : concat(as, ['left'])
+              : el.innerHTML.endsWith(':')
+                ? concat(as, ['right'])
+                : concat(as, [as[as.length - 1] || ''])
+          , [])
+          .map(s => html('td', s)));
+    }
+  });
+
+const row: TableParser.RowParser = transform(
+  line(trim(
+    surround(
+      '|',
+      some(transform(
+        surround(/^\s*/, compress(some(union([inline]), /^\s*\|/)), /^\s*\|?/, false),
+        (ns, rest) => [[html('td', ns)], rest])),
+      '',
+      false)
+    ), true, true),
+  (es, rest) =>
+    [[html('tr', es)], rest]);

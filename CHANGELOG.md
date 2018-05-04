@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.52.0
+
+- Refine table parser.
+
 ## 0.51.0
 
 - Allow image link in link.

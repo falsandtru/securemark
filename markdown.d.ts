@@ -111,8 +111,18 @@ export namespace MarkdownParser {
       // |data|
       Block<'table'>,
       Parser<HTMLTableElement, [
-        InlineParser
+        TableParser.RowParser,
+        TableParser.RowParser,
+        TableParser.RowParser
       ]> {
+    }
+    export namespace TableParser {
+      export interface RowParser extends
+        Block<'table/row'>,
+        Parser<HTMLElement, [
+          InlineParser
+        ]> {
+      }
     }
     export interface BlockquoteParser extends
       // > abc
