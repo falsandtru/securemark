@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.52.1
+
+- Fix table parser.
+
 ## 0.52.0
 
 - Refine table parser.
