@@ -3,7 +3,7 @@ import { union, subsequence, some, capture, surround, transform, build } from '.
 import { line } from '../source/line';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
-import { hasText, hasContent, stringify, squash } from '../util';
+import { hasText, hasContent, hasMedia, hasLink, hasAnnotation, stringify, squash } from '../util';
 import { sanitize } from '../string/url';
 import { html, text as txt } from 'typed-dom';
 
@@ -11,20 +11,20 @@ export const link: LinkParser = line(transform(build(() =>
   line<LinkParser>(surround('[', some(union([inline]), ']'), ']', false), false)),
   (ns, rest) => {
     const children = squash(ns, document.createDocumentFragment());
-    if (children.querySelector('.annotation')) return;
-    if (children.querySelector('.media')) {
+    if (hasAnnotation(children)) return;
+    if (hasMedia(children)) {
       void children.querySelectorAll('a > .media')
         .forEach(el =>
           void el.parentNode!.parentNode!.replaceChild(el, el.parentNode!))
       if (children.childNodes.length !== 1) return;
       if (!children.firstElementChild!.matches('.media')) return;
-      assert(!children.querySelector('a'));
+      assert(!hasLink(children));
     }
     else {
       if (children.childNodes.length > 0 && !hasText(children)) return;
-      if (children.querySelector('a')) return;
+      if (hasLink(children)) return;
     }
-    assert(children.querySelector('a > .media') || !children.querySelector('a'));
+    assert(children.querySelector('a > .media') || !hasLink(children));
     return transform(
       line<LinkParser>(surround('(', subsequence([some(union([parenthesis, text]), /^\)|^\s/), attribute]), ')', false), false),
       (ns, rest) => {
@@ -42,7 +42,7 @@ export const link: LinkParser = line(transform(build(() =>
             : sanitize(INSECURE_URL || window.location.href)
                 .replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
         assert(hasContent(el));
-        if (window.location.origin !== el.origin || el.querySelector('.media')) {
+        if (window.location.origin !== el.origin || hasMedia(el)) {
           void el.setAttribute('target', '_blank');
         }
         return [[el], rest];

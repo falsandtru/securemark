@@ -5,7 +5,7 @@ import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
 import { inline } from '../inline';
 import { unescsource } from '../source/unescapable';
-import { compress } from '../util';
+import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
@@ -24,7 +24,7 @@ const term: DListParser.TermParser = line(transform(build(() =>
   (ns, rest) => {
     const dt = html('dt', ns);
     void defineIndex(dt);
-    if (dt.querySelector('.media')) return;
+    if (hasMedia(dt)) return;
     return [[dt], rest];
   }
 ), true, true);

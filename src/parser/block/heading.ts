@@ -4,7 +4,7 @@ import { block } from '../source/block';
 import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
 import { inline } from '../inline';
-import { compress, hasText } from '../util';
+import { compress, hasText, hasMedia } from '../util';
 import { html } from 'typed-dom';
 
 export const heading: HeadingParser = block(line(capture(
@@ -15,7 +15,7 @@ export const heading: HeadingParser = block(line(capture(
       const el = html(`h${level}` as 'h1', cs);
       void defineIndex(el);
       if (!hasText(el)) return;
-      if (el.querySelector('.media')) return;
+      if (hasMedia(el)) return;
       return [[el], ''];
     })(content)
 ), true, true));

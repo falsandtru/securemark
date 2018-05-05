@@ -4,7 +4,7 @@ import { block } from '../source/block';
 import { line } from '../source/line';
 import { ulist, forceLinebreak } from './ulist';
 import { inline } from '../inline';
-import { compress } from '../util';
+import { compress, hasMedia } from '../util';
 import { html } from 'typed-dom';
 
 const cache = new Map<string, RegExp>();
@@ -18,7 +18,7 @@ export const olist: OListParser = block(capture(
     return transform(
       some(transform(
         inits<OListParser>([
-          line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !html('b', rs).querySelector('.media')), true, true),
+          line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
           indent(union([ulist, olist_]))
         ]),
         (ns, rest) =>

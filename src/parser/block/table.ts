@@ -3,7 +3,7 @@ import { union, sequence, some, capture, surround, contract, transform, trim, bu
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { inline } from '../inline';
-import { compress } from '../util';
+import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
@@ -57,7 +57,7 @@ export const table: TableParser = block(transform(build(() =>
   }));
 
 const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => transform(
-  line(contract('|', trim(surround('', some(union([parser])), /^\|?$/, strict)), ns => !html('b', ns).querySelector('.media')), true, true),
+  line(contract('|', trim(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(html('b', ns))), true, true),
   (es, rest) =>
     [[html('tr', es)], rest]);
 

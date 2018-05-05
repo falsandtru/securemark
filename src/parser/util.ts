@@ -42,7 +42,19 @@ export function squash<T extends Node[], U extends T | Node>(nodes: T, container
 
 export function hasContent(node: Element | DocumentFragment): boolean {
   return hasText(node)
-      || !!node.querySelector('.media');
+      || hasMedia(node);
+}
+
+export function hasMedia(node: Element | DocumentFragment): boolean {
+  return !!node.querySelector('.media');
+}
+
+export function hasLink(node: Element | DocumentFragment): boolean {
+  return !!node.querySelector('a');
+}
+
+export function hasAnnotation(node: Element | DocumentFragment): boolean {
+  return !!node.querySelector('.annotation');
 }
 
 export function hasText(node: Node): boolean {

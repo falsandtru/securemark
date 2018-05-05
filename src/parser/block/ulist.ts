@@ -4,7 +4,7 @@ import { block } from '../source/block';
 import { line } from '../source/line';
 import { olist_ } from './olist';
 import { inline } from '../inline';
-import { compress } from '../util';
+import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
@@ -19,7 +19,7 @@ export const ulist: UListParser = block(capture(
     return transform(
       some(transform(
         inits<UListParser>([
-          line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !html('b', rs).querySelector('.media')), true, true),
+          line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
           indent(union([ulist, olist_]))
         ]),
         (ns, rest) =>
