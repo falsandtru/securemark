@@ -62,20 +62,18 @@ const row = <P extends TableParser.CellParser>(parser: P): TableParser.RowParser
     [[html('tr', es)], rest]);
 
 const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser: P): TableParser.CellParser =>
-  transform(union([parser]), (ns, rest) => [[html('td', ns)], rest]);
+  transform(compress(union([parser])), (ns, rest) => [[html('td', ns)], rest]);
 
 const data: TableParser.DataParser = build(() => transform(
   surround(
     /^\|\s*/,
-    compress(union([some(inline, /^\s*(?:\||$)/)])),
+    union([some(inline, /^\s*(?:\||$)/)]),
     /^\s*/,
     false),
   (ns, rest) =>
-    ns.length === 0
-      ? rest === ''
-        ? undefined
-        : [[text('')], rest]
-      : [ns, rest]));
+    ns.length === 0 && rest === ''
+      ? undefined
+      : [concat([text('')], ns), rest]));
 
 const align: TableParser.AlignParser =
   surround(

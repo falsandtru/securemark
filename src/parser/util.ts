@@ -25,9 +25,15 @@ export function squash<T extends Node[], U extends T | Node>(nodes: T, container
       }
       switch (obj.type) {
         case Types.Array:
+          if (prev && prev.nodeType === 3 && prev.textContent === '') {
+            void obj.value.pop();
+          }
           void obj.value.push(curr);
           break;
         case Types.Node:
+          if (prev && prev.nodeType === 3 && prev.textContent === '') {
+            void obj.value.removeChild(prev);
+          }
           void obj.value.appendChild(curr);
           break;
       }
