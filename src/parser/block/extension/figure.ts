@@ -27,8 +27,16 @@ export const figure: FigureParser = block(capture(
         inits<FigureParser>([
           transform(
             rewrite(
-              union([pretext, some(contentline, closer)]),
-              union([table, pretext, math, line(match('!', trim(url)), true, true)])),
+              union([
+                pretext,
+                some(contentline, closer)
+              ]),
+              union([
+                table,
+                pretext,
+                math,
+                line(match('!', trim(url)), true, true),
+              ])),
             ([content], rest) => {
               assert(content);
               if (content instanceof Text) return;
