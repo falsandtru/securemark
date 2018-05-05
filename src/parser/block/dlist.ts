@@ -24,6 +24,7 @@ const term: DListParser.TermParser = line(transform(build(() =>
   (ns, rest) => {
     const dt = html('dt', ns);
     void defineIndex(dt);
+    if (dt.querySelector('.media')) return;
     return [[dt], rest];
   }
 ), true, true);

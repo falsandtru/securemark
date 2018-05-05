@@ -22,8 +22,8 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1.\n 1.')), undefined);
       assert.deepStrictEqual(inspect(parser('1.\n 1. a')), undefined);
       assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), undefined);
+      assert.deepStrictEqual(inspect(parser('1. !http://host')), undefined);
       assert.deepStrictEqual(inspect(parser(' 1.')), undefined);
-      assert.deepStrictEqual(inspect(parser('1.\n-')), undefined);
     });
 
     it('single', () => {

@@ -20,6 +20,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('-\n -')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n -\n 0')), undefined);
       assert.deepStrictEqual(inspect(parser('- 0\n  - 0\n - 0')), undefined);
+      assert.deepStrictEqual(inspect(parser('- !http://host')), undefined);
       assert.deepStrictEqual(inspect(parser(' -')), undefined);
     });
 

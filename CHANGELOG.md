@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.53.0
+
+- Disallow media in heading, ulist, olist, dlist, and table syntax.
+
 ## 0.52.2
 
 - Allow empty table row.

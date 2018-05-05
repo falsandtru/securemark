@@ -19,7 +19,7 @@ export const olist: OListParser = block(capture(
       some(transform(
         verify(
           inits<OListParser>([
-            line(surround(opener, compress(trim(some(inline))), '', false), true, true),
+            line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !html('b', rs).querySelector('.media')), true, true),
             indent(union([ulist, olist_]))
           ]),
           ([node = undefined]) => !node || ![HTMLUListElement, HTMLOListElement].some(E => node instanceof E)),

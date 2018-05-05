@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, capture, surround, validate, transform, trim, build } from '../../combinator';
+import { union, sequence, some, capture, surround, contract, transform, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { inline } from '../inline';
@@ -57,7 +57,7 @@ export const table: TableParser = block(transform(build(() =>
   }));
 
 const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => transform(
-  line(validate('|', trim(surround('', some(union([parser])), /^\|?$/, strict))), true, true),
+  line(contract('|', trim(surround('', some(union([parser])), /^\|?$/, strict)), ns => !html('b', ns).querySelector('.media')), true, true),
   (es, rest) =>
     [[html('tr', es)], rest]);
 

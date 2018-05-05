@@ -15,6 +15,7 @@ export const heading: HeadingParser = block(line(capture(
       const el = html(`h${level}` as 'h1', cs);
       void defineIndex(el);
       if (!hasText(el)) return;
+      if (el.querySelector('.media')) return;
       return [[el], ''];
     })(content)
 ), true, true));
