@@ -25,22 +25,17 @@ export const figure: FigureParser = block(capture(
       surround(
         '',
         inits<FigureParser>([
-          transform(
-            rewrite(
-              union([
-                pretext,
-                some(contentline, closer)
-              ]),
-              union([
-                table,
-                pretext,
-                math,
-                line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
-              ])),
-            ([content], rest) => {
-              assert(content);
-              return [[content], rest];
-            }),
+          rewrite(
+            union([
+              pretext,
+              some(contentline, closer)
+            ]),
+            union([
+              table,
+              pretext,
+              math,
+              line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
+            ])),
           rewrite(
             inits([emptyline, union([emptyline, some(contentline, closer)])]),
             compress(trim(some(union([inline]))))),

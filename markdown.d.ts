@@ -190,7 +190,7 @@ export namespace MarkdownParser {
             MathParser,
             InlineParser.AutolinkParser.UrlParser
           ]>,
-          Parser<HTMLElement, [
+          Parser<HTMLElement | Text, [
             InlineParser
           ]>
         ]> {
