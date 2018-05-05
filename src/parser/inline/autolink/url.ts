@@ -22,7 +22,7 @@ export const url: AutolinkParser.UrlParser = line(union([
         ? source.slice(1)
         : source;
       return transform(
-        some<SubParsers<AutolinkParser.UrlParser>[1]>(union([ipv6, parenthesis, some(escsource, closer)])),
+        some(union<SubParsers<AutolinkParser.UrlParser>[1]>([ipv6, parenthesis, some(escsource, closer)])),
         (_, rest) => {
           const attribute = source.startsWith('ttp')
             ? ' nofollow'
@@ -37,7 +37,7 @@ export const url: AutolinkParser.UrlParser = line(union([
     })
 ]), false);
 
-const ipv6 = transform(
+const ipv6 = transform<Text, never[]>(
   surround('[', capture(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),
   (ts, rest) =>
     [[text('['), ...ts, text(']')], rest]);

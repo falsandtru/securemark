@@ -14,7 +14,7 @@ describe('Unit: combinator/union', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     }
-    const ab = union<[typeof a, typeof b]>([a, b]);
+    const ab = union<Parser<string, [typeof a, typeof b]>>([a, b]);
 
     it('ab', () => {
       const parser = ab;
