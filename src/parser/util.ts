@@ -18,27 +18,25 @@ export function squash<T extends Node[], U extends T | Node>(nodes: T, container
     : { type: Types.Node as Types.Node, value: container as Node, };
   void nodes
     .reduce<Node | undefined>((prev, curr) => {
-      if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
-        prev.textContent += curr.textContent!;
-        curr.textContent = '';
-        return prev;
+      if (prev) {
+        if (curr.nodeType === 3 && curr.textContent === '') return prev;
+        if (prev.nodeType === 3 && curr.nodeType === 3) {
+          prev.textContent += curr.textContent!;
+          curr.textContent = '';
+          return prev;
+        }
       }
       switch (obj.type) {
         case Types.Array:
-          if (prev && prev.nodeType === 3 && prev.textContent === '') {
-            void obj.value.pop();
-          }
           void obj.value.push(curr);
           break;
         case Types.Node:
-          if (prev && prev.nodeType === 3 && prev.textContent === '') {
-            void obj.value.removeChild(prev);
-          }
           void obj.value.appendChild(curr);
           break;
       }
       return curr;
     }, undefined);
+  assert(nodes.length === 0 || (obj.type === Types.Array ? obj.value.length > 0 : obj.value.childNodes.length > 0));
   return container;
 }
 
