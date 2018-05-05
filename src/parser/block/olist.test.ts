@@ -19,8 +19,6 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1.1')), undefined);
       assert.deepStrictEqual(inspect(parser('1.1.')), undefined);
       assert.deepStrictEqual(inspect(parser('1.a')), undefined);
-      assert.deepStrictEqual(inspect(parser('1.\n 1.')), undefined);
-      assert.deepStrictEqual(inspect(parser('1.\n 1. a')), undefined);
       assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), undefined);
       assert.deepStrictEqual(inspect(parser('1. !http://host')), undefined);
       assert.deepStrictEqual(inspect(parser(' 1.')), undefined);
@@ -50,6 +48,7 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('1.\n 1')), [['<ol start="1" type="1"><li><br><ol start="1" type="1"><li></li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n 1')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li></li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n 1.')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li></li></ol></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n 1. ')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li></li></ol></li></ol>'], '']);

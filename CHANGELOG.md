@@ -2,6 +2,7 @@
 
 ## 0.53.0
 
+- Allow list nesting with no content.
 - Disallow media in heading, ulist, olist, dlist, and table syntax.
 
 ## 0.52.2

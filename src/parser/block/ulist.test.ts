@@ -17,7 +17,6 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('-[x]')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n+')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n0')), undefined);
-      assert.deepStrictEqual(inspect(parser('-\n -')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n -\n 0')), undefined);
       assert.deepStrictEqual(inspect(parser('- 0\n  - 0\n - 0')), undefined);
       assert.deepStrictEqual(inspect(parser('- !http://host')), undefined);
@@ -47,6 +46,7 @@ describe('Unit: parser/block/ulist', () => {
     });
 
     it('nest', () => {
+      assert.deepStrictEqual(inspect(parser('-\n -')), [['<ul><li><br><ul><li></li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2')), [['<ul><li>1<ul><li>2</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n - 3')), [['<ul><li>1<ul><li>2</li><li>3</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n  - 3')), [['<ul><li>1<ul><li>2<ul><li>3</li></ul></li></ul></li></ul>'], '']);
