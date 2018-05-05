@@ -1,5 +1,6 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, subsequence, some, capture, surround, transform, build } from '../../combinator';
+import { Parser, union, subsequence, some, capture, surround, transform, build } from '../../combinator';
+import { SubParser } from '../../combinator/parser';
 import { line } from '../source/line';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
@@ -8,7 +9,7 @@ import { sanitize } from '../string/url';
 import { html, text as txt, frag } from 'typed-dom';
 
 export const link: LinkParser = line(transform(build(() =>
-  line<LinkParser>(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
+  line(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
   (ns, rest) => {
     const children = frag(ns);
     if (hasAnnotation(children)) return;
@@ -26,7 +27,7 @@ export const link: LinkParser = line(transform(build(() =>
     }
     assert(children.querySelector('a > .media') || !hasLink(children));
     return transform(
-      line<LinkParser>(surround('(', subsequence([some(union([parenthesis, text]), /^\)|^\s/), attribute]), ')', false), false),
+      line(surround('(', subsequence<SubParser<LinkParser>>([some(union<Parser<Text, [typeof parenthesis, typeof text]>>([parenthesis, text]), /^\)|^\s/), attribute]), ')', false), false),
       (ns, rest) => {
         const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(.*?)(?:\n(.*))?$/) || [];
         assert(attr === '' || attr === 'nofollow');
@@ -52,7 +53,7 @@ export const link: LinkParser = line(transform(build(() =>
 ), false);
 
 export const parenthesis: LinkParser.ParenthesisParser = transform(build(() =>
-  surround('(', some(union<LinkParser.ParenthesisParser>([parenthesis, escsource]), /^\)|^\s/), ')', false)),
+  surround('(', some(union([parenthesis, escsource]), /^\)|^\s/), ')', false)),
   (ts, rest) =>
     [[txt('('), ...ts, txt(')')], rest]);
 

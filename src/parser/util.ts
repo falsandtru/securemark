@@ -2,7 +2,7 @@
 
 export function compress<P extends Parser<Node, any>>(parser: P): P;
 export function compress<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return transform<T, S>(parser, (ns, rest) =>
+  return transform<T, T, S>(parser, (ns, rest) =>
     [squash(ns), rest]);
 }
 

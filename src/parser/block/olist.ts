@@ -15,7 +15,7 @@ export const olist: OListParser = block(capture(
     const opener = cache.has(index)
       ? cache.get(index)!
       : cache.set(index, new RegExp(`^${pattern(index)}(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index)!;
-    return transform(
+    return transform<OListParser>(
       some(transform(
         inits<OListParser>([
           line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),

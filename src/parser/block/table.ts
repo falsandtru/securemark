@@ -8,7 +8,7 @@ import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
 export const table: TableParser = block(transform(build(() =>
-  sequence([
+  sequence<TableParser>([
     row(cell(data), false),
     row(cell(align), true),
     some(row(cell(data), false)),

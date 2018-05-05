@@ -16,7 +16,7 @@ export const code: CodeParser = line(capture(
       ? cache.get(bracket)!
       : cache.set(bracket, new RegExp(`^${bracket}(?!\`)`)).get(bracket)!;
     return transform(
-      surround<CodeParser>(bracket, some(union([some(char('`')), unescsource]), closer), closer),
+      surround(bracket, some(union([some(char('`')), unescsource]), closer), closer),
       (ns, rest) => {
         const el = html('code',
           { 'data-src': source.slice(0, source.length - rest.length) },

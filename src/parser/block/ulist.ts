@@ -16,7 +16,7 @@ export const ulist: UListParser = block(capture(
     const opener = cache.has(flag)
       ? cache.get(flag)!
       : cache.set(flag, new RegExp(`^\\${flag}(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag)!;
-    return transform(
+    return transform<UListParser>(
       some(transform(
         inits<UListParser>([
           line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),

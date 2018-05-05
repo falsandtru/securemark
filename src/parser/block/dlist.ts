@@ -19,8 +19,8 @@ export const dlist: DListParser = block(transform(build(() =>
     rest
   ]));
 
-const term: DListParser.TermParser = line(transform(build(() =>
-  surround<DListParser.TermParser>(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),
+const term: DListParser.TermParser = line(transform<DListParser.TermParser>(build(() =>
+  surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),
   (ns, rest) => {
     const dt = html('dt', ns);
     void defineIndex(dt);
@@ -29,8 +29,8 @@ const term: DListParser.TermParser = line(transform(build(() =>
   }
 ), true, true);
 
-const desc: DListParser.DescriptionParser = block(transform(build(() =>
-  rewrite<DListParser.DescriptionParser>(
+const desc: DListParser.DescriptionParser = block(transform<DListParser.DescriptionParser>(build(() =>
+  rewrite(
     surround(/^:(?=\s|$)|/, some(line(some(unescsource), true, true), /^[~:](?:\s|$)/), '', false),
     surround(/^:(?=\s|$)|/, trim(some(union([inline]))), '', false))),
   (ns, rest) =>

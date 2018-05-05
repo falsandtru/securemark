@@ -15,8 +15,8 @@ export const html: HTMLParser = capture(
     const opentag = `<${tag}>`;
     assert(whole.startsWith(opentag));
     if (tag === 'wbr') return [[htm(tag)], rest];
-    return transform(
-      surround<HTMLParser>(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
+    return transform<HTMLParser>(
+      surround(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
       (ns, rest) => {
         const el = htm(tag as 'wbr', ns);
         return hasText(el)

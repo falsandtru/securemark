@@ -3,13 +3,14 @@ import { union, surround, transform, trim } from '../../combinator';
 import { line } from '../source/line';
 import { index } from '../inline';
 
-export const indexer: IndexerParser = line(transform(
-  surround(/^\s+?(?=\[#)/, trim(union([index])), /$/),
-  ([el], rest) => {
-    assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
-    void el.setAttribute('class', 'index');
-    return [[el], rest];
-  }));
+export const indexer: IndexerParser = line(
+  transform<IndexerParser>(
+    surround(/^\s+?(?=\[#)/, trim(union([index])), /$/),
+    ([el], rest) => {
+      assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
+      void el.setAttribute('class', 'index');
+      return [[el], rest];
+    }));
 
 export function defineIndex(source: HTMLElement): void {
   if (source.hasAttribute('id')) return;

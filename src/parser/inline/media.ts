@@ -11,11 +11,11 @@ import { html } from 'typed-dom';
 export const cache = new Cache<string, HTMLElement>(100);
 
 export const media: MediaParser = line(transform(
-  line<MediaParser>(surround('![', some(union([text]), ']'), ']', false), false),
+  line(surround('![', some(union([text]), ']'), ']', false), false),
   (ts, rest) => {
     const caption = stringify(ts).trim();
-    return transform(
-      line<MediaParser>(surround('(', some(union([parenthesis, text]), /^\)|^\s/), ')'), false),
+    return transform<MediaParser>(
+      line(surround('(', some(union([parenthesis, text]), /^\)|^\s/), ')'), false),
       (ts, rest) => {
         const url = sanitize(stringify(ts));
         if (url === '') return;
