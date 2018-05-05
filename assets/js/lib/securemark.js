@@ -1778,12 +1778,10 @@ require = function () {
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.table = block_1.block(combinator_1.transform(combinator_1.build(() => combinator_1.sequence([
-                row(cell(data)),
-                row(cell(align)),
-                combinator_1.some(row(cell(data)))
+                row(cell(data), false),
+                row(cell(align), true),
+                combinator_1.some(row(cell(data), false))
             ])), ([head, as, ...rows], rest) => {
-                if (as.children.length === 0)
-                    return;
                 void align();
                 return [
                     [typed_dom_1.html('table', [
@@ -1812,7 +1810,7 @@ require = function () {
                     }
                 }
             }));
-            const row = parser => combinator_1.transform(line_1.line(combinator_1.match(/^\|/, combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, false))), true, true), (es, rest) => [
+            const row = (parser, strict) => combinator_1.transform(line_1.line(combinator_1.match(/^\|/, combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict))), true, true), (es, rest) => [
                 [typed_dom_1.html('tr', es)],
                 rest
             ]);
@@ -2898,22 +2896,20 @@ require = function () {
                     value: container
                 };
                 void nodes.reduce((prev, curr) => {
-                    if (prev && prev.nodeType === 3 && curr.nodeType === 3) {
-                        prev.textContent += curr.textContent;
-                        curr.textContent = '';
-                        return prev;
+                    if (prev) {
+                        if (curr.nodeType === 3 && curr.textContent === '')
+                            return prev;
+                        if (prev.nodeType === 3 && curr.nodeType === 3) {
+                            prev.textContent += curr.textContent;
+                            curr.textContent = '';
+                            return prev;
+                        }
                     }
                     switch (obj.type) {
                     case 0:
-                        if (prev && prev.nodeType === 3 && prev.textContent === '') {
-                            void obj.value.pop();
-                        }
                         void obj.value.push(curr);
                         break;
                     case 1:
-                        if (prev && prev.nodeType === 3 && prev.textContent === '') {
-                            void obj.value.removeChild(prev);
-                        }
                         void obj.value.appendChild(curr);
                         break;
                     }
