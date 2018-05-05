@@ -66,12 +66,16 @@ const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser
 
 const data: TableParser.DataParser = build(() => transform(
   surround(
-    /^\|\s*(?=\S)/,
+    /^\|\s*/,
     compress(union([some(inline, /^\s*(?:\||$)/)])),
     /^\s*/,
     false),
   (ns, rest) =>
-    [ns.length === 0 ? [text('')] : ns, rest]));
+    ns.length === 0
+      ? rest === ''
+        ? undefined
+        : [[text('')], rest]
+      : [ns, rest]));
 
 const align: TableParser.AlignParser =
   surround(
