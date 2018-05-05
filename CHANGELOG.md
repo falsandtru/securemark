@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.52.2
+
+- Allow empty table row.
+
 ## 0.52.1
 
 - Fix table parser.

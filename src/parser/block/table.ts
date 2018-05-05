@@ -14,17 +14,15 @@ export const table: TableParser = block(transform(build(() =>
     some(row(cell(data))),
   ])),
   ([head, as, ...rows], rest) => {
+    if (as.children.length === 0) return;
     void align();
     return [[html('table', [html('thead', [head]), html('tbody', rows)])], rest];
 
     function align(): void {
-      assert(head.children.length > 0);
-      assert(rows.every(row => row.children.length > 0));
       const aligns = [...as.children]
         .reduce((acc, el) =>
           concat(acc, [el.textContent || acc[acc.length - 1] || ''])
         , []);
-      assert(aligns.length > 0);
       void align(head, extend(aligns.slice(0, 2), head.children.length));
       void rows
         .forEach(row =>
@@ -32,7 +30,6 @@ export const table: TableParser = block(transform(build(() =>
       return;
 
       function extend(aligns: string[], size: number): string[] {
-        assert(aligns.length > 0);
         return size > aligns.length
           ? concat(
               aligns,
@@ -60,7 +57,7 @@ export const table: TableParser = block(transform(build(() =>
   }));
 
 const row = <P extends TableParser.CellParser>(parser: P): TableParser.RowParser => transform(
-  line(surround(/(?=^\|)/, trim(surround('', some(union([parser]), /^\|?$/), /^\|?$/)), ''), true, true),
+  line(surround(/(?=^\|)/, trim(surround('', some(union([parser])), /^\|?$/, false)), ''), true, true),
   (es, rest) =>
     [[html('tr', es)], rest]);
 
@@ -69,7 +66,7 @@ const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser
 
 const data: TableParser.DataParser = build(() => transform(
   surround(
-    /^\|\s*/,
+    /^\|\s*(?=\S)/,
     compress(union([some(inline, /^\s*(?:\||$)/)])),
     /^\s*/,
     false),
