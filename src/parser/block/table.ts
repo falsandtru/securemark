@@ -14,27 +14,48 @@ export const table: TableParser = block(transform(build(() =>
     some(row(cell(data))),
   ])),
   ([head, as, ...rows], rest) => {
-    const aligns = [...as.children]
-      .reduce((acc, el) =>
-        concat(acc, [el.textContent || acc[acc.length - 1] || ''])
-      , []);
-    void align(head, [aligns[0] || '', aligns[1] || aligns[0] || '']);
-    void rows
-      .forEach(row => void align(row, aligns));
+    void align();
     return [[html('table', [html('thead', [head]), html('tbody', rows)])], rest];
 
-    function align(row: HTMLElement, aligns: string[]): void {
-      aligns = aligns.concat(Array(Math.max(row.children.length - aligns.length, 0)).fill(aligns[aligns.length - 1] || ''));
-      return void [...row.children]
-        .forEach((col, i) =>
-          aligns[i] &&
-          void col.setAttribute('style', `text-align: ${sanitize(aligns[i])};`));
-    }
+    function align(): void {
+      assert(head.children.length > 0);
+      assert(rows.every(row => row.children.length > 0));
+      const aligns = [...as.children]
+        .reduce((acc, el) =>
+          concat(acc, [el.textContent || acc[acc.length - 1] || ''])
+        , []);
+      assert(aligns.length > 0);
+      void align(head, extend(aligns.slice(0, 2), head.children.length));
+      void rows
+        .forEach(row =>
+          void align(row, extend(aligns, row.children.length)));
+      return;
 
-    function sanitize(align: string): string {
-      return ['left', 'center', 'right'].includes(align)
-        ? align
-        : '';
+      function extend(aligns: string[], size: number): string[] {
+        assert(aligns.length > 0);
+        return size > aligns.length
+          ? concat(
+              aligns,
+              Array(size - aligns.length)
+                .fill(aligns[aligns.length - 1] || ''))
+          : aligns;
+      }
+
+      function align(row: HTMLElement, aligns: string[]): void {
+        assert(row.children.length <= aligns.length);
+        return void [...row.children]
+          .forEach((col, i) =>
+            aligns[i] &&
+            aligns[i] === sanitize(aligns[i]) &&
+            void col.setAttribute('style', `text-align: ${sanitize(aligns[i])};`));
+      }
+
+      function sanitize(align: string): string {
+        assert(['left', 'center', 'right', ''].includes(align));
+        return ['left', 'center', 'right'].includes(align)
+          ? align
+          : '';
+      }
     }
   }));
 
