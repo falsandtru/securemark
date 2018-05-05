@@ -1,5 +1,5 @@
 ﻿import { UListParser } from '../block';
-import { union, inits, some, capture, surround, indent, transform, trim } from '../../combinator';
+import { union, inits, some, capture, surround, verify, indent, transform, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { olist_ } from './olist';
@@ -17,14 +17,14 @@ export const ulist: UListParser = block(capture(
       : cache.set(flag, new RegExp(`^\\${flag}(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag)!;
     return transform(
       some(transform(
-        inits<UListParser>([
-          line(surround(opener, compress(trim(some(inline))), '', false), true, true),
-          indent(union([ulist, olist_]))
-        ]),
+        verify(
+          inits<UListParser>([
+            line(surround(opener, compress(trim(some(inline))), '', false), true, true),
+            indent(union([ulist, olist_]))
+          ]),
+          ([node = undefined]) => !node || ![HTMLUListElement, HTMLOListElement].some(E => node instanceof E)),
         (ns, rest) =>
-          ns.length === 1 && [HTMLUListElement, HTMLOListElement].some(C => ns[0] instanceof C)
-            ? undefined
-            : [[html('li', ns)], rest])),
+          [[html('li', ns)], rest])),
       (es, rest) =>
         [[html('ul', es)], rest])
       (whole + rest);

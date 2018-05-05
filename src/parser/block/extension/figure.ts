@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, match, capture, surround, transform, rewrite, trim } from '../../../combinator';
+import { union, inits, some, capture, contract, surround, transform, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
@@ -35,11 +35,10 @@ export const figure: FigureParser = block(capture(
                 table,
                 pretext,
                 math,
-                line(match('!', trim(url)), true, true),
+                line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
               ])),
             ([content], rest) => {
               assert(content);
-              if (content instanceof Text) return;
               return [[content], rest];
             }),
           rewrite(
