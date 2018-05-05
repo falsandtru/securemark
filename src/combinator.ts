@@ -5,7 +5,7 @@ export * from './combinator/subsequence';
 export * from './combinator/inits';
 export * from './combinator/tails';
 export * from './combinator/some';
-export * from './combinator/match';
+export * from './combinator/capture';
 export * from './combinator/surround';
 export * from './combinator/indent';
 export * from './combinator/transform';

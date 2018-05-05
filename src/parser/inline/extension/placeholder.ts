@@ -1,12 +1,12 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, match, surround, transform, build } from '../../../combinator';
+import { union, some, capture, surround, transform, build } from '../../../combinator';
 import { line } from '../../source/line';
 import { html } from 'typed-dom';
 
 export const placeholder: ExtensionParser.PlaceholderParser = line(transform(build(() =>
   surround(
     '[',
-    match(/^[~^\[]/, ([flag], rest) =>
+    capture(/^[~^\[]/, ([flag], rest) =>
       some(union<ExtensionParser.PlaceholderParser>([inline]), ']')(flag === '[' ? flag + rest : rest)),
     ']')),
   (ns, rest) =>

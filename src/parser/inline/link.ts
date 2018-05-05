@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, subsequence, some, match, surround, transform, build } from '../../combinator';
+import { union, subsequence, some, capture, surround, transform, build } from '../../combinator';
 import { line } from '../source/line';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
@@ -59,6 +59,6 @@ export const parenthesis: LinkParser.ParenthesisParser = transform(build(() =>
 const attribute: LinkParser.AttributeParser =
   surround(
     /^\s(?=\S)/,
-    match(/^nofollow/, ([attr], rest) =>
+    capture(/^nofollow/, ([attr], rest) =>
       [[txt(`\n${attr}`)], rest]),
     /^(?=\))/);

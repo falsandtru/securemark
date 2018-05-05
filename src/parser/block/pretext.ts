@@ -1,11 +1,11 @@
 ﻿import { PretextParser } from '../block';
-import { some, match, trim } from '../../combinator';
+import { some, capture, trim } from '../../combinator';
 import { block } from '../source/block';
 import { escsource } from '../source/escapable';
 import { stringify } from '../util';
 import { html } from 'typed-dom';
 
-export const pretext: PretextParser = block(match(
+export const pretext: PretextParser = block(capture(
   /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/,
   ([, , notes, body], rest) => {
     const el = html('pre', body);

@@ -1,5 +1,5 @@
 ﻿import { OListParser } from '../block';
-import { union, inits, some, match, surround, indent, transform, trim } from '../../combinator';
+import { union, inits, some, capture, surround, indent, transform, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { ulist } from './ulist';
@@ -9,7 +9,7 @@ import { html } from 'typed-dom';
 
 const cache = new Map<string, RegExp>();
 
-export const olist: OListParser = block(match(
+export const olist: OListParser = block(capture(
   /^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/,
   ([whole, index], rest) => {
     const opener = cache.has(index)

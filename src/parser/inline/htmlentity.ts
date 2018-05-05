@@ -1,8 +1,8 @@
 ﻿import { HTMLEntityParser } from '../inline';
-import { match } from '../../combinator';
+import { capture } from '../../combinator';
 import { html, text } from 'typed-dom';
 
-export const htmlentity: HTMLEntityParser = match(
+export const htmlentity: HTMLEntityParser = capture(
   /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i,
   ([entity], rest) =>
     [[text(parse(entity))], rest]);
