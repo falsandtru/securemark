@@ -600,6 +600,13 @@ require = function () {
                 return element('svg', tag, attrs, children);
             }
             exports.svg = svg;
+            function frag(children = []) {
+                children = typeof children === 'string' ? [text(children)] : children;
+                const frag = document.createDocumentFragment();
+                void [...children].forEach(child => void frag.appendChild(child));
+                return frag;
+            }
+            exports.frag = frag;
             function text(source) {
                 return document.createTextNode(source);
             }
@@ -716,9 +723,9 @@ require = function () {
             __export(require('./combinator/inits'));
             __export(require('./combinator/tails'));
             __export(require('./combinator/some'));
-            __export(require('./combinator/match'));
             __export(require('./combinator/capture'));
             __export(require('./combinator/surround'));
+            __export(require('./combinator/contract'));
             __export(require('./combinator/indent'));
             __export(require('./combinator/transform'));
             __export(require('./combinator/rewrite'));
@@ -728,9 +735,9 @@ require = function () {
         {
             './combinator/build': 20,
             './combinator/capture': 21,
-            './combinator/indent': 22,
-            './combinator/inits': 23,
-            './combinator/match': 24,
+            './combinator/contract': 22,
+            './combinator/indent': 23,
+            './combinator/inits': 24,
             './combinator/rewrite': 25,
             './combinator/sequence': 26,
             './combinator/some': 27,
@@ -781,6 +788,51 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            function contract(pattern, parser, cond) {
+                return verify(validate(pattern, parser), cond);
+            }
+            exports.contract = contract;
+            function validate(pattern, parser) {
+                return source => {
+                    const result = match(source, pattern);
+                    if (!result)
+                        return;
+                    const [rs = [], r = undefined] = parser(source) || [];
+                    if (r === undefined)
+                        return;
+                    return r.length < source.length ? [
+                        rs,
+                        r
+                    ] : undefined;
+                };
+            }
+            exports.validate = validate;
+            function verify(parser, cond) {
+                return source => {
+                    const [rs = [], r = undefined] = parser(source) || [];
+                    if (r === undefined)
+                        return;
+                    if (!cond(rs))
+                        return;
+                    return r.length < source.length ? [
+                        rs,
+                        r
+                    ] : undefined;
+                };
+            }
+            exports.verify = verify;
+            function match(source, pattern) {
+                if (typeof pattern === 'string')
+                    return source.startsWith(pattern) ? [pattern] : null;
+                return source.match(pattern);
+            }
+        },
+        {}
+    ],
+    23: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
             const syntax = /^\s*/;
             function indent(parser) {
                 return source => {
@@ -816,7 +868,7 @@ require = function () {
         },
         {}
     ],
-    23: [
+    24: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -842,28 +894,6 @@ require = function () {
                 };
             }
             exports.inits = inits;
-        },
-        {}
-    ],
-    24: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            function match(pattern, f) {
-                return source => {
-                    const result = source.match(pattern);
-                    if (!result)
-                        return;
-                    const [rs = [], r = undefined] = f(source, result) || [];
-                    if (r === undefined)
-                        return;
-                    return r.length < source.length ? [
-                        rs,
-                        r
-                    ] : undefined;
-                };
-            }
-            exports.match = match;
         },
         {}
     ],
@@ -1059,10 +1089,28 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function trim(parser) {
+                return trim_(parser, s => s.trim());
+            }
+            exports.trim = trim;
+            function trimStart(parser) {
+                return trim_(parser, source => {
+                    const mid = source.trim();
+                    return source.slice(source.lastIndexOf(mid));
+                });
+            }
+            exports.trimStart = trimStart;
+            function trimEnd(parser) {
+                return trim_(parser, source => {
+                    const mid = source.trim();
+                    return source.slice(0, source.lastIndexOf(mid) + mid.length);
+                });
+            }
+            exports.trimEnd = trimEnd;
+            function trim_(parser, trim) {
                 return source => {
                     if (source === '')
                         return;
-                    source = source.trim();
+                    source = trim(source);
                     if (source === '')
                         return [
                             [],
@@ -1079,7 +1127,6 @@ require = function () {
                     ] : undefined;
                 };
             }
-            exports.trim = trim;
         },
         {}
     ],
@@ -1336,6 +1383,8 @@ require = function () {
             ])))), '', false)), (ns, rest) => {
                 const dt = typed_dom_1.html('dt', ns);
                 void indexer_1.defineIndex(dt);
+                if (util_1.hasMedia(dt))
+                    return;
                 return [
                     [dt],
                     rest
@@ -1396,24 +1445,15 @@ require = function () {
                     return;
                 const closer = cache.has(bracket) ? cache.get(bracket) : cache.set(bracket, new RegExp(`^${ bracket }[^\\S\\n]*(?:\\n|$)`)).get(bracket);
                 return combinator_1.transform(combinator_1.surround('', combinator_1.inits([
-                    combinator_1.transform(combinator_1.rewrite(combinator_1.union([
+                    combinator_1.rewrite(combinator_1.union([
                         pretext_1.pretext,
                         combinator_1.some(line_1.contentline, closer)
                     ]), combinator_1.union([
                         table_1.table,
                         pretext_1.pretext,
                         math_1.math,
-                        line_1.line(combinator_1.trim(inline_1.url), true, true)
-                    ])), ([content], rest) => {
-                        if (content instanceof Text)
-                            return;
-                        if (content instanceof HTMLAnchorElement && !content.querySelector('.media'))
-                            return;
-                        return [
-                            [content],
-                            rest
-                        ];
-                    }),
+                        line_1.line(combinator_1.contract('!', combinator_1.trim(inline_1.url), ([node]) => node instanceof Element), true, true)
+                    ])),
                     combinator_1.rewrite(combinator_1.inits([
                         line_1.emptyline,
                         combinator_1.union([
@@ -1478,6 +1518,8 @@ require = function () {
                 const el = typed_dom_1.html(`h${ level }`, cs);
                 void indexer_1.defineIndex(el);
                 if (!util_1.hasText(el))
+                    return;
+                if (util_1.hasMedia(el))
                     return;
                 return [
                     [el],
@@ -1602,16 +1644,13 @@ require = function () {
             exports.olist = block_1.block(combinator_1.capture(/^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/, ([whole, index], rest) => {
                 const opener = cache.has(index) ? cache.get(index) : cache.set(index, new RegExp(`^${ pattern(index) }(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index);
                 return combinator_1.transform(combinator_1.some(combinator_1.transform(combinator_1.inits([
-                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), true, true),
+                    line_1.line(combinator_1.verify(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         exports.olist_
                     ]))
-                ]), (ns, rest) => ns.length === 1 && [
-                    HTMLUListElement,
-                    HTMLOListElement
-                ].some(C => ns[0] instanceof C) ? undefined : [
-                    [typed_dom_1.html('li', ns)],
+                ]), (ns, rest) => [
+                    [typed_dom_1.html('li', ulist_1.forceLinebreak(ns))],
                     rest
                 ])), (es, rest) => [
                     [typed_dom_1.html('ol', {
@@ -1810,7 +1849,7 @@ require = function () {
                     }
                 }
             }));
-            const row = (parser, strict) => combinator_1.transform(line_1.line(combinator_1.match(/^\|/, combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict))), true, true), (es, rest) => [
+            const row = (parser, strict) => combinator_1.transform(line_1.line(combinator_1.contract('|', combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)), ns => !util_1.hasMedia(typed_dom_1.html('b', ns))), true, true), (es, rest) => [
                 [typed_dom_1.html('tr', es)],
                 rest
             ]);
@@ -1861,27 +1900,32 @@ require = function () {
             const olist_1 = require('./olist');
             const inline_1 = require('../inline');
             const util_1 = require('../util');
+            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             const cache = new Map();
             exports.ulist = block_1.block(combinator_1.capture(/^([-+*])(?=\s|$)/, ([whole, flag], rest) => {
                 const opener = cache.has(flag) ? cache.get(flag) : cache.set(flag, new RegExp(`^\\${ flag }(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag);
                 return combinator_1.transform(combinator_1.some(combinator_1.transform(combinator_1.inits([
-                    line_1.line(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), true, true),
+                    line_1.line(combinator_1.verify(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist,
                         olist_1.olist_
                     ]))
-                ]), (ns, rest) => ns.length === 1 && [
-                    HTMLUListElement,
-                    HTMLOListElement
-                ].some(C => ns[0] instanceof C) ? undefined : [
-                    [typed_dom_1.html('li', ns)],
+                ]), (ns, rest) => [
+                    [typed_dom_1.html('li', forceLinebreak(ns))],
                     rest
                 ])), (es, rest) => [
                     [typed_dom_1.html('ul', es)],
                     rest
                 ])(whole + rest);
             }));
+            function forceLinebreak(ns) {
+                return [
+                    HTMLUListElement,
+                    HTMLOListElement
+                ].some(E => ns[0] instanceof E) ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
+            }
+            exports.forceLinebreak = forceLinebreak;
         },
         {
             '../../combinator': 19,
@@ -1890,6 +1934,7 @@ require = function () {
             '../source/line': 80,
             '../util': 84,
             './olist': 47,
+            'spica/concat': 7,
             'typed-dom': 12
         }
     ],
@@ -1996,7 +2041,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.annotation = combinator_1.transform(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([inline_1.inline]), '))'), '))')), (ns, rest) => {
                 const el = typed_dom_1.html('sup', { class: 'annotation' }, ns);
-                return util_1.hasText(el) && !el.querySelector('.annotation, .media') ? [
+                return util_1.hasText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotation(el) ? [
                     [el],
                     rest
                 ] : undefined;
@@ -2400,11 +2445,11 @@ require = function () {
             const util_1 = require('../util');
             const url_1 = require('../string/url');
             const typed_dom_1 = require('typed-dom');
-            exports.link = line_1.line(combinator_1.transform(combinator_1.build(() => line_1.line(combinator_1.surround('[', combinator_1.some(combinator_1.union([inline_1.inline]), ']'), ']', false), false)), (ns, rest) => {
-                const children = util_1.squash(ns, document.createDocumentFragment());
-                if (children.querySelector('.annotation'))
+            exports.link = line_1.line(combinator_1.transform(combinator_1.build(() => line_1.line(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']', false), false)), (ns, rest) => {
+                const children = typed_dom_1.frag(ns);
+                if (util_1.hasAnnotation(children))
                     return;
-                if (children.querySelector('.media')) {
+                if (util_1.hasMedia(children)) {
                     void children.querySelectorAll('a > .media').forEach(el => void el.parentNode.parentNode.replaceChild(el, el.parentNode));
                     if (children.childNodes.length !== 1)
                         return;
@@ -2413,7 +2458,7 @@ require = function () {
                 } else {
                     if (children.childNodes.length > 0 && !util_1.hasText(children))
                         return;
-                    if (children.querySelector('a'))
+                    if (util_1.hasLink(children))
                         return;
                 }
                 return combinator_1.transform(line_1.line(combinator_1.surround('(', combinator_1.subsequence([
@@ -2431,7 +2476,7 @@ require = function () {
                         href: url,
                         rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener'
                     }, util_1.hasContent(children) ? children.childNodes : url_1.sanitize(INSECURE_URL || window.location.href).replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
-                    if (window.location.origin !== el.origin || el.querySelector('.media')) {
+                    if (window.location.origin !== el.origin || util_1.hasMedia(el)) {
                         void el.setAttribute('target', '_blank');
                     }
                     return [
@@ -2882,19 +2927,8 @@ require = function () {
                 ]);
             }
             exports.compress = compress;
-            function squash(nodes, container = []) {
-                let Types;
-                (function (Types) {
-                    Types[Types['Array'] = 0] = 'Array';
-                    Types[Types['Node'] = 1] = 'Node';
-                }(Types || (Types = {})));
-                const obj = Array.isArray(container) ? {
-                    type: 0,
-                    value: container
-                } : {
-                    type: 1,
-                    value: container
-                };
+            function squash(nodes) {
+                const acc = [];
                 void nodes.reduce((prev, curr) => {
                     if (prev) {
                         if (curr.nodeType === 3 && curr.textContent === '')
@@ -2905,23 +2939,28 @@ require = function () {
                             return prev;
                         }
                     }
-                    switch (obj.type) {
-                    case 0:
-                        void obj.value.push(curr);
-                        break;
-                    case 1:
-                        void obj.value.appendChild(curr);
-                        break;
-                    }
+                    void acc.push(curr);
                     return curr;
                 }, undefined);
-                return container;
+                return acc;
             }
             exports.squash = squash;
             function hasContent(node) {
-                return hasText(node) || !!node.querySelector('.media');
+                return hasText(node) || hasMedia(node);
             }
             exports.hasContent = hasContent;
+            function hasMedia(node) {
+                return !!node.querySelector('.media');
+            }
+            exports.hasMedia = hasMedia;
+            function hasLink(node) {
+                return !!node.querySelector('a');
+            }
+            exports.hasLink = hasLink;
+            function hasAnnotation(node) {
+                return !!node.querySelector('.annotation');
+            }
+            exports.hasAnnotation = hasAnnotation;
             function hasText(node) {
                 return node.textContent.trim() !== '';
             }
