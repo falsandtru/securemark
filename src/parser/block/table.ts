@@ -57,7 +57,7 @@ export const table: TableParser = block(transform(build(() =>
   }));
 
 const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => transform(
-  line(match(/^\|/, trim(surround('', some(union([parser])), /^\|?$/, strict))), true, true),
+  line(match('|', trim(surround('', some(union([parser])), /^\|?$/, strict))), true, true),
   (es, rest) =>
     [[html('tr', es)], rest]);
 
