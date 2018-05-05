@@ -9,12 +9,12 @@ import { html, text } from 'typed-dom';
 
 export const table: TableParser = block(transform(build(() =>
   sequence([
-    row(cell(data)),
-    row(cell(align)),
-    some(row(cell(data))),
+    row(cell(data), false),
+    row(cell(align), true),
+    some(row(cell(data), false)),
   ])),
   ([head, as, ...rows], rest) => {
-    if (as.children.length === 0) return;
+    assert(as.children.length > 0);
     void align();
     return [[html('table', [html('thead', [head]), html('tbody', rows)])], rest];
 
@@ -56,8 +56,8 @@ export const table: TableParser = block(transform(build(() =>
     }
   }));
 
-const row = <P extends TableParser.CellParser>(parser: P): TableParser.RowParser => transform(
-  line(match(/^\|/, trim(surround('', some(union([parser])), /^\|?$/, false))), true, true),
+const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => transform(
+  line(match(/^\|/, trim(surround('', some(union([parser])), /^\|?$/, strict))), true, true),
   (es, rest) =>
     [[html('tr', es)], rest]);
 
