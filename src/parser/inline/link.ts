@@ -3,14 +3,14 @@ import { union, subsequence, some, capture, surround, transform, build } from '.
 import { line } from '../source/line';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
-import { hasText, hasContent, hasMedia, hasLink, hasAnnotation, stringify, squash } from '../util';
+import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotation, stringify } from '../util';
 import { sanitize } from '../string/url';
-import { html, text as txt } from 'typed-dom';
+import { html, text as txt, frag } from 'typed-dom';
 
 export const link: LinkParser = line(transform(build(() =>
-  line<LinkParser>(surround('[', some(union([inline]), ']'), ']', false), false)),
+  line<LinkParser>(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
   (ns, rest) => {
-    const children = squash(ns, document.createDocumentFragment());
+    const children = frag(ns);
     if (hasAnnotation(children)) return;
     if (hasMedia(children)) {
       void children.querySelectorAll('a > .media')

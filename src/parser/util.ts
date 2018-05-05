@@ -6,16 +6,8 @@ export function compress<T extends Node, S extends Parser<any, any>[]>(parser: P
     [squash(ns), rest]);
 }
 
-export function squash<T extends Node[]>(nodes: T): T;
-export function squash<T extends Node[], U extends DocumentFragment>(nodes: T, container: U): U;
-export function squash<T extends Node[], U extends T | Node>(nodes: T, container: U = [] as Node[] as U): U {
-  const enum Types {
-    Array,
-    Node,
-  }
-  const obj = Array.isArray(container)
-    ? { type: Types.Array as Types.Array, value: container as T, }
-    : { type: Types.Node as Types.Node, value: container as Node, };
+export function squash<T extends Node>(nodes: T[]): T[] {
+  const acc: T[] = [];
   void nodes
     .reduce<Node | undefined>((prev, curr) => {
       if (prev) {
@@ -26,18 +18,11 @@ export function squash<T extends Node[], U extends T | Node>(nodes: T, container
           return prev;
         }
       }
-      switch (obj.type) {
-        case Types.Array:
-          void obj.value.push(curr);
-          break;
-        case Types.Node:
-          void obj.value.appendChild(curr);
-          break;
-      }
+      void acc.push(curr);
       return curr;
     }, undefined);
-  assert(nodes.length === 0 || (obj.type === Types.Array ? obj.value.length > 0 : obj.value.childNodes.length > 0));
-  return container;
+  assert(nodes.length > 0 ? acc.length > 0 : true);
+  return acc;
 }
 
 export function hasContent(node: Element | DocumentFragment): boolean {
