@@ -1758,12 +1758,7 @@ require = function () {
                 row(cell(align)),
                 combinator_1.some(row(cell(data)))
             ])), ([head, as, ...rows], rest) => {
-                const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc[acc.length - 1] || '']), []);
-                void align(head, [
-                    aligns[0] || '',
-                    aligns[1] || aligns[0] || ''
-                ]);
-                void rows.forEach(row => void align(row, aligns));
+                void align();
                 return [
                     [typed_dom_1.html('table', [
                             typed_dom_1.html('thead', [head]),
@@ -1771,16 +1766,24 @@ require = function () {
                         ])],
                     rest
                 ];
-                function align(row, aligns) {
-                    aligns = aligns.concat(Array(Math.max(row.children.length - aligns.length, 0)).fill(aligns[aligns.length - 1] || ''));
-                    return void [...row.children].forEach((col, i) => aligns[i] && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
-                }
-                function sanitize(align) {
-                    return [
-                        'left',
-                        'center',
-                        'right'
-                    ].includes(align) ? align : '';
+                function align() {
+                    const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc[acc.length - 1] || '']), []);
+                    void align(head, extend(aligns.slice(0, 2), head.children.length));
+                    void rows.forEach(row => void align(row, extend(aligns, row.children.length)));
+                    return;
+                    function extend(aligns, size) {
+                        return size > aligns.length ? concat_1.concat(aligns, Array(size - aligns.length).fill(aligns[aligns.length - 1] || '')) : aligns;
+                    }
+                    function align(row, aligns) {
+                        return void [...row.children].forEach((col, i) => aligns[i] && aligns[i] === sanitize(aligns[i]) && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
+                    }
+                    function sanitize(align) {
+                        return [
+                            'left',
+                            'center',
+                            'right'
+                        ].includes(align) ? align : '';
+                    }
                 }
             }));
             const row = parser => combinator_1.transform(line_1.line(combinator_1.surround(/(?=^\|)/, combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser]), /^\|?$/), /^\|?$/)), ''), true, true), (es, rest) => [
