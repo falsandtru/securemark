@@ -1633,7 +1633,7 @@ require = function () {
                         ulist_1.ulist,
                         exports.olist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', ulist_1.forceLinebreak(ns))])), es => [typed_dom_1.html('ol', {
+                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))])), es => [typed_dom_1.html('ol', {
                         start: index,
                         type: type(index)
                     }, es)])(whole + rest);
@@ -1676,9 +1676,12 @@ require = function () {
                     inline_1.inline
                 ]))))
             ])), ns => {
-                const el = typed_dom_1.html('p', ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns);
+                const el = typed_dom_1.html('p', dropTrailingLinebreak(ns));
                 return util_1.hasContent(el) ? [el] : [];
             }));
+            function dropTrailingLinebreak(ns) {
+                return ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns;
+            }
         },
         {
             '../../combinator': 19,
@@ -1868,15 +1871,15 @@ require = function () {
                         exports.ulist,
                         olist_1.olist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', forceLinebreak(ns))])), es => [typed_dom_1.html('ul', es)])(whole + rest);
+                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))])), es => [typed_dom_1.html('ul', es)])(whole + rest);
             }));
-            function forceLinebreak(ns) {
+            function fillFirstLine(ns) {
                 return [
                     HTMLUListElement,
                     HTMLOListElement
                 ].some(E => ns[0] instanceof E) ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
             }
-            exports.forceLinebreak = forceLinebreak;
+            exports.fillFirstLine = fillFirstLine;
         },
         {
             '../../combinator': 19,
