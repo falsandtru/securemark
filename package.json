@@ -65,7 +65,7 @@
     "spica": "0.0.169",
     "tsify": "^4.0.0",
     "typed-dom": "0.0.91",
-    "typescript": "2.9.0-dev.20180505",
+    "typescript": "2.9.0-dev.20180506",
     "uglify-es": "^3.3.9",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0",
