@@ -835,7 +835,7 @@ require = function () {
                     const [rs = [], r = undefined] = parser(source) || [];
                     if (r === undefined)
                         return;
-                    if (!cond(rs))
+                    if (!cond(rs, r))
                         return;
                     return r.length < source.length ? [
                         rs,
@@ -1401,19 +1401,13 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const figure_1 = require('./extension/figure');
             const placeholder_1 = require('./extension/placeholder');
-            const block_1 = require('../source/block');
-            exports.segment = block_1.block(combinator_1.capture(/^(~{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
-                [],
-                rest
-            ]));
-            exports.extension = combinator_1.rewrite(exports.segment, combinator_1.union([
+            exports.extension = combinator_1.union([
                 figure_1.figure,
                 placeholder_1.placeholder
-            ]));
+            ]);
         },
         {
             '../../combinator': 19,
-            '../source/block': 78,
             './extension/figure': 41,
             './extension/placeholder': 42
         }
@@ -1426,18 +1420,46 @@ require = function () {
             const block_1 = require('../../source/block');
             const inline_1 = require('../../inline');
             const table_1 = require('../table');
+            const blockquote_1 = require('../blockquote');
             const pretext_1 = require('../pretext');
             const math_1 = require('../math');
             const line_1 = require('../../source/line');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.figure = block_1.block(combinator_1.capture(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?:([\s\S]*?)\n)?\1[^\S\n]*\n?$/, ([, , note, body = ''], rest) => {
+            const segment = block_1.block(combinator_1.union([
+                combinator_1.capture(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/, ([, bracket, note], rest) => {
+                    if (!inline_1.label(note))
+                        return;
+                    return combinator_1.bind(combinator_1.inits([
+                        combinator_1.capture(/^(`{3,})[^\n]*\n(?:[\s\S]*?\n)?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
+                            [],
+                            rest
+                        ]),
+                        combinator_1.inits([
+                            line_1.emptyline,
+                            combinator_1.union([
+                                line_1.emptyline,
+                                combinator_1.some(line_1.contentline)
+                            ])
+                        ])
+                    ]), (_, rest) => rest.split('\n')[0].trim() === bracket ? [
+                        [],
+                        rest.slice(rest.split('\n')[0].length + 1)
+                    ] : undefined)(rest);
+                }),
+                combinator_1.capture(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
+                    [],
+                    rest
+                ])
+            ]));
+            exports.figure = block_1.block(combinator_1.rewrite(segment, combinator_1.capture(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?:([\s\S]*?)\n)?\1[^\S\n]*\n?$/, ([, , note, body = ''], rest) => {
                 const [[figlabel = undefined] = []] = inline_1.label(note) || [];
                 if (!figlabel)
                     return;
                 return combinator_1.fmap(combinator_1.inits([
                     combinator_1.union([
                         table_1.table,
+                        blockquote_1.blockquote,
                         pretext_1.pretext,
                         math_1.math,
                         line_1.line(combinator_1.contract('!', combinator_1.trim(inline_1.url), ([node]) => node instanceof Element), true, true)
@@ -1450,7 +1472,7 @@ require = function () {
                         ])
                     ]), util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))))
                 ]), ([content, ...caption]) => [fig(figlabel, content, caption)])(body);
-            }));
+            })));
             function fig(label, content, caption) {
                 return typed_dom_1.html('figure', { class: label.getAttribute('href').slice(1) }, [
                     content,
@@ -1464,6 +1486,7 @@ require = function () {
             '../../source/block': 78,
             '../../source/line': 81,
             '../../util': 85,
+            '../blockquote': 38,
             '../math': 46,
             '../pretext': 52,
             '../table': 53,
@@ -1474,13 +1497,19 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const combinator_1 = require('../../../combinator');
+            const block_1 = require('../../source/block');
             const paragraph_1 = require('../paragraph');
-            exports.placeholder = _ => [
+            exports.placeholder = block_1.block(combinator_1.capture(/^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
                 paragraph_1.paragraph('**WARNING: DON\'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.\n')[0],
-                ''
-            ];
+                rest
+            ]));
         },
-        { '../paragraph': 49 }
+        {
+            '../../../combinator': 19,
+            '../../source/block': 78,
+            '../paragraph': 49
+        }
     ],
     43: [
         function (require, module, exports) {
@@ -1744,10 +1773,10 @@ require = function () {
             const escapable_1 = require('../source/escapable');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = block_1.block(combinator_1.capture(/^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
+            exports.segment = combinator_1.capture(/^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
                 [],
                 rest
-            ]));
+            ]);
             exports.pretext = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.capture(/^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*\n?$/, ([, , notes, body = ''], rest) => {
                 const el = typed_dom_1.html('pre', body);
                 const lang = notes.split(/\s/, 1)[0];
@@ -2584,7 +2613,7 @@ require = function () {
                 while (source.length > 0) {
                     const [, rest = ''] = combinator_1.union([
                         pretext_1.segment,
-                        extension_1.segment,
+                        extension_1.extension,
                         combinator_1.some(line_1.contentline),
                         combinator_1.some(line_1.blankline)
                     ])(source) || [];
