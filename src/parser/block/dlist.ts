@@ -15,7 +15,7 @@ export const dlist: DListParser = block(fmap(build(() =>
     some(desc)
   ]))),
   es =>
-    [html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
+    [html('dl', es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
 
 const term: DListParser.TermParser = line(bind<DListParser.TermParser>(build(() =>
   surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),

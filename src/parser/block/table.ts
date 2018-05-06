@@ -21,7 +21,7 @@ export const table: TableParser = block(fmap(build(() =>
     function align(): void {
       const aligns = [...as.children]
         .reduce((acc, el) =>
-          concat(acc, [el.textContent || acc[acc.length - 1] || ''])
+          concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
         , []);
       void align(head, extend(aligns.slice(0, 2), head.children.length));
       void rows
@@ -34,7 +34,7 @@ export const table: TableParser = block(fmap(build(() =>
           ? concat(
               aligns,
               Array(size - aligns.length)
-                .fill(aligns[aligns.length - 1] || ''))
+                .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
           : aligns;
       }
 

@@ -16,7 +16,7 @@ export const paragraph: ParagraphParser = block(fmap(build(() =>
     ])))),
   ])),
   ns => {
-    const el = html('p', ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns);
+    const el = html('p', ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns);
     return hasContent(el)
       ? [el]
       : [];
