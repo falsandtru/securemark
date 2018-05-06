@@ -41,18 +41,18 @@ export const figure: FigureParser = block(capture(
             compress(trim(some(union([inline]))))),
         ]),
         closer),
-      ([content, ...caption], rest) => [
-        [
-          html('figure',
-            { class: figlabel.getAttribute('href')!.slice(1) },
-            [
-              content,
-              html('figcaption',
-                { 'data-type': figlabel.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0] },
-                [html('span', caption)])
-            ])
-        ],
-        rest
-      ])
+      ([content, ...caption], rest) =>
+        [[fig(figlabel, content, caption)], rest])
       (rest);
   }));
+
+function fig(label: HTMLAnchorElement, content: HTMLElement | Text, caption: (HTMLElement | Text)[]): HTMLElement {
+  return html('figure',
+    { class: label.getAttribute('href')!.slice(1) },
+    [
+      content,
+      html('figcaption',
+        { 'data-type': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0] },
+        [html('span', caption)])
+    ]);
+}
