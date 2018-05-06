@@ -20,3 +20,7 @@ export const pretext: PretextParser = block(capture(
     }
     return [[el], rest];
   }));
+
+export const segment: PretextParser = block(capture(
+  /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/,
+  (_, rest) => [[], rest]));
