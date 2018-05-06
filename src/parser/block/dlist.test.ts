@@ -35,15 +35,20 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~\n~\n:')), [['<dl><dt></dt><dt></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~\n:\n:')), [['<dl><dt></dt><dd></dd><dd></dd></dl>'], '']);
       // filled
-      assert.deepStrictEqual(inspect(parser('~\na\n:')), [['<dl><dt></dt><dd>a</dd><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~\n:\nb')), [['<dl><dt></dt><dd>b</dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~\na\n: b')), [['<dl><dt></dt><dd>a</dd><dd>b</dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ \\\n')), [['<dl><dt></dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a: b')), [['<dl><dt id="index:a:-b">a: b</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~\na')), [['<dl><dt></dt><dd>a</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ \na')), [['<dl><dt></dt><dd>a</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ \\\na')), [['<dl><dt></dt><dd>a</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a')), [['<dl><dt id="index:a">a</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a\nb')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a\nb\n')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a\nb\nc')), [['<dl><dt id="index:a">a</dt><dd>b<span class="newline"> </span>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n~b')), [['<dl><dt id="index:a">a</dt><dd>~b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n:b')), [['<dl><dt id="index:a">a</dt><dd>:b</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a\n: b')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\n')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\nc')), [['<dl><dt id="index:a">a</dt><dd>b<span class="newline"> </span>c</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a~ b')), [['<dl><dt id="index:a~-b">a~ b</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a: b')), [['<dl><dt id="index:a:-b">a: b</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b \nc ')), [['<dl><dt id="index:a">a</dt><dd>b <span class="newline"> </span>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b\n c ')), [['<dl><dt id="index:a">a</dt><dd>b<span class="newline"> </span> c</dd></dl>'], '']);
     });
