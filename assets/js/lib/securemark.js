@@ -833,40 +833,32 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const syntax = /^\s*/;
+            const some_1 = require('./some');
+            const capture_1 = require('./capture');
+            const surround_1 = require('./surround');
+            const line_1 = require('../parser/source/line');
+            const transform_1 = require('./transform');
             function indent(parser) {
-                return source => {
-                    const [indent = ''] = firstline(source).match(syntax) || [];
-                    if (indent === '')
-                        return;
-                    const lines = [];
-                    let rest = source;
-                    while (true) {
-                        const line = firstline(rest);
-                        if (!line.startsWith(indent))
-                            break;
-                        const content = line.slice(indent.length);
-                        if (content.trim() === '')
-                            break;
-                        void lines.push(content);
-                        rest = rest.slice(line.length + 1);
-                    }
-                    if (lines.length === 0)
-                        return;
-                    const [rs = [], r = undefined] = parser(lines.join('\n')) || [];
-                    return rest.length < source.length && r === '' ? [
-                        rs,
+                return transform_1.transform(capture_1.capture(/^\s+/, ([whole], rest) => some_1.some(line_1.line(surround_1.surround(whole, s => [
+                    [s.split('\n')[0]],
+                    ''
+                ], ''), true, true))(whole + rest)), (rs, rest) => {
+                    const result = parser(rs.join('\n'));
+                    return result && result[1] === '' ? [
+                        result[0],
                         rest
                     ] : undefined;
-                };
+                });
             }
             exports.indent = indent;
-            function firstline(source) {
-                const i = source.indexOf('\n');
-                return i === -1 ? source : source.slice(0, i);
-            }
         },
-        {}
+        {
+            '../parser/source/line': 80,
+            './capture': 21,
+            './some': 27,
+            './surround': 29,
+            './transform': 31
+        }
     ],
     24: [
         function (require, module, exports) {
@@ -1299,47 +1291,42 @@ require = function () {
             const block_1 = require('../source/block');
             const line_1 = require('../source/line');
             const parse_1 = require('../parse');
-            const util_1 = require('../util');
-            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = block_1.block(combinator_1.build(() => combinator_1.union([
                 combinator_1.surround(/^(?=(>+)\s)/, textquote, ''),
                 combinator_1.surround(/^!(?=(>+)\s)/, mdquote, '')
             ])));
+            const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.transform(combinator_1.build(() => combinator_1.some(combinator_1.union([
-                combinator_1.rewrite(indent, s => textquote(unindent(s))),
-                line_1.line(s => [
+                combinator_1.transform(combinator_1.some(line_1.line(s => [
                     [
-                        typed_dom_1.text(unindent(s.split('\n')[0])),
+                        typed_dom_1.text(unindent(s.split('\n')[0].replace(/ /g, String.fromCharCode(160)))),
                         typed_dom_1.html('br')
                     ],
                     ''
-                ], true, true)
-            ]))), (ns, rest) => {
-                return [
-                    [typed_dom_1.html('blockquote', adjust(ns))],
+                ], true, true), opener), (ns, rest) => [
+                    ns.slice(0, -1),
                     rest
-                ];
-                function adjust(ns) {
-                    return ns.filter((n, i) => !(n instanceof HTMLBRElement && (i === ns.length - 1 || ns[i + 1] instanceof HTMLQuoteElement))).map(n => n instanceof Text ? typed_dom_1.text(n.textContent.replace(/ /g, String.fromCharCode(160))) : n);
-                }
-            });
+                ]),
+                combinator_1.rewrite(indent, s => textquote(unindent(s)))
+            ]))), (ns, rest) => [
+                [typed_dom_1.html('blockquote', ns)],
+                rest
+            ]);
             const mdquote = combinator_1.transform(combinator_1.build(() => combinator_1.some(combinator_1.union([
-                combinator_1.rewrite(indent, s => mdquote(unindent(s))),
-                line_1.line(s => [
-                    [typed_dom_1.text(unindent(s))],
+                combinator_1.rewrite(combinator_1.some(line_1.line(s => [
+                    [s],
                     ''
-                ], true, true)
-            ]))), (ns, rest) => {
-                return [
-                    [typed_dom_1.html('blockquote', expand(ns))],
-                    rest
-                ];
-                function expand(ns) {
-                    return util_1.squash(ns).reduce((ns, node) => node instanceof Text ? concat_1.concat(ns, [...parse_1.parse(node.textContent).childNodes]) : concat_1.concat(ns, [node]), []);
-                }
-            });
-            const indent = block_1.block(combinator_1.surround(/^(?=>>+(?:\s|$))/, combinator_1.some(line_1.line(s => [
+                ], true, true), opener), s => [
+                    [parse_1.parse(unindent(s))],
+                    ''
+                ]),
+                combinator_1.rewrite(indent, s => mdquote(unindent(s)))
+            ]))), (ns, rest) => [
+                [typed_dom_1.html('blockquote', ns)],
+                rest
+            ]);
+            const indent = block_1.block(combinator_1.surround(opener, combinator_1.some(line_1.line(s => [
                 [s],
                 ''
             ], true, true), /^>(?:\s|$)/), ''), false);
@@ -1352,8 +1339,6 @@ require = function () {
             '../parse': 75,
             '../source/block': 77,
             '../source/line': 80,
-            '../util': 84,
-            'spica/concat': 7,
             'typed-dom': 12
         }
     ],
@@ -1462,13 +1447,16 @@ require = function () {
                         ])
                     ]), util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))))
                 ]), closer), ([content, ...caption], rest) => [
-                    [typed_dom_1.html('figure', { class: figlabel.getAttribute('href').slice(1) }, [
-                            content,
-                            typed_dom_1.html('figcaption', { 'data-type': figlabel.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0] }, [typed_dom_1.html('span', caption)])
-                        ])],
+                    [fig(figlabel, content, caption)],
                     rest
                 ])(rest);
             }));
+            function fig(label, content, caption) {
+                return typed_dom_1.html('figure', { class: label.getAttribute('href').slice(1) }, [
+                    content,
+                    typed_dom_1.html('figcaption', { 'data-type': label.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0] }, [typed_dom_1.html('span', caption)])
+                ]);
+            }
         },
         {
             '../../../combinator': 19,
