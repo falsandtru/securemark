@@ -1442,7 +1442,13 @@ require = function () {
                         math_1.math,
                         line_1.line(combinator_1.contract('!', combinator_1.trim(inline_1.url), ([node]) => node instanceof Element), true, true)
                     ]),
-                    util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))))
+                    combinator_1.rewrite(combinator_1.inits([
+                        line_1.emptyline,
+                        combinator_1.union([
+                            line_1.emptyline,
+                            combinator_1.some(line_1.contentline)
+                        ])
+                    ]), util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))))
                 ]), ([content, ...caption]) => [fig(figlabel, content, caption)])(body);
             }));
             function fig(label, content, caption) {
