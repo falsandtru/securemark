@@ -2,7 +2,7 @@
 import { union, inits, some, capture, surround, verify, indent, fmap, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
-import { ulist, forceLinebreak } from './ulist';
+import { ulist, fillFirstLine } from './ulist';
 import { inline } from '../inline';
 import { compress, hasMedia } from '../util';
 import { html } from 'typed-dom';
@@ -22,7 +22,7 @@ export const olist: OListParser = block(capture(
           indent(union([ulist, olist_]))
         ]),
         ns =>
-          [html('li', forceLinebreak(ns))])),
+          [html('li', fillFirstLine(ns))])),
       es =>
         [html('ol', { start: index, type: type(index) }, es)])
       (whole + rest);

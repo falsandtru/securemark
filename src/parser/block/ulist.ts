@@ -23,13 +23,13 @@ export const ulist: UListParser = block(capture(
           indent(union([ulist, olist_]))
         ]),
         ns =>
-          [html('li', forceLinebreak(ns))])),
+          [html('li', fillFirstLine(ns))])),
       es =>
         [html('ul', es)])
       (whole + rest);
   }));
 
-export function forceLinebreak(ns: Node[]): Node[] {
+export function fillFirstLine(ns: Node[]): Node[] {
   return [HTMLUListElement, HTMLOListElement].some(E => ns[0] instanceof E)
     ? concat([html('br')], ns)
     : ns;

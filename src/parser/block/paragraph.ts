@@ -16,8 +16,14 @@ export const paragraph: ParagraphParser = block(fmap(build(() =>
     ])))),
   ])),
   ns => {
-    const el = html('p', ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns);
+    const el = html('p', dropTrailingLinebreak(ns));
     return hasContent(el)
       ? [el]
       : [];
   }));
+
+function dropTrailingLinebreak(ns: Node[]): Node[] {
+  return ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement
+    ? ns.slice(0, -1)
+    : ns;
+}
