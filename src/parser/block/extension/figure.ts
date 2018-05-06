@@ -3,6 +3,7 @@ import { union, inits, some, capture, contract, fmap, bind, rewrite, trim } from
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
+import { blockquote } from '../blockquote';
 import { pretext } from '../pretext';
 import { math } from '../math';
 import { line, emptyline, contentline } from '../../source/line';
@@ -47,6 +48,7 @@ export const figure: FigureParser = block(rewrite(
         inits<FigureParser>([
           union([
             table,
+            blockquote,
             pretext,
             math,
             line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),

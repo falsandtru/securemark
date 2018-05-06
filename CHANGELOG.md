@@ -2,6 +2,7 @@
 
 ## 0.54.0
 
+- Allow blockquote syntax in figure syntax.
 - Improve figure parser with pretext syntax.
 
 ## 0.53.0

@@ -186,6 +186,7 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           Parser<HTMLElement, [
             TableParser,
+            BlockquoteParser,
             PretextParser,
             MathParser,
             InlineParser.AutolinkParser.UrlParser
