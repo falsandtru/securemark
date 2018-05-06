@@ -1,11 +1,11 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, capture, contract, fmap, trim } from '../../../combinator';
+import { union, inits, some, capture, contract, fmap, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
 import { pretext } from '../pretext';
 import { math } from '../math';
-import { line } from '../../source/line';
+import { line, emptyline, contentline } from '../../source/line';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
 
@@ -25,7 +25,9 @@ export const figure: FigureParser = block(capture(
           math,
           line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
         ]),
-        compress(trim(some(union([inline]))))
+        rewrite(
+          inits([emptyline, union([emptyline, some(contentline)])]),
+          compress(trim(some(union([inline]))))),
       ]),
       ([content, ...caption]) =>
         [fig(figlabel, content, caption)])
