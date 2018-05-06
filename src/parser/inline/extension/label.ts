@@ -7,7 +7,7 @@ export const label: ExtensionParser.LabelParser = line(fmap(build(() =>
   surround(
     '[:',
     capture(
-      /^[a-z]+(?:(?:-[a-z][0-9a-z]*|-[0-9]+[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
+      /^[a-z]+(?:(?:-[0-9]*[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
       ([query], rest) =>
         union<ExtensionParser.LabelParser>([link])
           (`[${query}](#${makeLabel(query)})${rest}`)),
