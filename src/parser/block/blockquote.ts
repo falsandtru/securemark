@@ -16,8 +16,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
   some(union([
     fmap(
       some(line(s => [[text(unindent(s.split('\n')[0].replace(/ /g, String.fromCharCode(160)))), html('br')], ''], true, true), opener),
-      ns =>
-        ns.slice(0, -1)),
+      ns => ns.slice(0, -1)),
     rewrite(indent, s => textquote(unindent(s))),
   ]))),
   ns =>
