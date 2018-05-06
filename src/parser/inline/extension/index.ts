@@ -1,11 +1,11 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, surround, transform, rewrite, build } from '../../../combinator';
+import { union, some, surround, bind, rewrite, build } from '../../../combinator';
 import { line } from '../../source/line';
 import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
 import { hasTightText } from '../../util';
 
-export const index: ExtensionParser.IndexParser = line(transform(build(() =>
+export const index: ExtensionParser.IndexParser = line(bind(build(() =>
   surround(
     '[#',
     rewrite(

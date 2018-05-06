@@ -1,5 +1,5 @@
 ﻿import { MediaParser } from '../inline';
-import { union, some, surround, transform } from '../../combinator';
+import { union, some, surround, bind } from '../../combinator';
 import { line } from '../source/line';
 import { text } from '../source/text';
 import { parenthesis } from './link';
@@ -10,11 +10,11 @@ import { html } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(100);
 
-export const media: MediaParser = line(transform(
+export const media: MediaParser = line(bind(
   line(surround('![', some(union([text]), ']'), ']', false), false),
   (ts, rest) => {
     const caption = stringify(ts).trim();
-    return transform<MediaParser>(
+    return bind<MediaParser>(
       line(surround('(', some(union([parenthesis, text]), /^\)|^\s/), ')'), false),
       (ts, rest) => {
         const url = sanitize(stringify(ts));

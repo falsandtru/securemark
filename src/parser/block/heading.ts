@@ -1,5 +1,5 @@
 ﻿import { HeadingParser } from '../block';
-import { union, some, capture, transform, trim } from '../../combinator';
+import { union, some, capture, bind, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
@@ -10,7 +10,7 @@ import { html } from 'typed-dom';
 export const heading: HeadingParser = block(line(capture(
   /^(#{1,6})\s+([^\n]+)(?:\n|$)/,
   ([, { length: level }, content]) =>
-    transform<HeadingParser>(compress(trim(some(union([indexer, inline])))), cs => {
+    bind<HeadingParser>(compress(trim(some(union([indexer, inline])))), cs => {
       assert(level > 0 && level < 7);
       const el = html(`h${level}` as 'h1', cs);
       void defineIndex(el);

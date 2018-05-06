@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { Parser, union, subsequence, some, capture, surround, transform, build } from '../../combinator';
+import { Parser, union, subsequence, some, capture, surround, bind, build } from '../../combinator';
 import { SubParser } from '../../combinator/parser';
 import { line } from '../source/line';
 import { text } from '../source/text';
@@ -8,7 +8,7 @@ import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotation, string
 import { sanitize } from '../string/url';
 import { html, text as txt, frag } from 'typed-dom';
 
-export const link: LinkParser = line(transform(build(() =>
+export const link: LinkParser = line(bind(build(() =>
   line(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
   (ns, rest) => {
     const children = frag(ns);
@@ -26,7 +26,7 @@ export const link: LinkParser = line(transform(build(() =>
       if (hasLink(children)) return;
     }
     assert(children.querySelector('a > .media') || !hasLink(children));
-    return transform(
+    return bind(
       line(surround('(', subsequence<SubParser<LinkParser>>([some(union<Parser<Text, [typeof parenthesis, typeof text]>>([parenthesis, text]), /^\)|^\s/), attribute]), ')', false), false),
       (ns, rest) => {
         const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(.*?)(?:\n(.*))?$/) || [];
@@ -52,7 +52,7 @@ export const link: LinkParser = line(transform(build(() =>
   }
 ), false);
 
-export const parenthesis: LinkParser.ParenthesisParser = transform(build(() =>
+export const parenthesis: LinkParser.ParenthesisParser = bind(build(() =>
   surround('(', some(union([parenthesis, escsource]), /^\)|^\s/), ')', false)),
   (ts, rest) =>
     [[txt('('), ...ts, txt(')')], rest]);

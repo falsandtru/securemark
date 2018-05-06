@@ -1,6 +1,6 @@
 ﻿import { AutolinkParser } from '../../inline';
 import { SubParsers } from '../../../combinator/parser';
-import { union, some, capture, surround, fmap, transform } from '../../../combinator';
+import { union, some, capture, surround, fmap, bind } from '../../../combinator';
 import { line } from '../../source/line';
 import { escsource } from '../../source/escapable';
 import { link, parenthesis } from '../link';
@@ -21,7 +21,7 @@ export const url: AutolinkParser.UrlParser = line(union([
       source = flag
         ? source.slice(1)
         : source;
-      return transform<SubParsers<AutolinkParser.UrlParser>[1]>(
+      return bind<SubParsers<AutolinkParser.UrlParser>[1]>(
         some(union([ipv6, parenthesis, some(escsource, closer)])),
         (_, rest) => {
           const attribute = source.startsWith('ttp')

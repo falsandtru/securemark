@@ -10,7 +10,7 @@ export * from './combinator/surround';
 export * from './combinator/contract';
 export * from './combinator/indent';
 export * from './combinator/fmap';
-export * from './combinator/transform';
+export * from './combinator/bind';
 export * from './combinator/rewrite';
 export * from './combinator/trim';
 export * from './combinator/build';

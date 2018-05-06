@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, capture, surround, contract, fmap, transform, trim, build } from '../../combinator';
+import { union, sequence, some, capture, surround, contract, fmap, bind, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { inline } from '../inline';
@@ -66,7 +66,7 @@ const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser
   ns =>
     [html('td', ns)]);
 
-const data: TableParser.DataParser = build(() => transform(
+const data: TableParser.DataParser = build(() => bind(
   surround(
     /^\|\s*/,
     compress(union([some(inline, /^\s*(?:\||$)/)])),

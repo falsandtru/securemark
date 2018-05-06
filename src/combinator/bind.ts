@@ -1,8 +1,8 @@
 ﻿import { Parser, Result, Data, SubData, SubParser } from './parser';
 
-export function transform<P extends Parser<any, any>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string) => Result<Data<P>, any>): P;
-export function transform<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, any>): Parser<U, S>;
-export function transform<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, any>): Parser<U, S> {
+export function bind<P extends Parser<any, any>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string) => Result<Data<P>, any>): P;
+export function bind<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, any>): Parser<U, S>;
+export function bind<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, any>): Parser<U, S> {
   return source => {
     if (source === '') return;
     const [rs = [], rest = undefined] = parser(source) || [];

@@ -1,5 +1,5 @@
 ﻿import { CodeParser } from '../inline';
-import { union, some, capture, surround, transform } from '../../combinator';
+import { union, some, capture, surround, bind } from '../../combinator';
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
@@ -15,7 +15,7 @@ export const code: CodeParser = line(capture(
     const closer = cache.has(bracket)
       ? cache.get(bracket)!
       : cache.set(bracket, new RegExp(`^${bracket}(?!\`)`)).get(bracket)!;
-    return transform(
+    return bind(
       surround(bracket, some(union([some(char('`')), unescsource]), closer), closer),
       (ns, rest) => {
         const el = html('code',
