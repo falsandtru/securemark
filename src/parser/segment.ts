@@ -1,7 +1,7 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
 import { union, some } from '../combinator';
 import { segment as pretext } from './block/pretext';
-import { segment as extension } from './block/extension';
+import { extension } from './block/extension';
 import { contentline, blankline } from './source/line';
 
 import SegmentParser = MarkdownParser.SegmentParser;

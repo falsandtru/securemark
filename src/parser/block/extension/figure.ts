@@ -12,7 +12,7 @@ import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 
-export const segment: FigureParser = block(union([
+const segment: FigureParser = block(union([
   capture(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/,
     ([, bracket, note], rest) => {
