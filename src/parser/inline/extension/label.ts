@@ -1,9 +1,9 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { union, capture, surround, transform, build } from '../../../combinator';
+import { union, capture, surround, fmap, build } from '../../../combinator';
 import { line } from '../../source/line';
 import { link } from '../link';
 
-export const label: ExtensionParser.LabelParser = line(transform(build(() =>
+export const label: ExtensionParser.LabelParser = line(fmap(build(() =>
   surround(
     '[:',
     capture(
@@ -12,9 +12,9 @@ export const label: ExtensionParser.LabelParser = line(transform(build(() =>
         union<ExtensionParser.LabelParser>([link])
           (`[${query}](#${makeLabel(query)})${rest}`)),
     ']')),
-  ([el], rest) => {
+  ([el]) => {
     void el.setAttribute('class', el.getAttribute('href')!.slice(1));
-    return [[el], rest];
+    return [el];
   }
 ), false);
 

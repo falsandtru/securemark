@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, capture, contract, surround, transform, rewrite, trim } from '../../../combinator';
+import { union, inits, some, capture, contract, surround, fmap, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
@@ -21,7 +21,7 @@ export const figure: FigureParser = block(capture(
     const closer = cache.has(bracket)
       ? cache.get(bracket)!
       : cache.set(bracket, new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)).get(bracket)!;
-    return transform(
+    return fmap(
       surround(
         '',
         inits<FigureParser>([
@@ -41,8 +41,8 @@ export const figure: FigureParser = block(capture(
             compress(trim(some(union([inline]))))),
         ]),
         closer),
-      ([content, ...caption], rest) =>
-        [[fig(figlabel, content, caption)], rest])
+      ([content, ...caption]) =>
+        [fig(figlabel, content, caption)])
       (rest);
   }));
 

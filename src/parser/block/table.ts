@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, capture, surround, contract, transform, trim, build } from '../../combinator';
+import { union, sequence, some, capture, surround, contract, fmap, transform, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { inline } from '../inline';
@@ -7,16 +7,16 @@ import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
-export const table: TableParser = block(transform(build(() =>
+export const table: TableParser = block(fmap(build(() =>
   sequence<TableParser>([
     row(cell(data), false),
     row(cell(align), true),
     some(row(cell(data), false)),
   ])),
-  ([head, as, ...rows], rest) => {
+  ([head, as, ...rows]) => {
     assert(as.children.length > 0);
     void align();
-    return [[html('table', [html('thead', [head]), html('tbody', rows)])], rest];
+    return [html('table', [html('thead', [head]), html('tbody', rows)])];
 
     function align(): void {
       const aligns = [...as.children]
@@ -56,18 +56,20 @@ export const table: TableParser = block(transform(build(() =>
     }
   }));
 
-const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => transform(
+const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => fmap(
   line(contract('|', trim(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(html('b', ns))), true, true),
-  (es, rest) =>
-    [[html('tr', es)], rest]);
+  es =>
+    [html('tr', es)]);
 
-const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser: P): TableParser.CellParser =>
-  transform(compress(union([parser])), (ns, rest) => [[html('td', ns)], rest]);
+const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser: P): TableParser.CellParser => fmap(
+  union([parser]),
+  ns =>
+    [html('td', ns)]);
 
 const data: TableParser.DataParser = build(() => transform(
   surround(
     /^\|\s*/,
-    union([some(inline, /^\s*(?:\||$)/)]),
+    compress(union([some(inline, /^\s*(?:\||$)/)])),
     /^\s*/,
     false),
   (ns, rest) =>

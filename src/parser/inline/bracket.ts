@@ -1,22 +1,22 @@
 ﻿import { BracketParser, inline } from '../inline';
-import { union, some, surround, transform, build } from '../../combinator';
+import { union, some, surround, fmap, build } from '../../combinator';
 import { compress } from '../util';
 import { text } from 'typed-dom';
 
 export const bracket: BracketParser = build(() => compress(union([
-  transform(
+  fmap(
     surround('(', some(inline, ')'), ')', false),
-    (ns, rest) => [[text('('), ...ns, text(')')], rest]),
-  transform(
+    ns => [text('('), ...ns, text(')')]),
+  fmap(
     surround('[', some(inline, ']'), ']', false),
-    (ns, rest) => [[text('['), ...ns, text(']')], rest]),
-  transform(
+    ns => [text('['), ...ns, text(']')]),
+  fmap(
     surround('{', some(inline, '}'), '}', false),
-    (ns, rest) => [[text('{'), ...ns, text('}')], rest]),
-  transform(
+    ns => [text('{'), ...ns, text('}')]),
+  fmap(
     surround('<', some(inline, '>'), '>', false),
-    (ns, rest) => [[text('<'), ...ns, text('>')], rest]),
-  transform(
+    ns => [text('<'), ...ns, text('>')]),
+  fmap(
     surround('"', some(inline, '"'), '"', false),
-    (ns, rest) => [[text('"'), ...ns, text('"')], rest]),
+    ns => [text('"'), ...ns, text('"')]),
 ])));

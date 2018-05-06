@@ -1,6 +1,6 @@
 ﻿import { AutolinkParser } from '../../inline';
 import { SubParsers } from '../../../combinator/parser';
-import { union, some, capture, surround, transform } from '../../../combinator';
+import { union, some, capture, surround, fmap, transform } from '../../../combinator';
 import { line } from '../../source/line';
 import { escsource } from '../../source/escapable';
 import { link, parenthesis } from '../link';
@@ -37,7 +37,7 @@ export const url: AutolinkParser.UrlParser = line(union([
     })
 ]), false);
 
-const ipv6 = transform(
+const ipv6 = fmap(
   surround('[', capture(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),
-  (ts, rest) =>
-    [[text('['), ...ts, text(']')], rest]);
+  ts =>
+    [text('['), ...ts, text(']')]);

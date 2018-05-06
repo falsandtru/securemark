@@ -1,5 +1,5 @@
 ﻿import { DListParser } from '../block';
-import { union, inits, some, surround, transform, rewrite, trim, build } from '../../combinator';
+import { union, inits, some, surround, fmap, transform, rewrite, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
@@ -9,15 +9,13 @@ import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-export const dlist: DListParser = block(transform(build(() =>
+export const dlist: DListParser = block(fmap(build(() =>
   some(inits<DListParser>([
     some(term),
     some(desc)
   ]))),
-  (es, rest) => [
-    [html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)],
-    rest
-  ]));
+  es =>
+    [html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
 
 const term: DListParser.TermParser = line(transform<DListParser.TermParser>(build(() =>
   surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),
@@ -29,10 +27,10 @@ const term: DListParser.TermParser = line(transform<DListParser.TermParser>(buil
   }
 ), true, true);
 
-const desc: DListParser.DescriptionParser = block(transform<DListParser.DescriptionParser>(build(() =>
+const desc: DListParser.DescriptionParser = block(fmap<DListParser.DescriptionParser>(build(() =>
   rewrite(
     surround(/^:(?=\s|$)|/, some(line(some(unescsource), true, true), /^[~:](?:\s|$)/), '', false),
     surround(/^:(?=\s|$)|/, trim(some(union([inline]))), '', false))),
-  (ns, rest) =>
-    [[html('dd', ns)], rest]
+  ns =>
+    [html('dd', ns)]
 ), false);

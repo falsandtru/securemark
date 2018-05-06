@@ -1,5 +1,5 @@
 ﻿import { ParagraphParser } from '../block';
-import { union, subsequence, some, transform, trim, build } from '../../combinator';
+import { union, subsequence, some, fmap, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { reference } from './paragraph/reference';
 import { hashtag } from './paragraph/hashtag';
@@ -7,7 +7,7 @@ import { inline } from '../inline';
 import { compress, hasContent } from '../util';
 import { html } from 'typed-dom';
 
-export const paragraph: ParagraphParser = block(transform(build(() =>
+export const paragraph: ParagraphParser = block(fmap(build(() =>
   subsequence<ParagraphParser>([
     some(reference),
     compress(trim(some(union([
@@ -15,9 +15,9 @@ export const paragraph: ParagraphParser = block(transform(build(() =>
       some(inline, /^\s(?=#\S)/), inline
     ])))),
   ])),
-  (ns, rest) => {
+  ns => {
     const el = html('p', ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns);
     return hasContent(el)
-      ? [[el], rest]
-      : [[], rest];
+      ? [el]
+      : [];
   }));

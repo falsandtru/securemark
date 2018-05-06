@@ -1,14 +1,14 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, capture, surround, transform, build } from '../../../combinator';
+import { union, some, capture, surround, fmap, build } from '../../../combinator';
 import { line } from '../../source/line';
 import { html } from 'typed-dom';
 
-export const placeholder: ExtensionParser.PlaceholderParser = line(transform(build(() =>
+export const placeholder: ExtensionParser.PlaceholderParser = line(fmap(build(() =>
   surround(
     '[',
     capture(/^[~^\[]/, ([flag], rest) =>
       some(union<ExtensionParser.PlaceholderParser>([inline]), ']')(flag === '[' ? flag + rest : rest)),
     ']')),
-  (ns, rest) =>
-    [[html('span', some(inline)(`**WARNING: DON'T USE \`[${ns[0].textContent![0]} ]\` SYNTAX!!** This syntax is reserved for extensibility.`)![0])], rest]
+  ns =>
+    [html('span', some(inline)(`**WARNING: DON'T USE \`[${ns[0].textContent![0]} ]\` SYNTAX!!** This syntax is reserved for extensibility.`)![0])]
 ), false);

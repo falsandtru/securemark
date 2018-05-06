@@ -1,5 +1,5 @@
 ﻿import { UListParser } from '../block';
-import { union, inits, some, capture, surround, verify, indent, transform, trim } from '../../combinator';
+import { union, inits, some, capture, surround, verify, indent, fmap, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { olist_ } from './olist';
@@ -16,16 +16,16 @@ export const ulist: UListParser = block(capture(
     const opener = cache.has(flag)
       ? cache.get(flag)!
       : cache.set(flag, new RegExp(`^\\${flag}(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag)!;
-    return transform<UListParser>(
-      some(transform(
+    return fmap<UListParser>(
+      some(fmap(
         inits<UListParser>([
           line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
           indent(union([ulist, olist_]))
         ]),
-        (ns, rest) =>
-          [[html('li', forceLinebreak(ns))], rest])),
-      (es, rest) =>
-        [[html('ul', es)], rest])
+        ns =>
+          [html('li', forceLinebreak(ns))])),
+      es =>
+        [html('ul', es)])
       (whole + rest);
   }));
 

@@ -1,9 +1,8 @@
-﻿import { Parser, transform } from '../combinator';
+﻿import { Parser, fmap } from '../combinator';
 
 export function compress<P extends Parser<Node, any>>(parser: P): P;
 export function compress<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return transform<T, T, S>(parser, (ns, rest) =>
-    [squash(ns), rest]);
+  return fmap<T, T, S>(parser, squash);
 }
 
 export function squash<T extends Node>(nodes: T[]): T[] {
