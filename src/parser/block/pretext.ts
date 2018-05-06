@@ -5,9 +5,9 @@ import { escsource } from '../source/escapable';
 import { stringify } from '../util';
 import { html } from 'typed-dom';
 
-export const segment: PretextParser = block(capture(
+export const segment: PretextParser = capture(
   /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/,
-  (_, rest) => [[], rest]));
+  (_, rest) => [[], rest]);
 
 export const pretext: PretextParser = block(rewrite(
   segment,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.54.0
+
+- Improve figure parser with pretext syntax.
+
 ## 0.53.0
 
 - Allow list nesting with no content.
