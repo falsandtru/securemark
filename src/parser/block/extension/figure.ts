@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, capture, contract, fmap, bind, rewrite, trim } from '../../../combinator';
+import { union, inits, some, capture, surround, contract, fmap, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { inline, label, url } from '../../inline';
 import { table } from '../table';
@@ -12,55 +12,46 @@ import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 
-const segment: FigureParser = block(union([
-  capture(
-    /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/,
-    ([, bracket, note], rest) => {
-      if (!label(note)) return;
-      return bind(
-        inits([
-          // pretext
-          capture(
-            /^(`{3,})[^\n]*\n(?:[\s\S]*?\n)?\1[^\S\n]*(?:\n|$)/,
-            (_, rest) => [[], rest]),
-          inits([emptyline, union([emptyline, some(contentline)])]),
-        ]),
-        (_, rest) =>
-          rest.split('\n')[0].trim() === bracket
-            ? [[], rest.slice(rest.split('\n')[0].length + 1)]
-            : undefined)
-        (rest);
-    }),
-  capture(
-    /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/,
-    (_, rest) => [[], rest]),
-]));
+const cache = new Map<string, RegExp>();
 
-export const figure: FigureParser = block(rewrite(
-  segment,
-  capture(
-    /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?:([\s\S]*?)\n)?\1[^\S\n]*\n?$/,
-    ([, , note, body = ''], rest) => {
-      assert(rest === '');
-      const [[figlabel = undefined] = []] = label(note) || [];
-      if (!figlabel) return;
-      return fmap(
+export const figure: FigureParser = block(capture(
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/,
+  ([, bracket, note], rest) => {
+    const [[figlabel = undefined] = []] = label(note) || [];
+    if (!figlabel) return;
+    const closer = cache.has(bracket)
+      ? cache.get(bracket)!
+      : cache.set(bracket, new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)).get(bracket)!;
+    return fmap(
+      surround(
+        '',
         inits<FigureParser>([
-          union([
-            table,
-            blockquote,
-            pretext,
-            math,
-            line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
-          ]),
           rewrite(
-            inits([emptyline, union([emptyline, some(contentline)])]),
+            union([
+              block(capture(
+                /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/,
+                (_, rest) => [[], rest]), false),
+              some(contentline, closer)
+            ]),
+            union([
+              table,
+              blockquote,
+              pretext,
+              math,
+              line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
+            ])),
+          rewrite(
+            inits([
+              emptyline,
+              union([emptyline, some(contentline, closer)])
+            ]),
             compress(trim(some(union([inline]))))),
         ]),
-        ([content, ...caption]) =>
-          [fig(figlabel, content, caption)])
-        (body);
-    })));
+        closer),
+      ([content, ...caption]) =>
+        [fig(figlabel, content, caption)])
+      (rest);
+  }));
 
 function fig(label: HTMLAnchorElement, content: HTMLElement | Text, caption: (HTMLElement | Text)[]): HTMLElement {
   return html('figure',

@@ -10,7 +10,6 @@ export function rewrite<T, S extends Parser<any, any>[]>(a: Parser<never, any>, 
     if (!ar || ar[1].length >= source.length) return;
     const br = b(source.slice(0, source.length - ar[1].length));
     if (!br || br[1].length >= source.length) return;
-    assert(br[1] === '');
     assert(source.slice(1).endsWith(br[1] + ar[1]));
     return br[1].length + ar[1].length < source.length
       ? [br[0], br[1] + ar[1]]
