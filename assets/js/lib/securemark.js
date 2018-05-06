@@ -1366,7 +1366,7 @@ require = function () {
             exports.dlist = block_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
-            ]))), es => [typed_dom_1.html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es)]));
+            ]))), es => [typed_dom_1.html('dl', es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es)]));
             const term = line_1.line(combinator_1.bind(combinator_1.build(() => combinator_1.surround(/^~(?=\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([
                 indexer_1.indexer,
                 inline_1.inline
@@ -1676,7 +1676,7 @@ require = function () {
                     inline_1.inline
                 ]))))
             ])), ns => {
-                const el = typed_dom_1.html('p', ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns);
+                const el = typed_dom_1.html('p', ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns);
                 return util_1.hasContent(el) ? [el] : [];
             }));
         },
@@ -1793,12 +1793,12 @@ require = function () {
                         typed_dom_1.html('tbody', rows)
                     ])];
                 function align() {
-                    const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc[acc.length - 1] || '']), []);
+                    const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || '']), []);
                     void align(head, extend(aligns.slice(0, 2), head.children.length));
                     void rows.forEach(row => void align(row, extend(aligns, row.children.length)));
                     return;
                     function extend(aligns, size) {
-                        return size > aligns.length ? concat_1.concat(aligns, Array(size - aligns.length).fill(aligns[aligns.length - 1] || '')) : aligns;
+                        return size > aligns.length ? concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : aligns;
                     }
                     function align(row, aligns) {
                         return void [...row.children].forEach((col, i) => aligns[i] && aligns[i] === sanitize(aligns[i]) && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
