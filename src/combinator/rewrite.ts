@@ -2,6 +2,8 @@
 
 export function rewrite<P extends Parser<any, any>>(a: Parser<any, any>, b: P): P;
 export function rewrite<T, S extends Parser<any, any>[]>(a: Parser<never, any>, b: Parser<T, S>): Parser<T, S> {
+  assert(a);
+  assert(b);
   return source => {
     if (source === '') return;
     const ar = a(source);
