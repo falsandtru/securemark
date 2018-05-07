@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.56.0
+
+- Extend reference parser to add nest level.
+
 ## 0.55.0
 
 - Extend hashtag parser to add tag level.
