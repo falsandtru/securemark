@@ -2,6 +2,7 @@
 
 ## 0.56.0
 
+- Change reference parser to accept only lower-case alphanumeric characters.
 - Extend reference parser to add nest level.
 
 ## 0.55.0

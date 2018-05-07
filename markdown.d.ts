@@ -216,8 +216,11 @@ export namespace MarkdownParser {
       export interface ReferenceParser extends
         // >0a
         Block<'paragraph/reference'>,
-        Parser<HTMLAnchorElement | HTMLBRElement, [
-          SourceParser.UnescapableSourceParser
+        Parser<HTMLElement | Text, [
+          Parser<HTMLAnchorElement | HTMLBRElement, [
+            SourceParser.UnescapableSourceParser
+          ]>,
+          InlineParser
         ]> {
       }
       export interface HashtagParser extends
