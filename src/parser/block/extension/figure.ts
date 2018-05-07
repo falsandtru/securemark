@@ -1,57 +1,70 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, capture, surround, contract, fmap, rewrite, trim } from '../../../combinator';
+import { union, inits, some, capture, contract, fmap, bind, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
-import { inline, label, url } from '../../inline';
+import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
-import { pretext } from '../pretext';
+import { pretext, segment_ as preseg } from '../pretext';
 import { math } from '../math';
-import { line, emptyline, contentline } from '../../source/line';
+import { inline, label, url } from '../../inline';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 
-const cache = new Map<string, RegExp>();
+export const segment: FigureParser = block(union([
+  capture(
+    /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
+    ([, bracket, note], rest) => {
+      if (!label(note)) return;
+      return block(bind(
+        inits([
+          // All parsers which can include empty lines.
+          union([
+            preseg,
+          ]),
+          inits([
+            emptyline,
+            union([emptyline, some(contentline)])
+          ]),
+        ]),
+        (_, rest) =>
+          rest.split('\n')[0].trim() === bracket
+            ? [[], rest.slice(rest.split('\n')[0].length + 1)]
+            : undefined))
+        (rest);
+    }),
+  capture(
+    /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
+    (_, rest) => [[], rest]),
+]));
 
-export const figure: FigureParser = block(capture(
-  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n/,
-  ([, bracket, note], rest) => {
+export const figure: FigureParser = block(rewrite(segment, trim(capture(
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
+  ([, , note, body], rest) => {
+    assert(rest === '');
     const [[figlabel = undefined] = []] = label(note) || [];
     if (!figlabel) return;
-    const closer = cache.has(bracket)
-      ? cache.get(bracket)!
-      : cache.set(bracket, new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)).get(bracket)!;
-    return fmap(
-      surround(
-        '',
-        inits<FigureParser>([
-          rewrite(
-            union([
-              block(capture(
-                /^(`{3,})([^\n]*)\n(?:([\s\S]*?)\n)?\1[^\S\n]*(?:\n|$)/,
-                (_, rest) => [[], rest]), false),
-              some(contentline, closer)
-            ]),
-            union([
-              table,
-              blockquote,
-              pretext,
-              math,
-              line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
-            ])),
-          rewrite(
-            inits([
-              emptyline,
-              union([emptyline, some(contentline, closer)])
-            ]),
-            compress(trim(some(union([inline]))))),
-        ]),
-        closer),
+    return block(fmap(
+      inits<FigureParser>([
+        block(union([
+          table,
+          blockquote,
+          pretext,
+          math,
+          line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
+        ])),
+        rewrite(
+          inits([
+            emptyline,
+            union([emptyline, some(contentline)])
+          ]),
+          compress(trim(some(union([inline])))))
+      ]),
       ([content, ...caption]) =>
-        [fig(figlabel, content, caption)])
-      (rest);
-  }));
+        [fig(figlabel, content, caption)]))
+      (body.slice(0, -1));
+  }))));
 
 function fig(label: HTMLAnchorElement, content: HTMLElement | Text, caption: (HTMLElement | Text)[]): HTMLElement {
   return html('figure',
