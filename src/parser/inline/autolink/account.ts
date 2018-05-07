@@ -1,14 +1,14 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { union, capture } from '../../../combinator';
+import { union, match } from '../../../combinator';
 import { line } from '../../source/line';
 import { html, text } from 'typed-dom';
 
 export const account: AutolinkParser.AccountParser = line(union([
-  capture(
+  match(
     /^[0-9a-zA-Z@]@.*?(?!@)/,
     ([frag], rest) =>
       [[text(frag)], rest]),
-  capture(
+  match(
     /^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/,
     ([whole], rest) =>
       [[html('a', { class: 'account', rel: 'noopener' }, whole)], rest])

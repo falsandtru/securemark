@@ -1,6 +1,6 @@
 ﻿import { AutolinkParser } from '../../inline';
 import { SubParsers } from '../../../combinator/parser';
-import { union, some, capture, surround, fmap, bind } from '../../../combinator';
+import { union, some, match, surround, fmap, bind } from '../../../combinator';
 import { line } from '../../source/line';
 import { escsource } from '../../source/escapable';
 import { link, parenthesis } from '../link';
@@ -9,11 +9,11 @@ import { text } from 'typed-dom';
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
 
 export const url: AutolinkParser.UrlParser = line(union([
-  capture(
+  match(
     /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/,
     ([frag], rest) =>
       [[text(frag)], rest]),
-  capture(
+  match(
     /^(?:!?h)?ttps?:\/\/\S/,
     ([whole], source) => {
       source = whole + source;
@@ -38,6 +38,6 @@ export const url: AutolinkParser.UrlParser = line(union([
 ]), false);
 
 const ipv6 = fmap(
-  surround('[', capture(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),
+  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),
   ts =>
     [text('['), ...ts, text(']')]);

@@ -1,9 +1,9 @@
 ﻿import { ParagraphParser } from '../../block';
-import { capture } from '../../../combinator';
+import { match } from '../../../combinator';
 import { line } from '../../source/line';
 import { html } from 'typed-dom';
 
-export const hashtag: ParagraphParser.HashtagParser = line(capture(
+export const hashtag: ParagraphParser.HashtagParser = line(match(
   /^(#+)\S+/,
   ([tag, { length: level }], rest) =>
     [[html('a', { class: 'hashtag', rel: 'noopener', 'data-level': `${level}` }, tag)], rest]

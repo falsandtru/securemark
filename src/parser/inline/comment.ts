@@ -1,11 +1,11 @@
 ﻿import { CommentParser } from '../inline';
-import { union, capture } from '../../combinator';
+import { union, match } from '../../combinator';
 
 export const comment: CommentParser = union<CommentParser>([
-  capture(
+  match(
     /^<(#+)\s+(?:\S+\s+)*?\1>/,
     (_, r) => [[], r]),
-  capture(
+  match(
     /^<!(-{2,})\s+(?:\S+\s+)*?\1>/,
     (_, r) => [[], r]),
 ]);

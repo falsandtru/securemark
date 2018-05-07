@@ -1,6 +1,6 @@
 ﻿import { Parser } from './parser';
 import { some } from './some';
-import { capture } from './capture';
+import { match } from './match';
 import { surround } from './surround';
 import { line } from '../parser/source/line';
 import { bind } from './bind';
@@ -8,7 +8,7 @@ import { bind } from './bind';
 export function indent<P extends Parser<any, any>>(parser: P): P;
 export function indent<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   assert(parser);
-  return bind<string, T, S>(capture(
+  return bind<string, T, S>(match(
     /^\s+/,
     ([whole], rest) =>
       some(line(surround(whole, s => [[s.split('\n')[0]], ''], ''), true, true))(whole + rest)),

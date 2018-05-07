@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, capture, contract, fmap, bind, rewrite, trim } from '../../../combinator';
+import { union, inits, some, match, contract, fmap, bind, rewrite, trim } from '../../../combinator';
 import { block } from '../../source/block';
 import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
@@ -13,7 +13,7 @@ import { html } from 'typed-dom';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser = block(union([
-  capture(
+  match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
     ([, bracket, note], rest) => {
       if (!label(note)) return;
@@ -34,12 +34,12 @@ export const segment: FigureParser = block(union([
             : undefined))
         (rest);
     }),
-  capture(
+  match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
     (_, rest) => [[], rest]),
 ]));
 
-export const figure: FigureParser = block(rewrite(segment, trim(capture(
+export const figure: FigureParser = block(rewrite(segment, trim(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
   ([, , note, body], rest) => {
     assert(rest === '');

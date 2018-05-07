@@ -1,5 +1,5 @@
 ﻿import { CodeParser } from '../inline';
-import { union, some, capture, surround, bind } from '../../combinator';
+import { union, some, match, surround, bind } from '../../combinator';
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
@@ -8,7 +8,7 @@ import { html } from 'typed-dom';
 
 const cache = new Map<string, RegExp>();
 
-export const code: CodeParser = line(capture(
+export const code: CodeParser = line(match(
   /^(`+)[^\n]+?\1(?!`)/,
   ([whole, bracket], source) => {
     source = whole + source;

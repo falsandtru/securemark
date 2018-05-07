@@ -1,12 +1,12 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { union, capture, surround, fmap, build } from '../../../combinator';
+import { union, match, surround, fmap, build } from '../../../combinator';
 import { line } from '../../source/line';
 import { link } from '../link';
 
 export const label: ExtensionParser.LabelParser = line(fmap(build(() =>
   surround(
     '[:',
-    capture(
+    match(
       /^[a-z]+(?:(?:-[0-9]*[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
       ([query], rest) =>
         union<ExtensionParser.LabelParser>([link])

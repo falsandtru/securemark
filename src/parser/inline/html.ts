@@ -1,5 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { union, some, capture, surround, bind } from '../../combinator';
+import { union, some, match, surround, bind } from '../../combinator';
 import { compress, hasText } from '../util';
 import { html as htm } from 'typed-dom';
 
@@ -8,7 +8,7 @@ assert(tags.every(tag => /[a-z]+/.test(tag)));
 assert(tags.every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
 assert(tags.every(tag => !['strong', 'em', 'code', 's', 'u'].includes(tag)));
 
-export const html: HTMLParser = capture(
+export const html: HTMLParser = match(
   /^<([a-z]+)>/,
   ([whole, tag], rest) => {
     if (!tags.includes(tag)) return;
