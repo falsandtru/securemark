@@ -327,7 +327,10 @@ export namespace MarkdownParser {
     export interface CommentParser extends
       // <# comment #>
       Inline<'comment'>,
-      Parser<never, never> {
+      Parser<never, [
+        Parser<never, never>,
+        Parser<never, never>
+      ]> {
     }
     export interface HTMLParser extends
       // <small>abc</small>

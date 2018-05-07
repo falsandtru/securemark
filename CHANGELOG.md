@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.55.0
+
+- Extend comment syntax to add HTML comment syntax.
+
 ## 0.54.0
 
 - Allow blockquote syntax in figure syntax.
