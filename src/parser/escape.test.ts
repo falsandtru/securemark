@@ -12,7 +12,7 @@ describe('Unit: parser/escape', () => {
       assert(parse(escape('https://[::]')).firstElementChild!.innerHTML === '<a href="https://[::]" rel="noopener" target="_blank">https://[::]</a>');
       assert(parse(escape('!https://a')).firstElementChild!.innerHTML === '<a href="https://a" rel="noopener" target="_blank"><img class="media" data-src="https://a" alt=""></a>');
       assert(parse(escape('@a')).firstElementChild!.innerHTML === '<a class="account" rel="noopener">@a</a>');
-      assert(parse(escape('#a')).firstElementChild!.innerHTML === '<a class="hashtag" rel="noopener">#a</a>');
+      assert(parse(escape('#a')).firstElementChild!.innerHTML === '<a class="hashtag" rel="noopener" data-level="1">#a</a>');
     });
 
   });

@@ -2,6 +2,7 @@
 
 ## 0.55.0
 
+- Extend hashtag parser to add tag level.
 - Extend comment syntax to add HTML comment syntax.
 
 ## 0.54.0
