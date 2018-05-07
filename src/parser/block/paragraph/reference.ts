@@ -12,6 +12,6 @@ export const reference: ParagraphParser.ReferenceParser = line(validate(
       ([ref, { length: level }], rest) =>
         [[html('a', { class: 'reference', rel: 'noopener', 'data-level': `${level}` }, ref.trim()), html('br')], rest]),
     () =>
-      [[...inline(`**WARNING: USE LOWER-CASE ALPHANUMERIC CHARACTERS IN REFERENCE SYNTAX!!**`)![0], html('br')], ''],
+      [[...inline(`*Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.*`)![0], html('br')], ''],
   ])
 ), true, true);

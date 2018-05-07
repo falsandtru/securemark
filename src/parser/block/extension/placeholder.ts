@@ -9,4 +9,4 @@ export const segment: ExtensionParser.PlaceholderParser = block(capture(
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(rewrite(segment,
   () =>
-    [paragraph("**WARNING: DON'T USE `~~~` SYNTAX!!**\\\nThis *extension syntax* is reserved for extensibility.\n")![0], '']));
+    [paragraph("*Invalid syntax: Extension syntax: ~~~.*\n")![0], '']));

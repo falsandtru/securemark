@@ -7,14 +7,14 @@ describe('Unit: parser/block/extension/placeholder', () => {
     const parser = some(placeholder);
 
     it('warning', () => {
-      assert.deepStrictEqual(inspect(parser('~~~\n~~~')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], '']);
-      assert.deepStrictEqual(inspect(parser('~~~\n~~~\n')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], '']);
-      assert.deepStrictEqual(inspect(parser('~~~\n<"\n~~~')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], ""]);
-      assert.deepStrictEqual(inspect(parser('~~~a\n~~~')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], '']);
-      assert.deepStrictEqual(inspect(parser('~~~a \n~~~')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], '']);
-      assert.deepStrictEqual(inspect(parser('~~~a b \n~~~')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], '']);
-      assert.deepStrictEqual(inspect(parser('~~~ a\n~~~')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], '']);
-      assert.deepStrictEqual(inspect(parser('~~~~\n~~~~')), [["<p><strong>WARNING: DON'T USE <code data-src=\"`~~~`\">~~~</code> SYNTAX!!</strong><br>This <em>extension syntax</em> is reserved for extensibility.</p>"], '']);
+      assert.deepStrictEqual(inspect(parser('~~~\n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
+      assert.deepStrictEqual(inspect(parser('~~~\n~~~\n')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
+      assert.deepStrictEqual(inspect(parser('~~~\n<"\n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], ""]);
+      assert.deepStrictEqual(inspect(parser('~~~a\n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
+      assert.deepStrictEqual(inspect(parser('~~~a \n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
+      assert.deepStrictEqual(inspect(parser('~~~a b \n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
+      assert.deepStrictEqual(inspect(parser('~~~ a\n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
+      assert.deepStrictEqual(inspect(parser('~~~~\n~~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
     });
 
   });
