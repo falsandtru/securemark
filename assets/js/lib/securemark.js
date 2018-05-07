@@ -1708,10 +1708,11 @@ require = function () {
             const unescapable_1 = require('../../source/unescapable');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.hashtag = line_1.line(combinator_1.fmap(combinator_1.surround(/^(?=#\S)/, util_1.compress(combinator_1.some(combinator_1.union([unescapable_1.unescsource]), /^\s/)), ''), ts => [typed_dom_1.html('a', {
+            exports.hashtag = line_1.line(combinator_1.capture(/^(?=(#+)\S)/, ([, {length: level}], rest) => combinator_1.fmap(util_1.compress(combinator_1.some(combinator_1.union([unescapable_1.unescsource]), /^\s/)), ts => [typed_dom_1.html('a', {
                     class: 'hashtag',
-                    rel: 'noopener'
-                }, ts)]), false);
+                    rel: 'noopener',
+                    'data-level': `${ level }`
+                }, ts)])(rest)), false);
         },
         {
             '../../../combinator': 19,
@@ -2193,9 +2194,15 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            exports.comment = combinator_1.capture(/^<(#+)\s+(?:\S+\s+)*?\1>/, (_, r) => [
-                [],
-                r
+            exports.comment = combinator_1.union([
+                combinator_1.capture(/^<(#+)\s+(?:\S+\s+)*?\1>/, (_, r) => [
+                    [],
+                    r
+                ]),
+                combinator_1.capture(/^<!(-{2,})\s+(?:\S+\s+)*?\1>/, (_, r) => [
+                    [],
+                    r
+                ])
             ]);
         },
         { '../../combinator': 19 }
@@ -2287,7 +2294,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const line_1 = require('../../source/line');
             const link_1 = require('../link');
-            exports.label = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.capture(/^[a-z]+(?:(?:-[a-z][0-9a-z]*|-[0-9]+[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, ([query], rest) => combinator_1.union([link_1.link])(`[${ query }](#${ makeLabel(query) })${ rest }`)), ']')), ([el]) => {
+            exports.label = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.capture(/^[a-z]+(?:(?:-[0-9]*[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, ([query], rest) => combinator_1.union([link_1.link])(`[${ query }](#${ makeLabel(query) })${ rest }`)), ']')), ([el]) => {
                 void el.setAttribute('class', el.getAttribute('href').slice(1));
                 return [el];
             }), false);
