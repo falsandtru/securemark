@@ -37,12 +37,14 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="newline"> </span>&gt;b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser(' >a')), [['<p>&gt;a</p>'], '']);
     });
 
     it('hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#a')), [['<p><a class="hashtag" rel="noopener" data-level="1">#a</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('#a\nb\n#c\n[#d]')), [['<p><a class="hashtag" rel="noopener" data-level="1">#a</a><span class="newline"> </span>b<span class="newline"> </span><a class="hashtag" rel="noopener" data-level="1">#c</a><span class="newline"> </span><a href="#index:d" rel="noopener">d</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a#b')), [['<p>a#b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser(' #a')), [['<p><a class="hashtag" rel="noopener" data-level="1">#a</a></p>'], '']);
     });
 
     it('comment', () => {
