@@ -7,6 +7,7 @@ describe('Unit: parser/block/extension/placeholder', () => {
     const parser = some(placeholder);
 
     it('warning', () => {
+      assert.deepStrictEqual(inspect(parser(' ~~~\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~\n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
       assert.deepStrictEqual(inspect(parser('~~~\n~~~\n')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], '']);
       assert.deepStrictEqual(inspect(parser('~~~\n<"\n~~~')), [["<p><em>Invalid syntax: Extension syntax: ~~~.</em></p>"], ""]);

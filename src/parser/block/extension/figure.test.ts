@@ -9,9 +9,11 @@ describe('Unit: parser/block/extension/figure', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure\n!https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\nhttps://host\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n!https://host\\\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n!https://host\na\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n !https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n\n!https://host\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser(' ~~~figure [:type-name]\n!https://host\n~~~')), undefined);
     });
 
     it('valid', () => {
