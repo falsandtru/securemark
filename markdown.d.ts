@@ -172,6 +172,7 @@ export namespace MarkdownParser {
       Block<'extension'>,
       Parser<HTMLElement, [
         ExtensionParser.FigureParser,
+        ExtensionParser.FigureParser,
         ExtensionParser.PlaceholderParser
       ]> {
     }

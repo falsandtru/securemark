@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.57.0
+
+- Add lightweight figure syntax.
+
 ## 0.56.0
 
 - Change reference parser to accept only lower-case alphanumeric characters.
