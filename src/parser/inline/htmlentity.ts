@@ -1,5 +1,6 @@
 ﻿import { HTMLEntityParser } from '../inline';
 import { match } from '../../combinator';
+import '../source/unescapable';
 import { html, text } from 'typed-dom';
 
 export const htmlentity: HTMLEntityParser = match(

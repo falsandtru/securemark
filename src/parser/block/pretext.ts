@@ -2,6 +2,7 @@
 import { some, match, rewrite, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { escsource } from '../source/escapable';
+import '../source/unescapable';
 import { stringify } from '../util';
 import { html } from 'typed-dom';
 

@@ -1,6 +1,7 @@
 ﻿import { MathParser } from '../block';
 import { match } from '../../combinator';
 import { block } from '../source/block';
+import '../source/unescapable';
 import { html } from 'typed-dom';
 
 export const math: MathParser = block(match(

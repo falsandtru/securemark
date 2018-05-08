@@ -2,6 +2,7 @@
 import { Parser, union, some, surround, fmap, rewrite, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
+import '../source/unescapable';
 import { parse } from '../parse';
 import { html, text } from 'typed-dom';
 

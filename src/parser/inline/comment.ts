@@ -1,5 +1,6 @@
 ﻿import { CommentParser } from '../inline';
 import { union, match } from '../../combinator';
+import '../source/unescapable';
 
 export const comment: CommentParser = union<CommentParser>([
   match(

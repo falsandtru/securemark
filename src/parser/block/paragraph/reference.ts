@@ -1,6 +1,7 @@
 ﻿import { ParagraphParser } from '../../block';
 import { union, match, validate } from '../../../combinator';
 import { line } from '../../source/line';
+import '../../source/unescapable';
 import { inline } from '../../inline';
 import { html } from 'typed-dom';
 

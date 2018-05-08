@@ -1,6 +1,7 @@
 ﻿import { ExtensionParser } from '../../inline';
 import { union, match, surround, fmap, build } from '../../../combinator';
 import { line } from '../../source/line';
+import '../../source/unescapable';
 import { link } from '../link';
 
 export const label: ExtensionParser.LabelParser = line(fmap(build(() =>
