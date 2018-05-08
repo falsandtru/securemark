@@ -56,5 +56,5 @@ function defineId(target: HTMLElement, index: number): void {
 
 function description(text: string): string {
   text = text.replace(/\s/g, '_');
-  return text.slice(0, 15) + '.'.repeat(text.slice(15, 18).length);
+  return text.slice(0, 15).toLowerCase() + '.'.repeat(text.slice(15, 18).length);
 }
