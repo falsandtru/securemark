@@ -4,7 +4,6 @@ import { block } from '../source/block';
 import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
 import { inline } from '../inline';
-import { unescsource } from '../source/unescapable';
 import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
@@ -29,7 +28,7 @@ const term: DListParser.TermParser = line(bind<DListParser.TermParser>(build(() 
 
 const desc: DListParser.DescriptionParser = block(fmap<DListParser.DescriptionParser>(build(() =>
   rewrite(
-    surround(/^:(?=\s|$)|/, some(line(some(unescsource), true, true), /^[~:](?:\s|$)/), '', false),
+    surround(/^:(?=\s|$)|/, some(line(() => [[], ''], true, true), /^[~:](?:\s|$)/), '', false),
     surround(/^:(?=\s|$)|/, trim(some(union([inline]))), '', false))),
   ns =>
     [html('dd', ns)]
