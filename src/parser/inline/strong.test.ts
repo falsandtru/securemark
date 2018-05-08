@@ -19,7 +19,7 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('a**a**')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('**a**')), [['<strong>a</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**ab**')), [['<strong>ab</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a\nb**')), [['<strong>a<span class="newline"> </span>b</strong>'], '']);

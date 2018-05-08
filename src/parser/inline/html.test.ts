@@ -31,7 +31,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('a<ruby>')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('<ruby>a</ruby>')), [['<ruby>a</ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('<ruby>a</ruby>a')), [['<ruby>a</ruby>'], 'a']);
     });

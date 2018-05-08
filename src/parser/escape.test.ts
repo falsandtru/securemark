@@ -3,7 +3,7 @@ import { parse } from './parse';
 
 describe('Unit: parser/escape', () => {
   describe('escape', () => {
-    it('ab', () => {
+    it('basic', () => {
       assert(escape('*a\\\nb*') === '\\*a\\\nb\\*');
     });
 

@@ -18,7 +18,7 @@ describe('Unit: parser/inline/extension/label', () => {
       assert.deepStrictEqual(inspect(parser('[:a-b-.0]')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('[:a-b]')), [['<a href="#label:a-b" rel="noopener" class="label:a-b">a-b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[:a-b-0]')), [['<a href="#label:a-b-0" rel="noopener" class="label:a-b-0">a-b-0</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[:a-b-0.0]')), [['<a href="#label:a-b-0.0" rel="noopener" class="label:a-b-0.0">a-b-0.0</a>'], '']);

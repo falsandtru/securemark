@@ -16,7 +16,7 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('>>')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('> ')), [['<blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> \\')), [['<blockquote>\\</blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> \\\n')), [['<blockquote>\\</blockquote>'], '']);

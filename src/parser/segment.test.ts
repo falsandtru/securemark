@@ -2,7 +2,7 @@
 
 describe('Unit: parser/segment', () => {
   describe('segment', () => {
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(segment(''), []);
       assert.deepStrictEqual(segment('a'), ['a']);
       assert.deepStrictEqual(segment('a\n'), ['a\n']);

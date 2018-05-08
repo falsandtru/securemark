@@ -17,7 +17,7 @@ describe('Unit: combinator/some', () => {
     }
     const ab = union<Parser<string, [typeof a, typeof b]>>([a, b]);
 
-    it('ab', () => {
+    it('basic', () => {
       const parser = some(ab, /aaa|$/);
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), [['A'], '']);

@@ -10,7 +10,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
       assert.deepStrictEqual(inspect(parser('a\nb')), [['a', '<span class="newline"> </span>', 'b'], '']);

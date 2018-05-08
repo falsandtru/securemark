@@ -10,7 +10,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['<p>ab</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a ')), [['<p>a</p>'], '']);

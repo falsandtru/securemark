@@ -16,7 +16,7 @@ describe('Unit: combinator/subsequence', () => {
     }
     const ab = subsequence<Parser<string, [typeof a, typeof b]>>([a, b]);
 
-    it('ab', () => {
+    it('basic', () => {
       const parser = ab;
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), [['A'], '']);

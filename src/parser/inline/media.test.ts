@@ -50,7 +50,7 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('[](#)')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('![](b)')), [['<img class="media" data-src="b" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](b\\ )')), [['<img class="media" data-src="b%20" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](b\\ c)')), [['<img class="media" data-src="b%20c" alt="">'], '']);

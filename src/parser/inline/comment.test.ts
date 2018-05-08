@@ -19,7 +19,7 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('<!- ->')), undefined);
     });
 
-    it('ab', () => {
+    it('basic', () => {
       assert.deepStrictEqual(inspect(parser('<# #>')), [[], '']);
       assert.deepStrictEqual(inspect(parser('<# a #>')), [[], '']);
       assert.deepStrictEqual(inspect(parser('<# a b #>')), [[], '']);
