@@ -1,6 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { Parser, union, subsequence, some, match, surround, bind, build } from '../../combinator';
-import { SubParser } from '../../combinator/parser';
+import { Parser, union, subsequence, some, match, surround, fmap, bind, build } from '../../combinator';
 import { line } from '../source/line';
 import { text } from '../source/text';
 import { escsource } from '../source/escapable';
@@ -27,7 +26,15 @@ export const link: LinkParser = line(bind(build(() =>
     }
     assert(children.querySelector('a > .media') || !hasLink(children));
     return bind(
-      line(surround('(', subsequence<SubParser<LinkParser>>([some(union<Parser<Text, [typeof parenthesis, typeof text]>>([parenthesis, text]), /^\)|^\s/), attribute]), ')', false), false),
+      line(surround(
+        '(',
+        subsequence<LinkParser>([
+          some(union<Parser<Text, [typeof parenthesis, typeof text]>>([parenthesis, text]), /^\)|^\s/),
+          attribute
+        ]),
+        ')',
+        false
+      ), false),
       (ns, rest) => {
         const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(.*?)(?:\n(.*))?$/) || [];
         assert(attr === '' || attr === 'nofollow');
@@ -52,10 +59,13 @@ export const link: LinkParser = line(bind(build(() =>
   }
 ), false);
 
+export const ipv6 = fmap(
+  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[txt(addr)], rest]), ']'),
+  ts => [txt('['), ...ts, txt(']')]);
+
 export const parenthesis: LinkParser.ParenthesisParser = bind(build(() =>
   surround('(', some(union([parenthesis, escsource]), /^\)|^\s/), ')', false)),
-  (ts, rest) =>
-    [[txt('('), ...ts, txt(')')], rest]);
+  (ts, rest) => [[txt('('), ...ts, txt(')')], rest]);
 
 const attribute: LinkParser.AttributeParser =
   surround(
