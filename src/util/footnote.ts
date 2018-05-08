@@ -20,7 +20,7 @@ export function footnote(source: DocumentFragment | HTMLElement, target: HTMLOLi
         : acc.length + 1;
       const id = fn
         ? fn.getAttribute('id')!
-        : `footnote:${index}:${description(title)}`;
+        : `footnote:${index}`;
       assert(id.startsWith('footnote:'));
       void reference.set(el, el.appendChild(html('a', { href: `#${id}`, rel: 'noopener' }, `[${index}]`)));
       return fn
@@ -51,10 +51,5 @@ function defineTitle(target: HTMLElement): void {
 
 function defineId(target: HTMLElement, index: number): void {
   if (target.hasAttribute('id')) return;
-  void target.setAttribute('id', `annotation:${index}:${description(target.getAttribute('title')!)}`);
-}
-
-function description(text: string): string {
-  text = text.replace(/\s/g, '_');
-  return text.slice(0, 15).toLowerCase() + '.'.repeat(text.slice(15, 18).length);
+  void target.setAttribute('id', `annotation:${index}`);
 }
