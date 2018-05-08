@@ -85,6 +85,20 @@ describe('Unit: util/figure', () => {
       }
     });
 
+    it('number', () => {
+      const source = parse([
+        '~~~figure [:$-a]\n$$\nLaTeX\n$$\n\n~~~',
+        '[:$-a]',
+      ].join('\n\n'));
+      figure(source);
+      assert.deepStrictEqual(
+        [...source.children].map(el => el.outerHTML),
+        [
+          '<figure class="label:$-a" id="label:$-1"><div class="math">$$\nLaTeX\n$$</div><figcaption data-type="$" data-index="1"><span>(1)</span><span></span></figcaption></figure>',
+          '<p><a href="#label:$-1" rel="noopener" class="label:$-a">(1)</a></p>',
+        ]);
+    });
+
   });
 
 });

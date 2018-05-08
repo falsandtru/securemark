@@ -1,6 +1,12 @@
 ﻿import { html } from 'typed-dom';
 
-export function figure(source: DocumentFragment | HTMLElement, header: (caption: HTMLElement) => string = el => capitalize(`${el.getAttribute('data-type')}. ${el.getAttribute('data-index')}.`)): void {
+export function figure(
+  source: DocumentFragment | HTMLElement,
+  header: (caption: HTMLElement) => string
+    = caption => caption.getAttribute('data-type') === '$'
+        ? `(${caption.getAttribute('data-index')})`
+        : capitalize(`${caption.getAttribute('data-type')}. ${caption.getAttribute('data-index')}.`)
+): void {
   return void [...source.querySelectorAll<HTMLElement>('figure[class^="label:"]')]
     .reduce((map, el) => {
       const label = el.className;
@@ -17,7 +23,7 @@ export function figure(source: DocumentFragment | HTMLElement, header: (caption:
       else {
         void caption.replaceChild(html('span', header(caption.cloneNode())), caption.firstChild!);
       }
-      void source.querySelectorAll(`a.${label.replace(/[:.]/g, '\\$&')}`)
+      void source.querySelectorAll(`a.${label.replace(/[:$.]/g, '\\$&')}`)
         .forEach(link => {
           void link.setAttribute('href', `#${el.id}`);
           void link.replaceChild(caption.firstChild!.firstChild!.cloneNode(true), link.firstChild!);

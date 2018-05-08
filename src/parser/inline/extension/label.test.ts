@@ -16,6 +16,9 @@ describe('Unit: parser/inline/extension/label', () => {
       assert.deepStrictEqual(inspect(parser('[:a-b-1]')), undefined);
       assert.deepStrictEqual(inspect(parser('[:a-b-0.]')), undefined);
       assert.deepStrictEqual(inspect(parser('[:a-b-.0]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:a$-b]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:$a-b]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[:$$-b]')), undefined);
     });
 
     it('basic', () => {
@@ -24,6 +27,8 @@ describe('Unit: parser/inline/extension/label', () => {
       assert.deepStrictEqual(inspect(parser('[:a-b-0.0]')), [['<a href="#label:a-b-0.0" rel="noopener" class="label:a-b-0.0">a-b-0.0</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[:a-b-0.0.0]')), [['<a href="#label:a-b-0.0.0" rel="noopener" class="label:a-b-0.0.0">a-b-0.0.0</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[:a-0]')), [['<a href="#label:a-0" rel="noopener" class="label:a-0">a-0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[:$-b]')), [['<a href="#label:$-b" rel="noopener" class="label:$-b">$-b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[:$-1]')), [['<a href="#label:$-1" rel="noopener" class="label:$-1">$-1</a>'], '']);
     });
 
   });

@@ -4,6 +4,7 @@
 
 - Change reference parser to accept only lower-case alphanumeric characters.
 - Extend reference parser to add nest level.
+- Extend label parser to support equation numbering.
 
 ## 0.55.0
 
