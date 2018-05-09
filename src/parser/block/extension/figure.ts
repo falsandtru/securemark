@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, match, contract, fmap, bind, rewrite, trim } from '../../../combinator';
+import { union, inits, some, match, contract, fmap, bind, rewrite, trim, trimEnd } from '../../../combinator';
 import { block } from '../../source/block';
 import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
@@ -39,7 +39,7 @@ export const segment: FigureParser = block(union([
     (_, rest) => [[], rest]),
 ]));
 
-export const figure: FigureParser = block(rewrite(segment, trim(match(
+export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
   ([, , note, body], rest) => {
     assert(rest === '');
@@ -52,7 +52,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(match(
           blockquote,
           pretext,
           math,
-          line(contract('!', trim(url), ([node]) => node instanceof Element), true, true),
+          line(contract('!', trimEnd(url), ([node]) => node instanceof Element), true, true),
         ])),
         rewrite(
           inits([

@@ -1,5 +1,5 @@
 ﻿import { PretextParser } from '../block';
-import { some, match, rewrite, trim, build } from '../../combinator';
+import { some, match, rewrite, trim, trimEnd, build } from '../../combinator';
 import { block } from '../source/block';
 import { escsource } from '../source/escapable';
 import '../source/unescapable';
@@ -12,7 +12,7 @@ export const segment_: PretextParser = block(match(
   /^(`{3,})([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
   (_, rest) => [[], rest]), false);
 
-export const pretext: PretextParser = block(rewrite(segment, trim(match(
+export const pretext: PretextParser = block(rewrite(segment, trimEnd(match(
   /^(`{3,})([^\n]*)\n((?:[^\n]*\n)*?)\1$/,
   ([, , notes, body], rest) => {
     assert(rest === '');
