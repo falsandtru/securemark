@@ -183,17 +183,23 @@ export namespace MarkdownParser {
         //
         // caption
         // ~~~
+        //
+        // [:type-name]
+        // !https://host/image.png
         Block<'extension/figure'>,
         Parser<HTMLElement, [
-          Parser<HTMLElement, [
-            TableParser,
-            BlockquoteParser,
-            PretextParser,
-            MathParser,
-            InlineParser.AutolinkParser.UrlParser
-          ]>,
+          InlineParser.ExtensionParser.LabelParser,
           Parser<HTMLElement | Text, [
-            InlineParser
+            Parser<HTMLElement, [
+              TableParser,
+              BlockquoteParser,
+              PretextParser,
+              MathParser,
+              InlineParser.AutolinkParser.UrlParser
+            ]>,
+            Parser<HTMLElement | Text, [
+              InlineParser
+            ]>
           ]>
         ]> {
       }

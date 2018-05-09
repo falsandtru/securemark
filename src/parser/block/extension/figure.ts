@@ -1,5 +1,6 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, inits, some, match, contract, fmap, bind, rewrite, trim, trimEnd } from '../../../combinator';
+import { SubParsers } from '../../../combinator/parser';
+import { union, sequence, inits, some, match, contract, fmap, bind, rewrite, trim, trimEnd } from '../../../combinator';
 import { block } from '../../source/block';
 import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
@@ -16,23 +17,25 @@ export const segment: FigureParser = block(union([
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
     ([, bracket, note], rest) => {
-      if (!label(note)) return;
       return block(bind(
-        inits([
-          // All parsers which can include empty lines.
-          union([
-            preseg,
-          ]),
+        sequence([
+          line(trimEnd(label), true, true),
           inits([
-            emptyline,
-            union([emptyline, some(contentline)])
+            // All parsers which can include empty lines.
+            union([
+              preseg,
+            ]),
+            inits([
+              emptyline,
+              union([emptyline, some(contentline)])
+            ]),
           ]),
         ]),
         (_, rest) =>
           rest.split('\n')[0].trim() === bracket
             ? [[], rest.slice(rest.split('\n')[0].length + 1)]
             : undefined))
-        (rest);
+        (`${note}\n${rest}`);
     }),
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
@@ -43,30 +46,32 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
   ([, , note, body], rest) => {
     assert(rest === '');
-    const [[figlabel = undefined] = []] = label(note) || [];
-    if (!figlabel) return;
     return block(fmap(
-      inits<FigureParser>([
-        block(union([
-          table,
-          blockquote,
-          pretext,
-          math,
-          line(contract('!', trimEnd(url), ([node]) => node instanceof Element), true, true),
-        ])),
-        rewrite(
-          inits([
-            emptyline,
-            union([emptyline, some(contentline)])
-          ]),
-          compress(trim(some(union([inline])))))
+      sequence<FigureParser>([
+        line(trimEnd(label), true, true),
+        inits<SubParsers<FigureParser>[1]>([
+          block(union([
+            table,
+            blockquote,
+            pretext,
+            math,
+            line(contract('!', trimEnd(url), ([node]) => node instanceof Element), true, true),
+          ])),
+          rewrite(
+            inits([
+              emptyline,
+              union([emptyline, some(contentline)])
+            ]),
+            compress(trim(some(union([inline])))))
+        ]),
       ]),
-      ([content, ...caption]) =>
-        [fig(figlabel, content, caption)]))
-      (body.slice(0, -1));
+      ([label, content, ...caption]) =>
+        [fig(label as HTMLAnchorElement, content, caption)]))
+      (`${note}\n${body.slice(0, -1)}`);
   }))));
 
 function fig(label: HTMLAnchorElement, content: HTMLElement | Text, caption: (HTMLElement | Text)[]): HTMLElement {
+  assert(label instanceof HTMLAnchorElement);
   return html('figure',
     { class: label.getAttribute('href')!.slice(1) },
     [
