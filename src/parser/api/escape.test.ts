@@ -1,7 +1,7 @@
 ﻿import { escape } from './escape';
 import { parse } from './parse';
 
-describe('Unit: parser/escape', () => {
+describe('Unit: parser/api/escape', () => {
   describe('escape', () => {
     it('basic', () => {
       assert(escape('*a\\\nb*') === '\\*a\\\nb\\*');

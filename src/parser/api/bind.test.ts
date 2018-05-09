@@ -1,7 +1,7 @@
 ﻿import { bind } from './bind';
 import { html } from 'typed-dom';
 
-describe('Unit: parser/bind', () => {
+describe('Unit: parser/api/bind', () => {
   describe('bind', () => {
     function inspect(iter: Iterable<HTMLElement>) {
       return [...iter].map(e => e.outerHTML);

@@ -1,5 +1,5 @@
 ﻿import { render } from './render';
-import { parse } from '../parser/parse';
+import { parse } from '../parser/api/parse';
 
 describe('Unit: renderer/render', () => {
   describe('render', () => {

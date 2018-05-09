@@ -3,7 +3,7 @@ import { Parser, union, some, surround, fmap, rewrite, build } from '../../combi
 import { block } from '../source/block';
 import { line } from '../source/line';
 import '../source/unescapable';
-import { parse } from '../parse';
+import { parse } from '../api/parse';
 import { html, text } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(build(() => union([

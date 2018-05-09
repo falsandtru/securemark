@@ -1,5 +1,5 @@
-import { some } from '../combinator';
-import { block } from './block';
+import { some } from '../../combinator';
+import { block } from '../block';
 import { segment } from './segment';
 
 export function parse(source: string): DocumentFragment {

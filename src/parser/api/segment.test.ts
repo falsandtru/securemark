@@ -1,6 +1,6 @@
 ﻿import { segment } from './segment';
 
-describe('Unit: parser/segment', () => {
+describe('Unit: parser/api/segment', () => {
   describe('segment', () => {
     it('basic', () => {
       assert.deepStrictEqual(segment(''), []);
