@@ -35,7 +35,7 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'footnote:1' }, [
               text('a '),
-              html('span', { class: 'newline' }, ' '),
+              html('span', { class: 'linebreak' }, ' '),
               text(' b'),
               html('sup', [html('a', { href: '#annotation:1', rel: 'noopener' }, '[1]')])
             ]),
