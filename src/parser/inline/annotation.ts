@@ -1,13 +1,12 @@
 ﻿import { AnnotationParser, inline } from '../inline';
-import { union, some, surround, bind, build } from '../../combinator';
+import { union, some, surround, verify, fmap, build } from '../../combinator';
 import { hasText, hasMedia, hasAnnotation } from '../util';
 import { html } from 'typed-dom';
 
-export const annotation: AnnotationParser = bind(build(() =>
+export const annotation: AnnotationParser = verify(fmap(build(() =>
   surround('((', some(union([inline]), '))'), '))')),
-  (ns, rest) => {
+  ns => {
     const el = html('sup', { class: 'annotation' }, ns);
-    return hasText(el) && !hasMedia(el) && !hasAnnotation(el)
-      ? [[el], rest]
-      : undefined;
-  });
+    return [el];
+  }
+), ([el]) => hasText(el) && !hasMedia(el) && !hasAnnotation(el));

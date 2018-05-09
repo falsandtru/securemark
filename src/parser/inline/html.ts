@@ -1,5 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { union, some, match, surround, bind } from '../../combinator';
+import { union, some, match, surround, verify, fmap } from '../../combinator';
 import { compress, hasText } from '../util';
 import { html as htm } from 'typed-dom';
 
@@ -15,13 +15,10 @@ export const html: HTMLParser = match(
     const opentag = `<${tag}>`;
     assert(whole.startsWith(opentag));
     if (tag === 'wbr') return [[htm(tag)], rest];
-    return bind<HTMLParser>(
+    return verify(fmap<HTMLParser>(
       surround(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
-      (ns, rest) => {
-        const el = htm(tag as 'wbr', ns);
-        return hasText(el)
-          ? [[el], rest]
-          : undefined;
-      })
+      ns =>
+        [htm(tag as 'wbr', ns)]
+    ), ([el]) => hasText(el))
       (whole + rest);
   });

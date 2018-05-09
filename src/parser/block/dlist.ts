@@ -1,5 +1,5 @@
 ﻿import { DListParser } from '../block';
-import { union, inits, some, surround, fmap, bind, rewrite, trim, build } from '../../combinator';
+import { union, inits, some, surround, verify, fmap, rewrite, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { indexer, defineIndex } from './indexer';
@@ -16,15 +16,14 @@ export const dlist: DListParser = block(fmap(build(() =>
   es =>
     [html('dl', es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
 
-const term: DListParser.TermParser = line(bind<DListParser.TermParser>(build(() =>
+const term: DListParser.TermParser = line(verify(fmap<DListParser.TermParser>(build(() =>
   surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),
-  (ns, rest) => {
+  ns => {
     const dt = html('dt', ns);
     void defineIndex(dt);
-    if (hasMedia(dt)) return;
-    return [[dt], rest];
+    return [dt];
   }
-), true, true);
+), ([el]) => !hasMedia(el)), true, true);
 
 const desc: DListParser.DescriptionParser = block(fmap<DListParser.DescriptionParser>(build(() =>
   rewrite(
