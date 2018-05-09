@@ -2,12 +2,12 @@
 
 export function trim<P extends Parser<any, any>>(parser: P): P;
 export function trim<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return trim_(parser, s => s.trim());
+  return trimWith(parser, s => s.trim());
 }
 
 export function trimStart<P extends Parser<any, any>>(parser: P): P;
 export function trimStart<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return trim_(parser, (source: string): string => {
+  return trimWith(parser, source => {
     const mid = source.trim();
     return source.slice(source.lastIndexOf(mid));
   });
@@ -15,13 +15,13 @@ export function trimStart<T, S extends Parser<any, any>[]>(parser: Parser<T, S>)
 
 export function trimEnd<P extends Parser<any, any>>(parser: P): P;
 export function trimEnd<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return trim_(parser, (source: string): string => {
+  return trimWith(parser, source => {
     const mid = source.trim();
     return source.slice(0, source.lastIndexOf(mid) + mid.length);
   });
 }
 
-function trim_<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, trim: (source: string) => string): Parser<T, S> {
+function trimWith<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, trim: (source: string) => string): Parser<T, S> {
   assert(parser);
   return source => {
     if (source === '') return;
