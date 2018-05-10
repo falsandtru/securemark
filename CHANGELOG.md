@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.59.0
+
+- Disallow figure name starting with numbers.
+
 ## 0.58.0
 
 - Localize linebreak processing.
