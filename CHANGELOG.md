@@ -3,11 +3,12 @@
 ## 0.59.0
 
 - Disallow figure name starting with numbers.
+- Revert removing linebreaks after `wbr` html tag.
 
 ## 0.58.0
 
 - Localize linebreak processing.
-- Insert `wbr` element with linebreak.
+- Insert wbr element with linebreak.
 - Remove linebreaks after `wbr` html tag.
 
 ## 0.57.0

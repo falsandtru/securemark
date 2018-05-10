@@ -54,7 +54,6 @@ describe('Unit: parser/inline/html', () => {
 
     it('wbr', () => {
       assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
-      assert.deepStrictEqual(inspect(parser('<wbr>\na')), [['<wbr>'], 'a']);
     });
 
   });

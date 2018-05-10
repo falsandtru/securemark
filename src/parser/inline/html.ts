@@ -14,7 +14,7 @@ export const html: HTMLParser = match(
     if (!tags.includes(tag)) return;
     const opentag = `<${tag}>`;
     assert(whole.startsWith(opentag));
-    if (tag === 'wbr') return [[htm(tag)], rest[0] === '\n' ? rest.slice(1) : rest];
+    if (tag === 'wbr') return [[htm(tag)], rest];
     return verify(fmap<HTMLParser>(
       surround(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
       ns =>
