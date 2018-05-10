@@ -868,7 +868,7 @@ require = function () {
             exports.indent = indent;
         },
         {
-            '../parser/source/line': 82,
+            '../parser/source/line': 85,
             './bind': 20,
             './match': 26,
             './some': 29,
@@ -1172,24 +1172,37 @@ require = function () {
     35: [
         function (require, module, exports) {
             'use strict';
+            function __export(m) {
+                for (var p in m)
+                    if (!exports.hasOwnProperty(p))
+                        exports[p] = m[p];
+            }
             Object.defineProperty(exports, '__esModule', { value: true });
-            var parse_1 = require('./parser/parse');
+            __export(require('./parser/api'));
+        },
+        { './parser/api': 36 }
+    ],
+    36: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            var parse_1 = require('./api/parse');
             exports.parse = parse_1.parse;
-            var bind_1 = require('./parser/bind');
+            var bind_1 = require('./api/bind');
             exports.bind = bind_1.bind;
-            var escape_1 = require('./parser/escape');
+            var escape_1 = require('./api/escape');
             exports.escape = escape_1.escape;
-            var cache_1 = require('./parser/cache');
+            var cache_1 = require('./api/cache');
             exports.caches = cache_1.caches;
         },
         {
-            './parser/bind': 36,
-            './parser/cache': 56,
-            './parser/escape': 57,
-            './parser/parse': 77
+            './api/bind': 37,
+            './api/cache': 38,
+            './api/escape': 39,
+            './api/parse': 40
         }
     ],
-    36: [
+    37: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1248,11 +1261,92 @@ require = function () {
             exports.bind = bind;
         },
         {
-            './parse': 77,
-            './segment': 78
+            './parse': 40,
+            './segment': 41
         }
     ],
-    37: [
+    38: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const math_1 = require('../inline/math');
+            const media_1 = require('../inline/media');
+            exports.caches = {
+                math: math_1.cache,
+                media: { image: media_1.cache }
+            };
+        },
+        {
+            '../inline/math': 77,
+            '../inline/media': 78
+        }
+    ],
+    39: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const symbols = /^(?:[~:|>`$-+*\s]|[0-9a-z]+\.|!>|#+\s)|[*`$&()\[\]{}]|\\./gim;
+            function escape(source) {
+                return source.replace(symbols, str => str[0] === '\\' ? str : `\\${ str }`);
+            }
+            exports.escape = escape;
+        },
+        {}
+    ],
+    40: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const combinator_1 = require('../../combinator');
+            const block_1 = require('../block');
+            const segment_1 = require('./segment');
+            function parse(source) {
+                return segment_1.segment(source).reduce((parent, seg) => (void parse_(seg).forEach(el => void parent.appendChild(el)), parent), document.createDocumentFragment());
+            }
+            exports.parse = parse;
+            function parse_(source) {
+                return (block_1.block(source) || [[]])[0];
+            }
+            exports.parse_ = parse_;
+        },
+        {
+            '../../combinator': 19,
+            '../block': 42,
+            './segment': 41
+        }
+    ],
+    41: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const combinator_1 = require('../../combinator');
+            const pretext_1 = require('../block/pretext');
+            const extension_1 = require('../block/extension');
+            const line_1 = require('../source/line');
+            function segment(source) {
+                const segments = [];
+                while (source.length > 0) {
+                    const [, rest = ''] = combinator_1.union([
+                        pretext_1.segment,
+                        extension_1.segment,
+                        combinator_1.some(line_1.contentline),
+                        combinator_1.some(line_1.blankline)
+                    ])(source) || [];
+                    void segments.push(source.slice(0, source.length - rest.length));
+                    source = rest;
+                }
+                return segments;
+            }
+            exports.segment = segment;
+        },
+        {
+            '../../combinator': 19,
+            '../block/extension': 45,
+            '../block/pretext': 58,
+            '../source/line': 85
+        }
+    ],
+    42: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1269,7 +1363,8 @@ require = function () {
             const math_1 = require('./block/math');
             const extension_1 = require('./block/extension');
             const paragraph_1 = require('./block/paragraph');
-            exports.block = combinator_1.union([
+            const locale_1 = require('./locale');
+            exports.block = locale_1.localize(combinator_1.union([
                 newline_1.newline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -1282,25 +1377,26 @@ require = function () {
                 math_1.math,
                 extension_1.extension,
                 paragraph_1.paragraph
-            ]);
+            ]));
         },
         {
             '../combinator': 19,
-            './block/blockquote': 38,
-            './block/dlist': 39,
-            './block/extension': 40,
-            './block/heading': 44,
-            './block/horizontalrule': 45,
-            './block/math': 47,
-            './block/newline': 48,
-            './block/olist': 49,
-            './block/paragraph': 50,
-            './block/pretext': 53,
-            './block/table': 54,
-            './block/ulist': 55
+            './block/blockquote': 43,
+            './block/dlist': 44,
+            './block/extension': 45,
+            './block/heading': 49,
+            './block/horizontalrule': 50,
+            './block/math': 52,
+            './block/newline': 53,
+            './block/olist': 54,
+            './block/paragraph': 55,
+            './block/pretext': 58,
+            './block/table': 59,
+            './block/ulist': 60,
+            './locale': 80
         }
     ],
-    38: [
+    43: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1308,7 +1404,7 @@ require = function () {
             const block_1 = require('../source/block');
             const line_1 = require('../source/line');
             require('../source/unescapable');
-            const parse_1 = require('../parse');
+            const parse_1 = require('../api/parse');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = block_1.block(combinator_1.build(() => combinator_1.union([
                 combinator_1.surround(/^(?=(>+)\s)/, textquote, ''),
@@ -1345,14 +1441,14 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../parse': 77,
-            '../source/block': 79,
-            '../source/line': 82,
-            '../source/unescapable': 84,
+            '../api/parse': 40,
+            '../source/block': 82,
+            '../source/line': 85,
+            '../source/unescapable': 87,
             'typed-dom': 12
         }
     ],
-    39: [
+    44: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1383,16 +1479,16 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/block': 79,
-            '../source/line': 82,
-            '../util': 86,
-            './indexer': 46,
+            '../inline': 61,
+            '../source/block': 82,
+            '../source/line': 85,
+            '../util': 89,
+            './indexer': 51,
             'spica/concat': 7,
             'typed-dom': 12
         }
     ],
-    40: [
+    45: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1413,12 +1509,12 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            './extension/fig': 41,
-            './extension/figure': 42,
-            './extension/placeholder': 43
+            './extension/fig': 46,
+            './extension/figure': 47,
+            './extension/placeholder': 48
         }
     ],
-    41: [
+    46: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1442,14 +1538,14 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../inline': 58,
-            '../../source/block': 79,
-            '../../source/line': 82,
-            '../pretext': 53,
-            './figure': 42
+            '../../inline': 61,
+            '../../source/block': 82,
+            '../../source/line': 85,
+            '../pretext': 58,
+            './figure': 47
         }
     ],
-    42: [
+    47: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1517,18 +1613,18 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../inline': 58,
-            '../../source/block': 79,
-            '../../source/line': 82,
-            '../../util': 86,
-            '../blockquote': 38,
-            '../math': 47,
-            '../pretext': 53,
-            '../table': 54,
+            '../../inline': 61,
+            '../../source/block': 82,
+            '../../source/line': 85,
+            '../../util': 89,
+            '../blockquote': 43,
+            '../math': 52,
+            '../pretext': 58,
+            '../table': 59,
             'typed-dom': 12
         }
     ],
-    43: [
+    48: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1546,11 +1642,11 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../source/block': 79,
-            '../paragraph': 50
+            '../../source/block': 82,
+            '../paragraph': 55
         }
     ],
-    44: [
+    49: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1575,15 +1671,15 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/block': 79,
-            '../source/line': 82,
-            '../util': 86,
-            './indexer': 46,
+            '../inline': 61,
+            '../source/block': 82,
+            '../source/line': 85,
+            '../util': 89,
+            './indexer': 51,
             'typed-dom': 12
         }
     ],
-    45: [
+    50: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1598,12 +1694,12 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/block': 79,
-            '../source/line': 82,
+            '../source/block': 82,
+            '../source/line': 85,
             'typed-dom': 12
         }
     ],
-    46: [
+    51: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1637,11 +1733,11 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/line': 82
+            '../inline': 61,
+            '../source/line': 85
         }
     ],
-    47: [
+    52: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1656,12 +1752,12 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/block': 79,
-            '../source/unescapable': 84,
+            '../source/block': 82,
+            '../source/unescapable': 87,
             'typed-dom': 12
         }
     ],
-    48: [
+    53: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1671,10 +1767,10 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/line': 82
+            '../source/line': 85
         }
     ],
-    49: [
+    54: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1710,15 +1806,15 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/block': 79,
-            '../source/line': 82,
-            '../util': 86,
-            './ulist': 55,
+            '../inline': 61,
+            '../source/block': 82,
+            '../source/line': 85,
+            '../util': 89,
+            './ulist': 60,
             'typed-dom': 12
         }
     ],
-    50: [
+    55: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1746,15 +1842,15 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/block': 79,
-            '../util': 86,
-            './paragraph/hashtag': 51,
-            './paragraph/reference': 52,
+            '../inline': 61,
+            '../source/block': 82,
+            '../util': 89,
+            './paragraph/hashtag': 56,
+            './paragraph/reference': 57,
             'typed-dom': 12
         }
     ],
-    51: [
+    56: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1773,12 +1869,12 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../source/line': 82,
-            '../../source/unescapable': 84,
+            '../../source/line': 85,
+            '../../source/unescapable': 87,
             'typed-dom': 12
         }
     ],
-    52: [
+    57: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1810,13 +1906,13 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../inline': 58,
-            '../../source/line': 82,
-            '../../source/unescapable': 84,
+            '../../inline': 61,
+            '../../source/line': 85,
+            '../../source/unescapable': 87,
             'typed-dom': 12
         }
     ],
-    53: [
+    58: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1849,14 +1945,14 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/block': 79,
-            '../source/escapable': 81,
-            '../source/unescapable': 84,
-            '../util': 86,
+            '../source/block': 82,
+            '../source/escapable': 84,
+            '../source/unescapable': 87,
+            '../util': 89,
             'typed-dom': 12
         }
     ],
-    54: [
+    59: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1924,15 +2020,15 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/block': 79,
-            '../source/line': 82,
-            '../util': 86,
+            '../inline': 61,
+            '../source/block': 82,
+            '../source/line': 85,
+            '../util': 89,
             'spica/concat': 7,
             'typed-dom': 12
         }
     ],
-    55: [
+    60: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1965,44 +2061,16 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/block': 79,
-            '../source/line': 82,
-            '../util': 86,
-            './olist': 49,
+            '../inline': 61,
+            '../source/block': 82,
+            '../source/line': 85,
+            '../util': 89,
+            './olist': 54,
             'spica/concat': 7,
             'typed-dom': 12
         }
     ],
-    56: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const math_1 = require('./inline/math');
-            const media_1 = require('./inline/media');
-            exports.caches = {
-                math: math_1.cache,
-                media: { image: media_1.cache }
-            };
-        },
-        {
-            './inline/math': 74,
-            './inline/media': 75
-        }
-    ],
-    57: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const symbols = /^(?:[~:|>`$-+*\s]|[0-9a-z]+\.|!>|#+\s)|[*`$&()\[\]{}]|\\./gim;
-            function escape(source) {
-                return source.replace(symbols, str => str[0] === '\\' ? str : `\\${ str }`);
-            }
-            exports.escape = escape;
-        },
-        {}
-    ],
-    58: [
+    61: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2048,26 +2116,26 @@ require = function () {
         },
         {
             '../combinator': 19,
-            './inline/annotation': 59,
-            './inline/autolink': 60,
-            './inline/autolink/url': 62,
-            './inline/bracket': 63,
-            './inline/code': 64,
-            './inline/comment': 65,
-            './inline/emphasis': 66,
-            './inline/extension': 67,
-            './inline/extension/index': 68,
-            './inline/extension/label': 69,
-            './inline/html': 71,
-            './inline/htmlentity': 72,
-            './inline/link': 73,
-            './inline/math': 74,
-            './inline/media': 75,
-            './inline/strong': 76,
-            './source/text': 83
+            './inline/annotation': 62,
+            './inline/autolink': 63,
+            './inline/autolink/url': 65,
+            './inline/bracket': 66,
+            './inline/code': 67,
+            './inline/comment': 68,
+            './inline/emphasis': 69,
+            './inline/extension': 70,
+            './inline/extension/index': 71,
+            './inline/extension/label': 72,
+            './inline/html': 74,
+            './inline/htmlentity': 75,
+            './inline/link': 76,
+            './inline/math': 77,
+            './inline/media': 78,
+            './inline/strong': 79,
+            './source/text': 86
         }
     ],
-    59: [
+    62: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2082,12 +2150,12 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../util': 86,
+            '../inline': 61,
+            '../util': 89,
             'typed-dom': 12
         }
     ],
-    60: [
+    63: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2101,11 +2169,11 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            './autolink/account': 61,
-            './autolink/url': 62
+            './autolink/account': 64,
+            './autolink/url': 65
         }
     ],
-    61: [
+    64: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2129,12 +2197,12 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../source/line': 82,
-            '../../source/unescapable': 84,
+            '../../source/line': 85,
+            '../../source/unescapable': 87,
             'typed-dom': 12
         }
     ],
-    62: [
+    65: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2165,13 +2233,13 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../source/escapable': 81,
-            '../../source/line': 82,
-            '../link': 73,
+            '../../source/escapable': 84,
+            '../../source/line': 85,
+            '../link': 76,
             'typed-dom': 12
         }
     ],
-    63: [
+    66: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2209,12 +2277,12 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../util': 86,
+            '../inline': 61,
+            '../util': 89,
             'typed-dom': 12
         }
     ],
-    64: [
+    67: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2242,14 +2310,14 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/char': 80,
-            '../source/line': 82,
-            '../source/unescapable': 84,
-            '../util': 86,
+            '../source/char': 83,
+            '../source/line': 85,
+            '../source/unescapable': 87,
+            '../util': 89,
             'typed-dom': 12
         }
     ],
-    65: [
+    68: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2268,10 +2336,10 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/unescapable': 84
+            '../source/unescapable': 87
         }
     ],
-    66: [
+    69: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2287,13 +2355,13 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../util': 86,
-            './strong': 76,
+            '../inline': 61,
+            '../util': 89,
+            './strong': 79,
             'typed-dom': 12
         }
     ],
-    67: [
+    70: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2309,12 +2377,12 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            './extension/index': 68,
-            './extension/label': 69,
-            './extension/placeholder': 70
+            './extension/index': 71,
+            './extension/label': 72,
+            './extension/placeholder': 73
         }
     ],
-    68: [
+    71: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2333,14 +2401,14 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../block/indexer': 46,
-            '../../inline': 58,
-            '../../source/line': 82,
-            '../../util': 86,
-            '../link': 73
+            '../../block/indexer': 51,
+            '../../inline': 61,
+            '../../source/line': 85,
+            '../../util': 89,
+            '../link': 76
         }
     ],
-    69: [
+    72: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2358,12 +2426,12 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../source/line': 82,
-            '../../source/unescapable': 84,
-            '../link': 73
+            '../../source/line': 85,
+            '../../source/unescapable': 87,
+            '../link': 76
         }
     ],
-    70: [
+    73: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2375,12 +2443,12 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../inline': 58,
-            '../../source/line': 82,
+            '../../inline': 61,
+            '../../source/line': 85,
             'typed-dom': 12
         }
     ],
-    71: [
+    74: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2396,19 +2464,19 @@ require = function () {
                 if (tag === 'wbr')
                     return [
                         [typed_dom_1.html(tag)],
-                        rest
+                        rest[0] === '\n' ? rest.slice(1) : rest
                     ];
                 return combinator_1.verify(combinator_1.fmap(combinator_1.surround(`<${ tag }>`, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.html(tag, ns)]), ([el]) => util_1.hasText(el))(whole + rest);
             });
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../util': 86,
+            '../inline': 61,
+            '../util': 89,
             'typed-dom': 12
         }
     ],
-    72: [
+    75: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2427,11 +2495,11 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/unescapable': 84,
+            '../source/unescapable': 87,
             'typed-dom': 12
         }
     ],
-    73: [
+    76: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2509,16 +2577,16 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../source/escapable': 81,
-            '../source/line': 82,
-            '../source/text': 83,
-            '../string/url': 85,
-            '../util': 86,
+            '../inline': 61,
+            '../source/escapable': 84,
+            '../source/line': 85,
+            '../source/text': 86,
+            '../string/url': 88,
+            '../util': 89,
             'typed-dom': 12
         }
     ],
-    74: [
+    77: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2539,14 +2607,14 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/escapable': 81,
-            '../source/line': 82,
-            '../util': 86,
+            '../source/escapable': 84,
+            '../source/line': 85,
+            '../util': 89,
             'spica/cache': 6,
             'typed-dom': 12
         }
     ],
-    75: [
+    78: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2586,16 +2654,16 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../source/line': 82,
-            '../source/text': 83,
-            '../string/url': 85,
-            '../util': 86,
-            './link': 73,
+            '../source/line': 85,
+            '../source/text': 86,
+            '../string/url': 88,
+            '../util': 89,
+            './link': 76,
             'spica/cache': 6,
             'typed-dom': 12
         }
     ],
-    76: [
+    79: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2607,65 +2675,83 @@ require = function () {
         },
         {
             '../../combinator': 19,
-            '../inline': 58,
-            '../util': 86,
+            '../inline': 61,
+            '../util': 89,
             'typed-dom': 12
         }
     ],
-    77: [
+    80: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../combinator');
-            const block_1 = require('./block');
-            const segment_1 = require('./segment');
-            function parse(source) {
-                return segment_1.segment(source).reduce((parent, seg) => (void parse_(seg).forEach(el => void parent.appendChild(el)), parent), document.createDocumentFragment());
+            const ja_1 = require('./locale/ja');
+            function localize(block) {
+                return combinator_1.fmap(block, es => {
+                    void es.forEach(el => void el.querySelectorAll('.linebreak').forEach(el => {
+                        if (el.childNodes.length === 1)
+                            return;
+                        if (!check(el))
+                            return;
+                        void el.removeChild(el.firstChild);
+                    }));
+                    return es;
+                });
             }
-            exports.parse = parse;
-            function parse_(source) {
-                return (block_1.block(source) || [[]])[0];
+            exports.localize = localize;
+            function check(el) {
+                const char = endingChar(prevText(el));
+                if (!char)
+                    return false;
+                return ja_1.japanese(char);
             }
-            exports.parse_ = parse_;
-        },
-        {
-            '../combinator': 19,
-            './block': 37,
-            './segment': 78
-        }
-    ],
-    78: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../combinator');
-            const pretext_1 = require('./block/pretext');
-            const extension_1 = require('./block/extension');
-            const line_1 = require('./source/line');
-            function segment(source) {
-                const segments = [];
-                while (source.length > 0) {
-                    const [, rest = ''] = combinator_1.union([
-                        pretext_1.segment,
-                        extension_1.segment,
-                        combinator_1.some(line_1.contentline),
-                        combinator_1.some(line_1.blankline)
-                    ])(source) || [];
-                    void segments.push(source.slice(0, source.length - rest.length));
-                    source = rest;
+            function endingChar(str) {
+                return [...str.slice(-2)].pop() || '';
+            }
+            function prevText(el) {
+                return el.previousSibling ? text(el.previousSibling) : '';
+            }
+            function text(node) {
+                if (!(node instanceof Element))
+                    return node.textContent;
+                switch (node.tagName.toLowerCase()) {
+                case 'ruby':
+                    return [...node.childNodes].reduceRight((str, node) => {
+                        if (str)
+                            return str;
+                        if (node instanceof Text)
+                            return node.textContent;
+                        switch (node.tagName.toLowerCase()) {
+                        case 'rt':
+                        case 'rp':
+                            return '';
+                        default:
+                            return node.textContent;
+                        }
+                    }, '');
+                default:
+                    return node.textContent;
                 }
-                return segments;
             }
-            exports.segment = segment;
         },
         {
             '../combinator': 19,
-            './block/extension': 40,
-            './block/pretext': 53,
-            './source/line': 82
+            './locale/ja': 81
         }
     ],
-    79: [
+    81: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const endings = /[、。！？…]/;
+            function japanese(char) {
+                return char.search(endings) === 0;
+            }
+            exports.japanese = japanese;
+        },
+        {}
+    ],
+    82: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2685,9 +2771,9 @@ require = function () {
             }
             exports.block = block;
         },
-        { './line': 82 }
+        { './line': 85 }
     ],
-    80: [
+    83: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2711,7 +2797,7 @@ require = function () {
         },
         {}
     ],
-    81: [
+    84: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2757,7 +2843,7 @@ require = function () {
         },
         {}
     ],
-    82: [
+    85: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2802,9 +2888,9 @@ require = function () {
                 ''
             ] : undefined, true, true);
         },
-        { './block': 79 }
+        { './block': 82 }
     ],
-    83: [
+    86: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2837,7 +2923,10 @@ require = function () {
                         }
                     case '\n':
                         return [
-                            [typed_dom_1.html('span', { class: 'newline' }, ' ')],
+                            [typed_dom_1.html('span', { class: 'linebreak' }, [
+                                    document.createTextNode(' '),
+                                    typed_dom_1.html('wbr')
+                                ])],
                             source.slice(1)
                         ];
                     default:
@@ -2856,7 +2945,7 @@ require = function () {
         },
         { 'typed-dom': 12 }
     ],
-    84: [
+    87: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2886,7 +2975,7 @@ require = function () {
         },
         {}
     ],
-    85: [
+    88: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2907,7 +2996,7 @@ require = function () {
         },
         { 'typed-dom': 12 }
     ],
-    86: [
+    89: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2965,16 +3054,16 @@ require = function () {
         },
         { '../combinator': 19 }
     ],
-    87: [
+    90: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var render_1 = require('./renderer/render');
             exports.render = render_1.render;
         },
-        { './renderer/render': 88 }
+        { './renderer/render': 91 }
     ],
-    88: [
+    91: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3012,12 +3101,12 @@ require = function () {
             exports.render = render;
         },
         {
-            './render/code': 89,
-            './render/math': 90,
-            './render/media': 91
+            './render/code': 92,
+            './render/math': 93,
+            './render/media': 94
         }
     ],
-    89: [
+    92: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -3031,7 +3120,7 @@ require = function () {
         },
         {}
     ],
-    90: [
+    93: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3055,9 +3144,9 @@ require = function () {
                 ]);
             }
         },
-        { '../../parser/inline/math': 74 }
+        { '../../parser/inline/math': 77 }
     ],
-    91: [
+    94: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3114,17 +3203,17 @@ require = function () {
             exports.media = media;
         },
         {
-            './media/audio': 92,
-            './media/gist': 93,
-            './media/image': 94,
-            './media/pdf': 95,
-            './media/slideshare': 96,
-            './media/twitter': 97,
-            './media/video': 98,
-            './media/youtube': 99
+            './media/audio': 95,
+            './media/gist': 96,
+            './media/image': 97,
+            './media/pdf': 98,
+            './media/slideshare': 99,
+            './media/twitter': 100,
+            './media/video': 101,
+            './media/youtube': 102
         }
     ],
-    92: [
+    95: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3141,11 +3230,11 @@ require = function () {
             exports.audio = audio;
         },
         {
-            '../../../parser/inline/media': 75,
+            '../../../parser/inline/media': 78,
             'typed-dom': 12
         }
     ],
-    93: [
+    96: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -3190,11 +3279,11 @@ require = function () {
         },
         {
             '../../../parser': 35,
-            '../../../parser/inline/media': 75,
+            '../../../parser/inline/media': 78,
             'typed-dom': 12
         }
     ],
-    94: [
+    97: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3210,11 +3299,11 @@ require = function () {
             exports.image = image;
         },
         {
-            '../../../parser/inline/media': 75,
+            '../../../parser/inline/media': 78,
             'typed-dom': 12
         }
     ],
-    95: [
+    98: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3241,7 +3330,7 @@ require = function () {
             'typed-dom': 12
         }
     ],
-    96: [
+    99: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -3280,11 +3369,11 @@ require = function () {
         },
         {
             '../../../parser': 35,
-            '../../../parser/inline/media': 75,
+            '../../../parser/inline/media': 78,
             'typed-dom': 12
         }
     ],
-    97: [
+    100: [
         function (require, module, exports) {
             (function (global) {
                 'use strict';
@@ -3342,7 +3431,7 @@ require = function () {
             'typed-dom': 12
         }
     ],
-    98: [
+    101: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3360,11 +3449,11 @@ require = function () {
             exports.video = video;
         },
         {
-            '../../../parser/inline/media': 75,
+            '../../../parser/inline/media': 78,
             'typed-dom': 12
         }
     ],
-    99: [
+    102: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3381,7 +3470,7 @@ require = function () {
         },
         { 'typed-dom': 12 }
     ],
-    100: [
+    103: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3393,12 +3482,12 @@ require = function () {
             exports.toc = toc_1.toc;
         },
         {
-            './util/figure': 101,
-            './util/footnote': 102,
-            './util/toc': 103
+            './util/figure': 104,
+            './util/footnote': 105,
+            './util/toc': 106
         }
     ],
-    101: [
+    104: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3455,7 +3544,7 @@ require = function () {
         },
         { 'typed-dom': 12 }
     ],
-    102: [
+    105: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3508,12 +3597,12 @@ require = function () {
             }
         },
         {
-            '../parser/block/indexer': 46,
+            '../parser/block/indexer': 51,
             'spica/concat': 7,
             'typed-dom': 12
         }
     ],
-    103: [
+    106: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3571,8 +3660,8 @@ require = function () {
         },
         {
             './src/parser': 35,
-            './src/renderer': 87,
-            './src/util': 100
+            './src/renderer': 90,
+            './src/util': 103
         }
     ]
 }, {}, [
