@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.58.0
+
+- Remove linebreaks after `wbr` html tag.
+
 ## 0.57.0
 
 - Add lightweight figure syntax.
