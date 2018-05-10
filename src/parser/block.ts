@@ -12,6 +12,7 @@ import { pretext } from './block/pretext';
 import { math } from './block/math';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
+import { localize } from './locale';
 
 export import BlockParser = MarkdownParser.BlockParser;
 export import NewlineParser = BlockParser.NewlineParser;
@@ -28,7 +29,7 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 export import IndexerParser = BlockParser.IndexerParser;
 
-export const block: BlockParser = union<BlockParser>([
+export const block: BlockParser = localize(union<BlockParser>([
   newline,
   horizontalrule,
   heading,
@@ -41,4 +42,4 @@ export const block: BlockParser = union<BlockParser>([
   math,
   extension,
   paragraph
-]);
+]));
