@@ -19,7 +19,7 @@ export const text: TextParser = source => {
               return [[document.createTextNode(source.slice(1, 2))], source.slice(2)];
           }
         case '\n':
-          return [[html('span', { class: 'linebreak' }, ' ')], source.slice(1)];
+          return [[html('span', { class: 'linebreak' }, [document.createTextNode(' '), html('wbr')])], source.slice(1)];
         default:
           return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
       }

@@ -7,7 +7,7 @@ export function localize(block: BlockParser): BlockParser {
     void es.forEach(el =>
       void el.querySelectorAll('.linebreak')
         .forEach(el => {
-          assert(el.childNodes.length === 1);
+          assert(el.childNodes.length === 2);
           if (!check(el)) return;
           void el.removeChild(el.firstChild!);
         }));

@@ -3,6 +3,7 @@
 ## 0.58.0
 
 - Localize linebreak processing.
+- Insert `wbr` element with linebreak.
 - Remove linebreaks after `wbr` html tag.
 
 ## 0.57.0
