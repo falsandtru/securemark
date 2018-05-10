@@ -7,7 +7,6 @@ describe('Unit: parser/locale/ja', () => {
       assert(japanese('。'));
       assert(japanese('！'));
       assert(japanese('？'));
-      assert(japanese('…'));
     });
 
   });
