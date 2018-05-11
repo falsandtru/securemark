@@ -17,19 +17,18 @@ export function localize(block: BlockParser): BlockParser {
 }
 
 function check(el: Element): boolean {
-  const char = endingChar(prevText(el));
-  if (!char) return false;
-  return japanese(char);
+  const char = endingChar(el.previousSibling);
+  return !!char
+      && japanese(char);
 }
 
-function endingChar(str: string): string {
-  return [...str.slice(-2)].pop() || '';
-}
-
-function prevText(el: Element): string {
-  return el.previousSibling
-    ? text(el.previousSibling)
-    : '';
+function endingChar(node: Node | null): string {
+  while (node) {
+    const str = text(node);
+    if (str) return [...str.slice(-2)].pop() || '';
+    node = node.previousSibling;
+  }
+  return '';
 }
 
 function text(node: Node): string {
