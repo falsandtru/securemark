@@ -2416,7 +2416,7 @@ require = function () {
             const line_1 = require('../../source/line');
             require('../../source/unescapable');
             const link_1 = require('../link');
-            exports.label = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.match(/^(?:\$|[a-z]+)(?:(?:-[0-9]*[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, ([query], rest) => combinator_1.union([link_1.link])(`[\\${ query }](#${ makeLabel(query) })${ rest }`)), ']')), ([el]) => {
+            exports.label = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.match(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, ([query], rest) => combinator_1.union([link_1.link])(`[\\${ query }](#${ makeLabel(query) })${ rest }`)), ']')), ([el]) => {
                 void el.setAttribute('class', el.getAttribute('href').slice(1));
                 return [el];
             }), false);
@@ -2464,7 +2464,7 @@ require = function () {
                 if (tag === 'wbr')
                     return [
                         [typed_dom_1.html(tag)],
-                        rest[0] === '\n' ? rest.slice(1) : rest
+                        rest
                     ];
                 return combinator_1.verify(combinator_1.fmap(combinator_1.surround(`<${ tag }>`, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.html(tag, ns)]), ([el]) => util_1.hasText(el))(whole + rest);
             });
@@ -2700,16 +2700,17 @@ require = function () {
             }
             exports.localize = localize;
             function check(el) {
-                const char = endingChar(prevText(el));
-                if (!char)
-                    return false;
-                return ja_1.japanese(char);
+                const char = endingChar(el.previousSibling);
+                return !!char && ja_1.japanese(char);
             }
-            function endingChar(str) {
-                return [...str.slice(-2)].pop() || '';
-            }
-            function prevText(el) {
-                return el.previousSibling ? text(el.previousSibling) : '';
+            function endingChar(node) {
+                while (node) {
+                    const str = text(node);
+                    if (str)
+                        return [...str.slice(-2)].pop() || '';
+                    node = node.previousSibling;
+                }
+                return '';
             }
             function text(node) {
                 if (!(node instanceof Element))
@@ -2743,7 +2744,7 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const endings = /[、。！？…]/;
+            const endings = /[、。！？]/;
             function japanese(char) {
                 return char.search(endings) === 0;
             }
