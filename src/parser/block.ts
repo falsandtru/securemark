@@ -22,6 +22,7 @@ export import HeadingParser = BlockParser.HeadingParser;
 export import UListParser = BlockParser.UListParser;
 export import OListParser = BlockParser.OListParser;
 export import IListParser = BlockParser.IListParser;
+export import ListItemParser = BlockParser.ListItemParser;
 export import DListParser = BlockParser.DListParser;
 export import TableParser = BlockParser.TableParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;

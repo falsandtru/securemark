@@ -64,30 +64,26 @@ export namespace MarkdownParser {
       // - item
       Block<'ulist'>,
       Parser<HTMLUListElement, [
-        InlineParser,
-        Parser<HTMLUListElement | HTMLOListElement, [
-          UListParser,
-          OListParser,
-          IListParser
-        ]>
+        ListItemParser
       ]> {
     }
     export interface OListParser extends
       // 0. item
       Block<'olist'>,
       Parser<HTMLOListElement, [
-        InlineParser,
-        Parser<HTMLUListElement | HTMLOListElement, [
-          UListParser,
-          OListParser,
-          IListParser
-        ]>
+        ListItemParser
       ]> {
     }
     export interface IListParser extends
       // + item
       Block<'ilist'>,
       Parser<HTMLUListElement, [
+        ListItemParser
+      ]> {
+    }
+    export interface ListItemParser extends
+      Block<'listitem'>,
+      Parser<HTMLLIElement, [
         InlineParser,
         Parser<HTMLUListElement | HTMLOListElement, [
           UListParser,

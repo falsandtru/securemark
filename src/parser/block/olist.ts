@@ -1,4 +1,4 @@
-﻿import { OListParser } from '../block';
+﻿import { OListParser, ListItemParser } from '../block';
 import { union, inits, some, match, surround, verify, indent, fmap, trim } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
@@ -18,13 +18,15 @@ export const olist: OListParser = block(match(
       ? cache.get(ty)!
       : cache.set(ty, new RegExp(`^${pattern(ty)}(?:\\.\\s|\\.?(?=\\n|$))`)).get(ty)!;
     return fmap<OListParser>(
-      some(fmap(
-        inits<OListParser>([
-          line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
-          indent(union([ulist, olist_, ilist]))
-        ]),
-        ns =>
-          [html('li', fillFirstLine(ns))])),
+      some(union([
+        fmap(
+          inits<ListItemParser>([
+            line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
+            indent(union([ulist, olist_, ilist]))
+          ]),
+          ns =>
+            [html('li', fillFirstLine(ns))])
+      ])),
       es =>
         [html('ol', { start: index, type: ty }, es)])
       (whole + rest);

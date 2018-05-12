@@ -1,4 +1,4 @@
-﻿import { UListParser } from '../block';
+﻿import { UListParser, ListItemParser } from '../block';
 import { union, inits, some, surround, verify, indent, fmap, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
@@ -10,13 +10,15 @@ import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
 export const ulist: UListParser = block(fmap<UListParser>(build(() =>
-  some(fmap(
-    inits<UListParser>([
-      line(verify(surround(/^-(?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
-      indent(union([ulist, olist_, ilist]))
-    ]),
-    ns =>
-      [html('li', fillFirstLine(ns))]))),
+  some(union([
+    fmap(
+      inits<ListItemParser>([
+        line(verify(surround(/^-(?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
+        indent(union([ulist, olist_, ilist]))
+      ]),
+      ns =>
+        [html('li', fillFirstLine(ns))])
+  ]))),
   es =>
     [html('ul', es)]));
 
