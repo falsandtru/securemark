@@ -11,11 +11,12 @@ import { html } from 'typed-dom';
 const cache = new Map<string, RegExp>();
 
 export const olist: OListParser = block(match(
-  /^([0-9]+|[A-Z]+|[a-z]+)\.(?=\s|$)/,
+  /^([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$)/,
   ([whole, index], rest) => {
-    const opener = cache.has(index)
-      ? cache.get(index)!
-      : cache.set(index, new RegExp(`^${pattern(index)}(?:\.[^\\S\\n]+|\.?(?=\\n|$))`)).get(index)!;
+    const ty = type(index);
+    const opener = cache.has(ty)
+      ? cache.get(ty)!
+      : cache.set(ty, new RegExp(`^${pattern(ty)}(?:\\.\\s|\\.?(?=\\n|$))`)).get(ty)!;
     return fmap<OListParser>(
       some(fmap(
         inits<OListParser>([
@@ -25,23 +26,23 @@ export const olist: OListParser = block(match(
         ns =>
           [html('li', fillFirstLine(ns))])),
       es =>
-        [html('ol', { start: index, type: type(index) }, es)])
+        [html('ol', { start: index, type: ty }, es)])
       (whole + rest);
   }));
 
 function type(index: string): string {
-  return Number.isFinite(+index)
+  return Number.isInteger(+index)
     ? '1'
     : index === index.toLowerCase()
       ? 'a'
       : 'A';
 }
 
-function pattern(index: string): string {
-  index = type(index);
-  return index === 'A'
+function pattern(type: string): string {
+  assert(['1', 'a', 'A'].includes(type));
+  return type === 'A'
     ? '[A-Z]+'
-    : index === 'a'
+    : type === 'a'
       ? '[a-z]+'
       : '[0-9]+';
 }
