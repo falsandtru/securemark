@@ -1,33 +1,24 @@
 ﻿import { UListParser } from '../block';
-import { union, inits, some, match, surround, verify, indent, fmap, trim } from '../../combinator';
+import { union, inits, some, surround, verify, indent, fmap, trim, build } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { olist_ } from './olist';
+import { ilist } from './ilist';
 import { inline } from '../inline';
 import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-const cache = new Map<string, RegExp>();
-
-export const ulist: UListParser = block(match(
-  /^([-+*])(?=\s|$)/,
-  ([whole, flag], rest) => {
-    const opener = cache.has(flag)
-      ? cache.get(flag)!
-      : cache.set(flag, new RegExp(`^\\${flag}(?:[^\\S\\n]+|(?=\\n|$))`)).get(flag)!;
-    return fmap<UListParser>(
-      some(fmap(
-        inits<UListParser>([
-          line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
-          indent(union([ulist, olist_]))
-        ]),
-        ns =>
-          [html('li', fillFirstLine(ns))])),
-      es =>
-        [html('ul', es)])
-      (whole + rest);
-  }));
+export const ulist: UListParser = block(fmap<UListParser>(build(() =>
+  some(fmap(
+    inits<UListParser>([
+      line(verify(surround(/^-(?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
+      indent(union([ulist, olist_, ilist]))
+    ]),
+    ns =>
+      [html('li', fillFirstLine(ns))]))),
+  es =>
+    [html('ul', es)]));
 
 export function fillFirstLine(ns: Node[]): Node[] {
   return [HTMLUListElement, HTMLOListElement].some(E => ns[0] instanceof E)

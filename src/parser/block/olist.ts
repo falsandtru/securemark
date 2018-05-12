@@ -3,6 +3,7 @@ import { union, inits, some, match, surround, verify, indent, fmap, trim } from 
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { ulist, fillFirstLine } from './ulist';
+import { ilist } from './ilist';
 import { inline } from '../inline';
 import { compress, hasMedia } from '../util';
 import { html } from 'typed-dom';
@@ -19,7 +20,7 @@ export const olist: OListParser = block(match(
       some(fmap(
         inits<OListParser>([
           line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
-          indent(union([ulist, olist_]))
+          indent(union([ulist, olist_, ilist]))
         ]),
         ns =>
           [html('li', fillFirstLine(ns))])),

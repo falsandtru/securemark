@@ -5,6 +5,7 @@ import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';
 import { olist } from './block/olist';
+import { ilist } from './block/ilist';
 import { dlist } from './block/dlist';
 import { table } from './block/table';
 import { blockquote } from './block/blockquote';
@@ -20,6 +21,7 @@ export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
 export import HeadingParser = BlockParser.HeadingParser;
 export import UListParser = BlockParser.UListParser;
 export import OListParser = BlockParser.OListParser;
+export import IListParser = BlockParser.IListParser;
 export import DListParser = BlockParser.DListParser;
 export import TableParser = BlockParser.TableParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
@@ -35,6 +37,7 @@ export const block: BlockParser = localize(union<BlockParser>([
   heading,
   ulist,
   olist,
+  ilist,
   dlist,
   table,
   blockquote,

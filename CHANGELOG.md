@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.60.0
+
+- Disallow ulist syntax without `-`.
+
 ## 0.59.0
 
 - Disallow figure name starting with numbers.

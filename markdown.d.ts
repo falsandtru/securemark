@@ -27,6 +27,7 @@ export namespace MarkdownParser {
       BlockParser.HeadingParser,
       BlockParser.UListParser,
       BlockParser.OListParser,
+      BlockParser.IListParser,
       BlockParser.DListParser,
       BlockParser.TableParser,
       BlockParser.BlockquoteParser,
@@ -66,7 +67,8 @@ export namespace MarkdownParser {
         InlineParser,
         Parser<HTMLUListElement | HTMLOListElement, [
           UListParser,
-          OListParser
+          OListParser,
+          IListParser
         ]>
       ]> {
     }
@@ -77,7 +79,20 @@ export namespace MarkdownParser {
         InlineParser,
         Parser<HTMLUListElement | HTMLOListElement, [
           UListParser,
-          OListParser
+          OListParser,
+          IListParser
+        ]>
+      ]> {
+    }
+    export interface IListParser extends
+      // + item
+      Block<'ilist'>,
+      Parser<HTMLUListElement, [
+        InlineParser,
+        Parser<HTMLUListElement | HTMLOListElement, [
+          UListParser,
+          OListParser,
+          IListParser
         ]>
       ]> {
     }
