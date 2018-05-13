@@ -1714,14 +1714,14 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.ilist = block_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.fmap(combinator_1.inits([
-                line_1.line(combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
-                combinator_1.indent(combinator_1.union([
-                    ulist_1.ulist,
-                    olist_1.olist_,
-                    exports.ilist
-                ]))
-            ]), () => [typed_dom_1.html('li', combinator_1.some(inline_1.inline)('*Invalid syntax: UList syntax: Use `-` instead.*')[0])]))), es => [typed_dom_1.html('ul', es)]));
+            exports.ilist = block_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+                    line_1.line(combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
+                    combinator_1.indent(combinator_1.union([
+                        ulist_1.ulist,
+                        olist_1.olist_,
+                        exports.ilist
+                    ]))
+                ]), () => [typed_dom_1.html('li', combinator_1.some(inline_1.inline)('*Invalid syntax: UList syntax: Use `-` instead.*')[0])])]))), es => [typed_dom_1.html('ul', es)]));
         },
         {
             '../../combinator': 19,
@@ -1821,14 +1821,14 @@ require = function () {
             exports.olist = block_1.block(combinator_1.match(/^([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$)/, ([whole, index], rest) => {
                 const ty = type(index);
                 const opener = cache.has(ty) ? cache.get(ty) : cache.set(ty, new RegExp(`^${ pattern(ty) }(?:\\.\\s|\\.?(?=\\n|$))`)).get(ty);
-                return combinator_1.fmap(combinator_1.some(combinator_1.fmap(combinator_1.inits([
-                    line_1.line(combinator_1.verify(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
-                    combinator_1.indent(combinator_1.union([
-                        ulist_1.ulist,
-                        exports.olist_,
-                        ilist_1.ilist
-                    ]))
-                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))])), es => [typed_dom_1.html('ol', {
+                return combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+                        line_1.line(combinator_1.verify(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
+                        combinator_1.indent(combinator_1.union([
+                            ulist_1.ulist,
+                            exports.olist_,
+                            ilist_1.ilist
+                        ]))
+                    ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))])])), es => [typed_dom_1.html('ol', {
                         start: index,
                         type: ty
                     }, es)])(whole + rest);
@@ -2079,14 +2079,14 @@ require = function () {
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            exports.ulist = block_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.fmap(combinator_1.inits([
-                line_1.line(combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
-                combinator_1.indent(combinator_1.union([
-                    exports.ulist,
-                    olist_1.olist_,
-                    ilist_1.ilist
-                ]))
-            ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))]))), es => [typed_dom_1.html('ul', es)]));
+            exports.ulist = block_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+                    line_1.line(combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
+                    combinator_1.indent(combinator_1.union([
+                        exports.ulist,
+                        olist_1.olist_,
+                        ilist_1.ilist
+                    ]))
+                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))])]))), es => [typed_dom_1.html('ul', es)]));
             function fillFirstLine(ns) {
                 return [
                     HTMLUListElement,
