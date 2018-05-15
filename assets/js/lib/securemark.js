@@ -2578,8 +2578,10 @@ require = function () {
                     const el = typed_dom_1.html('a', {
                         href: url,
                         rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener'
-                    }, util_1.hasContent(children) ? children.childNodes : url_1.sanitize(INSECURE_URL || window.location.href).replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
-                    if (window.location.origin !== el.origin || util_1.hasMedia(el)) {
+                    }, util_1.hasContent(children) ? children.childNodes : url_1.sanitize(INSECURE_URL.replace(/^tel:/, '') || window.location.href).replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
+                    if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=\d)/g, '') }`)
+                        return;
+                    if ((window.location.origin !== el.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
                         void el.setAttribute('target', '_blank');
                     }
                     return [
@@ -2678,6 +2680,8 @@ require = function () {
                             [exports.cache.get(url).cloneNode(true)],
                             rest
                         ];
+                    if (url.trim().toLowerCase().startsWith('tel:'))
+                        return;
                     return [
                         [typed_dom_1.html('img', {
                                 class: 'media',
@@ -3028,7 +3032,8 @@ require = function () {
                 parser.setAttribute('href', url);
                 return [
                     'http:',
-                    'https:'
+                    'https:',
+                    'tel:'
                 ].includes(parser.protocol);
             }
         },
@@ -3209,30 +3214,7 @@ require = function () {
                 }, opts);
                 const url = new URL(target.getAttribute('data-src'), window.location.href);
                 const alt = target.getAttribute('alt') || '';
-                const el = (() => {
-                    switch (`${ url.protocol }//${ url.host }`) {
-                    case 'https://twitter.com':
-                        return opts.twitter ? opts.twitter(url.href) : undefined;
-                    case 'https://www.youtube.com':
-                    case 'https://youtu.be':
-                        return opts.youtube ? opts.youtube(url.href) : undefined;
-                    case 'https://gist.github.com':
-                        return opts.gist ? opts.gist(url.href) : undefined;
-                    case 'https://www.slideshare.net':
-                        return opts.slideshare ? opts.slideshare(url.href) : undefined;
-                    }
-                    switch (url.pathname.split(/(?=\.)/).pop()) {
-                    case '.pdf':
-                        return opts.pdf ? opts.pdf(url.href) : undefined;
-                    case '.webm':
-                    case '.ogv':
-                        return opts.video ? opts.video(url.href, alt) : undefined;
-                    case '.oga':
-                    case '.ogg':
-                        return opts.audio ? opts.audio(url.href, alt) : undefined;
-                    }
-                    return opts.image ? opts.image(url.href, alt) : undefined;
-                })();
+                const el = undefined || opts.twitter && opts.twitter(url) || opts.youtube && opts.youtube(url) || opts.gist && opts.gist(url) || opts.slideshare && opts.slideshare(url) || opts.pdf && opts.pdf(url) || opts.video && opts.video(url, alt) || opts.audio && opts.audio(url, alt) || opts.image && opts.image(url, alt);
                 if (!el)
                     return;
                 void el.classList.add('media');
@@ -3258,8 +3240,13 @@ require = function () {
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function audio(url, alt) {
-                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.html('audio', {
-                    src: url,
+                if (![
+                        '.oga',
+                        '.ogg'
+                    ].includes(url.pathname.split(/(?=\.)/).pop()))
+                    return;
+                return media_1.cache.has(url.href) ? media_1.cache.get(url.href).cloneNode(true) : media_1.cache.set(url.href, typed_dom_1.html('audio', {
+                    src: url.href,
                     alt,
                     controls: '',
                     style: 'width: 100%;'
@@ -3282,11 +3269,13 @@ require = function () {
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
                 function gist(url) {
-                    if (media_1.cache.has(url))
-                        return media_1.cache.get(url).cloneNode(true);
-                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url }`)], () => {
+                    if (!['https://gist.github.com'].includes(url.origin))
+                        return;
+                    if (media_1.cache.has(url.href))
+                        return media_1.cache.get(url.href).cloneNode(true);
+                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
                         const outer = typed_dom_1.html('div');
-                        void $.ajax(`${ url }.json`, {
+                        void $.ajax(`${ url.href }.json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
                             cache: true,
@@ -3295,8 +3284,8 @@ require = function () {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(parser_1.escape(url)).querySelector('a'))]).element, gist.firstChild);
-                                void media_1.cache.set(url, outer.cloneNode(true));
+                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(parser_1.escape(url.href)).querySelector('a'))]).element, gist.firstChild);
+                                void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
                                 void document.head.appendChild(typed_dom_1.html('link', {
@@ -3306,7 +3295,7 @@ require = function () {
                                 }));
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url.href) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -3328,8 +3317,8 @@ require = function () {
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function image(url, alt) {
-                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.html('img', {
-                    src: url,
+                return media_1.cache.has(url.href) ? media_1.cache.get(url.href).cloneNode(true) : media_1.cache.set(url.href, typed_dom_1.html('img', {
+                    src: url.href,
                     alt,
                     style: 'max-width: 100%;'
                 }).cloneNode(true));
@@ -3348,17 +3337,19 @@ require = function () {
             const parser_1 = require('../../../parser');
             const typed_dom_1 = require('typed-dom');
             function pdf(url) {
+                if (!['.pdf'].includes(url.pathname.split(/(?=\.)/).pop()))
+                    return;
                 return typed_dom_1.default.div({ style: 'position: relative;' }, [
                     typed_dom_1.default.div({ style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.default.object({
                             type: 'application/pdf',
-                            data: url,
+                            data: url.href,
                             style: 'width: 100%; height: 100%; min-height: 400px;'
                         }, () => {
                             const el = typed_dom_1.html('object');
                             el.typeMustMatch = true;
                             return el;
                         })]),
-                    typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parser_1.parse(`**${ parser_1.escape(url) }**`).querySelector('strong'))])
+                    typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parser_1.parse(`**${ parser_1.escape(url.href) }**`).querySelector('strong'))])
                 ]).element;
             }
             exports.pdf = pdf;
@@ -3378,11 +3369,13 @@ require = function () {
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
                 function slideshare(url) {
-                    if (media_1.cache.has(url))
-                        return media_1.cache.get(url).cloneNode(true);
-                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url }`)], () => {
+                    if (!['https://www.slideshare.net'].includes(url.origin))
+                        return;
+                    if (media_1.cache.has(url.href))
+                        return media_1.cache.get(url.href).cloneNode(true);
+                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
                         const outer = typed_dom_1.html('div');
-                        void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url }&format=json`, {
+                        void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
                             cache: true,
@@ -3393,10 +3386,10 @@ require = function () {
                                 iframe.parentElement.style.paddingTop = `${ +iframe.height / +iframe.width * 100 }%`;
                                 void outer.appendChild(iframe.nextElementSibling);
                                 void outer.lastElementChild.removeAttribute('style');
-                                void media_1.cache.set(url, outer.cloneNode(true));
+                                void media_1.cache.set(url.href, outer.cloneNode(true));
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url.href) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -3423,14 +3416,16 @@ require = function () {
                 let widgetScriptRequested = !!window.twttr;
                 const cache = new cache_1.Cache(100);
                 function twitter(url) {
-                    if (cache.has(url)) {
-                        const el = cache.get(url).cloneNode(true);
+                    if (!['https://twitter.com'].includes(url.origin))
+                        return;
+                    if (cache.has(url.href)) {
+                        const el = cache.get(url.href).cloneNode(true);
                         window.twttr && void window.twttr.widgets.load(el);
                         return el;
                     }
-                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url }`)], () => {
+                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
                         const outer = typed_dom_1.html('div');
-                        void $.ajax(`https://publish.twitter.com/oembed?url=${ url.replace('?', '&') }`, {
+                        void $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
                             cache: true,
@@ -3438,7 +3433,7 @@ require = function () {
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`, { ADD_TAGS: ['script'] });
                                 const script = outer.querySelector('script');
                                 script && void script.remove();
-                                void cache.set(url, outer.cloneNode(true));
+                                void cache.set(url.href, outer.cloneNode(true));
                                 if (window.twttr)
                                     return void window.twttr.widgets.load(outer);
                                 if (widgetScriptRequested || !script)
@@ -3454,7 +3449,7 @@ require = function () {
                                 });
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url.href) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -3476,8 +3471,13 @@ require = function () {
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function video(url, alt) {
-                return media_1.cache.has(url) ? media_1.cache.get(url).cloneNode(true) : media_1.cache.set(url, typed_dom_1.html('video', {
-                    src: url,
+                if (![
+                        '.webm',
+                        '.ogv'
+                    ].includes(url.pathname.split(/(?=\.)/).pop()))
+                    return;
+                return media_1.cache.has(url.href) ? media_1.cache.get(url.href).cloneNode(true) : media_1.cache.set(url.href, typed_dom_1.html('video', {
+                    src: url.href,
                     alt,
                     muted: '',
                     controls: '',
@@ -3497,8 +3497,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
             function youtube(url) {
+                if (![
+                        'https://www.youtube.com',
+                        'https://youtu.be'
+                    ].includes(url.origin))
+                    return;
                 return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
-                            src: `https://www.youtube.com/embed/${ url.startsWith('https://www.youtube.com/') && url.replace(/.+?=/, '').replace(/&/, '?') || url.startsWith('https://youtu.be/') && url.slice(url.indexOf('/', 9) + 1) }`,
+                            src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com/' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be/' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
