@@ -11,6 +11,9 @@ describe('Unit: parser/text/url', () => {
     });
 
     it('protocol', () => {
+      assert(sanitize('http:') === 'http:');
+      assert(sanitize('https://example') === 'https://example');
+      assert(sanitize('tel:') === 'tel:');
       assert(sanitize('javascript:') === '');
       assert(sanitize('javascript:alert)') === '');
       assert(sanitize('vbscript:alert)') === '');

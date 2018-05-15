@@ -20,6 +20,7 @@ export const media: MediaParser = line(bind(
         const url = sanitize(stringify(ts));
         if (url === '') return;
         if (cache.has(url)) return [[cache.get(url)!.cloneNode(true)], rest];
+        if (url.trim().toLowerCase().startsWith('tel:')) return;
         return [[html('img', { class: 'media', 'data-src': url, alt: caption })], rest];
       })
       (rest);

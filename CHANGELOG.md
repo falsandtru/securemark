@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.61.0
+
+- Allow tel protocol in link syntax.
+
 ## 0.60.0
 
 - Disallow ulist syntax without `-`.

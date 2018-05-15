@@ -32,6 +32,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[https://host](http://host)')), undefined);
       assert.deepStrictEqual(inspect(parser('[[](http://host).com](http://host)')), undefined);
       assert.deepStrictEqual(inspect(parser('[[](http://host/a)b](http://host/ab)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[0987654321](tel:1234567890)')), undefined);
     });
 
     it('invalid', () => {
@@ -68,6 +69,12 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[a ]()')), [['<a href="" rel="noopener">a </a>'], '']);
       assert.deepStrictEqual(inspect(parser('[ a]()')), [['<a href="" rel="noopener"> a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[ a ]()')), [['<a href="" rel="noopener"> a </a>'], '']);
+    });
+
+    it('tel', () => {
+      assert.deepStrictEqual(inspect(parser('[](tel:1234567890)')), [[`<a href="tel:1234567890" rel="noopener">1234567890</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[1234567890](tel:1234567890)')), [[`<a href="tel:1234567890" rel="noopener">1234567890</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[12-3456-7890](tel:1234567890)')), [[`<a href="tel:1234567890" rel="noopener">12-3456-7890</a>`], '']);
     });
 
     it('image', () => {

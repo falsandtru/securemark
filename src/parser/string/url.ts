@@ -13,6 +13,7 @@ function isAcceptedProtocol(url: string): boolean {
   return [
     'http:',
     'https:',
+    'tel:',
   ]
     .includes(parser.protocol);
 }

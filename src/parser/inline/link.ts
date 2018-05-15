@@ -47,10 +47,11 @@ export const link: LinkParser = line(bind(build(() =>
           },
           hasContent(children)
             ? children.childNodes
-            : sanitize(INSECURE_URL || window.location.href)
+            : sanitize(INSECURE_URL.replace(/^tel:/, '') || window.location.href)
                 .replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
         assert(hasContent(el));
-        if (window.location.origin !== el.origin || hasMedia(el)) {
+        if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=\d)/g, '')}`) return;
+        if ((window.location.origin !== el.origin || hasMedia(el)) && el.protocol !== 'tel:') {
           void el.setAttribute('target', '_blank');
         }
         return [[el], rest];
