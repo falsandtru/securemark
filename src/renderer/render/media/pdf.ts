@@ -1,7 +1,8 @@
 ﻿import { parse, escape } from '../../../parser';
 import DOM, { html } from 'typed-dom';
 
-export function pdf(url: string): HTMLElement {
+export function pdf(url: URL): HTMLElement | undefined {
+  if (!['.pdf'].includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   return DOM.div({
     style: 'position: relative;',
   }, [
@@ -10,7 +11,7 @@ export function pdf(url: string): HTMLElement {
     }, [
       DOM.object({
         type: 'application/pdf',
-        data: url,
+        data: url.href,
         style: 'width: 100%; height: 100%; min-height: 400px;',
       }, () => {
         const el = html('object');
@@ -22,7 +23,7 @@ export function pdf(url: string): HTMLElement {
       DOM.strong({
         style: 'word-wrap: break-word;',
       }, () =>
-        parse(`**${escape(url)}**`).querySelector('strong')!),
+        parse(`**${escape(url.href)}**`).querySelector('strong')!),
     ]),
   ]).element;
 }

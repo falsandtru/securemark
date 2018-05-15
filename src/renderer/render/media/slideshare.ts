@@ -3,13 +3,14 @@ import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
 import DOM, { html } from 'typed-dom';
 
-export function slideshare(url: string): HTMLElement {
-  if (cache.has(url)) return cache.get(url)!.cloneNode(true);
+export function slideshare(url: URL): HTMLElement | undefined {
+  if (!['https://www.slideshare.net'].includes(url.origin)) return;
+  if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
   return DOM.div({
     style: 'position: relative;',
-  }, [DOM.em(`loading ${url}`)], () => {
+  }, [DOM.em(`loading ${url.href}`)], () => {
     const outer = html('div');
-    void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${url}&format=json`, {
+    void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${url.href}&format=json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
       cache: true,
@@ -20,11 +21,11 @@ export function slideshare(url: string): HTMLElement {
         iframe.parentElement!.style.paddingTop = `${(+iframe.height / +iframe.width) * 100}%`;
         void outer.appendChild(iframe.nextElementSibling!);
         void outer.lastElementChild!.removeAttribute('style');
-        void cache.set(url, outer.cloneNode(true));
+        void cache.set(url.href, outer.cloneNode(true));
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        outer.innerHTML = parse(`*${escape(url)}\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
+        outer.innerHTML = parse(`*${escape(url.href)}\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;

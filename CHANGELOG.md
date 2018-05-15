@@ -3,6 +3,7 @@
 ## 0.61.0
 
 - Allow tel protocol in link syntax.
+- Refine rendering options.
 
 ## 0.60.0
 

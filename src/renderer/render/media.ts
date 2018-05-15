@@ -13,46 +13,15 @@ export function media(target: HTMLImageElement, opts: NonNullable<RenderingOptio
   opts = { twitter, youtube, gist, slideshare, pdf, video, audio, image, ...opts };
   const url = new URL(target.getAttribute('data-src')!, window.location.href);
   const alt = target.getAttribute('alt') || '';
-  const el = (() => {
-    switch (`${url.protocol}//${url.host}`) {
-      case 'https://twitter.com':
-        return opts.twitter
-          ? opts.twitter(url.href)
-          : undefined;
-      case 'https://www.youtube.com':
-      case 'https://youtu.be':
-        return opts.youtube
-          ? opts.youtube(url.href)
-          : undefined;
-      case 'https://gist.github.com':
-        return opts.gist
-          ? opts.gist(url.href)
-          : undefined;
-      case 'https://www.slideshare.net':
-        return opts.slideshare
-          ? opts.slideshare(url.href)
-          : undefined;
-    }
-    switch (url.pathname.split(/(?=\.)/).pop()!) {
-      case '.pdf':
-        return opts.pdf
-          ? opts.pdf(url.href)
-          : undefined;
-      case '.webm':
-      case '.ogv':
-        return opts.video
-          ? opts.video(url.href, alt)
-          : undefined;
-      case '.oga':
-      case '.ogg':
-        return opts.audio
-          ? opts.audio(url.href, alt)
-          : undefined;
-    }
-    return opts.image
-      ? opts.image(url.href, alt)
-      : undefined;
-  })();
+  const el = undefined
+    || opts.twitter && opts.twitter(url)
+    || opts.youtube && opts.youtube(url)
+    || opts.gist && opts.gist(url)
+    || opts.slideshare && opts.slideshare(url)
+    || opts.pdf && opts.pdf(url)
+    || opts.video && opts.video(url, alt)
+    || opts.audio && opts.audio(url, alt)
+    || opts.image && opts.image(url, alt);
   if (!el) return;
   void el.classList.add('media');
   return el;

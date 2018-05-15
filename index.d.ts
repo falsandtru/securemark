@@ -17,14 +17,14 @@ export interface RenderingOptions {
   code?: (target: HTMLElement) => void;
   math?: (target: HTMLElement) => void;
   media?: {
-    twitter?: (url: string) => HTMLElement;
-    youtube?: (url: string) => HTMLElement;
-    gist?: (url: string) => HTMLElement;
-    slideshare?: (url: string) => HTMLElement;
-    pdf?: (url: string) => HTMLElement;
-    video?: (url: string, alt: string) => HTMLVideoElement;
-    audio?: (url: string, alt: string) => HTMLAudioElement;
-    image?: (url: string, alt: string) => HTMLImageElement;
+    twitter?: (url: URL) => HTMLElement | undefined;
+    youtube?: (url: URL) => HTMLElement | undefined;
+    gist?: (url: URL) => HTMLElement | undefined;
+    slideshare?: (url: URL) => HTMLElement | undefined;
+    pdf?: (url: URL) => HTMLElement | undefined;
+    video?: (url: URL, alt: string) => HTMLVideoElement | undefined;
+    audio?: (url: URL, alt: string) => HTMLAudioElement | undefined;
+    image?: (url: URL, alt: string) => HTMLImageElement;
   };
 }
 
