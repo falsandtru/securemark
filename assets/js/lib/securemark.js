@@ -3503,7 +3503,7 @@ require = function () {
                     ].includes(url.origin))
                     return;
                 return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
-                            src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com/' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be/' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
+                            src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
