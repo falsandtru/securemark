@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.62.0
+
+- Allow invalid html tags with replacing.
+
 ## 0.61.0
 
 - Allow tel protocol in link syntax.
