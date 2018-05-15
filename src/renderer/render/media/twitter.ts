@@ -14,6 +14,7 @@ const cache = new Cache<string, HTMLElement>(100);
 
 export function twitter(url: URL): HTMLElement | undefined {
   if (!['https://twitter.com'].includes(url.origin)) return;
+  if (!url.pathname.match(/^\/\w+\/status\/\d{15,}(?!\w)/)) return;
   if (cache.has(url.href)) {
     const el = cache.get(url.href)!.cloneNode(true);
     window.twttr && void window.twttr.widgets.load(el);

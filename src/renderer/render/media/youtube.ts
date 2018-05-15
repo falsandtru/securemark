@@ -2,6 +2,8 @@
 
 export function youtube(url: URL): HTMLElement | undefined {
   if (!['https://www.youtube.com', 'https://youtu.be'].includes(url.origin)) return;
+  if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/)) return;
+  if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w\-]+$/)) return;
   return DOM.div({
     style: 'position: relative;',
   }, [
