@@ -11,46 +11,46 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), [['<span>alert()</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<script src="."></script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby></ruby>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby> </ruby>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby>\n</ruby>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small></small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small> </small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>\n</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()">')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()"><ruby>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby><ruby onclick="alert()"></ruby></ruby>')), [['<ruby>&lt;ruby onclick="alert()"&gt;</ruby>'], '</ruby>']);
+      assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()"><small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small><ruby onclick="alert()"></small></small>')), [['<small>&lt;ruby onclick="alert()"&gt;</small>'], '</small>']);
     });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby>a')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby>a</RUBY>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<RUBY>a</ruby>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>a')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>a</RUBY>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<RUBY>a</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<RUBY>a</RUBY>')), undefined);
-      assert.deepStrictEqual(inspect(parser('</ruby>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby>![](a)</ruby>')), undefined);
+      assert.deepStrictEqual(inspect(parser('</small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>![](a)</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), undefined);
-      assert.deepStrictEqual(inspect(parser('a<ruby>')), undefined);
+      assert.deepStrictEqual(inspect(parser('a<small>')), undefined);
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('<ruby>a</ruby>')), [['<ruby>a</ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('<ruby>a</ruby>a')), [['<ruby>a</ruby>'], 'a']);
+      assert.deepStrictEqual(inspect(parser('<small>a</small>')), [['<small>a</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a</small>a')), [['<small>a</small>'], 'a']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('<ruby><ruby>a</ruby></ruby>')), [['<ruby><ruby>a</ruby></ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('<ruby>a<ruby>b</ruby>c</ruby>')), [['<ruby>a<ruby>b</ruby>c</ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('<ruby>`a`</ruby>')), [['<ruby><code data-src="`a`">a</code></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><small>a</small></small>')), [['<small><small>a</small></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a<small>b</small>c</small>')), [['<small>a<small>b</small>c</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>`a`</small>')), [['<small><code data-src="`a`">a</code></small>'], '']);
     });
 
     it('escape', () => {
       assert.deepStrictEqual(inspect(parser('<a>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby><a></a></ruby>')), [['<ruby>&lt;a&gt;&lt;/a&gt;</ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('<ruby>a<a>b</a>c</ruby>')), [['<ruby>a<span>b</span>c</ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><a></a></small>')), [['<small>&lt;a&gt;&lt;/a&gt;</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a<a>b</a>c</small>')), [['<small>a<span>b</span>c</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<img>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby><img></ruby>')), [['<ruby>&lt;img&gt;</ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><img></small>')), [['<small>&lt;img&gt;</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<img />')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby><img /></ruby>')), [['<ruby>&lt;img /&gt;</ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><img /></small>')), [['<small>&lt;img /&gt;</small>'], '']);
     });
 
     it('wbr', () => {

@@ -30,8 +30,8 @@ describe('Unit: parser/inline/emphasis', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('*<ruby>*')), [['<em>&lt;ruby&gt;</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*`<ruby>`*')), [['<em><code data-src="`<ruby>`">&lt;ruby&gt;</code></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*<small>*')), [['<em>&lt;small&gt;</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*`<small>`*')), [['<em><code data-src="`<small>`">&lt;small&gt;</code></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*`a`*')), [['<em><code data-src="`a`">a</code></em>'], '']);
     });
 

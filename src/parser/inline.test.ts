@@ -19,8 +19,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('**[*a*]**')), [['<strong>[<em>a</em>]</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('*[**a**]*')), [['<em>[<strong>a</strong>]</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*<a>`b`&c;&amp; *')), [['<em>&lt;a&gt;<code data-src="`b`">b</code>&amp;c;&amp; </em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*<ruby>`a`</ruby>*')), [['<em><ruby><code data-src="`a`">a</code></ruby></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('<ruby>*<mark>a</mark>*</ruby>')), [['<ruby><em><mark>a</mark></em></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('*<small>`a`</small>*')), [['<em><small><code data-src="`a`">a</code></small></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>*<mark>a</mark>*</small>')), [['<small><em><mark>a</mark></em></small>'], '']);
     });
 
     it('link', () => {
