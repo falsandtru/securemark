@@ -2493,17 +2493,14 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            const tags = Object.freeze('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+            const tags = new Set('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             exports.html = combinator_1.match(/^<([a-z]+)>/, ([whole, tag], rest) => {
-                if (!tags.includes(tag))
-                    return;
-                const opentag = `<${ tag }>`;
-                if (tag === 'wbr')
+                if (['wbr'].includes(tag))
                     return [
                         [typed_dom_1.html(tag)],
                         rest
                     ];
-                return combinator_1.verify(combinator_1.fmap(combinator_1.surround(`<${ tag }>`, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.html(tag, ns)]), ([el]) => util_1.hasText(el))(whole + rest);
+                return combinator_1.verify(combinator_1.fmap(combinator_1.surround(`<${ tag }>`, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.html(tags.has(tag) ? tag : 'span', ns)]), ([el]) => util_1.hasText(el))(whole + rest);
             });
         },
         {
@@ -3271,6 +3268,8 @@ require = function () {
                 function gist(url) {
                     if (!['https://gist.github.com'].includes(url.origin))
                         return;
+                    if (!url.pathname.match(/^\/[\w\-]+?\/\w{32}(?!\w)/))
+                        return;
                     if (media_1.cache.has(url.href))
                         return media_1.cache.get(url.href).cloneNode(true);
                     return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
@@ -3371,6 +3370,8 @@ require = function () {
                 function slideshare(url) {
                     if (!['https://www.slideshare.net'].includes(url.origin))
                         return;
+                    if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/))
+                        return;
                     if (media_1.cache.has(url.href))
                         return media_1.cache.get(url.href).cloneNode(true);
                     return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
@@ -3417,6 +3418,8 @@ require = function () {
                 const cache = new cache_1.Cache(100);
                 function twitter(url) {
                     if (!['https://twitter.com'].includes(url.origin))
+                        return;
+                    if (!url.pathname.match(/^\/\w+\/status\/\d{15,}(?!\w)/))
                         return;
                     if (cache.has(url.href)) {
                         const el = cache.get(url.href).cloneNode(true);
@@ -3501,6 +3504,10 @@ require = function () {
                         'https://www.youtube.com',
                         'https://youtu.be'
                     ].includes(url.origin))
+                    return;
+                if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/))
+                    return;
+                if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w\-]+$/))
                     return;
                 return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
                             src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
