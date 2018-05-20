@@ -3,7 +3,7 @@ import { union, sequence, some, match, surround, contract, fmap, bind, trimEnd, 
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { inline } from '../inline';
-import { compress, hasMedia } from '../util';
+import { squash, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
@@ -69,13 +69,13 @@ const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser
 const data: TableParser.DataParser = build(() => bind(
   surround(
     /^\|\s*/,
-    compress(union([some(inline, /^\s*(?:\||$)/)])),
+    union([some(inline, /^\s*(?:\||$)/)]),
     /^\s*/,
     false),
   (ns, rest) =>
     ns.length === 0 && rest === ''
       ? undefined
-      : [concat([text('')], ns), rest]));
+      : [squash(ns), rest]));
 
 const align: TableParser.AlignParser =
   surround(

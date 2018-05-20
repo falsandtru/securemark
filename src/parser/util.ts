@@ -5,22 +5,19 @@ export function compress<T extends Node, S extends Parser<any, any>[]>(parser: P
   return fmap<T, T, S>(parser, squash);
 }
 
-export function squash<T extends Node>(nodes: T[]): T[] {
-  const acc: T[] = [];
+export function squash<T extends Node>(nodes: T[]): T[];
+export function squash(nodes: Node[]): Node[] {
+  const acc: Node[] = [];
   void nodes
     .reduce<Node | undefined>((prev, curr) => {
-      if (prev) {
-        if (curr.nodeType === 3 && curr.textContent === '') return prev;
-        if (prev.nodeType === 3 && curr.nodeType === 3) {
-          prev.textContent += curr.textContent!;
-          curr.textContent = '';
-          return prev;
-        }
+      if (curr.nodeType === 3) {
+        if (curr.textContent === '') return prev;
+        if (prev && prev.nodeType === 3) return prev.textContent += curr.textContent!, prev;
       }
+      curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
       void acc.push(curr);
       return curr;
     }, undefined);
-  assert(nodes.length > 0 ? acc.length > 0 : true);
   return acc;
 }
 
