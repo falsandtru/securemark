@@ -15,10 +15,12 @@ const opener = /^(?=>>+(?:\s|$))/;
 
 const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
   some(union([
+    rewrite(
+      indent,
+      s => textquote(unindent(s))),
     fmap(
       some(line(s => [[text(unindent(s.split('\n')[0].replace(/ /g, String.fromCharCode(160)))), html('br')], ''], true, true), opener),
       ns => ns.slice(0, -1)),
-    rewrite(indent, s => textquote(unindent(s))),
   ]))),
   ns =>
     [html('blockquote', ns)]);
@@ -26,9 +28,11 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
 const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
   some(union([
     rewrite(
+      indent,
+      s => mdquote(unindent(s))),
+    rewrite(
       some(line(s => [[s], ''], true, true), opener),
       s => [[parse(unindent(s))], '']),
-    rewrite(indent, s => mdquote(unindent(s))),
   ]))),
   ns =>
     [html('blockquote', ns)]);
