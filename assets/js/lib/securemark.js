@@ -1415,24 +1415,24 @@ require = function () {
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
+                combinator_1.rewrite(indent, s => textquote(unindent(s))),
                 combinator_1.fmap(combinator_1.some(line_1.line(s => [
                     [
                         typed_dom_1.text(unindent(s.split('\n')[0].replace(/ /g, String.fromCharCode(160)))),
                         typed_dom_1.html('br')
                     ],
                     ''
-                ], true, true), opener), ns => ns.slice(0, -1)),
-                combinator_1.rewrite(indent, s => textquote(unindent(s)))
+                ], true, true), opener), ns => ns.slice(0, -1))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const mdquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
+                combinator_1.rewrite(indent, s => mdquote(unindent(s))),
                 combinator_1.rewrite(combinator_1.some(line_1.line(s => [
                     [s],
                     ''
                 ], true, true), opener), s => [
                     [parse_1.parse(unindent(s))],
                     ''
-                ]),
-                combinator_1.rewrite(indent, s => mdquote(unindent(s)))
+                ])
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const indent = block_1.block(combinator_1.surround(opener, combinator_1.some(line_1.line(s => [
                 [s],
@@ -2033,8 +2033,8 @@ require = function () {
             }));
             const row = (parser, strict) => combinator_1.fmap(line_1.line(combinator_1.contract('|', combinator_1.trimEnd(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)), ns => !util_1.hasMedia(typed_dom_1.html('b', ns))), true, true), es => [typed_dom_1.html('tr', es)]);
             const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
-            const data = combinator_1.build(() => combinator_1.bind(combinator_1.surround(/^\|\s*/, util_1.compress(combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)])), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
-                concat_1.concat([typed_dom_1.text('')], ns),
+            const data = combinator_1.build(() => combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
+                util_1.squash(ns),
                 rest
             ]));
             const align = combinator_1.surround('|', combinator_1.union([
@@ -2751,6 +2751,8 @@ require = function () {
                 return '';
             }
             function text(node) {
+                if (node instanceof Text)
+                    return node.wholeText;
                 if (!(node instanceof Element))
                     return node.textContent;
                 switch (node.tagName.toLowerCase()) {
@@ -2759,7 +2761,7 @@ require = function () {
                         if (str)
                             return str;
                         if (node instanceof Text)
-                            return node.textContent;
+                            return node.wholeText;
                         switch (node.tagName.toLowerCase()) {
                         case 'rt':
                         case 'rp':
@@ -3048,15 +3050,13 @@ require = function () {
             function squash(nodes) {
                 const acc = [];
                 void nodes.reduce((prev, curr) => {
-                    if (prev) {
-                        if (curr.nodeType === 3 && curr.textContent === '')
+                    if (curr.nodeType === 3) {
+                        if (curr.textContent === '')
                             return prev;
-                        if (prev.nodeType === 3 && curr.nodeType === 3) {
-                            prev.textContent += curr.textContent;
-                            curr.textContent = '';
-                            return prev;
-                        }
+                        if (prev && prev.nodeType === 3)
+                            return prev.textContent += curr.textContent, prev;
                     }
+                    curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
                     void acc.push(curr);
                     return curr;
                 }, undefined);
