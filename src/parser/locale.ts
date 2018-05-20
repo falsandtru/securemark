@@ -32,13 +32,14 @@ function endingChar(node: Node | null): string {
 }
 
 function text(node: Node): string {
+  if (node instanceof Text) return node.wholeText;
   if (!(node instanceof Element)) return node.textContent!;
   switch (node.tagName.toLowerCase()) {
     case 'ruby':
       return [...node.childNodes]
         .reduceRight((str, node: Text | Element) => {
           if (str) return str;
-          if (node instanceof Text) return node.textContent!;
+          if (node instanceof Text) return node.wholeText;
           switch (node.tagName.toLowerCase()) {
             case 'rt':
             case 'rp':
