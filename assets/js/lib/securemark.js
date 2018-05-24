@@ -384,7 +384,7 @@ require = function () {
             exports.TypedHTML = new Proxy({}, handle(dom_1.html));
             exports.TypedSVG = new Proxy({}, handle(dom_1.svg));
             function handle(defaultFactory) {
-                return { get: (obj, prop) => obj[prop] || typeof prop !== 'string' ? obj[prop] : obj[prop] = builder(prop, () => defaultFactory(prop)) };
+                return { get: (obj, prop) => obj[prop] || typeof prop !== 'string' ? obj[prop] : obj[prop] = builder(prop, (...args) => defaultFactory(prop, ...args)) };
                 function builder(tag, defaultFactory) {
                     return function build(attrs, children, factory) {
                         if (typeof attrs === 'function')
@@ -393,27 +393,16 @@ require = function () {
                             return build(attrs, undefined, children);
                         if (attrs !== undefined && isChildren(attrs))
                             return build(undefined, attrs, factory);
-                        return new manager_1.El(elem(tag, factory, attrs), children);
+                        return new manager_1.El(elem(tag, factory || (() => defaultFactory()), attrs), children);
                     };
                     function isChildren(children) {
                         return typeof children !== 'object' || Object.values(children).slice(-1).every(val => typeof val === 'object');
                     }
-                    function elem(tag, factory = defaultFactory, attrs) {
-                        const el = factory();
+                    function elem(tag, factory, attrs) {
+                        const el = factory(defaultFactory);
                         if (tag !== el.tagName.toLowerCase())
                             throw new Error(`TypedDOM: Tag name must be "${ tag }", but got "${ el.tagName.toLowerCase() }".`);
-                        if (!attrs)
-                            return el;
-                        for (const [name, value] of Object.entries(attrs)) {
-                            typeof value === 'string' ? void el.setAttribute(name, value) : void el.addEventListener(name.slice(2), value, {
-                                passive: [
-                                    'wheel',
-                                    'mousewheel',
-                                    'touchstart',
-                                    'touchmove'
-                                ].includes(name.slice(2))
-                            });
-                        }
+                        attrs && void dom_1.define(el, attrs);
                         return el;
                     }
                 }
@@ -618,7 +607,7 @@ require = function () {
                     return element(ns, tag, attrs, [text(children)]);
                 const key = `${ ns }:${ tag }`;
                 const el = cache.has(key) ? cache.get(key).cloneNode(true) : cache.set(key, elem(ns, tag)).get(key).cloneNode(true);
-                void Object.entries(attrs).forEach(([name, value]) => void el.setAttribute(name, value));
+                void define(el, attrs);
                 void [...children].forEach(child => void el.appendChild(child));
                 return el;
             }
@@ -632,6 +621,17 @@ require = function () {
                     throw new Error(`TypedDOM: Unknown namespace: ${ ns }`);
                 }
             }
+            function define(el, attrs) {
+                void Object.entries(attrs).forEach(([name, value]) => typeof value === 'string' ? void el.setAttribute(name, value) : void el.addEventListener(name.slice(2), value, {
+                    passive: [
+                        'wheel',
+                        'mousewheel',
+                        'touchstart',
+                        'touchmove'
+                    ].includes(name.slice(2))
+                }));
+            }
+            exports.define = define;
             function isChildren(o) {
                 return !!o[Symbol.iterator];
             }
@@ -3721,3 +3721,14 @@ require = function () {
     'securemark',
     4
 ]);
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+      define([], factory);
+  } else if (typeof module === 'object' && module.exports) {
+      module.exports = factory();
+  } else {
+      root.returnExports = factory();
+}
+}(typeof self !== 'undefined' ? self : this, function () {
+  return require('atomic-promise');
+}));
