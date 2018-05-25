@@ -366,7 +366,13 @@ require = function () {
             exports.default = builder_1.TypedHTML;
             exports.TypedHTML = builder_1.TypedHTML;
             exports.TypedSVG = builder_1.TypedSVG;
-            __export(require('./src/util/dom'));
+            exports.API = builder_1.API;
+            var dom_1 = require('./src/util/dom');
+            exports.html = dom_1.html;
+            exports.svg = dom_1.svg;
+            exports.text = dom_1.text;
+            exports.frag = dom_1.frag;
+            exports.observe = dom_1.observe;
             __export(require('./src/util/listener'));
         },
         {
@@ -381,11 +387,15 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const manager_1 = require('./manager');
             const dom_1 = require('../util/dom');
-            exports.TypedHTML = new Proxy({}, handle(dom_1.html));
-            exports.TypedSVG = new Proxy({}, handle(dom_1.svg));
-            function handle(defaultFactory) {
-                return { get: (obj, prop) => obj[prop] || typeof prop !== 'string' ? obj[prop] : obj[prop] = builder(prop, (...args) => defaultFactory(prop, ...args)) };
-                function builder(tag, defaultFactory) {
+            function API(baseFactory) {
+                return new Proxy({}, handle(baseFactory));
+            }
+            exports.API = API;
+            exports.TypedHTML = API(dom_1.html);
+            exports.TypedSVG = API(dom_1.svg);
+            function handle(baseFactory) {
+                return { get: (obj, prop) => obj[prop] || prop in obj || typeof prop !== 'string' ? obj[prop] : obj[prop] = builder(prop, baseFactory) };
+                function builder(tag, baseFactory) {
                     return function build(attrs, children, factory) {
                         if (typeof attrs === 'function')
                             return build(undefined, undefined, attrs);
@@ -393,16 +403,16 @@ require = function () {
                             return build(attrs, undefined, children);
                         if (attrs !== undefined && isChildren(attrs))
                             return build(undefined, attrs, factory);
-                        return new manager_1.El(elem(tag, factory || (() => defaultFactory()), attrs), children);
+                        return new manager_1.El(elem(factory || ((f, tag) => f(tag)), attrs || {}, children), children);
                     };
                     function isChildren(children) {
                         return typeof children !== 'object' || Object.values(children).slice(-1).every(val => typeof val === 'object');
                     }
-                    function elem(tag, factory, attrs) {
-                        const el = factory(defaultFactory);
+                    function elem(factory, attrs, children) {
+                        const el = factory(baseFactory, tag, attrs, children);
                         if (tag !== el.tagName.toLowerCase())
                             throw new Error(`TypedDOM: Tag name must be "${ tag }", but got "${ el.tagName.toLowerCase() }".`);
-                        attrs && void dom_1.define(el, attrs);
+                        void dom_1.define(el, attrs);
                         return el;
                     }
                 }
@@ -540,7 +550,9 @@ require = function () {
                     case ElChildrenType.Void:
                         return;
                     case ElChildrenType.Text:
-                        this.children_.data = children;
+                        children = document.createTextNode(children);
+                        void this.element_.replaceChild(children, this.children_);
+                        this.children_ = children;
                         return;
                     case ElChildrenType.Collection:
                         void this.children_.reduce((cs, c) => {
@@ -580,13 +592,23 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            function observe(factory, callback, opts = { childList: true }) {
+                return (tag, ...args) => {
+                    const obs = new MutationObserver(callback);
+                    const el = factory(tag);
+                    void obs.observe(el, opts);
+                    void define(el, ...args);
+                    return el;
+                };
+            }
+            exports.observe = observe;
             const cache = new Map();
             function html(tag, attrs = {}, children = []) {
-                return element('html', tag, attrs, children);
+                return element(0, tag, attrs, children);
             }
             exports.html = html;
             function svg(tag, attrs = {}, children = []) {
-                return element('svg', tag, attrs, children);
+                return element(1, tag, attrs, children);
             }
             exports.svg = svg;
             function frag(children = []) {
@@ -600,28 +622,32 @@ require = function () {
                 return document.createTextNode(source);
             }
             exports.text = text;
+            var NS;
+            (function (NS) {
+                NS[NS['HTML'] = 0] = 'HTML';
+                NS[NS['SVG'] = 1] = 'SVG';
+            }(NS || (NS = {})));
             function element(ns, tag, attrs = {}, children = []) {
-                if (isChildren(attrs))
-                    return element(ns, tag, {}, attrs);
-                if (typeof children === 'string')
-                    return element(ns, tag, attrs, [text(children)]);
                 const key = `${ ns }:${ tag }`;
                 const el = cache.has(key) ? cache.get(key).cloneNode(true) : cache.set(key, elem(ns, tag)).get(key).cloneNode(true);
-                void define(el, attrs);
-                void [...children].forEach(child => void el.appendChild(child));
+                void define(el, attrs, children);
                 return el;
             }
             function elem(ns, tag) {
                 switch (ns) {
-                case 'html':
+                case 0:
                     return document.createElement(tag);
-                case 'svg':
+                case 1:
                     return document.createElementNS('http://www.w3.org/2000/svg', tag);
                 default:
                     throw new Error(`TypedDOM: Unknown namespace: ${ ns }`);
                 }
             }
-            function define(el, attrs) {
+            function define(el, attrs = {}, children = []) {
+                if (isChildren(attrs))
+                    return define(el, {}, attrs);
+                if (typeof children === 'string')
+                    return define(el, attrs, [text(children)]);
                 void Object.entries(attrs).forEach(([name, value]) => typeof value === 'string' ? void el.setAttribute(name, value) : void el.addEventListener(name.slice(2), value, {
                     passive: [
                         'wheel',
@@ -630,6 +656,7 @@ require = function () {
                         'touchmove'
                     ].includes(name.slice(2))
                 }));
+                void [...children].forEach(child => void el.appendChild(child));
             }
             exports.define = define;
             function isChildren(o) {
@@ -3722,13 +3749,12 @@ require = function () {
     4
 ]);
 (function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-      define([], factory);
-  } else if (typeof module === 'object' && module.exports) {
-      module.exports = factory();
-  } else {
-      root.returnExports = factory();
-}
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+    }
 }(typeof self !== 'undefined' ? self : this, function () {
-  return require('atomic-promise');
+    return require('securemark');
 }));
