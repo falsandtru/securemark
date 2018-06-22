@@ -94,7 +94,7 @@ describe('Unit: util/figure', () => {
       assert.deepStrictEqual(
         [...source.children].map(el => el.outerHTML),
         [
-          '<figure class="label:$-a" id="label:$-1"><div class="math">$$\nLaTeX\n$$</div><figcaption data-type="$" data-index="1"><span>(1)</span><span></span></figcaption></figure>',
+          '<figure class="label:$-a" id="label:$-1"><div class="math notranslate">$$\nLaTeX\n$$</div><figcaption data-type="$" data-index="1"><span>(1)</span><span></span></figcaption></figure>',
           '<p><a href="#label:$-1" rel="noopener" class="label:$-a">(1)</a></p>',
         ]);
     });

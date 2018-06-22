@@ -3,6 +3,7 @@
 ## 0.62.0
 
 - Allow invalid html tags with replacing.
+- Don't translate the text of code and math.
 
 ## 0.61.0
 

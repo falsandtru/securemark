@@ -7,4 +7,4 @@ import { html } from 'typed-dom';
 export const math: MathParser = block(match(
   /^\$\$[^\S\n]*\n(?:[^\n]+\n)+?\$\$[^\S\n]*(?:\n|$)/,
   ([whole], rest) =>
-    [[html('div', { class: 'math' }, whole.trim())], rest]));
+    [[html('div', { class: 'math notranslate' }, whole.trim())], rest]));

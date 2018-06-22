@@ -11,7 +11,7 @@ export const cache = new Cache<string, HTMLElement>(100); // for rerendering in 
 export const math: MathParser = line(verify(fmap(
   surround('$', some(union([escsource]), '$'), /^\$(?![$\d])/),
   ns => {
-    const el = html('span', { class: 'math' }, `$${stringify(ns)}$`);
+    const el = html('span', { class: 'math notranslate' }, `$${stringify(ns)}$`);
     if (cache.has(el.textContent!)) return [cache.get(el.textContent!)!.cloneNode(true)];
     void el.setAttribute('data-src', el.textContent!);
     return [el];

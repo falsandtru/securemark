@@ -16,9 +16,9 @@ export const pretext: PretextParser = block(rewrite(segment, trimEnd(match(
   /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1$/,
   ([, , lang, notes, body], rest) => {
     assert(rest === '');
-    const el = html('pre', body.slice(0, -1));
+    const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
     if (lang) {
-      void el.setAttribute('class', `language-${lang.toLowerCase()}`);
+      void el.classList.add(`language-${lang.toLowerCase()}`);
       void el.setAttribute('data-lang', lang);
     }
     const filepath = stringify((some(escsource, /^\s/)(notes.trim()) || [[]])[0]);

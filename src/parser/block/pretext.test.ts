@@ -18,26 +18,26 @@ describe('Unit: parser/block/pretext', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('```\n```')), [['<pre></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\n\n```')), [['<pre></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\na\n```')), [['<pre>a</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\na\nb\n```')), [['<pre>a\nb</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\n\\\n```')), [['<pre>\\</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\n\n\n```')), [['<pre>\n</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\n`\n```')), [['<pre>`</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\n````\n```')), [['<pre>````</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('````\n```\n````')), [['<pre>```</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```\n\n```\n')), [['<pre></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n```')), [['<pre class="notranslate"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n\n```')), [['<pre class="notranslate"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\na\n```')), [['<pre class="notranslate">a</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\na\nb\n```')), [['<pre class="notranslate">a\nb</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n\\\n```')), [['<pre class="notranslate">\\</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n\n\n```')), [['<pre class="notranslate">\n</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n`\n```')), [['<pre class="notranslate">`</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n````\n```')), [['<pre class="notranslate">````</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('````\n```\n````')), [['<pre class="notranslate">```</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n\n```\n')), [['<pre class="notranslate"></pre>'], '']);
     });
 
     it('attribute', () => {
-      assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="language-abc" data-lang="abc">a</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```abc \na\n```')), [['<pre class="language-abc" data-lang="abc">a</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('``` b\n```')), [['<pre data-file="b"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('``` b c \n```')), [['<pre data-file="b"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('``` b.c\n```')), [['<pre data-file="b.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```  b.c \n```')), [['<pre data-file="b.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```"0A ~/.\\ b\n```')), [['<pre class="language-&quot;0a" data-lang="&quot;0A" data-file="~/.\\ b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="notranslate language-abc" data-lang="abc">a</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```abc \na\n```')), [['<pre class="notranslate language-abc" data-lang="abc">a</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` b\n```')), [['<pre class="notranslate" data-file="b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` b c \n```')), [['<pre class="notranslate" data-file="b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` b.c\n```')), [['<pre class="notranslate" data-file="b.c"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```  b.c \n```')), [['<pre class="notranslate" data-file="b.c"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```"0A ~/.\\ b\n```')), [['<pre class="notranslate language-&quot;0a" data-lang="&quot;0A" data-file="~/.\\ b"></pre>'], '']);
     });
 
   });

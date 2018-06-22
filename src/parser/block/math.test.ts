@@ -20,12 +20,12 @@ describe('Unit: parser/block/math', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('$$\na\n$$')), [['<div class="math">$$\na\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na\n$$\n')), [['<div class="math">$$\na\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na\nb\n$$')), [['<div class="math">$$\na\nb\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n\\\n$$')), [['<div class="math">$$\n\\\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$\n$$')), [['<div class="math">$$\n$\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math">$$\n$$$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\n$$')), [['<div class="math notranslate">$$\na\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\n$$\n')), [['<div class="math notranslate">$$\na\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\nb\n$$')), [['<div class="math notranslate">$$\na\nb\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n\\\n$$')), [['<div class="math notranslate">$$\n\\\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$\n$$')), [['<div class="math notranslate">$$\n$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math notranslate">$$\n$$$\n$$</div>'], '']);
     });
 
   });

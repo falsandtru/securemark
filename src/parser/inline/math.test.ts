@@ -27,18 +27,18 @@ describe('Unit: parser/inline/math', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('$a$')), [['<span class="math" data-src="$a$">$a$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$ab$')), [['<span class="math" data-src="$ab$">$ab$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$a$b')), [['<span class="math" data-src="$a$">$a$</span>'], 'b']);
-      assert.deepStrictEqual(inspect(parser('$a b$')), [['<span class="math" data-src="$a b$">$a b$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$\\a$')), [['<span class="math" data-src="$\\a$">$\\a$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$\\$$')), [['<span class="math" data-src="$\\$$">$\\$$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$\\\\$')), [['<span class="math" data-src="$\\\\$">$\\\\$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$a$')), [['<span class="math notranslate" data-src="$a$">$a$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$ab$')), [['<span class="math notranslate" data-src="$ab$">$ab$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$a$b')), [['<span class="math notranslate" data-src="$a$">$a$</span>'], 'b']);
+      assert.deepStrictEqual(inspect(parser('$a b$')), [['<span class="math notranslate" data-src="$a b$">$a b$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\a$')), [['<span class="math notranslate" data-src="$\\a$">$\\a$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\$$')), [['<span class="math notranslate" data-src="$\\$$">$\\$$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$\\\\$')), [['<span class="math notranslate" data-src="$\\\\$">$\\\\$</span>'], '']);
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('$*a*$')), [['<span class="math" data-src="$*a*$">$*a*$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('$<wbr>$')), [['<span class="math" data-src="$<wbr>$">$&lt;wbr&gt;$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$*a*$')), [['<span class="math notranslate" data-src="$*a*$">$*a*$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('$<wbr>$')), [['<span class="math notranslate" data-src="$<wbr>$">$&lt;wbr&gt;$</span>'], '']);
     });
 
   });
