@@ -1808,7 +1808,7 @@ require = function () {
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.math = block_1.block(combinator_1.match(/^\$\$[^\S\n]*\n(?:[^\n]+\n)+?\$\$[^\S\n]*(?:\n|$)/, ([whole], rest) => [
-                [typed_dom_1.html('div', { class: 'math' }, whole.trim())],
+                [typed_dom_1.html('div', { class: 'math notranslate' }, whole.trim())],
                 rest
             ]));
         },
@@ -1993,9 +1993,9 @@ require = function () {
                 rest
             ]), false);
             exports.pretext = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.trimEnd(combinator_1.match(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1$/, ([, , lang, notes, body], rest) => {
-                const el = typed_dom_1.html('pre', body.slice(0, -1));
+                const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
-                    void el.setAttribute('class', `language-${ lang.toLowerCase() }`);
+                    void el.classList.add(`language-${ lang.toLowerCase() }`);
                     void el.setAttribute('data-lang', lang);
                 }
                 const filepath = util_1.stringify((combinator_1.some(escapable_1.escsource, /^\s/)(notes.trim()) || [[]])[0]);
@@ -2661,7 +2661,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(100);
             exports.math = line_1.line(combinator_1.verify(combinator_1.fmap(combinator_1.surround('$', combinator_1.some(combinator_1.union([escapable_1.escsource]), '$'), /^\$(?![$\d])/), ns => {
-                const el = typed_dom_1.html('span', { class: 'math' }, `$${ util_1.stringify(ns) }$`);
+                const el = typed_dom_1.html('span', { class: 'math notranslate' }, `$${ util_1.stringify(ns) }$`);
                 if (exports.cache.has(el.textContent))
                     return [exports.cache.get(el.textContent).cloneNode(true)];
                 void el.setAttribute('data-src', el.textContent);
