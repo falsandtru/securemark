@@ -10,6 +10,7 @@ export function localize(block: BlockParser): BlockParser {
           if (el.childNodes.length === 1) return;
           assert(el.childNodes.length === 2);
           if (!check(el)) return;
+          assert(el.firstChild!.textContent === ' ');
           void el.removeChild(el.firstChild!);
         }));
     return es;
@@ -18,8 +19,9 @@ export function localize(block: BlockParser): BlockParser {
 
 function check(el: Element): boolean {
   const char = endingChar(el.previousSibling);
-  return !!char
-      && japanese(char);
+  if (!char) return false;
+  assert([...char].length === 1);
+  return japanese(char);
 }
 
 function endingChar(node: Node | null): string {
