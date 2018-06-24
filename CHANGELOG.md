@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.62.1
+
+- Parse as extension before parsing as link.
+
 ## 0.62.0
 
 - Allow invalid html tags with replacing.

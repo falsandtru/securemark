@@ -33,8 +33,8 @@ export import AutolinkParser = InlineParser.AutolinkParser;
 export const inline: InlineParser = union<InlineParser>([
   comment,
   annotation,
-  link,
   extension,
+  link,
   html,
   emphasis,
   strong,

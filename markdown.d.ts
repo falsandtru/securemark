@@ -262,8 +262,8 @@ export namespace MarkdownParser {
     Parser<HTMLElement | Text, [
       InlineParser.CommentParser,
       InlineParser.AnnotationParser,
-      InlineParser.LinkParser,
       InlineParser.ExtensionParser,
+      InlineParser.LinkParser,
       InlineParser.HTMLParser,
       InlineParser.EmphasisParser,
       InlineParser.StrongParser,
