@@ -3,6 +3,7 @@
 ## 0.62.1
 
 - Parse as extension before parsing as link.
+- Disallow link text starting with `#`.
 
 ## 0.62.0
 
