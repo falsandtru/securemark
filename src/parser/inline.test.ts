@@ -24,6 +24,7 @@ describe('Unit: parser/inline', () => {
     });
 
     it('link', () => {
+      assert.deepStrictEqual(inspect(parser('[@a](b)')), [['[', '<a class="account" rel="noopener">@a</a>', ']', '(b)'], '']);
       assert.deepStrictEqual(inspect(parser('[http://host](http://host)')), [['[', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', ']', '(', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', ')'], '']);
     });
 
