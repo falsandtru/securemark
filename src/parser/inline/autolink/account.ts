@@ -6,7 +6,7 @@ import { html, text } from 'typed-dom';
 
 export const account: AutolinkParser.AccountParser = line(union([
   match(
-    /^[0-9a-zA-Z@]@.*?(?!@)/,
+    /^[0-9a-zA-Z@]@+/,
     ([frag], rest) =>
       [[text(frag)], rest]),
   match(
