@@ -2574,6 +2574,8 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.link = line_1.line(combinator_1.bind(combinator_1.build(() => line_1.line(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']', false), false)), (ns, rest) => {
                 const children = typed_dom_1.frag(ns);
+                if (children.textContent.trim().startsWith('#'))
+                    return;
                 if (util_1.hasAnnotation(children))
                     return;
                 if (util_1.hasMedia(children)) {
