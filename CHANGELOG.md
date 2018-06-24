@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.63.1
+
+- Disallow link text starting with `@`.
+
 ## 0.63.0
 
 - Parse as extension before parsing as link.

@@ -33,6 +33,13 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[[](http://host).com](http://host)')), undefined);
       assert.deepStrictEqual(inspect(parser('[[](http://host/a)b](http://host/ab)')), undefined);
       assert.deepStrictEqual(inspect(parser('[0987654321](tel:1234567890)')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#]()')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#a]()')), undefined);
+      assert.deepStrictEqual(inspect(parser('[ #a]()')), undefined);
+      assert.deepStrictEqual(inspect(parser('[@]()')), undefined);
+      assert.deepStrictEqual(inspect(parser('[@a]()')), undefined);
+      assert.deepStrictEqual(inspect(parser('[@a_]()')), undefined);
+      assert.deepStrictEqual(inspect(parser('[ @a]()')), undefined);
     });
 
     it('invalid', () => {
@@ -50,7 +57,6 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[ ]( )')), undefined);
       assert.deepStrictEqual(inspect(parser('[[]()')), undefined);
       assert.deepStrictEqual(inspect(parser('[]]()')), undefined);
-      assert.deepStrictEqual(inspect(parser('[#]()')), undefined);
       assert.deepStrictEqual(inspect(parser('[a\nb](ab)')), undefined);
       assert.deepStrictEqual(inspect(parser('[a\\\nb](ab)')), undefined);
       assert.deepStrictEqual(inspect(parser('[*a\\](\nb*](ab)')), undefined);

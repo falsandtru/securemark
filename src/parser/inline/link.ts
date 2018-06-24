@@ -11,7 +11,7 @@ export const link: LinkParser = line(bind(build(() =>
   line(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
   (ns, rest) => {
     const children = frag(ns);
-    if (children.textContent!.trim().startsWith('#')) return;
+    if (['#', '@'].includes(children.textContent!.trim()[0])) return;
     if (hasAnnotation(children)) return;
     if (hasMedia(children)) {
       void children.querySelectorAll('a > .media')
