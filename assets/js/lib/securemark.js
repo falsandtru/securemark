@@ -2156,8 +2156,8 @@ require = function () {
             exports.inline = combinator_1.union([
                 comment_1.comment,
                 annotation_1.annotation,
-                link_1.link,
                 extension_1.extension,
+                link_1.link,
                 html_1.html,
                 emphasis_1.emphasis,
                 strong_1.strong,
@@ -2766,7 +2766,9 @@ require = function () {
             exports.localize = localize;
             function check(el) {
                 const char = endingChar(el.previousSibling);
-                return !!char && ja_1.japanese(char);
+                if (!char)
+                    return false;
+                return ja_1.japanese(char);
             }
             function endingChar(node) {
                 while (node) {
