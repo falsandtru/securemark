@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.62.1
+## 0.63.0
 
 - Parse as extension before parsing as link.
 - Disallow link text starting with `#`.
