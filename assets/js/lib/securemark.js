@@ -2246,7 +2246,7 @@ require = function () {
             require('../../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.account = line_1.line(combinator_1.union([
-                combinator_1.match(/^[0-9a-zA-Z@]@.*?(?!@)/, ([frag], rest) => [
+                combinator_1.match(/^[0-9a-zA-Z@]@+/, ([frag], rest) => [
                     [typed_dom_1.text(frag)],
                     rest
                 ]),
@@ -2574,7 +2574,10 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.link = line_1.line(combinator_1.bind(combinator_1.build(() => line_1.line(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']', false), false)), (ns, rest) => {
                 const children = typed_dom_1.frag(ns);
-                if (children.textContent.trim().startsWith('#'))
+                if ([
+                        '#',
+                        '@'
+                    ].includes(children.textContent.trim()[0]))
                     return;
                 if (util_1.hasAnnotation(children))
                     return;
