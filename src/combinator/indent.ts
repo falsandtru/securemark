@@ -1,4 +1,4 @@
-﻿import { Parser } from './parser';
+﻿import { Parser, eval, exec } from './parser';
 import { some } from './some';
 import { match } from './match';
 import { surround } from './surround';
@@ -14,8 +14,8 @@ export function indent<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): P
       some(line(surround(whole, s => [[s.split('\n')[0]], ''], ''), true, true))(whole + rest)),
     (rs, rest) => {
       const result = parser(rs.join('\n'));
-      return result && result[1] === ''
-        ? [result[0], rest]
+      return result && exec(result) === ''
+        ? [eval(result), rest]
         : undefined;
     });
 }

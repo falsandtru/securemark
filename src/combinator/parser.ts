@@ -7,3 +7,12 @@ export type SubParser<P extends Parser<any, any>> = Parser<SubData<P>, SubParser
 export type ExtractData<S extends Parser<any, any>[]> = ExtractData_<ExtractParser<S>>;
 type ExtractData_<P extends Parser<any, any>> = P extends Parser<infer T, any> ? T : never;
 type ExtractParser<S extends Parser<any, any>[]> = S extends (infer P)[] ? P extends Parser<any, any> ? P : never : never;
+
+export { eval_ as eval };
+function eval_<R>(result: Result<R, any>, default_: R[] = []): R[] {
+  return (result || [default_])[0];
+}
+
+export function exec(result: Result<any, any>, default_: string = ''): string {
+  return (result || [[], default_])[1];
+}

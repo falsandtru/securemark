@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { match, rewrite } from '../../../combinator';
+import { match, rewrite, eval } from '../../../combinator';
 import { block } from '../../source/block';
 import { paragraph } from '../paragraph';
 
@@ -9,4 +9,4 @@ export const segment: ExtensionParser.PlaceholderParser = block(match(
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(rewrite(segment,
   () =>
-    [paragraph("*Invalid syntax: Extension syntax: ~~~.*\n")![0], '']));
+    [eval(paragraph("*Invalid syntax: Extension syntax: ~~~.*\n")), '']));

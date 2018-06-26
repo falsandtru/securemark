@@ -1,5 +1,5 @@
 ﻿import { PretextParser } from '../block';
-import { some, match, rewrite, trimEnd, build } from '../../combinator';
+import { some, match, rewrite, trimEnd, build, eval } from '../../combinator';
 import { block } from '../source/block';
 import { escsource } from '../source/escapable';
 import '../source/unescapable';
@@ -21,7 +21,7 @@ export const pretext: PretextParser = block(rewrite(segment, trimEnd(match(
       void el.classList.add(`language-${lang.toLowerCase()}`);
       void el.setAttribute('data-lang', lang);
     }
-    const filepath = stringify((some(escsource, /^\s/)(notes.trim()) || [[]])[0]);
+    const filepath = stringify(eval(some(escsource, /^\s/)(notes.trim())));
     if (filepath) {
       void el.setAttribute('data-file', filepath);
     }

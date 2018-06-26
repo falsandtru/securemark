@@ -1,5 +1,5 @@
 ﻿import { IListParser, ListItemParser } from '../block';
-import { union, inits, some, surround, verify, indent, fmap, trim, build } from '../../combinator';
+import { union, inits, some, surround, verify, indent, fmap, trim, build, eval } from '../../combinator';
 import { block } from '../source/block';
 import { line } from '../source/line';
 import { ulist } from './ulist';
@@ -16,7 +16,7 @@ export const ilist: IListParser = block(fmap<IListParser>(build(() =>
         indent(union([ulist, olist_, ilist]))
       ]),
       () =>
-        [html('li', some(inline)('*Invalid syntax: UList syntax: Use `-` instead.*')![0])])
+        [html('li', eval(some(inline)('*Invalid syntax: UList syntax: Use `-` instead.*')))])
   ]))),
   es =>
     [html('ul', es)]));

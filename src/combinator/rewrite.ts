@@ -1,4 +1,4 @@
-﻿import { Parser } from './parser';
+﻿import { Parser, eval, exec } from './parser';
 
 export function rewrite<P extends Parser<any, any>>(a: Parser<any, any>, b: P): P;
 export function rewrite<T, S extends Parser<any, any>[]>(a: Parser<never, any>, b: Parser<T, S>): Parser<T, S> {
@@ -7,13 +7,13 @@ export function rewrite<T, S extends Parser<any, any>[]>(a: Parser<never, any>, 
   return source => {
     if (source === '') return;
     const ar = a(source);
-    if (!ar || ar[1].length >= source.length) return;
-    const br = b(source.slice(0, source.length - ar[1].length));
-    if (!br || br[1].length >= source.length) return;
-    assert(br[1]==='');
-    assert(source.slice(1).endsWith(br[1] + ar[1]));
-    return br[1].length + ar[1].length < source.length
-      ? [br[0], br[1] + ar[1]]
+    if (!ar || exec(ar).length >= source.length) return;
+    const br = b(source.slice(0, source.length - exec(ar).length));
+    if (!br || exec(br).length >= source.length) return;
+    assert(exec(br)==='');
+    assert(source.slice(1).endsWith(exec(br) + exec(ar)));
+    return exec(br).length + exec(ar).length < source.length
+      ? [eval(br), exec(br) + exec(ar)]
       : undefined;
   };
 }

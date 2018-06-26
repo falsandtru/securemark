@@ -1,4 +1,4 @@
-﻿import { Parser } from '../../combinator';
+﻿import { Parser, eval, exec } from '../../combinator';
 import { EmptyLineParser, BlankLineParser, ContentLineParser } from '../source';
 import { block } from './block';
 
@@ -11,14 +11,14 @@ export function line<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, enti
       const rst = source.slice(src.length + 1);
       const result = line(parser, entire, false)(src + (source.length > src.length ? source[src.length] : ''));
       return result
-        ? [result[0], result[1] + rst]
+        ? [eval(result), exec(result) + rst]
         : undefined;
     }
     const result = entire
       ? block(parser, false)(source)
       : parser(source);
     if (!result) return result;
-    const src = source.slice(0, source.length - result[1].length);
+    const src = source.slice(0, source.length - exec(result).length);
     return src === '\n' || src.lastIndexOf('\n', src.length - 2) === -1
       ? result
       : undefined;

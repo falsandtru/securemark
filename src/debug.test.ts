@@ -1,15 +1,15 @@
-﻿import { Result } from './combinator';
+﻿import { Result, eval, exec } from './combinator';
 
 export function inspect(r: Result<HTMLElement | Text | string, any>): [string[], string] | undefined {
   return r
     ? [
-        r[0].map(n =>
+        eval(r).map(n =>
           typeof n === 'string'
             ? n
             : n instanceof Element
               ? n.outerHTML
               : n.textContent!),
-          r[1]
+          exec(r)
       ]
     : r;
 }
