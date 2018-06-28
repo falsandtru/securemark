@@ -3,10 +3,11 @@ import { union, some, match, surround, fmap, build, eval } from '../../../combin
 import { line } from '../../source/line';
 import { html } from 'typed-dom';
 
+// Already used symbols: !@$*<
 export const placeholder: ExtensionParser.PlaceholderParser = line(fmap(build(() =>
   surround(
     '[',
-    match(/^[~^\[]/, ([flag], rest) =>
+    match(/^[#:~^\[]/, ([flag], rest) =>
       some(union<ExtensionParser.PlaceholderParser>([inline]), ']')(flag === '[' ? flag + rest : rest)),
     ']')),
   ns =>
