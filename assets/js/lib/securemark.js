@@ -2529,7 +2529,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const line_1 = require('../../source/line');
             const typed_dom_1 = require('typed-dom');
-            exports.placeholder = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.match(/^[~^\[]/, ([flag], rest) => combinator_1.some(combinator_1.union([inline_1.inline]), ']')(flag === '[' ? flag + rest : rest)), ']')), ns => [typed_dom_1.html('span', combinator_1.eval(combinator_1.some(inline_1.inline)(`*Invalid syntax: Extension syntax: \`[${ ns[0].textContent[0] } ]\`.*`)))]), false);
+            exports.placeholder = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.match(/^[#:~^\[]/, ([flag], rest) => combinator_1.some(combinator_1.union([inline_1.inline]), ']')(flag === '[' ? flag + rest : rest)), ']')), ns => [typed_dom_1.html('span', combinator_1.eval(combinator_1.some(inline_1.inline)(`*Invalid syntax: Extension syntax: \`[${ ns[0].textContent[0] } ]\`.*`)))]), false);
         },
         {
             '../../../combinator': 19,
