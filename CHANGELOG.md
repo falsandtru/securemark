@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.64.0
+
+- Remove control characters.
+
 ## 0.63.1
 
 - Disallow link text starting with `@`.

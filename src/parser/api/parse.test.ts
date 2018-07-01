@@ -39,6 +39,12 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a</p>', '<p>b</p>']);
     });
 
+    it('normalize', () => {
+      assert.deepStrictEqual(
+        [...parse('a\\\r\nb').children].map(el => el.outerHTML),
+        ['<p>a<br>b</p>']);
+    });
+
   });
 
 });

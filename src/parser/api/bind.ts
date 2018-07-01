@@ -1,12 +1,14 @@
 ﻿import { eval } from '../../combinator';
 import { segment } from './segment';
 import { block } from '../block';
+import { normalize } from './normalization';
 
 export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement> {
   type Pair = [string, HTMLElement[]];
   const pairs: Pair[] = [];
   let revision: symbol;
   return function* (source: string): Iterable<HTMLElement> {
+    source = normalize(source);
     const rev = revision = Symbol();
     const cs = pairs.map(([s]) => s);
     if (source === cs.join('')) return;

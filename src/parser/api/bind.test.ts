@@ -87,6 +87,10 @@ describe('Unit: parser/api/bind', () => {
       assert(el.innerHTML === '<p>1</p>');
     });
 
+    it('normalize', () => {
+      assert.deepStrictEqual(inspect(bind(html('div'))('a\\\r\nb')), ['<p>a<br>b</p>']);
+    });
+
   });
 
 });
