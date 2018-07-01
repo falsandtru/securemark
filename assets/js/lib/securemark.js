@@ -1259,8 +1259,9 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const combinator_1 = require('../../combinator');
             const segment_1 = require('./segment');
-            const parse_1 = require('./parse');
+            const block_1 = require('../block');
             function bind(target) {
                 const pairs = [];
                 let revision;
@@ -1286,7 +1287,7 @@ require = function () {
                             seg,
                             i + k
                         ])) {
-                        const es = parse_1.parse_(seg);
+                        const es = combinator_1.eval(block_1.block(seg));
                         void pairs.splice(k, 0, [
                             seg,
                             es
@@ -1314,7 +1315,8 @@ require = function () {
             exports.bind = bind;
         },
         {
-            './parse': 41,
+            '../../combinator': 19,
+            '../block': 43,
             './segment': 42
         }
     ],
@@ -1354,13 +1356,9 @@ require = function () {
             const block_1 = require('../block');
             const segment_1 = require('./segment');
             function parse(source) {
-                return segment_1.segment(source).reduce((parent, seg) => (void parse_(seg).forEach(el => void parent.appendChild(el)), parent), document.createDocumentFragment());
+                return segment_1.segment(source).reduce((parent, seg) => (void combinator_1.eval(block_1.block(seg)).forEach(el => void parent.appendChild(el)), parent), document.createDocumentFragment());
             }
             exports.parse = parse;
-            function parse_(source) {
-                return combinator_1.eval(block_1.block(source));
-            }
-            exports.parse_ = parse_;
         },
         {
             '../../combinator': 19,
