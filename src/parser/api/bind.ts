@@ -1,5 +1,6 @@
-﻿import { segment } from './segment';
-import { parse_ } from './parse';
+﻿import { eval } from '../../combinator';
+import { segment } from './segment';
+import { block } from '../block';
 
 export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement> {
   type Pair = [string, HTMLElement[]];
@@ -26,7 +27,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     const [, [ref = bottom()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     for (const [seg, k] of ns.slice(i, ns.length - j).map<[string, number]>((seg, k) => [seg, i + k])) {
       assert(revision === rev);
-      const es = parse_(seg);
+      const es = eval(block(seg));
       void pairs.splice(k, 0, [seg, es]);
       assert(es.length < 2);
       for (const el of es) {
