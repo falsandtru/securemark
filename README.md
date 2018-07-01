@@ -54,7 +54,7 @@ https://falsandtru.github.io/securemark/
 - Annotation (((annotation)))
 - Index (# title [#section], ~ term [#term], [#some words])
 - Hashtag (#tag)
-- Comment (<# comment #>)
+- Comment (<# comment #>, \<!-- comment -->)
 
 ## Media
 
