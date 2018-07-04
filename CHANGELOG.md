@@ -3,6 +3,7 @@
 ## 0.64.0
 
 - Remove control characters.
+- Fix link text constraints.
 
 ## 0.63.1
 

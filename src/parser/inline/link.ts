@@ -11,7 +11,6 @@ export const link: LinkParser = line(bind(build(() =>
   line(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
   (ns, rest) => {
     const children = frag(ns);
-    if (['#', '@'].includes(children.textContent!.trim()[0])) return;
     if (hasAnnotation(children)) return;
     if (hasMedia(children)) {
       void children.querySelectorAll('a > .media')
@@ -55,6 +54,7 @@ export const link: LinkParser = line(bind(build(() =>
         if ((window.location.origin !== el.origin || hasMedia(el)) && el.protocol !== 'tel:') {
           void el.setAttribute('target', '_blank');
         }
+        if (el.textContent!.trim().match(/^[#@]/)) return;
         return [[el], rest];
       })
       (rest);
