@@ -7,13 +7,13 @@ import { ilist } from './ilist';
 import { inline } from '../inline';
 import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
-import { html } from 'typed-dom';
+import { html, frag } from 'typed-dom';
 
 export const ulist: UListParser = block(fmap<UListParser>(build(() =>
   some(union([
     fmap(
       inits<ListItemParser>([
-        line(verify(surround(/^-(?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
+        line(verify(surround(/^-(?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))), true, true),
         indent(union([ulist, olist_, ilist]))
       ]),
       ns =>

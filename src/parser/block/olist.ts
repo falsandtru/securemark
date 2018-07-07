@@ -6,7 +6,7 @@ import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
 import { compress, hasMedia } from '../util';
-import { html } from 'typed-dom';
+import { html, frag } from 'typed-dom';
 
 const cache = new Map<string, RegExp>();
 
@@ -21,7 +21,7 @@ export const olist: OListParser = block(match(
       some(union([
         fmap(
           inits<ListItemParser>([
-            line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(html('b', rs))), true, true),
+            line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))), true, true),
             indent(union([ulist, olist_, ilist]))
           ]),
           ns =>

@@ -5,7 +5,7 @@ import { line } from '../source/line';
 import { inline } from '../inline';
 import { squash, hasMedia } from '../util';
 import { concat } from 'spica/concat';
-import { html, text } from 'typed-dom';
+import { html, frag, text } from 'typed-dom';
 
 export const table: TableParser = block(fmap(build(() =>
   sequence<TableParser>([
@@ -57,7 +57,7 @@ export const table: TableParser = block(fmap(build(() =>
   }));
 
 const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => fmap(
-  line(contract('|', trimEnd(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(html('b', ns))), true, true),
+  line(contract('|', trimEnd(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(frag(ns))), true, true),
   es =>
     [html('tr', es)]);
 
