@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.65.0
+
+- Fix link, media, and url parser.
+  - Don't escape any character by `\`.
+
 ## 0.64.0
 
 - Remove control characters.

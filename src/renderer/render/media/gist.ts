@@ -22,7 +22,7 @@ export function gist(url: URL): HTMLElement | undefined {
         void gist.insertBefore(
           DOM.div({ class: 'gist-description' }, [
             DOM.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () =>
-              parse(escape(url.href)).querySelector('a')!),
+              parse(`[]((${url.href} ))`).querySelector('a')!),
           ]).element,
           gist.firstChild);
         void cache.set(url.href, outer.cloneNode(true));
@@ -35,7 +35,7 @@ export function gist(url: URL): HTMLElement | undefined {
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        outer.innerHTML = parse(`*${escape(url.href)}\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
+        outer.innerHTML = parse(`*[]((${url.href} ))\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;

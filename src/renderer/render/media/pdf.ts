@@ -1,4 +1,4 @@
-﻿import { parse, escape } from '../../../parser';
+﻿import { parse } from '../../../parser';
 import DOM, { html } from 'typed-dom';
 
 export function pdf(url: URL): HTMLElement | undefined {
@@ -23,7 +23,7 @@ export function pdf(url: URL): HTMLElement | undefined {
       DOM.strong({
         style: 'word-wrap: break-word;',
       }, () =>
-        parse(`**${escape(url.href)}**`).querySelector('strong')!),
+        parse(`**[]((${url.href} ))**`).querySelector('strong')!),
     ]),
   ]).element;
 }

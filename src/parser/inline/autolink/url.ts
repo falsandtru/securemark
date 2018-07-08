@@ -1,11 +1,11 @@
 ﻿import { AutolinkParser } from '../../inline';
 import { union, some, match, surround, verify, rewrite, build } from '../../../combinator';
 import { line } from '../../source/line';
-import { escsource } from '../../source/escapable';
-import { link, ipv6, parenthesis } from '../link';
+import { unescsource } from '../../source/unescapable';
+import { link, ipv6, bracket } from '../link';
 import { text } from 'typed-dom';
 
-const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
+const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
 
 export const url: AutolinkParser.UrlParser = line(union([
   match(
@@ -15,7 +15,7 @@ export const url: AutolinkParser.UrlParser = line(union([
   surround(
     /^(?=h?ttps?:\/\/\S)/,
     verify(rewrite(
-      some(union([ipv6, parenthesis, some(escsource, closer)])),
+      some(union([ipv6, bracket, some(unescsource, closer)])),
       source =>
         link(`[](${address(source)}${attribute(source)})`)),
       ([node]) => node instanceof HTMLAnchorElement),

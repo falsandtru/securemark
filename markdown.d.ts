@@ -292,20 +292,17 @@ export namespace MarkdownParser {
         InlineParser
       ] | [
         Parser<Text, [
-          LinkParser.ParenthesisParser,
-          SourceParser.TextParser
+          LinkParser.BracketParser,
+          SourceParser.UnescapableSourceParser
         ]>,
         LinkParser.AttributeParser
       ]> {
     }
     export namespace LinkParser {
-      export interface ParenthesisParser extends
+      export interface BracketParser extends
         // ()
-        Inline<'link/parenthesis'>,
-        Parser<Text, [
-          ParenthesisParser,
-          SourceParser.EscapableSourceParser
-        ]> {
+        Inline<'link/bracket'>,
+        Parser<Text, Parser<Text, [BracketParser, SourceParser.UnescapableSourceParser]>[]> {
       }
       export interface AttributeParser extends
         // nofollow
@@ -397,8 +394,8 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         SourceParser.TextParser
       ] | [
-        LinkParser.ParenthesisParser,
-        SourceParser.TextParser
+        LinkParser.BracketParser,
+        SourceParser.UnescapableSourceParser
       ]> {
     }
     export interface BracketParser extends

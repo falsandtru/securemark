@@ -1,11 +1,10 @@
 ﻿import { LinkParser, inline } from '../inline';
 import { Parser, union, subsequence, some, match, surround, fmap, bind, build } from '../../combinator';
 import { line } from '../source/line';
-import { text } from '../source/text';
-import { escsource } from '../source/escapable';
+import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotation, stringify } from '../util';
 import { sanitize } from '../string/url';
-import { html, text as txt, frag } from 'typed-dom';
+import { html, text, frag } from 'typed-dom';
 
 export const link: LinkParser = line(bind(build(() =>
   line(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
@@ -25,18 +24,19 @@ export const link: LinkParser = line(bind(build(() =>
       if (hasLink(children)) return;
     }
     assert(children.querySelector('a > .media') || !hasLink(children));
+    const [{ length: count }] = rest.match(/^\(+/) || ['('];
     return bind(
       line(surround(
-        '(',
+        '('.repeat(count),
         subsequence<LinkParser>([
-          some(union<Parser<Text, [typeof parenthesis, typeof text]>>([parenthesis, text]), /^\)|^\s/),
+          some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)),
           attribute
         ]),
-        ')',
+        ')'.repeat(count),
         false
       ), false),
       (ns, rest) => {
-        const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(.*?)(?:\n(.*))?$/) || [];
+        const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(\S*)[^\S\n]*(?:\n(.*))?$/) || [];
         assert(attr === '' || attr === 'nofollow');
         const url = sanitize(INSECURE_URL);
         if (url === '' && INSECURE_URL !== '') return;
@@ -62,16 +62,27 @@ export const link: LinkParser = line(bind(build(() =>
 ), false);
 
 export const ipv6 = fmap(
-  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[txt(addr)], rest]), ']'),
-  ts => [txt('['), ...ts, txt(']')]);
+  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),
+  ts => [text('['), ...ts, text(']')]);
 
-export const parenthesis: LinkParser.ParenthesisParser = bind(build(() =>
-  surround('(', some(union([parenthesis, escsource]), /^\)|^\s/), ')', false)),
-  (ts, rest) => [[txt('('), ...ts, txt(')')], rest]);
+export const bracket: LinkParser.BracketParser = build(() => union([
+  fmap(
+    surround('(', some(union([bracket, unescsource]), /^[\)\s]/), ')', false),
+    ts => [text('('), ...ts, text(')')]),
+  fmap(
+    surround('[', some(union([bracket, unescsource]), /^[\]\s]/), ']', false),
+    ts => [text('['), ...ts, text(']')]),
+  fmap(
+    surround('{', some(union([bracket, unescsource]), /^[\}\s]/), '}', false),
+    ts => [text('{'), ...ts, text('}')]),
+  fmap(
+    surround('<', some(union([bracket, unescsource]), /^[\>\s]/), '>', false),
+    ts => [text('<'), ...ts, text('>')]),
+]));
 
 const attribute: LinkParser.AttributeParser =
   surround(
-    /^\s(?=\S)/,
+    /^ (?=\S)/,
     match(/^nofollow/, ([attr], rest) =>
-      [[txt(`\n${attr}`)], rest]),
+      [[text(`\n${attr}`)], rest]),
     /^(?=\))/);

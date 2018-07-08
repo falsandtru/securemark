@@ -2,7 +2,8 @@
 import { union, some, surround, bind } from '../../combinator';
 import { line } from '../source/line';
 import { text } from '../source/text';
-import { parenthesis } from './link';
+import { unescsource } from '../source/unescapable';
+import { bracket } from './link';
 import { sanitize } from '../string/url';
 import { stringify } from '../util';
 import { Cache } from 'spica/cache';
@@ -14,10 +15,11 @@ export const media: MediaParser = line(bind(
   line(surround('![', some(union([text]), ']'), ']', false), false),
   (ts, rest) => {
     const caption = stringify(ts).trim();
+    const [{ length: count }] = rest.match(/^\(+/) || ['('];
     return bind<MediaParser>(
-      line(surround('(', some(union([parenthesis, text]), /^\)|^\s/), ')'), false),
+      line(surround('('.repeat(count), some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)), ')'.repeat(count)), false),
       (ts, rest) => {
-        const url = sanitize(stringify(ts));
+        const url = sanitize(stringify(ts).trim());
         if (url === '') return;
         if (cache.has(url)) return [[cache.get(url)!.cloneNode(true)], rest];
         if (url.trim().toLowerCase().startsWith('tel:')) return;
