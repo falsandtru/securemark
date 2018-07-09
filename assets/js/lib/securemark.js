@@ -1794,7 +1794,7 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             exports.ilist = block_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    line_1.line(combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
+                    line_1.line(combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))), true, true),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         olist_1.olist_,
@@ -1901,7 +1901,7 @@ require = function () {
                 const ty = type(index);
                 const opener = cache.has(ty) ? cache.get(ty) : cache.set(ty, new RegExp(`^${ pattern(ty) }(?:\\.\\s|\\.?(?=\\n|$))`)).get(ty);
                 return combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                        line_1.line(combinator_1.verify(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
+                        line_1.line(combinator_1.verify(combinator_1.surround(opener, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))), true, true),
                         combinator_1.indent(combinator_1.union([
                             ulist_1.ulist,
                             exports.olist_,
@@ -2110,7 +2110,7 @@ require = function () {
                     }
                 }
             }));
-            const row = (parser, strict) => combinator_1.fmap(line_1.line(combinator_1.contract('|', combinator_1.trimEnd(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)), ns => !util_1.hasMedia(typed_dom_1.html('b', ns))), true, true), es => [typed_dom_1.html('tr', es)]);
+            const row = (parser, strict) => combinator_1.fmap(line_1.line(combinator_1.contract('|', combinator_1.trimEnd(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)), ns => !util_1.hasMedia(typed_dom_1.frag(ns))), true, true), es => [typed_dom_1.html('tr', es)]);
             const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
             const data = combinator_1.build(() => combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
                 util_1.squash(ns),
@@ -2159,7 +2159,7 @@ require = function () {
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.ulist = block_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    line_1.line(combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.html('b', rs))), true, true),
+                    line_1.line(combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))), true, true),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist,
                         olist_1.olist_,
@@ -2324,10 +2324,10 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
             const line_1 = require('../../source/line');
-            const escapable_1 = require('../../source/escapable');
+            const unescapable_1 = require('../../source/unescapable');
             const link_1 = require('../link');
             const typed_dom_1 = require('typed-dom');
-            const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\n|$)/;
+            const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
             exports.url = line_1.line(combinator_1.union([
                 combinator_1.match(/^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/, ([frag], rest) => [
                     [typed_dom_1.text(frag)],
@@ -2335,8 +2335,8 @@ require = function () {
                 ]),
                 combinator_1.surround(/^(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.ipv6,
-                    link_1.parenthesis,
-                    combinator_1.some(escapable_1.escsource, closer)
+                    link_1.bracket,
+                    combinator_1.some(unescapable_1.unescsource, closer)
                 ])), source => link_1.link(`[](${ address(source) }${ attribute(source) })`)), ([node]) => node instanceof HTMLAnchorElement), ''),
                 combinator_1.surround(/^!(?=https?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.build(() => combinator_1.verify(exports.url, ([node]) => node instanceof HTMLAnchorElement)), source => link_1.link(`[![](${ source })](${ source })`)), ([node]) => node instanceof HTMLAnchorElement), '')
             ]), false);
@@ -2349,8 +2349,8 @@ require = function () {
         },
         {
             '../../../combinator': 19,
-            '../../source/escapable': 87,
             '../../source/line': 88,
+            '../../source/unescapable': 90,
             '../link': 79,
             'typed-dom': 12
         }
@@ -2619,8 +2619,7 @@ require = function () {
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
             const line_1 = require('../source/line');
-            const text_1 = require('../source/text');
-            const escapable_1 = require('../source/escapable');
+            const unescapable_1 = require('../source/unescapable');
             const util_1 = require('../util');
             const url_1 = require('../string/url');
             const typed_dom_1 = require('typed-dom');
@@ -2640,14 +2639,15 @@ require = function () {
                     if (util_1.hasLink(children))
                         return;
                 }
-                return combinator_1.bind(line_1.line(combinator_1.surround('(', combinator_1.subsequence([
+                const [{length: count}] = rest.match(/^\(+/) || ['('];
+                return combinator_1.bind(line_1.line(combinator_1.surround('('.repeat(count), combinator_1.subsequence([
                     combinator_1.some(combinator_1.union([
-                        exports.parenthesis,
-                        text_1.text
-                    ]), /^\)|^\s/),
+                        exports.bracket,
+                        unescapable_1.unescsource
+                    ]), new RegExp(`^\\){${ count }}|^ (?!\\))|^[^\\S ]`)),
                     attribute
-                ]), ')', false), false), (ns, rest) => {
-                    const [, INSECURE_URL = '', attr = ''] = util_1.stringify(ns).match(/^(.*?)(?:\n(.*))?$/) || [];
+                ]), ')'.repeat(count), false), false), (ns, rest) => {
+                    const [, INSECURE_URL = '', attr = ''] = util_1.stringify(ns).match(/^(\S*)[^\S\n]*(?:\n(.*))?$/) || [];
                     const url = url_1.sanitize(INSECURE_URL);
                     if (url === '' && INSECURE_URL !== '')
                         return;
@@ -2676,18 +2676,41 @@ require = function () {
                 ...ts,
                 typed_dom_1.text(']')
             ]);
-            exports.parenthesis = combinator_1.bind(combinator_1.build(() => combinator_1.surround('(', combinator_1.some(combinator_1.union([
-                exports.parenthesis,
-                escapable_1.escsource
-            ]), /^\)|^\s/), ')', false)), (ts, rest) => [
-                [
+            exports.bracket = combinator_1.build(() => combinator_1.union([
+                combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
+                    exports.bracket,
+                    unescapable_1.unescsource
+                ]), /^[\)\s]/), ')', false), ts => [
                     typed_dom_1.text('('),
                     ...ts,
                     typed_dom_1.text(')')
-                ],
-                rest
-            ]);
-            const attribute = combinator_1.surround(/^\s(?=\S)/, combinator_1.match(/^nofollow/, ([attr], rest) => [
+                ]),
+                combinator_1.fmap(combinator_1.surround('[', combinator_1.some(combinator_1.union([
+                    exports.bracket,
+                    unescapable_1.unescsource
+                ]), /^[\]\s]/), ']', false), ts => [
+                    typed_dom_1.text('['),
+                    ...ts,
+                    typed_dom_1.text(']')
+                ]),
+                combinator_1.fmap(combinator_1.surround('{', combinator_1.some(combinator_1.union([
+                    exports.bracket,
+                    unescapable_1.unescsource
+                ]), /^[\}\s]/), '}', false), ts => [
+                    typed_dom_1.text('{'),
+                    ...ts,
+                    typed_dom_1.text('}')
+                ]),
+                combinator_1.fmap(combinator_1.surround('<', combinator_1.some(combinator_1.union([
+                    exports.bracket,
+                    unescapable_1.unescsource
+                ]), /^[\>\s]/), '>', false), ts => [
+                    typed_dom_1.text('<'),
+                    ...ts,
+                    typed_dom_1.text('>')
+                ])
+            ]));
+            const attribute = combinator_1.surround(/^ (?=\S)/, combinator_1.match(/^nofollow/, ([attr], rest) => [
                 [typed_dom_1.text(`\n${ attr }`)],
                 rest
             ]), /^(?=\))/);
@@ -2695,9 +2718,8 @@ require = function () {
         {
             '../../combinator': 19,
             '../inline': 64,
-            '../source/escapable': 87,
             '../source/line': 88,
-            '../source/text': 89,
+            '../source/unescapable': 90,
             '../string/url': 91,
             '../util': 92,
             'typed-dom': 12
@@ -2738,6 +2760,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const line_1 = require('../source/line');
             const text_1 = require('../source/text');
+            const unescapable_1 = require('../source/unescapable');
             const link_1 = require('./link');
             const url_1 = require('../string/url');
             const util_1 = require('../util');
@@ -2746,11 +2769,12 @@ require = function () {
             exports.cache = new cache_1.Cache(100);
             exports.media = line_1.line(combinator_1.bind(line_1.line(combinator_1.surround('![', combinator_1.some(combinator_1.union([text_1.text]), ']'), ']', false), false), (ts, rest) => {
                 const caption = util_1.stringify(ts).trim();
-                return combinator_1.bind(line_1.line(combinator_1.surround('(', combinator_1.some(combinator_1.union([
-                    link_1.parenthesis,
-                    text_1.text
-                ]), /^\)|^\s/), ')'), false), (ts, rest) => {
-                    const url = url_1.sanitize(util_1.stringify(ts));
+                const [{length: count}] = rest.match(/^\(+/) || ['('];
+                return combinator_1.bind(line_1.line(combinator_1.surround('('.repeat(count), combinator_1.some(combinator_1.union([
+                    link_1.bracket,
+                    unescapable_1.unescsource
+                ]), new RegExp(`^\\){${ count }}|^ (?!\\))|^[^\\S ]`)), ')'.repeat(count)), false), (ts, rest) => {
+                    const url = url_1.sanitize(util_1.stringify(ts).trim());
                     if (url === '')
                         return;
                     if (exports.cache.has(url))
@@ -2775,6 +2799,7 @@ require = function () {
             '../../combinator': 19,
             '../source/line': 88,
             '../source/text': 89,
+            '../source/unescapable': 90,
             '../string/url': 91,
             '../util': 92,
             './link': 79,
@@ -3081,7 +3106,7 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const separator = /`|<\/code>|[>\]\)\s]/i;
+            const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
             exports.unescsource = source => {
                 if (source.length === 0)
                     return;
@@ -3374,7 +3399,7 @@ require = function () {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(parser_1.escape(url.href)).querySelector('a'))]).element, gist.firstChild);
+                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(`[]((${ url.href } ))`).querySelector('a'))]).element, gist.firstChild);
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
@@ -3385,7 +3410,7 @@ require = function () {
                                 }));
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url.href) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*[]((${ url.href } ))\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -3439,7 +3464,7 @@ require = function () {
                             el.typeMustMatch = true;
                             return el;
                         })]),
-                    typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parser_1.parse(`**${ parser_1.escape(url.href) }**`).querySelector('strong'))])
+                    typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parser_1.parse(`**[]((${ url.href } ))**`).querySelector('strong'))])
                 ]).element;
             }
             exports.pdf = pdf;
@@ -3481,7 +3506,7 @@ require = function () {
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url.href) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*[]((${ url.href } ))\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
@@ -3543,7 +3568,7 @@ require = function () {
                                 });
                             },
                             error({status, statusText}) {
-                                outer.innerHTML = parser_1.parse(`*${ parser_1.escape(url.href) }\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
+                                outer.innerHTML = parser_1.parse(`*[]((${ url.href } ))\\\n-> ${ status }: ${ parser_1.escape(statusText) }*`).querySelector('p').innerHTML;
                             }
                         });
                         return outer;
