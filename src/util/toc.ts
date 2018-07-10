@@ -34,8 +34,8 @@ function cons(hs: HTMLHeadingElement[]): Tree {
           ? [[hs.shift()!, cons(hs)]]
           : hs)
     , []);
+}
 
-  function level(h: HTMLHeadingElement): number {
-    return +h.tagName[1];
-  }
+function level(h: HTMLHeadingElement): number {
+  return +h.tagName[1];
 }
