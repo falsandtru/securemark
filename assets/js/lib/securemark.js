@@ -3673,37 +3673,38 @@ require = function () {
                     } else {
                         void caption.replaceChild(typed_dom_1.html('span', header(caption.cloneNode())), caption.firstChild);
                     }
-                    void source.querySelectorAll(`a.${ label.replace(/[:$.]/g, '\\$&') }`).forEach(link => {
+                    const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
+                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(link => {
                         void link.setAttribute('href', `#${ el.id }`);
                         void link.replaceChild(caption.firstChild.firstChild.cloneNode(true), link.firstChild);
                     });
                     return map;
                 }, new Map());
-                function index(label, es) {
-                    switch (true) {
-                    case isFixed(label):
-                        return label.split('-').pop();
-                    case isGroup(label):
-                        return increment(label.split('-').pop(), es.length > 1 ? es[es.length - 2].lastElementChild.getAttribute('data-index') : '');
-                    default:
-                        return es.length + '';
-                    }
-                }
-                function isFixed(label) {
-                    return label.split(':').pop().search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
-                }
-                function isGroup(label) {
-                    return label.split('-').pop().search(/^0(?:\.0)*$/) === 0;
-                }
-                function increment(order, prev) {
-                    if (!prev)
-                        return '1';
-                    const ps = prev.split('.');
-                    const os = order.split('.');
-                    return Array(Math.max(ps.length, os.length)).fill(0).map((_, i) => +ps[i]).map((p, i) => isFinite(p) ? i + 1 < os.length ? p : i + 1 === os.length ? p + 1 : NaN : i + 1 < os.length ? 0 : 1).filter(isFinite).join('.');
-                }
             }
             exports.figure = figure;
+            function index(label, es) {
+                switch (true) {
+                case isFixed(label):
+                    return label.split('-').pop();
+                case isGroup(label):
+                    return increment(label.split('-').pop(), es.length > 1 ? es[es.length - 2].querySelector('figcaption').getAttribute('data-index') : '');
+                default:
+                    return increment(label.split('-').pop().split('.')[0], es.length > 1 ? es[es.length - 2].querySelector('figcaption').getAttribute('data-index').split('.')[0] : '');
+                }
+            }
+            function isFixed(label) {
+                return label.split(':').pop().search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
+            }
+            function isGroup(label) {
+                return label.split('-').pop().search(/^0(?:\.0)*$/) === 0 && !isFixed(label);
+            }
+            function increment(order, prev) {
+                if (!prev)
+                    return '1';
+                const ps = prev.split('.');
+                const os = order.split('.');
+                return Array(Math.max(ps.length, os.length)).fill(0).map((_, i) => +ps[i]).map((p, i) => isFinite(p) ? i + 1 < os.length ? p : i + 1 === os.length ? p + 1 : NaN : i + 1 < os.length ? 0 : 1).filter(isFinite).join('.');
+            }
             function capitalize(label) {
                 return label[0].toUpperCase() + label.slice(1);
             }
@@ -3777,34 +3778,34 @@ require = function () {
             function toc(source) {
                 const hs = [...source.children].filter(el => el instanceof HTMLHeadingElement);
                 return parse(cons(hs));
-                function parse(node) {
-                    return typed_dom_1.html('ul', node.map(node => node instanceof Element ? typed_dom_1.html('li', [typed_dom_1.html('a', {
-                            href: `#${ node.id }`,
-                            rel: 'noopener'
-                        }, node.textContent)]) : typed_dom_1.html('li', [
-                        typed_dom_1.html('a', {
-                            href: `#${ node[0].id }`,
-                            rel: 'noopener'
-                        }, node[0].textContent),
-                        parse(node[1])
-                    ])));
-                }
-                function cons(hs) {
-                    return hs.reduce((hss, h) => {
-                        const hs = hss[hss.length - 1];
-                        const [fst = undefined] = hs;
-                        !fst || level(h) > level(fst) ? void hs.push(h) : void hss.push([h]);
-                        return hss;
-                    }, [[]]).reduce((node, hs) => concat_1.concat(node, hs.length > 1 ? [[
-                            hs.shift(),
-                            cons(hs)
-                        ]] : hs), []);
-                    function level(h) {
-                        return +h.tagName[1];
-                    }
-                }
             }
             exports.toc = toc;
+            function parse(node) {
+                return typed_dom_1.html('ul', node.map(node => node instanceof Element ? typed_dom_1.html('li', [typed_dom_1.html('a', {
+                        href: `#${ node.id }`,
+                        rel: 'noopener'
+                    }, node.textContent)]) : typed_dom_1.html('li', [
+                    typed_dom_1.html('a', {
+                        href: `#${ node[0].id }`,
+                        rel: 'noopener'
+                    }, node[0].textContent),
+                    parse(node[1])
+                ])));
+            }
+            function cons(hs) {
+                return hs.reduce((hss, h) => {
+                    const hs = hss[hss.length - 1];
+                    const [fst = undefined] = hs;
+                    !fst || level(h) > level(fst) ? void hs.push(h) : void hss.push([h]);
+                    return hss;
+                }, [[]]).reduce((node, hs) => concat_1.concat(node, hs.length > 1 ? [[
+                        hs.shift(),
+                        cons(hs)
+                    ]] : hs), []);
+                function level(h) {
+                    return +h.tagName[1];
+                }
+            }
         },
         {
             'spica/concat': 7,
