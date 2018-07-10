@@ -137,8 +137,7 @@ export namespace MarkdownParser {
       export interface CellParser extends
         Block<'table/cell'>,
         Parser<HTMLTableDataCellElement, [
-          DataParser |
-          AlignParser
+          DataParser | AlignParser
         ]> {
       }
       export interface DataParser extends
