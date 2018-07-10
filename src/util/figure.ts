@@ -34,50 +34,50 @@ export function figure(
         });
       return map;
     }, new Map<string, HTMLElement[]>())
+}
 
-  function index(label: string, es: HTMLElement[]): string {
-    switch (true) {
-      case isFixed(label):
-        return label.split('-').pop()!;
-      case isGroup(label):
-        return increment(
-          label.split('-').pop()!,
-          es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')! : '');
-      default:
-        return increment(
-          label.split('-').pop()!.split('.')[0],
-          es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')!.split('.')[0] : '');
-    }
+function index(label: string, es: HTMLElement[]): string {
+  switch (true) {
+    case isFixed(label):
+      return label.split('-').pop()!;
+    case isGroup(label):
+      return increment(
+        label.split('-').pop()!,
+        es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')! : '');
+    default:
+      return increment(
+        label.split('-').pop()!.split('.')[0],
+        es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')!.split('.')[0] : '');
   }
+}
 
-  function isFixed(label: string): boolean {
-    return label.split(':').pop()!.search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
-  }
+function isFixed(label: string): boolean {
+  return label.split(':').pop()!.search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
+}
 
-  function isGroup(label: string): boolean {
-    return label.split('-').pop()!.search(/^0(?:\.0)*$/) === 0
-        && !isFixed(label);
-  }
+function isGroup(label: string): boolean {
+  return label.split('-').pop()!.search(/^0(?:\.0)*$/) === 0
+      && !isFixed(label);
+}
 
-  function increment(order: string, prev: string): string {
-    if (!prev) return '1';
-    const ps = prev.split('.');
-    const os = order.split('.');
-    return Array(Math.max(ps.length, os.length)).fill(0)
-      .map((_, i) => +ps[i])
-      .map((p, i) =>
-        isFinite(p)
-          ? i + 1 < os.length
-            ? p
-            : i + 1 === os.length
-              ? p + 1
-              : NaN
-          : i + 1 < os.length
-            ? 0
-            : 1)
-      .filter(isFinite)
-      .join('.');
-  }
+function increment(order: string, prev: string): string {
+  if (!prev) return '1';
+  const ps = prev.split('.');
+  const os = order.split('.');
+  return Array(Math.max(ps.length, os.length)).fill(0)
+    .map((_, i) => +ps[i])
+    .map((p, i) =>
+      isFinite(p)
+        ? i + 1 < os.length
+          ? p
+          : i + 1 === os.length
+            ? p + 1
+            : NaN
+        : i + 1 < os.length
+          ? 0
+          : 1)
+    .filter(isFinite)
+    .join('.');
 }
 
 function capitalize(label: string): string {
