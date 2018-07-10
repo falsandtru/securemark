@@ -11,12 +11,14 @@ export function figure(
     .reduce((map, el) => {
       const label = el.className;
       const caption = el.lastElementChild! as HTMLElement;
+      assert(caption.matches('figcaption[data-type]:not(:empty)'));
       const type = caption.getAttribute('data-type')!;
       const es = map.get(type) || map.set(type, []).get(type)!;
       void es.push(el);
       const idx = index(label, es);
       void el.setAttribute('id', `${label.split('-', 1)[0]}-${idx}`);
       void caption.setAttribute('data-index', `${idx}`);
+      assert(caption.matches('figcaption[data-type][data-index]:not(:empty)'));
       if (caption.children.length === 1) {
         void caption.insertBefore(html('span', header(caption.cloneNode())), caption.firstChild);
       }
@@ -25,6 +27,7 @@ export function figure(
       }
       void source.querySelectorAll(`a.${label.replace(/[:$.]/g, '\\$&')}`)
         .forEach(link => {
+          assert(link.childNodes.length === 1);
           void link.setAttribute('href', `#${el.id}`);
           void link.replaceChild(caption.firstChild!.firstChild!.cloneNode(true), link.firstChild!);
         });
@@ -36,9 +39,13 @@ export function figure(
       case isFixed(label):
         return label.split('-').pop()!;
       case isGroup(label):
-        return increment(label.split('-').pop()!, es.length > 1 ? es[es.length - 2].lastElementChild!.getAttribute('data-index')! : '');
+        return increment(
+          label.split('-').pop()!,
+          es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')! : '');
       default:
-        return es.length + '';
+        return increment(
+          label.split('-').pop()!.split('.')[0],
+          es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')!.split('.')[0] : '');
     }
   }
 

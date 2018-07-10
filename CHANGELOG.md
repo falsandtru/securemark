@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.65.1
+
+- Fix numbering of figure elements.
+
 ## 0.65.0
 
 - Fix link, media, and url parser.
