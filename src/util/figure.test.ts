@@ -50,10 +50,10 @@ describe('Unit: util/figure', () => {
     it('group', () => {
       const source = parse([
         '~~~figure [:fig-a-0.0]\n!https://host\n~~~',
-        '~~~figure [:fig-a-0.0.0.0]\n!https://host\n~~~',
-        '~~~figure [:fig-a-0.0]\n!https://host\n~~~',
-        '~~~figure [:fig-b]\n!https://host\n~~~',
-        '[:fig-a-0.0.0.0]',
+        '~~~figure [:fig-b-0.0.0.0]\n!https://host\n~~~',
+        '~~~figure [:fig-c-0.0]\n!https://host\n~~~',
+        '~~~figure [:fig-d]\n!https://host\n~~~',
+        '[:fig-b]',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         figure(source);
@@ -61,10 +61,10 @@ describe('Unit: util/figure', () => {
           [...source.children].map(el => el.outerHTML),
           [
             '<figure class="label:fig-a-0.0" id="label:fig-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption data-type="fig" data-index="1"><span>Fig. 1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-a-0.0.0.0" id="label:fig-1.0.0.1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption data-type="fig" data-index="1.0.0.1"><span>Fig. 1.0.0.1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-a-0.0" id="label:fig-1.1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption data-type="fig" data-index="1.1"><span>Fig. 1.1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-b" id="label:fig-2"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption data-type="fig" data-index="2"><span>Fig. 2.</span><span></span></figcaption></figure>',
-            '<p><a href="#label:fig-1.0.0.1" rel="noopener" class="label:fig-a-0.0.0.0">Fig. 1.0.0.1.</a></p>',
+            '<figure class="label:fig-b-0.0.0.0" id="label:fig-1.0.0.1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption data-type="fig" data-index="1.0.0.1"><span>Fig. 1.0.0.1.</span><span></span></figcaption></figure>',
+            '<figure class="label:fig-c-0.0" id="label:fig-1.1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption data-type="fig" data-index="1.1"><span>Fig. 1.1.</span><span></span></figcaption></figure>',
+            '<figure class="label:fig-d" id="label:fig-2"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption data-type="fig" data-index="2"><span>Fig. 2.</span><span></span></figcaption></figure>',
+            '<p><a href="#label:fig-1.0.0.1" rel="noopener" class="label:fig-b">Fig. 1.0.0.1.</a></p>',
           ]);
       }
     });

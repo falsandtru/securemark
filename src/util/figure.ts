@@ -25,7 +25,8 @@ export function figure(
       else {
         void caption.replaceChild(html('span', header(caption.cloneNode())), caption.firstChild!);
       }
-      void source.querySelectorAll(`a.${label.replace(/[:$.]/g, '\\$&')}`)
+      const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
+      void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
         .forEach(link => {
           assert(link.childNodes.length === 1);
           void link.setAttribute('href', `#${el.id}`);
@@ -54,7 +55,8 @@ export function figure(
   }
 
   function isGroup(label: string): boolean {
-    return label.split('-').pop()!.search(/^0(?:\.0)*$/) === 0;
+    return label.split('-').pop()!.search(/^0(?:\.0)*$/) === 0
+        && !isFixed(label);
   }
 
   function increment(order: string, prev: string): string {

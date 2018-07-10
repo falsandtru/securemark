@@ -2,7 +2,9 @@
 
 ## 0.65.1
 
-- Fix numbering of figure elements.
+- Fix figure function.
+  - Fix numbering of figure elements.
+  - Don't require group index in reference.
 
 ## 0.65.0
 
