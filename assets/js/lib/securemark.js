@@ -1453,9 +1453,9 @@ require = function () {
                 ilist_1.ilist,
                 dlist_1.dlist,
                 table_1.table,
-                blockquote_1.blockquote,
                 pretext_1.pretext,
                 math_1.math,
+                blockquote_1.blockquote,
                 extension_1.extension,
                 paragraph_1.paragraph
             ]));
@@ -1671,9 +1671,10 @@ require = function () {
                     combinator_1.inits([
                         block_1.block(combinator_1.union([
                             table_1.table,
-                            blockquote_1.blockquote,
                             pretext_1.pretext,
                             math_1.math,
+                            blockquote_1.blockquote,
+                            combinator_1.rewrite(line_1.line(combinator_1.trimEnd(inline_1.media), true, true), line_1.line(combinator_1.trimEnd(source => inline_1.link(`[${ source }]${ '('.repeat(source.match(/\)+$/)[0].length) }${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') } ${ source.match(/\)+$/)[0] }`)))),
                             line_1.line(combinator_1.contract('!', combinator_1.trimEnd(inline_1.url), ([node]) => node instanceof Element), true, true)
                         ])),
                         combinator_1.rewrite(combinator_1.inits([
@@ -2225,6 +2226,8 @@ require = function () {
             exports.index = index_1.index;
             var label_1 = require('./inline/extension/label');
             exports.label = label_1.label;
+            var link_2 = require('./inline/link');
+            exports.link = link_2.link;
             var media_2 = require('./inline/media');
             exports.media = media_2.media;
             var url_1 = require('./inline/autolink/url');
