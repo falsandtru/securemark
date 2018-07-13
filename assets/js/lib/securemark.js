@@ -3802,9 +3802,9 @@ require = function () {
                         hs.shift(),
                         cons(hs)
                     ]] : hs), []);
-                function level(h) {
-                    return +h.tagName[1];
-                }
+            }
+            function level(h) {
+                return +h.tagName[1];
             }
         },
         {
