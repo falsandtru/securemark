@@ -52,9 +52,9 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
         inits<SubParsers<FigureParser>[1]>([
           block(union([
             table,
-            blockquote,
             pretext,
             math,
+            blockquote,
             rewrite(
               line(trimEnd(media), true, true),
               line(trimEnd(source => link(`[${source}]${'('.repeat(source.match(/\)+$/)![0].length)}${eval(media(source))[0].getAttribute('data-src')} ${source.match(/\)+$/)![0]}`)))),

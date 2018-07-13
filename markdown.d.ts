@@ -30,9 +30,9 @@ export namespace MarkdownParser {
       BlockParser.IListParser,
       BlockParser.DListParser,
       BlockParser.TableParser,
-      BlockParser.BlockquoteParser,
       BlockParser.PretextParser,
       BlockParser.MathParser,
+      BlockParser.BlockquoteParser,
       BlockParser.ExtensionParser,
       BlockParser.ParagraphParser
     ]> {
@@ -202,9 +202,9 @@ export namespace MarkdownParser {
           Parser<HTMLElement | Text, [
             Parser<HTMLElement, [
               TableParser,
-              BlockquoteParser,
               PretextParser,
               MathParser,
+              BlockquoteParser,
               InlineParser.LinkParser, // Take media syntax and convert to link syntax.
               InlineParser.AutolinkParser.UrlParser
             ]>,

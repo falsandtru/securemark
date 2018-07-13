@@ -25,9 +25,9 @@ export import IListParser = BlockParser.IListParser;
 export import ListItemParser = BlockParser.ListItemParser;
 export import DListParser = BlockParser.DListParser;
 export import TableParser = BlockParser.TableParser;
-export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import PretextParser = BlockParser.PretextParser;
 export import MathParser = BlockParser.MathParser;
+export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 export import IndexerParser = BlockParser.IndexerParser;
@@ -41,9 +41,9 @@ export const block: BlockParser = localize(union<BlockParser>([
   ilist,
   dlist,
   table,
-  blockquote,
   pretext,
   math,
+  blockquote,
   extension,
   paragraph
 ]));
