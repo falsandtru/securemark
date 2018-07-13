@@ -1,13 +1,13 @@
 ﻿import { ExtensionParser } from '../../block';
 import { SubParsers } from '../../../combinator/parser';
-import { union, sequence, inits, some, match, contract, fmap, bind, rewrite, trim, trimEnd } from '../../../combinator';
+import { union, sequence, inits, some, match, contract, fmap, bind, rewrite, trim, trimEnd, eval } from '../../../combinator';
 import { block } from '../../source/block';
 import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
 import { pretext, segment_ as preseg } from '../pretext';
 import { math } from '../math';
-import { inline, label, url } from '../../inline';
+import { inline, label, media, link, url } from '../../inline';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
 
@@ -55,6 +55,9 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
             blockquote,
             pretext,
             math,
+            rewrite(
+              line(trimEnd(media), true, true),
+              line(trimEnd(source => link(`[${source}]${'('.repeat(source.match(/\)+$/)![0].length)}${eval(media(source))[0].getAttribute('data-src')} ${source.match(/\)+$/)![0]}`)))),
             line(contract('!', trimEnd(url), ([node]) => node instanceof Element), true, true),
           ])),
           rewrite(

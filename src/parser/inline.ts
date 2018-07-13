@@ -49,5 +49,6 @@ export const inline: InlineParser = union<InlineParser>([
 
 export { index } from './inline/extension/index';
 export { label } from './inline/extension/label';
+export { link } from './inline/link';
 export { media } from './inline/media';
 export { url } from './inline/autolink/url';

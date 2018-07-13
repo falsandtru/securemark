@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.66.0
+
+- Allow media syntax in figure syntax.
+
 ## 0.65.1
 
 - Fix figure function.

@@ -97,6 +97,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[a](())')), [['<a href="" rel="noopener">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a](()))')), [['<a href="" rel="noopener">a</a>'], ')']);
       assert.deepStrictEqual(inspect(parser('[a](() ))')), [['<a href=")" rel="noopener">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[\\(\\(]((/]((a))((b ))')), [['<a href="/]((a))((b" rel="noopener">((</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[](/)](/)')), undefined);
       assert.deepStrictEqual(inspect(parser('[((/))](/)')), undefined);
       assert.deepStrictEqual(inspect(parser('[<wbr>](/)')), undefined);
