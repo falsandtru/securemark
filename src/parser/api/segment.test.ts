@@ -53,6 +53,7 @@ describe('Unit: parser/api/segment', () => {
       assert.deepStrictEqual(segment('~~~~\n~~~\n~~~~'), ['~~~~\n~~~\n~~~~']);
       assert.deepStrictEqual(segment('~~~\n\n\n~~~\n\n'), ['~~~\n\n\n~~~\n', '\n']);
       assert.deepStrictEqual(segment('~~~\n```\n~~~\n```\n~~~'), ['~~~\n```\n~~~\n```\n~~~']);
+      assert.deepStrictEqual(segment('~~~\ninvalid\n\ncaption\n~~~'), ['~~~\ninvalid\n\ncaption\n~~~']);
     });
 
     it('mixed', () => {
