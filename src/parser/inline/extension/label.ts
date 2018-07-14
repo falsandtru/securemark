@@ -1,10 +1,11 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { union, match, surround, fmap, build } from '../../../combinator';
+import { union, match, surround, verify, fmap, build } from '../../../combinator';
 import { line } from '../../source/line';
 import '../../source/unescapable';
 import { link } from '../link';
+import { hasTightText } from '../../util';
 
-export const label: ExtensionParser.LabelParser = line(fmap(build(() =>
+export const label: ExtensionParser.LabelParser = line(verify(fmap(build(() =>
   surround(
     '[:',
     match(
@@ -17,7 +18,7 @@ export const label: ExtensionParser.LabelParser = line(fmap(build(() =>
     void el.setAttribute('class', el.getAttribute('href')!.slice(1));
     return [el];
   }
-), false);
+), ([el]) => hasTightText(el)), false);
 
 function makeLabel(text: string): string {
   assert(!text.includes('\n'));
