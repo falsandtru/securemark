@@ -32,8 +32,8 @@ export namespace MarkdownParser {
       BlockParser.TableParser,
       BlockParser.PretextParser,
       BlockParser.MathParser,
-      BlockParser.BlockquoteParser,
       BlockParser.ExtensionParser,
+      BlockParser.BlockquoteParser,
       BlockParser.ParagraphParser
     ]> {
   }
