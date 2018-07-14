@@ -2546,10 +2546,11 @@ require = function () {
             const line_1 = require('../../source/line');
             require('../../source/unescapable');
             const link_1 = require('../link');
-            exports.label = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.match(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, ([query], rest) => combinator_1.union([link_1.link])(`[\\${ query }](#${ makeLabel(query) })${ rest }`)), ']')), ([el]) => {
+            const util_1 = require('../../util');
+            exports.label = line_1.line(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.match(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, ([query], rest) => combinator_1.union([link_1.link])(`[\\${ query }](#${ makeLabel(query) })${ rest }`)), ']')), ([el]) => {
                 void el.setAttribute('class', el.getAttribute('href').slice(1));
                 return [el];
-            }), false);
+            }), ([el]) => util_1.hasTightText(el)), false);
             function makeLabel(text) {
                 return `label:${ text }`;
             }
@@ -2558,6 +2559,7 @@ require = function () {
             '../../../combinator': 19,
             '../../source/line': 88,
             '../../source/unescapable': 90,
+            '../../util': 92,
             '../link': 79
         }
     ],
