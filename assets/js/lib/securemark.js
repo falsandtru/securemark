@@ -555,20 +555,17 @@ require = function () {
                         this.children_ = children;
                         return;
                     case ElChildrenType.Collection:
-                        void this.children_.reduce((cs, c) => {
-                            const i = cs.indexOf(c);
-                            if (i > -1)
-                                return cs;
-                            void cs.splice(i, 1);
-                            void c.element.remove();
-                            return cs;
-                        }, [...children]);
                         this.children_ = [];
                         void children.forEach((child, i) => {
                             child.element_.parentElement === this.element_ || void throwErrorIfNotUsable(child);
                             this.children_[i] = child;
-                            void this.element_.appendChild(child.element);
+                            if (this.children_[i] === this.element_.childNodes[i])
+                                return;
+                            void this.element_.insertBefore(child.element, this.element_.childNodes[i]);
                         });
+                        while (this.element_.childNodes.length > children.length) {
+                            void this.element_.removeChild(this.element_.lastChild);
+                        }
                         void Object.freeze(this.children_);
                         void this.scope(Object.values(this.children_));
                         return;
@@ -645,7 +642,7 @@ require = function () {
             }
             function define(el, attrs = {}, children = []) {
                 if (isChildren(attrs))
-                    return define(el, {}, attrs);
+                    return define(el, undefined, attrs);
                 if (typeof children === 'string')
                     return define(el, attrs, [text(children)]);
                 void Object.entries(attrs).forEach(([name, value]) => typeof value === 'string' ? void el.setAttribute(name, value) : void el.addEventListener(name.slice(2), value, {
@@ -1400,6 +1397,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             const pretext_1 = require('../block/pretext');
+            const math_1 = require('../block/math');
             const extension_1 = require('../block/extension');
             const line_1 = require('../source/line');
             function segment(source) {
@@ -1407,6 +1405,7 @@ require = function () {
                 while (source.length > 0) {
                     const [, rest = ''] = combinator_1.union([
                         pretext_1.segment,
+                        math_1.segment,
                         extension_1.segment,
                         combinator_1.some(line_1.contentline),
                         combinator_1.some(line_1.blankline)
@@ -1421,6 +1420,7 @@ require = function () {
         {
             '../../combinator': 19,
             '../block/extension': 47,
+            '../block/math': 55,
             '../block/pretext': 61,
             '../source/line': 88
         }
@@ -1455,8 +1455,8 @@ require = function () {
                 table_1.table,
                 pretext_1.pretext,
                 math_1.math,
-                blockquote_1.blockquote,
                 extension_1.extension,
+                blockquote_1.blockquote,
                 paragraph_1.paragraph
             ]));
         },
@@ -1605,12 +1605,14 @@ require = function () {
             const line_1 = require('../../source/line');
             const figure_1 = require('./figure');
             const pretext_1 = require('../pretext');
+            const math_1 = require('../math');
             const inline_1 = require('../../inline');
             exports.segment = block_1.block(combinator_1.union([
                 combinator_1.sequence([
                     line_1.line(combinator_1.trimEnd(inline_1.label), true, true),
                     combinator_1.union([
                         pretext_1.segment_,
+                        math_1.segment_,
                         combinator_1.some(line_1.contentline)
                     ])
                 ]),
@@ -1623,6 +1625,7 @@ require = function () {
             '../../inline': 64,
             '../../source/block': 85,
             '../../source/line': 88,
+            '../math': 55,
             '../pretext': 61,
             './figure': 49
         }
@@ -1646,7 +1649,10 @@ require = function () {
                     return block_1.block(combinator_1.bind(combinator_1.sequence([
                         line_1.line(combinator_1.trimEnd(inline_1.label), true, true),
                         combinator_1.inits([
-                            combinator_1.union([pretext_1.segment_]),
+                            combinator_1.union([
+                                pretext_1.segment_,
+                                math_1.segment_
+                            ]),
                             combinator_1.inits([
                                 line_1.emptyline,
                                 combinator_1.union([
@@ -1860,10 +1866,15 @@ require = function () {
             const block_1 = require('../source/block');
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.math = block_1.block(combinator_1.match(/^\$\$[^\S\n]*\n(?:[^\n]+\n)+?\$\$[^\S\n]*(?:\n|$)/, ([whole], rest) => [
+            exports.segment = block_1.block(combinator_1.build(() => exports.segment_));
+            exports.segment_ = block_1.block(combinator_1.match(/^\$\$[^\S\n]*\n(?:[^\n]*\n)*?\$\$[^\S\n]*(?:\n|$)/, (_, rest) => [
+                [],
+                rest
+            ]), false);
+            exports.math = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$[^\S\n]*\n(?:[^\n]*\n)*?\$\$\s*$/, ([whole], rest) => [
                 [typed_dom_1.html('div', { class: 'math notranslate' }, whole.trim())],
                 rest
-            ]));
+            ])));
         },
         {
             '../../combinator': 19,
@@ -2045,7 +2056,7 @@ require = function () {
                 [],
                 rest
             ]), false);
-            exports.pretext = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.trimEnd(combinator_1.match(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1$/, ([, , lang, notes, body], rest) => {
+            exports.pretext = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , lang, notes, body], rest) => {
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
                     void el.classList.add(`language-${ lang.toLowerCase() }`);
@@ -2059,7 +2070,7 @@ require = function () {
                     [el],
                     rest
                 ];
-            }))));
+            })));
         },
         {
             '../../combinator': 19,
