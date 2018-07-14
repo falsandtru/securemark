@@ -2,7 +2,7 @@
 import { union, some, surround, verify, fmap } from '../../combinator';
 import { line } from '../source/line';
 import { escsource } from '../source/escapable';
-import { hasTightText, stringify } from '../util';
+import { hasText, stringify } from '../util';
 import { Cache } from 'spica/cache';
 import { html } from 'typed-dom';
 
@@ -16,4 +16,4 @@ export const math: MathParser = line(verify(fmap(
     void el.setAttribute('data-src', el.textContent!);
     return [el];
   }
-), ([el]) => hasTightText(html('span', el.textContent!.slice(1, -1)))), false);
+), ([el]) => hasText(html('span', el.textContent!.slice(1, -1)))), false);

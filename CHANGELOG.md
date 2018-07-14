@@ -3,6 +3,7 @@
 ## 0.67.0
 
 - Allow empty lines in math syntax.
+- Allow leading and trailing whitespace in math syntax.
 
 ## 0.66.0
 
