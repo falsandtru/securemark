@@ -2756,7 +2756,7 @@ require = function () {
                     return [exports.cache.get(el.textContent).cloneNode(true)];
                 void el.setAttribute('data-src', el.textContent);
                 return [el];
-            }), ([el]) => util_1.hasTightText(typed_dom_1.html('span', el.textContent.slice(1, -1)))), false);
+            }), ([el]) => util_1.hasText(typed_dom_1.html('span', el.textContent.slice(1, -1)))), false);
         },
         {
             '../../combinator': 19,
