@@ -1,6 +1,7 @@
 ﻿import { MarkdownParser } from '../../../markdown.d';
 import { union, some } from '../../combinator';
 import { segment as pretext } from '../block/pretext';
+import { segment as math } from '../block/math';
 import { segment as extension } from '../block/extension';
 import { contentline, blankline } from '../source/line';
 
@@ -11,6 +12,7 @@ export function segment(source: string): string[] {
   while (source.length > 0) {
     const [, rest = ''] = union<SegmentParser>([
       pretext,
+      math,
       extension,
       some(contentline),
       some(blankline)

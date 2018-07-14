@@ -14,6 +14,7 @@ export namespace MarkdownParser {
     Markdown<'segment'>,
     Parser<HTMLElement, [
       BlockParser.PretextParser,
+      BlockParser.MathParser,
       BlockParser.ExtensionParser,
       SourceParser.ContentLineParser,
       SourceParser.BlankLineParser

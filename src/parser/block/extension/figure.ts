@@ -6,7 +6,7 @@ import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
 import { pretext, segment_ as preseg } from '../pretext';
-import { math } from '../math';
+import { math, segment_ as mathseg } from '../math';
 import { inline, label, media, link, url } from '../../inline';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
@@ -24,6 +24,7 @@ export const segment: FigureParser = block(union([
             // All parsers which can include empty lines.
             union([
               preseg,
+              mathseg,
             ]),
             inits([
               emptyline,

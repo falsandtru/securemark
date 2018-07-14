@@ -1,5 +1,5 @@
 ﻿import { PretextParser } from '../block';
-import { some, match, rewrite, trimEnd, build, eval } from '../../combinator';
+import { some, match, rewrite, build, eval } from '../../combinator';
 import { block } from '../source/block';
 import { escsource } from '../source/escapable';
 import '../source/unescapable';
@@ -12,8 +12,8 @@ export const segment_: PretextParser = block(match(
   /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
   (_, rest) => [[], rest]), false);
 
-export const pretext: PretextParser = block(rewrite(segment, trimEnd(match(
-  /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1$/,
+export const pretext: PretextParser = block(rewrite(segment, match(
+  /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/,
   ([, , lang, notes, body], rest) => {
     assert(rest === '');
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
@@ -26,4 +26,4 @@ export const pretext: PretextParser = block(rewrite(segment, trimEnd(match(
       void el.setAttribute('data-file', filepath);
     }
     return [[el], rest];
-  }))));
+  })));

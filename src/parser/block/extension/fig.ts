@@ -4,6 +4,7 @@ import { block } from '../../source/block';
 import { line, contentline } from '../../source/line';
 import { figure } from './figure';
 import { segment_ as preseg } from '../pretext';
+import { segment_ as mathseg } from '../math';
 import { label } from '../../inline';
 
 import FigureParser = ExtensionParser.FigureParser;
@@ -13,6 +14,7 @@ export const segment: FigureParser = block(union([
     line(trimEnd(label), true, true),
     union([
       preseg,
+      mathseg,
       some(contentline),
     ]),
   ]),
