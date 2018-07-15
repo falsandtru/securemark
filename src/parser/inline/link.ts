@@ -3,7 +3,7 @@ import { Parser, union, subsequence, some, match, surround, fmap, bind, build } 
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotation, stringify } from '../util';
-import { sanitize, decode } from '../string/url';
+import { sanitize, decode } from '../string/uri';
 import { html, text, frag } from 'typed-dom';
 
 export const link: LinkParser = line(bind(build(() =>
@@ -38,11 +38,11 @@ export const link: LinkParser = line(bind(build(() =>
       (ns, rest) => {
         const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(\S*)[^\S\n]*(?:\n(.*))?$/) || [];
         assert(attr === '' || attr === 'nofollow');
-        const url = sanitize(INSECURE_URL);
-        if (url === '' && INSECURE_URL !== '') return;
+        const uri = sanitize(INSECURE_URL);
+        if (uri === '' && INSECURE_URL !== '') return;
         const el = html('a',
           {
-            href: url,
+            href: uri,
             rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener',
           },
           hasContent(children)

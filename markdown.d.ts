@@ -207,7 +207,7 @@ export namespace MarkdownParser {
               MathParser,
               BlockquoteParser,
               InlineParser.LinkParser, // Take media syntax and convert to link syntax.
-              InlineParser.AutolinkParser.UrlParser
+              InlineParser.AutolinkParser.UriParser
             ]>,
             Parser<HTMLElement | Text, [
               InlineParser
@@ -287,7 +287,7 @@ export namespace MarkdownParser {
       ]> {
     }
     export interface LinkParser extends
-      // [abc](url)
+      // [abc](uri)
       Inline<'link'>,
       Parser<HTMLAnchorElement, [
         InlineParser
@@ -390,7 +390,7 @@ export namespace MarkdownParser {
       ]> {
     }
     export interface MediaParser extends
-      // ![abc](url)
+      // ![abc](uri)
       Inline<'media'>,
       Parser<HTMLElement, [
         SourceParser.TextParser
@@ -412,14 +412,14 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLAnchorElement | HTMLImageElement | HTMLSpanElement | Text, [
-        AutolinkParser.UrlParser,
+        AutolinkParser.UriParser,
         AutolinkParser.AccountParser
       ]> {
     }
     export namespace AutolinkParser {
-      export interface UrlParser extends
+      export interface UriParser extends
         // https://host
-        Inline<'url'>,
+        Inline<'uri'>,
         Parser<HTMLAnchorElement | Text, [
           Parser<Text, never[]>,
           LinkParser,

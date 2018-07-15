@@ -7,7 +7,7 @@ import { text } from 'typed-dom';
 
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
 
-export const url: AutolinkParser.UrlParser = line(union([
+export const uri: AutolinkParser.UriParser = line(union([
   match(
     /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/,
     ([frag], rest) =>
@@ -23,7 +23,7 @@ export const url: AutolinkParser.UrlParser = line(union([
   surround(
     /^!(?=https?:\/\/\S)/,
     verify(rewrite(build(() =>
-      verify(url, ([node]) => node instanceof HTMLAnchorElement)),
+      verify(uri, ([node]) => node instanceof HTMLAnchorElement)),
       source =>
         link(`[![](${source})](${source})`)),
       ([node]) => node instanceof HTMLAnchorElement),

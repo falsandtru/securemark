@@ -50,7 +50,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('\\\\\\\n')), [['\\', '<br>'], '']);
     });
 
-    it('url', () => {
+    it('uri', () => {
       assert.deepStrictEqual(inspect(parser('http:')), [['http', ':'], '']);
       assert.deepStrictEqual(inspect(parser('https:')), [['https', ':'], '']);
       assert.deepStrictEqual(inspect(parser('_http:')), [['_', 'http', ':'], '']);

@@ -4,7 +4,7 @@ import { line } from '../source/line';
 import { text } from '../source/text';
 import { unescsource } from '../source/unescapable';
 import { bracket } from './link';
-import { sanitize } from '../string/url';
+import { sanitize } from '../string/uri';
 import { stringify } from '../util';
 import { Cache } from 'spica/cache';
 import { html } from 'typed-dom';
@@ -19,11 +19,11 @@ export const media: MediaParser = line(bind(
     return bind<MediaParser>(
       line(surround('('.repeat(count), some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)), ')'.repeat(count)), false),
       (ts, rest) => {
-        const url = sanitize(stringify(ts).trim());
-        if (url === '') return;
-        if (cache.has(url)) return [[cache.get(url)!.cloneNode(true)], rest];
-        if (url.trim().toLowerCase().startsWith('tel:')) return;
-        return [[html('img', { class: 'media', 'data-src': url, alt: caption })], rest];
+        const uri = sanitize(stringify(ts).trim());
+        if (uri === '') return;
+        if (cache.has(uri)) return [[cache.get(uri)!.cloneNode(true)], rest];
+        if (uri.trim().toLowerCase().startsWith('tel:')) return;
+        return [[html('img', { class: 'media', 'data-src': uri, alt: caption })], rest];
       })
       (rest);
   }
