@@ -1352,9 +1352,8 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const reg = /\r\n|[\x00-\x08\x0B-\x1F\x7F]/g;
             function normalize(source) {
-                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(reg, char => {
+                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
                     switch (char) {
                     case '\r':
                     case '\x0B':
@@ -1681,7 +1680,7 @@ require = function () {
                             math_1.math,
                             blockquote_1.blockquote,
                             combinator_1.rewrite(line_1.line(combinator_1.trimEnd(inline_1.media), true, true), line_1.line(combinator_1.trimEnd(source => inline_1.link(`[${ source }]${ '('.repeat(source.match(/\)+$/)[0].length) }${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') } ${ source.match(/\)+$/)[0] }`)))),
-                            line_1.line(combinator_1.contract('!', combinator_1.trimEnd(inline_1.url), ([node]) => node instanceof Element), true, true)
+                            line_1.line(combinator_1.contract('!', combinator_1.trimEnd(inline_1.uri), ([node]) => node instanceof Element), true, true)
                         ])),
                         combinator_1.rewrite(combinator_1.inits([
                             line_1.emptyline,
@@ -2241,14 +2240,14 @@ require = function () {
             exports.link = link_2.link;
             var media_2 = require('./inline/media');
             exports.media = media_2.media;
-            var url_1 = require('./inline/autolink/url');
-            exports.url = url_1.url;
+            var uri_1 = require('./inline/autolink/uri');
+            exports.uri = uri_1.uri;
         },
         {
             '../combinator': 19,
             './inline/annotation': 65,
             './inline/autolink': 66,
-            './inline/autolink/url': 68,
+            './inline/autolink/uri': 68,
             './inline/bracket': 69,
             './inline/code': 70,
             './inline/comment': 71,
@@ -2290,17 +2289,17 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const url_1 = require('./autolink/url');
+            const uri_1 = require('./autolink/uri');
             const account_1 = require('./autolink/account');
             exports.autolink = combinator_1.union([
-                url_1.url,
+                uri_1.uri,
                 account_1.account
             ]);
         },
         {
             '../../combinator': 19,
             './autolink/account': 67,
-            './autolink/url': 68
+            './autolink/uri': 68
         }
     ],
     67: [
@@ -2342,7 +2341,7 @@ require = function () {
             const link_1 = require('../link');
             const typed_dom_1 = require('typed-dom');
             const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
-            exports.url = line_1.line(combinator_1.union([
+            exports.uri = line_1.line(combinator_1.union([
                 combinator_1.match(/^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/, ([frag], rest) => [
                     [typed_dom_1.text(frag)],
                     rest
@@ -2352,7 +2351,7 @@ require = function () {
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
                 ])), source => link_1.link(`[](${ address(source) }${ attribute(source) })`)), ([node]) => node instanceof HTMLAnchorElement), ''),
-                combinator_1.surround(/^!(?=https?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.build(() => combinator_1.verify(exports.url, ([node]) => node instanceof HTMLAnchorElement)), source => link_1.link(`[![](${ source })](${ source })`)), ([node]) => node instanceof HTMLAnchorElement), '')
+                combinator_1.surround(/^!(?=https?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.build(() => combinator_1.verify(exports.uri, ([node]) => node instanceof HTMLAnchorElement)), source => link_1.link(`[![](${ source })](${ source })`)), ([node]) => node instanceof HTMLAnchorElement), '')
             ]), false);
             function address(source) {
                 return source.startsWith('ttp') ? `h${ source }` : source;
@@ -2637,7 +2636,7 @@ require = function () {
             const line_1 = require('../source/line');
             const unescapable_1 = require('../source/unescapable');
             const util_1 = require('../util');
-            const url_1 = require('../string/url');
+            const uri_1 = require('../string/uri');
             const typed_dom_1 = require('typed-dom');
             exports.link = line_1.line(combinator_1.bind(combinator_1.build(() => line_1.line(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']', false), false)), (ns, rest) => {
                 const children = typed_dom_1.frag(ns);
@@ -2664,13 +2663,13 @@ require = function () {
                     attribute
                 ]), ')'.repeat(count), false), false), (ns, rest) => {
                     const [, INSECURE_URL = '', attr = ''] = util_1.stringify(ns).match(/^(\S*)[^\S\n]*(?:\n(.*))?$/) || [];
-                    const url = url_1.sanitize(INSECURE_URL);
-                    if (url === '' && INSECURE_URL !== '')
+                    const uri = uri_1.sanitize(INSECURE_URL);
+                    if (uri === '' && INSECURE_URL !== '')
                         return;
                     const el = typed_dom_1.html('a', {
-                        href: url,
+                        href: uri,
                         rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener'
-                    }, util_1.hasContent(children) ? children.childNodes : url_1.sanitize(url_1.decode(INSECURE_URL || window.location.href)).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
+                    }, util_1.hasContent(children) ? children.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || window.location.href)).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
                     if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=\d)/g, '') }`)
                         return;
                     if ((window.location.origin !== el.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
@@ -2736,7 +2735,7 @@ require = function () {
             '../inline': 64,
             '../source/line': 88,
             '../source/unescapable': 90,
-            '../string/url': 91,
+            '../string/uri': 91,
             '../util': 92,
             'typed-dom': 12
         }
@@ -2778,7 +2777,7 @@ require = function () {
             const text_1 = require('../source/text');
             const unescapable_1 = require('../source/unescapable');
             const link_1 = require('./link');
-            const url_1 = require('../string/url');
+            const uri_1 = require('../string/uri');
             const util_1 = require('../util');
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
@@ -2790,20 +2789,20 @@ require = function () {
                     link_1.bracket,
                     unescapable_1.unescsource
                 ]), new RegExp(`^\\){${ count }}|^ (?!\\))|^[^\\S ]`)), ')'.repeat(count)), false), (ts, rest) => {
-                    const url = url_1.sanitize(util_1.stringify(ts).trim());
-                    if (url === '')
+                    const uri = uri_1.sanitize(util_1.stringify(ts).trim());
+                    if (uri === '')
                         return;
-                    if (exports.cache.has(url))
+                    if (exports.cache.has(uri))
                         return [
-                            [exports.cache.get(url).cloneNode(true)],
+                            [exports.cache.get(uri).cloneNode(true)],
                             rest
                         ];
-                    if (url.trim().toLowerCase().startsWith('tel:'))
+                    if (uri.trim().toLowerCase().startsWith('tel:'))
                         return;
                     return [
                         [typed_dom_1.html('img', {
                                 class: 'media',
-                                'data-src': url,
+                                'data-src': uri,
                                 alt: caption
                             })],
                         rest
@@ -2816,7 +2815,7 @@ require = function () {
             '../source/line': 88,
             '../source/text': 89,
             '../source/unescapable': 90,
-            '../string/url': 91,
+            '../string/uri': 91,
             '../util': 92,
             './link': 79,
             'spica/cache': 6,
@@ -3153,22 +3152,22 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
-            function sanitize(url) {
-                url = url.replace(/\s/g, encodeURI);
-                return isAcceptedProtocol(url) ? url : '';
+            function sanitize(uri) {
+                uri = uri.replace(/\s/g, encodeURI);
+                return isAcceptedProtocol(uri) ? uri : '';
             }
             exports.sanitize = sanitize;
-            function decode(url) {
+            function decode(uri) {
                 try {
-                    url = decodeURI(url);
+                    uri = decodeURI(uri);
                 } finally {
-                    return url.replace(/\s/g, encodeURIComponent);
+                    return uri.replace(/\s/g, encodeURIComponent);
                 }
             }
             exports.decode = decode;
             const parser = typed_dom_1.html('a');
-            function isAcceptedProtocol(url) {
-                parser.setAttribute('href', url);
+            function isAcceptedProtocol(uri) {
+                parser.setAttribute('href', uri);
                 return [
                     'http:',
                     'https:',
