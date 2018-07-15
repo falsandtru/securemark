@@ -15,12 +15,11 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('$a\nb$')), undefined);
       assert.deepStrictEqual(inspect(parser('$a\\\nb$')), undefined);
       assert.deepStrictEqual(inspect(parser('$a$0')), undefined);
-      assert.deepStrictEqual(inspect(parser('$a$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$a$$b$')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$a$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$a$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('a$a$')), undefined);
       assert.deepStrictEqual(inspect(parser('$0-$1')), undefined);
       assert.deepStrictEqual(inspect(parser('$0 - $1')), undefined);
+      assert.deepStrictEqual(inspect(parser('a$a$')), undefined);
     });
 
     it('basic', () => {

@@ -2,6 +2,7 @@
 
 ## 0.68.0
 
+- Allow to put `$` symbol after math syntax.
 - Decode URL only on displaying.
 - Remove invalid surrogate pairs.
 

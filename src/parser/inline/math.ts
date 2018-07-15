@@ -9,7 +9,7 @@ import { html } from 'typed-dom';
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
 export const math: MathParser = line(verify(fmap(
-  surround('$', some(union([escsource]), '$'), /^\$(?![$\d])/),
+  surround('$', some(union([escsource]), '$'), /^\$(?!\d)/),
   ns => {
     const el = html('span', { class: 'math notranslate' }, `$${stringify(ns)}$`);
     if (cache.has(el.textContent!)) return [cache.get(el.textContent!)!.cloneNode(true)];
