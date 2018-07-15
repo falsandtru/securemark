@@ -1354,7 +1354,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const reg = /\r\n|[\x00-\x08\x0B-\x1F\x7F]/g;
             function normalize(source) {
-                return source.replace(reg, char => {
+                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(reg, char => {
                     switch (char) {
                     case '\r':
                     case '\x0B':
@@ -2670,7 +2670,7 @@ require = function () {
                     const el = typed_dom_1.html('a', {
                         href: url,
                         rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener'
-                    }, util_1.hasContent(children) ? children.childNodes : url_1.sanitize(INSECURE_URL.replace(/^tel:/, '') || window.location.href).replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
+                    }, util_1.hasContent(children) ? children.childNodes : url_1.sanitize(url_1.decode(INSECURE_URL || window.location.href)).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
                     if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=\d)/g, '') }`)
                         return;
                     if ((window.location.origin !== el.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
@@ -2752,7 +2752,7 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(100);
-            exports.math = line_1.line(combinator_1.verify(combinator_1.fmap(combinator_1.surround('$', combinator_1.some(combinator_1.union([escapable_1.escsource]), '$'), /^\$(?![$\d])/), ns => {
+            exports.math = line_1.line(combinator_1.verify(combinator_1.fmap(combinator_1.surround('$', combinator_1.some(combinator_1.union([escapable_1.escsource]), '$'), /^\$(?!\d)/), ns => {
                 const el = typed_dom_1.html('span', { class: 'math notranslate' }, `$${ util_1.stringify(ns) }$`);
                 if (exports.cache.has(el.textContent))
                     return [exports.cache.get(el.textContent).cloneNode(true)];
@@ -3158,6 +3158,14 @@ require = function () {
                 return isAcceptedProtocol(url) ? url : '';
             }
             exports.sanitize = sanitize;
+            function decode(url) {
+                try {
+                    url = decodeURI(url);
+                } finally {
+                    return url.replace(/\s/g, encodeURIComponent);
+                }
+            }
+            exports.decode = decode;
             const parser = typed_dom_1.html('a');
             function isAcceptedProtocol(url) {
                 parser.setAttribute('href', url);
