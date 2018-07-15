@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.68.0
+
+- Remove invalid surrogate pairs.
+
 ## 0.67.0
 
 - Allow empty lines in math syntax.

@@ -2,6 +2,10 @@
 
 describe('Unit: parser/api/normalization', () => {
   describe('normalize', () => {
+    it('surrogate pairs', () => {
+      assert(normalize('\uDC00\uD800') === '');
+    });
+
     it('control', () => {
       assert(normalize('\v') === '\n');
       assert(normalize('\f') === '\n');
