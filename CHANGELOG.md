@@ -2,6 +2,7 @@
 
 ## 0.68.0
 
+- Decode URL only on displaying.
 - Remove invalid surrogate pairs.
 
 ## 0.67.0

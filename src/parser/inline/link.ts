@@ -3,7 +3,7 @@ import { Parser, union, subsequence, some, match, surround, fmap, bind, build } 
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotation, stringify } from '../util';
-import { sanitize } from '../string/url';
+import { sanitize, decode } from '../string/url';
 import { html, text, frag } from 'typed-dom';
 
 export const link: LinkParser = line(bind(build(() =>
@@ -47,7 +47,8 @@ export const link: LinkParser = line(bind(build(() =>
           },
           hasContent(children)
             ? children.childNodes
-            : sanitize(INSECURE_URL.replace(/^tel:/, '') || window.location.href)
+            : sanitize(decode(INSECURE_URL || window.location.href))
+                .replace(/^tel:/, '')
                 .replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
         assert(hasContent(el));
         if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=\d)/g, '')}`) return;

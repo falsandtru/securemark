@@ -7,6 +7,16 @@ export function sanitize(url: string): string {
     : '';
 }
 
+export function decode(url: string): string {
+  try {
+    url = decodeURI(url);
+  }
+  finally {
+    return url
+      .replace(/\s/g, encodeURIComponent);
+  }
+}
+
 const parser = html('a');
 function isAcceptedProtocol(url: string): boolean {
   parser.setAttribute('href', url);
