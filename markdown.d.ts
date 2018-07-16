@@ -149,13 +149,13 @@ export namespace MarkdownParser {
       }
       export interface AlignParser extends
         Block<'table/align'>,
-        Parser<Text, Parser<Text, never[]>[]> {
+        Parser<Text, Parser<Text, []>[]> {
       }
     }
     export interface BlockquoteParser extends
       // > abc
       Block<'blockquote'>,
-      Parser<HTMLQuoteElement, Parser<HTMLElement | Text, never[]>[]> {
+      Parser<HTMLQuoteElement, Parser<HTMLElement | Text, []>[]> {
     }
     export interface PretextParser extends
       // ```
@@ -217,7 +217,7 @@ export namespace MarkdownParser {
       }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,
-        Parser<HTMLElement, never[]> {
+        Parser<HTMLElement, []> {
       }
     }
     export interface ParagraphParser extends
@@ -308,7 +308,7 @@ export namespace MarkdownParser {
       export interface AttributeParser extends
         // nofollow
         Inline<'link/attribute'>,
-        Parser<Text, never[]> {
+        Parser<Text, []> {
       }
     }
     export interface ExtensionParser extends
@@ -407,7 +407,7 @@ export namespace MarkdownParser {
     export interface HTMLEntityParser extends
       // &copy;
       Inline<'htmlentity'>,
-      Parser<Text, never[]> {
+      Parser<Text, []> {
     }
     export interface AutolinkParser extends
       Inline<'autolink'>,
@@ -421,7 +421,7 @@ export namespace MarkdownParser {
         // https://host
         Inline<'uri'>,
         Parser<HTMLAnchorElement | Text, [
-          Parser<Text, never[]>,
+          Parser<Text, []>,
           LinkParser,
           LinkParser
         ]> {
@@ -430,8 +430,8 @@ export namespace MarkdownParser {
         // @account
         Inline<'account'>,
         Parser<HTMLAnchorElement | Text, [
-          Parser<Text, never[]>,
-          Parser<HTMLAnchorElement, never[]>
+          Parser<Text, []>,
+          Parser<HTMLAnchorElement, []>
         ]> {
       }
     }
@@ -441,35 +441,35 @@ export namespace MarkdownParser {
     export interface TextParser extends
       // abc
       Source<'text'>,
-      Parser<HTMLBRElement | HTMLSpanElement | Text, never[]> {
+      Parser<HTMLBRElement | HTMLSpanElement | Text, []> {
     }
     export interface UnescapableSourceParser extends
       // abc
       Source<'unescsource'>,
-      Parser<Text, never[]> {
+      Parser<Text, []> {
     }
     export interface EscapableSourceParser extends
       // abc
       Source<'escsource'>,
-      Parser<Text, never[]> {
+      Parser<Text, []> {
     }
     export interface EmptyLineParser extends
       Source<'emptyline'>,
-      Parser<never, never[]> {
+      Parser<never, []> {
     }
     export interface BlankLineParser extends
       Source<'blankline'>,
-      Parser<never, never[]> {
+      Parser<never, []> {
     }
     export interface ContentLineParser extends
       Source<'contentline'>,
-      Parser<never, never[]> {
+      Parser<never, []> {
     }
     export namespace CharParser {
       export interface BackquoteParser extends
         // `
         Source<'char/backquote'>,
-        Parser<Text, never[]> {
+        Parser<Text, []> {
       }
     }
   }

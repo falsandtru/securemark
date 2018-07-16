@@ -2,7 +2,7 @@
 import { CharParser } from '../source';
 
 export function char(char: '`'): CharParser.BackquoteParser;
-export function char(char: string): Parser<Text, never[]> {
+export function char(char: string): Parser<Text, []> {
   return source => {
     if (source.length === 0) return;
     switch (source[0]) {
