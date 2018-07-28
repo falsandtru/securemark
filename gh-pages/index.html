@@ -64,7 +64,7 @@
 <article id="content">
   <p>time: <span id="time">-</span>ms</p>
   <textarea id="editor" style="float: left; width: 49%; min-height: 200px;"></textarea>
-  <div id="viewer" style="float: left; width: 49%; min-height: 200px"><ol></ol></div>
+  <div id="viewer" style="float: left; width: 49%; min-height: 200px"><ol id="annotation"></ol><ol id="authority"></ol></div>
 </article>
 <aside></aside>
 </div>
@@ -230,7 +230,10 @@
       time = Date.now();
     }
     figure(viewer);
-    footnote(viewer, viewer.lastChild);
+    footnote(viewer, {
+      annotation: viewer.querySelector('#annotation'),
+      authority: viewer.querySelector('#authority'),
+    });
     return elapsed;
   }
   function log(time) {

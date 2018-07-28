@@ -2,7 +2,7 @@
 import { Parser, union, subsequence, some, match, surround, fmap, bind, build } from '../../combinator';
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
-import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotation, stringify } from '../util';
+import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority, stringify } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { html, text, frag } from 'typed-dom';
 
@@ -10,7 +10,7 @@ export const link: LinkParser = line(bind(build(() =>
   line(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
   (ns, rest) => {
     const children = frag(ns);
-    if (hasAnnotation(children)) return;
+    if (hasAnnotationOrAuthority(children)) return;
     if (hasMedia(children)) {
       void children.querySelectorAll('a > .media')
         .forEach(el =>

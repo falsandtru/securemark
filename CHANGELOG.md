@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.69.0
+
+- Add authority syntax.
+- Refine footnote function.
+
 ## 0.68.0
 
 - Allow to put `$` symbol after math syntax.

@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 export const placeholder: ExtensionParser.PlaceholderParser = line(fmap(build(() =>
   surround(
     '[',
-    match(/^[#:~^\[]/, ([flag], rest) =>
+    match(/^[#:~^]/, ([flag], rest) =>
       some(union<ExtensionParser.PlaceholderParser>([inline]), ']')(flag === '[' ? flag + rest : rest)),
     ']')),
   ns =>

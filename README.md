@@ -14,13 +14,14 @@ Secure markdown renderer working on browsers for user input data.
 - Incremental update.
 - Progressive rendering.
 - Unblinking rendering.
-- Syntax highlight with PrismJS.
-- LaTeX support with MathJax.
 - Large document support.
+- Syntax highlight with PrismJS.
+- LaTeX rendering with MathJax.
+- Figure, Annotation, and Authority syntax.
 - Index generation for headings, terms, and figures.
 - Shortlink syntax for local references of indexes and figures.
 - Auto numbering of figures and footnotes.
-- Footnote and its bidirectional link generation from annotations.
+- Footnote and its bidirectional link generation from annotations and authorities.
 - Table of contents.
 
 ## Demos
@@ -52,6 +53,7 @@ https://falsandtru.github.io/securemark/
 - Figure (~~~figure [:fig-name])
 - Label ([:fig-name])
 - Annotation (((annotation)))
+- Authority ([[authority]])
 - Index (# title [#section], ~ term [#term], [#some words])
 - Hashtag (#tag)
 - Comment (<# comment #>, \<!-- comment -->)

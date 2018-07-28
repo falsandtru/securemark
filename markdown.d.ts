@@ -261,11 +261,12 @@ export namespace MarkdownParser {
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
-      InlineParser.CommentParser,
       InlineParser.AnnotationParser,
+      InlineParser.AuthorityParser,
       InlineParser.ExtensionParser,
       InlineParser.LinkParser,
       InlineParser.HTMLParser,
+      InlineParser.CommentParser,
       InlineParser.EmphasisParser,
       InlineParser.StrongParser,
       InlineParser.CodeParser,
@@ -282,6 +283,13 @@ export namespace MarkdownParser {
     export interface AnnotationParser extends
       // ((abc))
       Inline<'annotation'>,
+      Parser<HTMLElement, [
+        InlineParser
+      ]> {
+    }
+    export interface AuthorityParser extends
+      // [[abc]]
+      Inline<'authority'>,
       Parser<HTMLElement, [
         InlineParser
       ]> {

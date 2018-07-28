@@ -34,8 +34,8 @@ export function hasLink(node: Element | DocumentFragment): boolean {
   return !!node.querySelector('a');
 }
 
-export function hasAnnotation(node: Element | DocumentFragment): boolean {
-  return !!node.querySelector('.annotation');
+export function hasAnnotationOrAuthority(node: Element | DocumentFragment): boolean {
+  return !!node.querySelector('.annotation, .authority');
 }
 
 export function hasText(node: Node): boolean {

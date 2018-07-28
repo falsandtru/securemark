@@ -17,6 +17,9 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert(!parser('[^\\]'));
       assert(!parser('[[]'));
       assert(!parser('[]]'));
+      assert(!parser('[[]]'));
+      assert(!parser('[[ ]]'));
+      assert(!parser('[[a]]'));
     });
 
     it('valid', () => {
@@ -30,9 +33,6 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert(parser('[^a\\ ]'));
       assert(parser('[^\\]]'));
       assert(parser('[^`a`]'));
-      assert(parser('[[]]'));
-      assert(parser('[[ ]]'));
-      assert(parser('[[a]]'));
     });
 
   });
