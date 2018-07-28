@@ -13,9 +13,9 @@ function build(category: string, indexer: (index: number) => string): (source: D
   assert(category.match(/^[a-z]+$/));
   const memory = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => {
-    const definitions = new Map<string, HTMLLIElement>();
     target.innerHTML = '';
-    void source.querySelectorAll<HTMLElement>(`.${category}`)
+    const definitions = new Map<string, HTMLLIElement>();
+    return void source.querySelectorAll<HTMLElement>(`.${category}`)
       .forEach((ref, i) => {
         !memory.has(ref) && void memory.set(ref, [...ref.childNodes]);
         const refIndex = i + 1;

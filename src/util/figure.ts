@@ -7,16 +7,17 @@ export function figure(
         ? `(${caption.getAttribute('data-index')})`
         : capitalize(`${caption.getAttribute('data-type')}. ${caption.getAttribute('data-index')}.`)
 ): void {
-  return void [...source.querySelectorAll<HTMLElement>('figure[class^="label:"]')]
-    .reduce((map, el) => {
-      const label = el.className;
-      const caption = el.lastElementChild! as HTMLElement;
+  const figures = new Map<string, HTMLElement[]>();
+  return void source.querySelectorAll<HTMLElement>('figure[class^="label:"]')
+    .forEach(figure => {
+      const label = figure.className;
+      const caption = figure.lastElementChild! as HTMLElement;
       assert(caption.matches('figcaption[data-type]:not(:empty)'));
       const type = caption.getAttribute('data-type')!;
-      const es = map.get(type) || map.set(type, []).get(type)!;
-      void es.push(el);
-      const idx = index(label, es);
-      void el.setAttribute('id', `${label.split('-', 1)[0]}-${idx}`);
+      const acc = figures.get(type) || figures.set(type, []).get(type)!;
+      void acc.push(figure);
+      const idx = index(label, acc);
+      void figure.setAttribute('id', `${label.split('-', 1)[0]}-${idx}`);
       void caption.setAttribute('data-index', `${idx}`);
       assert(caption.matches('figcaption[data-type][data-index]:not(:empty)'));
       if (caption.children.length === 1) {
@@ -27,27 +28,27 @@ export function figure(
       }
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
-        .forEach(link => {
-          assert(link.childNodes.length === 1);
-          void link.setAttribute('href', `#${el.id}`);
-          void link.replaceChild(caption.firstChild!.firstChild!.cloneNode(true), link.firstChild!);
+        .forEach(ref => {
+          assert(ref.childNodes.length === 1);
+          void ref.setAttribute('href', `#${figure.id}`);
+          void ref.replaceChild(caption.firstChild!.firstChild!.cloneNode(true), ref.firstChild!);
         });
-      return map;
-    }, new Map<string, HTMLElement[]>())
+    });
 }
 
-function index(label: string, es: HTMLElement[]): string {
+function index(label: string, figs: HTMLElement[]): string {
+  assert(figs.length > 0);
   switch (true) {
     case isFixed(label):
       return label.split('-').pop()!;
     case isGroup(label):
       return increment(
-        label.split('-').pop()!,
-        es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')! : '');
+        figs.length === 1 ? '0' : figs[figs.length - 2].querySelector('figcaption')!.getAttribute('data-index')!,
+        label.split('-').pop()!.split('.').length);
     default:
       return increment(
-        label.split('-').pop()!.split('.')[0],
-        es.length > 1 ? es[es.length - 2].querySelector('figcaption')!.getAttribute('data-index')!.split('.')[0] : '');
+        figs.length === 1 ? '0' : figs[figs.length - 2].querySelector('figcaption')!.getAttribute('data-index')!,
+        1);
   }
 }
 
@@ -60,20 +61,21 @@ function isGroup(label: string): boolean {
       && !isFixed(label);
 }
 
-function increment(order: string, prev: string): string {
-  if (!prev) return '1';
-  const ps = prev.split('.');
-  const os = order.split('.');
-  return Array(Math.max(ps.length, os.length)).fill(0)
-    .map((_, i) => +ps[i])
-    .map((p, i) =>
-      isFinite(p)
-        ? i + 1 < os.length
-          ? p
-          : i + 1 === os.length
-            ? p + 1
+function increment(index: string, position: number): string {
+  assert(index.match(/^\d+(?:\.\d+)*$/));
+  assert(position > 0);
+  if (index === '0' && position > 1) return increment(index, 1);
+  const ns = index.split('.');
+  return Array(Math.max(ns.length, position)).fill(0)
+    .map((_, i) => +ns[i])
+    .map((n, i) =>
+      isFinite(n)
+        ? i + 1 < position
+          ? n
+          : i + 1 === position
+            ? n + 1
             : NaN
-        : i + 1 < os.length
+        : i + 1 < position
           ? 0
           : 1)
     .filter(isFinite)
