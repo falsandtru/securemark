@@ -2,29 +2,25 @@
 
 export function figure(
   source: DocumentFragment | HTMLElement,
-  header: (caption: HTMLElement) => string
-    = caption => caption.getAttribute('data-type') === '$'
-        ? `(${caption.getAttribute('data-index')})`
-        : capitalize(`${caption.getAttribute('data-type')}. ${caption.getAttribute('data-index')}.`)
+  header: (type: string, index: string) => string
+    = (type, index) => type === '$' ? `(${index})` : `${capitalize(type)}. ${index}.`
 ): void {
   const figures = new Map<string, HTMLElement[]>();
   return void source.querySelectorAll<HTMLElement>('figure[class^="label:"]')
     .forEach(figure => {
       const label = figure.className;
-      const caption = figure.lastElementChild! as HTMLElement;
-      assert(caption.matches('figcaption[data-type]:not(:empty)'));
-      const type = caption.getAttribute('data-type')!;
+      const type = figure.getAttribute('data-type')!;
       const acc = figures.get(type) || figures.set(type, []).get(type)!;
       void acc.push(figure);
       const idx = index(label, acc);
+      void figure.setAttribute('data-index', `${idx}`);
       void figure.setAttribute('id', `${label.split('-', 1)[0]}-${idx}`);
-      void caption.setAttribute('data-index', `${idx}`);
-      assert(caption.matches('figcaption[data-type][data-index]:not(:empty)'));
+      const caption = figure.lastElementChild! as HTMLElement;
       if (caption.children.length === 1) {
-        void caption.insertBefore(html('span', header(caption.cloneNode())), caption.firstChild);
+        void caption.insertBefore(html('span', header(type, idx)), caption.firstChild);
       }
       else {
-        void caption.replaceChild(html('span', header(caption.cloneNode())), caption.firstChild!);
+        void caption.replaceChild(html('span', header(type, idx)), caption.firstChild!);
       }
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
@@ -43,11 +39,11 @@ function index(label: string, figs: HTMLElement[]): string {
       return label.split('-').pop()!;
     case isGroup(label):
       return increment(
-        figs.length === 1 ? '0' : figs[figs.length - 2].querySelector('figcaption')!.getAttribute('data-index')!,
+        figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index')!,
         label.split('-').pop()!.split('.').length);
     default:
       return increment(
-        figs.length === 1 ? '0' : figs[figs.length - 2].querySelector('figcaption')!.getAttribute('data-index')!,
+        figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index')!,
         1);
   }
 }

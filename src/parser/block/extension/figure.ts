@@ -77,11 +77,12 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
 function fig(label: HTMLAnchorElement, content: HTMLElement | Text, caption: (HTMLElement | Text)[]): HTMLElement {
   assert(label instanceof HTMLAnchorElement);
   return html('figure',
-    { class: label.getAttribute('href')!.slice(1) },
+    {
+       class: label.getAttribute('href')!.slice(1),
+      'data-type': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0],
+    },
     [
       content,
-      html('figcaption',
-        { 'data-type': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0] },
-        [html('span', caption)])
+      html('figcaption', [html('span', caption)])
     ]);
 }
