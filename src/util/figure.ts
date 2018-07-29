@@ -1,5 +1,7 @@
 ﻿import { html } from 'typed-dom';
 
+const headers = new WeakSet<HTMLElement>();
+
 export function figure(
   source: DocumentFragment | HTMLElement,
   header: (type: string, index: string) => string
@@ -16,12 +18,11 @@ export function figure(
       void figure.setAttribute('data-index', `${idx}`);
       void figure.setAttribute('id', `${label.split('-', 1)[0]}-${idx}`);
       const caption = figure.lastElementChild! as HTMLElement;
-      if (caption.children.length === 1) {
-        void caption.insertBefore(html('span', header(type, idx)), caption.firstChild);
-      }
-      else {
-        void caption.replaceChild(html('span', header(type, idx)), caption.firstChild!);
-      }
+      assert(caption.matches('figcaption'));
+      !headers.has(figure)
+        ? void caption.insertBefore(html('span', header(type, idx)), caption.firstChild)
+        : void caption.replaceChild(html('span', header(type, idx)), caption.firstChild!);
+      void headers.add(figure);
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
         .forEach(ref => {
