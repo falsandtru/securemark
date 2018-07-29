@@ -1692,9 +1692,12 @@ require = function () {
                 ]), ([label, content, ...caption]) => [fig(label, content, caption)]))(`${ note }\n${ body.slice(0, -1) }`);
             }))));
             function fig(label, content, caption) {
-                return typed_dom_1.html('figure', { class: label.getAttribute('href').slice(1) }, [
+                return typed_dom_1.html('figure', {
+                    class: label.getAttribute('href').slice(1),
+                    'data-type': label.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0]
+                }, [
                     content,
-                    typed_dom_1.html('figcaption', { 'data-type': label.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0] }, [typed_dom_1.html('span', caption)])
+                    typed_dom_1.html('figcaption', [typed_dom_1.html('span', caption)])
                 ]);
             }
         },
@@ -3697,39 +3700,32 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
-            function figure(source, header = caption => caption.getAttribute('data-type') === '$' ? `(${ caption.getAttribute('data-index') })` : capitalize(`${ caption.getAttribute('data-type') }. ${ caption.getAttribute('data-index') }.`)) {
-                return void [...source.querySelectorAll('figure[class^="label:"]')].reduce((map, el) => {
-                    const label = el.className;
-                    const caption = el.lastElementChild;
-                    const type = caption.getAttribute('data-type');
-                    const es = map.get(type) || map.set(type, []).get(type);
-                    void es.push(el);
-                    const idx = index(label, es);
-                    void el.setAttribute('id', `${ label.split('-', 1)[0] }-${ idx }`);
-                    void caption.setAttribute('data-index', `${ idx }`);
+            function figure(source, header = (type, index) => type === '$' ? `(${ index })` : `${ capitalize(type) }. ${ index }.`) {
+                const figures = new Map();
+                return void source.querySelectorAll('figure[class^="label:"]').forEach(figure => {
+                    const label = figure.className;
+                    const type = figure.getAttribute('data-type');
+                    const acc = figures.get(type) || figures.set(type, []).get(type);
+                    void acc.push(figure);
+                    const idx = index(label, acc);
+                    void figure.setAttribute('data-index', `${ idx }`);
+                    void figure.setAttribute('id', `${ label.split('-', 1)[0] }-${ idx }`);
+                    const caption = figure.lastElementChild;
                     if (caption.children.length === 1) {
-                        void caption.insertBefore(typed_dom_1.html('span', header(caption.cloneNode())), caption.firstChild);
+                        void caption.insertBefore(typed_dom_1.html('span', header(type, idx)), caption.firstChild);
                     } else {
-                        void caption.replaceChild(typed_dom_1.html('span', header(caption.cloneNode())), caption.firstChild);
+                        void caption.replaceChild(typed_dom_1.html('span', header(type, idx)), caption.firstChild);
                     }
                     const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(link => {
-                        void link.setAttribute('href', `#${ el.id }`);
-                        void link.replaceChild(caption.firstChild.firstChild.cloneNode(true), link.firstChild);
+                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => {
+                        void ref.setAttribute('href', `#${ figure.id }`);
+                        void ref.replaceChild(caption.firstChild.firstChild.cloneNode(true), ref.firstChild);
                     });
-                    return map;
-                }, new Map());
+                });
             }
             exports.figure = figure;
-            function index(label, es) {
-                switch (true) {
-                case isFixed(label):
-                    return label.split('-').pop();
-                case isGroup(label):
-                    return increment(label.split('-').pop(), es.length > 1 ? es[es.length - 2].querySelector('figcaption').getAttribute('data-index') : '');
-                default:
-                    return increment(label.split('-').pop().split('.')[0], es.length > 1 ? es[es.length - 2].querySelector('figcaption').getAttribute('data-index').split('.')[0] : '');
-                }
+            function index(label, figs) {
+                return isFixed(label) ? label.split('-').pop() : increment(figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index'), isGroup(label) ? label.split('-').pop().split('.').length : 1);
             }
             function isFixed(label) {
                 return label.split(':').pop().search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
@@ -3737,12 +3733,11 @@ require = function () {
             function isGroup(label) {
                 return label.split('-').pop().search(/^0(?:\.0)*$/) === 0 && !isFixed(label);
             }
-            function increment(order, prev) {
-                if (!prev)
-                    return '1';
-                const ps = prev.split('.');
-                const os = order.split('.');
-                return Array(Math.max(ps.length, os.length)).fill(0).map((_, i) => +ps[i]).map((p, i) => isFinite(p) ? i + 1 < os.length ? p : i + 1 === os.length ? p + 1 : NaN : i + 1 < os.length ? 0 : 1).filter(isFinite).join('.');
+            function increment(index, position) {
+                if (index === '0' && position > 1)
+                    return increment(index, 1);
+                const ns = index.split('.');
+                return Array(Math.max(ns.length, position)).fill(0).map((_, i) => +ns[i]).map((n, i) => isFinite(n) ? i + 1 < position ? n : i + 1 === position ? n + 1 : NaN : i + 1 < position ? 0 : 1).filter(isFinite).join('.');
             }
             function capitalize(label) {
                 return label[0].toUpperCase() + label.slice(1);
@@ -3766,9 +3761,9 @@ require = function () {
             function build(category, indexer) {
                 const memory = new WeakMap();
                 return (source, target) => {
-                    const definitions = new Map();
                     target.innerHTML = '';
-                    void source.querySelectorAll(`.${ category }`).forEach((ref, i) => {
+                    const definitions = new Map();
+                    return void source.querySelectorAll(`.${ category }`).forEach((ref, i) => {
                         !memory.has(ref) && void memory.set(ref, [...ref.childNodes]);
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }-ref:${ i + 1 }`;
