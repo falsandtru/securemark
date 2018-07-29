@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.70.0
+
+- Extend figure function.
+
 ## 0.69.0
 
 - Add authority syntax.
