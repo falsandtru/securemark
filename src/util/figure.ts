@@ -34,18 +34,11 @@ export function figure(
 
 function index(label: string, figs: HTMLElement[]): string {
   assert(figs.length > 0);
-  switch (true) {
-    case isFixed(label):
-      return label.split('-').pop()!;
-    case isGroup(label):
-      return increment(
+  return isFixed(label)
+    ? label.split('-').pop()!
+    : increment(
         figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index')!,
-        label.split('-').pop()!.split('.').length);
-    default:
-      return increment(
-        figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index')!,
-        1);
-  }
+        isGroup(label) ? label.split('-').pop()!.split('.').length : 1);
 }
 
 function isFixed(label: string): boolean {
