@@ -639,7 +639,7 @@ require = function () {
                     throw new Error(`TypedDOM: Unknown namespace: ${ ns }`);
                 }
             }
-            function define(el, attrs = {}, children = []) {
+            function define(el, attrs = {}, children) {
                 if (isChildren(attrs))
                     return define(el, undefined, attrs);
                 if (typeof children === 'string')
@@ -652,7 +652,14 @@ require = function () {
                         'touchmove'
                     ].includes(name.slice(2))
                 }));
-                void [...children].forEach(child => void el.appendChild(child));
+                if (children) {
+                    el.innerHTML = '';
+                    while (el.firstChild) {
+                        void el.removeChild(el.firstChild);
+                    }
+                    void [...children].forEach(child => void el.appendChild(child));
+                }
+                return el;
             }
             exports.define = define;
             function isChildren(o) {
@@ -3700,6 +3707,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
+            const headers = new WeakSet();
             function figure(source, header = (type, index) => type === '$' ? `(${ index })` : `${ capitalize(type) }. ${ index }.`) {
                 const figures = new Map();
                 return void source.querySelectorAll('figure[class^="label:"]').forEach(figure => {
@@ -3711,16 +3719,10 @@ require = function () {
                     void figure.setAttribute('data-index', `${ idx }`);
                     void figure.setAttribute('id', `${ label.split('-', 1)[0] }-${ idx }`);
                     const caption = figure.lastElementChild;
-                    if (caption.children.length === 1) {
-                        void caption.insertBefore(typed_dom_1.html('span', header(type, idx)), caption.firstChild);
-                    } else {
-                        void caption.replaceChild(typed_dom_1.html('span', header(type, idx)), caption.firstChild);
-                    }
+                    !headers.has(figure) ? void caption.insertBefore(typed_dom_1.html('span', header(type, idx)), caption.firstChild) : void caption.replaceChild(typed_dom_1.html('span', header(type, idx)), caption.firstChild);
+                    void headers.add(figure);
                     const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => {
-                        void ref.setAttribute('href', `#${ figure.id }`);
-                        void ref.replaceChild(caption.firstChild.firstChild.cloneNode(true), ref.firstChild);
-                    });
+                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, caption.firstChild.cloneNode(true).childNodes));
                 });
             }
             exports.figure = figure;
@@ -3737,7 +3739,11 @@ require = function () {
                 if (index === '0' && position > 1)
                     return increment(index, 1);
                 const ns = index.split('.');
-                return Array(Math.max(ns.length, position)).fill(0).map((_, i) => +ns[i]).map((n, i) => isFinite(n) ? i + 1 < position ? n : i + 1 === position ? n + 1 : NaN : i + 1 < position ? 0 : 1).filter(isFinite).join('.');
+                const idx = [];
+                for (let i = 0; i < position; ++i) {
+                    void idx.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1);
+                }
+                return idx.join('.');
             }
             function capitalize(label) {
                 return label[0].toUpperCase() + label.slice(1);
@@ -3761,17 +3767,14 @@ require = function () {
             function build(category, indexer) {
                 const memory = new WeakMap();
                 return (source, target) => {
-                    target.innerHTML = '';
-                    const definitions = new Map();
-                    return void source.querySelectorAll(`.${ category }`).forEach((ref, i) => {
-                        !memory.has(ref) && void memory.set(ref, [...ref.childNodes]);
+                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].reduce((acc, ref, i) => {
+                        void memory.set(ref, memory.get(ref) || [...ref.childNodes]);
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }-ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
-                        const def = definitions.get(title);
-                        const defIndex = def ? +def.id.match(/\d+/)[0] : definitions.size + 1;
+                        const def = acc.get(title);
+                        const defIndex = def ? +def.id.match(/\d+/)[0] : acc.size + 1;
                         const defId = def ? def.id : `${ category }-def:${ defIndex }`;
-                        ref.innerHTML = '';
                         void typed_dom_1.define(ref, {
                             id: refId,
                             title: title
@@ -3779,21 +3782,22 @@ require = function () {
                                 href: `#${ defId }`,
                                 rel: 'noopener'
                             }, indexer(defIndex))]);
-                        return def ? void def.lastChild.appendChild(typed_dom_1.html('a', {
-                            href: `#${ refId }`,
-                            rel: 'noopener'
-                        }, indexer(refIndex))) : void target.appendChild(typed_dom_1.TypedHTML.li((f, tag) => {
-                            const el = f(tag, { id: defId }, [
+                        if (def) {
+                            void def.lastChild.appendChild(typed_dom_1.html('a', {
+                                href: `#${ refId }`,
+                                rel: 'noopener'
+                            }, indexer(refIndex)));
+                        } else {
+                            void acc.set(title, typed_dom_1.html('li', { id: defId }, [
                                 ...memory.get(ref),
                                 typed_dom_1.html('sup', [typed_dom_1.html('a', {
                                         href: `#${ refId }`,
                                         rel: 'noopener'
                                     }, indexer(refIndex))])
-                            ]);
-                            void definitions.set(title, el);
-                            return el;
-                        }).element);
-                    });
+                            ]));
+                        }
+                        return acc;
+                    }, new Map()).values());
                 };
             }
         },
