@@ -53,20 +53,18 @@ function increment(index: string, position: number): string {
   assert(position > 0);
   if (index === '0' && position > 1) return increment(index, 1);
   const ns = index.split('.');
-  return Array(Math.max(ns.length, position)).fill(0)
-    .map((_, i) => +ns[i])
-    .map((n, i) =>
-      isFinite(n)
+  const idx: number[] = [];
+  for (let i = 0; i < position; ++i) {
+    void idx.push(
+      i < ns.length
         ? i + 1 < position
-          ? n
-          : i + 1 === position
-            ? n + 1
-            : NaN
+          ? +ns[i]
+          : +ns[i] + 1
         : i + 1 < position
           ? 0
-          : 1)
-    .filter(isFinite)
-    .join('.');
+          : 1);
+  }
+  return idx.join('.');
 }
 
 function capitalize(label: string): string {
