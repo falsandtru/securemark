@@ -1,4 +1,4 @@
-﻿import { html } from 'typed-dom';
+﻿import { html, define } from 'typed-dom';
 
 const headers = new WeakSet<HTMLElement>();
 
@@ -25,11 +25,8 @@ export function figure(
       void headers.add(figure);
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
-        .forEach(ref => {
-          assert(ref.childNodes.length === 1);
-          void ref.setAttribute('href', `#${figure.id}`);
-          void ref.replaceChild(caption.firstChild!.firstChild!.cloneNode(true), ref.firstChild!);
-        });
+        .forEach(ref =>
+          void define(ref, { href: `#${figure.id}` }, caption.firstChild!.cloneNode(true).childNodes));
     });
 }
 
