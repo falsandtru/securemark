@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.71.0
+
+- Exclude blockquote elements from the target of the contextual features.
+
 ## 0.70.0
 
 - Extend figure function.
