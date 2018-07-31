@@ -1,38 +1,36 @@
-﻿import { html } from 'typed-dom';
+﻿import { html, frag } from 'typed-dom';
 import { concat } from 'spica/concat';
 
 export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement {
   const hs = [...source.children]
     .filter((el): el is HTMLHeadingElement =>
       el instanceof HTMLHeadingElement);
+  assert(hs.every(h => !!h.id));
   return parse(cons(hs));
 }
 
-interface Tree extends Array<HTMLHeadingElement | [HTMLHeadingElement, Tree]> { }
+interface Tree extends Array<[HTMLHeadingElement, Tree]> { }
 
 function parse(node: Tree): HTMLUListElement {
-  return html('ul', node.map(node =>
-    node instanceof Element
-      ? html('li', [html('a', { href: `#${node.id}`, rel: 'noopener' }, node.textContent!)])
-      : html('li', [html('a', { href: `#${node[0].id}`, rel: 'noopener' }, node[0].textContent!), parse(node[1])])));
+  return html('ul', node.map(([el, node]) =>
+    html('li', [
+      html('a', { href: `#${el.id}`, rel: 'noopener' }, el.textContent!),
+      node.length > 0 ? parse(node) : frag()
+    ])));
 }
 
 function cons(hs: HTMLHeadingElement[]): Tree {
   return hs
     .reduce<HTMLHeadingElement[][]>((hss, h) => {
-      const hs = hss[hss.length - 1];
-      const [fst = undefined] = hs;
-      !fst || level(h) > level(fst)
-        ? void hs.push(h)
-        : void hss.push([h]);
-      return hss;
-    }, [[]])
+      const hs = hss.pop() || [];
+      return hs.length === 0 || level(h) > level(hs[0])
+        ? concat(hss, [concat(hs, [h])])
+        : concat(hss, [hs, [h]]);
+    }, [])
     .reduce<Tree>((node, hs) =>
-      concat(
-        node,
-        hs.length > 1
-          ? [[hs.shift()!, cons(hs)]]
-          : hs)
+      hs.length === 0
+        ? node
+        : concat<Tree[number]>(node, [[hs.shift()!, cons(hs)]])
     , []);
 }
 
