@@ -1,7 +1,7 @@
 ﻿import { index, isGroup } from '../parser/inline/extension/label';
 import { html, define } from 'typed-dom';
 
-const headers = new WeakSet<HTMLElement>();
+const headers = new WeakMap<HTMLElement, HTMLSpanElement>();
 
 export function figure(
   source: DocumentFragment | HTMLElement,
@@ -20,10 +20,8 @@ export function figure(
       void figure.setAttribute('id', `${label.split('-', 1)[0]}-${idx}`);
       const caption = figure.lastElementChild! as HTMLElement;
       assert(caption.matches('figcaption'));
-      !headers.has(figure)
-        ? void caption.insertBefore(html('span', header(type, idx)), caption.firstChild)
-        : void caption.replaceChild(html('span', header(type, idx)), caption.firstChild!);
-      void headers.add(figure);
+      headers.has(figure) && void headers.get(figure)!.remove();
+      void headers.set(figure, caption.insertBefore(html('span', header(type, idx)), caption.firstChild));
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
         .forEach(ref =>
