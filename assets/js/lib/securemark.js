@@ -1491,11 +1491,12 @@ require = function () {
             const block_1 = require('../source/block');
             const line_1 = require('../source/line');
             require('../source/unescapable');
+            const inline_1 = require('../inline');
             const parse_1 = require('../api/parse');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = block_1.block(combinator_1.build(() => combinator_1.union([
                 combinator_1.surround(/^(?=(>+)\s)/, textquote, ''),
-                combinator_1.surround(/^!(?=(>+)\s)/, mdquote, '')
+                combinator_1.surround(/^!(?=(>+)\s)/, combinator_1.fmap(mdquote, es => es.map(suppress)), '')
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
@@ -1525,10 +1526,17 @@ require = function () {
             function unindent(source) {
                 return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
             }
+            function suppress(target) {
+                void target.querySelectorAll('[id]').forEach(el => void el.removeAttribute('id'));
+                void target.querySelectorAll('figure[class^="label:"]').forEach(el => !inline_1.isFixed(el.className) && void el.setAttribute('class', el.getAttribute('class').split('-')[0] + '-0'));
+                void target.querySelectorAll('a[href^="#index:"], a[href^="#label:"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
+                return target;
+            }
         },
         {
             '../../combinator': 19,
             '../api/parse': 42,
+            '../inline': 64,
             '../source/block': 86,
             '../source/line': 89,
             '../source/unescapable': 91,
@@ -2247,6 +2255,7 @@ require = function () {
             exports.index = index_1.index;
             var label_1 = require('./inline/extension/label');
             exports.label = label_1.label;
+            exports.isFixed = label_1.isFixed;
             var link_2 = require('./inline/link');
             exports.link = link_2.link;
             var media_2 = require('./inline/media');
@@ -2483,7 +2492,7 @@ require = function () {
                     [],
                     r
                 ]),
-                combinator_1.match(/^<!(-{2,})\s+(?:\S+\s+)*?\1>/, (_, r) => [
+                combinator_1.match(/^<!-{2,}\s+(?:\S+\s+)*?-{2,}>/, (_, r) => [
                     [],
                     r
                 ])
@@ -2578,6 +2587,28 @@ require = function () {
             }), ([el]) => util_1.hasTightText(el)), false);
             function makeLabel(text) {
                 return `label:${ text }`;
+            }
+            function index(label, figs) {
+                return isFixed(label) ? label.split('-').pop() : increment(figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index'), isGroup(label) ? label.split('-').pop().split('.').length : 1);
+            }
+            exports.index = index;
+            function isFixed(label) {
+                return label.split(':').pop().search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
+            }
+            exports.isFixed = isFixed;
+            function isGroup(label) {
+                return label.split('-').pop().search(/^0(?:\.0)*$/) === 0 && !isFixed(label);
+            }
+            exports.isGroup = isGroup;
+            function increment(index, position) {
+                if (index === '0' && position > 1)
+                    return increment(index, 1);
+                const ns = index.split('.');
+                const idx = [];
+                for (let i = 0; i < position; ++i) {
+                    void idx.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1);
+                }
+                return idx.join('.');
             }
         },
         {
@@ -3706,8 +3737,9 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const label_1 = require('../parser/inline/extension/label');
             const typed_dom_1 = require('typed-dom');
-            const headers = new WeakSet();
+            const headers = new WeakMap();
             function figure(source, header = (type, index) => type === '$' ? `(${ index })` : `${ capitalize(type) }. ${ index }.`) {
                 const figures = new Map();
                 return void source.querySelectorAll('figure[class^="label:"]').forEach(figure => {
@@ -3715,41 +3747,25 @@ require = function () {
                     const type = figure.getAttribute('data-type');
                     const acc = figures.get(type) || figures.set(type, []).get(type);
                     void acc.push(figure);
-                    const idx = index(label, acc);
+                    const idx = label_1.index(label, acc);
                     void figure.setAttribute('data-index', `${ idx }`);
                     void figure.setAttribute('id', `${ label.split('-', 1)[0] }-${ idx }`);
                     const caption = figure.lastElementChild;
-                    !headers.has(figure) ? void caption.insertBefore(typed_dom_1.html('span', header(type, idx)), caption.firstChild) : void caption.replaceChild(typed_dom_1.html('span', header(type, idx)), caption.firstChild);
-                    void headers.add(figure);
-                    const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
+                    headers.has(figure) && void headers.get(figure).remove();
+                    void headers.set(figure, caption.insertBefore(typed_dom_1.html('span', header(type, idx)), caption.firstChild));
+                    const query = label_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
                     void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, caption.firstChild.cloneNode(true).childNodes));
                 });
             }
             exports.figure = figure;
-            function index(label, figs) {
-                return isFixed(label) ? label.split('-').pop() : increment(figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index'), isGroup(label) ? label.split('-').pop().split('.').length : 1);
-            }
-            function isFixed(label) {
-                return label.split(':').pop().search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
-            }
-            function isGroup(label) {
-                return label.split('-').pop().search(/^0(?:\.0)*$/) === 0 && !isFixed(label);
-            }
-            function increment(index, position) {
-                if (index === '0' && position > 1)
-                    return increment(index, 1);
-                const ns = index.split('.');
-                const idx = [];
-                for (let i = 0; i < position; ++i) {
-                    void idx.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1);
-                }
-                return idx.join('.');
-            }
             function capitalize(label) {
                 return label[0].toUpperCase() + label.slice(1);
             }
         },
-        { 'typed-dom': 12 }
+        {
+            '../parser/inline/extension/label': 76,
+            'typed-dom': 12
+        }
     ],
     109: [
         function (require, module, exports) {
@@ -3818,27 +3834,25 @@ require = function () {
             }
             exports.toc = toc;
             function parse(node) {
-                return typed_dom_1.html('ul', node.map(node => node instanceof Element ? typed_dom_1.html('li', [typed_dom_1.html('a', {
-                        href: `#${ node.id }`,
-                        rel: 'noopener'
-                    }, node.textContent)]) : typed_dom_1.html('li', [
+                return typed_dom_1.html('ul', node.map(([el, node]) => typed_dom_1.html('li', [
                     typed_dom_1.html('a', {
-                        href: `#${ node[0].id }`,
+                        href: `#${ el.id }`,
                         rel: 'noopener'
-                    }, node[0].textContent),
-                    parse(node[1])
+                    }, el.textContent),
+                    node.length > 0 ? parse(node) : typed_dom_1.frag()
                 ])));
             }
             function cons(hs) {
                 return hs.reduce((hss, h) => {
-                    const hs = hss[hss.length - 1];
-                    const [fst = undefined] = hs;
-                    !fst || level(h) > level(fst) ? void hs.push(h) : void hss.push([h]);
-                    return hss;
-                }, [[]]).reduce((node, hs) => concat_1.concat(node, hs.length > 1 ? [[
+                    const hs = hss.pop() || [];
+                    return hs.length === 0 || level(h) > level(hs[0]) ? concat_1.concat(hss, [concat_1.concat(hs, [h])]) : concat_1.concat(hss, [
+                        hs,
+                        [h]
+                    ]);
+                }, []).reduce((node, hs) => hs.length === 0 ? node : concat_1.concat(node, [[
                         hs.shift(),
                         cons(hs)
-                    ]] : hs), []);
+                    ]]), []);
             }
             function level(h) {
                 return +h.tagName[1];
