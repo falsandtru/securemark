@@ -7,6 +7,6 @@ export const comment: CommentParser = union<CommentParser>([
     /^<(#+)\s+(?:\S+\s+)*?\1>/,
     (_, r) => [[], r]),
   match(
-    /^<!(-{2,})\s+(?:\S+\s+)*?\1>/,
+    /^<!-{2,}\s+(?:\S+\s+)*?-{2,}>/,
     (_, r) => [[], r]),
 ]);

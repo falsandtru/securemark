@@ -3,6 +3,7 @@
 ## 0.71.0
 
 - Exclude blockquote elements from the target of the contextual features.
+- Don't count hyphens of HTML comment out syntax.
 
 ## 0.70.0
 
