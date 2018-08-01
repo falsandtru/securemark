@@ -47,7 +47,7 @@ export const link: LinkParser = line(bind(build(() =>
           },
           hasContent(children)
             ? children.childNodes
-            : sanitize(decode(INSECURE_URL || window.location.href))
+            : sanitize(decode(INSECURE_URL || '.'))
                 .replace(/^tel:/, '')
                 .replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
         assert(hasContent(el));

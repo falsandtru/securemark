@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.71.1
+
+- Don't use the current abstract path to visualize empty path.
+
 ## 0.71.0
 
 - Exclude blockquote elements from the target of the contextual features.
