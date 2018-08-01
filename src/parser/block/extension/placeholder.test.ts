@@ -1,5 +1,5 @@
-﻿import { some } from '../../../combinator';
-import { placeholder } from './placeholder';
+﻿import { placeholder } from './placeholder';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/placeholder', () => {

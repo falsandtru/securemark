@@ -1,5 +1,5 @@
-﻿import { some } from '../../../combinator';
-import { fig } from './fig';
+﻿import { fig } from './fig';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/fig', () => {
