@@ -2726,7 +2726,7 @@ require = function () {
                     const el = typed_dom_1.html('a', {
                         href: uri,
                         rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener'
-                    }, util_1.hasContent(children) ? children.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || window.location.href)).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
+                    }, util_1.hasContent(children) ? children.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
                     if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=\d)/g, '') }`)
                         return;
                     if ((window.location.origin !== el.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
