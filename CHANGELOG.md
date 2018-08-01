@@ -2,6 +2,7 @@
 
 ## 0.72.0
 
+- Remove `mark` html tag.
 - Set index number of headings for TOC.
 
 ## 0.71.1
