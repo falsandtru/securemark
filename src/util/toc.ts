@@ -11,12 +11,14 @@ export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement {
 
 interface Tree extends Array<[HTMLHeadingElement, Tree]> { }
 
-function parse(node: Tree): HTMLUListElement {
-  return html('ul', node.map(([el, node]) =>
-    html('li', [
-      html('a', { href: `#${el.id}`, rel: 'noopener' }, el.textContent!),
-      node.length > 0 ? parse(node) : frag()
-    ])));
+function parse(node: Tree, index: number[] = []): HTMLUListElement {
+  return html('ul', node.map(([el, node], i) => {
+    const idx = index.concat([i + 1]);
+    return html('li', [
+      html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx.join('.') }, el.textContent!),
+      node.length > 0 ? parse(node, idx) : frag()
+    ]);
+  }));
 }
 
 function cons(hs: HTMLHeadingElement[]): Tree {
@@ -32,8 +34,9 @@ function cons(hs: HTMLHeadingElement[]): Tree {
         ? node
         : concat<Tree[number]>(node, [[hs.shift()!, cons(hs)]])
     , []);
-}
 
-function level(h: HTMLHeadingElement): number {
-  return +h.tagName[1];
+  function level(h: HTMLHeadingElement): number {
+    assert(isFinite(+h.tagName[1]));
+    return +h.tagName[1];
+  }
 }

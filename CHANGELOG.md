@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.72.0
+
+- Set index number of headings for TOC.
+
 ## 0.71.1
 
 - Don't use the current abstract path to visualize empty path.
