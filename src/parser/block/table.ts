@@ -58,13 +58,11 @@ export const table: TableParser = block(fmap(build(() =>
 
 const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => fmap(
   line(contract('|', trimEnd(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(frag(ns))), true, true),
-  es =>
-    [html('tr', es)]);
+  es => [html('tr', es)]);
 
 const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser: P): TableParser.CellParser => fmap(
   union([parser]),
-  ns =>
-    [html('td', ns)]);
+  ns => [html('td', ns)]);
 
 const data: TableParser.DataParser = build(() => bind(
   surround(

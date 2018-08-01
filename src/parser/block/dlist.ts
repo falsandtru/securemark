@@ -13,8 +13,7 @@ export const dlist: DListParser = block(fmap(build(() =>
     some(term),
     some(desc)
   ]))),
-  es =>
-    [html('dl', es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
+  es => [html('dl', es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
 
 const term: DListParser.TermParser = line(verify(fmap<DListParser.TermParser>(build(() =>
   surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),
@@ -29,6 +28,5 @@ const desc: DListParser.DescriptionParser = block(fmap<DListParser.DescriptionPa
   rewrite(
     surround(/^:(?=\s|$)|/, some(line(() => [[], ''], true, true), /^[~:](?:\s|$)/), '', false),
     surround(/^:(?=\s|$)|/, trim(some(union([inline]))), '', false))),
-  ns =>
-    [html('dd', ns)]
+  ns => [html('dd', ns)]
 ), false);

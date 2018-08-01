@@ -24,11 +24,9 @@ export const olist: OListParser = block(match(
             line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))), true, true),
             indent(union([ulist, olist_, ilist]))
           ]),
-          ns =>
-            [html('li', fillFirstLine(ns))])
+          ns => [html('li', fillFirstLine(ns))])
       ])),
-      es =>
-        [html('ol', { start: index, type: ty }, es)])
+      es => [html('ol', { start: index, type: ty }, es)])
       (whole + rest);
   }));
 

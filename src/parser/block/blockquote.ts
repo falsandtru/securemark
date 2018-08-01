@@ -23,8 +23,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
       some(line(s => [[text(unindent(s.split('\n')[0].replace(/ /g, String.fromCharCode(160)))), html('br')], ''], true, true), opener),
       ns => ns.slice(0, -1)),
   ]))),
-  ns =>
-    [html('blockquote', ns)]);
+  ns => [html('blockquote', ns)]);
 
 const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
   some(union([
@@ -35,8 +34,7 @@ const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
       some(line(s => [[s], ''], true, true), opener),
       s => [[parse(unindent(s))], '']),
   ]))),
-  ns =>
-    [html('blockquote', ns)]);
+  ns => [html('blockquote', ns)]);
 
 const indent = block(surround(opener, some(line(s => [[s], ''], true, true), /^>(?:\s|$)/), ''), false);
 

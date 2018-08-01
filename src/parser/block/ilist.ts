@@ -15,8 +15,6 @@ export const ilist: IListParser = block(fmap<IListParser>(build(() =>
         line(verify(surround(/^[-+*](?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))), true, true),
         indent(union([ulist, olist_, ilist]))
       ]),
-      () =>
-        [html('li', eval(some(inline)('*Invalid syntax: UList syntax: Use `-` instead.*')))])
+      () => [html('li', eval(some(inline)('*Invalid syntax: UList syntax: Use `-` instead.*')))])
   ]))),
-  es =>
-    [html('ul', es)]));
+  es => [html('ul', es)]));
