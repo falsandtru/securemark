@@ -25,7 +25,7 @@ export function figure(
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
         .forEach(ref =>
-          void define(ref, { href: `#${figure.id}` }, caption.firstChild!.cloneNode(true).childNodes));
+          void define(ref, { href: `#${figure.id}` }, caption.firstChild!.textContent!.replace(/[.:]$/, '')));
     });
 }
 

@@ -6,6 +6,7 @@
 - Parse html syntax of invalid tags using another parser.
 - Parse invalid index and label syntax using another parser.
 - Set index number of headings for TOC.
+- Remove some trailing symbols in references of figures.
 
 ## 0.71.1
 
