@@ -3,6 +3,7 @@
 ## 0.72.0
 
 - Remove `mark` html tag.
+- Parse invalid index and label syntax using another parser.
 - Set index number of headings for TOC.
 
 ## 0.71.1
