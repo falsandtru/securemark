@@ -2631,7 +2631,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const line_1 = require('../../source/line');
             const typed_dom_1 = require('typed-dom');
-            exports.placeholder = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.match(/^[#:~^]/, ([flag], rest) => combinator_1.some(combinator_1.union([inline_1.inline]), ']')(flag === '[' ? flag + rest : rest)), ']')), ns => [typed_dom_1.html('span', combinator_1.eval(combinator_1.some(inline_1.inline)(`*Invalid syntax: Extension syntax: \`[${ ns[0].textContent[0] } ]\`.*`)))]), false);
+            exports.placeholder = line_1.line(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.match(/^[~^]/, ([flag], rest) => combinator_1.some(combinator_1.union([inline_1.inline]), ']')(flag === '[' ? flag + rest : rest)), ']')), ns => [typed_dom_1.html('span', combinator_1.eval(combinator_1.some(inline_1.inline)(`*Invalid syntax: Extension syntax: \`[${ ns[0].textContent[0] } ]\`.*`)))]), false);
         },
         {
             '../../../combinator': 19,
@@ -2650,12 +2650,14 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const tags = new Set('ins|del|sup|sub|small|cite|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             exports.html = combinator_1.match(/^<([a-z]+)>/, ([whole, tag], rest) => {
+                if (!tags.has(tag))
+                    return;
                 if (['wbr'].includes(tag))
                     return [
                         [typed_dom_1.html(tag)],
                         rest
                     ];
-                return combinator_1.verify(combinator_1.fmap(combinator_1.surround(`<${ tag }>`, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.html(tags.has(tag) ? tag : 'span', ns)]), ([el]) => util_1.hasText(el))(whole + rest);
+                return combinator_1.verify(combinator_1.fmap(combinator_1.surround(`<${ tag }>`, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.html(tag, ns)]), ([el]) => util_1.hasText(el))(whole + rest);
             });
         },
         {
@@ -3761,7 +3763,7 @@ require = function () {
                     headers.has(figure) && void headers.get(figure).remove();
                     void headers.set(figure, caption.insertBefore(typed_dom_1.html('span', header(type, idx)), caption.firstChild));
                     const query = label_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, caption.firstChild.cloneNode(true).childNodes));
+                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, caption.firstChild.textContent.replace(/[.:]$/, '')));
                 });
             }
             exports.figure = figure;
