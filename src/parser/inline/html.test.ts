@@ -9,7 +9,7 @@ describe('Unit: parser/inline/html', () => {
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('<script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), [['<span>alert()</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script src="."></script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small></small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small> </small>')), undefined);
@@ -46,7 +46,7 @@ describe('Unit: parser/inline/html', () => {
     it('escape', () => {
       assert.deepStrictEqual(inspect(parser('<a>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small><a></a></small>')), [['<small>&lt;a&gt;&lt;/a&gt;</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>a<a>b</a>c</small>')), [['<small>a<span>b</span>c</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a<a>b</a>c</small>')), [['<small>a&lt;a&gt;b&lt;/a&gt;c</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<img>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small><img></small>')), [['<small>&lt;img&gt;</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<img />')), undefined);

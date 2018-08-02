@@ -11,10 +11,12 @@ assert([...tags].every(tag => !['strong', 'em', 'code', 's', 'u', 'mark'].includ
 export const html: HTMLParser = match(
   /^<([a-z]+)>/,
   ([whole, tag], rest) => {
+    if (!tags.has(tag)) return;
     if (['wbr'].includes(tag)) return [[htm(tag as 'wbr')], rest];
+    assert(tags.has(tag));
     return verify(fmap<HTMLParser>(
       surround(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
-      ns => [htm(tags.has(tag) ? tag as 'span' : 'span', ns)]
+      ns => [htm(tag as 'span', ns)]
     ), ([el]) => hasText(el))
       (whole + rest);
   });
