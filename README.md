@@ -21,7 +21,7 @@ Secure markdown renderer working on browsers for user input data.
 - Index generation for headings, terms, and figures.
 - Shortlink syntax for local references of indexes and figures.
 - Auto numbering of figures and footnotes.
-- Footnote and its bidirectional link generation from annotations and authorities.
+- Footnote and its bidirectional reference link generation from annotations and authorities.
 - Table of contents.
 
 ## Demos
