@@ -598,7 +598,12 @@ require = function () {
                 };
             }
             exports.observer = observer;
-            const cache = new Map();
+            var cache;
+            (function (cache) {
+                cache.elem = new Map();
+                cache.text = document.createTextNode('');
+                cache.frag = document.createDocumentFragment();
+            }(cache || (cache = {})));
             function html(tag, attrs = {}, children = []) {
                 return element(0, tag, attrs, children);
             }
@@ -609,13 +614,15 @@ require = function () {
             exports.svg = svg;
             function frag(children = []) {
                 children = typeof children === 'string' ? [text(children)] : children;
-                const frag = document.createDocumentFragment();
+                const frag = cache.frag.cloneNode();
                 void [...children].forEach(child => void frag.appendChild(child));
                 return frag;
             }
             exports.frag = frag;
             function text(source) {
-                return document.createTextNode(source);
+                const text = cache.text.cloneNode();
+                text.data = source;
+                return text;
             }
             exports.text = text;
             var NS;
@@ -625,7 +632,7 @@ require = function () {
             }(NS || (NS = {})));
             function element(ns, tag, attrs = {}, children = []) {
                 const key = `${ ns }:${ tag }`;
-                const el = cache.has(key) ? cache.get(key).cloneNode(true) : cache.set(key, elem(ns, tag)).get(key).cloneNode(true);
+                const el = cache.elem.has(key) ? cache.elem.get(key).cloneNode(true) : cache.elem.set(key, elem(ns, tag)).get(key).cloneNode(true);
                 void define(el, attrs, children);
                 return el;
             }
@@ -1762,16 +1769,13 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.heading = block_1.block(line_1.line(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+([^\n]+)(?:\n|$)/, ([, {length: level}, content]) => combinator_1.bind(util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([
+            exports.heading = block_1.block(line_1.line(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+([^\n]+)(?:\n|$)/, ([, {length: level}, content]) => combinator_1.fmap(util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([
                 indexer_1.indexer,
                 inline_1.inline
-            ])))), cs => {
-                const el = typed_dom_1.html(`h${ level }`, cs);
+            ])))), ns => {
+                const el = typed_dom_1.html(`h${ level }`, ns);
                 void indexer_1.defineIndex(el);
-                return [
-                    [el],
-                    ''
-                ];
+                return [el];
             })(content)), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el)), true, true));
         },
         {
@@ -2644,7 +2648,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            const tags = new Set('ins|del|sup|sub|small|cite|mark|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+            const tags = new Set('ins|del|sup|sub|small|cite|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             exports.html = combinator_1.match(/^<([a-z]+)>/, ([whole, tag], rest) => {
                 if (['wbr'].includes(tag))
                     return [
@@ -3002,6 +3006,7 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const typed_dom_1 = require('typed-dom');
             function char(char) {
                 return source => {
                     if (source.length === 0)
@@ -3009,7 +3014,7 @@ require = function () {
                     switch (source[0]) {
                     case char:
                         return [
-                            [document.createTextNode(source.slice(0, 1))],
+                            [typed_dom_1.text(source.slice(0, 1))],
                             source.slice(1)
                         ];
                     default:
@@ -3020,12 +3025,13 @@ require = function () {
             exports.char = char;
             ;
         },
-        {}
+        { 'typed-dom': 12 }
     ],
     88: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const typed_dom_1 = require('typed-dom');
             const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
             exports.escsource = source => {
                 if (source.length === 0)
@@ -3034,7 +3040,7 @@ require = function () {
                 switch (i) {
                 case -1:
                     return [
-                        [document.createTextNode(source)],
+                        [typed_dom_1.text(source)],
                         ''
                     ];
                 case 0:
@@ -3043,30 +3049,30 @@ require = function () {
                         switch (source[1]) {
                         case '\n':
                             return [
-                                [document.createTextNode(source.slice(0, 1))],
+                                [typed_dom_1.text(source.slice(0, 1))],
                                 source.slice(1)
                             ];
                         default:
                             return [
-                                [document.createTextNode(source.slice(0, 2))],
+                                [typed_dom_1.text(source.slice(0, 2))],
                                 source.slice(2)
                             ];
                         }
                     default:
                         return [
-                            [document.createTextNode(source.slice(0, 1))],
+                            [typed_dom_1.text(source.slice(0, 1))],
                             source.slice(1)
                         ];
                     }
                 default:
                     return [
-                        [document.createTextNode(source.slice(0, i))],
+                        [typed_dom_1.text(source.slice(0, i))],
                         source.slice(i)
                     ];
                 }
             };
         },
-        {}
+        { 'typed-dom': 12 }
     ],
     89: [
         function (require, module, exports) {
@@ -3132,7 +3138,7 @@ require = function () {
                 switch (i) {
                 case -1:
                     return [
-                        [document.createTextNode(source)],
+                        [typed_dom_1.text(source)],
                         ''
                     ];
                 case 0:
@@ -3146,27 +3152,27 @@ require = function () {
                             ];
                         default:
                             return [
-                                [document.createTextNode(source.slice(1, 2))],
+                                [typed_dom_1.text(source.slice(1, 2))],
                                 source.slice(2)
                             ];
                         }
                     case '\n':
                         return [
                             [typed_dom_1.html('span', { class: 'linebreak' }, [
-                                    document.createTextNode(' '),
+                                    typed_dom_1.text(' '),
                                     typed_dom_1.html('wbr')
                                 ])],
                             source.slice(1)
                         ];
                     default:
                         return [
-                            [document.createTextNode(source.slice(0, 1))],
+                            [typed_dom_1.text(source.slice(0, 1))],
                             source.slice(1)
                         ];
                     }
                 default:
                     return [
-                        [document.createTextNode(source.slice(0, i))],
+                        [typed_dom_1.text(source.slice(0, i))],
                         source.slice(i)
                     ];
                 }
@@ -3178,6 +3184,7 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const typed_dom_1 = require('typed-dom');
             const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
             exports.unescsource = source => {
                 if (source.length === 0)
@@ -3186,23 +3193,23 @@ require = function () {
                 switch (i) {
                 case -1:
                     return [
-                        [document.createTextNode(source)],
+                        [typed_dom_1.text(source)],
                         ''
                     ];
                 case 0:
                     return [
-                        [document.createTextNode(source.slice(0, 1))],
+                        [typed_dom_1.text(source.slice(0, 1))],
                         source.slice(1)
                     ];
                 default:
                     return [
-                        [document.createTextNode(source.slice(0, i))],
+                        [typed_dom_1.text(source.slice(0, i))],
                         source.slice(i)
                     ];
                 }
             };
         },
-        {}
+        { 'typed-dom': 12 }
     ],
     92: [
         function (require, module, exports) {
@@ -3833,14 +3840,18 @@ require = function () {
                 return parse(cons(hs));
             }
             exports.toc = toc;
-            function parse(node) {
-                return typed_dom_1.html('ul', node.map(([el, node]) => typed_dom_1.html('li', [
-                    typed_dom_1.html('a', {
-                        href: `#${ el.id }`,
-                        rel: 'noopener'
-                    }, el.textContent),
-                    node.length > 0 ? parse(node) : typed_dom_1.frag()
-                ])));
+            function parse(node, index = []) {
+                return typed_dom_1.html('ul', node.map(([el, node], i) => {
+                    const idx = index.concat([i + 1]);
+                    return typed_dom_1.html('li', [
+                        typed_dom_1.html('a', {
+                            href: `#${ el.id }`,
+                            rel: 'noopener',
+                            'data-index': idx.join('.')
+                        }, el.textContent),
+                        node.length > 0 ? parse(node, idx) : typed_dom_1.frag()
+                    ]);
+                }));
             }
             function cons(hs) {
                 return hs.reduce((hss, h) => {
@@ -3853,9 +3864,9 @@ require = function () {
                         hs.shift(),
                         cons(hs)
                     ]]), []);
-            }
-            function level(h) {
-                return +h.tagName[1];
+                function level(h) {
+                    return +h.tagName[1];
+                }
             }
         },
         {
