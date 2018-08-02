@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.73.0
+
+- Reserve attribute schema of math syntax.
+
 ## 0.72.0
 
 - Remove `mark` HTML tag.

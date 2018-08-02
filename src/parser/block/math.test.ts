@@ -12,7 +12,6 @@ describe('Unit: parser/block/math', () => {
       assert.deepStrictEqual(inspect(parser('$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\n')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$ a\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na\n$$b')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na\n$$\nb')), undefined);
       assert.deepStrictEqual(inspect(parser(' $$\na\n$$')), undefined);
@@ -27,6 +26,7 @@ describe('Unit: parser/block/math', () => {
       assert.deepStrictEqual(inspect(parser('$$\n\\\n$$')), [['<div class="math notranslate">$$\n\\\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$\n$$')), [['<div class="math notranslate">$$\n$\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math notranslate">$$\n$$$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<div class="math notranslate">$$\n$$</div>'], '']);
     });
 
   });
