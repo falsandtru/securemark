@@ -11,9 +11,6 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script src="."></script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small></small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small> </small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small>\n</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()">')), undefined);
       assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()"><small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small><ruby onclick="alert()"></small></small>')), [['<small>&lt;ruby onclick="alert()"&gt;</small>'], '</small>']);
@@ -22,19 +19,23 @@ describe('Unit: parser/inline/html', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small></small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small> </small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>\n</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>a')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>a</RUBY>')), undefined);
       assert.deepStrictEqual(inspect(parser('<RUBY>a</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<RUBY>a</RUBY>')), undefined);
       assert.deepStrictEqual(inspect(parser('</small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small>![](a)</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), undefined);
       assert.deepStrictEqual(inspect(parser('a<small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('a<small></small>')), undefined);
     });
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('<small>a</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>a')), [['<small>a</small>'], 'a']);
+      assert.deepStrictEqual(inspect(parser('<small>a\nb</small>')), [['<small>a<span class="linebreak"> <wbr></span>b</small>'], '']);
     });
 
     it('nest', () => {
