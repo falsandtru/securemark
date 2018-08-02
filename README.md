@@ -45,7 +45,7 @@ https://falsandtru.github.io/securemark/
 - Preformattedtext (```)
 - HorizontalRule (---)
 - Inline markups (*, ~~, `, \[](), !\[](), (()), ...)
-- Inline html tags (\<smal>, \<ruby>, \<code>, ...)
+- Inline HTML tags (\<smal>, \<ruby>, \<code>, ...)
 - Autolink (https://host, ttps://host, !https://host/image.png, @account)
 - Media (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
 - Syntex highlight (```lang filename)

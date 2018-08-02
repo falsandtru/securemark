@@ -2,8 +2,8 @@
 
 ## 0.72.0
 
-- Remove `mark` html tag.
-- Parse html syntax of invalid tags using another parser.
+- Remove `mark` HTML tag.
+- Parse HTML syntax of invalid tags using another parser.
 - Parse invalid index and label syntax using another parser.
 - Set index number of headings for TOC.
 - Remove some trailing symbols in references of figures.
@@ -68,7 +68,7 @@
 
 ## 0.62.0
 
-- Allow invalid html tags with replacing.
+- Allow invalid HTML tags with replacing.
 - Don't translate the text of code and math.
 
 ## 0.61.0
@@ -83,13 +83,13 @@
 ## 0.59.0
 
 - Disallow figure name starting with numbers.
-- Revert removing linebreaks after `wbr` html tag.
+- Revert removing linebreaks after `wbr` HTML tag.
 
 ## 0.58.0
 
 - Localize linebreak processing.
 - Insert wbr element with linebreak.
-- Remove linebreaks after `wbr` html tag.
+- Remove linebreaks after `wbr` HTML tag.
 
 ## 0.57.0
 
@@ -192,7 +192,7 @@
 - Add footnote function.
 - Refine horizontalrule syntax.
 - Fix hashtag parser.
-- Remove `q` html tag.
+- Remove `q` HTML tag.
 
 ## 0.42.1
 
@@ -338,9 +338,9 @@
 
 ## 0.33.0
 
-- Add `ins`, `del`, `sup`, and `sub` html tags.
+- Add `ins`, `del`, `sup`, and `sub` HTML tags.
 - Remove insertion, deletion, superscript, and subscript syntax.
-- Remove `code` html tag.
+- Remove `code` HTML tag.
 - Improve parsing with brackets.
 - Fix parsing with strong and emphasis syntax.
 
@@ -465,7 +465,7 @@
 ## 0.14.0
 
 - Refine link parser.
-- Allow only lower case html tags.
+- Allow only lower case HTML tags.
 - Disallow empty contents.
 
 ## 0.13.0
@@ -482,13 +482,13 @@
 
 ## 0.11.0
 
-- Remove `dfn`, `abbr`, `samp`, `kbd`, `data`, `time`, and `var` html tags.
+- Remove `dfn`, `abbr`, `samp`, `kbd`, `data`, `time`, and `var` HTML tags.
 
 ## 0.10.0
 
 - Add insertion syntax.
 - Change strike to deletion syntax.
-- Remove `ins`, `del`, `sup`, and `sub` html tags.
+- Remove `ins`, `del`, `sup`, and `sub` HTML tags.
 - Improve parser algorithm.
 
 ## 0.9.0
@@ -508,8 +508,8 @@
 
 - Add superscript syntax.
 - Add subscript syntax.
-- Remove `u` html tag.
-- Improve html parser.
+- Remove `u` HTML tag.
+- Improve HTML parser.
 - Fix code parser.
 
 ## 0.6.0
@@ -535,7 +535,7 @@
 
 - Enhance pretext syntax.
 - Add extension syntax.
-- Allow `wbr` html tag.
+- Allow `wbr` HTML tag.
 - Fix segmentations.
 
 ## 0.3.1
