@@ -1,5 +1,6 @@
 ﻿import { Parser } from '../../combinator';
 import { CharParser } from '../source';
+import { text } from 'typed-dom';
 
 export function char(char: '`'): CharParser.BackquoteParser;
 export function char(char: string): Parser<Text, []> {
@@ -7,7 +8,7 @@ export function char(char: string): Parser<Text, []> {
     if (source.length === 0) return;
     switch (source[0]) {
       case char:
-        return [[document.createTextNode(source.slice(0, 1))], source.slice(1)];
+        return [[text(source.slice(0, 1))], source.slice(1)];
       default:
         return;
     }
