@@ -184,6 +184,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         ExtensionParser.FigureParser,
         ExtensionParser.FigureParser,
+        ExtensionParser.ExampleParser,
         ExtensionParser.PlaceholderParser
       ]> {
     }
@@ -214,6 +215,12 @@ export namespace MarkdownParser {
             ]>
           ]>
         ]> {
+      }
+      export interface ExampleParser extends
+        // ~~~markdown
+        // ~~~
+        Block<'extension/example'>,
+        Parser<HTMLElement, Parser<HTMLElement, []>[]> {
       }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,

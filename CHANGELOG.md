@@ -2,6 +2,7 @@
 
 ## 0.73.0
 
+- Add example syntax.
 - Reserve attribute schema of math syntax.
 
 ## 0.72.0
