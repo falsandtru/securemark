@@ -45,6 +45,7 @@ function unindent(source: string): string {
 function suppress(target: HTMLQuoteElement): HTMLQuoteElement {
   void target.querySelectorAll('[id]')
     .forEach(el =>
+      !el.matches('.math *') &&
       void el.removeAttribute('id'));
   void target.querySelectorAll('figure[class^="label:"]')
     .forEach(el =>
