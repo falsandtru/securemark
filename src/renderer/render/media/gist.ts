@@ -26,8 +26,8 @@ export function gist(url: URL): HTMLElement | undefined {
           ]).element,
           gist.firstChild);
         void cache.set(url.href, outer.cloneNode(true));
-        if (document.head.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
-        void document.head.appendChild(html('link', {
+        if (document.head!.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
+        void document.head!.appendChild(html('link', {
           rel: 'stylesheet',
           href: stylesheet,
           crossorigin: 'anonymous',
