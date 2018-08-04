@@ -15,7 +15,7 @@ export const code: CodeParser = line(match(
     const closer = cache.has(bracket)
       ? cache.get(bracket)!
       : cache.set(bracket, new RegExp(`^${bracket}(?!\`)`)).get(bracket)!;
-    return verify(bind(
+    return verify(bind<CodeParser>(
       surround(bracket, some(union([some(char('`')), unescsource]), closer), closer),
       (ns, rest) => {
         const el = html('code',

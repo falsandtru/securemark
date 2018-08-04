@@ -17,12 +17,17 @@ export const media: MediaParser = line(bind(
     const caption = stringify(ts).trim();
     const [{ length: count }] = rest.match(/^\(+/) || ['('];
     return bind<MediaParser>(
-      line(surround('('.repeat(count), some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)), ')'.repeat(count)), false),
+      line(surround(
+        '('.repeat(count),
+        some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)),
+        ')'.repeat(count),
+      ), false),
       (ts, rest) => {
-        const uri = sanitize(stringify(ts).trim());
-        if (uri === '') return;
-        if (cache.has(uri)) return [[cache.get(uri)!.cloneNode(true)], rest];
+        const INSECURE_URL = stringify(ts);
+        const uri = sanitize(INSECURE_URL.trim());
+        if (uri === '' && INSECURE_URL !== '') return;
         if (uri.trim().toLowerCase().startsWith('tel:')) return;
+        if (cache.has(uri)) return [[cache.get(uri)!.cloneNode(true)], rest];
         return [[html('img', { class: 'media', 'data-src': uri, alt: caption })], rest];
       })
       (rest);

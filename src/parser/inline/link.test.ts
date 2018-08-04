@@ -41,6 +41,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('[]( /)')), undefined);
       assert.deepStrictEqual(inspect(parser('[]( / )')), undefined);
+      assert.deepStrictEqual(inspect(parser('[](/  )')), undefined);
       assert.deepStrictEqual(inspect(parser('[](/ /)')), undefined);
       assert.deepStrictEqual(inspect(parser('[](()')), undefined);
       assert.deepStrictEqual(inspect(parser('[](a\nb)')), undefined);
@@ -62,6 +63,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]()')), [[`<a href="" rel="noopener">.</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]( )')), [[`<a href="" rel="noopener">.</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[](b)')), [['<a href="b" rel="noopener">b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[](b )')), [['<a href="b" rel="noopener">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[](\\)')), [[`<a href="\\" rel="noopener">\\</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[](\\ )')), [[`<a href="\\" rel="noopener">\\</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[](\\b)')), [[`<a href="\\b" rel="noopener">\\b</a>`], '']);

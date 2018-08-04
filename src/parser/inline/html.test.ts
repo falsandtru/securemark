@@ -29,7 +29,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), undefined);
       assert.deepStrictEqual(inspect(parser('a<small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('a<small></small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('a<small>b</small>')), undefined);
     });
 
     it('basic', () => {

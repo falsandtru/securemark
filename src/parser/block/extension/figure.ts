@@ -1,6 +1,6 @@
 ﻿import { ExtensionParser } from '../../block';
 import { SubParsers } from '../../../combinator/parser';
-import { union, sequence, inits, some, match, contract, fmap, bind, rewrite, trim, trimEnd, eval } from '../../../combinator';
+import { union, sequence, inits, some, match, contract, bind, rewrite, trim, trimEnd, eval } from '../../../combinator';
 import { block } from '../../source/block';
 import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
@@ -16,8 +16,8 @@ import FigureParser = ExtensionParser.FigureParser;
 export const segment: FigureParser = block(union([
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
-    ([, bracket, note], rest) => {
-      return block(bind(
+    ([, bracket, note], rest) =>
+      bind(
         sequence([
           line(trimEnd(label), true, true),
           inits([
@@ -35,9 +35,8 @@ export const segment: FigureParser = block(union([
         (_, rest) =>
           rest.split('\n')[0].trim() === bracket
             ? [[], rest.slice(rest.split('\n')[0].length + 1)]
-            : undefined))
-        (`${note}\n${rest}`);
-    }),
+            : undefined)
+        (`${note}\n${rest}`)),
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
     (_, rest) => [[], rest]),
@@ -45,9 +44,8 @@ export const segment: FigureParser = block(union([
 
 export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
-  ([, , note, body], rest) => {
-    assert(rest === '');
-    return block(fmap(
+  ([, , note, body], rest) =>
+    bind(
       sequence<FigureParser>([
         line(trimEnd(label), true, true),
         inits<SubParsers<FigureParser>[1]>([
@@ -69,20 +67,15 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
             compress(trim(some(union([inline])))))
         ]),
       ]),
-      ([label, content, ...caption]) =>
-        [fig(label as HTMLAnchorElement, content, caption)]))
-      (`${note}\n${body.slice(0, -1)}`);
-  }))));
-
-function fig(label: HTMLAnchorElement, content: HTMLElement | Text, caption: (HTMLElement | Text)[]): HTMLElement {
-  assert(label instanceof HTMLAnchorElement);
-  return html('figure',
-    {
-       class: label.getAttribute('href')!.slice(1),
-      'data-type': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0],
-    },
-    [
-      content,
-      html('figcaption', [html('span', caption)])
-    ]);
-}
+      ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) =>
+        [[html('figure',
+          {
+            class: label.getAttribute('href')!.slice(1),
+            'data-type': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0],
+          },
+          [
+            content,
+            html('figcaption', [html('span', caption)])
+          ])
+        ], rest])
+      (`${note}\n${body.slice(0, -1)}`)))));

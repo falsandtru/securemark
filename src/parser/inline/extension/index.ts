@@ -14,7 +14,7 @@ export const index: ExtensionParser.IndexParser = line(verify(fmap(build(() =>
     ']')),
   ([el]) => {
     void defineIndex(el);
-    void el.setAttribute('href', `#${el.id.toLowerCase()}`);
+    void el.setAttribute('href', `#${el.id}`);
     void el.removeAttribute('id');
     return [el];
   }

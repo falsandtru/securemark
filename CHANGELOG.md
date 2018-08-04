@@ -15,7 +15,7 @@
 
 ## 0.71.1
 
-- Don't use the current abstract path to visualize empty path.
+- Don't use the current abstract URI to visualize empty URI.
 
 ## 0.71.0
 
@@ -34,7 +34,7 @@
 ## 0.68.0
 
 - Allow to put `$` symbol after math syntax.
-- Decode URL only on displaying.
+- Decode URI only on displaying.
 - Remove invalid surrogate pairs.
 
 ## 0.67.0
@@ -225,7 +225,7 @@
 - Improve url parser.
   - Allow escaped whitespace.
 - Improve account parser.
-  - Don't escape url after `@` symbol.
+  - Don't escape URI after `@` symbol.
   - Use anchor element.
 
 ## 0.39.1
@@ -410,7 +410,7 @@
 
 - Extend link syntax.
 - Extend media syntax.
-- Fix media url parsing.
+- Fix media URI parsing.
 
 ## 0.22.0
 

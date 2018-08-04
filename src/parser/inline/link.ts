@@ -35,8 +35,8 @@ export const link: LinkParser = line(bind(build(() =>
         ')'.repeat(count),
         false
       ), false),
-      (ns, rest) => {
-        const [, INSECURE_URL = '', attr = ''] = stringify(ns).match(/^(\S*)[^\S\n]*(?:\n(.*))?$/) || [];
+      (ts, rest) => {
+        const [, INSECURE_URL = '', attr = ''] = stringify(ts).match(/^(\S*)[^\S\n]*(?:\n(.*))?$/) || [];
         assert(attr === '' || attr === 'nofollow');
         const uri = sanitize(INSECURE_URL);
         if (uri === '' && INSECURE_URL !== '') return;
