@@ -410,8 +410,11 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         SourceParser.TextParser
       ] | [
-        LinkParser.BracketParser,
-        SourceParser.UnescapableSourceParser
+        Parser<Text, [
+          LinkParser.BracketParser,
+          SourceParser.UnescapableSourceParser
+        ]>,
+        LinkParser.AttributeParser
       ]> {
     }
     export interface BracketParser extends

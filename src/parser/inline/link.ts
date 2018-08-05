@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { Parser, union, subsequence, some, match, surround, fmap, bind, build } from '../../combinator';
+import { Parser, union, inits, some, match, surround, fmap, bind, build } from '../../combinator';
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority } from '../util';
@@ -27,24 +27,22 @@ export const link: LinkParser = line(bind(build(() =>
     return bind(
       line(surround(
         '(',
-        subsequence<LinkParser>([
+        inits<LinkParser>([
           compress(surround(
             /^ ?(?! )/,
             some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\)${rest[1] === ' ' ? ' ' : ''}|^\\s`)),
             /^ ?(?=\))|^ /,
             false)),
-          some(surround('', attribute, /^ ?(?=\))|^ /))
+          some(surround('', compress(attribute), /^ ?(?=\))|^ /))
         ]),
         ')',
         false
       ), false),
       (ts, rest) => {
-        assert(ts.length <= 2);
         const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL);
         if (uri === '' && INSECURE_URL !== '') return;
         const attrs = new Map<string, string | undefined>(args.map<[string, string | undefined]>(arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
-        if (attrs.size !== args.length) return;
         const el = html('a',
           {
             href: uri,
@@ -56,11 +54,11 @@ export const link: LinkParser = line(bind(build(() =>
                 .replace(/^tel:/, '')
                 .replace(/^h(?=ttps?:\/\/)/, attrs.has('nofollow') ? '' : 'h'));
         assert(hasContent(el));
+        if (el.textContent!.trim().match(/^[#@]/)) return;
         if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=\d)/g, '')}`) return;
-        if ((window.location.origin !== el.origin || hasMedia(el)) && el.protocol !== 'tel:') {
+        if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
           void el.setAttribute('target', '_blank');
         }
-        if (el.textContent!.trim().match(/^[#@]/)) return;
         for (const [key, value] of attrs.entries()) {
           switch (key) {
             // @ts-ignore
@@ -70,6 +68,9 @@ export const link: LinkParser = line(bind(build(() =>
               void el.classList.add('invalid');
           }
           break;
+        }
+        if (attrs.size !== args.length) {
+          void el.classList.add('invalid');
         }
         return [[el], rest];
       })
@@ -96,6 +97,6 @@ export const bracket: LinkParser.BracketParser = build(() => union([
     ts => [text('<'), ...ts, text('>')]),
 ]));
 
-const attribute: LinkParser.AttributeParser =
+export const attribute: LinkParser.AttributeParser =
   match(/^[a-z]+(?:=[^\s)]+)?/, ([attr], rest) =>
     [[text(attr)], rest]);

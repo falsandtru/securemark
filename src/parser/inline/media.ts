@@ -1,9 +1,9 @@
 ﻿import { MediaParser } from '../inline';
-import { union, some, surround, bind } from '../../combinator';
+import { Parser, union, inits, some, surround, bind } from '../../combinator';
 import { line } from '../source/line';
 import { text } from '../source/text';
 import { unescsource } from '../source/unescapable';
-import { bracket } from './link';
+import { bracket, attribute } from './link';
 import { sanitize } from '../string/uri';
 import { compress, stringify } from '../util';
 import { Cache } from 'spica/cache';
@@ -18,22 +18,39 @@ export const media: MediaParser = line(bind(
     return bind<MediaParser>(
       line(surround(
         '(',
-        compress(surround(
-          /^ ?(?! )/,
-          some(union([bracket, unescsource]), new RegExp(`^\\)${rest[1] === ' ' ? ' ' : ''}|^\\s`)),
-          /^ ?(?=\))/,
-          false)),
+        inits<MediaParser>([
+          compress(surround(
+            /^ ?(?! )/,
+            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\)${rest[1] === ' ' ? ' ' : ''}|^\\s`)),
+            /^ ?(?=\))|^ /,
+            false)),
+          some(surround('', compress(attribute), /^ ?(?=\))|^ /))
+        ]),
         ')',
         false
       ), false),
       (ts, rest) => {
-        assert(ts.length <= 1);
-        const [INSECURE_URL = ''] = ts.map(t => t.textContent!);
+        const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL.trim());
         if (uri === '' && INSECURE_URL !== '') return;
+        const attrs = new Map<string, string | undefined>(args.map<[string, string | undefined]>(arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
         if (uri.trim().toLowerCase().startsWith('tel:')) return;
+        const el = html('img', { class: 'media', 'data-src': uri, alt: caption });
+        for (const [key, value] of attrs.entries()) {
+          switch (key) {
+            // @ts-ignore
+            case 'nofollow':
+              if (value === undefined) continue;
+            default:
+              void el.classList.add('invalid');
+          }
+          break;
+        }
+        if (attrs.size !== args.length) {
+          void el.classList.add('invalid');
+        }
         if (cache.has(uri)) return [[cache.get(uri)!.cloneNode(true)], rest];
-        return [[html('img', { class: 'media', 'data-src': uri, alt: caption })], rest];
+        return [[el], rest];
       })
       (rest);
   }
