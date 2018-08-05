@@ -26,7 +26,7 @@ export function slideshare(url: URL): HTMLElement | undefined {
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        outer.innerHTML = parse(`*[]((${url.href} ))\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
+        outer.innerHTML = parse(`*[]( ${url.href} )\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
       },
     });
     return outer;

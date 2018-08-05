@@ -24,15 +24,18 @@ export const link: LinkParser = line(bind(build(() =>
       if (hasLink(children)) return;
     }
     assert(children.querySelector('a > .media') || !hasLink(children));
-    const [{ length: count }] = rest.match(/^\(+/) || ['('];
     return bind(
       line(surround(
-        '('.repeat(count),
+        '(',
         subsequence<LinkParser>([
-          compress(surround(/^ ?(?! )/, some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\){${count}}|^\\s`)), /^ ?(?=\))|^ /, false)),
+          compress(surround(
+            /^ ?(?! )/,
+            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\)${rest[1] === ' ' ? ' ' : ''}|^\\s`)),
+            /^ ?(?=\))|^ /,
+            false)),
           some(surround('', attribute, /^ ?(?=\))|^ /))
         ]),
-        ')'.repeat(count),
+        ')',
         false
       ), false),
       (ts, rest) => {

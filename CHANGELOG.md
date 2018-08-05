@@ -3,6 +3,7 @@
 ## 0.73.0
 
 - Add example syntax.
+- Refine extended link and media syntax to allow URI including parenthesises.
 - Reserve attribute schema of math syntax.
 - Allow empty URI in media syntax.
 - Allow leading and trailing whitespace around URI in link and media syntax.

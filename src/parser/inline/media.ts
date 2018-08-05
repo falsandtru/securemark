@@ -15,12 +15,15 @@ export const media: MediaParser = line(bind(
   line(surround('![', some(union([text]), ']'), ']', false), false),
   (ts, rest) => {
     const caption = stringify(ts).trim();
-    const [{ length: count }] = rest.match(/^\(+/) || ['('];
     return bind<MediaParser>(
       line(surround(
-        '('.repeat(count),
-        compress(surround(/^ ?(?! )/, some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^\\s`)), /^ ?(?=\))/, false)),
-        ')'.repeat(count),
+        '(',
+        compress(surround(
+          /^ ?(?! )/,
+          some(union([bracket, unescsource]), new RegExp(`^\\)${rest[1] === ' ' ? ' ' : ''}|^\\s`)),
+          /^ ?(?=\))/,
+          false)),
+        ')',
         false
       ), false),
       (ts, rest) => {

@@ -23,7 +23,7 @@ export function pdf(url: URL): HTMLElement | undefined {
       DOM.strong({
         style: 'word-wrap: break-word;',
       }, () =>
-        parse(`**[]((${url.href} ))**`).querySelector('strong')!),
+        parse(`**[]( ${url.href} )**`).querySelector('strong')!),
     ]),
   ]).element;
 }
