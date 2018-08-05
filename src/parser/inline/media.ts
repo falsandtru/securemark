@@ -21,6 +21,7 @@ export const media: MediaParser = line(bind(
         '('.repeat(count),
         some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)),
         ')'.repeat(count),
+        false
       ), false),
       (ts, rest) => {
         const INSECURE_URL = stringify(ts);
