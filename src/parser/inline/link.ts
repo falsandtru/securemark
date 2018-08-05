@@ -30,32 +30,44 @@ export const link: LinkParser = line(bind(build(() =>
         '('.repeat(count),
         subsequence<LinkParser>([
           compress(surround(/^ ?(?! )/, some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\){${count}}|^\\s`)), /^ ?(?=\))|^ /, false)),
-          surround('', attribute, /^ ?(?=\))|^ /)
+          some(surround('', attribute, /^ ?(?=\))|^ /))
         ]),
         ')'.repeat(count),
         false
       ), false),
       (ts, rest) => {
         assert(ts.length <= 2);
-        const [INSECURE_URL = '', attr = ''] = ts.map(t => t.textContent!);
+        const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL);
         if (uri === '' && INSECURE_URL !== '') return;
+        const attrs = new Map<string, string | undefined>(args.map<[string, string | undefined]>(arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
+        if (attrs.size !== args.length) return;
         const el = html('a',
           {
             href: uri,
-            rel: attr === 'nofollow' ? 'noopener nofollow noreferrer' : 'noopener',
+            rel: `noopener ${attrs.has('nofollow') ? 'nofollow noreferrer' : ''}`.trim(),
           },
           hasContent(children)
             ? children.childNodes
             : sanitize(decode(INSECURE_URL || '.'))
                 .replace(/^tel:/, '')
-                .replace(/^h(?=ttps?:\/\/)/, attr === 'nofollow' ? '' : 'h'));
+                .replace(/^h(?=ttps?:\/\/)/, attrs.has('nofollow') ? '' : 'h'));
         assert(hasContent(el));
         if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=\d)/g, '')}`) return;
         if ((window.location.origin !== el.origin || hasMedia(el)) && el.protocol !== 'tel:') {
           void el.setAttribute('target', '_blank');
         }
         if (el.textContent!.trim().match(/^[#@]/)) return;
+        for (const [key, value] of attrs.entries()) {
+          switch (key) {
+            // @ts-ignore
+            case 'nofollow':
+              if (value === undefined) continue;
+            default:
+              void el.classList.add('invalid');
+          }
+          break;
+        }
         return [[el], rest];
       })
       (rest);
@@ -82,5 +94,5 @@ export const bracket: LinkParser.BracketParser = build(() => union([
 ]));
 
 const attribute: LinkParser.AttributeParser =
-  match(/^nofollow/, (_, rest) =>
-    [[text('nofollow')], rest]);
+  match(/^[a-z]+(?:=[^\s)]+)?/, ([attr], rest) =>
+    [[text(attr)], rest]);

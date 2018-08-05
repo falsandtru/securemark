@@ -11,5 +11,5 @@ export const placeholder: ExtensionParser.PlaceholderParser = line(fmap(build(()
       some(union<ExtensionParser.PlaceholderParser>([inline]), ']')(flag === '[' ? flag + rest : rest)),
     ']')),
   ns =>
-    [html('span', eval(some(inline)(`*Invalid syntax: Extension syntax: \`[${ns[0].textContent![0]} ]\`.*`)))]
+    [html('span', { class: 'invalid' }, eval(some(inline)(`Invalid syntax: Extension syntax: \`[${ns[0].textContent![0]} ]\`.`)))]
 ), false);

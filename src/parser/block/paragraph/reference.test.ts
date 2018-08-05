@@ -11,9 +11,9 @@ describe('Unit: parser/block/paragraph/reference', () => {
       assert.deepStrictEqual(inspect(parser('>')), undefined);
       assert.deepStrictEqual(inspect(parser('> ')), undefined);
       assert.deepStrictEqual(inspect(parser('>>')), undefined);
-      assert.deepStrictEqual(inspect(parser('>A')), [[`<em>Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.</em>`, '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('>\\')), [[`<em>Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.</em>`, '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('>0 a')), [[`<em>Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.</em>`, '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>A')), [[`<span class="invalid">Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.</span>`, '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>\\')), [[`<span class="invalid">Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.</span>`, '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0 a')), [[`<span class="invalid">Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.</span>`, '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('> 0')), undefined);
       assert.deepStrictEqual(inspect(parser(' >0')), undefined);
       assert.deepStrictEqual(inspect(parser('\\>0')), undefined);

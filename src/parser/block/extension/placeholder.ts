@@ -1,12 +1,12 @@
 ﻿import { ExtensionParser } from '../../block';
-import { match, rewrite, eval } from '../../../combinator';
+import { some, match, rewrite, eval } from '../../../combinator';
 import { block } from '../../source/block';
-import { paragraph } from '../paragraph';
+import { inline } from '../../inline';
+import { html } from 'typed-dom';
 
 export const segment: ExtensionParser.PlaceholderParser = block(match(
   /^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,
   (_, rest) => [[], rest]));
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(rewrite(segment,
-  () =>
-    [eval(paragraph("*Invalid syntax: Extension syntax: ~~~.*\n")), '']));
+  () => [[html('p', { class: 'invalid' }, eval(some(inline)('Invalid syntax: Extension syntax: ~~~.')))], '']));
