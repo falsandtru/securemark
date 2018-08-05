@@ -8,6 +8,7 @@
 - Allow empty URI in media syntax.
 - Allow leading and trailing whitespace around URI in link and media syntax.
 - Allow invalid arguments of syntax and mark as invalid.
+- Remove escape function.
 
 ## 0.72.0
 

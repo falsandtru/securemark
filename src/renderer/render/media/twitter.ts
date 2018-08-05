@@ -1,4 +1,4 @@
-﻿import { parse, escape } from '../../../parser';
+﻿import { parse } from '../../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
 import DOM, { html, define } from 'typed-dom';
@@ -45,7 +45,7 @@ export function twitter(url: URL): HTMLElement | undefined {
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        void define(outer, parse(`*[]( ${url.href} )\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.childNodes);
+        void define(outer, [parse(`*[]( ${url.href} )*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
       },
     });
     return outer;
