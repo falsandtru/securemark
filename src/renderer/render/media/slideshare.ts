@@ -1,7 +1,7 @@
 ﻿import { parse, escape } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
-import DOM, { html } from 'typed-dom';
+import DOM, { html, define } from 'typed-dom';
 
 export function slideshare(url: URL): HTMLElement | undefined {
   if (!['https://www.slideshare.net'].includes(url.origin)) return;
@@ -26,7 +26,7 @@ export function slideshare(url: URL): HTMLElement | undefined {
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        outer.innerHTML = parse(`*[]( ${url.href} )\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.innerHTML;
+        void define(outer, parse(`*[]( ${url.href} )\\\n-> ${status}: ${escape(statusText)}*`).querySelector('p')!.childNodes);
       },
     });
     return outer;
