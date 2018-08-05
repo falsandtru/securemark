@@ -19,14 +19,12 @@ describe('Unit: parser/inline/media', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('![]( )')), undefined);
-      assert.deepStrictEqual(inspect(parser('![ ]( )')), undefined);
-      assert.deepStrictEqual(inspect(parser('![]( /)')), undefined);
-      assert.deepStrictEqual(inspect(parser('![]( / )')), undefined);
+      assert.deepStrictEqual(inspect(parser('![](  )')), undefined);
       assert.deepStrictEqual(inspect(parser('![](/  )')), undefined);
       assert.deepStrictEqual(inspect(parser('![](/ /)')), undefined);
       assert.deepStrictEqual(inspect(parser('![]](/)')), undefined);
       assert.deepStrictEqual(inspect(parser('![](()')), undefined);
+      assert.deepStrictEqual(inspect(parser('![](a b)')), undefined);
       assert.deepStrictEqual(inspect(parser('![](a\nb)')), undefined);
       assert.deepStrictEqual(inspect(parser('![](a\\\nb)')), undefined);
       assert.deepStrictEqual(inspect(parser('![]((\n))')), undefined);
@@ -40,8 +38,11 @@ describe('Unit: parser/inline/media', () => {
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('![]()')), [['<img class="media" data-src="" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]( )')), [['<img class="media" data-src="" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](b)')), [['<img class="media" data-src="b" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](b )')), [['<img class="media" data-src="b" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]( b)')), [['<img class="media" data-src="b" alt="">'], '']);
+      assert.deepStrictEqual(inspect(parser('![]( b )')), [['<img class="media" data-src="b" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](\\)')), [['<img class="media" data-src="\\" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](\\ )')), [['<img class="media" data-src="\\" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![](\\b)')), [['<img class="media" data-src="\\b" alt="">'], '']);

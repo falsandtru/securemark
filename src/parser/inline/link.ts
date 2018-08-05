@@ -2,7 +2,7 @@
 import { Parser, union, subsequence, some, match, surround, fmap, bind, build } from '../../combinator';
 import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
-import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority, stringify } from '../util';
+import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { html, text, frag } from 'typed-dom';
 
@@ -29,15 +29,15 @@ export const link: LinkParser = line(bind(build(() =>
       line(surround(
         '('.repeat(count),
         subsequence<LinkParser>([
-          some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)),
-          attribute
+          compress(surround(/^ ?(?! )/, some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\){${count}}|^\\s`)), /^ ?(?=\))|^ /, false)),
+          surround('', attribute, /^ ?(?=\))|^ /)
         ]),
         ')'.repeat(count),
         false
       ), false),
       (ts, rest) => {
-        const [, INSECURE_URL = '', attr = ''] = stringify(ts).match(/^(\S*)[^\S\n]*(?:\n(.*))?$/) || [];
-        assert(attr === '' || attr === 'nofollow');
+        assert(ts.length <= 2);
+        const [INSECURE_URL = '', attr = ''] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL);
         if (uri === '' && INSECURE_URL !== '') return;
         const el = html('a',
@@ -82,8 +82,5 @@ export const bracket: LinkParser.BracketParser = build(() => union([
 ]));
 
 const attribute: LinkParser.AttributeParser =
-  surround(
-    /^ (?=\S)/,
-    match(/^nofollow/, ([attr], rest) =>
-      [[text(`\n${attr}`)], rest]),
-    /^(?=\))/);
+  match(/^nofollow/, (_, rest) =>
+    [[text('nofollow')], rest]);

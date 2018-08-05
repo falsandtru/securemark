@@ -5,7 +5,7 @@ import { text } from '../source/text';
 import { unescsource } from '../source/unescapable';
 import { bracket } from './link';
 import { sanitize } from '../string/uri';
-import { stringify } from '../util';
+import { compress, stringify } from '../util';
 import { Cache } from 'spica/cache';
 import { html } from 'typed-dom';
 
@@ -19,12 +19,13 @@ export const media: MediaParser = line(bind(
     return bind<MediaParser>(
       line(surround(
         '('.repeat(count),
-        some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^ (?!\\))|^[^\\S ]`)),
+        compress(surround(/^ ?(?! )/, some(union([bracket, unescsource]), new RegExp(`^\\){${count}}|^\\s`)), /^ ?(?=\))/, false)),
         ')'.repeat(count),
         false
       ), false),
       (ts, rest) => {
-        const INSECURE_URL = stringify(ts);
+        assert(ts.length <= 1);
+        const [INSECURE_URL = ''] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL.trim());
         if (uri === '' && INSECURE_URL !== '') return;
         if (uri.trim().toLowerCase().startsWith('tel:')) return;

@@ -5,6 +5,7 @@
 - Add example syntax.
 - Reserve attribute schema of math syntax.
 - Allow empty URI in media syntax.
+- Allow leading and trailing whitespace around URI in link and media syntax.
 
 ## 0.72.0
 
