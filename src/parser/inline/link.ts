@@ -7,7 +7,7 @@ import { sanitize, decode } from '../string/uri';
 import { html, text, frag } from 'typed-dom';
 
 export const link: LinkParser = line(bind(build(() =>
-  line(surround('[', compress(some(union([inline]), ']')), ']', false), false)),
+  line(surround('[', compress(some(union([inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), false)),
   (ns, rest) => {
     const children = frag(ns);
     if (hasAnnotationOrAuthority(children)) return;
@@ -30,7 +30,7 @@ export const link: LinkParser = line(bind(build(() =>
         inits<LinkParser>([
           compress(surround(
             /^ ?(?! )/,
-            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\)${rest[1] === ' ' ? ' ' : ''}|^\\s`)),
+            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^${rest[1] === ' ' ? ' ' : ''}\\)|^\\s`)),
             /^ ?(?=\))|^ /,
             false)),
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))

@@ -12,7 +12,7 @@ import { html } from 'typed-dom';
 export const cache = new Cache<string, HTMLElement>(100);
 
 export const media: MediaParser = line(bind(
-  line(surround('![', some(union([text]), ']'), ']', false), false),
+  line(surround('![', some(union([text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false), false),
   (ts, rest) => {
     const caption = stringify(ts).trim();
     return bind<MediaParser>(
@@ -21,7 +21,7 @@ export const media: MediaParser = line(bind(
         inits<MediaParser>([
           compress(surround(
             /^ ?(?! )/,
-            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^\\)${rest[1] === ' ' ? ' ' : ''}|^\\s`)),
+            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^${rest[1] === ' ' ? ' ' : ''}\\)|^\\s`)),
             /^ ?(?=\))|^ /,
             false)),
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))
