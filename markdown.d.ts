@@ -206,6 +206,7 @@ export namespace MarkdownParser {
               TableParser,
               PretextParser,
               MathParser,
+              ExtensionParser.ExampleParser,
               BlockquoteParser,
               InlineParser.LinkParser, // Take media syntax and convert to link syntax.
               InlineParser.AutolinkParser.UriParser

@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.73.1
+## 0.74.0
 
+- Allow example syntax in figure syntax.
 - Fix markdown example parser.
 
 ## 0.73.0

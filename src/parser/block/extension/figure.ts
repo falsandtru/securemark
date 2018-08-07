@@ -7,6 +7,7 @@ import { table } from '../table';
 import { blockquote } from '../blockquote';
 import { pretext, segment_ as preseg } from '../pretext';
 import { math, segment_ as mathseg } from '../math';
+import { example, segment_ as examseg } from './example';
 import { inline, label, media, link, uri } from '../../inline';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
@@ -25,6 +26,7 @@ export const segment: FigureParser = block(union([
             union([
               preseg,
               mathseg,
+              examseg,
             ]),
             inits([
               emptyline,
@@ -53,6 +55,7 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
             table,
             pretext,
             math,
+            example,
             blockquote,
             rewrite(
               line(trimEnd(media), true, true),

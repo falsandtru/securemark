@@ -11,6 +11,7 @@ describe('Unit: parser/block/extension/example', () => {
     });
 
     it('valid', () => {
+      assert.deepStrictEqual(inspect(parser('~~~example/markdown\n\n~~~')), [['<aside class="example" data-type="markdown"><pre></pre><div></div><ol></ol><ol></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\na\n~~~')), [['<aside class="example" data-type="markdown"><pre>a</pre><div><p>a</p></div><ol></ol><ol></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\n*a\nb*\n~~~')), [['<aside class="example" data-type="markdown"><pre>*a\nb*</pre><div><p><em>a<span class="linebreak"> <wbr></span>b</em></p></div><ol></ol><ol></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\n[:fig-a]\n!https://host\n~~~')), [['<aside class="example" data-type="markdown"><pre>[:fig-a]\n!https://host</pre><div><figure class="label:fig-a" data-type="fig" data-index="1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure></div><ol></ol><ol></ol></aside>'], '']);
