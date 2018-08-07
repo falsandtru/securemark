@@ -4,7 +4,10 @@ import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority } from '../util';
 import { sanitize, decode } from '../string/uri';
+import { memoize } from 'spica/memoization';
 import { html, text, frag } from 'typed-dom';
+
+const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\s`));
 
 export const link: LinkParser = line(bind(build(() =>
   line(surround('[', compress(some(union([inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), false)),
@@ -30,7 +33,9 @@ export const link: LinkParser = line(bind(build(() =>
         inits<LinkParser>([
           compress(surround(
             /^ ?(?! )/,
-            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^${rest[1] === ' ' ? ' ' : ''}\\)|^\\s`)),
+            some(
+              union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]),
+              closer(rest[1] === ' ' ? ' ' : '')),
             /^ ?(?=\))|^ /,
             false)),
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))

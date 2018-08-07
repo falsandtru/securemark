@@ -10,9 +10,12 @@ import { math, segment_ as seg_math } from '../math';
 import { example, segment_ as seg_example } from './example';
 import { inline, label, media, link, uri } from '../../inline';
 import { compress } from '../../util';
+import { memoize } from 'spica/memoization';
 import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
+
+const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}[^\\S\\n]*(?:\\n|$)`));
 
 export const segment: FigureParser = block(union([
   match(
@@ -31,11 +34,11 @@ export const segment: FigureParser = block(union([
             ]),
             inits([
               emptyline,
-              union([emptyline, some(contentline, new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`))])
+              union([emptyline, some(contentline, closer(bracket))])
             ]),
           ]),
         ]),
-        new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`))
+        closer(bracket))
         (`${note}\n${rest}`)),
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,

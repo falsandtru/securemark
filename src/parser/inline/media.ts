@@ -7,7 +7,10 @@ import { bracket, attribute } from './link';
 import { sanitize } from '../string/uri';
 import { compress, stringify } from '../util';
 import { Cache } from 'spica/cache';
+import { memoize } from 'spica/memoization';
 import { html } from 'typed-dom';
+
+const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\s`));
 
 export const cache = new Cache<string, HTMLElement>(100);
 
@@ -21,7 +24,9 @@ export const media: MediaParser = line(bind(
         inits<MediaParser>([
           compress(surround(
             /^ ?(?! )/,
-            some(union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]), new RegExp(`^${rest[1] === ' ' ? ' ' : ''}\\)|^\\s`)),
+            some(
+              union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]),
+              closer(rest[1] === ' ' ? ' ' : '')),
             /^ ?(?=\))|^ /,
             false)),
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))

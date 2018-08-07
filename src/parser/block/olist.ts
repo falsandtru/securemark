@@ -6,29 +6,25 @@ import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
 import { compress, hasMedia } from '../util';
+import { memoize } from 'spica/memoization';
 import { html, frag } from 'typed-dom';
 
-const cache = new Map<string, RegExp>();
+const opener = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
 export const olist: OListParser = block(match(
   /^([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$)/,
-  ([whole, index], rest) => {
-    const ty = type(index);
-    const opener = cache.has(ty)
-      ? cache.get(ty)!
-      : cache.set(ty, new RegExp(`^${pattern(ty)}(?:\\.\\s|\\.?(?=\\n|$))`)).get(ty)!;
-    return fmap<OListParser>(
+  ([whole, index], rest) =>
+    fmap<OListParser>(
       some(union([
         fmap(
           inits<ListItemParser>([
-            line(verify(surround(opener, compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))), true, true),
+            line(verify(surround(opener(pattern(type(index))), compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))), true, true),
             indent(union([ulist, olist_, ilist]))
           ]),
           ns => [html('li', fillFirstLine(ns))])
       ])),
-      es => [html('ol', { start: index, type: ty }, es)])
-      (whole + rest);
-  }));
+      es => [html('ol', { start: index, type: type(index) }, es)])
+      (whole + rest)));
 
 function type(index: string): string {
   return Number.isInteger(+index)

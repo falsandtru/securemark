@@ -4,19 +4,17 @@ import { line } from '../source/line';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
 import { hasText, stringify } from '../util';
+import { memoize } from 'spica/memoization';
 import { html } from 'typed-dom';
 
-const cache = new Map<string, RegExp>();
+const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}(?!\`)`));
 
 export const code: CodeParser = line(match(
   /^(`+)[^\n]+?\1(?!`)/,
   ([whole, bracket], source) => {
     source = whole + source;
-    const closer = cache.has(bracket)
-      ? cache.get(bracket)!
-      : cache.set(bracket, new RegExp(`^${bracket}(?!\`)`)).get(bracket)!;
     return verify(bind<CodeParser>(
-      surround(bracket, some(union([some(char('`')), unescsource]), closer), closer),
+      surround(bracket, some(union([some(char('`')), unescsource]), closer(bracket)), closer(bracket)),
       (ns, rest) => {
         const el = html('code',
           { 'data-src': source.slice(0, source.length - rest.length) },
