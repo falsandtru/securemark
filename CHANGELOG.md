@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.74.1
+
+- Fix media parser in figure syntax.
+
 ## 0.74.0
 
 - Allow example syntax in figure syntax.
