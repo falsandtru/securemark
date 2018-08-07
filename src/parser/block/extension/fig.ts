@@ -23,5 +23,8 @@ export const segment: FigureParser = block(union([
   () => undefined,
 ]));
 
-export const fig: FigureParser = block(rewrite(segment, source =>
-  figure(source.replace(/^([^\n]+)\n([\s\S]+?)\n?$/, '~~~figure $1\n$2\n~~~'))));
+export const fig: FigureParser = block(rewrite(segment, source => {
+  const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || [])
+    .reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
+  return figure(source.replace(/^([^\n]+)\n([\s\S]+?)\n?$/, `${bracket}figure $1\n$2\n${bracket}`));
+}));

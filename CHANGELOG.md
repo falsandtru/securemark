@@ -4,6 +4,7 @@
 
 - Allow example syntax in figure syntax.
 - Fix markdown example parser.
+- Fix lightweight figure parser to parse blockquote syntax including extension syntax.
 
 ## 0.73.0
 
