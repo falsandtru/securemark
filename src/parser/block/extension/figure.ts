@@ -1,6 +1,6 @@
 ﻿import { ExtensionParser } from '../../block';
 import { SubParsers } from '../../../combinator/parser';
-import { union, sequence, inits, some, match, contract, bind, rewrite, trim, trimEnd, eval } from '../../../combinator';
+import { union, sequence, inits, some, match, surround, contract, bind, rewrite, trim, trimEnd, eval } from '../../../combinator';
 import { block } from '../../source/block';
 import { line, emptyline, contentline } from '../../source/line';
 import { table } from '../table';
@@ -18,7 +18,8 @@ export const segment: FigureParser = block(union([
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
     ([, bracket, note], rest) =>
-      bind(
+      surround(
+        '',
         sequence([
           line(trimEnd(label), true, true),
           inits([
@@ -30,14 +31,11 @@ export const segment: FigureParser = block(union([
             ]),
             inits([
               emptyline,
-              union([emptyline, some(contentline)])
+              union([emptyline, some(contentline, new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`))])
             ]),
           ]),
         ]),
-        (_, rest) =>
-          rest.split('\n')[0].trim() === bracket
-            ? [[], rest.slice(rest.split('\n')[0].length + 1)]
-            : undefined)
+        new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`))
         (`${note}\n${rest}`)),
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,

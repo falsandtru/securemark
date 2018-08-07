@@ -2,6 +2,7 @@
 
 ## 0.74.1
 
+- Fix figure parser.
 - Fix media parser in figure syntax.
 
 ## 0.74.0

@@ -89,7 +89,7 @@ describe('Unit: util/figure', () => {
 
     it('number', () => {
       const source = parse([
-        '~~~figure [:$-a]\n$$\nLaTeX\n$$\n\n~~~',
+        '~~~figure [:$-a]\n$$\nLaTeX\n$$\n~~~',
         '[:$-a]',
       ].join('\n\n'));
       figure(source);
