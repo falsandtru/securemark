@@ -3,9 +3,8 @@ import { union, match, rewrite, eval } from '../../../combinator';
 import { block } from '../../source/block';
 import { parse } from '../../api/parse';
 import { math } from '../math';
-import { figure } from '../../../util/figure';
-import { footnote } from '../../../util/footnote';
-import { suppress } from '../blockquote';
+import { figure, footnote } from '../../../util';
+import { suppress } from '../../../util/suppression';
 import { html } from 'typed-dom';
 
 export const segment: ExtensionParser.ExampleParser = block(match(
