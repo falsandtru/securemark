@@ -5,6 +5,7 @@ import { line } from '../source/line';
 import '../source/unescapable';
 import { parse } from '../api/parse';
 import { suppress } from '../../util/suppression';
+import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(build(() => union([
@@ -20,8 +21,15 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
       indent,
       s => textquote(unindent(s))),
     fmap(
-      some(line(s => [[text(unindent(s.split('\n')[0].replace(/ /g, String.fromCharCode(160)))), html('br')], ''], true, true), opener),
-      ns => ns.slice(0, -1)),
+      some(line(s => [[s.split('\n')[0]], ''], true, true), opener),
+      ss =>
+        unindent(ss.join('\n'))
+          .replace(/ /g, String.fromCharCode(160))
+          .split('\n')
+          .reduce((acc, s) =>
+            concat(acc, [html('br'), text(s)])
+          , [])
+          .slice(1))
   ]))),
   ns => [html('blockquote', ns)]);
 
