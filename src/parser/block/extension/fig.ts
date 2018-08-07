@@ -3,9 +3,9 @@ import { union, sequence, some, rewrite, trimEnd } from '../../../combinator';
 import { block } from '../../source/block';
 import { line, contentline } from '../../source/line';
 import { figure } from './figure';
-import { segment as preseg } from '../pretext';
-import { segment as mathseg } from '../math';
-import { segment as examseg } from '../extension/example';
+import { segment as seg_pre } from '../pretext';
+import { segment as seg_math } from '../math';
+import { segment as seg_example } from '../extension/example';
 import { label } from '../../inline';
 
 import FigureParser = ExtensionParser.FigureParser;
@@ -14,9 +14,9 @@ export const segment: FigureParser = block(union([
   sequence([
     line(trimEnd(label), true, true),
     union([
-      preseg,
-      mathseg,
-      examseg,
+      seg_pre,
+      seg_math,
+      seg_example,
       some(contentline),
     ]),
   ]),
