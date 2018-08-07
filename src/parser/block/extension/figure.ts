@@ -22,7 +22,7 @@ export const segment: FigureParser = block(union([
         sequence([
           line(trimEnd(label), true, true),
           inits([
-            // All parsers which can include empty lines.
+            // All parsers which can include a closing term.
             union([
               seg_pre,
               seg_math,
