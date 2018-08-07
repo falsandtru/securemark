@@ -1484,23 +1484,24 @@ require = function () {
             const block_1 = require('../source/block');
             const line_1 = require('../source/line');
             require('../source/unescapable');
-            const inline_1 = require('../inline');
             const parse_1 = require('../api/parse');
+            const suppression_1 = require('../../util/suppression');
+            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = block_1.block(combinator_1.build(() => combinator_1.union([
                 combinator_1.surround(/^(?=(>+)\s)/, textquote, ''),
-                combinator_1.surround(/^!(?=(>+)\s)/, combinator_1.fmap(mdquote, es => es.map(suppress)), '')
+                combinator_1.surround(/^!(?=(>+)\s)/, combinator_1.fmap(mdquote, es => es.map(suppression_1.suppress)), '')
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, s => textquote(unindent(s))),
                 combinator_1.fmap(combinator_1.some(line_1.line(s => [
-                    [
-                        typed_dom_1.text(unindent(s.split('\n')[0].replace(/ /g, String.fromCharCode(160)))),
-                        typed_dom_1.html('br')
-                    ],
+                    [s.split('\n')[0]],
                     ''
-                ], true, true), opener), ns => ns.slice(0, -1))
+                ], true, true), opener), ss => unindent(ss.join('\n')).replace(/ /g, String.fromCharCode(160)).split('\n').reduce((acc, s) => concat_1.concat(acc, [
+                    typed_dom_1.html('br'),
+                    typed_dom_1.text(s)
+                ]), []).slice(1))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const mdquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, s => mdquote(unindent(s))),
@@ -1519,20 +1520,15 @@ require = function () {
             function unindent(source) {
                 return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
             }
-            function suppress(target) {
-                void target.querySelectorAll('[id]').forEach(el => !el.matches('.math *') && void el.removeAttribute('id'));
-                void target.querySelectorAll('figure[class^="label:"]').forEach(el => !inline_1.isFixed(el.className) && void el.setAttribute('class', el.getAttribute('class').split('-')[0] + '-0'));
-                void target.querySelectorAll('a[href^="#index:"], a[href^="#label:"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
-                return target;
-            }
         },
         {
             '../../combinator': 19,
+            '../../util/suppression': 110,
             '../api/parse': 41,
-            '../inline': 64,
             '../source/block': 86,
             '../source/line': 89,
             '../source/unescapable': 91,
+            'spica/concat': 7,
             'typed-dom': 12
         }
     ],
@@ -1612,24 +1608,42 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
             const block_1 = require('../../source/block');
-            const blockquote_1 = require('../blockquote');
+            const parse_1 = require('../../api/parse');
             const math_1 = require('../math');
+            const util_1 = require('../../../util');
+            const suppression_1 = require('../../../util/suppression');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = block_1.block(combinator_1.match(/^(~{3,})example\/(?:markdown|math)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
+            exports.segment = block_1.block(combinator_1.build(() => exports.segment_));
+            exports.segment_ = block_1.block(combinator_1.match(/^(~{3,})example\/(?:markdown|math)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
                 [],
                 rest
-            ]));
+            ]), false);
             exports.example = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
-                combinator_1.match(/^(~{3,})example\/markdown[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => [
-                    [typed_dom_1.html('aside', {
-                            class: 'example',
-                            'data-type': 'markdown'
-                        }, [
-                            typed_dom_1.html('pre', body.slice(1, -1)),
-                            typed_dom_1.html('div', ...combinator_1.eval(blockquote_1.blockquote(`!${ body.slice(1, -1).replace(/^/m, '> ') }`)).map(el => el.childNodes))
-                        ])],
-                    rest
-                ]),
+                combinator_1.match(/^(~{3,})example\/markdown[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => {
+                    const view = typed_dom_1.html('div', [parse_1.parse(body.slice(1, -1))]);
+                    const annotation = typed_dom_1.html('ol');
+                    const authority = typed_dom_1.html('ol');
+                    void util_1.figure(view);
+                    void util_1.footnote(view, {
+                        annotation,
+                        authority
+                    });
+                    void suppression_1.suppress(view);
+                    void suppression_1.suppress(annotation);
+                    void suppression_1.suppress(authority);
+                    return [
+                        [typed_dom_1.html('aside', {
+                                class: 'example',
+                                'data-type': 'markdown'
+                            }, [
+                                typed_dom_1.html('pre', body.slice(1, -1)),
+                                view,
+                                annotation,
+                                authority
+                            ])],
+                        rest
+                    ];
+                }),
                 combinator_1.match(/^(~{3,})example\/math[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => [
                     [typed_dom_1.html('aside', {
                             class: 'example',
@@ -1644,8 +1658,10 @@ require = function () {
         },
         {
             '../../../combinator': 19,
+            '../../../util': 107,
+            '../../../util/suppression': 110,
+            '../../api/parse': 41,
             '../../source/block': 86,
-            '../blockquote': 44,
             '../math': 55,
             'typed-dom': 12
         }
@@ -1660,25 +1676,31 @@ require = function () {
             const figure_1 = require('./figure');
             const pretext_1 = require('../pretext');
             const math_1 = require('../math');
+            const example_1 = require('../extension/example');
             const inline_1 = require('../../inline');
             exports.segment = block_1.block(combinator_1.union([
                 combinator_1.sequence([
                     line_1.line(combinator_1.trimEnd(inline_1.label), true, true),
                     combinator_1.union([
-                        pretext_1.segment_,
-                        math_1.segment_,
+                        pretext_1.segment,
+                        math_1.segment,
+                        example_1.segment,
                         combinator_1.some(line_1.contentline)
                     ])
                 ]),
                 () => undefined
             ]));
-            exports.fig = block_1.block(combinator_1.rewrite(exports.segment, source => figure_1.figure(source.replace(/^([^\n]+)\n([\s\S]+?)\n?$/, '~~~figure $1\n$2\n~~~'))));
+            exports.fig = block_1.block(combinator_1.rewrite(exports.segment, source => {
+                const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
+                return figure_1.figure(source.replace(/^([^\n]+)\n([\s\S]+?)\n?$/, `${ bracket }figure $1\n$2\n${ bracket }`));
+            }));
         },
         {
             '../../../combinator': 19,
             '../../inline': 64,
             '../../source/block': 86,
             '../../source/line': 89,
+            '../extension/example': 47,
             '../math': 55,
             '../pretext': 61,
             './figure': 49
@@ -1695,6 +1717,7 @@ require = function () {
             const blockquote_1 = require('../blockquote');
             const pretext_1 = require('../pretext');
             const math_1 = require('../math');
+            const example_1 = require('./example');
             const inline_1 = require('../../inline');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
@@ -1704,7 +1727,8 @@ require = function () {
                     combinator_1.inits([
                         combinator_1.union([
                             pretext_1.segment_,
-                            math_1.segment_
+                            math_1.segment_,
+                            example_1.segment_
                         ]),
                         combinator_1.inits([
                             line_1.emptyline,
@@ -1730,6 +1754,7 @@ require = function () {
                         table_1.table,
                         pretext_1.pretext,
                         math_1.math,
+                        example_1.example,
                         blockquote_1.blockquote,
                         combinator_1.rewrite(line_1.line(combinator_1.trimEnd(inline_1.media), true, true), line_1.line(combinator_1.trimEnd(source => inline_1.link(`[${ source }]${ '('.repeat(source.match(/\)+$/)[0].length) }${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') } ${ source.match(/\)+$/)[0] }`)))),
                         line_1.line(combinator_1.contract('!', combinator_1.trimEnd(inline_1.uri), ([node]) => node instanceof Element), true, true)
@@ -1763,6 +1788,7 @@ require = function () {
             '../math': 55,
             '../pretext': 61,
             '../table': 62,
+            './example': 47,
             'typed-dom': 12
         }
     ],
@@ -3812,7 +3838,7 @@ require = function () {
         {
             './util/figure': 108,
             './util/footnote': 109,
-            './util/toc': 110
+            './util/toc': 111
         }
     ],
     108: [
@@ -3824,7 +3850,10 @@ require = function () {
             const headers = new WeakMap();
             function figure(source, header = (type, index) => type === '$' ? `(${ index })` : `${ capitalize(type) }. ${ index }.`) {
                 const figures = new Map();
+                const exclusion = new Set(source.querySelectorAll('.example'));
                 return void source.querySelectorAll('figure[class^="label:"]').forEach(figure => {
+                    if (exclusion.has(figure.closest('.example')))
+                        return;
                     const label = figure.className;
                     const type = figure.getAttribute('data-type');
                     const acc = figures.get(type) || figures.set(type, []).get(type);
@@ -3865,7 +3894,12 @@ require = function () {
             function build(category, indexer) {
                 const memory = new WeakMap();
                 return (source, target) => {
+                    const exclusion = new Set(source.querySelectorAll('.example'));
                     return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].reduce((acc, ref, i) => {
+                        if (exclusion.has(ref.closest('.example')))
+                            return acc;
+                        if (!memory.has(ref) && ref.querySelector('a'))
+                            return acc;
                         void memory.set(ref, memory.get(ref) || [...ref.childNodes]);
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }-ref:${ i + 1 }`;
@@ -3905,6 +3939,21 @@ require = function () {
         }
     ],
     110: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const inline_1 = require('../parser/inline');
+            function suppress(target) {
+                void target.querySelectorAll('[id]').forEach(el => !el.closest('.math') && void el.removeAttribute('id'));
+                void target.querySelectorAll('figure[class^="label:"]:not([data-index])').forEach(el => !inline_1.isFixed(el.className) && void el.setAttribute('class', el.getAttribute('class').split('-')[0] + '-0'));
+                void target.querySelectorAll('a[href^="#"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
+                return target;
+            }
+            exports.suppress = suppress;
+        },
+        { '../parser/inline': 64 }
+    ],
+    111: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
