@@ -13,8 +13,11 @@ function build(category: string, indexer: (index: number) => string): (source: D
   assert(category.match(/^[a-z]+$/));
   const memory = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => {
+    const exclusion = new Set(source.querySelectorAll('.example'));
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
+        if (exclusion.has(ref.closest('.example')!)) return acc;
+        if (!memory.has(ref) && ref.querySelector('a')) return acc;
         void memory.set(ref, memory.get(ref) || [...ref.childNodes]);
         const refIndex = i + 1;
         const refId = ref.id || `${category}-ref:${i + 1}`;

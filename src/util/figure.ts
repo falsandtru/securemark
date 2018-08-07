@@ -9,8 +9,10 @@ export function figure(
     = (type, index) => type === '$' ? `(${index})` : `${capitalize(type)}. ${index}.`
 ): void {
   const figures = new Map<string, HTMLElement[]>();
+  const exclusion = new Set(source.querySelectorAll('.example'));
   return void source.querySelectorAll<HTMLElement>('figure[class^="label:"]')
     .forEach(figure => {
+      if (exclusion.has(figure.closest('.example')!)) return;
       const label = figure.className;
       const type = figure.getAttribute('data-type')!;
       const acc = figures.get(type) || figures.set(type, []).get(type)!;

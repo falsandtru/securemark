@@ -42,16 +42,16 @@ function unindent(source: string): string {
   return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
 }
 
-function suppress(target: HTMLQuoteElement): HTMLQuoteElement {
+export function suppress<T extends HTMLElement>(target: T): T {
   void target.querySelectorAll('[id]')
     .forEach(el =>
-      !el.matches('.math *') &&
+      !el.closest('.math') &&
       void el.removeAttribute('id'));
-  void target.querySelectorAll('figure[class^="label:"]')
+  void target.querySelectorAll('figure[class^="label:"]:not([data-index])')
     .forEach(el =>
       !isFixed(el.className) &&
       void el.setAttribute('class', el.getAttribute('class')!.split('-')[0] + '-0'));
-  void target.querySelectorAll('a[href^="#index:"], a[href^="#label:"]')
+  void target.querySelectorAll('a[href^="#"]')
     .forEach(el =>
       void el.setAttribute('onclick', 'return false;'));
   return target;

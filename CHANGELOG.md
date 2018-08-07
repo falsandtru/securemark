@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.73.1
+
+- Fix markdown example parser.
+
 ## 0.73.0
 
 - Add example syntax.
