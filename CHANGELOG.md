@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.74.2
+
+- Fix blockquote parser.
+
 ## 0.74.1
 
 - Fix figure parser.

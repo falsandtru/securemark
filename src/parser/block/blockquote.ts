@@ -9,8 +9,8 @@ import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(build(() => union([
-  surround(/^(?=(>+)\s)/, textquote, ''),
-  surround(/^!(?=(>+)\s)/, fmap(mdquote, es => es.map(suppress)), ''),
+  surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
+  surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, fmap(mdquote, es => es.map(suppress)), ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
