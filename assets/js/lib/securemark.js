@@ -1500,8 +1500,8 @@ require = function () {
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = block_1.block(combinator_1.build(() => combinator_1.union([
-                combinator_1.surround(/^(?=(>+)\s)/, textquote, ''),
-                combinator_1.surround(/^!(?=(>+)\s)/, combinator_1.fmap(mdquote, es => es.map(suppression_1.suppress)), '')
+                combinator_1.surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
+                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, combinator_1.fmap(mdquote, es => void es.forEach(suppression_1.suppress) || es), '')
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
@@ -2529,19 +2529,16 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?!\`)`));
-            exports.code = line_1.line(combinator_1.match(/^(`+)[^\n]+?\1(?!`)/, ([whole, bracket], source) => {
-                source = whole + source;
-                return combinator_1.verify(combinator_1.bind(combinator_1.surround(bracket, combinator_1.some(combinator_1.union([
-                    combinator_1.some(char_1.char('`')),
-                    unescapable_1.unescsource
-                ]), closer(bracket)), closer(bracket)), (ns, rest) => {
-                    const el = typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, util_1.stringify(ns).trim());
-                    return [
-                        [el],
-                        rest
-                    ];
-                }), ([el]) => util_1.hasText(el))(source);
-            }), false);
+            exports.code = line_1.line(combinator_1.match(/^(?=(`+)[^\n]+?\1(?!`))/, ([, bracket], source) => combinator_1.verify(combinator_1.bind(combinator_1.surround(bracket, combinator_1.some(combinator_1.union([
+                combinator_1.some(char_1.char('`')),
+                unescapable_1.unescsource
+            ]), closer(bracket)), closer(bracket)), (ns, rest) => {
+                const el = typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, util_1.stringify(ns).trim());
+                return [
+                    [el],
+                    rest
+                ];
+            }), ([el]) => util_1.hasText(el))(source)), false);
         },
         {
             '../../combinator': 20,
@@ -3963,7 +3960,6 @@ require = function () {
                 void target.querySelectorAll('[id]').forEach(el => !el.closest('.math') && void el.removeAttribute('id'));
                 void target.querySelectorAll('figure[class^="label:"]:not([data-index])').forEach(el => !inline_1.isFixed(el.className) && void el.setAttribute('class', el.getAttribute('class').split('-')[0] + '-0'));
                 void target.querySelectorAll('a[href^="#"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
-                return target;
             }
             exports.suppress = suppress;
         },
