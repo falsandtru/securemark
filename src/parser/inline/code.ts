@@ -10,10 +10,9 @@ import { html } from 'typed-dom';
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}(?!\`)`));
 
 export const code: CodeParser = line(match(
-  /^(`+)[^\n]+?\1(?!`)/,
-  ([whole, bracket], source) => {
-    source = whole + source;
-    return verify(bind<CodeParser>(
+  /^(?=(`+)[^\n]+?\1(?!`))/,
+  ([, bracket], source) =>
+    verify(bind<CodeParser>(
       surround(bracket, some(union([some(char('`')), unescsource]), closer(bracket)), closer(bracket)),
       (ns, rest) => {
         const el = html('code',
@@ -21,6 +20,5 @@ export const code: CodeParser = line(match(
           stringify(ns).trim());
         return [[el], rest]
       }), ([el]) => hasText(el))
-      (source);
-  }
+      (source)
 ), false);
