@@ -1,6 +1,6 @@
 ﻿import { isFixed } from '../parser/inline';
 
-export function suppress<T extends HTMLElement>(target: T): T {
+export function suppress(target: HTMLElement): void {
   void target.querySelectorAll('[id]')
     .forEach(el =>
       !el.closest('.math') &&
@@ -12,5 +12,4 @@ export function suppress<T extends HTMLElement>(target: T): T {
   void target.querySelectorAll('a[href^="#"]')
     .forEach(el =>
       void el.setAttribute('onclick', 'return false;'));
-  return target;
 }

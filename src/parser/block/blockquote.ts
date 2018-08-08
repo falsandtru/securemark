@@ -10,7 +10,7 @@ import { html, text } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(build(() => union([
   surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
-  surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, fmap(mdquote, es => es.map(suppress)), ''),
+  surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, fmap(mdquote, es => void es.forEach(suppress) || es), ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
