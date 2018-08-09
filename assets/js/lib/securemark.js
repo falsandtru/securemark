@@ -1757,7 +1757,7 @@ require = function () {
                     rest
                 ])
             ]));
-            exports.figure = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.trimEnd(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/, ([, , note, body], rest) => combinator_1.bind(combinator_1.sequence([
+            exports.figure = block_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/, ([, , note, body], rest) => combinator_1.bind(combinator_1.sequence([
                 line_1.line(combinator_1.trimEnd(inline_1.label), true, true),
                 combinator_1.inits([
                     block_1.block(combinator_1.union([
@@ -1769,13 +1769,13 @@ require = function () {
                         combinator_1.rewrite(line_1.line(combinator_1.trimEnd(inline_1.media), true, true), line_1.line(combinator_1.trimEnd(source => inline_1.link(`[${ source }]( ${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') } )`)))),
                         line_1.line(combinator_1.contract('!', combinator_1.trimEnd(inline_1.uri), ([node]) => node instanceof Element), true, true)
                     ])),
-                    combinator_1.rewrite(combinator_1.inits([
+                    block_1.block(combinator_1.inits([
                         line_1.emptyline,
                         combinator_1.union([
                             line_1.emptyline,
-                            combinator_1.some(line_1.contentline)
+                            util_1.compress(combinator_1.trim(combinator_1.some(inline_1.inline)))
                         ])
-                    ]), util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))))
+                    ]))
                 ])
             ]), ([label, content, ...caption]) => [
                 [typed_dom_1.html('figure', {
@@ -1786,7 +1786,7 @@ require = function () {
                         typed_dom_1.html('figcaption', [typed_dom_1.html('span', caption)])
                     ])],
                 rest
-            ])(`${ note }\n${ body.slice(0, -1) }`)))));
+            ])(`${ note }\n${ body.slice(0, -1) }`))));
         },
         {
             '../../../combinator': 20,
