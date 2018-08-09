@@ -212,7 +212,11 @@ export namespace MarkdownParser {
               InlineParser.AutolinkParser.UriParser
             ]>,
             Parser<HTMLElement | Text, [
-              InlineParser
+              SourceParser.EmptyLineParser,
+              Parser<HTMLElement | Text, [
+                SourceParser.EmptyLineParser,
+                InlineParser
+              ]>
             ]>
           ]>
         ]> {

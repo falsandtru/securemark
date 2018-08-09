@@ -10,6 +10,7 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure\n!https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\nhttps://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n!https://host\\\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n!https://host\n\\\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n!https://host\na\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n !https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [:type-name]\n\n!https://host\n~~~')), undefined);

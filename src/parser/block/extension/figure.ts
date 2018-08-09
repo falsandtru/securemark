@@ -45,8 +45,8 @@ export const segment: FigureParser = block(union([
     (_, rest) => [[], rest]),
 ]));
 
-export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
-  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
+export const figure: FigureParser = block(rewrite(segment, match(
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
   ([, , note, body], rest) =>
     bind(
       sequence<FigureParser>([
@@ -63,12 +63,13 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
               line(trimEnd(source => link(`[${source}]( ${eval(media(source))[0].getAttribute('data-src')} )`)))),
             line(contract('!', trimEnd(uri), ([node]) => node instanceof Element), true, true),
           ])),
-          rewrite(
-            inits([
+          block(inits([
+            emptyline,
+            union([
               emptyline,
-              union([emptyline, some(contentline)])
+              compress(trim(some(inline)))
             ]),
-            compress(trim(some(union([inline])))))
+          ])),
         ]),
       ]),
       ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) =>
@@ -82,4 +83,4 @@ export const figure: FigureParser = block(rewrite(segment, trimEnd(match(
             html('figcaption', [html('span', caption)])
           ])
         ], rest])
-      (`${note}\n${body.slice(0, -1)}`)))));
+      (`${note}\n${body.slice(0, -1)}`))));
