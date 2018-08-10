@@ -1,8 +1,7 @@
 ﻿import { ExtensionParser } from '../../block';
 import { SubParsers } from '../../../combinator/parser';
-import { union, sequence, inits, some, match, surround, contract, bind, rewrite, trim, trimEnd, eval } from '../../../combinator';
-import { block } from '../../source/block';
-import { line, emptyline, contentline } from '../../source/line';
+import { union, sequence, inits, some, match, surround, contract, block, line, focus, bind, trim, eval } from '../../../combinator';
+import { emptyline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
 import { pretext, segment_ as seg_pre } from '../pretext';
@@ -24,7 +23,7 @@ export const segment: FigureParser = block(union([
       surround(
         '',
         sequence([
-          line(trimEnd(label), true, true),
+          line(label),
           inits([
             // All parsers which can include a closing term.
             union([
@@ -45,12 +44,12 @@ export const segment: FigureParser = block(union([
     (_, rest) => [[], rest]),
 ]));
 
-export const figure: FigureParser = block(rewrite(segment, match(
+export const figure: FigureParser = block(focus(segment, match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
   ([, , note, body], rest) =>
     bind(
       sequence<FigureParser>([
-        line(trimEnd(label), true, true),
+        line(label),
         inits<SubParsers<FigureParser>[1]>([
           block(union([
             table,
@@ -58,10 +57,10 @@ export const figure: FigureParser = block(rewrite(segment, match(
             math,
             example,
             blockquote,
-            rewrite(
-              line(trimEnd(media), true, true),
-              line(trimEnd(source => link(`[${source}]( ${eval(media(source))[0].getAttribute('data-src')} )`)))),
-            line(contract('!', trimEnd(uri), ([node]) => node instanceof Element), true, true),
+            line(focus(
+              media,
+              source => link(`[${source}]( ${eval(media(source))[0].getAttribute('data-src')} )`))),
+            line(contract('!', uri, ([node]) => node instanceof Element)),
           ])),
           block(inits([
             emptyline,

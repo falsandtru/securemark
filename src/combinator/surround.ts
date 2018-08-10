@@ -4,6 +4,7 @@ export function surround<P extends Parser<any, any>>(start: string | RegExp, par
 export function surround<T, S extends Parser<any, any>[]>(start: string | RegExp, parser: Parser<T, S>, end: string | RegExp, strict = true): Parser<T, S> {
   assert(parser);
   return lmr_ => {
+    if (lmr_ === '') return;
     const l = match(lmr_, start);
     if (l === undefined) return;
     const mr_ = lmr_.slice(l.length);

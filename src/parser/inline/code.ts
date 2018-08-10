@@ -1,6 +1,5 @@
 ﻿import { CodeParser } from '../inline';
-import { union, some, match, surround, verify, bind } from '../../combinator';
-import { line } from '../source/line';
+import { union, some, match, surround, subline, verify, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
 import { hasText, stringify } from '../util';
@@ -9,7 +8,7 @@ import { html } from 'typed-dom';
 
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}(?!\`)`));
 
-export const code: CodeParser = line(match(
+export const code: CodeParser = subline(match(
   /^(?=(`+)[^\n]+?\1(?!`))/,
   ([, bracket], source) =>
     verify(bind<CodeParser>(
@@ -20,5 +19,4 @@ export const code: CodeParser = line(match(
           stringify(ns).trim());
         return [[el], rest]
       }), ([el]) => hasText(el))
-      (source)
-), false);
+      (source)));

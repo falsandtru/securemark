@@ -1,6 +1,5 @@
 ﻿import { ParagraphParser } from '../block';
-import { union, subsequence, some, fmap, trim, build } from '../../combinator';
-import { block } from '../source/block';
+import { union, subsequence, some, block, fmap, trim, build } from '../../combinator';
 import { reference } from './paragraph/reference';
 import { hashtag } from './paragraph/hashtag';
 import { inline } from '../inline';

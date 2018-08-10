@@ -1,14 +1,13 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, surround, verify, fmap, rewrite, build } from '../../../combinator';
-import { line } from '../../source/line';
+import { union, some, surround, verify, subline, focus, fmap, build } from '../../../combinator';
 import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
 import { hasTightText } from '../../util';
 
-export const index: ExtensionParser.IndexParser = line(verify(fmap(build(() =>
+export const index: ExtensionParser.IndexParser = subline(verify(fmap(build(() =>
   surround(
     '[#',
-    rewrite(
+    focus(
       some(inline, ']'),
       s => union<ExtensionParser.IndexParser>([link])(`[${s}]()`)),
     ']')),
@@ -18,4 +17,4 @@ export const index: ExtensionParser.IndexParser = line(verify(fmap(build(() =>
     void el.removeAttribute('id');
     return [el];
   }
-), ([el]) => hasTightText(el)), false);
+), ([el]) => hasTightText(el)));

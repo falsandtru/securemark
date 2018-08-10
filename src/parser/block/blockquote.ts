@@ -1,7 +1,6 @@
 ﻿import { BlockquoteParser } from '../block';
-import { Parser, union, some, surround, fmap, rewrite, build } from '../../combinator';
-import { block } from '../source/block';
-import { line } from '../source/line';
+import { Parser, union, some, surround, block, line, focus, fmap, build } from '../../combinator';
+import { contentline } from '../source/line';
 import '../source/unescapable';
 import { parse } from '../api/parse';
 import { suppress } from '../../util/suppression';
@@ -17,11 +16,11 @@ const opener = /^(?=>>+(?:\s|$))/;
 
 const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
   some(union([
-    rewrite(
+    focus(
       indent,
       s => textquote(unindent(s))),
     fmap(
-      some(line(s => [[s.split('\n')[0]], ''], true, true), opener),
+      some(line(focus(contentline, s => [[s.split('\n')[0]], ''])), opener),
       ss =>
         unindent(ss.join('\n'))
           .replace(/ /g, String.fromCharCode(160))
@@ -35,16 +34,16 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
 
 const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
   some(union([
-    rewrite(
+    focus(
       indent,
       s => mdquote(unindent(s))),
-    rewrite(
-      some(line(s => [[s], ''], true, true), opener),
+    focus(
+      some(line(focus(contentline, s => [[s], ''])), opener),
       s => [[parse(unindent(s))], '']),
   ]))),
   ns => [html('blockquote', ns)]);
 
-const indent = block(surround(opener, some(line(s => [[s], ''], true, true), /^>(?:\s|$)/), ''), false);
+const indent = block(surround(opener, some(line(focus(contentline, s => [[s], ''])), /^>(?:\s|$)/), ''), false);
 
 function unindent(source: string): string {
   return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');

@@ -1,6 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { Parser, union, inits, some, match, surround, fmap, bind, build } from '../../combinator';
-import { line } from '../source/line';
+import { Parser, union, inits, some, match, surround, subline, fmap, bind, build } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority } from '../util';
 import { sanitize, decode } from '../string/uri';
@@ -9,8 +8,8 @@ import { html, text, frag } from 'typed-dom';
 
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\s`));
 
-export const link: LinkParser = line(bind(build(() =>
-  line(surround('[', compress(some(union([inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), false)),
+export const link: LinkParser = subline(bind(build(() =>
+  subline(surround('[', compress(some(union([inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false))),
   (ns, rest) => {
     const children = frag(ns);
     if (hasAnnotationOrAuthority(children)) return;
@@ -28,7 +27,7 @@ export const link: LinkParser = line(bind(build(() =>
     }
     assert(children.querySelector('a > .media') || !hasLink(children));
     return bind(
-      line(surround(
+      subline(surround(
         '(',
         inits<LinkParser>([
           compress(surround(
@@ -41,8 +40,7 @@ export const link: LinkParser = line(bind(build(() =>
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))
         ]),
         ')',
-        false
-      ), false),
+        false)),
       (ts, rest) => {
         const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL);
@@ -80,8 +78,7 @@ export const link: LinkParser = line(bind(build(() =>
         return [[el], rest];
       })
       (rest);
-  }
-), false);
+  }));
 
 export const ipv6 = fmap(
   surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),

@@ -1,6 +1,5 @@
 ﻿import { MathParser } from '../block';
-import { match, rewrite, build } from '../../combinator';
-import { block } from '../source/block';
+import { match, block, focus, build } from '../../combinator';
 import '../source/unescapable';
 import { html } from 'typed-dom';
 
@@ -10,7 +9,7 @@ export const segment_: MathParser = block(match(
   /^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/,
   (_, rest) => [[], rest]), false);
 
-export const math: MathParser = block(rewrite(segment, match(
+export const math: MathParser = block(focus(segment, match(
   /^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/,
   ([, arg, body], rest) =>
     [[html('div', { class: `math notranslate ${arg.trim() ? 'invalid' : ''}`.trim() }, `$$${body}$$`)], rest])));

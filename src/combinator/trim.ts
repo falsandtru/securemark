@@ -2,19 +2,19 @@
 
 export function trim<P extends Parser<any, any>>(parser: P): P;
 export function trim<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return trimWith(parser, s => s.trim());
+  return trimWith(parser, source => source.trim());
 }
 
-export function trimStart<P extends Parser<any, any>>(parser: P): P;
-export function trimStart<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+function trimStart<P extends Parser<any, any>>(parser: P): P;
+function trimStart<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   return trimWith(parser, source => {
     const mid = source.trim();
     return source.slice(source.lastIndexOf(mid));
   });
 }
 
-export function trimEnd<P extends Parser<any, any>>(parser: P): P;
-export function trimEnd<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+function trimEnd<P extends Parser<any, any>>(parser: P): P;
+function trimEnd<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   return trimWith(parser, source => {
     const mid = source.trim();
     return source.slice(0, source.lastIndexOf(mid) + mid.length);
@@ -26,13 +26,33 @@ function trimWith<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, trim: (
   return source => {
     if (source === '') return;
     source = trim(source);
-    if (source === '') return [[], ''];
-    const [results = [], rest = undefined] = parser(source) || [];
-    if (rest === undefined) return;
-    assert(source.slice(1).endsWith(rest));
-    if (rest.length >= source.length) return;
-    return rest.length < source.length
-      ? [results, rest]
-      : undefined;
+    return source !== ''
+      ? parser(source)
+      : [[], ''];
   };
+}
+
+export function trimLine<P extends Parser<any, any>>(parser: P): P;
+export function trimLine<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return trimLineStart(trimLineEnd(parser));
+}
+
+function trimLineStart<P extends Parser<any, any>>(parser: P): P;
+function trimLineStart<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return source =>
+    source[0] === '\n'
+      ? parser(source)
+      : source.includes('\n')
+        ? trimStart(s => parser(s + source.slice(source.indexOf('\n'))))(source.split('\n', 1)[0])
+        : trimStart(parser)(source);
+}
+
+function trimLineEnd<P extends Parser<any, any>>(parser: P): P;
+function trimLineEnd<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return source =>
+    source[0] === '\n'
+      ? parser(source)
+      : source.includes('\n')
+        ? trimEnd(s => parser(s + source.slice(source.indexOf('\n'))))(source.split('\n', 1)[0])
+        : trimEnd(parser)(source);
 }

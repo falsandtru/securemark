@@ -1,7 +1,6 @@
 ﻿import { UListParser, ListItemParser } from '../block';
-import { union, inits, some, surround, verify, indent, fmap, trim, build } from '../../combinator';
-import { block } from '../source/block';
-import { line } from '../source/line';
+import { union, inits, some, surround, verify, block, line, focus, indent, fmap, trim, build } from '../../combinator';
+import { contentline } from '../source/line';
 import { olist_ } from './olist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
@@ -13,7 +12,7 @@ export const ulist: UListParser = block(fmap<UListParser>(build(() =>
   some(union([
     fmap(
       inits<ListItemParser>([
-        line(verify(surround(/^-(?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))), true, true),
+        line(focus(contentline, verify(surround(/^-(?:\s|$)/, compress(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))))),
         indent(union([ulist, olist_, ilist]))
       ]),
       ns => [html('li', fillFirstLine(ns))])

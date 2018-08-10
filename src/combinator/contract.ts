@@ -9,6 +9,7 @@ export function validate<P extends Parser<any, any>>(pattern: RegExp | string, p
 export function validate<T, S extends Parser<any, any>[]>(pattern: RegExp | string, parser: Parser<T, S>): Parser<T, S> {
   assert(parser);
   return source => {
+    if (source === '') return;
     const result = match(source, pattern);
     if (!result) return;
     assert(source.startsWith(result[0]));
@@ -25,6 +26,7 @@ export function verify<P extends Parser<any, any>>(parser: P, cond: (results: Da
 export function verify<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, cond: (results: T[], rest: string) => boolean): Parser<T, S> {
   assert(parser);
   return source => {
+    if (source === '') return;
     const [rs = [], r = undefined] = parser(source) || [];
     if (r === undefined) return;
     if (!cond(rs, r)) return;

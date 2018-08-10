@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../block';
-import { union, validate, rewrite } from '../../combinator';
+import { union, validate, focus } from '../../combinator';
 import { fig, segment as seg_fig } from './extension/fig';
 import { figure, segment as seg_figure } from './extension/figure';
 import { example, segment as seg_example } from './extension/example';
@@ -12,7 +12,7 @@ export const segment: ExtensionParser = validate(/^~~~|^\[:[^\]\s]+\][^\S\n]*\n/
   seg_placeholder,
 ]));
 
-export const extension: ExtensionParser = rewrite(segment, union([
+export const extension: ExtensionParser = focus(segment, union([
   fig,
   figure,
   example,

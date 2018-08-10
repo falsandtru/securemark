@@ -1,7 +1,5 @@
 ﻿import { HeadingParser } from '../block';
-import { union, some, match, verify, fmap, trim } from '../../combinator';
-import { block } from '../source/block';
-import { line } from '../source/line';
+import { union, some, match, verify, block, line, fmap, trim } from '../../combinator';
 import { indexer, defineIndex } from './indexer';
 import { inline } from '../inline';
 import { compress, hasText, hasMedia } from '../util';
@@ -16,4 +14,4 @@ export const heading: HeadingParser = block(line(verify(match(
       void defineIndex(el);
       return [el];
     })(content)
-), ([el]) => hasText(el) && !hasMedia(el)), true, true));
+), ([el]) => hasText(el) && !hasMedia(el))));

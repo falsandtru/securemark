@@ -1,28 +1,7 @@
-﻿import { line, blankline, contentline } from './line';
+﻿import { blankline, contentline } from './line';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/line', () => {
-  describe('line', () => {
-    it('invalid', () => {
-      assert.deepStrictEqual(inspect(line(_ => [[], '\n'])(' \n')), undefined);
-      assert.deepStrictEqual(inspect(line(_ => [[], ''])('\n\n')), undefined);
-      assert.deepStrictEqual(inspect(line(_ => [[], '\n'])('\n\n\n')), undefined);
-    });
-
-    it('valid', () => {
-      assert.deepStrictEqual(inspect(line(_ => [[], ''])('\n')), [[], '']);
-      assert.deepStrictEqual(inspect(line(_ => [[], ''])(' \n')), [[], '']);
-      assert.deepStrictEqual(inspect(line(_ => [[], '\n'])('\n\n')), [[], '\n']);
-      assert.deepStrictEqual(inspect(line(_ => [[], '\n\n'])('\n\n\n')), [[], '\n\n']);
-      assert.deepStrictEqual(inspect(line(_ => [[], ''], false)(' \n')), [[], '']);
-      assert.deepStrictEqual(inspect(line(_ => [[], '\n'], false)(' \n')), [[], '\n']);
-      assert.deepStrictEqual(inspect(line(_ => [[], ''], false, true)(' \n')), [[], '']);
-      assert.deepStrictEqual(inspect(line(s => [[s[0]], s.slice(1)], false, true)(' \n')), [[' '], '\n']);
-      assert.deepStrictEqual(inspect(line(s => [[s], ''], true, true)(' \n\n')), [[' \n'], '\n']);
-    });
-
-  });
-
   describe('blankline', () => {
     const parser = blankline;
 

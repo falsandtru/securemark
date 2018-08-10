@@ -1,6 +1,5 @@
 ﻿import { MediaParser } from '../inline';
-import { Parser, union, inits, some, surround, bind } from '../../combinator';
-import { line } from '../source/line';
+import { Parser, union, inits, some, surround, subline, bind } from '../../combinator';
 import { text } from '../source/text';
 import { unescsource } from '../source/unescapable';
 import { bracket, attribute } from './link';
@@ -14,12 +13,12 @@ const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\
 
 export const cache = new Cache<string, HTMLElement>(100);
 
-export const media: MediaParser = line(bind(
-  line(surround('![', some(union([text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false), false),
+export const media: MediaParser = subline(bind(
+  subline(surround('![', some(union([text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)),
   (ts, rest) => {
     const caption = stringify(ts).trim();
     return bind<MediaParser>(
-      line(surround(
+      subline(surround(
         '(',
         inits<MediaParser>([
           compress(surround(
@@ -32,8 +31,7 @@ export const media: MediaParser = line(bind(
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))
         ]),
         ')',
-        false
-      ), false),
+        false)),
       (ts, rest) => {
         const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL.trim());
@@ -58,5 +56,4 @@ export const media: MediaParser = line(bind(
         return [[el], rest];
       })
       (rest);
-  }
-), false);
+  }));

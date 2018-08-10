@@ -3,6 +3,7 @@
 export function match<P extends Parser<any, any>>(pattern: RegExp, f: (matched: string[], rest: string) => Result<Data<P>, SubParsers<P>>): P;
 export function match<T, S extends Parser<any, any>[] = []>(pattern: RegExp, f: (matched: string[], rest: string) => Result<T, S>): Parser<T, S> {
   return source => {
+    if (source === '') return;
     const result = source.match(pattern);
     if (!result) return;
     assert(source.startsWith(result[0]));

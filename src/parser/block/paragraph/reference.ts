@@ -1,11 +1,11 @@
 ﻿import { ParagraphParser } from '../../block';
-import { union, some, match, validate, eval } from '../../../combinator';
-import { line } from '../../source/line';
+import { union, some, match, validate, line, focus, eval } from '../../../combinator';
+import { contentline } from '../../source/line';
 import '../../source/unescapable';
 import { inline } from '../../inline';
 import { html } from 'typed-dom';
 
-export const reference: ParagraphParser.ReferenceParser = line(validate(
+export const reference: ParagraphParser.ReferenceParser = line(focus(contentline, validate(
   /^(>+)[^>\s].*/,
   union<ParagraphParser.ReferenceParser>([
     match(
@@ -14,5 +14,4 @@ export const reference: ParagraphParser.ReferenceParser = line(validate(
         [[html('a', { class: 'reference', rel: 'noopener', 'data-level': `${level}` }, ref.trim()), html('br')], rest]),
     () =>
       [[html('span', { class: 'invalid' }, eval(some(inline)(`Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.`))), html('br')], ''],
-  ])
-), true, true);
+  ]))));

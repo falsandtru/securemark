@@ -1,7 +1,7 @@
 ﻿import { block } from './block';
-import { inspect } from '../../debug.test';
+import { inspect } from '../debug.test';
 
-describe('Unit: parser/source/block', () => {
+describe('Unit: combinator/block', () => {
   describe('block', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(block(_ => [[], '\n'])(' \n')), undefined);
