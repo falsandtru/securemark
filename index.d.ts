@@ -7,7 +7,7 @@
 
 export function parse(source: string): DocumentFragment;
 export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement>;
-export function figure(source: DocumentFragment | HTMLElement, header?: (type: string, index: string) => string): void;
+export function figure(source: DocumentFragment | HTMLElement, header?: (group: string, index: string) => string): void;
 export function footnote(source: DocumentFragment | HTMLElement, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void;
 export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement;
 export function render(target: HTMLElement, opts?: RenderingOptions): void;

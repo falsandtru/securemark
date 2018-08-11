@@ -75,7 +75,7 @@ export const figure: FigureParser = block(focus(segment, match(
         [[html('figure',
           {
             class: label.getAttribute('href')!.slice(1),
-            'data-type': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0],
+            'data-group': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0],
           },
           [
             content,

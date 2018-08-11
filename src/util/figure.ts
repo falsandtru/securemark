@@ -5,8 +5,8 @@ const headers = new WeakMap<HTMLElement, HTMLSpanElement>();
 
 export function figure(
   source: DocumentFragment | HTMLElement,
-  header: (type: string, index: string) => string
-    = (type, index) => type === '$' ? `(${index})` : `${capitalize(type)}. ${index}.`
+  header: (group: string, index: string) => string
+    = (group, index) => group === '$' ? `(${index})` : `${capitalize(group)}. ${index}.`
 ): void {
   const figures = new Map<string, HTMLElement[]>();
   const exclusion = new Set(source.querySelectorAll('.example'));
@@ -14,8 +14,8 @@ export function figure(
     .forEach(figure => {
       if (exclusion.has(figure.closest('.example')!)) return;
       const label = figure.className;
-      const type = figure.getAttribute('data-type')!;
-      const acc = figures.get(type) || figures.set(type, []).get(type)!;
+      const group = figure.getAttribute('data-group')!;
+      const acc = figures.get(group) || figures.set(group, []).get(group)!;
       void acc.push(figure);
       const idx = index(label, acc);
       void figure.setAttribute('data-index', `${idx}`);
@@ -23,7 +23,7 @@ export function figure(
       const caption = figure.lastElementChild! as HTMLElement;
       assert(caption.matches('figcaption'));
       headers.has(figure) && void headers.get(figure)!.remove();
-      void headers.set(figure, caption.insertBefore(html('span', header(type, idx)), caption.firstChild));
+      void headers.set(figure, caption.insertBefore(html('span', header(group, idx)), caption.firstChild));
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
         .forEach(ref =>
