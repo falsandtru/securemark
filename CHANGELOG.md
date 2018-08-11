@@ -2,6 +2,7 @@
 
 ## 0.75.0
 
+- Allow trailing `@` with account syntax.
 - Remove figure function's header formatter injection.
 
 ## 0.74.3
