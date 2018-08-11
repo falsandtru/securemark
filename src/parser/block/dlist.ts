@@ -12,7 +12,7 @@ export const dlist: DListParser = block(fmap(build(() =>
     some(term),
     some(desc)
   ]))),
-  es => [html('dl', es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
+  es => [html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat(es, [html('dd')]) : es)]));
 
 const term: DListParser.TermParser = line(focus(contentline, verify(fmap<DListParser.TermParser>(build(() =>
   surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inline])))), '', false)),
