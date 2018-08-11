@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, match, surround, subline, fmap, build, eval } from '../../../combinator';
+import { union, some, fmap, match, surround, subline, build, eval } from '../../../combinator';
 import { html } from 'typed-dom';
 
 // Already used symbols: !@$*<

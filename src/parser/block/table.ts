@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, match, surround, contract, block, line, focus, fmap, bind, trim, build } from '../../combinator';
+import { union, sequence, some, fmap, bind, match, surround, contract, block, line, focus, trim, build } from '../../combinator';
 import { contentline } from '../source/line';
 import { inline } from '../inline';
 import { squash, hasMedia } from '../util';

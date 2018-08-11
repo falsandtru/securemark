@@ -1,5 +1,5 @@
 ﻿import { MediaParser } from '../inline';
-import { Parser, union, inits, some, surround, subline, bind } from '../../combinator';
+import { Parser, union, inits, some, bind, surround, subline } from '../../combinator';
 import { text } from '../source/text';
 import { unescsource } from '../source/unescapable';
 import { bracket, attribute } from './link';

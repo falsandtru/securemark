@@ -1,5 +1,5 @@
 ﻿import { IListParser, ListItemParser } from '../block';
-import { union, inits, some, surround, verify, block, line, indent, focus, fmap, trim, build, eval } from '../../combinator';
+import { union, inits, some, fmap, surround, verify, block, line, indent, focus, trim, build, eval } from '../../combinator';
 import { contentline } from '../source/line';
 import { ulist } from './ulist';
 import { olist_ } from './olist';

@@ -1,5 +1,5 @@
 ﻿import { EmphasisParser, inline } from '../inline';
-import { union, some, surround, verify, fmap, build } from '../../combinator';
+import { union, some, fmap, surround, verify, build } from '../../combinator';
 import { strong } from './strong';
 import { compress, hasText } from '../util';
 import { html } from 'typed-dom';

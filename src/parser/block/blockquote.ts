@@ -1,5 +1,5 @@
 ﻿import { BlockquoteParser } from '../block';
-import { Parser, union, some, surround, block, line, focus, fmap, build } from '../../combinator';
+import { Parser, union, some, fmap, surround, block, line, focus, build } from '../../combinator';
 import { contentline } from '../source/line';
 import '../source/unescapable';
 import { parse } from '../api/parse';

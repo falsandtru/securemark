@@ -1,5 +1,5 @@
 ﻿import { AuthorityParser, inline } from '../inline';
-import { union, some, surround, verify, fmap, build } from '../../combinator';
+import { union, some, fmap, surround, verify, build } from '../../combinator';
 import { hasText, hasMedia, hasAnnotationOrAuthority } from '../util';
 import { html } from 'typed-dom';
 

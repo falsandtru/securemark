@@ -1,5 +1,5 @@
 ﻿import { HeadingParser } from '../block';
-import { union, some, match, verify, block, line, fmap, trim } from '../../combinator';
+import { union, some, fmap, match, verify, block, line, trim } from '../../combinator';
 import { indexer, defineIndex } from './indexer';
 import { inline } from '../inline';
 import { compress, hasText, hasMedia } from '../util';

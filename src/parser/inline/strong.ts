@@ -1,5 +1,5 @@
 ﻿import { StrongParser, inline } from '../inline';
-import { union, some, surround, verify, fmap, build } from '../../combinator';
+import { union, some, fmap, surround, verify, build } from '../../combinator';
 import { compress, hasText } from '../util';
 import { html } from 'typed-dom';
 

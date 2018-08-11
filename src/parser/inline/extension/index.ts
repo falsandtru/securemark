@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, surround, verify, subline, focus, fmap, build } from '../../../combinator';
+import { union, some, fmap, surround, verify, subline, focus, build } from '../../../combinator';
 import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
 import { hasTightText } from '../../util';

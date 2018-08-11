@@ -1,5 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { union, some, match, surround, verify, fmap } from '../../combinator';
+import { union, some, fmap, match, surround, verify } from '../../combinator';
 import { compress, hasText } from '../util';
 import { html as htm } from 'typed-dom';
 

@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { Parser, union, inits, some, match, surround, subline, fmap, bind, build } from '../../combinator';
+import { Parser, union, inits, some, fmap, bind, match, surround, subline, build } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority } from '../util';
 import { sanitize, decode } from '../string/uri';

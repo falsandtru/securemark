@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { union, match, surround, verify, subline, fmap, build } from '../../../combinator';
+import { union, fmap, match, surround, verify, subline, build } from '../../../combinator';
 import '../../source/unescapable';
 import { link } from '../link';
 import { hasTightText } from '../../util';

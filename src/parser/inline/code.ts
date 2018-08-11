@@ -1,5 +1,5 @@
 ﻿import { CodeParser } from '../inline';
-import { union, some, match, surround, subline, verify, bind } from '../../combinator';
+import { union, some, bind, match, surround, subline, verify } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { char } from '../source/char';
 import { hasText, stringify } from '../util';

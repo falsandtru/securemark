@@ -1,6 +1,6 @@
 ﻿import { ExtensionParser } from '../../block';
 import { SubParsers } from '../../../combinator/parser';
-import { union, sequence, inits, some, match, surround, contract, block, line, focus, bind, trim, eval } from '../../../combinator';
+import { union, sequence, inits, some, bind, match, surround, contract, block, line, focus, trim, eval } from '../../../combinator';
 import { emptyline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';

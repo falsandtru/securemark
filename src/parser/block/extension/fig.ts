@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, block, line, focus, some } from '../../../combinator';
+import { union, sequence, some, block, line, focus } from '../../../combinator';
 import { contentline } from '../../source/line';
 import { figure } from './figure';
 import { segment as seg_pre } from '../pretext';

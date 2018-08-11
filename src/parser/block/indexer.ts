@@ -1,5 +1,5 @@
 ﻿import { IndexerParser } from '../block';
-import { union, surround, line, fmap, trim } from '../../combinator';
+import { union, fmap, surround, line, trim } from '../../combinator';
 import { index } from '../inline';
 
 export const indexer: IndexerParser = line(
