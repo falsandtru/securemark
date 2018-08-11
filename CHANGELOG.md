@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.74.3
+
+- Refactoring.
+
 ## 0.74.2
 
 - Fix blockquote parser.
