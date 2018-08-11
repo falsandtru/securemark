@@ -92,13 +92,31 @@ describe('Unit: util/figure', () => {
         '~~~figure [:$-a]\n$$\nLaTeX\n$$\n~~~',
         '[:$-a]',
       ].join('\n\n'));
-      figure(source);
-      assert.deepStrictEqual(
-        [...source.children].map(el => el.outerHTML),
-        [
-          '<figure class="label:$-a" data-group="$" data-index="1" id="label:$-1"><div class="math notranslate">$$\nLaTeX\n$$</div><figcaption><span>(1)</span><span></span></figcaption></figure>',
-          '<p><a href="#label:$-1" rel="noopener" class="label:$-a">(1)</a></p>',
-        ]);
+      for (let i = 0; i < 3; ++i) {
+        figure(source);
+        assert.deepStrictEqual(
+          [...source.children].map(el => el.outerHTML),
+          [
+            '<figure class="label:$-a" data-group="$" data-index="1" id="label:$-1"><div class="math notranslate">$$\nLaTeX\n$$</div><figcaption><span>(1)</span><span></span></figcaption></figure>',
+            '<p><a href="#label:$-1" rel="noopener" class="label:$-a">(1)</a></p>',
+          ]);
+      }
+    });
+
+    it('separation', () => {
+      const source = parse([
+        '~~~figure [:fig-a]\n!https://host\n~~~',
+        '~~~~example/markdown\n~~~figure [:fig-a]\n!https://host\n~~~\n~~~~',
+      ].join('\n\n'));
+      for (let i = 0; i < 3; ++i) {
+        figure(source);
+        assert.deepStrictEqual(
+          [...source.children].map(el => el.outerHTML),
+          [
+            '<figure class="label:fig-a" data-group="fig" data-index="1" id="label:fig-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure>',
+            '<aside class="example" data-type="markdown"><pre>~~~figure [:fig-a]\n!https://host\n~~~</pre><div><figure class="label:fig-a" data-group="fig" data-index="1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure></div><ol></ol><ol></ol></aside>',
+          ]);
+      }
     });
 
   });

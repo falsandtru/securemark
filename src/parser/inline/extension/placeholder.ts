@@ -2,7 +2,7 @@
 import { union, some, fmap, match, surround, subline, build, eval } from '../../../combinator';
 import { html } from 'typed-dom';
 
-// Already used symbols: !@$*<
+// Already used symbols: !@$&*<
 export const placeholder: ExtensionParser.PlaceholderParser = subline(fmap(build(() =>
   surround(
     '[',

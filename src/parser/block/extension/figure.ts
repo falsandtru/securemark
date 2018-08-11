@@ -79,7 +79,7 @@ export const figure: FigureParser = block(focus(segment, match(
           },
           [
             content,
-            html('figcaption', [html('span', caption)])
+            html('figcaption', [html('span'), html('span', caption)])
           ])
         ], rest])
       (`${note}\n${body.slice(0, -1)}`))));

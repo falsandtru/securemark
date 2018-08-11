@@ -51,7 +51,7 @@ export const inline: InlineParser = union<InlineParser>([
 ]);
 
 export { index } from './inline/extension/index';
-export { label, isFixed } from './inline/extension/label';
+export { label, isGroup, isFixed } from './inline/extension/label';
 export { link } from './inline/link';
 export { media } from './inline/media';
 export { uri } from './inline/autolink/uri';
