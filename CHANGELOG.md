@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.75.0
+
+- Remove figure function's header formatter injection.
+
 ## 0.74.3
 
 - Refactoring.

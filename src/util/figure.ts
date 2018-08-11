@@ -3,11 +3,7 @@ import { html, define } from 'typed-dom';
 
 const headers = new WeakMap<HTMLElement, HTMLSpanElement>();
 
-export function figure(
-  source: DocumentFragment | HTMLElement,
-  header: (group: string, index: string) => string
-    = (group, index) => group === '$' ? `(${index})` : `${capitalize(group)}. ${index}.`
-): void {
+export function figure(source: DocumentFragment | HTMLElement): void {
   const figures = new Map<string, HTMLElement[]>();
   const exclusion = new Set(source.querySelectorAll('.example'));
   return void source.querySelectorAll<HTMLElement>('figure[class^="label:"]')
@@ -22,12 +18,15 @@ export function figure(
       void figure.setAttribute('id', `${label.split('-', 1)[0]}-${idx}`);
       const caption = figure.lastElementChild! as HTMLElement;
       assert(caption.matches('figcaption'));
-      headers.has(figure) && void headers.get(figure)!.remove();
-      void headers.set(figure, caption.insertBefore(html('span', header(group, idx)), caption.firstChild));
+      const header = headers.has(figure)
+        ? headers.get(figure)!
+        : html('span', group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}.`);
+      void headers.set(figure, header);
+      void caption.insertBefore(header, caption.firstChild);
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
       void source.querySelectorAll(`a.${query.replace(/[:$.]/g, '\\$&')}`)
         .forEach(ref =>
-          void define(ref, { href: `#${figure.id}` }, caption.firstChild!.textContent!.replace(/[.:]$/, '')));
+          void define(ref, { href: `#${figure.id}` }, header.textContent!.replace(/[.]$/, '')));
     });
 }
 
