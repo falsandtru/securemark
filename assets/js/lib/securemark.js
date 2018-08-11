@@ -775,6 +775,8 @@ require = function () {
             __export(require('./combinator/inits'));
             __export(require('./combinator/tails'));
             __export(require('./combinator/some'));
+            __export(require('./combinator/fmap'));
+            __export(require('./combinator/bind'));
             __export(require('./combinator/match'));
             __export(require('./combinator/surround'));
             __export(require('./combinator/contract'));
@@ -782,8 +784,6 @@ require = function () {
             __export(require('./combinator/line'));
             __export(require('./combinator/indent'));
             __export(require('./combinator/scope'));
-            __export(require('./combinator/fmap'));
-            __export(require('./combinator/bind'));
             __export(require('./combinator/trim'));
             __export(require('./combinator/build'));
         },
@@ -938,11 +938,11 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = require('./parser');
             const some_1 = require('./some');
+            const bind_1 = require('./bind');
             const match_1 = require('./match');
             const surround_1 = require('./surround');
             const line_1 = require('./line');
             const scope_1 = require('./scope');
-            const bind_1 = require('./bind');
             function indent(parser) {
                 return bind_1.bind(match_1.match(/^\s+/, ([whole], rest) => some_1.some(line_1.line(scope_1.focus(s => [
                     [],
@@ -1259,18 +1259,6 @@ require = function () {
                 return trimWith(parser, source => source.trim());
             }
             exports.trim = trim;
-            function trimStart(parser) {
-                return trimWith(parser, source => {
-                    const mid = source.trim();
-                    return source.slice(source.lastIndexOf(mid));
-                });
-            }
-            function trimEnd(parser) {
-                return trimWith(parser, source => {
-                    const mid = source.trim();
-                    return source.slice(0, source.lastIndexOf(mid) + mid.length);
-                });
-            }
             function trimWith(parser, trim) {
                 return source => {
                     if (source === '')
@@ -1281,16 +1269,6 @@ require = function () {
                         ''
                     ];
                 };
-            }
-            function trimLine(parser) {
-                return trimLineStart(trimLineEnd(parser));
-            }
-            exports.trimLine = trimLine;
-            function trimLineStart(parser) {
-                return source => source[0] === '\n' ? parser(source) : source.includes('\n') ? trimStart(s => parser(s + source.slice(source.indexOf('\n'))))(source.split('\n', 1)[0]) : trimStart(parser)(source);
-            }
-            function trimLineEnd(parser) {
-                return source => source[0] === '\n' ? parser(source) : source.includes('\n') ? trimEnd(s => parser(s + source.slice(source.indexOf('\n'))))(source.split('\n', 1)[0]) : trimEnd(parser)(source);
             }
         },
         {}
@@ -1636,7 +1614,7 @@ require = function () {
             exports.dlist = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
-            ]))), es => [typed_dom_1.html('dl', es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es)]));
+            ]))), es => [typed_dom_1.html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es)]));
             const term = combinator_1.line(combinator_1.focus(line_1.contentline, combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround(/^~(?=\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([
                 indexer_1.indexer,
                 inline_1.inline
