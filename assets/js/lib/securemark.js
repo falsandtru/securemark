@@ -1614,7 +1614,7 @@ require = function () {
             exports.dlist = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
-            ]))), es => [typed_dom_1.html('dl', es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es)]));
+            ]))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))]));
             const term = combinator_1.line(combinator_1.focus(line_1.contentline, combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround(/^~(?=\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([
                 indexer_1.indexer,
                 inline_1.inline
@@ -1627,6 +1627,9 @@ require = function () {
                 line_1.blankline,
                 line_1.contentline
             ])), /^[~:](?:\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), '', false))), ns => [typed_dom_1.html('dd', ns)]), false);
+            function fillTrailingDescription(es) {
+                return es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
+            }
         },
         {
             '../../combinator': 20,
@@ -1830,10 +1833,13 @@ require = function () {
             ]), ([label, content, ...caption]) => [
                 [typed_dom_1.html('figure', {
                         class: label.getAttribute('href').slice(1),
-                        'data-type': label.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0]
+                        'data-group': label.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0]
                     }, [
                         content,
-                        typed_dom_1.html('figcaption', [typed_dom_1.html('span', caption)])
+                        typed_dom_1.html('figcaption', [
+                            typed_dom_1.html('span'),
+                            typed_dom_1.html('span', caption)
+                        ])
                     ])],
                 rest
             ])(`${ note }\n${ body.slice(0, -1) }`))));
@@ -2347,6 +2353,7 @@ require = function () {
             exports.index = index_1.index;
             var label_1 = require('./inline/extension/label');
             exports.label = label_1.label;
+            exports.isGroup = label_1.isGroup;
             exports.isFixed = label_1.isFixed;
             var link_2 = require('./inline/link');
             exports.link = link_2.link;
@@ -2441,7 +2448,7 @@ require = function () {
                     [typed_dom_1.text(frag)],
                     rest
                 ]),
-                combinator_1.match(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/, ([whole], rest) => [
+                combinator_1.match(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*/, ([whole], rest) => [
                     [typed_dom_1.html('a', {
                             class: 'account',
                             rel: 'noopener'
@@ -3819,26 +3826,27 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const label_1 = require('../parser/inline/extension/label');
+            const inline_1 = require('../parser/inline');
+            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            const headers = new WeakMap();
-            function figure(source, header = (type, index) => type === '$' ? `(${ index })` : `${ capitalize(type) }. ${ index }.`) {
-                const figures = new Map();
-                const exclusion = new Set(source.querySelectorAll('.example'));
+            function figure(source) {
+                const groups = new Map();
+                const exclusions = new Set(source.querySelectorAll('.example figure'));
                 return void source.querySelectorAll('figure[class^="label:"]').forEach(figure => {
-                    if (exclusion.has(figure.closest('.example')))
+                    if (exclusions.has(figure))
                         return;
                     const label = figure.className;
-                    const type = figure.getAttribute('data-type');
-                    const acc = figures.get(type) || figures.set(type, []).get(type);
-                    void acc.push(figure);
-                    const idx = label_1.index(label, acc);
-                    void figure.setAttribute('data-index', `${ idx }`);
+                    const group = figure.getAttribute('data-group');
+                    void groups.set(group, concat_1.concat(groups.get(group) || [], [figure]));
+                    const idx = label_1.index(label, groups.get(group));
+                    void figure.setAttribute('data-index', idx);
                     void figure.setAttribute('id', `${ label.split('-', 1)[0] }-${ idx }`);
                     const caption = figure.lastElementChild;
-                    headers.has(figure) && void headers.get(figure).remove();
-                    void headers.set(figure, caption.insertBefore(typed_dom_1.html('span', header(type, idx)), caption.firstChild));
-                    const query = label_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, caption.firstChild.textContent.replace(/[.:]$/, '')));
+                    const header = caption.firstElementChild;
+                    void typed_dom_1.define(header, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
+                    void caption.insertBefore(header, caption.firstChild);
+                    const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
+                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, header.textContent.replace(/[.]$/, '')));
                 });
             }
             exports.figure = figure;
@@ -3847,7 +3855,9 @@ require = function () {
             }
         },
         {
+            '../parser/inline': 67,
             '../parser/inline/extension/label': 79,
+            'spica/concat': 7,
             'typed-dom': 13
         }
     ],
@@ -3929,8 +3939,8 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
             const concat_1 = require('spica/concat');
+            const typed_dom_1 = require('typed-dom');
             function toc(source) {
                 const hs = [...source.children].filter(el => el instanceof HTMLHeadingElement);
                 return parse(cons(hs));
