@@ -9,6 +9,6 @@ export const account: AutolinkParser.AccountParser = subline(union([
     ([frag], rest) =>
       [[text(frag)], rest]),
   focus(
-    match(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/, (_, rest) => [[], rest]),
+    /^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/,
     source => [[html('a', { class: 'account', rel: 'noopener' }, source)], ''])
 ]));

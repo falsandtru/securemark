@@ -1,6 +1,6 @@
 ﻿import { ExtensionParser } from '../../block';
 import { SubParsers } from '../../../combinator/parser';
-import { union, sequence, inits, some, bind, match, surround, contract, block, line, focus, trim, eval } from '../../../combinator';
+import { union, sequence, inits, some, bind, match, surround, contract, block, line, rewrite, trim, eval } from '../../../combinator';
 import { emptyline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
@@ -45,7 +45,7 @@ export const segment: FigureParser = block(union([
     (_, rest) => [[], rest]),
 ]));
 
-export const figure: FigureParser = block(focus(segment, match(
+export const figure: FigureParser = block(rewrite(segment, match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
   ([, , note, body], rest) =>
     bind(
@@ -58,7 +58,7 @@ export const figure: FigureParser = block(focus(segment, match(
             math,
             example,
             blockquote,
-            line(focus(
+            line(rewrite(
               media,
               source => link(`[${source}]( ${eval(media(source))[0].getAttribute('data-src')} )`))),
             line(contract('!', uri, ([node]) => node instanceof Element)),

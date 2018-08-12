@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, match, block, focus, eval, build } from '../../../combinator';
+import { union, match, block, rewrite, eval, build } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { math } from '../math';
 import { figure, footnote } from '../../../util';
@@ -12,7 +12,7 @@ export const segment_: ExtensionParser.ExampleParser = block(match(
   /^(~{3,})example\/(?:markdown|math)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,
   (_, rest) => [[], rest]), false);
 
-export const example: ExtensionParser.ExampleParser = block(focus(segment, union([
+export const example: ExtensionParser.ExampleParser = block(rewrite(segment, union([
   match(
     /^(~{3,})example\/markdown[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/,
     ([, , body], rest) => {

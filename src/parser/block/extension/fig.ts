@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, some, block, line, focus } from '../../../combinator';
+import { union, sequence, some, block, line, rewrite } from '../../../combinator';
 import { contentline } from '../../source/line';
 import { figure } from './figure';
 import { segment as seg_pre } from '../pretext';
@@ -22,7 +22,7 @@ export const segment: FigureParser = block(union([
   () => undefined,
 ]));
 
-export const fig: FigureParser = block(focus(segment, source => {
+export const fig: FigureParser = block(rewrite(segment, source => {
   const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || [])
     .reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
   return figure(`${bracket}figure ${source}\n${bracket}`);

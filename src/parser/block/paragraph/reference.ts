@@ -1,11 +1,11 @@
 ﻿import { ParagraphParser } from '../../block';
-import { union, some, match, validate, line, focus, eval } from '../../../combinator';
+import { union, some, match, validate, line, rewrite, eval } from '../../../combinator';
 import { contentline } from '../../source/line';
 import '../../source/unescapable';
 import { inline } from '../../inline';
 import { html } from 'typed-dom';
 
-export const reference: ParagraphParser.ReferenceParser = line(focus(contentline, validate(
+export const reference: ParagraphParser.ReferenceParser = line(rewrite(contentline, validate(
   /^(>+)[^>\s].*/,
   union<ParagraphParser.ReferenceParser>([
     match(
