@@ -58,7 +58,7 @@ export namespace MarkdownParser {
       Block<'header'>,
       Parser<HTMLHeadingElement, [
         IndexerParser,
-        InlineParser
+        InblockParser
       ]> {
     }
     export interface UListParser extends
@@ -85,7 +85,7 @@ export namespace MarkdownParser {
     export interface ListItemParser extends
       Block<'listitem'>,
       Parser<HTMLLIElement, [
-        InlineParser,
+        InblockParser,
         Parser<HTMLUListElement | HTMLOListElement, [
           UListParser,
           OListParser,
@@ -107,13 +107,13 @@ export namespace MarkdownParser {
         Block<'dlist/term'>,
         Parser<HTMLElement, [
           IndexerParser,
-          InlineParser
+          InblockParser
         ]> {
       }
       export interface DescriptionParser extends
         Block<'dlist/description'>,
         Parser<HTMLElement, [
-          InlineParser
+          InblockParser
         ]> {
       }
     }
@@ -144,7 +144,7 @@ export namespace MarkdownParser {
       export interface DataParser extends
         Block<'table/data'>,
         Parser<HTMLElement | Text, [
-          InlineParser
+          InblockParser
         ]> {
       }
       export interface AlignParser extends
@@ -215,7 +215,7 @@ export namespace MarkdownParser {
               SourceParser.EmptyLineParser,
               Parser<HTMLElement | Text, [
                 SourceParser.EmptyLineParser,
-                InlineParser
+                InblockParser
               ]>
             ]>
           ]>
@@ -237,10 +237,7 @@ export namespace MarkdownParser {
       Block<'paragraph'>,
       Parser<HTMLParagraphElement, [
         ParagraphParser.ReferenceParser,
-        Parser<HTMLElement | Text, [
-          ParagraphParser.HashtagParser,
-          InlineParser, InlineParser
-        ]>
+        InblockParser
       ]> {
     }
     export namespace ParagraphParser {
@@ -254,13 +251,6 @@ export namespace MarkdownParser {
           InlineParser
         ]> {
       }
-      export interface HashtagParser extends
-        // #tag
-        Block<'paragraph/hashtag'>,
-        Parser<HTMLAnchorElement, [
-          SourceParser.UnescapableSourceParser
-        ]> {
-      }
     }
     export interface IndexerParser extends
       // [#index]
@@ -270,11 +260,59 @@ export namespace MarkdownParser {
       ]> {
     }
   }
+  export interface InblockParser extends
+    Markdown<'inblock'>,
+    Parser<HTMLElement | Text, [
+      InblockParser.AnnotationParser,
+      InblockParser.AuthorityParser,
+      InblockParser.AutolinkParser,
+      InlineParser, InlineParser
+    ]> {
+  }
+  export namespace InblockParser {
+    interface Inblock<T> extends Markdown<['inblock', T]> { }
+    export interface AnnotationParser extends
+      // ((abc))
+      Inblock<'annotation'>,
+      Parser<HTMLElement, [
+        InblockParser
+      ]> {
+    }
+    export interface AuthorityParser extends
+      // [[abc]]
+      Inblock<'authority'>,
+      Parser<HTMLElement, [
+        InblockParser
+      ]> {
+    }
+    export interface AutolinkParser extends
+      Inblock<'autolink'>,
+      Parser<HTMLAnchorElement | Text, [
+        AutolinkParser.AccountParser,
+        AutolinkParser.HashtagParser
+      ]> {
+    }
+    export namespace AutolinkParser {
+      export interface AccountParser extends
+        // @account
+        Inblock<'account'>,
+        Parser<HTMLAnchorElement | Text, [
+          Parser<Text, []>,
+          Parser<HTMLAnchorElement, []>
+        ]> {
+      }
+      export interface HashtagParser extends
+        // #tag
+        Inblock<'hashtag'>,
+        Parser<HTMLAnchorElement, [
+          SourceParser.UnescapableSourceParser
+        ]> {
+      }
+    }
+  }
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
-      InlineParser.AnnotationParser,
-      InlineParser.AuthorityParser,
       InlineParser.ExtensionParser,
       InlineParser.LinkParser,
       InlineParser.HTMLParser,
@@ -292,20 +330,6 @@ export namespace MarkdownParser {
   }
   export namespace InlineParser {
     interface Inline<T> extends Markdown<['inline', T]> { }
-    export interface AnnotationParser extends
-      // ((abc))
-      Inline<'annotation'>,
-      Parser<HTMLElement, [
-        InlineParser
-      ]> {
-    }
-    export interface AuthorityParser extends
-      // [[abc]]
-      Inline<'authority'>,
-      Parser<HTMLElement, [
-        InlineParser
-      ]> {
-    }
     export interface LinkParser extends
       // [abc](uri)
       Inline<'link'>,
@@ -434,9 +458,8 @@ export namespace MarkdownParser {
     }
     export interface AutolinkParser extends
       Inline<'autolink'>,
-      Parser<HTMLAnchorElement | HTMLImageElement | HTMLSpanElement | Text, [
-        AutolinkParser.UriParser,
-        AutolinkParser.AccountParser
+      Parser<HTMLAnchorElement | HTMLImageElement | Text, [
+        AutolinkParser.UriParser
       ]> {
     }
     export namespace AutolinkParser {
@@ -447,14 +470,6 @@ export namespace MarkdownParser {
           Parser<Text, []>,
           LinkParser,
           LinkParser
-        ]> {
-      }
-      export interface AccountParser extends
-        // @account
-        Inline<'account'>,
-        Parser<HTMLAnchorElement | Text, [
-          Parser<Text, []>,
-          Parser<HTMLAnchorElement, []>
         ]> {
       }
     }
@@ -489,6 +504,11 @@ export namespace MarkdownParser {
       Parser<never, []> {
     }
     export namespace CharParser {
+      export interface SharpParser extends
+        // #
+        Source<'char/sharp'>,
+        Parser<Text, []> {
+      }
       export interface BackquoteParser extends
         // `
         Source<'char/backquote'>,

@@ -7,7 +7,8 @@ import { blockquote } from '../blockquote';
 import { pretext, segment_ as seg_pre } from '../pretext';
 import { math, segment_ as seg_math } from '../math';
 import { example, segment_ as seg_example } from './example';
-import { inline, label, media, link, uri } from '../../inline';
+import { inblock } from '../../inblock';
+import { label, media, link, uri } from '../../inline';
 import { compress } from '../../util';
 import { memoize } from 'spica/memoization';
 import { html } from 'typed-dom';
@@ -66,7 +67,7 @@ export const figure: FigureParser = block(focus(segment, match(
             emptyline,
             union([
               emptyline,
-              compress(trim(some(inline)))
+              compress(trim(some(inblock)))
             ]),
           ])),
         ]),

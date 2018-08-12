@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.76.0
+
+- Refine syntax structure design.
+  - Move annotation, authority, account, and hashtag syntax into inblock syntax.
+- Disllow trailing `#` with hashtag syntax.
+- Disllow trailing `@` with account syntax.
+
 ## 0.75.0
 
 - Allow trailing `@` with account syntax.

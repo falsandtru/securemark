@@ -2,6 +2,7 @@
 import { CharParser } from '../source';
 import { text } from 'typed-dom';
 
+export function char(char: '#'): CharParser.SharpParser;
 export function char(char: '`'): CharParser.BackquoteParser;
 export function char(char: string): Parser<Text, []> {
   return source => {

@@ -1,7 +1,7 @@
 ﻿import { LinkParser, inline } from '../inline';
 import { Parser, union, inits, some, fmap, bind, match, surround, subline, build } from '../../combinator';
 import { unescsource } from '../source/unescapable';
-import { compress, hasText, hasContent, hasMedia, hasLink, hasAnnotationOrAuthority } from '../util';
+import { compress, hasText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { memoize } from 'spica/memoization';
 import { html, text, frag } from 'typed-dom';
@@ -12,7 +12,6 @@ export const link: LinkParser = subline(bind(build(() =>
   subline(surround('[', compress(some(union([inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false))),
   (ns, rest) => {
     const children = frag(ns);
-    if (hasAnnotationOrAuthority(children)) return;
     if (hasMedia(children)) {
       void children.querySelectorAll('a > .media')
         .forEach(el =>

@@ -1,18 +1,14 @@
 ﻿import { ParagraphParser } from '../block';
-import { union, subsequence, some, fmap, block, trim, build } from '../../combinator';
+import { subsequence, some, fmap, block, trim, build } from '../../combinator';
 import { reference } from './paragraph/reference';
-import { hashtag } from './paragraph/hashtag';
-import { inline } from '../inline';
+import { inblock } from '../inblock';
 import { compress, hasContent } from '../util';
 import { html } from 'typed-dom';
 
 export const paragraph: ParagraphParser = block(fmap(build(() =>
   subsequence<ParagraphParser>([
     some(reference),
-    compress(trim(some(union([
-      hashtag,
-      some(inline, /^\s(?=#\S)/), inline
-    ])))),
+    compress(trim(some(inblock))),
   ])),
   ns => {
     const el = html('p', dropTrailingLinebreak(ns));

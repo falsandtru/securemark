@@ -2,7 +2,7 @@
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/inline/authority', () => {
+describe('Unit: parser/inblock/authority', () => {
   describe('authority', () => {
     const parser = some(authority);
 

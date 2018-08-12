@@ -2,7 +2,7 @@
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/inline/annotation', () => {
+describe('Unit: parser/inblock/annotation', () => {
   describe('annotation', () => {
     const parser = some(annotation);
 
