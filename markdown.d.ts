@@ -288,11 +288,20 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inblock<'autolink'>,
       Parser<HTMLAnchorElement | Text, [
+        AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser,
         AutolinkParser.HashtagParser
       ]> {
     }
     export namespace AutolinkParser {
+      export interface ChannelParser extends
+        // @account#tag
+        Inblock<'channel'>,
+        Parser<HTMLAnchorElement, [
+          AccountParser,
+          HashtagParser
+        ]> {
+      }
       export interface AccountParser extends
         // @account
         Inblock<'account'>,

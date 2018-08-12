@@ -55,6 +55,7 @@ https://falsandtru.github.io/securemark/
 - Annotation (((annotation)))
 - Authority ([[authority]])
 - Index (# title [#section], ~ term [#term], [#some words])
+- Channel (@account#tag)
 - Hashtag (#tag)
 - Comment (<# comment #>, \<!-- comment -->)
 

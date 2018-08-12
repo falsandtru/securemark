@@ -16,6 +16,11 @@ describe('Unit: parser/inblock', () => {
       assert.deepStrictEqual(inspect(parser('a[[b]]')), [['a', '<sup class="authority">b</sup>'], '']);
     });
 
+    it('channel', () => {
+      assert.deepStrictEqual(inspect(parser('@a#1')), [['<a class="channel" rel="noopener">@a#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser(' @a#1')), [[' ', '<a class="channel" rel="noopener">@a#1</a>'], '']);
+    });
+
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('@a')), [['<a class="account" rel="noopener">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a@')), [['@', 'a@'], '']);

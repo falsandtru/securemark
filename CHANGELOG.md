@@ -4,6 +4,7 @@
 
 - Refine syntax structure design.
   - Move annotation, authority, account, and hashtag syntax into inblock syntax.
+- Add channel syntax.
 - Disllow trailing `#` with hashtag syntax.
 - Disllow trailing `@` with account syntax.
 
