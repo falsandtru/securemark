@@ -11,8 +11,8 @@ import { html, frag } from 'typed-dom';
 const opener = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
 export const olist: OListParser = block(match(
-  /^([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$)/,
-  ([whole, index], rest) =>
+  /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
+  ([, index], source) =>
     fmap<OListParser>(
       some(union([
         fmap(
@@ -23,7 +23,7 @@ export const olist: OListParser = block(match(
           ns => [html('li', fillFirstLine(ns))])
       ])),
       es => [html('ol', { start: index, type: type(index) }, es)])
-      (whole + rest)));
+      (source)));
 
 function type(index: string): string {
   return Number.isInteger(+index)

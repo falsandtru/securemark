@@ -1,12 +1,12 @@
 ﻿import { CommentParser } from '../inline';
-import { union, match } from '../../combinator';
+import { union, focus } from '../../combinator';
 import '../source/unescapable';
 
 export const comment: CommentParser = union<CommentParser>([
-  match(
+  focus(
     /^<(#+)\s+(?:\S+\s+)*?\1>/,
-    (_, r) => [[], r]),
-  match(
+    _ => [[], '']),
+  focus(
     /^<!-{2,}\s+(?:\S+\s+)*?-{2,}>/,
-    (_, r) => [[], r]),
+    _ => [[], '']),
 ]);

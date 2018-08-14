@@ -1,9 +1,8 @@
 ﻿import { AutolinkParser } from '../../inblock';
-import { match, subline } from '../../../combinator';
+import { subline, focus } from '../../../combinator';
 import '../../source/unescapable';
 import { html } from 'typed-dom';
 
-export const hashtag: AutolinkParser.HashtagParser = subline(match(
+export const hashtag: AutolinkParser.HashtagParser = subline(focus(
   /^#[^#\s]+/,
-  ([tag], rest) =>
-    [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], rest]));
+  tag => [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], '']));

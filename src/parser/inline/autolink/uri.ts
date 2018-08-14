@@ -1,5 +1,5 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { union, some, match, surround, verify, subline, rewrite, build } from '../../../combinator';
+import { union, some, surround, verify, subline, focus, rewrite, build } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { link, ipv6, bracket } from '../link';
 import { text } from 'typed-dom';
@@ -7,10 +7,9 @@ import { text } from 'typed-dom';
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
 
 export const uri: AutolinkParser.UriParser = subline(union([
-  match(
+  focus(
     /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/,
-    ([frag], rest) =>
-      [[text(frag)], rest]),
+    frag => [[text(frag)], '']),
   surround(
     /^(?=h?ttps?:\/\/\S)/,
     verify(rewrite(

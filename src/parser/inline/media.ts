@@ -21,13 +21,13 @@ export const media: MediaParser = subline(bind(
       subline(surround(
         '(',
         inits<MediaParser>([
-          compress(surround(
+          surround(
             /^ ?(?! )/,
-            some(
+            compress(some(
               union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]),
-              closer(rest[1] === ' ' ? ' ' : '')),
+              closer(rest[1] === ' ' ? ' ' : ''))),
             /^ ?(?=\))|^ /,
-            false)),
+            false),
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))
         ]),
         ')',

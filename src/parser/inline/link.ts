@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { Parser, union, inits, some, fmap, bind, match, surround, subline, build } from '../../combinator';
+import { Parser, union, inits, some, fmap, bind, surround, subline, focus, build } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { compress, hasText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
@@ -29,13 +29,13 @@ export const link: LinkParser = subline(bind(build(() =>
       subline(surround(
         '(',
         inits<LinkParser>([
-          compress(surround(
+          surround(
             /^ ?(?! )/,
-            some(
+            compress(some(
               union<Parser<Text, [typeof bracket, typeof unescsource]>>([bracket, unescsource]),
-              closer(rest[1] === ' ' ? ' ' : '')),
+              closer(rest[1] === ' ' ? ' ' : ''))),
             /^ ?(?=\))|^ /,
-            false)),
+            false),
           some(surround('', compress(attribute), /^ ?(?=\))|^ /))
         ]),
         ')',
@@ -80,7 +80,7 @@ export const link: LinkParser = subline(bind(build(() =>
   }));
 
 export const ipv6 = fmap(
-  surround('[', match(/^[:0-9a-z]+/, ([addr], rest) => [[text(addr)], rest]), ']'),
+  surround('[', focus(/^[:0-9a-z]+/, addr => [[text(addr)], '']), ']'),
   ts => [text('['), ...ts, text(']')]);
 
 export const bracket: LinkParser.BracketParser = build(() => union([
@@ -99,5 +99,4 @@ export const bracket: LinkParser.BracketParser = build(() => union([
 ]));
 
 export const attribute: LinkParser.AttributeParser =
-  match(/^[a-z]+(?:=[^\s)]+)?/, ([attr], rest) =>
-    [[text(attr)], rest]);
+  focus(/^[a-z]+(?:=[^\s)]+)?/, attr => [[text(attr)], '']);

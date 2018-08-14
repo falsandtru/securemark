@@ -1,12 +1,11 @@
 ﻿import { HTMLEntityParser } from '../inline';
-import { match } from '../../combinator';
+import { focus } from '../../combinator';
 import '../source/unescapable';
 import { html, text } from 'typed-dom';
 
-export const htmlentity: HTMLEntityParser = match(
+export const htmlentity: HTMLEntityParser = focus(
   /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i,
-  ([entity], rest) =>
-    [[text(parse(entity))], rest]);
+  entity => [[text(parse(entity))], '']);
 
 const parser = html('span');
 function parse(str: string): string {

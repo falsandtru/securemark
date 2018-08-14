@@ -9,14 +9,14 @@ assert([...tags].every(tag => !['script', 'style', 'link', 'a', 'img'].includes(
 assert([...tags].every(tag => !['strong', 'em', 'code', 's', 'u', 'mark'].includes(tag)));
 
 export const html: HTMLParser = match(
-  /^<([a-z]+)>/,
-  ([whole, tag], rest) => {
+  /^(?=<([a-z]+)>)/,
+  ([, tag], source) => {
     if (!tags.has(tag)) return;
-    if (['wbr'].includes(tag)) return [[htm(tag as 'wbr')], rest];
+    if (['wbr'].includes(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
     assert(tags.has(tag));
     return verify(fmap<HTMLParser>(
       surround(`<${tag}>`, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
       ns => [htm(tag as 'span', ns)]
     ), ([el]) => hasText(el))
-      (whole + rest);
+      (source);
   });

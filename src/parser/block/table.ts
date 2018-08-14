@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, fmap, bind, match, surround, contract, block, line, rewrite, trim, build } from '../../combinator';
+import { union, sequence, some, fmap, bind, surround, contract, block, line, focus, rewrite, trim, build } from '../../combinator';
 import { contentline } from '../source/line';
 import { incell } from '../inblock';
 import { squash, hasMedia } from '../util';
@@ -78,9 +78,9 @@ const align: TableParser.AlignParser =
   surround(
     '|',
     union([
-      match(/^:-+:/, (_, rest) => [[text('center')], rest]),
-      match(/^:-+/, (_, rest) => [[text('left')], rest]),
-      match(/^-+:/, (_, rest) => [[text('right')], rest]),
-      match(/^-+/, (_, rest) => [[text('')], rest]),
+      focus(/^:-+:/, _ => [[text('center')], '']),
+      focus(/^:-+/, _ => [[text('left')], '']),
+      focus(/^-+:/, _ => [[text('right')], '']),
+      focus(/^-+/, _ => [[text('')], '']),
     ]),
     '');
