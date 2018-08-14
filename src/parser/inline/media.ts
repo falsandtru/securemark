@@ -7,9 +7,11 @@ import { sanitize } from '../string/uri';
 import { compress, stringify } from '../util';
 import { Cache } from 'spica/cache';
 import { memoize } from 'spica/memoization';
-import { html } from 'typed-dom';
+import { html, define } from 'typed-dom';
 
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\s`));
+const attributes: Record<string, Array<string | undefined>> = {
+};
 
 export const cache = new Cache<string, HTMLElement>(100);
 
@@ -28,31 +30,29 @@ export const media: MediaParser = subline(bind(
               closer(rest[1] === ' ' ? ' ' : ''))),
             /^ ?(?=\))|^ /,
             false),
-          some(surround('', compress(attribute), /^ ?(?=\))|^ /))
+          some(surround('', compress(attribute), /^ |^(?=\))/))
         ]),
         ')',
         false)),
       (ts, rest) => {
-        const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent!);
+        const [INSECURE_URL = '', ...args]: string[] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL.trim());
         if (uri === '' && INSECURE_URL !== '') return;
-        const attrs = new Map<string, string | undefined>(args.map<[string, string | undefined]>(arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
         if (uri.trim().toLowerCase().startsWith('tel:')) return;
+        const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
+          arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
         const el = html('img', { class: 'media', 'data-src': uri, alt: caption });
-        for (const [key, value] of attrs.entries()) {
-          switch (key) {
-            // @ts-ignore
-            case 'nofollow':
-              if (value === undefined) continue;
-            default:
-              void el.classList.add('invalid');
-          }
-          break;
-        }
         if (attrs.size !== args.length) {
           void el.classList.add('invalid');
         }
-        if (cache.has(uri)) return [[cache.get(uri)!.cloneNode(true)], rest];
+        for (const [key, value] of attrs.entries()) {
+          if (attributes.hasOwnProperty(key) && attributes[key].includes(value)) continue;
+          void el.classList.add('invalid');
+        }
+        if (cache.has(uri)) {
+          const el = cache.get(uri)!.cloneNode(true);
+          return [[['img', 'audio', 'video'].includes(el.tagName.toLowerCase()) ? define(el, { alt: caption }) : el], rest];
+        }
         return [[el], rest];
       })
       (rest);

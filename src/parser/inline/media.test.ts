@@ -67,6 +67,10 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![](//[::])')), [['<img class="media" data-src="//[::]" alt="">'], '']);
     });
 
+    it('attribute', () => {
+      assert.deepStrictEqual(inspect(parser('![](/ constructor)')), [['<img class="media invalid" data-src="/" alt="">'], '']);
+    });
+
   });
 
 });

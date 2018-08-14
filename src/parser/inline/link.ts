@@ -7,6 +7,9 @@ import { memoize } from 'spica/memoization';
 import { html, text, frag } from 'typed-dom';
 
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\s`));
+const attributes: Record<string, Array<string | undefined>> = {
+  nofollow: [undefined],
+};
 
 export const link: LinkParser = subline(bind(build(() =>
   subline(surround('[', compress(some(union([inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false))),
@@ -36,15 +39,16 @@ export const link: LinkParser = subline(bind(build(() =>
               closer(rest[1] === ' ' ? ' ' : ''))),
             /^ ?(?=\))|^ /,
             false),
-          some(surround('', compress(attribute), /^ ?(?=\))|^ /))
+          some(surround('', compress(attribute), /^ |^(?=\))/))
         ]),
         ')',
         false)),
       (ts, rest) => {
-        const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent!);
+        const [INSECURE_URL = '', ...args]: string[] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL);
         if (uri === '' && INSECURE_URL !== '') return;
-        const attrs = new Map<string, string | undefined>(args.map<[string, string | undefined]>(arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
+        const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
+          arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
         const el = html('a',
           {
             href: uri,
@@ -61,17 +65,11 @@ export const link: LinkParser = subline(bind(build(() =>
         if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
           void el.setAttribute('target', '_blank');
         }
-        for (const [key, value] of attrs.entries()) {
-          switch (key) {
-            // @ts-ignore
-            case 'nofollow':
-              if (value === undefined) continue;
-            default:
-              void el.classList.add('invalid');
-          }
-          break;
-        }
         if (attrs.size !== args.length) {
+          void el.classList.add('invalid');
+        }
+        for (const [key, value] of attrs.entries()) {
+          if (attributes.hasOwnProperty(key) && attributes[key].includes(value)) continue;
           void el.classList.add('invalid');
         }
         return [[el], rest];
