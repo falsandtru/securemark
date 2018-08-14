@@ -1,7 +1,8 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { union, some, surround, verify, subline, focus, rewrite, build } from '../../../combinator';
+import { union, some, fmap, surround, verify, subline, focus, rewrite, build } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
-import { link, ipv6, bracket } from '../link';
+import { link, bracket } from '../link';
+import { compress } from '../../util';
 import { text } from 'typed-dom';
 
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
@@ -9,11 +10,11 @@ const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s
 export const uri: AutolinkParser.UriParser = subline(union([
   focus(
     /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/,
-    frag => [[text(frag)], '']),
+    compress(some(unescsource))),
   surround(
     /^(?=h?ttps?:\/\/\S)/,
-    verify(rewrite(
-      some(union([ipv6, bracket, some(unescsource, closer)])),
+    verify(rewrite(build(() =>
+      some(union([ipv6, bracket, some(unescsource, closer)]))),
       source =>
         link(`[](${address(source)}${attribute(source)})`)),
       ([node]) => node instanceof HTMLAnchorElement),
@@ -27,6 +28,10 @@ export const uri: AutolinkParser.UriParser = subline(union([
       ([node]) => node instanceof HTMLAnchorElement),
     ''),
 ]));
+
+const ipv6 = subline(fmap(
+  surround('[', focus(/^[:0-9a-z]+/, addr => [[text(addr)], '']), ']'),
+  ts => [text('['), ...ts, text(']')]));
 
 function address(source: string): string {
   return source.startsWith('ttp')

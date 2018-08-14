@@ -79,11 +79,7 @@ export const link: LinkParser = subline(bind(build(() =>
       (rest);
   }));
 
-export const ipv6 = fmap(
-  surround('[', focus(/^[:0-9a-z]+/, addr => [[text(addr)], '']), ']'),
-  ts => [text('['), ...ts, text(']')]);
-
-export const bracket: LinkParser.BracketParser = build(() => union([
+export const bracket: LinkParser.BracketParser = subline(build(() => union([
   fmap(
     surround('(', some(union([bracket, unescsource]), /^[\)\s]/), ')', false),
     ts => [text('('), ...ts, text(')')]),
@@ -96,7 +92,8 @@ export const bracket: LinkParser.BracketParser = build(() => union([
   fmap(
     surround('<', some(union([bracket, unescsource]), /^[\>\s]/), '>', false),
     ts => [text('<'), ...ts, text('>')]),
-]));
+])));
 
-export const attribute: LinkParser.AttributeParser =
-  focus(/^[a-z]+(?:=[^\s)]+)?/, attr => [[text(attr)], '']);
+export const attribute: LinkParser.AttributeParser = subline(focus(
+  /^[a-z]+(?:=[^\s)]+)?/,
+  some(union([unescsource]))));

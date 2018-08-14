@@ -306,7 +306,7 @@ export namespace MarkdownParser {
         // @account
         Inblock<'account'>,
         Parser<HTMLAnchorElement | Text, [
-          Parser<Text, []>,
+          SourceParser.UnescapableSourceParser,
           Parser<HTMLAnchorElement, []>
         ]> {
       }
@@ -361,7 +361,9 @@ export namespace MarkdownParser {
       export interface AttributeParser extends
         // nofollow
         Inline<'link/attribute'>,
-        Parser<Text, []> {
+        Parser<Text, [
+          SourceParser.UnescapableSourceParser
+        ]> {
       }
     }
     export interface ExtensionParser extends
@@ -476,7 +478,7 @@ export namespace MarkdownParser {
         // https://host
         Inline<'uri'>,
         Parser<HTMLAnchorElement | Text, [
-          Parser<Text, []>,
+          SourceParser.UnescapableSourceParser,
           LinkParser,
           LinkParser
         ]> {
