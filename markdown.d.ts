@@ -414,6 +414,15 @@ export namespace MarkdownParser {
         InlineParser
       ]> {
     }
+    export namespace HTMLParser {
+      export interface AttributeParser extends
+        // attr=""
+        Inline<'html/attribute'>,
+        Parser<Text, [
+          SourceParser.UnescapableSourceParser
+        ]> {
+      }
+    }
     export interface EmphasisParser extends
       // *abc*
       Inline<'emphasis'>,

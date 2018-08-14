@@ -2,6 +2,7 @@
 
 ## 0.77.0
 
+- Allow HTML attributes.
 - Remove `cite` HTML tag.
 
 ## 0.76.0

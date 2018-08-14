@@ -36,6 +36,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small>a</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>a')), [['<small>a</small>'], 'a']);
       assert.deepStrictEqual(inspect(parser('<small>a\nb</small>')), [['<small>a<span class="linebreak"> <wbr></span>b</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
     });
 
     it('nest', () => {
@@ -54,8 +55,10 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small><img /></small>')), [['<small>&lt;img /&gt;</small>'], '']);
     });
 
-    it('wbr', () => {
-      assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
+    it('attribute', () => {
+      assert.deepStrictEqual(inspect(parser('<small constructor>a</small>')), [['<small class="invalid">a</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdo constructor>a</bdo>')), [['<bdo class="invalid">a</bdo>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdo dir="rtl">a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
     });
 
   });
