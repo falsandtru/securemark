@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.77.0
+
+- Remove `cite` HTML tag.
+
 ## 0.76.0
 
 - Refine syntax structure design.
