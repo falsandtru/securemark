@@ -1699,9 +1699,9 @@ require = function () {
             const suppression_1 = require('../../../util/suppression');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.match(/^(~{3,})example\/(?:markdown|math)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
-                rest
+                ''
             ]), false);
             exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.match(/^(~{3,})example\/markdown[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => {
@@ -1884,9 +1884,9 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const inline_1 = require('../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, (_, rest) => [
+            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
-                rest
+                ''
             ]));
             exports.placeholder = combinator_1.block(combinator_1.rewrite(exports.segment, () => [
                 [typed_dom_1.html('p', { class: 'invalid' }, combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: Extension syntax: ~~~.')))],
@@ -1931,9 +1931,9 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             const typed_dom_1 = require('typed-dom');
-            exports.horizontalrule = combinator_1.block(combinator_1.line(combinator_1.match(/^-{3,}[^\S\n]*(?:\n|$)/, (_, r) => [
+            exports.horizontalrule = combinator_1.block(combinator_1.line(combinator_1.focus(/^-{3,}[^\S\n]*(?:\n|$)/, _ => [
                 [typed_dom_1.html('hr')],
-                r
+                ''
             ])));
         },
         {
@@ -2015,9 +2015,9 @@ require = function () {
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.match(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/, (_, rest) => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/, _ => [
                 [],
-                rest
+                ''
             ]), false);
             exports.math = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/, ([, arg, body], rest) => [
                 [typed_dom_1.html('div', { class: `math notranslate ${ arg.trim() ? 'invalid' : '' }`.trim() }, `$$${ body }$$`)],
@@ -2056,7 +2056,7 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const opener = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`));
-            exports.olist = combinator_1.block(combinator_1.match(/^([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$)/, ([whole, index], rest) => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/, ([, index], source) => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.surround(opener(pattern(type(index))), util_1.compress(combinator_1.trim(combinator_1.some(inblock_1.inblock))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))))),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
@@ -2066,7 +2066,7 @@ require = function () {
                 ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))])])), es => [typed_dom_1.html('ol', {
                     start: index,
                     type: type(index)
-                }, es)])(whole + rest)));
+                }, es)])(source)));
             function type(index) {
                 return Number.isInteger(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A';
             }
@@ -2162,9 +2162,9 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.match(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/, (_, rest) => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
-                rest
+                ''
             ]), false);
             exports.pretext = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , lang, notes, body], rest) => {
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
@@ -2237,21 +2237,21 @@ require = function () {
                 rest
             ]));
             const align = combinator_1.surround('|', combinator_1.union([
-                combinator_1.match(/^:-+:/, (_, rest) => [
+                combinator_1.focus(/^:-+:/, _ => [
                     [typed_dom_1.text('center')],
-                    rest
+                    ''
                 ]),
-                combinator_1.match(/^:-+/, (_, rest) => [
+                combinator_1.focus(/^:-+/, _ => [
                     [typed_dom_1.text('left')],
-                    rest
+                    ''
                 ]),
-                combinator_1.match(/^-+:/, (_, rest) => [
+                combinator_1.focus(/^-+:/, _ => [
                     [typed_dom_1.text('right')],
-                    rest
+                    ''
                 ]),
-                combinator_1.match(/^-+/, (_, rest) => [
+                combinator_1.focus(/^-+/, _ => [
                     [typed_dom_1.text('')],
-                    rest
+                    ''
                 ])
             ]), '');
         },
@@ -2409,13 +2409,11 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
-            require('../../source/unescapable');
+            const unescapable_1 = require('../../source/unescapable');
+            const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
             exports.account = combinator_1.subline(combinator_1.union([
-                combinator_1.match(/^[0-9a-zA-Z@]@+/, ([frag], rest) => [
-                    [typed_dom_1.text(frag)],
-                    rest
-                ]),
+                combinator_1.focus(/^[0-9a-zA-Z@]@+/, util_1.compress(combinator_1.some(unescapable_1.unescsource))),
                 combinator_1.focus(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/, source => [
                     [typed_dom_1.html('a', {
                             class: 'account',
@@ -2428,6 +2426,7 @@ require = function () {
         {
             '../../../combinator': 20,
             '../../source/unescapable': 96,
+            '../../util': 98,
             'typed-dom': 13
         }
     ],
@@ -2466,12 +2465,12 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             require('../../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.hashtag = combinator_1.subline(combinator_1.match(/^#[^#\s]+/, ([tag], rest) => [
+            exports.hashtag = combinator_1.subline(combinator_1.focus(/^#[^#\s]+/, tag => [
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
                         rel: 'noopener'
                     }, tag)],
-                rest
+                ''
             ]));
         },
         {
@@ -2566,19 +2565,25 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const unescapable_1 = require('../../source/unescapable');
             const link_1 = require('../link');
+            const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
             const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
             exports.uri = combinator_1.subline(combinator_1.union([
-                combinator_1.match(/^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/, ([frag], rest) => [
-                    [typed_dom_1.text(frag)],
-                    rest
-                ]),
-                combinator_1.surround(/^(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.some(combinator_1.union([
-                    link_1.ipv6,
+                combinator_1.focus(/^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/, util_1.compress(combinator_1.some(unescapable_1.unescsource))),
+                combinator_1.surround(/^(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.build(() => combinator_1.some(combinator_1.union([
+                    ipv6,
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ])), source => link_1.link(`[](${ address(source) }${ attribute(source) })`)), ([node]) => node instanceof HTMLAnchorElement), ''),
+                ]))), source => link_1.link(`[](${ address(source) }${ attribute(source) })`)), ([node]) => node instanceof HTMLAnchorElement), ''),
                 combinator_1.surround(/^!(?=https?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.build(() => combinator_1.verify(exports.uri, ([node]) => node instanceof HTMLAnchorElement)), source => link_1.link(`[![](${ source })](${ source })`)), ([node]) => node instanceof HTMLAnchorElement), '')
+            ]));
+            const ipv6 = combinator_1.subline(combinator_1.fmap(combinator_1.surround('[', combinator_1.focus(/^[:0-9a-z]+/, addr => [
+                [typed_dom_1.text(addr)],
+                ''
+            ]), ']'), ts => [
+                typed_dom_1.text('['),
+                ...ts,
+                typed_dom_1.text(']')
             ]));
             function address(source) {
                 return source.startsWith('ttp') ? `h${ source }` : source;
@@ -2590,6 +2595,7 @@ require = function () {
         {
             '../../../combinator': 20,
             '../../source/unescapable': 96,
+            '../../util': 98,
             '../link': 86,
             'typed-dom': 13
         }
@@ -2675,13 +2681,13 @@ require = function () {
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
             exports.comment = combinator_1.union([
-                combinator_1.match(/^<(#+)\s+(?:\S+\s+)*?\1>/, (_, r) => [
+                combinator_1.focus(/^<(#+)\s+(?:\S+\s+)*?\1>/, _ => [
                     [],
-                    r
+                    ''
                 ]),
-                combinator_1.match(/^<!-{2,}\s+(?:\S+\s+)*?-{2,}>/, (_, r) => [
+                combinator_1.focus(/^<!-{2,}\s+(?:\S+\s+)*?-{2,}>/, _ => [
                     [],
-                    r
+                    ''
                 ])
             ]);
         },
@@ -2765,7 +2771,7 @@ require = function () {
             require('../../source/unescapable');
             const link_1 = require('../link');
             const util_1 = require('../../util');
-            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.match(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, ([query], rest) => combinator_1.union([link_1.link])(`[\\${ query }](#${ makeLabel(query) })${ rest }`)), ']')), ([el]) => {
+            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, query => combinator_1.union([link_1.link])(`[\\${ query }](#${ makeLabel(query) })`)), ']')), ([el]) => {
                 void el.setAttribute('class', el.getAttribute('href').slice(1));
                 return [el];
             }), ([el]) => util_1.hasTightText(el)));
@@ -2823,23 +2829,67 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
+            const unescapable_1 = require('../source/unescapable');
+            const escapable_1 = require('../source/escapable');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            const tags = new Set('ins|del|sup|sub|small|cite|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
-            exports.html = combinator_1.match(/^<([a-z]+)>/, ([whole, tag], rest) => {
+            const tags = new Set('ins|del|sup|sub|small|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
+            exports.html = combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]+)?>)/, ([, tag], source) => {
                 if (!tags.has(tag))
                     return;
                 if (['wbr'].includes(tag))
                     return [
                         [typed_dom_1.html(tag)],
-                        rest
+                        source.slice(tag.length + 2)
                     ];
-                return combinator_1.verify(combinator_1.fmap(combinator_1.surround(`<${ tag }>`, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.html(tag, ns)]), ([el]) => util_1.hasText(el))(whole + rest);
+                const [args = [], rest = undefined] = combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.compress(attribute), '>'), '>', false)(source) || [];
+                if (!rest)
+                    return;
+                const el = typed_dom_1.html(tag);
+                return combinator_1.verify(combinator_1.fmap(combinator_1.surround(``, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), ns => [typed_dom_1.define(el, attrs(el, tag, args.map(t => t.textContent)), ns)]), ([el]) => util_1.hasText(el))(rest);
             });
+            const attribute = combinator_1.fmap(combinator_1.surround(' ', combinator_1.inits([
+                combinator_1.focus(/^[a-z]+(?=[= >])/, util_1.compress(combinator_1.some(unescapable_1.unescsource, /^[^a-z]/))),
+                combinator_1.surround('="', util_1.compress(combinator_1.some(escapable_1.escsource, '"')), '"', false)
+            ]), ''), ([key, value = undefined]) => value === undefined ? [key] : [
+                key,
+                typed_dom_1.text('='),
+                value
+            ]);
+            const attributes = {
+                bdo: {
+                    dir: [
+                        'ltr',
+                        'rtl'
+                    ]
+                }
+            };
+            function attrs(el, tag, args) {
+                const attrs = new Map(args.map(arg => [
+                    arg.split('=', 1)[0],
+                    arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined
+                ]));
+                if (!attributes[tag] && args.length > 0 || attrs.size !== args.length) {
+                    void el.classList.add('invalid');
+                }
+                if (attributes[tag]) {
+                    for (const [key, value] of [...attrs.entries()]) {
+                        if (attributes[tag].hasOwnProperty(key) && attributes[tag][key].includes(value)) {
+                            void el.setAttribute(key, value || '');
+                        } else {
+                            void attrs.delete(key);
+                            void el.classList.add('invalid');
+                        }
+                    }
+                }
+                return [...attrs.entries()].reduce((obj, [key, value]) => (obj[key] = value, obj), {});
+            }
         },
         {
             '../../combinator': 20,
             '../inline': 73,
+            '../source/escapable': 93,
+            '../source/unescapable': 96,
             '../util': 98,
             'typed-dom': 13
         }
@@ -2851,9 +2901,9 @@ require = function () {
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.htmlentity = combinator_1.match(/^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i, ([entity], rest) => [
+            exports.htmlentity = combinator_1.focus(/^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i, entity => [
                 [typed_dom_1.text(parse(entity))],
-                rest
+                ''
             ]);
             const parser = typed_dom_1.html('span');
             function parse(str) {
@@ -2879,6 +2929,7 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }\\)|^\\s`));
+            const attributes = { nofollow: [undefined] };
             exports.link = combinator_1.subline(combinator_1.bind(combinator_1.build(() => combinator_1.subline(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false))), (ns, rest) => {
                 const children = typed_dom_1.frag(ns);
                 if (util_1.hasMedia(children)) {
@@ -2894,11 +2945,11 @@ require = function () {
                         return;
                 }
                 return combinator_1.bind(combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
-                    util_1.compress(combinator_1.surround(/^ ?(?! )/, combinator_1.some(combinator_1.union([
+                    combinator_1.surround(/^ ?(?! )/, util_1.compress(combinator_1.some(combinator_1.union([
                         exports.bracket,
                         unescapable_1.unescsource
-                    ]), closer(rest[1] === ' ' ? ' ' : '')), /^ ?(?=\))|^ /, false)),
-                    combinator_1.some(combinator_1.surround('', util_1.compress(exports.attribute), /^ ?(?=\))|^ /))
+                    ]), closer(rest[1] === ' ' ? ' ' : ''))), /^ ?(?=\))|^ /, false),
+                    combinator_1.some(combinator_1.surround('', util_1.compress(exports.attribute), /^ |^(?=\))/))
                 ]), ')', false)), (ts, rest) => {
                     const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent);
                     const uri = uri_1.sanitize(INSECURE_URL);
@@ -2919,17 +2970,12 @@ require = function () {
                     if ((el.origin !== window.location.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
                         void el.setAttribute('target', '_blank');
                     }
-                    for (const [key, value] of attrs.entries()) {
-                        switch (key) {
-                        case 'nofollow':
-                            if (value === undefined)
-                                continue;
-                        default:
-                            void el.classList.add('invalid');
-                        }
-                        break;
-                    }
                     if (attrs.size !== args.length) {
+                        void el.classList.add('invalid');
+                    }
+                    for (const [key, value] of attrs.entries()) {
+                        if (attributes.hasOwnProperty(key) && attributes[key].includes(value))
+                            continue;
                         void el.classList.add('invalid');
                     }
                     return [
@@ -2938,15 +2984,7 @@ require = function () {
                     ];
                 })(rest);
             }));
-            exports.ipv6 = combinator_1.fmap(combinator_1.surround('[', combinator_1.match(/^[:0-9a-z]+/, ([addr], rest) => [
-                [typed_dom_1.text(addr)],
-                rest
-            ]), ']'), ts => [
-                typed_dom_1.text('['),
-                ...ts,
-                typed_dom_1.text(']')
-            ]);
-            exports.bracket = combinator_1.build(() => combinator_1.union([
+            exports.bracket = combinator_1.subline(combinator_1.build(() => combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
                     unescapable_1.unescsource
@@ -2979,11 +3017,8 @@ require = function () {
                     ...ts,
                     typed_dom_1.text('>')
                 ])
-            ]));
-            exports.attribute = combinator_1.match(/^[a-z]+(?:=[^\s)]+)?/, ([attr], rest) => [
-                [typed_dom_1.text(attr)],
-                rest
-            ]);
+            ])));
+            exports.attribute = combinator_1.subline(combinator_1.focus(/^[a-z]+(?:=[^\s)]+)?/, combinator_1.some(combinator_1.union([unescapable_1.unescsource]))));
         },
         {
             '../../combinator': 20,
@@ -3035,49 +3070,51 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }\\)|^\\s`));
+            const attributes = {};
             exports.cache = new cache_1.Cache(100);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.subline(combinator_1.surround('![', combinator_1.some(combinator_1.union([text_1.text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)), (ts, rest) => {
                 const caption = util_1.stringify(ts).trim();
                 return combinator_1.bind(combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
-                    util_1.compress(combinator_1.surround(/^ ?(?! )/, combinator_1.some(combinator_1.union([
+                    combinator_1.surround(/^ ?(?! )/, util_1.compress(combinator_1.some(combinator_1.union([
                         link_1.bracket,
                         unescapable_1.unescsource
-                    ]), closer(rest[1] === ' ' ? ' ' : '')), /^ ?(?=\))|^ /, false)),
-                    combinator_1.some(combinator_1.surround('', util_1.compress(link_1.attribute), /^ ?(?=\))|^ /))
+                    ]), closer(rest[1] === ' ' ? ' ' : ''))), /^ ?(?=\))|^ /, false),
+                    combinator_1.some(combinator_1.surround('', util_1.compress(link_1.attribute), /^ |^(?=\))/))
                 ]), ')', false)), (ts, rest) => {
                     const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent);
                     const uri = uri_1.sanitize(INSECURE_URL.trim());
                     if (uri === '' && INSECURE_URL !== '')
                         return;
+                    if (uri.trim().toLowerCase().startsWith('tel:'))
+                        return;
                     const attrs = new Map(args.map(arg => [
                         arg.split('=', 1)[0],
                         arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined
                     ]));
-                    if (uri.trim().toLowerCase().startsWith('tel:'))
-                        return;
                     const el = typed_dom_1.html('img', {
                         class: 'media',
                         'data-src': uri,
                         alt: caption
                     });
-                    for (const [key, value] of attrs.entries()) {
-                        switch (key) {
-                        case 'nofollow':
-                            if (value === undefined)
-                                continue;
-                        default:
-                            void el.classList.add('invalid');
-                        }
-                        break;
-                    }
                     if (attrs.size !== args.length) {
                         void el.classList.add('invalid');
                     }
-                    if (exports.cache.has(uri))
+                    for (const [key, value] of attrs.entries()) {
+                        if (attributes.hasOwnProperty(key) && attributes[key].includes(value))
+                            continue;
+                        void el.classList.add('invalid');
+                    }
+                    if (exports.cache.has(uri)) {
+                        const el = exports.cache.get(uri).cloneNode(true);
                         return [
-                            [exports.cache.get(uri).cloneNode(true)],
+                            [[
+                                    'img',
+                                    'audio',
+                                    'video'
+                                ].includes(el.tagName.toLowerCase()) ? typed_dom_1.define(el, { alt: caption }) : el],
                             rest
                         ];
+                    }
                     return [
                         [el],
                         rest
