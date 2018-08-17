@@ -2,8 +2,12 @@
 
 describe('Unit: parser/api/normalization', () => {
   describe('normalize', () => {
+    it('insecure characters', () => {
+      assert(normalize('\u0000\u0000') === '\uFFFD\uFFFD');
+    });
+
     it('surrogate pairs', () => {
-      assert(normalize('\uDC00\uD800') === '');
+      assert(normalize('\uDC00\uD800') === '\uFFFD\uFFFD');
     });
 
     it('control', () => {
@@ -12,7 +16,7 @@ describe('Unit: parser/api/normalization', () => {
       assert(normalize('\r') === '\n');
       assert(normalize('\r\n') === '\n');
       assert(normalize('\n\r') === '\n\n');
-      assert(normalize('\x00') === '');
+      assert(normalize('\x00') === '\uFFFD');
       assert(normalize('\x01') === '');
       assert(normalize('\x02') === '');
       assert(normalize('\x03') === '');

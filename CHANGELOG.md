@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.78.0
+
+- Escape insecure characters.
+
 ## 0.77.0
 
 - Allow HTML attributes.
