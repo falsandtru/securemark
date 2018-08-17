@@ -19,8 +19,8 @@ export const media: MediaParser = subline(bind(
   subline(surround('![', some(union([text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)),
   (ts, rest) => {
     const caption = stringify(ts).trim();
-    return bind<MediaParser>(
-      subline(surround(
+    return subline(bind<MediaParser>(
+      surround(
         '(',
         inits<MediaParser>([
           surround(
@@ -33,7 +33,7 @@ export const media: MediaParser = subline(bind(
           some(surround('', compress(attribute), /^ |^(?=\))/))
         ]),
         ')',
-        false)),
+        false),
       (ts, rest) => {
         const [INSECURE_URL = '', ...args]: string[] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL.trim());
@@ -54,6 +54,6 @@ export const media: MediaParser = subline(bind(
           return [[['img', 'audio', 'video'].includes(el.tagName.toLowerCase()) ? define(el, { alt: caption }) : el], rest];
         }
         return [[el], rest];
-      })
+      }))
       (rest);
   }));

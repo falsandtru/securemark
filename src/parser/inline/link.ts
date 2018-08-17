@@ -28,8 +28,8 @@ export const link: LinkParser = subline(bind(build(() =>
       if (hasLink(children)) return;
     }
     assert(children.querySelector('a > .media') || !hasLink(children));
-    return bind(
-      subline(surround(
+    return subline(bind(
+      surround(
         '(',
         inits<LinkParser>([
           surround(
@@ -42,7 +42,7 @@ export const link: LinkParser = subline(bind(build(() =>
           some(surround('', compress(attribute), /^ |^(?=\))/))
         ]),
         ')',
-        false)),
+        false),
       (ts, rest) => {
         const [INSECURE_URL = '', ...args]: string[] = ts.map(t => t.textContent!);
         const uri = sanitize(INSECURE_URL);
@@ -73,7 +73,7 @@ export const link: LinkParser = subline(bind(build(() =>
           void el.classList.add('invalid');
         }
         return [[el], rest];
-      })
+      }))
       (rest);
   }));
 

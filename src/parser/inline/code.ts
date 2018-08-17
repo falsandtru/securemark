@@ -13,10 +13,7 @@ export const code: CodeParser = subline(match(
   ([, bracket], source) =>
     verify(bind<CodeParser>(
       surround(bracket, some(union([some(char('`')), unescsource]), closer(bracket)), closer(bracket)),
-      (ns, rest) => {
-        const el = html('code',
-          { 'data-src': source.slice(0, source.length - rest.length) },
-          stringify(ns).trim());
-        return [[el], rest]
-      }), ([el]) => hasText(el))
+      (ns, rest) =>
+        [[html('code', { 'data-src': source.slice(0, source.length - rest.length) }, stringify(ns).trim())], rest]),
+      ([el]) => hasText(el))
       (source)));

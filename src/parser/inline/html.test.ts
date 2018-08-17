@@ -58,6 +58,7 @@ describe('Unit: parser/inline/html', () => {
     it('attribute', () => {
       assert.deepStrictEqual(inspect(parser('<small constructor>a</small>')), [['<small class="invalid">a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo constructor>a</bdo>')), [['<bdo class="invalid">a</bdo>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdo dir="rtl" dir="rtl">a</bdo>')), [['<bdo class="invalid" dir="rtl">a</bdo>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl">a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
     });
 
