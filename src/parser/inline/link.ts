@@ -1,7 +1,7 @@
 ﻿import { LinkParser, inline } from '../inline';
 import { Parser, union, inits, some, fmap, bind, surround, subline, focus, build } from '../../combinator';
 import { unescsource } from '../source/unescapable';
-import { compress, hasText, hasContent, hasMedia, hasLink } from '../util';
+import { compress, hasTightStartText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { memoize } from 'spica/memoization';
 import { html, text, frag } from 'typed-dom';
@@ -24,7 +24,7 @@ export const link: LinkParser = subline(bind(build(() =>
       assert(!hasLink(children));
     }
     else {
-      if (children.childNodes.length > 0 && !hasText(children)) return;
+      if (children.childNodes.length > 0 && !hasTightStartText(children)) return;
       if (hasLink(children)) return;
     }
     assert(children.querySelector('a > .media') || !hasLink(children));

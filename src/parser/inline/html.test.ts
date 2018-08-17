@@ -36,6 +36,9 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small>a</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>a')), [['<small>a</small>'], 'a']);
       assert.deepStrictEqual(inspect(parser('<small>a\nb</small>')), [['<small>a<span class="linebreak"> <wbr></span>b</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a </small>')), [['<small>a </small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<del> a</del>')), [['<del> a</del>'], '']);
+      assert.deepStrictEqual(inspect(parser('<del> a </del>')), [['<del> a </del>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
     });
 

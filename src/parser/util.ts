@@ -47,6 +47,11 @@ export function hasTightText(node: Node): boolean {
       && node.textContent === node.textContent!.trim();
 }
 
+export function hasTightStartText(node: Node): boolean {
+  return hasText(node)
+      && node.textContent!.startsWith(node.textContent!.trim());
+}
+
 export function stringify(ns: Node[]): string {
   return ns.reduce((s, n) => s + n.textContent, '');
 }

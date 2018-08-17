@@ -1,13 +1,13 @@
 ﻿import { MediaParser } from '../inline';
-import { Parser, union, inits, some, bind, surround, subline } from '../../combinator';
+import { Parser, union, inits, some, bind, surround, verify, subline } from '../../combinator';
 import { text } from '../source/text';
 import { unescsource } from '../source/unescapable';
 import { bracket, attribute } from './link';
 import { sanitize } from '../string/uri';
-import { compress, stringify } from '../util';
+import { compress, hasTightStartText, stringify } from '../util';
 import { Cache } from 'spica/cache';
 import { memoize } from 'spica/memoization';
-import { html, define } from 'typed-dom';
+import { html, frag, define } from 'typed-dom';
 
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\s`));
 const attributes: Record<string, Array<string | undefined>> = {
@@ -16,7 +16,9 @@ const attributes: Record<string, Array<string | undefined>> = {
 export const cache = new Cache<string, HTMLElement>(100);
 
 export const media: MediaParser = subline(bind(
-  subline(surround('![', some(union([text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)),
+  verify(
+    subline(surround('![', some(union([text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)),
+    ns => ns.length === 0 || hasTightStartText(frag(ns))),
   (ts, rest) => {
     const caption = stringify(ts).trim();
     return subline(bind<MediaParser>(

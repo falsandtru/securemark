@@ -2,6 +2,7 @@
 
 ## 0.78.0
 
+- Disallow leading whitespace in annotation, authority, link, media, emphasis, strong, and math syntax.
 - Escape insecure characters.
 
 ## 0.77.0
