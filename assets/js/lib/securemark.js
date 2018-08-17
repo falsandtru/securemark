@@ -1439,7 +1439,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function normalize(source) {
-                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
+                return source.replace(/\u0000|[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '\uFFFD').replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
                     switch (char) {
                     case '\r':
                     case '\x0B':
@@ -2357,7 +2357,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([inblock_1.inblock]), '))'), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el));
+            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([inblock_1.inblock]), '))'), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightStartText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el));
         },
         {
             '../../combinator': 20,
@@ -2374,7 +2374,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', combinator_1.some(combinator_1.union([inblock_1.inblock]), ']]'), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el));
+            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', combinator_1.some(combinator_1.union([inblock_1.inblock]), ']]'), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.hasTightStartText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el));
         },
         {
             '../../combinator': 20,
@@ -2705,7 +2705,7 @@ require = function () {
             exports.emphasis = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('*', util_1.compress(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
-            ]))), '*')), ns => [typed_dom_1.html('em', ns)]), ([el]) => util_1.hasText(el));
+            ]))), '*')), ns => [typed_dom_1.html('em', ns)]), ([el]) => util_1.hasTightStartText(el));
         },
         {
             '../../combinator': 20,
@@ -2936,7 +2936,7 @@ require = function () {
                     if (!children.firstElementChild.matches('.media'))
                         return;
                 } else {
-                    if (children.childNodes.length > 0 && !util_1.hasText(children))
+                    if (children.childNodes.length > 0 && !util_1.hasTightStartText(children))
                         return;
                     if (util_1.hasLink(children))
                         return;
@@ -3043,7 +3043,7 @@ require = function () {
                     return [exports.cache.get(el.textContent).cloneNode(true)];
                 void el.setAttribute('data-src', el.textContent);
                 return [el];
-            }), ([el]) => util_1.hasText(typed_dom_1.html('span', el.textContent.slice(1, -1)))));
+            }), ([el]) => util_1.hasTightStartText(typed_dom_1.frag(el.textContent.slice(1, -1)))));
         },
         {
             '../../combinator': 20,
@@ -3069,7 +3069,7 @@ require = function () {
             const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }\\)|^\\s`));
             const attributes = {};
             exports.cache = new cache_1.Cache(100);
-            exports.media = combinator_1.subline(combinator_1.bind(combinator_1.subline(combinator_1.surround('![', combinator_1.some(combinator_1.union([text_1.text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)), (ts, rest) => {
+            exports.media = combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.subline(combinator_1.surround('![', combinator_1.some(combinator_1.union([text_1.text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)), ns => ns.length === 0 || util_1.hasTightStartText(typed_dom_1.frag(ns))), (ts, rest) => {
                 const caption = util_1.stringify(ts).trim();
                 return combinator_1.subline(combinator_1.bind(combinator_1.surround('(', combinator_1.inits([
                     combinator_1.surround(/^ ?(?! )/, util_1.compress(combinator_1.some(combinator_1.union([
@@ -3139,7 +3139,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.strong = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('**', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**')), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.hasText(el));
+            exports.strong = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('**', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**')), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.hasTightStartText(el));
         },
         {
             '../../combinator': 20,
@@ -3491,10 +3491,14 @@ require = function () {
                 return node.textContent.trim() !== '';
             }
             exports.hasText = hasText;
-            function hasTightText(el) {
-                return hasText(el) && el.textContent === el.textContent.trim();
+            function hasTightText(node) {
+                return hasText(node) && node.textContent === node.textContent.trim();
             }
             exports.hasTightText = hasTightText;
+            function hasTightStartText(node) {
+                return hasText(node) && node.textContent.startsWith(node.textContent.trim());
+            }
+            exports.hasTightStartText = hasTightStartText;
             function stringify(ns) {
                 return ns.reduce((s, n) => s + n.textContent, '');
             }
