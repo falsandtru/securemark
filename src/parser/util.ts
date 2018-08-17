@@ -42,9 +42,9 @@ export function hasText(node: Node): boolean {
   return node.textContent!.trim() !== '';
 }
 
-export function hasTightText(el: HTMLElement): boolean {
-  return hasText(el)
-      && el.textContent === el.textContent!.trim();
+export function hasTightText(node: Node): boolean {
+  return hasText(node)
+      && node.textContent === node.textContent!.trim();
 }
 
 export function stringify(ns: Node[]): string {

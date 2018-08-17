@@ -1,9 +1,9 @@
 ﻿import { MathParser } from '../inline';
-import { union, some, fmap, surround, subline, verify } from '../../combinator';
+import { union, some, fmap, surround, verify, subline } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { hasText, stringify } from '../util';
 import { Cache } from 'spica/cache';
-import { html } from 'typed-dom';
+import { html, frag } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
@@ -15,4 +15,4 @@ export const math: MathParser = subline(verify(fmap(
     void el.setAttribute('data-src', el.textContent!);
     return [el];
   }
-), ([el]) => hasText(html('span', el.textContent!.slice(1, -1)))));
+), ([el]) => hasText(frag(el.textContent!.slice(1, -1)))));
