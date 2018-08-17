@@ -2657,13 +2657,10 @@ require = function () {
             exports.code = combinator_1.subline(combinator_1.match(/^(?=(`+)[^\n]+?\1(?!`))/, ([, bracket], source) => combinator_1.verify(combinator_1.bind(combinator_1.surround(bracket, combinator_1.some(combinator_1.union([
                 combinator_1.some(char_1.char('`')),
                 unescapable_1.unescsource
-            ]), closer(bracket)), closer(bracket)), (ns, rest) => {
-                const el = typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, util_1.stringify(ns).trim());
-                return [
-                    [el],
-                    rest
-                ];
-            }), ([el]) => util_1.hasText(el))(source)));
+            ]), closer(bracket)), closer(bracket)), (ns, rest) => [
+                [typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, util_1.stringify(ns).trim())],
+                rest
+            ]), ([el]) => util_1.hasText(el))(source)));
         },
         {
             '../../combinator': 20,
@@ -2944,13 +2941,13 @@ require = function () {
                     if (util_1.hasLink(children))
                         return;
                 }
-                return combinator_1.bind(combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
+                return combinator_1.subline(combinator_1.bind(combinator_1.surround('(', combinator_1.inits([
                     combinator_1.surround(/^ ?(?! )/, util_1.compress(combinator_1.some(combinator_1.union([
                         exports.bracket,
                         unescapable_1.unescsource
                     ]), closer(rest[1] === ' ' ? ' ' : ''))), /^ ?(?=\))|^ /, false),
                     combinator_1.some(combinator_1.surround('', util_1.compress(exports.attribute), /^ |^(?=\))/))
-                ]), ')', false)), (ts, rest) => {
+                ]), ')', false), (ts, rest) => {
                     const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent);
                     const uri = uri_1.sanitize(INSECURE_URL);
                     if (uri === '' && INSECURE_URL !== '')
@@ -2982,7 +2979,7 @@ require = function () {
                         [el],
                         rest
                     ];
-                })(rest);
+                }))(rest);
             }));
             exports.bracket = combinator_1.subline(combinator_1.build(() => combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
@@ -3074,13 +3071,13 @@ require = function () {
             exports.cache = new cache_1.Cache(100);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.subline(combinator_1.surround('![', combinator_1.some(combinator_1.union([text_1.text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)), (ts, rest) => {
                 const caption = util_1.stringify(ts).trim();
-                return combinator_1.bind(combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
+                return combinator_1.subline(combinator_1.bind(combinator_1.surround('(', combinator_1.inits([
                     combinator_1.surround(/^ ?(?! )/, util_1.compress(combinator_1.some(combinator_1.union([
                         link_1.bracket,
                         unescapable_1.unescsource
                     ]), closer(rest[1] === ' ' ? ' ' : ''))), /^ ?(?=\))|^ /, false),
                     combinator_1.some(combinator_1.surround('', util_1.compress(link_1.attribute), /^ |^(?=\))/))
-                ]), ')', false)), (ts, rest) => {
+                ]), ')', false), (ts, rest) => {
                     const [INSECURE_URL = '', ...args] = ts.map(t => t.textContent);
                     const uri = uri_1.sanitize(INSECURE_URL.trim());
                     if (uri === '' && INSECURE_URL !== '')
@@ -3119,7 +3116,7 @@ require = function () {
                         [el],
                         rest
                     ];
-                })(rest);
+                }))(rest);
             }));
         },
         {
