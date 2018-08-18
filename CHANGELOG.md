@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.78.2
+
+- Refactoring.
+
 ## 0.78.1
 
 - Allow tailing whitespace in index syntax.
