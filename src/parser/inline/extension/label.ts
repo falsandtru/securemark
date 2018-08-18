@@ -1,23 +1,22 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { union, fmap, surround, verify, subline, focus, build } from '../../../combinator';
+import { union, fmap, surround, verify, subline, focus } from '../../../combinator';
 import '../../source/unescapable';
 import { link } from '../link';
 import { hasTightText } from '../../util';
+import { define } from 'typed-dom';
 
-export const label: ExtensionParser.LabelParser = subline(verify(fmap(build(() =>
+export const label: ExtensionParser.LabelParser = subline(verify(
   surround(
     '[:',
     focus(
       /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
       query =>
-        union<ExtensionParser.LabelParser>([link])
+        fmap(
+          union<ExtensionParser.LabelParser>([link]),
+          ([el]) => [define(el, { class: el.getAttribute('href')!.slice(1) })])
           (`[\\${query}](#${makeLabel(query)})`)),
-    ']')),
-  ([el]) => {
-    void el.setAttribute('class', el.getAttribute('href')!.slice(1));
-    return [el];
-  }
-), ([el]) => hasTightText(el)));
+    ']'),
+  ([el]) => hasTightText(el)));
 
 function makeLabel(text: string): string {
   assert(!text.includes('\n'));
