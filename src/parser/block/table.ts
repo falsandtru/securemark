@@ -63,7 +63,7 @@ const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser
   union([parser]),
   ns => [html('td', ns)]);
 
-const data: TableParser.DataParser = build(() => bind(
+const data: TableParser.DataParser = bind(
   surround(
     /^\|\s*/,
     union([some(incell, /^\s*(?:\||$)/)]),
@@ -72,7 +72,7 @@ const data: TableParser.DataParser = build(() => bind(
   (ns, rest) =>
     ns.length === 0 && rest === ''
       ? undefined
-      : [squash(ns), rest]));
+      : [squash(ns), rest]);
 
 const align: TableParser.AlignParser =
   surround(

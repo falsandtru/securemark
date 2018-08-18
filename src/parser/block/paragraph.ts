@@ -1,15 +1,15 @@
 ﻿import { ParagraphParser } from '../block';
-import { subsequence, some, fmap, block, trim, build } from '../../combinator';
+import { subsequence, some, fmap, block, trim } from '../../combinator';
 import { reference } from './paragraph/reference';
 import { inblock } from '../inblock';
 import { compress, hasContent } from '../util';
 import { html } from 'typed-dom';
 
-export const paragraph: ParagraphParser = block(fmap(build(() =>
+export const paragraph: ParagraphParser = block(fmap(
   subsequence<ParagraphParser>([
     some(reference),
     compress(trim(some(inblock))),
-  ])),
+  ]),
   ns => {
     const el = html('p', dropTrailingLinebreak(ns));
     return hasContent(el)
