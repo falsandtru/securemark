@@ -2095,10 +2095,10 @@ require = function () {
             const inblock_1 = require('../inblock');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.subsequence([
+            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.subsequence([
                 combinator_1.some(reference_1.reference),
                 util_1.compress(combinator_1.trim(combinator_1.some(inblock_1.inblock)))
-            ])), ns => {
+            ]), ns => {
                 const el = typed_dom_1.html('p', dropTrailingLinebreak(ns));
                 return util_1.hasContent(el) ? [el] : [];
             }));
@@ -2232,10 +2232,10 @@ require = function () {
             }));
             const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.contract('|', combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)), ns => !util_1.hasMedia(typed_dom_1.frag(ns))))), es => [typed_dom_1.html('tr', es)]);
             const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
-            const data = combinator_1.build(() => combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inblock_1.incell, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
+            const data = combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inblock_1.incell, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
                 util_1.squash(ns),
                 rest
-            ]));
+            ]);
             const align = combinator_1.surround('|', combinator_1.union([
                 combinator_1.focus(/^:-+:/, _ => [
                     [typed_dom_1.text('center')],
@@ -2768,10 +2768,8 @@ require = function () {
             require('../../source/unescapable');
             const link_1 = require('../link');
             const util_1 = require('../../util');
-            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, query => combinator_1.union([link_1.link])(`[\\${ query }](#${ makeLabel(query) })`)), ']')), ([el]) => {
-                void el.setAttribute('class', el.getAttribute('href').slice(1));
-                return [el];
-            }), ([el]) => util_1.hasTightText(el)));
+            const typed_dom_1 = require('typed-dom');
+            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, query => combinator_1.fmap(combinator_1.union([link_1.link]), ([el]) => [typed_dom_1.define(el, { class: el.getAttribute('href').slice(1) })])(`[\\${ query }](#${ makeLabel(query) })`)), ']'), ([el]) => util_1.hasTightText(el)));
             function makeLabel(text) {
                 return `label:${ text }`;
             }
@@ -2802,7 +2800,8 @@ require = function () {
             '../../../combinator': 20,
             '../../source/unescapable': 96,
             '../../util': 98,
-            '../link': 86
+            '../link': 86,
+            'typed-dom': 13
         }
     ],
     83: [
@@ -2812,7 +2811,7 @@ require = function () {
             const inline_1 = require('../../inline');
             const combinator_1 = require('../../../combinator');
             const typed_dom_1 = require('typed-dom');
-            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.match(/^[~^@](?!\])/, ([flag], rest) => combinator_1.some(combinator_1.union([inline_1.inline]), ']')(flag + rest)), ']')), ns => [typed_dom_1.html('span', { class: 'invalid' }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension syntax: \`[${ ns[0].textContent[0] } ]\`.`)))]));
+            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']')), ns => [typed_dom_1.html('span', { class: 'invalid' }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension syntax: \`[${ ns[0].textContent[0] } ]\`.`)))]));
         },
         {
             '../../../combinator': 20,
