@@ -2750,7 +2750,7 @@ require = function () {
                 void el.setAttribute('href', `#${ el.id }`);
                 void el.removeAttribute('id');
                 return [el];
-            }), ([el]) => util_1.hasTightText(el)));
+            }), ([el]) => util_1.hasTightStartText(el)));
         },
         {
             '../../../combinator': 20,
@@ -4102,9 +4102,9 @@ require = function () {
                         hs.shift(),
                         cons(hs)
                     ]]), []);
-                function level(h) {
-                    return +h.tagName[1];
-                }
+            }
+            function level(h) {
+                return +h.tagName[1];
             }
         },
         {
