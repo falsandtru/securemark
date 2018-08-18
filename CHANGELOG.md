@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.78.1
+
+- Allow tailing whitespace in index syntax.
+
 ## 0.78.0
 
 - Disallow leading whitespace in annotation, authority, link, media, emphasis, strong, and math syntax.
