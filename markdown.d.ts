@@ -155,7 +155,14 @@ export namespace MarkdownParser {
     export interface BlockquoteParser extends
       // > abc
       Block<'blockquote'>,
-      Parser<HTMLQuoteElement, Parser<HTMLElement | Text, []>[]> {
+      Parser<HTMLQuoteElement, [
+        Parser<HTMLElement | Text, [
+          SourceParser.UnescapableSourceParser
+        ]>,
+        Parser<HTMLElement | Text, [
+          MarkdownParser
+        ]>
+      ]> {
     }
     export interface PretextParser extends
       // ```
@@ -307,7 +314,9 @@ export namespace MarkdownParser {
         Inblock<'account'>,
         Parser<HTMLAnchorElement | Text, [
           SourceParser.UnescapableSourceParser,
-          Parser<HTMLAnchorElement, []>
+          Parser<HTMLAnchorElement, [
+            SourceParser.UnescapableSourceParser
+          ]>
         ]> {
       }
       export interface HashtagParser extends
