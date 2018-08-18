@@ -34,9 +34,9 @@ function cons(hs: HTMLHeadingElement[]): Tree {
         ? node
         : concat<Tree[number]>(node, [[hs.shift()!, cons(hs)]])
     , []);
+}
 
-  function level(h: HTMLHeadingElement): number {
-    assert(isFinite(+h.tagName[1]));
-    return +h.tagName[1];
-  }
+function level(h: HTMLHeadingElement): number {
+  assert(isFinite(+h.tagName[1]));
+  return +h.tagName[1];
 }
