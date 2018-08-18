@@ -1591,18 +1591,12 @@ require = function () {
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const mdquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, s => mdquote(unindent(s))),
-                combinator_1.rewrite(combinator_1.some(combinator_1.line(combinator_1.rewrite(line_1.contentline, s => [
-                    [s],
-                    ''
-                ])), opener), s => [
+                combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), s => [
                     [parse_1.parse(unindent(s))],
                     ''
                 ])
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
-            const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(combinator_1.line(combinator_1.rewrite(line_1.contentline, s => [
-                [s],
-                ''
-            ])), /^>(?:\s|$)/), ''), false);
+            const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(line_1.contentline, /^>(?:\s|$)/), ''), false);
             function unindent(source) {
                 return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
             }
@@ -1640,12 +1634,9 @@ require = function () {
                 void indexer_1.defineIndex(dt);
                 return [dt];
             }), ([el]) => !util_1.hasMedia(el))));
-            const desc = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.rewrite(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.some(combinator_1.line(combinator_1.union([
-                line_1.blankline,
-                line_1.contentline
-            ])), /^[~:](?:\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inblock_1.inblock])))), '', false))), ns => [typed_dom_1.html('dd', ns)]), false);
+            const desc = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.rewrite(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.some(line_1.anyline, /^[~:](?=\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inblock_1.inblock])))), '', false))), ns => [typed_dom_1.html('dd', ns)]), false);
             function fillTrailingDescription(es) {
-                return es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
+                return es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
             }
         },
         {
@@ -1817,7 +1808,7 @@ require = function () {
                         combinator_1.inits([
                             line_1.emptyline,
                             combinator_1.union([
-                                line_1.emptyline,
+                                line_1.blankline,
                                 combinator_1.some(line_1.contentline, closer(bracket))
                             ])
                         ])
@@ -3300,6 +3291,10 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
+            exports.anyline = combinator_1.line(takeLine(_ => [
+                [],
+                ''
+            ]), false);
             exports.emptyline = combinator_1.line(takeLine(s => s.trim() === '' ? [
                 [],
                 ''
