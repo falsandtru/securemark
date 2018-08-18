@@ -1,7 +1,7 @@
 ﻿import { ExtensionParser } from '../../block';
 import { SubParsers } from '../../../combinator/parser';
 import { union, sequence, inits, some, bind, match, surround, contract, block, line, rewrite, trim, eval } from '../../../combinator';
-import { emptyline, contentline } from '../../source/line';
+import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
 import { pretext, segment_ as seg_pre } from '../pretext';
@@ -34,7 +34,7 @@ export const segment: FigureParser = block(union([
             ]),
             inits([
               emptyline,
-              union([emptyline, some(contentline, closer(bracket))])
+              union([blankline, some(contentline, closer(bracket))])
             ]),
           ]),
         ]),

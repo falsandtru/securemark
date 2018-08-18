@@ -520,6 +520,10 @@ export namespace MarkdownParser {
       Source<'escsource'>,
       Parser<Text, []> {
     }
+    export interface AnyLineParser extends
+      Source<'anyline'>,
+      Parser<never, []> {
+    }
     export interface EmptyLineParser extends
       Source<'emptyline'>,
       Parser<never, []> {

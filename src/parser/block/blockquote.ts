@@ -38,12 +38,12 @@ const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
       indent,
       s => mdquote(unindent(s))),
     rewrite(
-      some(line(rewrite(contentline, s => [[s], ''])), opener),
+      some(contentline, opener),
       s => [[parse(unindent(s))], '']),
   ]))),
   ns => [html('blockquote', ns)]);
 
-const indent = block(surround(opener, some(line(rewrite(contentline, s => [[s], ''])), /^>(?:\s|$)/), ''), false);
+const indent = block(surround(opener, some(contentline, /^>(?:\s|$)/), ''), false);
 
 function unindent(source: string): string {
   return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');

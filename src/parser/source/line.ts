@@ -1,7 +1,9 @@
 ﻿import { Parser, eval, exec, line, firstline } from '../../combinator';
-import { EmptyLineParser, BlankLineParser, ContentLineParser } from '../source';
+import { AnyLineParser, EmptyLineParser, BlankLineParser, ContentLineParser } from '../source';
 
+export const anyline: AnyLineParser = line(takeLine(_ => [[], '']), false);
 export const emptyline: EmptyLineParser = line(takeLine(s => s.trim() === '' ? [[], ''] : undefined), false);
+
 const invisible = /^(?:\\?[^\S\\]+)*\\?$/;
 export const blankline: BlankLineParser = line(takeLine(s => s.search(invisible) === 0 ? [[], ''] : undefined), false);
 export const contentline: ContentLineParser = line(takeLine(s => s.search(invisible) !== 0 ? [[], ''] : undefined), false);

@@ -1,6 +1,6 @@
 ﻿import { DListParser } from '../block';
 import { union, inits, some, fmap, surround, verify, block, line, rewrite, trim, build } from '../../combinator';
-import { blankline, contentline } from '../source/line';
+import { anyline, contentline } from '../source/line';
 import { inblock } from '../inblock';
 import { indexer, defineIndex } from './indexer';
 import { compress, hasMedia } from '../util';
@@ -25,13 +25,13 @@ const term: DListParser.TermParser = line(rewrite(contentline, verify(fmap<DList
 
 const desc: DListParser.DescriptionParser = block(fmap<DListParser.DescriptionParser>(build(() =>
   rewrite(
-    surround(/^:(?=\s|$)|/, some(line(union([blankline, contentline])), /^[~:](?:\s|$)/), '', false),
+    surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
     surround(/^:(?=\s|$)|/, compress(trim(some(union([inblock])))), '', false))),
   ns => [html('dd', ns)]
 ), false);
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {
-  return es[es.length - 1].tagName.toLowerCase() === 'dt'
+  return es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt'
     ? concat(es, [html('dd')])
     : es;
 }
