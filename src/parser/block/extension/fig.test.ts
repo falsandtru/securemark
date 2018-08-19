@@ -23,7 +23,7 @@ describe('Unit: parser/block/extension/fig', () => {
       assert.deepStrictEqual(inspect(parser('[:group-name]\n$$\n\n$$\n')), [['<figure class="label:group-name" data-group="group"><div class="math notranslate">$$\n\n$$</div><figcaption><span></span><span></span></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('[:group-name]\n~~~example/markdown\n~~~\n')), [['<figure class="label:group-name" data-group="group"><aside class="example" data-type="markdown"><pre></pre><div></div><ol></ol><ol></ol></aside><figcaption><span></span><span></span></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('[:group-name]\n> \n')), [['<figure class="label:group-name" data-group="group"><blockquote></blockquote><figcaption><span></span><span></span></figcaption></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser('[:group-name]\n!> ~~~\n~~~~\n')), [['<figure class="label:group-name" data-group="group"><blockquote><p>~~~<span class="linebreak"> <wbr></span>~~~~</p></blockquote><figcaption><span></span><span></span></figcaption></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('[:group-name]\n!> ~~~\n~~~~\n')), [['<figure class="label:group-name" data-group="group"><blockquote><p>~~~<span class="linebreak"> </span>~~~~</p></blockquote><figcaption><span></span><span></span></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('[:group-name]\n![](https://host)\n')), [['<figure class="label:group-name" data-group="group"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span></span><span></span></figcaption></figure>'], '']);
     });
 

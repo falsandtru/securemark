@@ -16,7 +16,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a ')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a \n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n')), [['<p>a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\nb')), [['<p>a<span class="linebreak"> <wbr></span>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\nb')), [['<p>a<span class="linebreak"> </span>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\nb')), [['<p>a<br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('*a\\\n*')), [['<p><em>a<br></em></p>'], '']);
@@ -36,7 +36,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('>a b')), [[`<p><span class="invalid">Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.</span></p>`], '']);
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="linebreak"> <wbr></span>&gt;b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="linebreak"> </span>&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser(' >a')), [['<p>&gt;a</p>'], '']);
     });
 

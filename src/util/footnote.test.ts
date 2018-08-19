@@ -35,7 +35,7 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'annotation-def:1' }, [
               text('a '),
-              html('span', { class: 'linebreak' }, [text(' '), html('wbr')]),
+              html('span', { class: 'linebreak' }, ' '),
               text(' b'),
               html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '(1)')])
             ]),
@@ -149,7 +149,7 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'authority-def:1' }, [
               text('a '),
-              html('span', { class: 'linebreak' }, [text(' '), html('wbr')]),
+              html('span', { class: 'linebreak' }, ' '),
               text(' b'),
               html('sup', [html('a', { href: '#authority-ref:1', rel: 'noopener' }, '[1]')])
             ]),

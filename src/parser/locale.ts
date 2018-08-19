@@ -1,17 +1,17 @@
 ﻿import { BlockParser } from './block';
 import { fmap } from '../combinator';
 import { japanese } from './locale/ja';
+import { html } from 'typed-dom';
 
 export function localize(block: BlockParser): BlockParser {
   return fmap(block, es => {
     void es.forEach(el =>
       void el.querySelectorAll('.linebreak')
         .forEach(el => {
-          if (el.childNodes.length === 1) return;
-          assert(el.childNodes.length === 2);
+          if (el.children.length === 1) return;
           if (!check(el)) return;
           assert(el.firstChild!.textContent === ' ');
-          void el.removeChild(el.firstChild!);
+          void el.replaceChild(html('wbr'), el.firstChild!);
         }));
     return es;
   });

@@ -27,7 +27,7 @@ describe('Unit: parser/api/parse', () => {
         []);
       assert.deepStrictEqual(
         [...parse('a\\ \nb').children].map(el => el.outerHTML),
-        ['<p>a <span class="linebreak"> <wbr></span>b</p>']);
+        ['<p>a <span class="linebreak"> </span>b</p>']);
       assert.deepStrictEqual(
         [...parse('a\\\nb').children].map(el => el.outerHTML),
         ['<p>a<br>b</p>']);
