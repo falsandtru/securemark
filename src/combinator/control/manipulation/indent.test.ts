@@ -1,5 +1,5 @@
 ﻿import { indent } from './indent';
-import { inspect } from '../debug.test';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/indent', () => {
   describe('indent', () => {

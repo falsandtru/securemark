@@ -1,10 +1,10 @@
-﻿import { Parser, eval, exec } from './parser';
-import { some } from './some';
-import { bind } from './bind';
+﻿import { Parser, eval, exec } from '../../data/parser';
+import { some } from '../../data/set/some';
+import { bind } from '../monad/bind';
 import { match } from './match';
 import { surround } from './surround';
-import { line, firstline } from './line';
-import { rewrite } from './scope';
+import { line, firstline } from '../constraint/line';
+import { rewrite } from '../constraint/scope';
 
 export function indent<P extends Parser<any, any>>(parser: P): P;
 export function indent<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {

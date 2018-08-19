@@ -1,4 +1,4 @@
-﻿import { Parser, SubParsers, SubParser, eval, exec, validate } from './parser';
+﻿import { Parser, SubParsers, SubParser, eval, exec, validate } from '../parser';
 import { concat } from 'spica/concat';
 
 export function sequence<P extends Parser<any, any>>(parsers: SubParsers<P>): SubParser<P>;

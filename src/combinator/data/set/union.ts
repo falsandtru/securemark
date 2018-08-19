@@ -1,4 +1,4 @@
-﻿import { Parser, SubParsers, exec, validate } from './parser';
+﻿import { Parser, SubParsers, exec, validate } from '../parser';
 
 export function union<P extends Parser<any, any>>(parsers: SubParsers<P>): P;
 export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {

@@ -1,5 +1,5 @@
 ﻿import { line, subline } from './line';
-import { inspect } from '../debug.test';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/line', () => {
   describe('line', () => {

@@ -1,4 +1,4 @@
-﻿import { Parser } from './parser';
+﻿import { Parser } from '../../data/parser';
 import { convert } from './convert';
 
 export function trim<P extends Parser<any, any>>(parser: P): P;

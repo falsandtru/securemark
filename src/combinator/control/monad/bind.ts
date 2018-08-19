@@ -1,4 +1,4 @@
-﻿import { Parser, Result, Data, SubData, SubParsers, SubParser, BaseParser, eval, exec, validate } from './parser';
+﻿import { Parser, Result, Data, SubData, SubParsers, SubParser, BaseParser, eval, exec, validate } from '../../data/parser';
 
 export function bind<P extends Parser<any, any>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string) => Result<Data<P>, SubParsers<P>>): P;
 export function bind<T, P extends Parser<any, any>>(parser: BaseParser<T, P>, f: (rs: T[], rest: string) => Result<Data<P>, SubParsers<P>>): P;

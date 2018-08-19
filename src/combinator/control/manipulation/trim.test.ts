@@ -1,5 +1,5 @@
 ﻿import { trim } from './trim';
-import { inspect } from '../debug.test';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/trim', () => {
   describe('trim', () => {

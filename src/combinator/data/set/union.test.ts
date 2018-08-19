@@ -1,6 +1,6 @@
-﻿import { Parser, Result } from './parser';
+﻿import { Parser, Result } from '../parser';
 import { union } from './union';
-import { inspect } from '../debug.test';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/union', () => {
   describe('union', () => {

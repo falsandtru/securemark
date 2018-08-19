@@ -1,4 +1,4 @@
-﻿import { Parser, exec } from './parser';
+﻿import { Parser, exec } from '../../data/parser';
 import { firstline } from './line';
 
 export function block<P extends Parser<any, any>>(parser: P, separation?: boolean): P;

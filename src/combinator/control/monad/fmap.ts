@@ -1,4 +1,4 @@
-﻿import { Parser, Data, SubData, SubParser, BaseParser } from './parser';
+﻿import { Parser, Data, SubData, SubParser, BaseParser } from '../../data/parser';
 import { bind } from './bind';
 
 export function fmap<P extends Parser<any, any>>(parser: SubParser<P>, f: (rs: SubData<P>[]) => Data<P>[]): P;

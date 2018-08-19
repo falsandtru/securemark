@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { SubParsers } from '../../../combinator/parser';
+import { SubParsers } from '../../../combinator/data/parser';
 import { union, sequence, inits, some, bind, match, surround, contract, block, line, rewrite, trim, eval } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';

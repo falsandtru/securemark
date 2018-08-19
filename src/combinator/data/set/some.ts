@@ -1,4 +1,4 @@
-﻿import { Parser, eval, exec, validate } from './parser';
+﻿import { Parser, eval, exec, validate } from '../parser';
 import { concat } from 'spica/concat';
 
 export function some<P extends Parser<any, any>>(parser: P, until?: string | RegExp): P;
