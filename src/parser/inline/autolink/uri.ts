@@ -1,5 +1,5 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { union, some, fmap, surround, verify, subline, focus, rewrite, build } from '../../../combinator';
+import { union, some, fmap, surround, verify, subline, focus, rewrite, convert, build } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { link, bracket } from '../link';
 import { compress } from '../../util';
@@ -15,16 +15,18 @@ export const uri: AutolinkParser.UriParser = subline(union([
     /^(?=h?ttps?:\/\/\S)/,
     verify(rewrite(build(() =>
       some(union([ipv6, bracket, some(unescsource, closer)]))),
-      source =>
-        link(`[](${address(source)}${attribute(source)})`)),
+      convert(
+        source => `[](${address(source)}${attribute(source)})`,
+        link)),
       ([node]) => node instanceof HTMLAnchorElement),
     ''),
   surround(
     /^!(?=https?:\/\/\S)/,
     verify(rewrite(build(() =>
       verify(uri, ([node]) => node instanceof HTMLAnchorElement)),
-      source =>
-        link(`[![](${source})](${source})`)),
+      convert(
+        source => `[![](${source})](${source})`,
+        link)),
       ([node]) => node instanceof HTMLAnchorElement),
     ''),
 ]));

@@ -14,5 +14,6 @@ export * from './combinator/block';
 export * from './combinator/line';
 export * from './combinator/indent';
 export * from './combinator/scope';
+export * from './combinator/convert';
 export * from './combinator/trim';
 export * from './combinator/build';

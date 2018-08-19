@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, fmap, surround, verify, subline, rewrite, build } from '../../../combinator';
+import { union, some, fmap, surround, verify, subline, rewrite, convert, build } from '../../../combinator';
 import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
 import { startsWithTightText } from '../../util';
@@ -9,7 +9,9 @@ export const index: ExtensionParser.IndexParser = subline(verify(fmap(build(() =
     '[#',
     rewrite(
       some(inline, ']'),
-      s => union<ExtensionParser.IndexParser>([link])(`[${s}]()`)),
+      convert(
+        query => `[${query}]()`,
+        union([link]))),
     ']')),
   ([el]) => {
     void defineIndex(el);
