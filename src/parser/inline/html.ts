@@ -31,10 +31,10 @@ export const html: HTMLParser = match(
       (source);
   });
 
-const attribute: HTMLParser.AttributeParser = fmap<HTMLParser.AttributeParser>(
+const attribute: HTMLParser.AttributeParser = fmap(
   surround(
     ' ',
-    inits([
+    inits<HTMLParser.AttributeParser>([
       focus(/^[a-z]+(?=[= >])/, compress(some(unescsource, /^[^a-z]/))),
       surround('="', compress(some(escsource, '"')), '"', false)
     ]),

@@ -429,7 +429,8 @@ export namespace MarkdownParser {
         // attr=""
         Inline<'html/attribute'>,
         Parser<Text | DocumentFragment, [
-          SourceParser.UnescapableSourceParser
+          SourceParser.UnescapableSourceParser,
+          SourceParser.EscapableSourceParser
         ]> {
       }
     }
