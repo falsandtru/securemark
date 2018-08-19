@@ -1,23 +1,19 @@
 ﻿import { Parser, SubParsers, SubParser } from './parser';
+import { union } from './union';
+import { sequence } from './sequence';
+import { bind } from './bind';
 
 export function inits<P extends Parser<any, any>>(parsers: SubParsers<P>): SubParser<P>;
 export function inits<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
   assert(parsers.every(f => !!f));
-  return source => {
-    let rest = source;
-    const results: T[] = [];
-    for (const parser of parsers) {
-      if (rest === '') break;
-      const [rs = [], r = undefined] = parser(rest) || [];
-      if (r === undefined) break;
-      assert(rest.slice(1).endsWith(r));
-      if (r.length >= rest.length) return;
-      void results.push(...rs);
-      rest = r;
-    }
-    assert(rest === source || source.slice(1).endsWith(rest));
-    return rest.length < source.length
-      ? [results, rest]
-      : undefined;
-  };
+  return parsers.length <= 1
+    ? union(parsers)
+    : bind(parsers[0], (rs, rest) =>
+        union([
+          sequence([
+            () => [rs, rest],
+            inits(parsers.slice(1)),
+          ]),
+          () => [rs, rest]
+        ])(` ${rest}`));
 }

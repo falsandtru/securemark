@@ -3,22 +3,21 @@
 export function union<P extends Parser<any, any>>(parsers: SubParsers<P>): P;
 export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
   assert(parsers.every(f => !!f));
-  return source => {
-    let rest = source;
-    const results: T[] = [];
-    for (const parser of parsers) {
-      if (rest === '') break;
-      const [rs = [], r = undefined] = parser(rest) || [];
-      if (r === undefined) continue;
-      assert(rest.slice(1).endsWith(r));
-      if (r.length >= rest.length) return;
-      void results.push(...rs);
-      rest = r;
-      break;
-    }
-    assert(rest === source || source.slice(1).endsWith(rest));
-    return rest.length < source.length
-      ? [results, rest]
-      : undefined;
-  };
+  switch (parsers.length) {
+    case 0:
+      return () => undefined;
+    case 1:
+      return parsers[0];
+    default:
+      return source => {
+        const [rs = [], rest = undefined] = parsers[0](source) || [];
+        if (rest === undefined) return union(parsers.slice(1))(source);
+        assert(source.slice(1).endsWith(rest));
+        if (rest.length >= source.length) return;
+        assert(rest === source || source.slice(1).endsWith(rest));
+        return rest.length < source.length
+          ? [rs, rest]
+          : undefined;
+      };
+  }
 }
