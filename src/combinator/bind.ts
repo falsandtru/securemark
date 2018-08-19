@@ -1,9 +1,9 @@
-﻿import { Parser, Result, Data, SubData, SubParser, BaseParser, exec } from './parser';
+﻿import { Parser, Result, Data, SubData, SubParsers, SubParser, BaseParser, exec } from './parser';
 
-export function bind<P extends Parser<any, any>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string) => Result<Data<P>, any>): P;
-export function bind<T, P extends Parser<any, any>>(parser: BaseParser<T, P>, f: (rs: T[], rest: string) => Result<Data<P>, any>): P;
-export function bind<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, any>): Parser<U, S>;
-export function bind<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, any>): Parser<U, S> {
+export function bind<P extends Parser<any, any>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string) => Result<Data<P>, SubParsers<P>>): P;
+export function bind<T, P extends Parser<any, any>>(parser: BaseParser<T, P>, f: (rs: T[], rest: string) => Result<Data<P>, SubParsers<P>>): P;
+export function bind<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S>;
+export function bind<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S> {
   assert(parser);
   return source => {
     if (source === '') return;
