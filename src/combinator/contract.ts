@@ -1,4 +1,4 @@
-﻿import { Parser, Data } from './parser';
+﻿import { Parser, Data, eval, exec, validate as vali } from './parser';
 
 export function contract<P extends Parser<any, any>>(pattern: RegExp | string, parser: P, cond: (results: Data<P>[], rest: string) => boolean): P;
 export function contract<T, S extends Parser<any, any>[]>(pattern: RegExp | string, parser: Parser<T, S>, cond: (results: T[], rest: string) => boolean): Parser<T, S> {
@@ -10,14 +10,14 @@ export function validate<T, S extends Parser<any, any>[]>(pattern: RegExp | stri
   assert(parser);
   return source => {
     if (source === '') return;
-    const result = match(source, pattern);
+    const res = match(source, pattern);
+    if (!res) return;
+    assert(source.startsWith(res[0]));
+    const result = parser(source);
+    vali(source, result);
     if (!result) return;
-    assert(source.startsWith(result[0]));
-    const [rs = [], r = undefined] = parser(source) || [];
-    if (r === undefined) return;
-    assert(source.endsWith(r));
-    return r.length < source.length
-      ? [rs, r]
+    return exec(result).length < source.length
+      ? result
       : undefined;
   };
 }
@@ -27,19 +27,18 @@ export function verify<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, co
   assert(parser);
   return source => {
     if (source === '') return;
-    const [rs = [], r = undefined] = parser(source) || [];
-    if (r === undefined) return;
-    if (!cond(rs, r)) return;
-    assert(source.endsWith(r));
-    return r.length < source.length
-      ? [rs, r]
+    const result = parser(source);
+    vali(source, result);
+    if (!result) return;
+    if (!cond(eval(result), exec(result))) return;
+    return exec(result).length < source.length
+      ? result
       : undefined;
   };
 }
 
 function match(source: string, pattern: string | RegExp): string[] | null {
-  if (typeof pattern === 'string') return source.startsWith(pattern)
-    ? [pattern]
-    : null;
-  return source.match(pattern);
+  return typeof pattern === 'string'
+    ? source.startsWith(pattern) ? [pattern] : null
+    : source.match(pattern);
 }

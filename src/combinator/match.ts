@@ -1,18 +1,18 @@
-﻿import { Parser, Result, Data, SubParsers } from './parser';
+﻿import { Parser, Result, Data, SubParsers, exec } from './parser';
 
 export function match<P extends Parser<any, any>>(pattern: RegExp, f: (matched: string[], rest: string) => Result<Data<P>, SubParsers<P>>): P;
 export function match<T, S extends Parser<any, any>[] = []>(pattern: RegExp, f: (matched: string[], rest: string) => Result<T, S>): Parser<T, S> {
   return source => {
     if (source === '') return;
-    const result = source.match(pattern);
+    const res = source.match(pattern);
+    if (!res) return;
+    assert(source.startsWith(res[0]));
+    const rest = source.slice(res[0].length);
+    const result = f(res, rest);
     if (!result) return;
-    assert(source.startsWith(result[0]));
-    const rest = source.slice(result[0].length);
-    const [rs = [], r = undefined] = f(result, rest) || [];
-    if (r === undefined) return;
-    assert(rest.endsWith(r));
-    return r.length < source.length && r.length <= rest.length
-      ? [rs, r]
+    assert(rest.endsWith(exec(result)));
+    return exec(result).length < source.length && exec(result).length <= rest.length
+      ? result
       : undefined;
   };
 }

@@ -1,4 +1,5 @@
-﻿import { Parser } from './parser';
+﻿import { Parser, eval, exec, validate } from './parser';
+import { concat } from 'spica/concat';
 
 export function some<P extends Parser<any, any>>(parser: P, until?: string | RegExp): P;
 export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, until?: string | RegExp): Parser<T, S> {
@@ -9,12 +10,12 @@ export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, unti
     while (true) {
       if (rest === '') break;
       if (until && match(rest, until)) break;
-      const [rs = [], r = undefined] = parser(rest) || [];
-      if (r === undefined) break;
-      assert(rest.slice(1).endsWith(r));
-      if (r.length >= rest.length) return;
-      void results.push(...rs);
-      rest = r;
+      const result = parser(rest);
+      validate(rest, result);
+      if (!result) break;
+      if (exec(result).length >= rest.length) return;
+      void concat(results, eval(result));
+      rest = exec(result);
     }
     return rest.length < source.length
       ? [results, rest]
