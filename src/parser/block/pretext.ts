@@ -20,7 +20,7 @@ export const pretext: PretextParser = block(rewrite(segment, match(
       void el.classList.add(`language-${lang.toLowerCase()}`);
       void el.setAttribute('data-lang', lang);
     }
-    const filepath = stringify(eval(some(escsource, /^\s/)(notes.trim())));
+    const filepath = eval(stringify(some(escsource, /^\s/))(notes.trim())).join('');
     if (filepath) {
       void el.setAttribute('data-file', filepath);
     }

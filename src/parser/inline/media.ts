@@ -4,7 +4,7 @@ import { text } from '../source/text';
 import { unescsource } from '../source/unescapable';
 import { bracket, attribute } from './link';
 import { sanitize } from '../string/uri';
-import { compress, startsWithTightText, stringify } from '../util';
+import { compress, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { memoize } from 'spica/memoization';
 import { html, frag, define } from 'typed-dom';
@@ -20,7 +20,7 @@ export const media: MediaParser = subline(bind(
     subline(surround('![', some(union([text]), ']'), /^\](?=\(( ?)[^\n]*?\1\))/, false)),
     ns => ns.length === 0 || startsWithTightText(frag(ns))),
   (ts, rest) => {
-    const caption = stringify(ts).trim();
+    const caption = ts.reduce((s, t) => s + t.textContent, '').trim();
     return subline(bind<MediaParser>(
       surround(
         '(',

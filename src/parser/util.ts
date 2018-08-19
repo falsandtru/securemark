@@ -1,8 +1,12 @@
 ﻿import { Parser, fmap } from '../combinator';
 
+export function stringify<S extends Parser<any, any>[]>(parser: Parser<Node, S>): Parser<string, S> {
+  return fmap(parser, ns => ns.map(n => n.textContent!));
+}
+
 export function compress<P extends Parser<Node, any>>(parser: P): P;
 export function compress<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return fmap<T, T, S>(parser, squash);
+  return fmap(parser, squash);
 }
 
 export function squash<T extends Node>(nodes: T[]): T[];
@@ -50,8 +54,4 @@ export function hasTightText(node: HTMLElement): boolean {
 export function startsWithTightText(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
       && node.textContent!.startsWith(node.textContent!.trim());
-}
-
-export function stringify(ns: Node[]): string {
-  return ns.reduce((s, n) => s + n.textContent, '');
 }
