@@ -420,6 +420,7 @@ export namespace MarkdownParser {
       // <small>abc</small>
       Inline<'html'>,
       Parser<HTMLElement, [
+        HTMLParser.AttributeParser,
         InlineParser
       ]> {
     }
@@ -427,7 +428,7 @@ export namespace MarkdownParser {
       export interface AttributeParser extends
         // attr=""
         Inline<'html/attribute'>,
-        Parser<Text, [
+        Parser<Text | DocumentFragment, [
           SourceParser.UnescapableSourceParser
         ]> {
       }

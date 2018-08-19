@@ -1,29 +1,34 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { union, inits, some, fmap, match, surround, verify, focus } from '../../combinator';
+import { inits, sequence, some, fmap, match, surround, verify, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { compress, hasText } from '../util';
-import { html as htm, text, define } from 'typed-dom';
+import { html as htm, text, frag, define } from 'typed-dom';
 
 const tags = new Set('ins|del|sup|sub|small|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
 assert([...tags].every(tag => /^[a-z]+$/.test(tag)));
 assert([...tags].every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
 assert([...tags].every(tag => !['strong', 'em', 'code', 's', 'u', 'mark'].includes(tag)));
+const emptytags = new Set('wbr'.split('|'));
+assert([...emptytags].every(tag => tags.has(tag)));
 
 export const html: HTMLParser = match(
   /^(?=<([a-z]+)(?: [^\n>]+)?>)/,
   ([, tag], source) => {
     if (!tags.has(tag)) return;
-    if (['wbr'].includes(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
+    if (emptytags.has(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
     assert(tags.has(tag));
-    const [args = [], rest = undefined] = surround(`<${tag}`, some(compress(attribute), '>'), '>', false)(source) || [];
-    if (!rest) return;
-    const el = htm(tag as 'span');
-    return verify(fmap<HTMLParser>(
-      surround(``, compress(some(union([inline]), `</${tag}>`)), `</${tag}>`),
-      ns => [define(el, attrs(el, tag, args.map(t => t.textContent!)), ns)]
+    return verify(fmap(
+      sequence<HTMLParser>([
+        fmap(
+          surround(`<${tag}`, some(compress(attribute), '>'), '>', false),
+          ts => [frag(ts)]),
+        surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
+      ]),
+      ([args, ...ns]: [DocumentFragment, ...Node[]]) =>
+        [elem(tag as 'span', [...args.childNodes].map(t => t.textContent!), ns)]
     ), ([el]) => hasText(el))
-      (rest);
+      (source);
   });
 
 const attribute: HTMLParser.AttributeParser = fmap<HTMLParser.AttributeParser>(
@@ -45,7 +50,8 @@ const attributes: Partial<Record<keyof HTMLElementTagNameMap, Record<string, Arr
   },
 };
 
-function attrs(el: HTMLElement, tag: string, args: string[]): Record<string, string> {
+function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]): HTMLElement {
+  const el = htm(tag, children);
   const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
     arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
   if (!attributes[tag] && args.length > 0 || attrs.size !== args.length) {
@@ -62,6 +68,8 @@ function attrs(el: HTMLElement, tag: string, args: string[]): Record<string, str
       }
     }
   }
-  return [...attrs.entries()]
-    .reduce((obj, [key, value]) => (obj[key] = value, obj), {});
+  return define(
+    el,
+    [...attrs.entries()]
+      .reduce((obj, [key, value]) => (obj[key] = value, obj), {}));
 }
