@@ -21,33 +21,33 @@ export function squash(nodes: Node[]): Node[] {
   return acc;
 }
 
-export function hasContent(node: Element | DocumentFragment): boolean {
+export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
       || hasMedia(node);
 }
 
-export function hasMedia(node: Element | DocumentFragment): boolean {
+export function hasMedia(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('.media');
 }
 
-export function hasLink(node: Element | DocumentFragment): boolean {
+export function hasLink(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('a');
 }
 
-export function hasAnnotationOrAuthority(node: Element | DocumentFragment): boolean {
+export function hasAnnotationOrAuthority(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('.annotation, .authority');
 }
 
-export function hasText(node: Node): boolean {
+export function hasText(node: HTMLElement | DocumentFragment): boolean {
   return node.textContent!.trim() !== '';
 }
 
-export function hasTightText(node: Node): boolean {
+export function hasTightText(node: HTMLElement): boolean {
   return hasText(node)
       && node.textContent === node.textContent!.trim();
 }
 
-export function hasTightStartText(node: Node): boolean {
+export function startsWithTightText(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
       && node.textContent!.startsWith(node.textContent!.trim());
 }

@@ -2,7 +2,7 @@
 import { union, some, fmap, surround, verify, subline, rewrite, build } from '../../../combinator';
 import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
-import { hasTightStartText } from '../../util';
+import { startsWithTightText } from '../../util';
 
 export const index: ExtensionParser.IndexParser = subline(verify(fmap(build(() =>
   surround(
@@ -17,4 +17,4 @@ export const index: ExtensionParser.IndexParser = subline(verify(fmap(build(() =
     void el.removeAttribute('id');
     return [el];
   }
-), ([el]) => hasTightStartText(el)));
+), ([el]) => startsWithTightText(el)));
