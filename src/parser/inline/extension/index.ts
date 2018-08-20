@@ -4,19 +4,20 @@ import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
 import { startsWithTightText } from '../../util';
 
-export const index: ExtensionParser.IndexParser = subline(verify(fmap(build(() =>
-  surround(
-    '[#',
-    rewrite(
-      some(inline, ']'),
-      convert(
-        query => `[${query}]()`,
-        union([link]))),
-    ']')),
-  ([el]) => {
-    void defineIndex(el);
-    void el.setAttribute('href', `#${el.id}`);
-    void el.removeAttribute('id');
-    return [el];
-  }
-), ([el]) => startsWithTightText(el)));
+export const index: ExtensionParser.IndexParser = subline(verify(
+  fmap(build(() =>
+    surround(
+      '[#',
+      rewrite(
+        some(inline, ']'),
+        convert(
+          query => `[${query}]()`,
+          union([link]))),
+      ']')),
+    ([el]) => {
+      void defineIndex(el);
+      void el.setAttribute('href', `#${el.id}`);
+      void el.removeAttribute('id');
+      return [el];
+    }),
+  ([el]) => startsWithTightText(el)));

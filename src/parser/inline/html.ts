@@ -18,16 +18,17 @@ export const html: HTMLParser = match(
     if (!tags.has(tag)) return;
     if (emptytags.has(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
     assert(tags.has(tag));
-    return verify(fmap(
-      sequence<HTMLParser>([
-        fmap(
-          surround(`<${tag}`, some(compress(attribute), '>'), '>', false),
-          ts => [frag(ts)]),
-        surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
-      ]),
-      ([args, ...ns]: [DocumentFragment, ...Node[]]) =>
-        [elem(tag as 'span', [...args.childNodes].map(t => t.textContent!), ns)]
-    ), ([el]) => hasText(el))
+    return verify(
+      fmap(
+        sequence<HTMLParser>([
+          fmap(
+            surround(`<${tag}`, some(compress(attribute), '>'), '>', false),
+            ts => [frag(ts)]),
+          surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
+        ]),
+        ([args, ...ns]: [DocumentFragment, ...Node[]]) =>
+          [elem(tag as 'span', [...args.childNodes].map(t => t.textContent!), ns)]),
+      ([el]) => hasText(el))
       (source);
   });
 

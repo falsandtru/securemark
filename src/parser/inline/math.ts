@@ -7,13 +7,14 @@ import { html, frag } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
 
-export const math: MathParser = subline(verify(fmap(
-  stringify(
-    surround('$', some(union([escsource]), '$'), /^\$(?!\d)/)),
-  ss => {
-    const el = html('span', { class: 'math notranslate' }, `$${ss.join('')}$`);
-    if (cache.has(el.textContent!)) return [cache.get(el.textContent!)!.cloneNode(true)];
-    void el.setAttribute('data-src', el.textContent!);
-    return [el];
-  }
-), ([el]) => startsWithTightText(frag(el.textContent!.slice(1, -1)))));
+export const math: MathParser = subline(verify(
+  fmap(
+    stringify(
+      surround('$', some(union([escsource]), '$'), /^\$(?!\d)/)),
+    ss => {
+      const el = html('span', { class: 'math notranslate' }, `$${ss.join('')}$`);
+      if (cache.has(el.textContent!)) return [cache.get(el.textContent!)!.cloneNode(true)];
+      void el.setAttribute('data-src', el.textContent!);
+      return [el];
+    }),
+  ([el]) => startsWithTightText(frag(el.textContent!.slice(1, -1)))));

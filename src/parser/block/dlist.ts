@@ -14,21 +14,23 @@ export const dlist: DListParser = block(fmap(build(() =>
   ]))),
   es => [html('dl', fillTrailingDescription(es))]));
 
-const term: DListParser.TermParser = line(rewrite(contentline, verify(fmap<DListParser.TermParser>(build(() =>
-  surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inblock])))), '', false)),
-  ns => {
-    const dt = html('dt', ns);
-    void defineIndex(dt);
-    return [dt];
-  }
-), ([el]) => !hasMedia(el))));
+const term: DListParser.TermParser = line(rewrite(contentline, verify(
+  fmap<DListParser.TermParser>(build(() =>
+    surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inblock])))), '', false)),
+    ns => {
+      const dt = html('dt', ns);
+      void defineIndex(dt);
+      return [dt];
+    }),
+  ([el]) => !hasMedia(el))));
 
-const desc: DListParser.DescriptionParser = block(fmap<DListParser.DescriptionParser>(build(() =>
-  rewrite(
-    surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
-    surround(/^:(?=\s|$)|/, compress(trim(some(union([inblock])))), '', false))),
-  ns => [html('dd', ns)]
-), false);
+const desc: DListParser.DescriptionParser = block(
+  fmap<DListParser.DescriptionParser>(build(() =>
+    rewrite(
+      surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
+      surround(/^:(?=\s|$)|/, compress(trim(some(union([inblock])))), '', false))),
+    ns => [html('dd', ns)]),
+  false);
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {
   return es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt'

@@ -5,16 +5,17 @@ import { link } from '../link';
 import { hasTightText } from '../../util';
 import { define } from 'typed-dom';
 
-export const label: ExtensionParser.LabelParser = subline(verify(fmap(
-  surround(
-    '[:',
-    focus(
-      /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
-      convert(
-        query => `[\\${query}](#${makeLabel(query)})`,
-        union([link]))),
-    ']'),
-  ([el]) => [define(el, { class: el.getAttribute('href')!.slice(1) })]),
+export const label: ExtensionParser.LabelParser = subline(verify(
+  fmap(
+    surround(
+      '[:',
+      focus(
+        /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
+        convert(
+          query => `[\\${query}](#${makeLabel(query)})`,
+          union([link]))),
+      ']'),
+    ([el]) => [define(el, { class: el.getAttribute('href')!.slice(1) })]),
   ([el]) => hasTightText(el)));
 
 function makeLabel(text: string): string {
