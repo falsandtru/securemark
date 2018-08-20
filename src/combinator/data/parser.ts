@@ -17,7 +17,8 @@ export function exec(result: Result<any, any>, default_: string = ''): string {
   return (result || [[], default_])[1];
 }
 
-export function validate(source: string, result: Result<any, any>): void {
-  if (!result) return;
+export function validate(source: string, result: Result<any, any>): true {
+  if (!result) return true;
   assert(source.slice(1).endsWith(exec(result)));
+  return true;
 }

@@ -14,7 +14,7 @@ export function validate<T, S extends Parser<any, any>[]>(pattern: RegExp | stri
     if (!res) return;
     assert(source.startsWith(res[0]));
     const result = parser(source);
-    vali(source, result);
+    assert(vali(source, result));
     if (!result) return;
     return exec(result).length < source.length
       ? result
@@ -28,7 +28,7 @@ export function verify<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, co
   return source => {
     if (source === '') return;
     const result = parser(source);
-    vali(source, result);
+    assert(vali(source, result));
     if (!result) return;
     if (!cond(eval(result), exec(result))) return;
     return exec(result).length < source.length

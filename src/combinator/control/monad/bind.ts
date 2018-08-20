@@ -7,10 +7,10 @@ export function bind<T, U, S extends Parser<any, any>[]>(parser: Parser<T, S>, f
   return source => {
     if (source === '') return;
     const res1 = parser(source);
-    validate(source, res1);
+    assert(validate(source, res1));
     if (!res1) return;
     const res2 = f(eval(res1), exec(res1));
-    validate(source, res2);
+    assert(validate(source, res2));
     if (!res2) return;
     assert(exec(res1).endsWith(exec(res2)));
     return exec(res2).length <= exec(res1).length

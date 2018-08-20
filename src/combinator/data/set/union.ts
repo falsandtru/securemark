@@ -11,7 +11,7 @@ export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
     default:
       return source => {
         const result = parsers[0](source);
-        validate(source, result);
+        assert(validate(source, result));
         if (!result) return union(parsers.slice(1))(source);
         return exec(result).length < source.length
           ? result

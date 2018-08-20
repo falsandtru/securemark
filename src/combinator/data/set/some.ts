@@ -11,7 +11,7 @@ export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, unti
       if (rest === '') break;
       if (until && match(rest, until)) break;
       const result = parser(rest);
-      validate(rest, result);
+      assert(validate(rest, result));
       if (!result) break;
       if (exec(result).length >= rest.length) return;
       void concat(results, eval(result));
