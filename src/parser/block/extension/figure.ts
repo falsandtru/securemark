@@ -1,5 +1,4 @@
 ﻿import { ExtensionParser } from '../../block';
-import { SubParsers } from '../../../combinator/data/parser';
 import { union, sequence, inits, some, bind, match, surround, contract, block, line, rewrite, trim, eval } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
@@ -51,8 +50,8 @@ export const figure: FigureParser = block(rewrite(segment, match(
     bind(
       sequence<FigureParser>([
         line(label),
-        inits<SubParsers<FigureParser>[1]>([
-          block(union([
+        inits([
+          block(union<FigureParser.ContentParser>([
             table,
             pretext,
             math,
@@ -63,7 +62,7 @@ export const figure: FigureParser = block(rewrite(segment, match(
               source => link(`[${source}]( ${eval(media(source))[0].getAttribute('data-src')} )`))),
             line(contract('!', uri, ([node]) => node instanceof Element)),
           ])),
-          block(inits([
+          block(inits<FigureParser.CaptionParser>([
             emptyline,
             union([
               emptyline,

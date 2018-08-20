@@ -208,25 +208,35 @@ export namespace MarkdownParser {
         Block<'extension/figure'>,
         Parser<HTMLElement, [
           InlineParser.ExtensionParser.LabelParser,
-          Parser<HTMLElement | Text, [
-            Parser<HTMLElement, [
-              TableParser,
-              PretextParser,
-              MathParser,
-              ExtensionParser.ExampleParser,
-              BlockquoteParser,
-              InlineParser.LinkParser, // Take media syntax and convert to link syntax.
-              InlineParser.AutolinkParser.UriParser
-            ]>,
-            Parser<HTMLElement | Text, [
-              SourceParser.EmptyLineParser,
-              Parser<HTMLElement | Text, [
-                SourceParser.EmptyLineParser,
-                InblockParser
-              ]>
-            ]>
+          Parser<HTMLElement, [
+            FigureParser.ContentParser,
+            FigureParser.CaptionParser
           ]>
         ]> {
+      }
+      export namespace FigureParser {
+        export interface ContentParser extends
+          Block<'extension/figure/content'>,
+          Parser<HTMLElement, [
+            TableParser,
+            PretextParser,
+            MathParser,
+            ExtensionParser.ExampleParser,
+            BlockquoteParser,
+            InlineParser.LinkParser, // Take media syntax and convert to link syntax.
+            InlineParser.AutolinkParser.UriParser
+          ]> {
+        }
+        export interface CaptionParser extends
+          Block<'extension/figure/caption'>,
+          Parser<HTMLElement, [
+            SourceParser.EmptyLineParser,
+            Parser<HTMLElement, [
+              SourceParser.EmptyLineParser,
+              InblockParser
+            ]>
+          ]> {
+        }
       }
       export interface ExampleParser extends
         // ~~~markdown
@@ -352,27 +362,47 @@ export namespace MarkdownParser {
       // [abc](uri)
       Inline<'link'>,
       Parser<HTMLAnchorElement, [
-        InlineParser
-      ] | [
-        Parser<Text, [
-          LinkParser.BracketParser,
-          SourceParser.UnescapableSourceParser
-        ]>,
-        LinkParser.AttributeParser
+        LinkParser.TextParser,
+        LinkParser.ParamParser
       ]> {
     }
     export namespace LinkParser {
-      export interface BracketParser extends
-        // ()
-        Inline<'link/bracket'>,
-        Parser<Text, Parser<Text, [BracketParser, SourceParser.UnescapableSourceParser]>[]> {
-      }
-      export interface AttributeParser extends
-        // nofollow
-        Inline<'link/attribute'>,
-        Parser<Text, [
-          SourceParser.UnescapableSourceParser
+      export interface TextParser extends
+        Inline<'link/text'>,
+        Parser<DocumentFragment, [
+          InlineParser
         ]> {
+      }
+      export interface ParamParser extends
+        Inline<'link/param'>,
+        Parser<DocumentFragment, [
+          Parser<Text, [
+            LinkParser.ParamParser.UriParser.BracketParser,
+            SourceParser.UnescapableSourceParser
+          ]>,
+          LinkParser.ParamParser.AttributeParser
+        ]> {
+      }
+      export namespace ParamParser {
+        export interface UriParser extends
+          Inline<'link/uri'>,
+          Parser<Text, [
+            UriParser.BracketParser,
+            SourceParser.UnescapableSourceParser
+          ]> {
+        }
+        export namespace UriParser {
+          export interface BracketParser extends
+            Inline<'link/bracket'>,
+            Parser<Text, Parser<Text, [BracketParser, SourceParser.UnescapableSourceParser]>[]> {
+          }
+        }
+        export interface AttributeParser extends
+          Inline<'link/attribute'>,
+          Parser<Text, [
+            SourceParser.UnescapableSourceParser
+          ]> {
+        }
       }
     }
     export interface ExtensionParser extends
@@ -468,14 +498,27 @@ export namespace MarkdownParser {
       // ![abc](uri)
       Inline<'media'>,
       Parser<HTMLElement, [
-        SourceParser.TextParser
-      ] | [
-        Parser<Text, [
-          LinkParser.BracketParser,
-          SourceParser.UnescapableSourceParser
-        ]>,
-        LinkParser.AttributeParser
+        MediaParser.TextParser,
+        MediaParser.ParamParser
       ]> {
+    }
+    export namespace MediaParser {
+      export interface TextParser extends
+        Inline<'media/text'>,
+        Parser<DocumentFragment, [
+          SourceParser.TextParser
+        ]> {
+      }
+      export interface ParamParser extends
+        Inline<'media/param'>,
+        Parser<Text, [
+          Parser<Text, [
+            LinkParser.ParamParser.UriParser.BracketParser,
+            SourceParser.UnescapableSourceParser
+          ]>,
+          LinkParser.ParamParser.AttributeParser
+        ]> {
+      }
     }
     export interface BracketParser extends
       // [abc]

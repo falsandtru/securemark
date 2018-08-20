@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 
 export const channel: AutolinkParser.ChannelParser = subline(
   rewrite(
-    sequence([
+    sequence<AutolinkParser.ChannelParser>([
       verify(account, ([node]) => node instanceof HTMLAnchorElement),
       some(hashtag),
     ]),
