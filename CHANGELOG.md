@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.78.4
+
+- Refactoring.
+
 ## 0.78.3
 
 - Improve linebreak handling.
