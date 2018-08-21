@@ -769,12 +769,12 @@ require = function () {
             var parser_1 = require('./combinator/data/parser');
             exports.eval = parser_1.eval;
             exports.exec = parser_1.exec;
-            __export(require('./combinator/data/set/union'));
-            __export(require('./combinator/data/set/sequence'));
-            __export(require('./combinator/data/set/subsequence'));
-            __export(require('./combinator/data/set/inits'));
-            __export(require('./combinator/data/set/tails'));
-            __export(require('./combinator/data/set/some'));
+            __export(require('./combinator/data/parser/union'));
+            __export(require('./combinator/data/parser/sequence'));
+            __export(require('./combinator/data/parser/subsequence'));
+            __export(require('./combinator/data/parser/inits'));
+            __export(require('./combinator/data/parser/tails'));
+            __export(require('./combinator/data/parser/some'));
             __export(require('./combinator/control/monad/fmap'));
             __export(require('./combinator/control/monad/bind'));
             __export(require('./combinator/control/constraint/line'));
@@ -802,12 +802,12 @@ require = function () {
             './combinator/control/monad/bind': 31,
             './combinator/control/monad/fmap': 32,
             './combinator/data/parser': 33,
-            './combinator/data/set/inits': 34,
-            './combinator/data/set/sequence': 35,
-            './combinator/data/set/some': 36,
-            './combinator/data/set/subsequence': 37,
-            './combinator/data/set/tails': 38,
-            './combinator/data/set/union': 39
+            './combinator/data/parser/inits': 34,
+            './combinator/data/parser/sequence': 35,
+            './combinator/data/parser/some': 36,
+            './combinator/data/parser/subsequence': 37,
+            './combinator/data/parser/tails': 38,
+            './combinator/data/parser/union': 39
         }
     ],
     21: [
@@ -997,7 +997,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = require('../../data/parser');
-            const some_1 = require('../../data/set/some');
+            const some_1 = require('../../data/parser/some');
             const bind_1 = require('../monad/bind');
             const match_1 = require('./match');
             const surround_1 = require('./surround');
@@ -1022,7 +1022,7 @@ require = function () {
         },
         {
             '../../data/parser': 33,
-            '../../data/set/some': 36,
+            '../../data/parser/some': 36,
             '../constraint/line': 23,
             '../constraint/scope': 24,
             '../monad/bind': 31,
