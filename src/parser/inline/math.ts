@@ -5,7 +5,7 @@ import { stringify, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { html, frag } from 'typed-dom';
 
-export const cache = new Cache<string, HTMLElement>(100); // for rerendering in editing
+export const cache = new Cache<string, HTMLElement>(20); // for rerendering in editing
 
 export const math: MathParser = subline(verify(
   fmap(

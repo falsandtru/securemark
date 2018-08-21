@@ -11,7 +11,7 @@ import { html, frag, define } from 'typed-dom';
 const attributes: Record<string, Array<string | undefined>> = {
 };
 
-export const cache = new Cache<string, HTMLElement>(100);
+export const cache = new Cache<string, HTMLElement>(10);
 
 export const media: MediaParser = subline(bind(
   sequence<MediaParser>([

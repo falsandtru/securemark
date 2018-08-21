@@ -10,7 +10,7 @@ declare global {
 }
 
 let widgetScriptRequested = !!window.twttr;
-const cache = new Cache<string, HTMLElement>(100);
+const cache = new Cache<string, HTMLElement>(10);
 
 export function twitter(url: URL): HTMLElement | undefined {
   if (!['https://twitter.com'].includes(url.origin)) return;
