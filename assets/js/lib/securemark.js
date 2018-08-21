@@ -853,7 +853,6 @@ require = function () {
                     if (!res)
                         return;
                     const result = parser(source);
-                    parser_1.validate(source, result);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length ? result : undefined;
@@ -865,7 +864,6 @@ require = function () {
                     if (source === '')
                         return;
                     const result = parser(source);
-                    parser_1.validate(source, result);
                     if (!result)
                         return;
                     if (!cond(parser_1.eval(result), parser_1.exec(result)))
@@ -933,7 +931,6 @@ require = function () {
                     if (src === '')
                         return;
                     const result = parser(src);
-                    parser_1.validate(src, result);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < src.length ? [
@@ -948,12 +945,10 @@ require = function () {
                     if (source === '')
                         return;
                     const res1 = scope(source);
-                    parser_1.validate(source, res1);
                     if (!res1 || parser_1.exec(res1).length >= source.length)
                         return;
                     const src = source.slice(0, source.length - parser_1.exec(res1).length);
                     const res2 = parser(src);
-                    parser_1.validate(src, res2);
                     if (!res2)
                         return;
                     return parser_1.exec(res2).length < src.length ? [
@@ -1116,11 +1111,9 @@ require = function () {
                     if (source === '')
                         return;
                     const res1 = parser(source);
-                    parser_1.validate(source, res1);
                     if (!res1)
                         return;
                     const res2 = f(parser_1.eval(res1), parser_1.exec(res1));
-                    parser_1.validate(source, res2);
                     if (!res2)
                         return;
                     return parser_1.exec(res2).length <= parser_1.exec(res1).length ? res2 : undefined;
@@ -1162,7 +1155,8 @@ require = function () {
             exports.exec = exec;
             function validate(source, result) {
                 if (!result)
-                    return;
+                    return true;
+                return true;
             }
             exports.validate = validate;
         },
@@ -1176,7 +1170,7 @@ require = function () {
             const sequence_1 = require('./sequence');
             const bind_1 = require('../../control/monad/bind');
             function inits(parsers) {
-                return parsers.length <= 1 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs, rest) => union_1.union([
+                return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs, rest) => union_1.union([
                     sequence_1.sequence([
                         () => [
                             rs,
@@ -1206,7 +1200,7 @@ require = function () {
             const bind_1 = require('../../control/monad/bind');
             const concat_1 = require('spica/concat');
             function sequence(parsers) {
-                return parsers.length <= 1 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs1, rest) => bind_1.bind(sequence(parsers.slice(1)), (rs2, rest) => [
+                return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs1, rest) => bind_1.bind(sequence(parsers.slice(1)), (rs2, rest) => [
                     concat_1.concat(rs1, rs2),
                     rest
                 ])(rest));
@@ -1235,7 +1229,6 @@ require = function () {
                         if (until && match(rest, until))
                             break;
                         const result = parser(rest);
-                        parser_1.validate(rest, result);
                         if (!result)
                             break;
                         if (parser_1.exec(result).length >= rest.length)
@@ -1266,7 +1259,7 @@ require = function () {
             const union_1 = require('./union');
             const inits_1 = require('./inits');
             function subsequence(parsers) {
-                return parsers.length <= 1 ? union_1.union(parsers) : union_1.union([
+                return parsers.length < 2 ? union_1.union(parsers) : union_1.union([
                     inits_1.inits(parsers),
                     subsequence(parsers.slice(1))
                 ]);
@@ -1308,7 +1301,6 @@ require = function () {
                 default:
                     return source => {
                         const result = parsers[0](source);
-                        parser_1.validate(source, result);
                         if (!result)
                             return union(parsers.slice(1))(source);
                         return parser_1.exec(result).length < source.length ? result : undefined;
@@ -1425,7 +1417,7 @@ require = function () {
             const media_1 = require('../inline/media');
             exports.caches = {
                 math: math_1.cache,
-                media: { image: media_1.cache }
+                media: media_1.cache
             };
         },
         {
@@ -2737,7 +2729,7 @@ require = function () {
                 void el.setAttribute('href', `#${ el.id }`);
                 void el.removeAttribute('id');
                 return [el];
-            }), ([el]) => util_1.startsWithTightText(el)));
+            }), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el)));
         },
         {
             '../../../combinator': 20,
@@ -3540,9 +3532,11 @@ require = function () {
                 }, opts);
                 void [
                     target,
-                    ...target.querySelectorAll('img, pre, .math')
+                    ...target.querySelectorAll('a > .media:not(img), img, pre, .math')
                 ].forEach(target => void new Promise(() => {
                     switch (true) {
+                    case target.matches('a > .media:not(img)'):
+                        return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
                     case target.matches('img:not([src])[data-src]'): {
                             const el = opts.media && media_1.media(target, opts.media);
                             if (!el)
@@ -3668,7 +3662,9 @@ require = function () {
                         '.ogg'
                     ].includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                return media_1.cache.has(url.href) ? media_1.cache.get(url.href).cloneNode(true) : media_1.cache.set(url.href, typed_dom_1.html('audio', {
+                if (media_1.cache.has(url.href))
+                    return media_1.cache.get(url.href).cloneNode(true);
+                return media_1.cache.set(url.href, typed_dom_1.html('audio', {
                     src: url.href,
                     alt,
                     controls: '',
@@ -3742,7 +3738,9 @@ require = function () {
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function image(url, alt) {
-                return media_1.cache.has(url.href) ? media_1.cache.get(url.href).cloneNode(true) : media_1.cache.set(url.href, typed_dom_1.html('img', {
+                if (media_1.cache.has(url.href))
+                    return media_1.cache.get(url.href).cloneNode(true);
+                return media_1.cache.set(url.href, typed_dom_1.html('img', {
                     src: url.href,
                     alt,
                     style: 'max-width: 100%;'
@@ -3760,11 +3758,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = require('../../../parser');
+            const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function pdf(url) {
                 if (!['.pdf'].includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                return typed_dom_1.default.div({ style: 'position: relative;' }, [
+                if (media_1.cache.has(url.href))
+                    return media_1.cache.get(url.href).cloneNode(true);
+                return media_1.cache.set(url.href, typed_dom_1.default.div({ style: 'position: relative;' }, [
                     typed_dom_1.default.div({ style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.default.object({
                             type: 'application/pdf',
                             data: url.href,
@@ -3775,12 +3776,13 @@ require = function () {
                             return el;
                         })]),
                     typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parser_1.parse(`**[]( ${ url.href } )**`).querySelector('strong'))])
-                ]).element;
+                ]).element);
             }
             exports.pdf = pdf;
         },
         {
             '../../../parser': 40,
+            '../../../parser/inline/media': 89,
             'typed-dom': 13
         }
     ],
@@ -3837,18 +3839,17 @@ require = function () {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
                 const parser_1 = require('../../../parser');
-                const cache_1 = require('spica/cache');
+                const media_1 = require('../../../parser/inline/media');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
                 let widgetScriptRequested = !!window.twttr;
-                const cache = new cache_1.Cache(100);
                 function twitter(url) {
                     if (!['https://twitter.com'].includes(url.origin))
                         return;
                     if (!url.pathname.match(/^\/\w+\/status\/\d{15,}(?!\w)/))
                         return;
-                    if (cache.has(url.href)) {
-                        const el = cache.get(url.href).cloneNode(true);
+                    if (media_1.cache.has(url.href)) {
+                        const el = media_1.cache.get(url.href).cloneNode(true);
                         window.twttr && void window.twttr.widgets.load(el);
                         return el;
                     }
@@ -3862,7 +3863,7 @@ require = function () {
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`, { ADD_TAGS: ['script'] });
                                 const script = outer.querySelector('script');
                                 script && void script.remove();
-                                void cache.set(url.href, outer.cloneNode(true));
+                                void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (window.twttr)
                                     return void window.twttr.widgets.load(outer);
                                 if (widgetScriptRequested || !script)
@@ -3889,7 +3890,7 @@ require = function () {
         },
         {
             '../../../parser': 40,
-            'spica/cache': 6,
+            '../../../parser/inline/media': 89,
             'typed-dom': 13
         }
     ],
@@ -3905,7 +3906,9 @@ require = function () {
                         '.ogv'
                     ].includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                return media_1.cache.has(url.href) ? media_1.cache.get(url.href).cloneNode(true) : media_1.cache.set(url.href, typed_dom_1.html('video', {
+                if (media_1.cache.has(url.href))
+                    return media_1.cache.get(url.href).cloneNode(true);
+                return media_1.cache.set(url.href, typed_dom_1.html('video', {
                     src: url.href,
                     alt,
                     muted: '',
@@ -3924,6 +3927,7 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
             function youtube(url) {
                 if (![
@@ -3935,16 +3939,21 @@ require = function () {
                     return;
                 if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w\-]+$/))
                     return;
-                return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
+                if (media_1.cache.has(url.href))
+                    return media_1.cache.get(url.href).cloneNode(true);
+                return media_1.cache.set(url.href, typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
                             src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
-                        })])]).element;
+                        })])]).element);
             }
             exports.youtube = youtube;
         },
-        { 'typed-dom': 13 }
+        {
+            '../../../parser/inline/media': 89,
+            'typed-dom': 13
+        }
     ],
     113: [
         function (require, module, exports) {
