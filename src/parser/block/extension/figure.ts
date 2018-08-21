@@ -65,7 +65,7 @@ export const figure: FigureParser = block(rewrite(segment, match(
           block(inits<FigureParser.CaptionParser>([
             emptyline,
             union([
-              emptyline,
+              blankline,
               compress(trim(some(inblock)))
             ]),
           ])),

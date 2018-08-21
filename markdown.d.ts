@@ -12,7 +12,7 @@ export interface MarkdownParser extends
 export namespace MarkdownParser {
   export interface SegmentParser extends
     Markdown<'segment'>,
-    Parser<HTMLElement, [
+    Parser<never, [
       BlockParser.PretextParser,
       BlockParser.MathParser,
       BlockParser.ExtensionParser,
@@ -232,7 +232,7 @@ export namespace MarkdownParser {
           Parser<HTMLElement, [
             SourceParser.EmptyLineParser,
             Parser<HTMLElement, [
-              SourceParser.EmptyLineParser,
+              SourceParser.BlankLineParser,
               InblockParser
             ]>
           ]> {
@@ -376,10 +376,7 @@ export namespace MarkdownParser {
       export interface ParamParser extends
         Inline<'link/param'>,
         Parser<DocumentFragment, [
-          Parser<Text, [
-            LinkParser.ParamParser.UriParser.BracketParser,
-            SourceParser.UnescapableSourceParser
-          ]>,
+          LinkParser.ParamParser.UriParser,
           LinkParser.ParamParser.AttributeParser
         ]> {
       }
@@ -393,8 +390,11 @@ export namespace MarkdownParser {
         }
         export namespace UriParser {
           export interface BracketParser extends
-            Inline<'link/bracket'>,
-            Parser<Text, Parser<Text, [BracketParser, SourceParser.UnescapableSourceParser]>[]> {
+            Inline<'link/uri/bracket'>,
+            Parser<Text, Parser<Text, [
+              BracketParser,
+              SourceParser.UnescapableSourceParser
+            ]>[]> {
           }
         }
         export interface AttributeParser extends
@@ -512,10 +512,7 @@ export namespace MarkdownParser {
       export interface ParamParser extends
         Inline<'media/param'>,
         Parser<Text, [
-          Parser<Text, [
-            LinkParser.ParamParser.UriParser.BracketParser,
-            SourceParser.UnescapableSourceParser
-          ]>,
+          LinkParser.ParamParser.UriParser,
           LinkParser.ParamParser.AttributeParser
         ]> {
       }
