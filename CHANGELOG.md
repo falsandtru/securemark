@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.79.0
+
+- Disallow media in index syntax.
+
 ## 0.78.4
 
 - Refactoring.
