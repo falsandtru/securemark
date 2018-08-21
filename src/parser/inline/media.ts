@@ -37,8 +37,9 @@ export const media: MediaParser = subline(bind(
     if (path.trim().toLowerCase().startsWith('tel:')) return;
     const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
       arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
-    const el = cache.has(path)
-      ? cache.get(path)!.cloneNode(true)
+    const uri = new URL(path, window.location.href).href;
+    const el = cache.has(uri)
+      ? cache.get(uri)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: caption });
     if (attrs.size !== args.length) {
       void el.classList.add('invalid');
@@ -47,7 +48,7 @@ export const media: MediaParser = subline(bind(
       if (attributes.hasOwnProperty(key) && attributes[key].includes(value)) continue;
       void el.classList.add('invalid');
     }
-    if (cache.has(path) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
+    if (cache.has(uri) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
       void define(el, { alt: caption });
     }
     return [[el], rest];

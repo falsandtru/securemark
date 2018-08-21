@@ -3,6 +3,7 @@
 ## 0.79.1
 
 - Fix cached tweet rendering.
+- Fix cache miss in media rendering with relative path.
 
 ## 0.79.0
 
