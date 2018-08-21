@@ -1,5 +1,5 @@
 ﻿import { Parser, eval, exec } from '../../data/parser';
-import { some } from '../../data/set/some';
+import { some } from '../../data/parser/some';
 import { bind } from '../monad/bind';
 import { match } from './match';
 import { surround } from './surround';

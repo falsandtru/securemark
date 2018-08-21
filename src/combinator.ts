@@ -1,10 +1,10 @@
 export { Parser, Result, eval, exec } from './combinator/data/parser';
-export * from './combinator/data/set/union';
-export * from './combinator/data/set/sequence';
-export * from './combinator/data/set/subsequence';
-export * from './combinator/data/set/inits';
-export * from './combinator/data/set/tails';
-export * from './combinator/data/set/some';
+export * from './combinator/data/parser/union';
+export * from './combinator/data/parser/sequence';
+export * from './combinator/data/parser/subsequence';
+export * from './combinator/data/parser/inits';
+export * from './combinator/data/parser/tails';
+export * from './combinator/data/parser/some';
 export * from './combinator/control/monad/fmap';
 export * from './combinator/control/monad/bind';
 export * from './combinator/control/constraint/line';
