@@ -44,13 +44,13 @@ export const link: LinkParser = subline(bind(build(() =>
   ])),
   ([text, param], rest) => {
     const [INSECURE_URL = '', ...args]: string[] = [...param.childNodes].map(t => t.textContent!);
-    const uri = sanitize(INSECURE_URL);
-    if (uri === '' && INSECURE_URL !== '') return;
+    const path = sanitize(INSECURE_URL);
+    if (path === '' && INSECURE_URL !== '') return;
     const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
       arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
     const el = html('a',
       {
-        href: uri,
+        href: path,
         rel: `noopener ${attrs.has('nofollow') ? 'nofollow noreferrer' : ''}`.trim(),
       },
       hasContent(text)

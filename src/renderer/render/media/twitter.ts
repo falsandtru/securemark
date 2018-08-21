@@ -9,8 +9,9 @@ declare global {
   }
 }
 
-let widgetScriptRequested = !!window.twttr;
 const cache = new Cache<string, HTMLElement>(10);
+
+let widgetScriptRequested = !!window.twttr;
 
 export function twitter(url: URL): HTMLElement | undefined {
   if (!['https://twitter.com'].includes(url.origin)) return;
@@ -20,9 +21,7 @@ export function twitter(url: URL): HTMLElement | undefined {
     window.twttr && void window.twttr.widgets.load(el);
     return el;
   }
-  return DOM.div({
-    style: 'position: relative;',
-  }, [DOM.em(`loading ${url.href}`)], () => {
+  return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], () => {
     const outer = html('div');
     void $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}`, {
       dataType: 'jsonp',
