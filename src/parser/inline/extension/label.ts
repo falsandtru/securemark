@@ -42,7 +42,7 @@ export function isGroup(label: string): boolean {
 }
 
 function increment(index: string, position: number): string {
-  assert(index.match(/^\d+(?:\.\d+)*$/));
+  assert(index.match(/^[0-9]+(?:\.[0-9]+)*$/));
   assert(position > 0);
   if (index === '0' && position > 1) return increment(index, 1);
   const ns = index.split('.');

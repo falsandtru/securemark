@@ -60,7 +60,7 @@ export const link: LinkParser = subline(bind(build(() =>
             .replace(/^h(?=ttps?:\/\/)/, attrs.has('nofollow') ? '' : 'h'));
     assert(hasContent(el));
     if (el.textContent!.trim().match(/^[#@]/)) return;
-    if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=\d)/g, '')}`) return;
+    if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
     if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
       void el.setAttribute('target', '_blank');
     }
