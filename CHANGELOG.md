@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.79.1
+
+- Fix cached tweet rendering.
+
 ## 0.79.0
 
 - Disallow media in index syntax.
