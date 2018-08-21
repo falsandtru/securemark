@@ -51,6 +51,10 @@ describe('Unit: parser/api/normalization', () => {
       assert(normalize('\x7F') === '');
     });
 
+    it('sanitization', () => {
+      assert.deepStrictEqual(normalize('\r\n'.repeat(100) + '.'), '\n'.repeat(100) + '.');
+    });
+
   });
 
 });

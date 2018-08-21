@@ -4,8 +4,7 @@ import { segment } from './segment';
 import { normalize } from './normalization';
 
 export function parse(source: string): DocumentFragment {
-  source = normalize(source);
-  return segment(source)
+  return segment(normalize(source))
     .reduce((parent, seg) => (
       void eval(block(seg))
         .forEach(el =>
