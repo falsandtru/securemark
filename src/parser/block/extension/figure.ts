@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, bind, match, surround, contract, block, line, rewrite, trim, eval } from '../../../combinator';
+import { union, sequence, inits, some, bind, match, surround, contract, block, line, rewrite, convert, trim, eval } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
@@ -59,7 +59,9 @@ export const figure: FigureParser = block(rewrite(segment, match(
             blockquote,
             line(rewrite(
               media,
-              source => link(`[${source}]( ${eval(media(source))[0].getAttribute('data-src')} )`))),
+              convert(
+                source => `[${source}]( ${eval(media(source))[0].getAttribute('data-src') || '#'} )`,
+                link))),
             line(contract('!', uri, ([node]) => node instanceof Element)),
           ])),
           block(inits<FigureParser.CaptionParser>([

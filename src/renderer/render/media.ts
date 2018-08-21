@@ -9,7 +9,7 @@ import { audio } from './media/audio';
 import { image } from './media/image';
 
 export function media(target: HTMLImageElement, opts: NonNullable<RenderingOptions['media']>): HTMLElement | undefined {
-  assert(target.matches(':not([src])[data-src]'));
+  assert(target.matches('img:not([src])[data-src]'));
   opts = { twitter, youtube, gist, slideshare, pdf, video, audio, image, ...opts };
   const url = new URL(target.getAttribute('data-src')!, window.location.href);
   const alt = target.getAttribute('alt') || '';

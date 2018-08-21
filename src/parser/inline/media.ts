@@ -19,7 +19,7 @@ export const media: MediaParser = subline(bind(
       verify(
         surround('![', compress(some(union([text]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false),
         ns => ns.length === 0 || startsWithTightText(frag(ns))),
-      ns => [frag(frag(ns).textContent!.trim())])),
+      ns => [frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
     subline(
       surround(
         '(',
@@ -37,7 +37,9 @@ export const media: MediaParser = subline(bind(
     if (uri.trim().toLowerCase().startsWith('tel:')) return;
     const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
       arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
-    const el = html('img', { class: 'media', 'data-src': uri, alt: caption });
+    const el = cache.has(uri)
+      ? cache.get(uri)!.cloneNode(true)
+      : html('img', { class: 'media', 'data-src': uri, alt: caption });
     if (attrs.size !== args.length) {
       void el.classList.add('invalid');
     }
@@ -45,9 +47,8 @@ export const media: MediaParser = subline(bind(
       if (attributes.hasOwnProperty(key) && attributes[key].includes(value)) continue;
       void el.classList.add('invalid');
     }
-    if (cache.has(uri)) {
-      const el = cache.get(uri)!.cloneNode(true);
-      return [[['img', 'audio', 'video'].includes(el.tagName.toLowerCase()) ? define(el, { alt: caption }) : el], rest];
+    if (cache.has(uri) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
+      void define(el, { alt: caption });
     }
     return [[el], rest];
   }));
