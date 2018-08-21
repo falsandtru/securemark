@@ -5,10 +5,12 @@ import { math } from './render/math';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
   opts = { code, math, media: {}, ...opts };
-  void [target, ...target.querySelectorAll<HTMLElement>('img, pre, .math')]
+  void [target, ...target.querySelectorAll<HTMLElement>('a > .media:not(img), img, pre, .math')]
     .forEach(target =>
       void new Promise(() => {
         switch (true) {
+          case target.matches('a > .media:not(img)'):
+            return void target.parentElement!.parentElement!.replaceChild(target, target.parentElement!);
           case target.matches('img:not([src])[data-src]'): {
             const el = opts.media && media(target as HTMLImageElement, opts.media);
             if (!el) return;

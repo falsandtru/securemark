@@ -1,5 +1,5 @@
 ﻿import { parse } from '../../../parser';
-import { Cache } from 'spica/cache';
+import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
 import DOM, { html, define } from 'typed-dom';
 
@@ -10,7 +10,6 @@ declare global {
 }
 
 let widgetScriptRequested = !!window.twttr;
-const cache = new Cache<string, HTMLElement>(100);
 
 export function twitter(url: URL): HTMLElement | undefined {
   if (!['https://twitter.com'].includes(url.origin)) return;

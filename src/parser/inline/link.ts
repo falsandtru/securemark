@@ -23,13 +23,12 @@ export const link: LinkParser = subline(bind(build(() =>
               void el.parentNode!.parentNode!.replaceChild(el, el.parentNode!))
           if (text.childNodes.length !== 1) return false;
           if (!text.firstElementChild!.matches('.media')) return false;
-          assert(!hasLink(text));
         }
         else {
           if (text.childNodes.length > 0 && !startsWithTightText(text)) return false;
           if (hasLink(text)) return false;
         }
-        assert(text.querySelector('a > .media') || !hasLink(text));
+        assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
         return true;
       })),
     subline(fmap(

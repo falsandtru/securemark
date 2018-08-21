@@ -3,6 +3,8 @@
 ## 0.79.0
 
 - Disallow media in index syntax.
+- Cache the results of rendering with all media.
+- Fix cache control interface.
 
 ## 0.78.4
 
