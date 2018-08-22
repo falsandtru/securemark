@@ -1455,8 +1455,7 @@ require = function () {
             const segment_1 = require('./segment');
             const normalization_1 = require('./normalization');
             function parse(source) {
-                source = normalization_1.normalize(source);
-                return segment_1.segment(source).reduce((parent, seg) => (void combinator_1.eval(block_1.block(seg)).forEach(el => void parent.appendChild(el)), parent), document.createDocumentFragment());
+                return segment_1.segment(normalization_1.normalize(source)).reduce((parent, seg) => (void combinator_1.eval(block_1.block(seg)).forEach(el => void parent.appendChild(el)), parent), document.createDocumentFragment());
             }
             exports.parse = parse;
         },
@@ -1471,6 +1470,7 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const normalization_1 = require('./normalization');
             const combinator_1 = require('../../combinator');
             const pretext_1 = require('../block/pretext');
             const math_1 = require('../block/math');
@@ -1479,13 +1479,14 @@ require = function () {
             function segment(source) {
                 const segments = [];
                 while (source.length > 0) {
-                    const [, rest = ''] = combinator_1.union([
+                    const result = combinator_1.union([
                         pretext_1.segment,
                         math_1.segment,
                         extension_1.segment,
                         combinator_1.some(line_1.contentline),
                         combinator_1.some(line_1.blankline)
-                    ])(source) || [];
+                    ])(source);
+                    const rest = result ? combinator_1.exec(result) : '';
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
                 }
@@ -1498,7 +1499,8 @@ require = function () {
             '../block/extension': 50,
             '../block/math': 59,
             '../block/pretext': 64,
-            '../source/line': 95
+            '../source/line': 95,
+            './normalization': 44
         }
     ],
     47: [
@@ -1816,13 +1818,13 @@ require = function () {
                         math_1.math,
                         example_1.example,
                         blockquote_1.blockquote,
-                        combinator_1.line(combinator_1.rewrite(inline_1.media, source => inline_1.link(`[${ source }]( ${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') } )`))),
+                        combinator_1.line(combinator_1.rewrite(inline_1.media, combinator_1.convert(source => `[${ source }]( ${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') || '#' } )`, inline_1.link))),
                         combinator_1.line(combinator_1.contract('!', inline_1.uri, ([node]) => node instanceof Element))
                     ])),
                     combinator_1.block(combinator_1.inits([
                         line_1.emptyline,
                         combinator_1.union([
-                            line_1.emptyline,
+                            line_1.blankline,
                             util_1.compress(combinator_1.trim(combinator_1.some(inblock_1.inblock)))
                         ])
                     ]))
@@ -2927,20 +2929,20 @@ require = function () {
                 ]), ')', false), ts => [typed_dom_1.frag(ts)]))
             ])), ([text, param], rest) => {
                 const [INSECURE_URL = '', ...args] = [...param.childNodes].map(t => t.textContent);
-                const uri = uri_1.sanitize(INSECURE_URL);
-                if (uri === '' && INSECURE_URL !== '')
+                const path = uri_1.sanitize(INSECURE_URL);
+                if (path === '' && INSECURE_URL !== '')
                     return;
                 const attrs = new Map(args.map(arg => [
                     arg.split('=', 1)[0],
                     arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined
                 ]));
                 const el = typed_dom_1.html('a', {
-                    href: uri,
+                    href: path,
                     rel: `noopener ${ attrs.has('nofollow') ? 'nofollow noreferrer' : '' }`.trim()
                 }, util_1.hasContent(text) ? text.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, attrs.has('nofollow') ? '' : 'h'));
                 if (el.textContent.trim().match(/^[#@]/))
                     return;
-                if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=\d)/g, '') }`)
+                if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
                     return;
                 if ((el.origin !== window.location.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
                     void el.setAttribute('target', '_blank');
@@ -3026,8 +3028,8 @@ require = function () {
             const util_1 = require('../util');
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
-            exports.cache = new cache_1.Cache(100);
-            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('$', combinator_1.some(combinator_1.union([escapable_1.escsource]), '$'), /^\$(?!\d)/)), ss => {
+            exports.cache = new cache_1.Cache(20);
+            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('$', combinator_1.some(combinator_1.union([escapable_1.escsource]), '$'), /^\$(?![0-9])/)), ss => {
                 const el = typed_dom_1.html('span', { class: 'math notranslate' }, `$${ ss.join('') }$`);
                 if (exports.cache.has(el.textContent))
                     return [exports.cache.get(el.textContent).cloneNode(true)];
@@ -3056,27 +3058,28 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             const attributes = {};
-            exports.cache = new cache_1.Cache(100);
+            exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.sequence([
-                combinator_1.subline(combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(typed_dom_1.frag(ns).textContent.trim())])),
+                combinator_1.subline(combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
                 combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(combinator_1.surround('', util_1.compress(link_1.attribute), /^ |^(?=\))/))
                 ]), ')', false))
             ]), (ts, rest) => {
                 const [caption, INSECURE_URL = '', ...args] = ts.map(t => t.textContent);
-                const uri = uri_1.sanitize(INSECURE_URL.trim());
-                if (uri === '' && INSECURE_URL !== '')
+                const path = uri_1.sanitize(INSECURE_URL.trim());
+                if (path === '' && INSECURE_URL !== '')
                     return;
-                if (uri.trim().toLowerCase().startsWith('tel:'))
+                if (path.trim().toLowerCase().startsWith('tel:'))
                     return;
                 const attrs = new Map(args.map(arg => [
                     arg.split('=', 1)[0],
                     arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined
                 ]));
-                const el = typed_dom_1.html('img', {
+                const uri = new URL(path, window.location.href).href;
+                const el = exports.cache.has(uri) ? exports.cache.get(uri).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
-                    'data-src': uri,
+                    'data-src': path,
                     alt: caption
                 });
                 if (attrs.size !== args.length) {
@@ -3087,16 +3090,12 @@ require = function () {
                         continue;
                     void el.classList.add('invalid');
                 }
-                if (exports.cache.has(uri)) {
-                    const el = exports.cache.get(uri).cloneNode(true);
-                    return [
-                        [[
-                                'img',
-                                'audio',
-                                'video'
-                            ].includes(el.tagName.toLowerCase()) ? typed_dom_1.define(el, { alt: caption }) : el],
-                        rest
-                    ];
+                if (exports.cache.has(uri) && [
+                        'img',
+                        'audio',
+                        'video'
+                    ].includes(el.tagName.toLowerCase())) {
+                    void typed_dom_1.define(el, { alt: caption });
                 }
                 return [
                     [el],
@@ -3287,6 +3286,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
+            const parser_1 = require('../../combinator/data/parser');
             exports.anyline = combinator_1.line(takeLine(_ => [
                 [],
                 ''
@@ -3318,7 +3318,10 @@ require = function () {
                 };
             }
         },
-        { '../../combinator': 20 }
+        {
+            '../../combinator': 20,
+            '../../combinator/data/parser': 33
+        }
     ],
     96: [
         function (require, module, exports) {
@@ -3535,19 +3538,21 @@ require = function () {
                     ...target.querySelectorAll('a > .media:not(img), img, pre, .math')
                 ].forEach(target => void new Promise(() => {
                     switch (true) {
+                    case target.matches('.invalid'):
+                        return;
                     case target.matches('a > .media:not(img)'):
                         return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
-                    case target.matches('img:not([src])[data-src]'): {
-                            const el = opts.media && media_1.media(target, opts.media);
+                    case !!opts.media && target.matches('img:not([src])[data-src]'): {
+                            const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
                             const scope = el instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
-                    case target.matches('pre'):
-                        return target.children.length === 0 && opts.code ? void opts.code(target) : void 0;
-                    case target.matches('.math'):
-                        return target.children.length === 0 && opts.math ? void opts.math(target) : void 0;
+                    case !!opts.code && target.matches('pre'):
+                        return target.children.length === 0 ? void opts.code(target) : void 0;
+                    case !!opts.math && target.matches('.math'):
+                        return target.children.length === 0 ? void opts.math(target) : void 0;
                     default:
                         return;
                     }
@@ -3839,17 +3844,18 @@ require = function () {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
                 const parser_1 = require('../../../parser');
-                const media_1 = require('../../../parser/inline/media');
+                const cache_1 = require('spica/cache');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
+                const cache = new cache_1.Cache(10);
                 let widgetScriptRequested = !!window.twttr;
                 function twitter(url) {
                     if (!['https://twitter.com'].includes(url.origin))
                         return;
-                    if (!url.pathname.match(/^\/\w+\/status\/\d{15,}(?!\w)/))
+                    if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                         return;
-                    if (media_1.cache.has(url.href)) {
-                        const el = media_1.cache.get(url.href).cloneNode(true);
+                    if (cache.has(url.href)) {
+                        const el = cache.get(url.href).cloneNode(true);
                         window.twttr && void window.twttr.widgets.load(el);
                         return el;
                     }
@@ -3863,7 +3869,7 @@ require = function () {
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`, { ADD_TAGS: ['script'] });
                                 const script = outer.querySelector('script');
                                 script && void script.remove();
-                                void media_1.cache.set(url.href, outer.cloneNode(true));
+                                void cache.set(url.href, outer.cloneNode(true));
                                 if (window.twttr)
                                     return void window.twttr.widgets.load(outer);
                                 if (widgetScriptRequested || !script)
@@ -3890,7 +3896,7 @@ require = function () {
         },
         {
             '../../../parser': 40,
-            '../../../parser/inline/media': 89,
+            'spica/cache': 6,
             'typed-dom': 13
         }
     ],
@@ -4039,7 +4045,7 @@ require = function () {
                         const refId = ref.id || `${ category }-ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
                         const def = acc.get(title);
-                        const defIndex = def ? +def.id.match(/\d+/)[0] : acc.size + 1;
+                        const defIndex = def ? +def.id.match(/[0-9]+/)[0] : acc.size + 1;
                         const defId = def ? def.id : `${ category }-def:${ defIndex }`;
                         void typed_dom_1.define(ref, {
                             id: refId,
