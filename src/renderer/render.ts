@@ -17,21 +17,19 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLEl
             && target.matches('img:not([src])[data-src]'): {
             const el = media(target as HTMLImageElement, opts.media!);
             if (!el) return;
-            const scope = el instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement
+            const scope = !el.matches('img') && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement
               ? target.closest('a')!
               : target;
             return void scope.parentElement!.replaceChild(el, scope);
           }
           case !!opts.code
-            && target.matches('pre'):
-            return target.children.length === 0
-              ? void opts.code!(target)
-              : void 0;
+            && target.matches('pre')
+            && target.children.length === 0:
+            return void opts.code!(target);
           case !!opts.math
-            && target.matches('.math'):
-            return target.children.length === 0
-              ? void opts.math!(target)
-              : void 0;
+            && target.matches('.math')
+            && target.children.length === 0:
+            return void opts.math!(target);
           default:
             return;
         }
