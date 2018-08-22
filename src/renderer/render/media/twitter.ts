@@ -5,13 +5,13 @@ import DOM, { html, define } from 'typed-dom';
 
 declare global {
   interface Window {
-    twttr: any;
+    twttr?: { widgets: { load: (el: HTMLElement) => void; }; };
   }
 }
 
 const cache = new Cache<string, HTMLElement>(10);
 
-let widgetScriptRequested = !!window.twttr;
+let isWidgetScriptRequested = !!window.twttr;
 
 export function twitter(url: URL): HTMLElement | undefined {
   if (!['https://twitter.com'].includes(url.origin)) return;
@@ -33,13 +33,14 @@ export function twitter(url: URL): HTMLElement | undefined {
         script && void script.remove();
         void cache.set(url.href, outer.cloneNode(true));
         if (window.twttr) return void window.twttr.widgets.load(outer);
-        if (widgetScriptRequested || !script) return;
-        widgetScriptRequested = true;
-        if (!script.getAttribute('src')!.startsWith('https://platform.twitter.com/')) return;
+        if (isWidgetScriptRequested) return;
+        if (!script || !script.getAttribute('src')!.startsWith('https://platform.twitter.com/')) return;
         if (document.querySelector(`script[src="${script.getAttribute('src')}"]`)) return;
+        isWidgetScriptRequested = true;
         void $.ajax(script.src, {
           dataType: 'script',
           cache: true,
+          complete: () => isWidgetScriptRequested = !!window.twttr,
         });
       },
       error({ status, statusText }) {
