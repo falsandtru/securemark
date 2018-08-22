@@ -1,14 +1,14 @@
 ﻿import { parse } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
-import DOM, { html, define } from 'typed-dom';
+import DOM, { define } from 'typed-dom';
 
 export function slideshare(url: URL): HTMLElement | undefined {
   if (!['https://www.slideshare.net'].includes(url.origin)) return;
   if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
-  return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], () => {
-    const outer = html('div');
+  return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {
+    const outer = f(tag);
     void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${url.href}&format=json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,

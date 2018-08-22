@@ -1,7 +1,7 @@
 ﻿import { parse } from '../../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
-import DOM, { html, define } from 'typed-dom';
+import DOM, { define } from 'typed-dom';
 
 declare global {
   interface Window {
@@ -21,8 +21,8 @@ export function twitter(url: URL): HTMLElement | undefined {
     window.twttr && void window.twttr.widgets.load(el);
     return el;
   }
-  return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], () => {
-    const outer = html('div');
+  return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {
+    const outer = f(tag);
     void $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
