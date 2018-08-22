@@ -2635,11 +2635,11 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?!\`)`));
-            exports.code = combinator_1.subline(combinator_1.match(/^(?=(`+)[^\n]+?\1(?!`))/, ([, bracket], source) => combinator_1.verify(combinator_1.bind(util_1.stringify(combinator_1.surround(bracket, combinator_1.some(combinator_1.union([
+            exports.code = combinator_1.subline(combinator_1.match(/^(?=(`+)[^\n]+?\1(?!`))/, ([, bracket], source) => combinator_1.verify(combinator_1.bind(util_1.stringify(combinator_1.surround(bracket, util_1.compress(combinator_1.some(combinator_1.union([
                 combinator_1.some(char_1.char('`')),
                 unescapable_1.unescsource
-            ]), closer(bracket)), closer(bracket))), (ss, rest) => [
-                [typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, ss.join('').trim())],
+            ]), closer(bracket))), closer(bracket))), ([body], rest) => [
+                [typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, body.trim())],
                 rest
             ]), ([el]) => util_1.hasText(el))(source)));
         },
@@ -3029,11 +3029,12 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('$', combinator_1.some(combinator_1.union([escapable_1.escsource]), '$'), /^\$(?![0-9])/)), ss => {
-                const el = typed_dom_1.html('span', { class: 'math notranslate' }, `$${ ss.join('') }$`);
-                if (exports.cache.has(el.textContent))
-                    return [exports.cache.get(el.textContent).cloneNode(true)];
-                void el.setAttribute('data-src', el.textContent);
+            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('$', util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), '$')), /^\$(?![0-9])/)), ([body]) => {
+                const source = `$${ body }$`;
+                if (exports.cache.has(source))
+                    return [exports.cache.get(source).cloneNode(true)];
+                const el = typed_dom_1.html('span', { class: 'math notranslate' }, source);
+                void el.setAttribute('data-src', source);
                 return [el];
             }), ([el]) => util_1.startsWithTightText(typed_dom_1.frag(el.textContent.slice(1, -1)))));
         },
@@ -3546,13 +3547,13 @@ require = function () {
                             const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
-                            const scope = el instanceof HTMLImageElement === false && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
+                            const scope = !el.matches('img') && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
-                    case !!opts.code && target.matches('pre'):
-                        return target.children.length === 0 ? void opts.code(target) : void 0;
-                    case !!opts.math && target.matches('.math'):
-                        return target.children.length === 0 ? void opts.math(target) : void 0;
+                    case !!opts.code && target.matches('pre') && target.children.length === 0:
+                        return void opts.code(target);
+                    case !!opts.math && target.matches('.math') && target.children.length === 0:
+                        return void opts.math(target);
                     default:
                         return;
                     }
@@ -3588,13 +3589,8 @@ require = function () {
             const math_1 = require('../../parser/inline/math');
             const typed_dom_1 = require('typed-dom');
             function math(target) {
-                if (target instanceof HTMLDivElement)
-                    return void queue(target);
-                void target.setAttribute('data-src', target.textContent);
-                const expr = target.textContent;
-                if (math_1.cache.has(expr))
-                    return void typed_dom_1.define(target, math_1.cache.get(expr).cloneNode(true).childNodes);
-                void queue(target, () => void math_1.cache.set(expr, target.cloneNode(true)));
+                const source = target.textContent;
+                return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : undefined);
             }
             exports.math = math;
             function queue(target, callback = () => undefined) {
@@ -3699,8 +3695,8 @@ require = function () {
                         return;
                     if (media_1.cache.has(url.href))
                         return media_1.cache.get(url.href).cloneNode(true);
-                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
-                        const outer = typed_dom_1.html('div');
+                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], (f, tag) => {
+                        const outer = f(tag);
                         void $.ajax(`${ url.href }.json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
@@ -3807,8 +3803,8 @@ require = function () {
                         return;
                     if (media_1.cache.has(url.href))
                         return media_1.cache.get(url.href).cloneNode(true);
-                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
-                        const outer = typed_dom_1.html('div');
+                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], (f, tag) => {
+                        const outer = f(tag);
                         void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
@@ -3848,7 +3844,7 @@ require = function () {
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
                 const cache = new cache_1.Cache(10);
-                let widgetScriptRequested = !!window.twttr;
+                let isWidgetScriptRequested = !!window.twttr;
                 function twitter(url) {
                     if (!['https://twitter.com'].includes(url.origin))
                         return;
@@ -3859,8 +3855,8 @@ require = function () {
                         window.twttr && void window.twttr.widgets.load(el);
                         return el;
                     }
-                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], () => {
-                        const outer = typed_dom_1.html('div');
+                    return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], (f, tag) => {
+                        const outer = f(tag);
                         void $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
@@ -3872,16 +3868,17 @@ require = function () {
                                 void cache.set(url.href, outer.cloneNode(true));
                                 if (window.twttr)
                                     return void window.twttr.widgets.load(outer);
-                                if (widgetScriptRequested || !script)
+                                if (isWidgetScriptRequested)
                                     return;
-                                widgetScriptRequested = true;
-                                if (!script.getAttribute('src').startsWith('https://platform.twitter.com/'))
+                                if (!script || !script.getAttribute('src').startsWith('https://platform.twitter.com/'))
                                     return;
                                 if (document.querySelector(`script[src="${ script.getAttribute('src') }"]`))
                                     return;
+                                isWidgetScriptRequested = true;
                                 void $.ajax(script.src, {
                                     dataType: 'script',
-                                    cache: true
+                                    cache: true,
+                                    complete: () => isWidgetScriptRequested = !!window.twttr
                                 });
                             },
                             error({status, statusText}) {
@@ -4029,9 +4026,9 @@ require = function () {
                 void exports.authority(source, targets.authority);
             }
             exports.footnote = footnote;
-            exports.annotation = build('annotation', n => `(${ n })`);
+            exports.annotation = build('annotation', n => `*${ n }`);
             exports.authority = build('authority', n => `[${ n }]`);
-            function build(category, indexer) {
+            function build(category, marker) {
                 const memory = new WeakMap();
                 return (source, target) => {
                     const exclusion = new Set(source.querySelectorAll('.example'));
@@ -4053,19 +4050,19 @@ require = function () {
                         }, [typed_dom_1.html('a', {
                                 href: `#${ defId }`,
                                 rel: 'noopener'
-                            }, indexer(defIndex))]);
+                            }, marker(defIndex))]);
                         if (def) {
                             void def.lastChild.appendChild(typed_dom_1.html('a', {
                                 href: `#${ refId }`,
                                 rel: 'noopener'
-                            }, indexer(refIndex)));
+                            }, marker(refIndex)));
                         } else {
                             void acc.set(title, typed_dom_1.html('li', { id: defId }, [
                                 ...memory.get(ref),
                                 typed_dom_1.html('sup', [typed_dom_1.html('a', {
                                         href: `#${ refId }`,
                                         rel: 'noopener'
-                                    }, indexer(refIndex))])
+                                    }, marker(refIndex))])
                             ]));
                         }
                         return acc;
