@@ -6,10 +6,10 @@ export function footnote(source: DocumentFragment | HTMLElement, targets: { anno
   void authority(source, targets.authority);
 }
 
-export const annotation = build('annotation', n => `(${n})`);
+export const annotation = build('annotation', n => `*${n}`);
 export const authority = build('authority', n => `[${n}]`);
 
-function build(category: string, indexer: (index: number) => string): (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => void {
+function build(category: string, marker: (index: number) => string): (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => void {
   assert(category.match(/^[a-z]+$/));
   const memory = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => {
@@ -29,15 +29,15 @@ function build(category: string, indexer: (index: number) => string): (source: D
         const defId = def
           ? def.id
           : `${category}-def:${defIndex}`;
-        void define(ref, { id: refId, title: title }, [html('a', { href: `#${defId}`, rel: 'noopener' }, indexer(defIndex))]);
+        void define(ref, { id: refId, title: title }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
         if (def) {
-          void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, indexer(refIndex)));
+          void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, marker(refIndex)));
         }
         else {
           void acc.set(title, html('li', { id: defId }, [
             ...memory.get(ref)!,
             html('sup', [
-              html('a', { href: `#${refId}`, rel: 'noopener' }, indexer(refIndex)),
+              html('a', { href: `#${refId}`, rel: 'noopener' }, marker(refIndex)),
             ])
           ]));
         }

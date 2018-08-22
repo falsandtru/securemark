@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.79.2
+
+- Change annotation mark.
+
 ## 0.79.1
 
 - Fix cached tweet rendering.
