@@ -11,5 +11,11 @@ export const segment_: MathParser = block(focus(
 
 export const math: MathParser = block(rewrite(segment, match(
   /^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/,
-  ([, arg, body], rest) =>
-    [[html('div', { class: `math notranslate ${arg.trim() ? 'invalid' : ''}`.trim() }, `$$${body}$$`)], rest])));
+  ([, arg, body], rest) => {
+    const el = html('div', { class: `math notranslate`.trim() }, `$$${body}$$`);
+    if (arg.trim() !== '') {
+      void el.classList.add('invalid');
+      void el.setAttribute('data-invalid-type', 'attribute');
+    }
+    return [[el], rest];
+  })));

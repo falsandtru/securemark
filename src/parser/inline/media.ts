@@ -39,6 +39,7 @@ export const media: MediaParser = subline(bind(
     }
     if (!check(attrs, args, attributes)) {
       void el.classList.add('invalid');
+      void el.setAttribute('data-invalid-type', 'attribute');
     }
     return [[el], rest];
   }));

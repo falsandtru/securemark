@@ -8,5 +8,5 @@ export const placeholder: ExtensionParser.PlaceholderParser = subline(fmap(build
     '[',
     validate(/^[~^@](?!\])/, some(union<ExtensionParser.PlaceholderParser>([inline]), ']')),
     ']')),
-  ns =>
-    [html('span', { class: 'invalid' }, eval(some(inline)(`Invalid syntax: Extension syntax: \`[${ns[0].textContent![0]} ]\`.`)))]));
+  () =>
+    [html('span', { class: 'invalid', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`)))]));

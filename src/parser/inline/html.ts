@@ -68,5 +68,8 @@ function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]
         : void el.classList.add('invalid');
     }
   }
+  if (el.matches('.invalid')) {
+    void el.setAttribute('data-invalid-type', 'attribute');
+  }
   return el;
 }

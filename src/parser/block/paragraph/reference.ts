@@ -13,5 +13,5 @@ export const reference: ParagraphParser.ReferenceParser = line(rewrite(contentli
       ([ref, { length: level }], rest) =>
         [[html('a', { class: 'reference', rel: 'noopener', 'data-level': `${level}` }, ref.trim()), html('br')], rest]),
     () =>
-      [[html('span', { class: 'invalid' }, eval(some(inline)(`Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.`))), html('br')], ''],
+      [[html('span', { class: 'invalid', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Reference: Use lower-case alphanumeric characters in reference syntax.`))), html('br')], ''],
   ]))));

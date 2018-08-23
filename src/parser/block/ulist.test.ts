@@ -51,7 +51,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n - 3')), [['<ul><li>1<ul><li>2</li><li>3</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n  - 3')), [['<ul><li>1<ul><li>2<ul><li>3</li></ul></li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n- 3')), [['<ul><li>1<ul><li>2</li></ul></li><li>3</li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- 1\n + 2')), [['<ul><li>1<ul class="invalid"><li>Invalid syntax: UList syntax: Use <code data-src="`-`">-</code> instead.</li></ul></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- 1\n + 2')), [['<ul><li>1<ul class="invalid" data-invalid-type="syntax"><li>Invalid syntax: UList: Use <code data-src="`-`">-</code> instead.</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 1')), [['<ul><li>1<ol start="1" type="1"><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 1.')), [['<ul><li>1<ol start="1" type="1"><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 1. ')), [['<ul><li>1<ol start="1" type="1"><li></li></ol></li></ul>'], '']);
