@@ -2812,7 +2812,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const tags = new Set('ins|del|sup|sub|small|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
             const emptytags = new Set('wbr'.split('|'));
-            exports.html = combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]+)?>)/, ([, tag], source) => {
+            exports.html = combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, ([, tag], source) => {
                 if (!tags.has(tag))
                     return;
                 if (emptytags.has(tag))
@@ -2821,18 +2821,18 @@ require = function () {
                         source.slice(tag.length + 2)
                     ];
                 return combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
-                    combinator_1.fmap(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.compress(attribute), '>'), '>', false), ts => [typed_dom_1.frag(ts)]),
+                    combinator_1.fmap(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.compress(attribute)), /^ ?>/, false), ts => [typed_dom_1.frag(ts)]),
                     combinator_1.surround(``, util_1.compress(combinator_1.some(inline_1.inline, `</${ tag }>`)), `</${ tag }>`)
                 ]), ([args, ...ns]) => [elem(tag, [...args.childNodes].map(t => t.textContent), ns)]), ([el]) => util_1.hasText(el))(source);
             });
-            const attribute = combinator_1.fmap(combinator_1.surround(' ', combinator_1.inits([
+            const attribute = combinator_1.subline(combinator_1.fmap(combinator_1.surround(' ', combinator_1.inits([
                 combinator_1.focus(/^[a-z]+(?=[= >])/, util_1.compress(combinator_1.some(unescapable_1.unescsource, /^[^a-z]/))),
                 combinator_1.surround('="', util_1.compress(combinator_1.some(escapable_1.escsource, '"')), '"', false)
             ]), ''), ([key, value = undefined]) => value === undefined ? [key] : [
                 key,
                 typed_dom_1.text('='),
                 value
-            ]);
+            ]));
             const attributes = {
                 bdo: {
                     dir: [
@@ -2904,7 +2904,6 @@ require = function () {
             const unescapable_1 = require('../source/unescapable');
             const util_1 = require('../util');
             const uri_1 = require('../string/uri');
-            const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const attributes = { nofollow: [undefined] };
             exports.link = combinator_1.subline(combinator_1.bind(combinator_1.build(() => combinator_1.sequence([
@@ -2925,8 +2924,8 @@ require = function () {
                 })),
                 combinator_1.subline(combinator_1.fmap(combinator_1.surround('(', combinator_1.inits([
                     exports.uri,
-                    combinator_1.some(combinator_1.surround('', util_1.compress(exports.attribute), /^ |^(?=\))/))
-                ]), ')', false), ts => [typed_dom_1.frag(ts)]))
+                    combinator_1.some(util_1.compress(exports.attribute))
+                ]), /^ ?\)/, false), ts => [typed_dom_1.frag(ts)]))
             ])), ([text, param], rest) => {
                 const [INSECURE_URL = '', ...args] = [...param.childNodes].map(t => t.textContent);
                 const path = uri_1.sanitize(INSECURE_URL);
@@ -2960,11 +2959,10 @@ require = function () {
                     rest
                 ];
             }));
-            const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }\\)|^\\s`));
-            exports.uri = source => combinator_1.subline(combinator_1.surround(/^ ?(?! )/, util_1.compress(combinator_1.some(combinator_1.union([
+            exports.uri = combinator_1.subline(combinator_1.match(/^ ?(?! )/, ([flag], rest) => util_1.compress(combinator_1.some(combinator_1.union([
                 exports.bracket,
                 unescapable_1.unescsource
-            ]), closer(source[0] === ' ' ? ' ' : ''))), /^ ?(?=\))|^ /))(source);
+            ]), flag === ' ' ? /^\s/ : /^\s|^\)/))(rest)));
             exports.bracket = combinator_1.subline(combinator_1.build(() => combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
@@ -3007,7 +3005,7 @@ require = function () {
                     typed_dom_1.text('"')
                 ])
             ])));
-            exports.attribute = combinator_1.subline(combinator_1.focus(/^[a-z]+(?:=[^\s)]+)?/, combinator_1.some(combinator_1.union([unescapable_1.unescsource]))));
+            exports.attribute = combinator_1.subline(combinator_1.surround(' ', combinator_1.focus(/^[a-z]+(?:=[^\s)]+)?/, combinator_1.some(combinator_1.union([unescapable_1.unescsource]))), ''));
         },
         {
             '../../combinator': 20,
@@ -3015,7 +3013,6 @@ require = function () {
             '../source/unescapable': 97,
             '../string/uri': 98,
             '../util': 99,
-            'spica/memoization': 9,
             'typed-dom': 13
         }
     ],
@@ -3064,8 +3061,8 @@ require = function () {
                 combinator_1.subline(combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
                 combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
                     link_1.uri,
-                    combinator_1.some(combinator_1.surround('', util_1.compress(link_1.attribute), /^ |^(?=\))/))
-                ]), ')', false))
+                    combinator_1.some(util_1.compress(link_1.attribute))
+                ]), /^ ?\)/, false))
             ]), (ts, rest) => {
                 const [caption, INSECURE_URL = '', ...args] = ts.map(t => t.textContent);
                 const path = uri_1.sanitize(INSECURE_URL.trim());
