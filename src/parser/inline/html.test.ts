@@ -66,7 +66,9 @@ describe('Unit: parser/inline/html', () => {
     });
 
     it('attribute', () => {
+      assert.deepStrictEqual(inspect(parser('<bdo >a</bdo>')), [['<bdo>a</bdo>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl">a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
+      assert.deepStrictEqual(inspect(parser('<bdo dir="rtl" >a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
     });
 
   });

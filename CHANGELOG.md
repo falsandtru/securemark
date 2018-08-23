@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.79.3
+
+- Allow tailing whitespace in HTML tag of HTML syntax.
+
 ## 0.79.2
 
 - Change annotation mark.

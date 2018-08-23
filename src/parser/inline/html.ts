@@ -1,5 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { inits, sequence, some, fmap, match, surround, verify, focus } from '../../combinator';
+import { inits, sequence, some, fmap, match, surround, subline, verify, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { compress, hasText } from '../util';
@@ -13,7 +13,7 @@ const emptytags = new Set('wbr'.split('|'));
 assert([...emptytags].every(tag => tags.has(tag)));
 
 export const html: HTMLParser = match(
-  /^(?=<([a-z]+)(?: [^\n>]+)?>)/,
+  /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
   ([, tag], source) => {
     if (!tags.has(tag)) return;
     if (emptytags.has(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
@@ -22,7 +22,7 @@ export const html: HTMLParser = match(
       fmap(
         sequence<HTMLParser>([
           fmap(
-            surround(`<${tag}`, some(compress(attribute), '>'), '>', false),
+            surround(`<${tag}`, some(compress(attribute)), /^ ?>/, false),
             ts => [frag(ts)]),
           surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
         ]),
@@ -32,7 +32,7 @@ export const html: HTMLParser = match(
       (source);
   });
 
-const attribute: HTMLParser.AttributeParser = fmap(
+const attribute: HTMLParser.AttributeParser = subline(fmap(
   surround(
     ' ',
     inits<HTMLParser.AttributeParser>([
@@ -43,7 +43,7 @@ const attribute: HTMLParser.AttributeParser = fmap(
   ([key, value = undefined]) =>
     value === undefined
       ? [key]
-      : [key, text('='), value]);
+      : [key, text('='), value]));
 
 const attributes: Partial<Record<keyof HTMLElementTagNameMap, Record<string, Array<string | undefined>> | undefined>> = {
   bdo: {
