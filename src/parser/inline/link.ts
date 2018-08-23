@@ -1,9 +1,8 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, sequence, some, fmap, bind, surround, subline, focus, verify, build } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, subline, focus, verify, build } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { compress, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
-import { memoize } from 'spica/memoization';
 import { html, text, frag } from 'typed-dom';
 
 const attributes: Record<string, Array<string | undefined>> = {
@@ -36,9 +35,9 @@ export const link: LinkParser = subline(bind(build(() =>
         '(',
         inits<LinkParser.ParamParser>([
           uri,
-          some(surround('', compress(attribute), /^ |^(?=\))/))
+          some(compress(attribute)),
         ]),
-        ')',
+        /^ ?\)/,
         false),
       ts => [frag(ts)])),
   ])),
@@ -74,15 +73,13 @@ export const link: LinkParser = subline(bind(build(() =>
     return [[el], rest];
   }));
 
-const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}\\)|^\\s`));
-
-export const uri: LinkParser.ParamParser.UriParser = (source: string) => subline(surround(
+export const uri: LinkParser.ParamParser.UriParser = subline(match(
   /^ ?(?! )/,
-  compress(some(
-    union<LinkParser.ParamParser.UriParser>([bracket, unescsource]),
-    closer(source[0] === ' ' ? ' ' : ''))),
-  /^ ?(?=\))|^ /))
-  (source);
+  ([flag], rest) =>
+    compress(some(
+      union<LinkParser.ParamParser.UriParser>([bracket, unescsource]),
+      flag === ' ' ? /^\s/ : /^\s|^\)/))
+      (rest)));
 
 export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(build(() => union([
   fmap(
@@ -102,6 +99,8 @@ export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(b
     ts => [text('"'), ...ts, text('"')]),
 ])));
 
-export const attribute: LinkParser.ParamParser.AttributeParser = subline(focus(
-  /^[a-z]+(?:=[^\s)]+)?/,
-  some(union([unescsource]))));
+export const attribute: LinkParser.ParamParser.AttributeParser = subline(
+  surround(
+    ' ',
+    focus(/^[a-z]+(?:=[^\s)]+)?/, some(union([unescsource]))),
+    ''));

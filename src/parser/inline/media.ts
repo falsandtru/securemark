@@ -25,9 +25,9 @@ export const media: MediaParser = subline(bind(
         '(',
         inits<MediaParser.ParamParser>([
           uri,
-          some(surround('', compress(attribute), /^ |^(?=\))/))
+          some(compress(attribute)),
         ]),
-        ')',
+        /^ ?\)/,
         false))
   ]),
   (ts, rest) => {
