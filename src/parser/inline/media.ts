@@ -2,7 +2,7 @@
 import { union, inits, sequence, some, fmap, bind, surround, verify, subline } from '../../combinator';
 import { text } from '../source/text';
 import '../source/unescapable';
-import { uri, attribute } from './link';
+import { uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
 import { compress, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
@@ -21,14 +21,7 @@ export const media: MediaParser = subline(bind(
         ns => ns.length === 0 || startsWithTightText(frag(ns))),
       ns => [frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
     subline(
-      surround(
-        '(',
-        inits<MediaParser.ParamParser>([
-          uri,
-          some(compress(attribute)),
-        ]),
-        /^ ?\)/,
-        false))
+      surround('(', inits<MediaParser.ParamParser>([uri, some(compress(attribute)),]), /^ ?\)/, false))
   ]),
   (ts, rest) => {
     const [caption, INSECURE_URL = '', ...args]: string[] = ts.map(t => t.textContent!);
@@ -41,15 +34,11 @@ export const media: MediaParser = subline(bind(
     const el = cache.has(uri)
       ? cache.get(uri)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: caption });
-    if (attrs.size !== args.length) {
-      void el.classList.add('invalid');
-    }
-    for (const [key, value] of attrs.entries()) {
-      if (attributes.hasOwnProperty(key) && attributes[key].includes(value)) continue;
-      void el.classList.add('invalid');
-    }
     if (cache.has(uri) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
       void define(el, { alt: caption });
+    }
+    if (!check(attrs, args, attributes)) {
+      void el.classList.add('invalid');
     }
     return [[el], rest];
   }));

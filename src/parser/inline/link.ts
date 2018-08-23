@@ -31,14 +31,7 @@ export const link: LinkParser = subline(bind(build(() =>
         return true;
       })),
     subline(fmap(
-      surround(
-        '(',
-        inits<LinkParser.ParamParser>([
-          uri,
-          some(compress(attribute)),
-        ]),
-        /^ ?\)/,
-        false),
+      surround('(', inits<LinkParser.ParamParser>([uri, some(compress(attribute)),]), /^ ?\)/, false),
       ts => [frag(ts)])),
   ])),
   ([text, param], rest) => {
@@ -63,11 +56,7 @@ export const link: LinkParser = subline(bind(build(() =>
     if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
       void el.setAttribute('target', '_blank');
     }
-    if (attrs.size !== args.length) {
-      void el.classList.add('invalid');
-    }
-    for (const [key, value] of attrs.entries()) {
-      if (attributes.hasOwnProperty(key) && attributes[key].includes(value)) continue;
+    if (!check(attrs, args, attributes)) {
       void el.classList.add('invalid');
     }
     return [[el], rest];
@@ -104,3 +93,15 @@ export const attribute: LinkParser.ParamParser.AttributeParser = subline(
     ' ',
     focus(/^[a-z]+(?:=[^\s)]+)?/, some(union([unescsource]))),
     ''));
+
+export function check(
+  attrs: Map<string, string | undefined>,
+  args: string[],
+  spec: Record<string, Array<string | undefined>>,
+): boolean {
+  return attrs.size === args.length
+      && [...attrs.entries()]
+          .every(([key, value]) =>
+            spec.hasOwnProperty(key) &&
+            spec[key].includes(value));
+}

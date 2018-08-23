@@ -3,7 +3,7 @@ import { inits, sequence, some, fmap, match, surround, subline, verify, focus } 
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { compress, hasText } from '../util';
-import { html as htm, text, frag, define } from 'typed-dom';
+import { html as htm, text, frag } from 'typed-dom';
 
 const tags = new Set('ins|del|sup|sub|small|ruby|rt|rp|bdi|bdo|wbr'.split('|'));
 assert([...tags].every(tag => /^[a-z]+$/.test(tag)));
@@ -59,18 +59,11 @@ function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]
     void el.classList.add('invalid');
   }
   if (attributes[tag]) {
-    for (const [key, value] of [...attrs.entries()]) {
-      if (attributes[tag]!.hasOwnProperty(key) && attributes[tag]![key].includes(value)) {
-        void el.setAttribute(key, value || '');
-      }
-      else {
-        void attrs.delete(key);
-        void el.classList.add('invalid');
-      }
+    for (const [key, value] of attrs.entries()) {
+      attributes[tag]!.hasOwnProperty(key) && attributes[tag]![key].includes(value)
+        ? void el.setAttribute(key, value || '')
+        : void el.classList.add('invalid');
     }
   }
-  return define(
-    el,
-    [...attrs.entries()]
-      .reduce((obj, [key, value]) => (obj[key] = value, obj), {}));
+  return el;
 }
