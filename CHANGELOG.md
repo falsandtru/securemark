@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.79.4
+
+- Mark the missing of required attributes with link, media, and HTML syntax.
+
 ## 0.79.3
 
 - Allow tailing whitespace in HTML tag of HTML syntax.

@@ -100,6 +100,7 @@ export function check(
   spec: Record<string, Array<string | undefined>>,
 ): boolean {
   return attrs.size === args.length
+      && attrs.size >= [...Object.values(spec)].filter(Object.isFrozen).length
       && [...attrs.entries()]
           .every(([key, value]) =>
             spec.hasOwnProperty(key) &&

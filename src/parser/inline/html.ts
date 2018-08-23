@@ -45,9 +45,9 @@ const attribute: HTMLParser.AttributeParser = subline(fmap(
       ? [key]
       : [key, text('='), value]));
 
-const attributes: Partial<Record<keyof HTMLElementTagNameMap, Record<string, Array<string | undefined>> | undefined>> = {
+const attributes: Partial<Record<keyof HTMLElementTagNameMap, Record<string, ReadonlyArray<string | undefined>> | undefined>> = {
   bdo: {
-    dir: ['ltr', 'rtl'],
+    dir: Object.freeze(['ltr', 'rtl']),
   },
 };
 
@@ -59,6 +59,9 @@ function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]
     void el.classList.add('invalid');
   }
   if (attributes[tag]) {
+    if (attrs.size < [...Object.values(attributes[tag]!)].filter(Object.isFrozen).length) {
+      void el.classList.add('invalid');
+    }
     for (const [key, value] of attrs.entries()) {
       attributes[tag]!.hasOwnProperty(key) && attributes[tag]![key].includes(value)
         ? void el.setAttribute(key, value || '')
