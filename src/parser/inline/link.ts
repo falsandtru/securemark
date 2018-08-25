@@ -43,7 +43,7 @@ export const link: LinkParser = subline(bind(build(() =>
     const el = html('a',
       {
         href: path,
-        rel: `noopener ${attrs.has('nofollow') ? 'nofollow noreferrer' : ''}`.trim(),
+        rel: `noopener${attrs.has('nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       hasContent(text)
         ? text.childNodes
