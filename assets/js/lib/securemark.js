@@ -1870,7 +1870,10 @@ require = function () {
                 ''
             ]));
             exports.placeholder = combinator_1.block(combinator_1.rewrite(exports.segment, () => [
-                [typed_dom_1.html('p', { class: 'invalid' }, combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: Extension syntax: ~~~.')))],
+                [typed_dom_1.html('p', {
+                        class: 'invalid',
+                        'data-invalid-type': 'syntax'
+                    }, combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: Extension: Invalid extension name, attribute, or content.')))],
                 ''
             ]));
         },
@@ -1940,7 +1943,10 @@ require = function () {
                         olist_1.olist_,
                         exports.ilist
                     ]))
-                ]), () => [typed_dom_1.html('li', combinator_1.eval(combinator_1.some(inblock_1.inblock)('Invalid syntax: UList syntax: Use `-` instead.')))])]))), es => [typed_dom_1.html('ul', { class: 'invalid' }, es)]));
+                ]), () => [typed_dom_1.html('li', combinator_1.eval(combinator_1.some(inblock_1.inblock)('Invalid syntax: UList: Use `-` instead.')))])]))), es => [typed_dom_1.html('ul', {
+                    class: 'invalid',
+                    'data-invalid-type': 'syntax'
+                }, es)]));
         },
         {
             '../../combinator': 20,
@@ -2000,10 +2006,17 @@ require = function () {
                 [],
                 ''
             ]), false);
-            exports.math = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/, ([, arg, body], rest) => [
-                [typed_dom_1.html('div', { class: `math notranslate ${ arg.trim() ? 'invalid' : '' }`.trim() }, `$$${ body }$$`)],
-                rest
-            ])));
+            exports.math = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/, ([, arg, body], rest) => {
+                const el = typed_dom_1.html('div', { class: `math notranslate`.trim() }, `$$${ body }$$`);
+                if (arg.trim() !== '') {
+                    void el.classList.add('invalid');
+                    void el.setAttribute('data-invalid-type', 'attribute');
+                }
+                return [
+                    [el],
+                    rest
+                ];
+            })));
         },
         {
             '../../combinator': 20,
@@ -2118,7 +2131,10 @@ require = function () {
                 ]),
                 () => [
                     [
-                        typed_dom_1.html('span', { class: 'invalid' }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Reference syntax: Use lower-case alphanumeric characters in reference syntax.`))),
+                        typed_dom_1.html('span', {
+                            class: 'invalid',
+                            'data-invalid-type': 'syntax'
+                        }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Reference: Use lower-case alphanumeric characters in reference syntax.`))),
                         typed_dom_1.html('br')
                     ],
                     ''
@@ -2792,7 +2808,10 @@ require = function () {
             const inline_1 = require('../../inline');
             const combinator_1 = require('../../../combinator');
             const typed_dom_1 = require('typed-dom');
-            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']')), ns => [typed_dom_1.html('span', { class: 'invalid' }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension syntax: \`[${ ns[0].textContent[0] } ]\`.`)))]));
+            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']')), () => [typed_dom_1.html('span', {
+                    class: 'invalid',
+                    'data-invalid-type': 'syntax'
+                }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`)))]));
         },
         {
             '../../../combinator': 20,
@@ -2835,10 +2854,10 @@ require = function () {
             ]));
             const attributes = {
                 bdo: {
-                    dir: [
+                    dir: Object.freeze([
                         'ltr',
                         'rtl'
-                    ]
+                    ])
                 }
             };
             function elem(tag, args, children) {
@@ -2851,16 +2870,17 @@ require = function () {
                     void el.classList.add('invalid');
                 }
                 if (attributes[tag]) {
-                    for (const [key, value] of [...attrs.entries()]) {
-                        if (attributes[tag].hasOwnProperty(key) && attributes[tag][key].includes(value)) {
-                            void el.setAttribute(key, value || '');
-                        } else {
-                            void attrs.delete(key);
-                            void el.classList.add('invalid');
-                        }
+                    if (attrs.size < [...Object.values(attributes[tag])].filter(Object.isFrozen).length) {
+                        void el.classList.add('invalid');
+                    }
+                    for (const [key, value] of attrs.entries()) {
+                        attributes[tag].hasOwnProperty(key) && attributes[tag][key].includes(value) ? void el.setAttribute(key, value || '') : void el.classList.add('invalid');
                     }
                 }
-                return typed_dom_1.define(el, [...attrs.entries()].reduce((obj, [key, value]) => (obj[key] = value, obj), {}));
+                if (el.matches('.invalid')) {
+                    void el.setAttribute('data-invalid-type', 'attribute');
+                }
+                return el;
             }
         },
         {
@@ -2946,13 +2966,9 @@ require = function () {
                 if ((el.origin !== window.location.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
                     void el.setAttribute('target', '_blank');
                 }
-                if (attrs.size !== args.length) {
+                if (!check(attrs, args, attributes)) {
                     void el.classList.add('invalid');
-                }
-                for (const [key, value] of attrs.entries()) {
-                    if (attributes.hasOwnProperty(key) && attributes[key].includes(value))
-                        continue;
-                    void el.classList.add('invalid');
+                    void el.setAttribute('data-invalid-type', 'attribute');
                 }
                 return [
                     [el],
@@ -3006,6 +3022,10 @@ require = function () {
                 ])
             ])));
             exports.attribute = combinator_1.subline(combinator_1.surround(' ', combinator_1.focus(/^[a-z]+(?:=[^\s)]+)?/, combinator_1.some(combinator_1.union([unescapable_1.unescsource]))), ''));
+            function check(attrs, args, spec) {
+                return attrs.size === args.length && attrs.size >= [...Object.values(spec)].filter(Object.isFrozen).length && [...attrs.entries()].every(([key, value]) => spec.hasOwnProperty(key) && spec[key].includes(value));
+            }
+            exports.check = check;
         },
         {
             '../../combinator': 20,
@@ -3080,20 +3100,16 @@ require = function () {
                     'data-src': path,
                     alt: caption
                 });
-                if (attrs.size !== args.length) {
-                    void el.classList.add('invalid');
-                }
-                for (const [key, value] of attrs.entries()) {
-                    if (attributes.hasOwnProperty(key) && attributes[key].includes(value))
-                        continue;
-                    void el.classList.add('invalid');
-                }
                 if (exports.cache.has(uri) && [
                         'img',
                         'audio',
                         'video'
                     ].includes(el.tagName.toLowerCase())) {
                     void typed_dom_1.define(el, { alt: caption });
+                }
+                if (!link_1.check(attrs, args, attributes)) {
+                    void el.classList.add('invalid');
+                    void el.setAttribute('data-invalid-type', 'attribute');
                 }
                 return [
                     [el],
