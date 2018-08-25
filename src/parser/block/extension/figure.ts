@@ -31,9 +31,10 @@ export const segment: FigureParser = block(union([
               seg_math,
               seg_example,
             ]),
-            inits([
-              emptyline,
-              union([blankline, some(contentline, closer(bracket))])
+            emptyline,
+            union([
+              blankline,
+              some(contentline, closer(bracket)),
             ]),
           ]),
         ]),
@@ -64,12 +65,10 @@ export const figure: FigureParser = block(rewrite(segment, match(
                 link))),
             line(contract('!', uri, ([node]) => node instanceof Element)),
           ])),
-          block(inits<FigureParser.CaptionParser>([
-            emptyline,
-            union([
-              blankline,
-              compress(trim(some(inblock)))
-            ]),
+          emptyline,
+          block(union<FigureParser.CaptionParser>([
+            blankline,
+            compress(trim(some(inblock))),
           ])),
         ]),
       ]),
