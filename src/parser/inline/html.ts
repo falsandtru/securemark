@@ -69,7 +69,7 @@ function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]
     }
   }
   if (el.matches('.invalid')) {
-    void el.setAttribute('data-invalid-type', 'attribute');
+    void el.setAttribute('data-invalid-type', 'parameter');
   }
   return el;
 }

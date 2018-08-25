@@ -58,7 +58,7 @@ export const link: LinkParser = subline(bind(build(() =>
     }
     if (!check(attrs, args, attributes)) {
       void el.classList.add('invalid');
-      void el.setAttribute('data-invalid-type', 'attribute');
+      void el.setAttribute('data-invalid-type', 'parameter');
     }
     return [[el], rest];
   }));

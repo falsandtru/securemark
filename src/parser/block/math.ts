@@ -15,7 +15,7 @@ export const math: MathParser = block(rewrite(segment, match(
     const el = html('div', { class: `math notranslate`.trim() }, `$$${body}$$`);
     if (arg.trim() !== '') {
       void el.classList.add('invalid');
-      void el.setAttribute('data-invalid-type', 'attribute');
+      void el.setAttribute('data-invalid-type', 'parameter');
     }
     return [[el], rest];
   })));
