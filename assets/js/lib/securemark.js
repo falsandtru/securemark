@@ -2346,15 +2346,15 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inblock_1 = require('../inblock');
             const combinator_1 = require('../../combinator');
+            const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([inblock_1.inblock]), '))'), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el));
+            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([inline_1.inline]), '))'), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
         },
         {
             '../../combinator': 20,
-            '../inblock': 67,
+            '../inline': 74,
             '../util': 99,
             'typed-dom': 13
         }
@@ -2363,15 +2363,15 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inblock_1 = require('../inblock');
             const combinator_1 = require('../../combinator');
+            const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', combinator_1.some(combinator_1.union([inblock_1.inblock]), ']]'), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el));
+            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', combinator_1.some(combinator_1.union([inline_1.inline]), ']]'), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
         },
         {
             '../../combinator': 20,
-            '../inblock': 67,
+            '../inline': 74,
             '../util': 99,
             'typed-dom': 13
         }
@@ -3499,10 +3499,6 @@ require = function () {
                 return !!node.querySelector('a');
             }
             exports.hasLink = hasLink;
-            function hasAnnotationOrAuthority(node) {
-                return !!node.querySelector('.annotation, .authority');
-            }
-            exports.hasAnnotationOrAuthority = hasAnnotationOrAuthority;
             function hasText(node) {
                 return node.textContent.trim() !== '';
             }
