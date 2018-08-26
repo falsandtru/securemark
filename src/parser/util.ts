@@ -59,10 +59,6 @@ export function hasLink(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('a');
 }
 
-export function hasAnnotationOrAuthority(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('.annotation, .authority');
-}
-
 export function hasText(node: HTMLElement | DocumentFragment): boolean {
   return node.textContent!.trim() !== '';
 }

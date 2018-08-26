@@ -290,14 +290,14 @@ export namespace MarkdownParser {
       // ((abc))
       Inblock<'annotation'>,
       Parser<HTMLElement, [
-        InblockParser
+        InlineParser
       ]> {
     }
     export interface AuthorityParser extends
       // [[abc]]
       Inblock<'authority'>,
       Parser<HTMLElement, [
-        InblockParser
+        InlineParser
       ]> {
     }
     export interface AutolinkParser extends

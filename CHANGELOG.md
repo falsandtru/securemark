@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.79.5
+
+- Fix annotation and authority parser.
+
 ## 0.79.4
 
 - Mark the missing of required attributes with link, media, and HTML syntax.
