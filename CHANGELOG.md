@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.79.6
+
+- Fix annotation and authority parser.
+
 ## 0.79.5
 
 - Fix annotation and authority parser.
