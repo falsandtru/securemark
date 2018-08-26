@@ -1795,12 +1795,10 @@ require = function () {
                             math_1.segment_,
                             example_1.segment_
                         ]),
-                        combinator_1.inits([
-                            line_1.emptyline,
-                            combinator_1.union([
-                                line_1.blankline,
-                                combinator_1.some(line_1.contentline, closer(bracket))
-                            ])
+                        line_1.emptyline,
+                        combinator_1.union([
+                            line_1.blankline,
+                            combinator_1.some(line_1.contentline, closer(bracket))
                         ])
                     ])
                 ]), closer(bracket))(`${ note }\n${ rest }`)),
@@ -1821,12 +1819,10 @@ require = function () {
                         combinator_1.line(combinator_1.rewrite(inline_1.media, combinator_1.convert(source => `[${ source }]( ${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') || '#' } )`, inline_1.link))),
                         combinator_1.line(combinator_1.contract('!', inline_1.uri, ([node]) => node instanceof Element))
                     ])),
-                    combinator_1.block(combinator_1.inits([
-                        line_1.emptyline,
-                        combinator_1.union([
-                            line_1.blankline,
-                            util_1.compress(combinator_1.trim(combinator_1.some(inblock_1.inblock)))
-                        ])
+                    line_1.emptyline,
+                    combinator_1.block(combinator_1.union([
+                        line_1.blankline,
+                        util_1.compress(combinator_1.trim(combinator_1.some(inblock_1.inblock)))
                     ]))
                 ])
             ]), ([label, content, ...caption]) => [
@@ -2007,10 +2003,10 @@ require = function () {
                 ''
             ]), false);
             exports.math = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/, ([, arg, body], rest) => {
-                const el = typed_dom_1.html('div', { class: `math notranslate`.trim() }, `$$${ body }$$`);
+                const el = typed_dom_1.html('div', { class: `math notranslate` }, `$$${ body }$$`);
                 if (arg.trim() !== '') {
                     void el.classList.add('invalid');
-                    void el.setAttribute('data-invalid-type', 'attribute');
+                    void el.setAttribute('data-invalid-type', 'parameter');
                 }
                 return [
                     [el],
@@ -2878,7 +2874,7 @@ require = function () {
                     }
                 }
                 if (el.matches('.invalid')) {
-                    void el.setAttribute('data-invalid-type', 'attribute');
+                    void el.setAttribute('data-invalid-type', 'parameter');
                 }
                 return el;
             }
@@ -2957,7 +2953,7 @@ require = function () {
                 ]));
                 const el = typed_dom_1.html('a', {
                     href: path,
-                    rel: `noopener ${ attrs.has('nofollow') ? 'nofollow noreferrer' : '' }`.trim()
+                    rel: `noopener${ attrs.has('nofollow') ? ' nofollow noreferrer' : '' }`
                 }, util_1.hasContent(text) ? text.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, attrs.has('nofollow') ? '' : 'h'));
                 if (el.textContent.trim().match(/^[#@]/))
                     return;
@@ -2968,7 +2964,7 @@ require = function () {
                 }
                 if (!check(attrs, args, attributes)) {
                     void el.classList.add('invalid');
-                    void el.setAttribute('data-invalid-type', 'attribute');
+                    void el.setAttribute('data-invalid-type', 'parameter');
                 }
                 return [
                     [el],
@@ -3088,19 +3084,19 @@ require = function () {
                 const path = uri_1.sanitize(INSECURE_URL.trim());
                 if (path === '' && INSECURE_URL !== '')
                     return;
-                if (path.trim().toLowerCase().startsWith('tel:'))
+                const uri = new URL(path, window.location.href);
+                if (uri.protocol === 'tel:')
                     return;
                 const attrs = new Map(args.map(arg => [
                     arg.split('=', 1)[0],
                     arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined
                 ]));
-                const uri = new URL(path, window.location.href).href;
-                const el = exports.cache.has(uri) ? exports.cache.get(uri).cloneNode(true) : typed_dom_1.html('img', {
+                const el = exports.cache.has(uri.href) ? exports.cache.get(uri.href).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': path,
                     alt: caption
                 });
-                if (exports.cache.has(uri) && [
+                if (exports.cache.has(uri.href) && [
                         'img',
                         'audio',
                         'video'
@@ -3109,7 +3105,7 @@ require = function () {
                 }
                 if (!link_1.check(attrs, args, attributes)) {
                     void el.classList.add('invalid');
-                    void el.setAttribute('data-invalid-type', 'attribute');
+                    void el.setAttribute('data-invalid-type', 'parameter');
                 }
                 return [
                     [el],
