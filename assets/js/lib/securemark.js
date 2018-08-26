@@ -2347,15 +2347,20 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
+            const autolink_1 = require('./autolink');
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([inline_1.inline]), '))'), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
+            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([
+                autolink_1.autolink,
+                inline_1.inline
+            ]), '))'), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
         },
         {
             '../../combinator': 20,
             '../inline': 74,
             '../util': 99,
+            './autolink': 70,
             'typed-dom': 13
         }
     ],
@@ -2364,15 +2369,20 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
+            const autolink_1 = require('./autolink');
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', combinator_1.some(combinator_1.union([inline_1.inline]), ']]'), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
+            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', combinator_1.some(combinator_1.union([
+                autolink_1.autolink,
+                inline_1.inline
+            ]), ']]'), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
         },
         {
             '../../combinator': 20,
             '../inline': 74,
             '../util': 99,
+            './autolink': 70,
             'typed-dom': 13
         }
     ],
