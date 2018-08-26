@@ -1,8 +1,8 @@
 ﻿import { Parser, fmap } from '../combinator';
 import { isFixed } from './inline';
 
-export function suppress<P extends Parser<HTMLQuoteElement, any>>(parser: P): P;
-export function suppress<T extends HTMLQuoteElement, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+export function suppress<P extends Parser<HTMLElement, any>>(parser: P): P;
+export function suppress<T extends HTMLElement, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   return fmap(parser, es => {
     void es.forEach(target => {
       void target.querySelectorAll('[id]')
