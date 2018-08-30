@@ -237,7 +237,7 @@ export namespace MarkdownParser {
         }
       }
       export interface ExampleParser extends
-        // ~~~markdown
+        // ~~~example
         // ~~~
         Block<'extension/example'>,
         Parser<HTMLElement, Parser<HTMLElement, []>[]> {
