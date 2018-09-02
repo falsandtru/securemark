@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, bind, match, surround, contract, block, line, rewrite, convert, trim, eval } from '../../../combinator';
+import { union, sequence, inits, some, bind, match, surround, contract, verify, block, line, rewrite, convert, trim, eval } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
@@ -45,7 +45,7 @@ export const segment: FigureParser = block(union([
     (_, rest) => [[], rest]),
 ]));
 
-export const figure: FigureParser = block(rewrite(segment, match(
+export const figure: FigureParser = block(rewrite(segment, verify(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
   ([, , note, body], rest) =>
     bind(
@@ -83,4 +83,8 @@ export const figure: FigureParser = block(rewrite(segment, match(
             html('figcaption', [html('span'), html('span', caption)])
           ])
         ], rest])
-      (`${note}\n${body.slice(0, -1)}`))));
+      (`${note}\n${body.slice(0, -1)}`)),
+  ([el]) =>
+    el.getAttribute('data-group') === '$'
+      ? el.firstElementChild!.matches('.math')
+      : true)));
