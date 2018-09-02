@@ -1,17 +1,17 @@
-﻿import { PretextParser } from '../block';
+﻿import { CodeBlockParser } from '../block';
 import { some, match, block, focus, rewrite, build, eval } from '../../combinator';
 import { escsource } from '../source/escapable';
 import '../source/unescapable';
 import { stringify } from '../util';
 import { html } from 'typed-dom';
 
-export const segment: PretextParser = block(build(() => segment_));
+export const segment: CodeBlockParser = block(build(() => segment_));
 
-export const segment_: PretextParser = block(focus(
+export const segment_: CodeBlockParser = block(focus(
   /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
-export const pretext: PretextParser = block(rewrite(segment, match(
+export const codeblock: CodeBlockParser = block(rewrite(segment, match(
   /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/,
   ([, , lang, notes, body], rest) => {
     assert(rest === '');

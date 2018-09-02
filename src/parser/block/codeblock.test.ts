@@ -1,10 +1,10 @@
-﻿import { pretext} from './pretext';
+﻿import { codeblock } from './codeblock';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/block/pretext', () => {
-  describe('pretext', () => {
-    const parser = some(pretext);
+describe('Unit: parser/block/codeblock', () => {
+  describe('codeblock', () => {
+    const parser = some(codeblock);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

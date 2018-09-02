@@ -9,8 +9,8 @@ import { ilist } from './block/ilist';
 import { dlist } from './block/dlist';
 import { table } from './block/table';
 import { blockquote } from './block/blockquote';
-import { pretext } from './block/pretext';
-import { math } from './block/math';
+import { codeblock } from './block/codeblock';
+import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 import { localize } from './locale';
@@ -25,8 +25,8 @@ export import IListParser = BlockParser.IListParser;
 export import ListItemParser = BlockParser.ListItemParser;
 export import DListParser = BlockParser.DListParser;
 export import TableParser = BlockParser.TableParser;
-export import PretextParser = BlockParser.PretextParser;
-export import MathParser = BlockParser.MathParser;
+export import CodeBlockParser = BlockParser.CodeBlockParser;
+export import MathBlockParser = BlockParser.MathBlockParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
@@ -41,8 +41,8 @@ export const block: BlockParser = localize(union<BlockParser>([
   ilist,
   dlist,
   table,
-  pretext,
-  math,
+  codeblock,
+  mathblock,
   extension,
   blockquote,
   paragraph

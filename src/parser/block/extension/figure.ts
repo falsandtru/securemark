@@ -3,8 +3,8 @@ import { union, sequence, inits, some, bind, match, surround, contract, verify, 
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
-import { pretext, segment_ as seg_pre } from '../pretext';
-import { math, segment_ as seg_math } from '../math';
+import { codeblock, segment_ as seg_code } from '../codeblock';
+import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example, segment_ as seg_example } from './example';
 import { inblock } from '../../inblock';
 import { label, media, link, uri } from '../../inline';
@@ -27,7 +27,7 @@ export const segment: FigureParser = block(union([
           inits([
             // All parsers which can include a closing term.
             union([
-              seg_pre,
+              seg_code,
               seg_math,
               seg_example,
             ]),
@@ -54,8 +54,8 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
         inits([
           block(union<FigureParser.ContentParser>([
             table,
-            pretext,
-            math,
+            codeblock,
+            mathblock,
             example,
             blockquote,
             line(rewrite(

@@ -1,7 +1,7 @@
 ﻿import { ExtensionParser } from '../../block';
 import { union, match, block, focus, rewrite, eval, build } from '../../../combinator';
 import { parse } from '../../api/parse';
-import { math } from '../math';
+import { mathblock } from '../mathblock';
 import { suppress } from '../../util';
 import { figure, footnote } from '../../../util';
 import { html } from 'typed-dom';
@@ -33,6 +33,6 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, sup
     ([, , body], rest) =>
       [[html('aside', { class: 'example', 'data-type': 'math' }, [
         html('pre', body.slice(1, -1)),
-        ...eval(math(`$$${body}$$`))
+        ...eval(mathblock(`$$${body}$$`))
       ])], rest]),
 ]))));

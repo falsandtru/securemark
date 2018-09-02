@@ -1,10 +1,10 @@
-﻿import { math } from './math';
+﻿import { mathblock } from './mathblock';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/block/math', () => {
-  describe('math', () => {
-    const parser = some(math);
+describe('Unit: parser/block/mathblock', () => {
+  describe('mathblock', () => {
+    const parser = some(mathblock);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

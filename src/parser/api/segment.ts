@@ -1,8 +1,8 @@
 ﻿import { MarkdownParser } from '../../../markdown.d';
 import { normalize } from './normalization';
 import { exec, union, some } from '../../combinator';
-import { segment as pretext } from '../block/pretext';
-import { segment as math } from '../block/math';
+import { segment as codeblock } from '../block/codeblock';
+import { segment as mathblock } from '../block/mathblock';
 import { segment as extension } from '../block/extension';
 import { contentline, blankline } from '../source/line';
 
@@ -13,8 +13,8 @@ export function segment(source: string): string[] {
   const segments: string[] = [];
   while (source.length > 0) {
     const result = union<SegmentParser>([
-      pretext,
-      math,
+      codeblock,
+      mathblock,
       extension,
       some(contentline),
       some(blankline)

@@ -2,8 +2,8 @@
 import { union, sequence, some, block, line, rewrite } from '../../../combinator';
 import { contentline } from '../../source/line';
 import { figure } from './figure';
-import { segment as seg_pre } from '../pretext';
-import { segment as seg_math } from '../math';
+import { segment as seg_code } from '../codeblock';
+import { segment as seg_math } from '../mathblock';
 import { segment as seg_example } from '../extension/example';
 import { label } from '../../inline';
 
@@ -13,7 +13,7 @@ export const segment: FigureParser = block(union([
   sequence([
     line(label),
     union([
-      seg_pre,
+      seg_code,
       seg_math,
       seg_example,
       some(contentline),

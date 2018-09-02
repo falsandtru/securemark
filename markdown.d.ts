@@ -13,8 +13,8 @@ export namespace MarkdownParser {
   export interface SegmentParser extends
     Markdown<'segment'>,
     Parser<never, [
-      BlockParser.PretextParser,
-      BlockParser.MathParser,
+      BlockParser.CodeBlockParser,
+      BlockParser.MathBlockParser,
       BlockParser.ExtensionParser,
       SourceParser.ContentLineParser,
       SourceParser.BlankLineParser
@@ -31,8 +31,8 @@ export namespace MarkdownParser {
       BlockParser.IListParser,
       BlockParser.DListParser,
       BlockParser.TableParser,
-      BlockParser.PretextParser,
-      BlockParser.MathParser,
+      BlockParser.CodeBlockParser,
+      BlockParser.MathBlockParser,
       BlockParser.ExtensionParser,
       BlockParser.BlockquoteParser,
       BlockParser.ParagraphParser
@@ -164,20 +164,20 @@ export namespace MarkdownParser {
         ]>
       ]> {
     }
-    export interface PretextParser extends
+    export interface CodeBlockParser extends
       // ```
       // abc
       // ```
-      Block<'pretext'>,
+      Block<'codeblock'>,
       Parser<HTMLPreElement, [
         SourceParser.UnescapableSourceParser
       ]> {
     }
-    export interface MathParser extends
+    export interface MathBlockParser extends
       // $$
       // expr
       // $$
-      Block<'math'>,
+      Block<'mathblock'>,
       Parser<HTMLDivElement, [
         SourceParser.EscapableSourceParser
       ]> {
@@ -220,8 +220,8 @@ export namespace MarkdownParser {
           Block<'extension/figure/content'>,
           Parser<HTMLElement, [
             TableParser,
-            PretextParser,
-            MathParser,
+            CodeBlockParser,
+            MathBlockParser,
             ExtensionParser.ExampleParser,
             BlockquoteParser,
             InlineParser.LinkParser, // Take media syntax and convert to link syntax.
