@@ -483,7 +483,6 @@ export namespace MarkdownParser {
       // `abc`
       Inline<'code'>,
       Parser<HTMLElement, [
-        SourceParser.CharParser.BackquoteParser,
         SourceParser.UnescapableSourceParser
       ]> {
     }
@@ -582,11 +581,6 @@ export namespace MarkdownParser {
       export interface SharpParser extends
         // #
         Source<'char/sharp'>,
-        Parser<Text, []> {
-      }
-      export interface BackquoteParser extends
-        // `
-        Source<'char/backquote'>,
         Parser<Text, []> {
       }
     }

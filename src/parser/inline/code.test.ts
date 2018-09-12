@@ -10,7 +10,6 @@ describe('Unit: parser/inline/code', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('`')), undefined);
       assert.deepStrictEqual(inspect(parser('``')), undefined);
-      assert.deepStrictEqual(inspect(parser('` `')), undefined);
       assert.deepStrictEqual(inspect(parser('`a``')), undefined);
       assert.deepStrictEqual(inspect(parser('`\n`')), undefined);
       assert.deepStrictEqual(inspect(parser('`a\nb`')), undefined);
@@ -19,6 +18,8 @@ describe('Unit: parser/inline/code', () => {
     });
 
     it('basic', () => {
+      assert.deepStrictEqual(inspect(parser('` `')), [['<code data-src="` `"> </code>'], '']);
+      assert.deepStrictEqual(inspect(parser('`  `')), [['<code data-src="`  `">  </code>'], '']);
       assert.deepStrictEqual(inspect(parser('`a`')), [['<code data-src="`a`">a</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`ab`')), [['<code data-src="`ab`">ab</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`a`b')), [['<code data-src="`a`">a</code>'], 'b']);

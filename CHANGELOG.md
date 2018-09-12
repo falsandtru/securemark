@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.80.1
+
+- Allow whitespace in code syntax.
+
 ## 0.80.0
 
 - Disallow to use formula number except math syntax in figure syntax.
