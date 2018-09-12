@@ -6,7 +6,7 @@ import { html } from 'typed-dom';
 export const placeholder: ExtensionParser.PlaceholderParser = subline(fmap(build(() =>
   surround(
     '[',
-    validate(/^[~^@](?!\])/, some(union<ExtensionParser.PlaceholderParser>([inline]), ']')),
+    validate(/^[~^@](?!\])/, some(union<ExtensionParser.PlaceholderParser>([inline]), /^[\n\]]/)),
     ']')),
   () =>
     [html('span', { class: 'invalid', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`)))]));

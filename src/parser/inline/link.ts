@@ -13,7 +13,7 @@ export const link: LinkParser = subline(bind(build(() =>
   sequence<LinkParser>([
     subline(verify(
       fmap(
-        surround('[', compress(some(union([inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false),
+        surround('[', compress(some(union([inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false),
         ns => [frag(ns)]),
       ([text]) => {
         if (hasMedia(text)) {

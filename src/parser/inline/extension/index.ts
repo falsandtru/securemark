@@ -9,7 +9,7 @@ export const index: ExtensionParser.IndexParser = subline(verify(
     surround(
       '[#',
       rewrite(
-        some(inline, ']'),
+        some(inline, /^[\n\]]/),
         convert(
           query => `[${query}]()`,
           union([link]))),
