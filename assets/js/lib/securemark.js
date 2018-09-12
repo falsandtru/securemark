@@ -2653,26 +2653,16 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const unescapable_1 = require('../source/unescapable');
-            const char_1 = require('../source/char');
-            const util_1 = require('../util');
-            const memoization_1 = require('spica/memoization');
+            require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?!\`)`));
-            exports.code = combinator_1.subline(combinator_1.match(/^(?=(`+)[^\n]+?\1(?!`))/, ([, bracket], source) => combinator_1.verify(combinator_1.bind(util_1.stringify(combinator_1.surround(bracket, util_1.compress(combinator_1.some(combinator_1.union([
-                combinator_1.some(char_1.char('`')),
-                unescapable_1.unescsource
-            ]), closer(bracket))), closer(bracket))), ([body], rest) => [
-                [typed_dom_1.html('code', { 'data-src': source.slice(0, source.length - rest.length) }, body.trim())],
+            exports.code = combinator_1.subline(combinator_1.match(/^(`+)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body], rest) => [
+                [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
                 rest
-            ]), ([el]) => util_1.hasText(el))(source)));
+            ]));
         },
         {
             '../../combinator': 20,
-            '../source/char': 93,
             '../source/unescapable': 97,
-            '../util': 99,
-            'spica/memoization': 9,
             'typed-dom': 13
         }
     ],
@@ -2750,7 +2740,7 @@ require = function () {
             const link_1 = require('../link');
             const indexer_1 = require('../../block/indexer');
             const util_1 = require('../../util');
-            exports.index = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, ']'), combinator_1.convert(query => `[${ query }]()`, combinator_1.union([link_1.link]))), ']')), ([el]) => {
+            exports.index = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]()`, combinator_1.union([link_1.link]))), ']')), ([el]) => {
                 void indexer_1.defineIndex(el);
                 void el.setAttribute('href', `#${ el.id }`);
                 void el.removeAttribute('id');
@@ -2816,7 +2806,7 @@ require = function () {
             const inline_1 = require('../../inline');
             const combinator_1 = require('../../../combinator');
             const typed_dom_1 = require('typed-dom');
-            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), ']')), ']')), () => [typed_dom_1.html('span', {
+            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']')), () => [typed_dom_1.html('span', {
                     class: 'invalid',
                     'data-invalid-type': 'syntax'
                 }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`)))]));
@@ -2935,7 +2925,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const attributes = { nofollow: [undefined] };
             exports.link = combinator_1.subline(combinator_1.bind(combinator_1.build(() => combinator_1.sequence([
-                combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => [typed_dom_1.frag(ns)]), ([text]) => {
+                combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => [typed_dom_1.frag(ns)]), ([text]) => {
                     if (util_1.hasMedia(text)) {
                         void text.querySelectorAll('a > .media').forEach(el => void el.parentNode.parentNode.replaceChild(el, el.parentNode));
                         if (text.childNodes.length !== 1)
@@ -3054,7 +3044,7 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('$', util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), '$')), /^\$(?![0-9])/)), ([body]) => {
+            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('$', util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^[\n$]/)), /^\$(?![0-9])/)), ([body]) => {
                 const source = `$${ body }$`;
                 if (exports.cache.has(source))
                     return [exports.cache.get(source).cloneNode(true)];
@@ -3086,7 +3076,7 @@ require = function () {
             const attributes = {};
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.sequence([
-                combinator_1.subline(combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), ']')), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
+                combinator_1.subline(combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
                 combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(util_1.compress(link_1.attribute))
