@@ -5,6 +5,7 @@
 - Fix code parser.
 - Fix codeblock parser.
 - Fix mathblock parser.
+- Fix extension parser.
 
 ## 0.80.1
 

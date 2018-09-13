@@ -6,6 +6,7 @@ describe('Unit: parser/block/extension/placeholder', () => {
     const parser = some(placeholder);
 
     it('invalid', () => {
+      assert(!parser('~~~~\n~~~'));
       assert(!parser(' ~~~\n~~~'));
     });
 
