@@ -4,6 +4,7 @@
 
 - Fix code parser.
 - Fix codeblock parser.
+- Fix mathblock parser.
 
 ## 0.80.1
 
