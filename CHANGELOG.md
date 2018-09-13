@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.80.2
+
+- Fix code parser.
+
 ## 0.80.1
 
 - Allow whitespace in code syntax.
