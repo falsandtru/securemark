@@ -8,11 +8,11 @@ import { html } from 'typed-dom';
 export const segment: CodeBlockParser = block(build(() => segment_));
 
 export const segment_: CodeBlockParser = block(focus(
-  /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
+  /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, match(
-  /^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/,
+  /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/,
   ([, , lang, notes, body], rest) => {
     assert(rest === '');
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));

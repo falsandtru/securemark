@@ -3,6 +3,7 @@
 ## 0.80.2
 
 - Fix code parser.
+- Fix codeblock parser.
 
 ## 0.80.1
 
