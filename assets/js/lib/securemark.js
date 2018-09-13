@@ -1614,11 +1614,11 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
-            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^(`{3,})(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , lang, notes, body], rest) => {
+            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , lang, notes, body], rest) => {
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
                     void el.classList.add(`language-${ lang.toLowerCase() }`);
@@ -1899,7 +1899,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const inline_1 = require('../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})(?!~)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]));
@@ -2036,11 +2036,11 @@ require = function () {
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
-            exports.mathblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/, ([, arg, body], rest) => {
+            exports.mathblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/, ([, arg, body], rest) => {
                 const el = typed_dom_1.html('div', { class: `math notranslate` }, `$$${ body }$$`);
                 if (arg.trim() !== '') {
                     void el.classList.add('invalid');
@@ -2655,7 +2655,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.code = combinator_1.subline(combinator_1.match(/^(`+)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body], rest) => [
+            exports.code = combinator_1.subline(combinator_1.match(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body], rest) => [
                 [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
                 rest
             ]));
