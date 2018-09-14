@@ -18,10 +18,10 @@ export function gist(url: URL): HTMLElement | undefined {
         outer.innerHTML = sanitize(`<div style="position: relative; margin-bottom: -1em;">${div}</div>`);
         const gist = outer.querySelector('.gist')! as HTMLElement;
         void gist.insertBefore(
-          DOM.div({ class: 'gist-description' }, [
+          html('div', { class: 'gist-description' }, [
             DOM.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () =>
-              parse(`[]( ${url.href} )`).querySelector('a')!),
-          ]).element,
+              parse(`[]( ${url.href} )`).querySelector('a')!).element,
+          ]),
           gist.firstChild);
         void cache.set(url.href, outer.cloneNode(true));
         if (document.head!.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
