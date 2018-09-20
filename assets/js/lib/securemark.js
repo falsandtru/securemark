@@ -2653,11 +2653,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            require('../source/unescapable');
+            const unescapable_1 = require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.code = combinator_1.subline(combinator_1.match(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body], rest) => [
-                [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
-                rest
+            exports.code = combinator_1.subline(combinator_1.union([
+                combinator_1.match(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body], rest) => [
+                    [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
+                    rest
+                ]),
+                combinator_1.focus(/^`+/, combinator_1.some(unescapable_1.unescsource))
             ]));
         },
         {
@@ -3713,7 +3716,7 @@ require = function () {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.default.div({ class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(`[]( ${ url.href } )`).querySelector('a'))]).element, gist.firstChild);
+                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(`[]( ${ url.href } )`).querySelector('a')).element]), gist.firstChild);
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
@@ -3773,18 +3776,15 @@ require = function () {
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.default.div({ style: 'position: relative;' }, [
-                    typed_dom_1.default.div({ style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.default.object({
+                return media_1.cache.set(url.href, typed_dom_1.html('div', { style: 'position: relative;' }, [
+                    typed_dom_1.html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.html('object', {
                             type: 'application/pdf',
                             data: url.href,
-                            style: 'width: 100%; height: 100%; min-height: 400px;'
-                        }, () => {
-                            const el = typed_dom_1.html('object');
-                            el.typeMustMatch = true;
-                            return el;
+                            style: 'width: 100%; height: 100%; min-height: 400px;',
+                            typemustmatch: ''
                         })]),
-                    typed_dom_1.default.div([typed_dom_1.default.strong({ style: 'word-wrap: break-word;' }, () => parser_1.parse(`**[]( ${ url.href } )**`).querySelector('strong'))])
-                ]).element);
+                    typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**[]( ${ url.href } )**`).firstElementChild.childNodes)
+                ]));
             }
             exports.pdf = pdf;
         },
@@ -3951,12 +3951,12 @@ require = function () {
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.div({ style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.default.iframe({
+                return media_1.cache.set(url.href, typed_dom_1.html('div', { style: 'position: relative;' }, [typed_dom_1.html('div', { style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.html('iframe', {
                             src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
-                        })])]).element);
+                        })])]));
             }
             exports.youtube = youtube;
         },
@@ -4038,9 +4038,9 @@ require = function () {
             function build(category, marker) {
                 const memory = new WeakMap();
                 return (source, target) => {
-                    const exclusion = new Set(source.querySelectorAll('.example'));
+                    const exclusions = new Set(source.querySelectorAll('.example'));
                     return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].reduce((acc, ref, i) => {
-                        if (exclusion.has(ref.closest('.example')))
+                        if (exclusions.has(ref.closest('.example')))
                             return acc;
                         if (!memory.has(ref) && ref.querySelector('a'))
                             return acc;
