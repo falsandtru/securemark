@@ -483,6 +483,7 @@ export namespace MarkdownParser {
       // `abc`
       Inline<'code'>,
       Parser<HTMLElement, [
+        SourceParser.UnescapableSourceParser,
         SourceParser.UnescapableSourceParser
       ]> {
     }

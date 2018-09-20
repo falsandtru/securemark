@@ -8,13 +8,6 @@ describe('Unit: parser/inline/code', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('`')), undefined);
-      assert.deepStrictEqual(inspect(parser('``')), undefined);
-      assert.deepStrictEqual(inspect(parser('`a``')), undefined);
-      assert.deepStrictEqual(inspect(parser('`\n`')), undefined);
-      assert.deepStrictEqual(inspect(parser('`a\nb`')), undefined);
-      assert.deepStrictEqual(inspect(parser('`a\\\nb`')), undefined);
-      assert.deepStrictEqual(inspect(parser('``a`')), undefined);
       assert.deepStrictEqual(inspect(parser('a`b`')), undefined);
     });
 
@@ -27,6 +20,13 @@ describe('Unit: parser/inline/code', () => {
     });
 
     it('escape', () => {
+      assert.deepStrictEqual(inspect(parser('`')), [['`'], '']);
+      assert.deepStrictEqual(inspect(parser('``')), [['`', '`'], '']);
+      assert.deepStrictEqual(inspect(parser('`a``')), [['`'], 'a``']);
+      assert.deepStrictEqual(inspect(parser('``a`')), [['`', '`'], 'a`']);
+      assert.deepStrictEqual(inspect(parser('`\n`')), [['`'], '\n`']);
+      assert.deepStrictEqual(inspect(parser('`a\nb`')), [['`'], 'a\nb`']);
+      assert.deepStrictEqual(inspect(parser('`a\\\nb`')), [['`'], 'a\\\nb`']);
       assert.deepStrictEqual(inspect(parser('`\\`')), [['<code data-src="`\\`">\\</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`\\\\`')), [['<code data-src="`\\\\`">\\\\</code>'], '']);
       assert.deepStrictEqual(inspect(parser('`&nbsp;`')), [['<code data-src="`&amp;nbsp;`">&amp;nbsp;</code>'], '']);
