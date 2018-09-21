@@ -12,15 +12,15 @@ export import AuthorityParser = InblockParser.AuthorityParser;
 export import AutolinkParser = InblockParser.AutolinkParser;
 
 export const inblock: InblockParser = union<InblockParser>([
-  inits([annotation, some(char('#'))]) as AnnotationParser,
-  inits([authority, some(char('#'))]) as AuthorityParser,
+  inits([annotation, some(char('#'))]) as any as AnnotationParser,
+  inits([authority, some(char('#'))]) as any as AuthorityParser,
   autolink,
   some(inline, /^(?:([\[\]\(\)])\1|[0-9a-zA-Z@]?@|\s#\S|\s+\[)/), inline
 ]);
 
 export const incell: InblockParser = union<InblockParser>([
-  inits([annotation, some(char('#'))]) as AnnotationParser,
-  inits([authority, some(char('#'))]) as AuthorityParser,
+  inits([annotation, some(char('#'))]) as any as AnnotationParser,
+  inits([authority, some(char('#'))]) as any as AuthorityParser,
   autolink,
   some(inline, /^(?:([\[\]\(\)])\1|[0-9a-zA-Z@]?@|\s#\S|\s*\|)/), inline
 ]);
