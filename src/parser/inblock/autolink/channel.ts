@@ -9,6 +9,6 @@ export const channel: AutolinkParser.ChannelParser = subline(
   rewrite(
     sequence<AutolinkParser.ChannelParser>([
       verify(account, ([node]) => node instanceof HTMLAnchorElement),
-      some(hashtag_),
+      verify(some(hashtag_), ns => ns.every(node => node instanceof HTMLAnchorElement)),
     ]),
     source => [[html('a', { class: 'channel', rel: 'noopener' }, source)], '']));

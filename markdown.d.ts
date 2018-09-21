@@ -333,6 +333,7 @@ export namespace MarkdownParser {
         // #tag
         Inblock<'hashtag'>,
         Parser<HTMLAnchorElement, [
+          SourceParser.UnescapableSourceParser,
           SourceParser.UnescapableSourceParser
         ]> {
       }

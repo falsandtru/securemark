@@ -23,11 +23,12 @@ describe('Unit: parser/inblock', () => {
 
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('@a')), [['<a class="account" rel="noopener">@a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@')), [['@', 'a@'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@b')), [['@', 'a@', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@')), [['@', 'a', '@'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@b')), [['@', 'a', '@', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('@a,@b')), [['<a class="account" rel="noopener">@a</a>', ',', '<a class="account" rel="noopener">@b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('a@b')), [['a@', 'b'], '']);
-      assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('@@a')), [['@', '@', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('a@b')), [['a', '@', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('a@@b')), [['a', '@', '@', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('_@a')), [['_', '<a class="account" rel="noopener">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('*@a*')), [['<em>@a</em>'], '']);
       assert.deepStrictEqual(inspect(parser('(@a)')), [['(@a)'], '']);
@@ -39,6 +40,7 @@ describe('Unit: parser/inblock', () => {
       assert.deepStrictEqual(inspect(parser('#a#b')), [['#', 'a', '#', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('#a')), [['<a class="hashtag" rel="noopener" data-level="1">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#a\nb\n#c\n[#d]')), [['<a class="hashtag" rel="noopener" data-level="1">#a</a>', '<span class="linebreak"> </span>', 'b', '<span class="linebreak"> </span>', '<a class="hashtag" rel="noopener" data-level="1">#c</a>', '<span class="linebreak"> </span>', '<a href="#index:d" rel="noopener">d</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('####a')), [['#', '#', '#', '#', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('a#b')), [['a', '#', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('((a))#b')), [['<sup class="annotation">a</sup>', '#', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('[[a]]#b')), [['<sup class="authority">a</sup>', '#', 'b'], '']);

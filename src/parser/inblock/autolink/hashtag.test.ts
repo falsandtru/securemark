@@ -8,10 +8,10 @@ describe('Unit: parser/inblock/autolink/hashtag', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('#')), undefined);
-      assert.deepStrictEqual(inspect(parser('# ')), undefined);
+      assert.deepStrictEqual(inspect(parser('#')), [['#'], '']);
+      assert.deepStrictEqual(inspect(parser('# ')), [['#'], ' ']);
       assert.deepStrictEqual(inspect(parser('#a#')), undefined);
-      assert.deepStrictEqual(inspect(parser('##')), undefined);
+      assert.deepStrictEqual(inspect(parser('##')), [['#', '#'], '']);
       assert.deepStrictEqual(inspect(parser('a#b')), undefined);
       assert.deepStrictEqual(inspect(parser('a##b')), undefined);
       assert.deepStrictEqual(inspect(parser(' #a')), undefined);
