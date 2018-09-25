@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.81.1
+
+- Separate auto numbering context per blockquote elements.
+
 ## 0.81.0
 
 - Refine figure parser.
