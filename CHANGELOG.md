@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.81.0
+
+- Refine figure parser.
+- Support formula number rendering.
+
 ## 0.80.3
 
 - Fix code parser.

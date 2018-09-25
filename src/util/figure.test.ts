@@ -22,7 +22,7 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure class="label:fig-a" data-group="fig" data-index="1" id="label:fig-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure>',
+            '<figure class="label:fig-a" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
             '<p><a href="#label:fig-1" rel="noopener" class="label:fig-a">Fig. 1</a></p>',
             '<p><a href="#label:fig-1" rel="noopener" class="label:fig-a">Fig. 1</a></p>',
           ]);
@@ -40,9 +40,9 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure class="label:fig-a" data-group="fig" data-index="1" id="label:fig-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure>',
-            '<figure class="label:table-a" data-group="table" data-index="1" id="label:table-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Table. 1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-b" data-group="fig" data-index="2" id="label:fig-2"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 2.</span><span></span></figcaption></figure>',
+            '<figure class="label:fig-a" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+            '<figure class="label:table-a" data-group="table" data-index="1" id="label:table-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Table. 1.</span><figcaption></figcaption></figure>',
+            '<figure class="label:fig-b" data-group="fig" data-index="2" id="label:fig-2"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 2.</span><figcaption></figcaption></figure>',
           ]);
       }
     });
@@ -60,10 +60,10 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure class="label:fig-a-0.0" data-group="fig" data-index="1" id="label:fig-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-b-0.0.0.0" data-group="fig" data-index="1.0.0.1" id="label:fig-1.0.0.1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.0.0.1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-c-0.0" data-group="fig" data-index="1.1" id="label:fig-1.1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-d" data-group="fig" data-index="2" id="label:fig-2"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 2.</span><span></span></figcaption></figure>',
+            '<figure class="label:fig-a-0.0" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+            '<figure class="label:fig-b-0.0.0.0" data-group="fig" data-index="1.0.0.1" id="label:fig-1.0.0.1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.0.0.1.</span><figcaption></figcaption></figure>',
+            '<figure class="label:fig-c-0.0" data-group="fig" data-index="1.1" id="label:fig-1.1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.1.</span><figcaption></figcaption></figure>',
+            '<figure class="label:fig-d" data-group="fig" data-index="2" id="label:fig-2"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 2.</span><figcaption></figcaption></figure>',
             '<p><a href="#label:fig-1.0.0.1" rel="noopener" class="label:fig-b">Fig. 1.0.0.1</a></p>',
           ]);
       }
@@ -80,8 +80,8 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure class="label:fig-1" data-group="fig" data-index="1" id="label:fig-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure>',
-            '<figure class="label:fig-1.1" data-group="fig" data-index="1.1" id="label:fig-1.1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.1.</span><span></span></figcaption></figure>',
+            '<figure class="label:fig-1" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+            '<figure class="label:fig-1.1" data-group="fig" data-index="1.1" id="label:fig-1.1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.1.</span><figcaption></figcaption></figure>',
             '<p><a href="#label:fig-1.1" rel="noopener" class="label:fig-1.1">Fig. 1.1</a></p>',
           ]);
       }
@@ -97,7 +97,7 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure class="label:$-a" data-group="$" data-index="1" id="label:$-1"><div class="math notranslate">$$\nLaTeX\n$$</div><figcaption><span>(1)</span><span></span></figcaption></figure>',
+            '<figure class="label:$-a" data-group="$" data-index="1" id="label:$-1"><div class="figcontent"><div class="math notranslate">$$\nLaTeX\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
             '<p><a href="#label:$-1" rel="noopener" class="label:$-a">(1)</a></p>',
           ]);
       }
@@ -113,8 +113,8 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure class="label:fig-a" data-group="fig" data-index="1" id="label:fig-1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure>',
-            '<aside class="example" data-type="markdown"><pre>~~~figure [:fig-a]\n!https://host\n~~~</pre><div><figure class="label:fig-a" data-group="fig" data-index="1"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a><figcaption><span>Fig. 1.</span><span></span></figcaption></figure></div><ol></ol><ol></ol></aside>',
+            '<figure class="label:fig-a" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+            '<aside class="example" data-type="markdown"><pre>~~~figure [:fig-a]\n!https://host\n~~~</pre><div><figure class="label:fig-a" data-group="fig" data-index="1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></div><ol></ol><ol></ol></aside>',
           ]);
       }
     });

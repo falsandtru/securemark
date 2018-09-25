@@ -79,12 +79,13 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
             'data-group': label.getAttribute('href')!.slice(1).split(':', 2)[1].split('-', 1)[0],
           },
           [
-            content,
-            html('figcaption', [html('span'), html('span', caption)])
+            html('div', { class: 'figcontent' }, [content]),
+            html('span', { class: 'figindex' }),
+            html('figcaption', caption)
           ])
         ], rest])
       (`${note}\n${body.slice(0, -1)}`)),
   ([el]) =>
-    el.getAttribute('data-group') === '$'
-      ? el.firstElementChild!.matches('.math')
+    el.matches('[data-group="$"]')
+      ? el.firstElementChild!.firstElementChild!.matches('.math')
       : true)));
