@@ -5,6 +5,7 @@
 - Refine figure parser.
 - Support formula number rendering.
 - Fix extension parser.
+- Fix figure function.
 
 ## 0.80.3
 

@@ -73,6 +73,7 @@ describe('Unit: util/figure', () => {
       const source = parse([
         '~~~figure [:fig-1]\n!https://host\n~~~',
         '~~~figure [:fig-1.1]\n!https://host\n~~~',
+        '~~~figure [:$-2.1]\n$$\nLaTeX\n$$\n~~~',
         '[:fig-1.1]',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
@@ -82,6 +83,7 @@ describe('Unit: util/figure', () => {
           [
             '<figure class="label:fig-1" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
             '<figure class="label:fig-1.1" data-group="fig" data-index="1.1" id="label:fig-1.1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.1.</span><figcaption></figcaption></figure>',
+            '<figure class="label:$-2.1" data-group="$" data-index="2.1" id="label:$-2.1"><div class="figcontent"><div class="math notranslate">$$\nLaTeX\n$$</div></div><span class="figindex">(2.1)</span><figcaption></figcaption></figure>',
             '<p><a href="#label:fig-1.1" rel="noopener" class="label:fig-1.1">Fig. 1.1</a></p>',
           ]);
       }

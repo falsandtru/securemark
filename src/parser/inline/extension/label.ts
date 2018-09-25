@@ -33,7 +33,7 @@ export function index(label: string, figs: HTMLElement[]): string {
 }
 
 export function isFixed(label: string): boolean {
-  return label.split(':').pop()!.search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
+  return label.split(':').pop()!.search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
 }
 
 export function isGroup(label: string): boolean {
