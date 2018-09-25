@@ -6,19 +6,24 @@ describe('Unit: parser/block/extension/placeholder', () => {
     const parser = some(placeholder);
 
     it('invalid', () => {
-      assert(!parser('~~~~\n~~~'));
       assert(!parser(' ~~~\n~~~'));
     });
 
     it('valid', () => {
+      assert(parser('~~~'));
+      assert(parser('~~~\n'));
       assert(parser('~~~\n~~~'));
+      assert(parser('~~~\n~~~~'));
+      assert(parser('~~~\n~~~~\n'));
       assert(parser('~~~\n~~~\n'));
       assert(parser('~~~\n<"\n~~~'));
       assert(parser('~~~a\n~~~'));
       assert(parser('~~~a \n~~~'));
       assert(parser('~~~a b \n~~~'));
       assert(parser('~~~ a\n~~~'));
+      assert(parser('~~~~\n~~~'));
       assert(parser('~~~~\n~~~~'));
+      assert(parser('~~~~\n~~~~\n'));
     });
 
   });

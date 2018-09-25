@@ -55,19 +55,20 @@ describe('Unit: parser/api/segment', () => {
     it('extension', () => {
       assert.deepStrictEqual(segment('~~~'), ['~~~']);
       assert.deepStrictEqual(segment('~~~\n~~~'), ['~~~\n~~~']);
-      assert.deepStrictEqual(segment('~~~\n\n\n~~~'), ['~~~\n\n\n~~~']);
+      assert.deepStrictEqual(segment('~~~\n\n\n~~~'), ['~~~\n', '\n\n', '~~~']);
       assert.deepStrictEqual(segment('~~~\n~~~~\n~~~'), ['~~~\n~~~~\n~~~']);
       assert.deepStrictEqual(segment('~~~~\n~~~\n~~~~'), ['~~~~\n~~~\n~~~~']);
-      assert.deepStrictEqual(segment('~~~\n\n\n~~~\n\n'), ['~~~\n\n\n~~~\n', '\n']);
+      assert.deepStrictEqual(segment('~~~\n\n\n~~~\n\n'), ['~~~\n', '\n\n', '~~~\n', '\n']);
       assert.deepStrictEqual(segment('~~~\n```\n~~~\n```\n~~~'), ['~~~\n```\n~~~\n```\n~~~']);
-      assert.deepStrictEqual(segment('~~~\ninvalid\n\ncaption\n~~~'), ['~~~\ninvalid\n\ncaption\n~~~']);
+      assert.deepStrictEqual(segment('~~~\ninvalid\n~~~'), ['~~~\ninvalid\n~~~']);
+      assert.deepStrictEqual(segment('~~~\ninvalid\n\ncaption\n~~~'), ['~~~\ninvalid\n', '\n', 'caption\n~~~']);
     });
 
     it('mixed', () => {
       assert.deepStrictEqual(segment('```\n\n\n'), ['```\n', '\n\n']);
       assert.deepStrictEqual(segment('~~~\n\n\n'), ['~~~\n', '\n\n']);
       assert.deepStrictEqual(segment('```\n\n\n~~~\n\n\n```'), ['```\n\n\n~~~\n\n\n```']);
-      assert.deepStrictEqual(segment('~~~\n\n\n```\n\n\n~~~'), ['~~~\n\n\n```\n\n\n~~~']);
+      assert.deepStrictEqual(segment('~~~\n\n\n```\n\n\n~~~'), ['~~~\n', '\n\n', '```\n', '\n\n', '~~~']);
       assert.deepStrictEqual(segment('```\n```\n\n~~~\n~~~'), ['```\n```\n', '\n', '~~~\n~~~']);
       assert.deepStrictEqual(segment('~~~\n~~~\n\n```\n```'), ['~~~\n~~~\n', '\n', '```\n```']);
       assert.deepStrictEqual(segment(' ```\n\n\n```'), [' ```\n', '\n\n', '```']);

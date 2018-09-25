@@ -30,6 +30,7 @@ export const segment: FigureParser = block(union([
               seg_code,
               seg_math,
               seg_example,
+              some(contentline, closer(bracket)),
             ]),
             emptyline,
             union([
@@ -40,9 +41,7 @@ export const segment: FigureParser = block(union([
         ]),
         closer(bracket))
         (`${note}\n${rest}`)),
-  match(
-    /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
-    (_, rest) => [[], rest]),
+  () => undefined,
 ]));
 
 export const figure: FigureParser = block(rewrite(segment, verify(match(
