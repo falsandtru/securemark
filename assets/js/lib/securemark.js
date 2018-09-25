@@ -1831,7 +1831,8 @@ require = function () {
                         combinator_1.union([
                             codeblock_1.segment_,
                             mathblock_1.segment_,
-                            example_1.segment_
+                            example_1.segment_,
+                            combinator_1.some(line_1.contentline, closer(bracket))
                         ]),
                         line_1.emptyline,
                         combinator_1.union([
@@ -1840,10 +1841,7 @@ require = function () {
                         ])
                     ])
                 ]), closer(bracket))(`${ note }\n${ rest }`)),
-                combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/, (_, rest) => [
-                    [],
-                    rest
-                ])
+                () => undefined
             ]));
             exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.verify(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/, ([, , note, body], rest) => combinator_1.bind(combinator_1.sequence([
                 combinator_1.line(inline_1.label),
@@ -1868,14 +1866,12 @@ require = function () {
                         class: label.getAttribute('href').slice(1),
                         'data-group': label.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0]
                     }, [
-                        content,
-                        typed_dom_1.html('figcaption', [
-                            typed_dom_1.html('span'),
-                            typed_dom_1.html('span', caption)
-                        ])
+                        typed_dom_1.html('div', { class: 'figcontent' }, [content]),
+                        typed_dom_1.html('span', { class: 'figindex' }),
+                        typed_dom_1.html('figcaption', caption)
                     ])],
                 rest
-            ])(`${ note }\n${ body.slice(0, -1) }`)), ([el]) => el.getAttribute('data-group') === '$' ? el.firstElementChild.matches('.math') : true)));
+            ])(`${ note }\n${ body.slice(0, -1) }`)), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.math') : true)));
         },
         {
             '../../../combinator': 20,
@@ -1899,7 +1895,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const inline_1 = require('../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})(?!~)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[^\n]*(?:\n|$)(?=[^\S\n]*(?:\n|$))|^(~{3,})(?!~)[^\n]*\n(?:[^\n]*(?:\n|$))*?\1?[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]));
@@ -2351,10 +2347,10 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', combinator_1.some(combinator_1.union([
+            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', util_1.compress(combinator_1.some(combinator_1.union([
                 autolink_1.autolink,
                 inline_1.inline
-            ]), '))'), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
+            ]), '))')), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
         },
         {
             '../../combinator': 20,
@@ -2373,10 +2369,10 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', combinator_1.some(combinator_1.union([
+            exports.authority = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', util_1.compress(combinator_1.some(combinator_1.union([
                 autolink_1.autolink,
                 inline_1.inline
-            ]), ']]'), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
+            ]), ']]')), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
         },
         {
             '../../combinator': 20,
@@ -2413,10 +2409,9 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
             const unescapable_1 = require('../../source/unescapable');
-            const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
             exports.account = combinator_1.subline(combinator_1.union([
-                combinator_1.focus(/^[0-9a-zA-Z@]@+/, util_1.compress(combinator_1.some(unescapable_1.unescsource))),
+                combinator_1.focus(/^[0-9a-zA-Z@]@+/, combinator_1.some(unescapable_1.unescsource)),
                 combinator_1.focus(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*(?!@)/, source => [
                     [typed_dom_1.html('a', {
                             class: 'account',
@@ -2429,7 +2424,6 @@ require = function () {
         {
             '../../../combinator': 20,
             '../../source/unescapable': 97,
-            '../../util': 99,
             'typed-dom': 13
         }
     ],
@@ -2444,7 +2438,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.channel = combinator_1.subline(combinator_1.rewrite(combinator_1.sequence([
                 combinator_1.verify(account_1.account, ([node]) => node instanceof HTMLAnchorElement),
-                combinator_1.some(hashtag_1.hashtag_)
+                combinator_1.verify(combinator_1.some(hashtag_1.hashtag_), ns => ns.every(node => node instanceof HTMLAnchorElement))
             ]), source => [
                 [typed_dom_1.html('a', {
                         class: 'channel',
@@ -2466,16 +2460,19 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
-            require('../../source/unescapable');
+            const unescapable_1 = require('../../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.hashtag = combinator_1.verify(combinator_1.build(() => exports.hashtag_), (_, rest) => !rest.startsWith('#'));
-            exports.hashtag_ = combinator_1.subline(combinator_1.match(/^(#{1,3})[^#\s]+/, ([tag, {length: level}], rest) => [
-                [typed_dom_1.html('a', {
-                        class: 'hashtag',
-                        rel: 'noopener',
-                        'data-level': `${ level }`
-                    }, tag)],
-                rest
+            exports.hashtag_ = combinator_1.subline(combinator_1.union([
+                combinator_1.match(/^(#{1,3})[^#\s]+/, ([tag, {length: level}], rest) => [
+                    [typed_dom_1.html('a', {
+                            class: 'hashtag',
+                            rel: 'noopener',
+                            'data-level': `${ level }`
+                        }, tag)],
+                    rest
+                ]),
+                combinator_1.focus(/^#+/, combinator_1.some(unescapable_1.unescsource))
             ]));
         },
         {
@@ -2776,7 +2773,7 @@ require = function () {
             }
             exports.index = index;
             function isFixed(label) {
-                return label.split(':').pop().search(/^[a-z][0-9a-z]*-[0-9]+(?:\.[0-9]+)*$/) === 0;
+                return label.split(':').pop().search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
             }
             exports.isFixed = isFixed;
             function isGroup(label) {
@@ -3310,7 +3307,7 @@ require = function () {
                 [],
                 ''
             ] : undefined), false);
-            const invisible = /^(?:\\?[^\S\\]+)*\\?$/;
+            const invisible = /^(?:\\?\s)*$/;
             exports.blankline = combinator_1.line(takeLine(s => s.search(invisible) === 0 ? [
                 [],
                 ''
@@ -4002,12 +3999,10 @@ require = function () {
                     const idx = label_1.index(label, groups.get(group));
                     void figure.setAttribute('data-index', idx);
                     void figure.setAttribute('id', `${ label.split('-', 1)[0] }-${ idx }`);
-                    const caption = figure.lastElementChild;
-                    const header = caption.firstElementChild;
-                    void typed_dom_1.define(header, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
-                    void caption.insertBefore(header, caption.firstChild);
+                    const figindex = figure.lastElementChild.previousElementSibling;
+                    void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, header.textContent.replace(/[.]$/, '')));
+                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, figindex.textContent.replace(/[.]$/, '')));
                 });
             }
             exports.figure = figure;

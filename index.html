@@ -34,11 +34,37 @@
   .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
     background: none;
   }
-  figcaption > span:first-child {
-    margin-right: .5em;
+  .figcontent {
+    display: block;
   }
-  figcaption > span:last-child {
+  figure:not([data-group="$"]) > .figindex {
+    display: inline-block;
+    margin-right: .5em;
     font-size: .9em;
+  }
+  figcaption {
+    display: inline-block;
+    font-size: .9em;
+  }
+  figure[data-group="$"] {
+    display: grid;
+    grid-template-rows: 2fr;
+    grid-template-columns: 1fr min-content;
+  }
+  figure[data-group="$"] > .figcontent {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+  }
+  figure[data-group="$"] > .figindex {
+    grid-row: 1 / 2;
+    grid-column: 2 / 2;
+    align-self: center;
+    font-size: 1.2em;
+  }
+  figure[data-group="$"] > figcaption {
+    grid-row: 2 / 2;
+    grid-column-start: 1;
+    grid-column-end: 3;
   }
 </style>
 
@@ -129,6 +155,7 @@
     '',
     '$E = mc^2$',
     '',
+    '[:$-name]',
     '$$',
     '\\frac{\\pi}{2} =',
     '\\left(\\int_{0}^{\\infty} \\frac{\\sin x}{\\sqrt{x}} dx \\right)^2 =',
@@ -163,6 +190,7 @@
     '',
     '### Label',
     '',
+    '[:$-name]',
     '[:fig-name]',
     '',
     '## Media',
