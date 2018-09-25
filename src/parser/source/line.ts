@@ -5,7 +5,7 @@ import { validate } from '../../combinator/data/parser';
 export const anyline: AnyLineParser = line(takeLine(_ => [[], '']), false);
 export const emptyline: EmptyLineParser = line(takeLine(s => s.trim() === '' ? [[], ''] : undefined), false);
 
-const invisible = /^(?:\\?[^\S\\]+)*\\?$/;
+const invisible = /^(?:\\?\s)*$/;
 export const blankline: BlankLineParser = line(takeLine(s => s.search(invisible) === 0 ? [[], ''] : undefined), false);
 export const contentline: ContentLineParser = line(takeLine(s => s.search(invisible) !== 0 ? [[], ''] : undefined), false);
 
