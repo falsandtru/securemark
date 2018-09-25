@@ -12,16 +12,11 @@ export const label: ExtensionParser.LabelParser = subline(verify(
       focus(
         /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
         convert(
-          query => `[\\${query}](#${makeLabel(query)})`,
+          query => `[\\${query}](#)`,
           union([link]))),
       ']'),
-    ([el]) => [define(el, { class: el.getAttribute('href')!.slice(1) })]),
+    ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()! })]),
   ([el]) => hasTightText(el)));
-
-function makeLabel(text: string): string {
-  assert(!text.includes('\n'));
-  return `label:${text}`;
-}
 
 export function index(label: string, figs: HTMLElement[]): string {
   assert(figs.length > 0);
@@ -33,7 +28,7 @@ export function index(label: string, figs: HTMLElement[]): string {
 }
 
 export function isFixed(label: string): boolean {
-  return label.split(':').pop()!.search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
+  return label.search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
 }
 
 export function isGroup(label: string): boolean {

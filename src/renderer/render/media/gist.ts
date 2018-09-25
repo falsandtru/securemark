@@ -19,7 +19,7 @@ export function gist(url: URL): HTMLElement | undefined {
         const gist = outer.querySelector('.gist')! as HTMLElement;
         void gist.insertBefore(
           html('div', { class: 'gist-description' }, [
-            DOM.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () =>
+            DOM.a({ style: 'color: #555; font-weight: 600;' }, description, () =>
               parse(`[]( ${url.href} )`).querySelector('a')!).element,
           ]),
           gist.firstChild);

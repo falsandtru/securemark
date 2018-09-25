@@ -9,10 +9,10 @@ export function suppress<T extends HTMLElement, S extends Parser<any, any>[]>(pa
         .forEach(el =>
           !el.closest('.math') &&
           void el.removeAttribute('id'));
-      void target.querySelectorAll('figure[class^="label:"]:not([data-index])')
+      void target.querySelectorAll('figure[data-label]:not([data-index])')
         .forEach(el =>
-          !isFixed(el.className) &&
-          void el.setAttribute('class', el.getAttribute('class')!.split('-')[0] + '-0'));
+          !isFixed(el.getAttribute('data-label')!) &&
+          void el.setAttribute('data-label', el.getAttribute('data-label')!.split('-')[0] + '-0'));
       void target.querySelectorAll('a[href^="#"]')
         .forEach(el =>
           void el.setAttribute('onclick', 'return false;'));

@@ -10,17 +10,21 @@
 
 <!-- Bootstrap -->
 <!-- Latest compiled and minified CSS -->
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/themes/prism.css" rel="stylesheet">
 <style>
+  #viewer .media {
+    display: initial;
+  }
   blockquote {
-    font-size: inherit;
+    padding: 4px 4px;
+    border-left: 4px solid #eee;
   }
   pre[class*="language-"] {
     background: unset;
     background-color: #fbfbfb;
     position: relative;
-    border-color: #eee;
+    border: solid 1px #eee;
     border-radius: unset;
   }
   pre[data-file]:before {
@@ -81,19 +85,19 @@
 <div id="container" class="container">
 <!-- ----- HEADER ------------------------------------------------------------- -->
 <header id="header" class="row">
-<h1>Securemark</h1>
-<h3>Secure markdown renderer working on browsers for user input data.</h3>
-<p><a href="https://github.com/falsandtru/securemark">https://github.com/falsandtru/securemark</a></p>
-<p style="max-height: 7em; overflow: scroll;">Share: <a id="share" href=""></a></p>
+<h1 class="col-12">Securemark</h1>
+<h3 class="col-12">Secure markdown renderer working on browsers for user input data.</h3>
+<p class="col-12"><a href="https://github.com/falsandtru/securemark">https://github.com/falsandtru/securemark</a></p>
+<div class="col-12"><div class="w-100" style="max-height: 7em; word-wrap: break-word; overflow-y: scroll;">Share: <a id="share" href=""></a></div></div>
+<p class="col-12">process: <span id="time">-</span>ms</p>
 </header>
 
 <div id="wrapper" class="row">
 <!-- ----- PRIMARY ------------------------------------------------------------ -->
-<div id="primary" class="col-md-12">
-<article id="content">
-  <p>time: <span id="time">-</span>ms</p>
-  <textarea id="editor" style="float: left; width: 49%; min-height: 200px;"></textarea>
-  <div id="viewer" style="float: left; width: 49%; min-height: 200px"><ol id="annotation"></ol><ol id="authority"></ol></div>
+<div id="primary" class="col-12">
+<article id="content" class="row">
+  <div class="col-6"><textarea id="editor" class="w-100 h-100"></textarea></div>
+  <div id="viewer" class="col-6"><ol id="annotation"></ol><ol id="authority"></ol></div>
 </article>
 <aside></aside>
 </div>
@@ -107,7 +111,9 @@
 
 </div>
 <script src="https://cdn.polyfill.io/v2/polyfill.js?flags=gated&features=default,NodeList.prototype.@@iterator,IntersectionObserver"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/prism.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.8.4/plugins/autoloader/prism-autoloader.js"></script>
 <script>
