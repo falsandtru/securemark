@@ -1863,8 +1863,8 @@ require = function () {
                 ])
             ]), ([label, content, ...caption]) => [
                 [typed_dom_1.html('figure', {
-                        class: label.getAttribute('href').slice(1),
-                        'data-group': label.getAttribute('href').slice(1).split(':', 2)[1].split('-', 1)[0]
+                        'data-label': label.getAttribute('data-label'),
+                        'data-group': label.getAttribute('data-label').split('-', 1)[0]
                     }, [
                         typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                         typed_dom_1.html('span', { class: 'figindex' }),
@@ -2764,16 +2764,16 @@ require = function () {
             const link_1 = require('../link');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[\\${ query }](#${ makeLabel(query) })`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, { class: el.getAttribute('href').slice(1) })]), ([el]) => util_1.hasTightText(el)));
-            function makeLabel(text) {
-                return `label:${ text }`;
-            }
+            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[\\${ query }](#)`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
+                    class: 'label',
+                    'data-label': el.textContent.split(':').pop()
+                })]), ([el]) => util_1.hasTightText(el)));
             function index(label, figs) {
                 return isFixed(label) ? label.split('-').pop() : increment(figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index'), isGroup(label) ? label.split('-').pop().split('.').length : 1);
             }
             exports.index = index;
             function isFixed(label) {
-                return label.split(':').pop().search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
+                return label.search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
             }
             exports.isFixed = isFixed;
             function isGroup(label) {
@@ -3458,7 +3458,7 @@ require = function () {
                 return combinator_1.fmap(parser, es => {
                     void es.forEach(target => {
                         void target.querySelectorAll('[id]').forEach(el => !el.closest('.math') && void el.removeAttribute('id'));
-                        void target.querySelectorAll('figure[class^="label:"]:not([data-index])').forEach(el => !inline_1.isFixed(el.className) && void el.setAttribute('class', el.getAttribute('class').split('-')[0] + '-0'));
+                        void target.querySelectorAll('figure[data-label]:not([data-index])').forEach(el => !inline_1.isFixed(el.getAttribute('data-label')) && void el.setAttribute('data-label', el.getAttribute('data-label').split('-')[0] + '-0'));
                         void target.querySelectorAll('a[href^="#"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
                     });
                     return es;
@@ -3713,7 +3713,7 @@ require = function () {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-size: 14px; font-weight: 600;' }, description, () => parser_1.parse(`[]( ${ url.href } )`).querySelector('a')).element]), gist.firstChild);
+                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`[]( ${ url.href } )`).querySelector('a')).element]), gist.firstChild);
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
@@ -3989,20 +3989,25 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             function figure(source) {
                 const groups = new Map();
-                const exclusions = new Set(source.querySelectorAll('.example figure'));
-                return void source.querySelectorAll('figure[class^="label:"]').forEach(figure => {
-                    if (exclusions.has(figure))
+                const exclusions = new Set();
+                return void source.querySelectorAll('figure[data-label][data-group]').forEach(fig => {
+                    if (fig.matches('.example figure'))
                         return;
-                    const label = figure.className;
-                    const group = figure.getAttribute('data-group');
-                    void groups.set(group, concat_1.concat(groups.get(group) || [], [figure]));
+                    if (fig.parentElement !== source && fig.parentElement instanceof HTMLQuoteElement) {
+                        return exclusions.has(fig.parentElement) ? undefined : void exclusions.add(fig.parentElement) || void figure(fig.parentElement);
+                    }
+                    const label = fig.getAttribute('data-label');
+                    const group = fig.getAttribute('data-group');
+                    void groups.set(group, concat_1.concat(groups.get(group) || [], [fig]));
                     const idx = label_1.index(label, groups.get(group));
-                    void figure.setAttribute('data-index', idx);
-                    void figure.setAttribute('id', `${ label.split('-', 1)[0] }-${ idx }`);
-                    const figindex = figure.lastElementChild.previousElementSibling;
+                    void fig.setAttribute('data-index', idx);
+                    const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
+                    if (fig.closest('blockquote'))
+                        return;
+                    void fig.setAttribute('id', `label:${ label.split('-', 1)[0] }-${ idx }`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    void source.querySelectorAll(`a.${ query.replace(/[:$.]/g, '\\$&') }`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ figure.id }` }, figindex.textContent.replace(/[.]$/, '')));
+                    void source.querySelectorAll(`a.label[data-label="${ query.replace(/[:$.]/g, '\\$&') }"]`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, '')));
                 });
             }
             exports.figure = figure;
