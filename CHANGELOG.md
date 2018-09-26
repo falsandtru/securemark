@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.81.2
+
+- Improve blockquote parser.
+
 ## 0.81.1
 
 - Separate auto numbering context per blockquote elements.

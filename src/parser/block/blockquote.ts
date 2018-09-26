@@ -27,14 +27,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
             source
               .replace(/\n$/, '')
               .replace(/ /g, String.fromCharCode(160))),
-        source => [
-          source.split('\n')
-            .reduce((acc, source) =>
-              concat(acc, [html('br'), text(source)])
-              , [])
-            .slice(1),
-          ''
-        ]))
+        source => [[html('div', format(source))], '']))
   ]))),
   ns => [html('blockquote', ns)]);
 
@@ -53,4 +46,12 @@ const indent = block(surround(opener, some(contentline, /^>(?:\s|$)/), ''), fals
 
 function unindent(source: string): string {
   return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
+}
+
+function format(source: string): Node[] {
+  return source.split('\n')
+    .reduce((acc, source) =>
+      concat(acc, [html('br'), text(source)])
+      , [])
+    .slice(1);
 }

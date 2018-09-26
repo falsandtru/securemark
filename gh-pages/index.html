@@ -17,11 +17,13 @@
     display: initial;
   }
   blockquote {
-    padding: 4px 4px;
-    border-left: 4px solid #eee;
+    padding: .3em;
+    border-left: .3em solid #eee;
+  }
+  blockquote > :not(blockquote) {
+    margin-left: .5em;
   }
   pre[class*="language-"] {
-    background: unset;
     background-color: #fbfbfb;
     position: relative;
     border: solid 1px #eee;
