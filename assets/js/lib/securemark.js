@@ -1575,10 +1575,7 @@ require = function () {
             const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, textquote)),
                 combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(source => unindent(source.replace(/\n$/, '').replace(/ /g, String.fromCharCode(160))), source => [
-                    source.split('\n').reduce((acc, source) => concat_1.concat(acc, [
-                        typed_dom_1.html('br'),
-                        typed_dom_1.text(source)
-                    ]), []).slice(1),
+                    [typed_dom_1.html('div', format(source))],
                     ''
                 ]))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
@@ -1592,6 +1589,12 @@ require = function () {
             const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(line_1.contentline, /^>(?:\s|$)/), ''), false);
             function unindent(source) {
                 return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
+            }
+            function format(source) {
+                return source.split('\n').reduce((acc, source) => concat_1.concat(acc, [
+                    typed_dom_1.html('br'),
+                    typed_dom_1.text(source)
+                ]), []).slice(1);
             }
         },
         {
