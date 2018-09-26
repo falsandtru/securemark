@@ -49,8 +49,8 @@ describe('Unit: parser/inline', () => {
 
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('@a')), [['<a class="account" rel="noopener">@a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@')), [['@', 'a', '@'], '']);
-      assert.deepStrictEqual(inspect(parser('@a@b')), [['@', 'a', '@', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@')), [['<a class="account" rel="noopener">@a</a>', '@'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@b')), [['<a class="account" rel="noopener">@a</a>', '<a class="account" rel="noopener">@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a,@b')), [['<a class="account" rel="noopener">@a</a>', ',', '<a class="account" rel="noopener">@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@@a')), [['@', '@', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('a@b')), [['a', '@', 'b'], '']);
