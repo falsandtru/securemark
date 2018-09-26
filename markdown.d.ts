@@ -539,9 +539,9 @@ export namespace MarkdownParser {
         // https://host
         Inline<'uri'>,
         Parser<HTMLAnchorElement | Text, [
-          SourceParser.UnescapableSourceParser,
           LinkParser,
-          LinkParser
+          LinkParser,
+          SourceParser.UnescapableSourceParser
         ]> {
       }
     }

@@ -10,13 +10,8 @@ describe('Unit: parser/inline/autolink/uri', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('http')), undefined);
       assert.deepStrictEqual(inspect(parser('ttp')), undefined);
-      assert.deepStrictEqual(inspect(parser('http:')), undefined);
-      assert.deepStrictEqual(inspect(parser('ttp:')), undefined);
-      assert.deepStrictEqual(inspect(parser('http://')), undefined);
-      assert.deepStrictEqual(inspect(parser('ttp://')), undefined);
       assert.deepStrictEqual(inspect(parser('_http://')), undefined);
       assert.deepStrictEqual(inspect(parser('_ttp://')), undefined);
-      assert.deepStrictEqual(inspect(parser('0!ttp://host')), undefined);
       assert.deepStrictEqual(inspect(parser('#')), undefined);
     });
 
@@ -27,11 +22,12 @@ describe('Unit: parser/inline/autolink/uri', () => {
       assert.deepStrictEqual(inspect(parser('attp://host')), [['attp'], '://host']);
       assert.deepStrictEqual(inspect(parser('Ahttp://host')), [['Ahttp'], '://host']);
       assert.deepStrictEqual(inspect(parser('Attp://host')), [['Attp'], '://host']);
-      assert.deepStrictEqual(inspect(parser('!ttp://host')), [['!ttp'], '://host']);
       assert.deepStrictEqual(inspect(parser('?http://host')), [['?http'], '://host']);
       assert.deepStrictEqual(inspect(parser('?ttp://host')), [['?ttp'], '://host']);
       assert.deepStrictEqual(inspect(parser('0!http://host')), [['0!http'], '://host']);
+      assert.deepStrictEqual(inspect(parser('0!ttp://host')), [['0!ttp'], '://host']);
       assert.deepStrictEqual(inspect(parser('0?http://host')), [['0?http'], '://host']);
+      assert.deepStrictEqual(inspect(parser('0?ttp://host')), [['0?ttp'], '://host']);
       assert.deepStrictEqual(inspect(parser('0?!http://host')), [['0?!http'], '://host']);
       assert.deepStrictEqual(inspect(parser('0!?http://host')), [['0!?http'], '://host']);
     });
@@ -100,6 +96,7 @@ describe('Unit: parser/inline/autolink/uri', () => {
     it('media', () => {
       assert.deepStrictEqual(inspect(parser('!http://host')), [['<a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('!https://host')), [['<a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!ttps://host')), [['<a href="https://host" rel="noopener nofollow noreferrer" target="_blank"><img class="media" data-src="https://host" alt=""></a>'], '']);
     });
 
   });

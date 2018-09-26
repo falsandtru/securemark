@@ -8,9 +8,6 @@ import { text } from 'typed-dom';
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
 
 export const uri: AutolinkParser.UriParser = subline(union([
-  focus(
-    /^(?:[0-9a-zA-Z][!?]*h|\?h|[0-9a-gi-zA-Z!?])ttps?(?=:\/\/\S)/,
-    compress(some(unescsource))),
   surround(
     /^(?=h?ttps?:\/\/\S)/,
     verify(rewrite(build(() =>
@@ -21,14 +18,17 @@ export const uri: AutolinkParser.UriParser = subline(union([
       ([node]) => node instanceof HTMLAnchorElement),
     ''),
   surround(
-    /^!(?=https?:\/\/\S)/,
+    /^!(?=h?ttps?:\/\/\S)/,
     verify(rewrite(build(() =>
-      verify(uri, ([node]) => node instanceof HTMLAnchorElement)),
+      some(union([ipv6, bracket, some(unescsource, closer)]))),
       convert(
-        source => `[![](${source})](${source})`,
+        source => `[![](${address(source)})](${address(source)}${attribute(source)})`,
         link)),
       ([node]) => node instanceof HTMLAnchorElement),
     ''),
+  focus(
+    /^[0-9a-zA-Z!?][!?]*h?ttps?(?=:)/,
+    compress(some(unescsource))),
 ]));
 
 const ipv6 = subline(fmap(

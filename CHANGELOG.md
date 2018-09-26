@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.82.0
+
+- Extend uri syntax.
+
 ## 0.81.3
 
 - Improve blockquote parser.
