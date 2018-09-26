@@ -305,6 +305,7 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inblock<'autolink'>,
       Parser<HTMLAnchorElement | Text, [
+        InlineParser.AutolinkParser.EmailParser,
         AutolinkParser.ChannelParser,
         AutolinkParser.HashtagParser
       ]> {
@@ -521,6 +522,7 @@ export namespace MarkdownParser {
       Inline<'autolink'>,
       Parser<HTMLAnchorElement | HTMLImageElement | Text, [
         AutolinkParser.UriParser,
+        AutolinkParser.EmailParser,
         AutolinkParser.AccountParser
       ]> {
     }
@@ -531,6 +533,16 @@ export namespace MarkdownParser {
         Parser<HTMLAnchorElement | Text, [
           LinkParser,
           LinkParser,
+          SourceParser.UnescapableSourceParser
+        ]> {
+      }
+      export interface EmailParser extends
+        // account@host
+        Inline<'email'>,
+        Parser<HTMLAnchorElement | Text, [
+          Parser<HTMLAnchorElement, [
+            SourceParser.UnescapableSourceParser
+          ]>,
           SourceParser.UnescapableSourceParser
         ]> {
       }

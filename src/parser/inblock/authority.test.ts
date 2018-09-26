@@ -25,7 +25,6 @@ describe('Unit: parser/inblock/authority', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('[[a]]')), [['<sup class="authority">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[ab]]')), [['<sup class="authority">ab</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[a@b]]')), [['<sup class="authority">a@b</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a ]]')), [['<sup class="authority">a </sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a\nb]]')), [['<sup class="authority">a<span class="linebreak"> </span>b</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), [['<sup class="authority">a<br>b</sup>'], '']);

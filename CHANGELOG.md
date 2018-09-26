@@ -2,6 +2,7 @@
 
 ## 0.82.0
 
+- Add email syntax.
 - Extend uri syntax.
 - Extend account syntax.
 - Move account syntax into inline-level syntax.
