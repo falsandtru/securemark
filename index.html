@@ -90,8 +90,8 @@
 <h1 class="col-12">Securemark</h1>
 <h3 class="col-12">Secure markdown renderer working on browsers for user input data.</h3>
 <p class="col-12"><a href="https://github.com/falsandtru/securemark">https://github.com/falsandtru/securemark</a></p>
-<div class="col-12"><div class="w-100" style="max-height: 7em; word-wrap: break-word; overflow-y: scroll;">Share: <a id="share" href=""></a></div></div>
-<p class="col-12">process: <span id="time">-</span>ms</p>
+<div class="col-12" style="overflow-y: scroll; height: 1.5em">Share: <a id="share" href="" style="word-break: break-all;"></a></div>
+<p class="col-12">Process: <span id="time">-</span>ms</p>
 </header>
 
 <div id="wrapper" class="row">
@@ -247,6 +247,8 @@
   }, {
     rootMargin: '100px',
   });
+  document.getElementById('share').href = location.href;
+  document.getElementById('share').textContent = document.getElementById('share').href;
   (async () => log(await display()))();
   var timer = 0;
   document.getElementById('editor').addEventListener('keyup', function () {
