@@ -3,6 +3,7 @@
 ## 0.82.0
 
 - Extend uri syntax.
+- Move account syntax into inline-level syntax.
 
 ## 0.81.3
 

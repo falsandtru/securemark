@@ -2,7 +2,7 @@
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: parser/inblock/autolink/account', () => {
+describe('Unit: parser/inline/autolink/account', () => {
   describe('account', () => {
     const parser = some(account);
 

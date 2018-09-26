@@ -1,7 +1,7 @@
 ﻿import { AutolinkParser } from '../../inblock';
 import { sequence, some, verify, subline, rewrite } from '../../../combinator';
 import '../../source/unescapable';
-import { account } from './account';
+import { account } from '../../inline';
 import { hashtag_ } from './hashtag';
 import { html } from 'typed-dom';
 
