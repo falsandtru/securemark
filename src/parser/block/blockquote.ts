@@ -27,7 +27,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
             source
               .replace(/\n$/, '')
               .replace(/ /g, String.fromCharCode(160))),
-        source => [[html('div', format(source))], '']))
+        source => [[html('p', format(source))], '']))
   ]))),
   ns => [html('blockquote', ns)]);
 

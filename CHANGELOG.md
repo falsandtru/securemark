@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.81.3
+
+- Improve blockquote parser.
+
 ## 0.81.2
 
 - Improve blockquote parser.
