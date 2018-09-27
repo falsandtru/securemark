@@ -31,14 +31,15 @@
   }
   pre[data-file]:before {
     content: attr(data-file);
+    direction: ltr;
     position: absolute;
     top: 0;
     right: 0;
-    border-inline-start: solid 1px #eee;
+    border-left: solid 1px #eee;
     border-bottom: solid 1px #eee;
     border-radius: 2px;
-    padding-inline-start: 5px;
-    padding-inline-end: 2px;
+    padding-left: 5px;
+    padding-right: 2px;
   }
   .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
     background: none;
