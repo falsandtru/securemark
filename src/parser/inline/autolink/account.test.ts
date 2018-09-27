@@ -13,14 +13,14 @@ describe('Unit: parser/inline/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser('@-')), undefined);
       assert.deepStrictEqual(inspect(parser('@_a')), undefined);
       assert.deepStrictEqual(inspect(parser('@-a')), undefined);
-      assert.deepStrictEqual(inspect(parser('@@')), [['@', '@'], '']);
-      assert.deepStrictEqual(inspect(parser('@@a')), [['@', '@'], 'a']);
-      assert.deepStrictEqual(inspect(parser('a@b')), [['a', '@'], 'b']);
-      assert.deepStrictEqual(inspect(parser('a@http://host')), [['a', '@'], 'http://host']);
-      assert.deepStrictEqual(inspect(parser('a@ttp://host')), [['a', '@'], 'ttp://host']);
-      assert.deepStrictEqual(inspect(parser('a@@b')), [['a', '@', '@'], 'b']);
-      assert.deepStrictEqual(inspect(parser('a@@http://host')), [['a', '@', '@'], 'http://host']);
-      assert.deepStrictEqual(inspect(parser('a@@ttp://host')), [['a', '@', '@'], 'ttp://host']);
+      assert.deepStrictEqual(inspect(parser('@@')), [['@@'], '']);
+      assert.deepStrictEqual(inspect(parser('@@a')), [['@@'], 'a']);
+      assert.deepStrictEqual(inspect(parser('a@b')), [['a@'], 'b']);
+      assert.deepStrictEqual(inspect(parser('a@http://host')), [['a@'], 'http://host']);
+      assert.deepStrictEqual(inspect(parser('a@ttp://host')), [['a@'], 'ttp://host']);
+      assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@'], 'b']);
+      assert.deepStrictEqual(inspect(parser('a@@http://host')), [['a@@'], 'http://host']);
+      assert.deepStrictEqual(inspect(parser('a@@ttp://host')), [['a@@'], 'ttp://host']);
       assert.deepStrictEqual(inspect(parser(' @a')), undefined);
     });
 

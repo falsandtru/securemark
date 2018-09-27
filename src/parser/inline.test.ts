@@ -53,7 +53,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('a@b@c')), [['<a class="email" href="mailto:a@b" rel="noopener">a@b</a>', '<a class="account" rel="noopener">@c</a>'], '']);
       assert.deepStrictEqual(inspect(parser('a@b,c@d')), [['<a class="email" href="mailto:a@b" rel="noopener">a@b</a>', ',', '<a class="email" href="mailto:c@d" rel="noopener">c@d</a>'], '']);
       assert.deepStrictEqual(inspect(parser('a@b')), [['<a class="email" href="mailto:a@b" rel="noopener">a@b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('a@@b')), [['a', '@', '@', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('_a@b')), [['_', '<a class="email" href="mailto:a@b" rel="noopener">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('*a@b*')), [['<em><a class="email" href="mailto:a@b" rel="noopener">a@b</a></em>'], '']);
       assert.deepStrictEqual(inspect(parser('(a@b)')), [['(', '<a class="email" href="mailto:a@b" rel="noopener">a@b</a>', ')'], '']);
@@ -65,7 +65,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('@a@')), [['<a class="account" rel="noopener">@a</a>', '@'], '']);
       assert.deepStrictEqual(inspect(parser('@a@b')), [['<a class="account" rel="noopener">@a</a>', '<a class="account" rel="noopener">@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a,@b')), [['<a class="account" rel="noopener">@a</a>', ',', '<a class="account" rel="noopener">@b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@@a')), [['@', '@', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('@@a')), [['@@', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('_@a')), [['_', '<a class="account" rel="noopener">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('*@a*')), [['<em><a class="account" rel="noopener">@a</a></em>'], '']);
       assert.deepStrictEqual(inspect(parser('(@a)')), [['(', '<a class="account" rel="noopener">@a</a>', ')'], '']);

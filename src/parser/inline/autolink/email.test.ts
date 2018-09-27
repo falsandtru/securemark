@@ -8,13 +8,13 @@ describe('Unit: parser/inline/autolink/email', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('a@')), [['a', '@'], '']);
-      assert.deepStrictEqual(inspect(parser('a@_')), [['a', '@'], '_']);
-      assert.deepStrictEqual(inspect(parser('a@-')), [['a', '@'], '-']);
-      assert.deepStrictEqual(inspect(parser('a@_b')), [['a', '@'], '_b']);
-      assert.deepStrictEqual(inspect(parser('a@-b')), [['a', '@'], '-b']);
-      assert.deepStrictEqual(inspect(parser('a@@')), [['a', '@', '@'], '']);
-      assert.deepStrictEqual(inspect(parser('a@@b')), [['a', '@', '@'], 'b']);
+      assert.deepStrictEqual(inspect(parser('a@')), [['a@'], '']);
+      assert.deepStrictEqual(inspect(parser('a@_')), [['a@'], '_']);
+      assert.deepStrictEqual(inspect(parser('a@-')), [['a@'], '-']);
+      assert.deepStrictEqual(inspect(parser('a@_b')), [['a@'], '_b']);
+      assert.deepStrictEqual(inspect(parser('a@-b')), [['a@'], '-b']);
+      assert.deepStrictEqual(inspect(parser('a@@')), [['a@@'], '']);
+      assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@'], 'b']);
       assert.deepStrictEqual(inspect(parser(' a@b')), undefined);
     });
 
