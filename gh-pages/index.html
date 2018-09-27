@@ -18,10 +18,10 @@
   }
   blockquote {
     padding: .3em;
-    border-left: .2em solid #eee;
+    border-inline-start: .2em solid #eee;
   }
   blockquote > :not(blockquote) {
-    margin-left: .5em;
+    margin-inline-start: .5em;
   }
   pre[class*="language-"] {
     background-color: #fbfbfb;
@@ -34,11 +34,11 @@
     position: absolute;
     top: 0;
     right: 0;
-    border-left: solid 1px #eee;
+    border-inline-start: solid 1px #eee;
     border-bottom: solid 1px #eee;
     border-radius: 2px;
-    padding-left: 5px;
-    padding-right: 2px;
+    padding-inline-start: 5px;
+    padding-inline-end: 2px;
   }
   .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
     background: none;
@@ -48,7 +48,7 @@
   }
   figure:not([data-group="$"]) > .figindex {
     display: inline-block;
-    margin-right: .5em;
+    margin-inline-end: .5em;
     font-size: .9em;
   }
   figcaption {
