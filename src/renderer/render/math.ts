@@ -1,6 +1,13 @@
 ﻿import { cache } from '../../parser/inline/math';
 import { define } from 'typed-dom';
 
+void MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['${', '}$']],
+    displayMath: [['$$', '$$']],
+  },
+});
+
 export function math(target: HTMLElement): void {
   assert(target.children.length === 0);
   const source = target.textContent!;

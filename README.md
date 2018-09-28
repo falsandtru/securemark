@@ -49,7 +49,7 @@ https://falsandtru.github.io/securemark/
 - Autolink (https://host, ttps://host, !https://host/image.png, account@host, @account)
 - Media (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
 - Syntex highlight (```lang filename)
-- LaTeX ($expr$, $$expr$$)
+- LaTeX (${expr}$, $$expr$$)
 - Figure (~~~figure [:fig-name])
 - Label ([:fig-name])
 - Annotation (((annotation)))

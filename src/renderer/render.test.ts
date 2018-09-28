@@ -4,12 +4,12 @@ import { parse } from '../parser/api/parse';
 describe('Unit: renderer/render', () => {
   describe('render', () => {
     it('code', () => {
-      assert(render(parse('`$E = mc^2$`').querySelector('p')!).querySelector('code'));
-      assert(render(parse('```\n$E = mc^2$\n```').querySelector('pre')!).matches('pre'));
+      assert(render(parse('`${E = mc^2}$`').querySelector('p')!).querySelector('code'));
+      assert(render(parse('```\n${E = mc^2}$\n```').querySelector('pre')!).matches('pre'));
     });
 
     it('math', () => {
-      assert(render(parse('$E = mc^2$').querySelector('p')!).querySelector('.math'));
+      assert(render(parse('${E = mc^2}$').querySelector('p')!).querySelector('.math'));
       assert(render(parse('$$\nE = mc^2\n$$').querySelector('div')!).matches('.math'));
     });
 

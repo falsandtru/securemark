@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.83.0
+
+- Refine math syntax.
+
 ## 0.82.0
 
 - Add email syntax.

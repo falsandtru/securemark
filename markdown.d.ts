@@ -479,7 +479,7 @@ export namespace MarkdownParser {
       ]> {
     }
     export interface MathParser extends
-      // $expr$
+      // ${expr}$
       Inline<'math'>,
       Parser<HTMLSpanElement, [
         SourceParser.EscapableSourceParser
