@@ -1,7 +1,7 @@
 ﻿import { UnescapableSourceParser } from '../source';
 import { text } from 'typed-dom';
 
-const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
+export const separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
 
 export const unescsource: UnescapableSourceParser = source => {
   if (source.length === 0) return;

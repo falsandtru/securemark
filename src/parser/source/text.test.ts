@@ -36,9 +36,13 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('\\\\')), [['\\'], '']);
       assert.deepStrictEqual(inspect(parser('\\\\\\')), [['\\', ''], '']);
       assert.deepStrictEqual(inspect(parser('\\\\\\\\')), [['\\', '\\'], '']);
+      assert.deepStrictEqual(inspect(parser('\\ ')), [[' '], '']);
+      assert.deepStrictEqual(inspect(parser('\\_')), [['_'], '']);
       assert.deepStrictEqual(inspect(parser('\\0')), [['0'], '']);
       assert.deepStrictEqual(inspect(parser('\\a')), [['a'], '']);
       assert.deepStrictEqual(inspect(parser('\\\\a')), [['\\', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('\\　')), [['　'], '']);
+      assert.deepStrictEqual(inspect(parser('\\。')), [['。'], '']);
     });
 
     it('break', () => {
