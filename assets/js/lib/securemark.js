@@ -2816,7 +2816,7 @@ require = function () {
             const link_1 = require('../link');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[\\${ query }](#)`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
+            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[${ query }](#)`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
                     class: 'label',
                     'data-label': el.textContent.split(':').pop()
                 })]), ([el]) => util_1.hasTightText(el)));
@@ -3302,12 +3302,12 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const unescapable_1 = require('./unescapable');
             const typed_dom_1 = require('typed-dom');
-            const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
             exports.escsource = source => {
                 if (source.length === 0)
                     return;
-                const i = source.search(separator);
+                const i = source.search(unescapable_1.separator);
                 switch (i) {
                 case -1:
                     return [
@@ -3343,7 +3343,10 @@ require = function () {
                 }
             };
         },
-        { 'typed-dom': 13 }
+        {
+            './unescapable': 98,
+            'typed-dom': 13
+        }
     ],
     96: [
         function (require, module, exports) {
@@ -3392,7 +3395,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
-            const separator = /[^0-9a-zA-Z\u0080-\uFFFF]|[\u0300-\u036F]|(?!h?ttps?:)[0-9a-zA-Z][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|[0-9a-zA-Z]@[a-zA-Z0-9]/;
+            const separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s|(?!h?ttps?:)[0-9a-zA-Z][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|[0-9a-zA-Z]@[a-zA-Z0-9]/;
             exports.text = source => {
                 if (source.length === 0)
                     return;
@@ -3444,11 +3447,11 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
-            const separator = /[^0-9a-zA-Z\u0080-\uFFFF]/;
+            exports.separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
             exports.unescsource = source => {
                 if (source.length === 0)
                     return;
-                const i = source.search(separator);
+                const i = source.search(exports.separator);
                 switch (i) {
                 case -1:
                     return [
