@@ -2749,7 +2749,7 @@ require = function () {
             const strong_1 = require('./strong');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.emphasis = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('*', util_1.compress(combinator_1.some(combinator_1.union([
+            exports.emphasis = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround(/^\*(?=\S[\s\S]*?\*)/, util_1.compress(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
             ]))), '*')), ns => [typed_dom_1.html('em', ns)]), ([el]) => util_1.startsWithTightText(el));
@@ -2977,7 +2977,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const attributes = { nofollow: [undefined] };
             exports.link = combinator_1.subline(combinator_1.bind(combinator_1.build(() => combinator_1.sequence([
-                combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => [typed_dom_1.frag(ns)]), ([text]) => {
+                combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^\[(?=\]|\S.*?\]\(.*\))/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => [typed_dom_1.frag(ns)]), ([text]) => {
                     if (util_1.hasMedia(text)) {
                         void text.querySelectorAll('a > .media').forEach(el => void el.parentNode.parentNode.replaceChild(el, el.parentNode));
                         if (text.childNodes.length !== 1)
@@ -3096,14 +3096,14 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('$', util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^[\n$]/)), /^\$(?![0-9])/)), ([body]) => {
-                const source = `$${ body }$`;
+            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround(/^\$\{(?=\S.*?\}\$)/, util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^}\$|^\n/)), /^}\$/)), ([body]) => {
+                const source = `$\{${ body }}$`;
                 if (exports.cache.has(source))
                     return [exports.cache.get(source).cloneNode(true)];
                 const el = typed_dom_1.html('span', { class: 'math notranslate' }, source);
                 void el.setAttribute('data-src', source);
                 return [el];
-            }), ([el]) => util_1.startsWithTightText(typed_dom_1.frag(el.textContent.slice(1, -1)))));
+            }), ([el]) => util_1.startsWithTightText(typed_dom_1.frag(el.textContent.slice(2, -2)))));
         },
         {
             '../../combinator': 20,
@@ -3128,7 +3128,7 @@ require = function () {
             const attributes = {};
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.sequence([
-                combinator_1.subline(combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
+                combinator_1.subline(combinator_1.fmap(combinator_1.verify(combinator_1.surround(/^!\[(?=\]|\S.*?\]\(.*\))/, util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())])),
                 combinator_1.subline(combinator_1.surround('(', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(util_1.compress(link_1.attribute))
@@ -3186,7 +3186,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.strong = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('**', util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**')), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.startsWithTightText(el));
+            exports.strong = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround(/^\*\*(?=\S[\s\S]*?\*\*)/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**')), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.startsWithTightText(el));
         },
         {
             '../../combinator': 20,
@@ -3302,12 +3302,12 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const unescapable_1 = require('./unescapable');
             const typed_dom_1 = require('typed-dom');
+            const separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
             exports.escsource = source => {
                 if (source.length === 0)
                     return;
-                const i = source.search(unescapable_1.separator);
+                const i = source.search(separator);
                 switch (i) {
                 case -1:
                     return [
@@ -3343,10 +3343,7 @@ require = function () {
                 }
             };
         },
-        {
-            './unescapable': 98,
-            'typed-dom': 13
-        }
+        { 'typed-dom': 13 }
     ],
     96: [
         function (require, module, exports) {
@@ -3447,11 +3444,11 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
-            exports.separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
+            const separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
             exports.unescsource = source => {
                 if (source.length === 0)
                     return;
-                const i = source.search(exports.separator);
+                const i = source.search(separator);
                 switch (i) {
                 case -1:
                     return [
@@ -3650,6 +3647,18 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const math_1 = require('../../parser/inline/math');
             const typed_dom_1 = require('typed-dom');
+            void MathJax.Hub.Config({
+                tex2jax: {
+                    inlineMath: [[
+                            '${',
+                            '}$'
+                        ]],
+                    displayMath: [[
+                            '$$',
+                            '$$'
+                        ]]
+                }
+            });
             function math(target) {
                 const source = target.textContent;
                 return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : undefined);
@@ -3719,11 +3728,12 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
+            const extensions = new Set([
+                '.oga',
+                '.ogg'
+            ]);
             function audio(url, alt) {
-                if (![
-                        '.oga',
-                        '.ogg'
-                    ].includes(url.pathname.split(/(?=\.)/).pop()))
+                if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
@@ -3750,8 +3760,9 @@ require = function () {
                 const media_1 = require('../../../parser/inline/media');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
+                const origins = new Set(['https://gist.github.com']);
                 function gist(url) {
-                    if (!['https://gist.github.com'].includes(url.origin))
+                    if (!origins.has(url.origin))
                         return;
                     if (!url.pathname.match(/^\/[\w\-]+?\/\w{32}(?!\w)/))
                         return;
@@ -3823,8 +3834,9 @@ require = function () {
             const parser_1 = require('../../../parser');
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
+            const extensions = new Set(['.pdf']);
             function pdf(url) {
-                if (!['.pdf'].includes(url.pathname.split(/(?=\.)/).pop()))
+                if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
@@ -3855,8 +3867,9 @@ require = function () {
                 const media_1 = require('../../../parser/inline/media');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
+                const origins = new Set(['https://gist.github.com']);
                 function slideshare(url) {
-                    if (!['https://www.slideshare.net'].includes(url.origin))
+                    if (!origins.has(url.origin))
                         return;
                     if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/))
                         return;
@@ -3904,8 +3917,9 @@ require = function () {
                 const typed_dom_1 = require('typed-dom');
                 const cache = new cache_1.Cache(10);
                 let isWidgetScriptRequested = !!window.twttr;
+                const origins = new Set(['https://twitter.com']);
                 function twitter(url) {
-                    if (!['https://twitter.com'].includes(url.origin))
+                    if (!origins.has(url.origin))
                         return;
                     if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                         return;
@@ -3962,11 +3976,12 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
+            const extensions = new Set([
+                '.webm',
+                '.ogv'
+            ]);
             function video(url, alt) {
-                if (![
-                        '.webm',
-                        '.ogv'
-                    ].includes(url.pathname.split(/(?=\.)/).pop()))
+                if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
@@ -3991,11 +4006,12 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const media_1 = require('../../../parser/inline/media');
             const typed_dom_1 = require('typed-dom');
+            const origins = new Set([
+                'https://www.youtube.com',
+                'https://youtu.be'
+            ]);
             function youtube(url) {
-                if (![
-                        'https://www.youtube.com',
-                        'https://youtu.be'
-                    ].includes(url.origin))
+                if (!origins.has(url.origin))
                     return;
                 if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/))
                     return;
