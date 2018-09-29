@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.84.0
+
+- Improve blockquote parser.
+
 ## 0.83.0
 
 - Refine math syntax.

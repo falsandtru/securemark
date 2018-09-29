@@ -4,8 +4,7 @@ import { contentline } from '../source/line';
 import '../source/unescapable';
 import { parse } from '../api/parse';
 import { suppress } from '../util';
-import { concat } from 'spica/concat';
-import { html, text } from 'typed-dom';
+import { html } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(build(() => union([
   surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
@@ -22,12 +21,8 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
     rewrite(
       some(contentline, opener),
       convert(
-        source =>
-          unindent(
-            source
-              .replace(/\n$/, '')
-              .replace(/ /g, String.fromCharCode(160))),
-        source => [[html('p', format(source))], '']))
+        unindent,
+        source => [[html('pre', { class: 'quote' }, source)], '']))
   ]))),
   ns => [html('blockquote', ns)]);
 
@@ -45,13 +40,7 @@ const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
 const indent = block(surround(opener, some(contentline, /^>(?:\s|$)/), ''), false);
 
 function unindent(source: string): string {
-  return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
-}
-
-function format(source: string): Node[] {
-  return source.split('\n')
-    .reduce((acc, source) =>
-      concat(acc, [html('br'), text(source)])
-      , [])
-    .slice(1);
+  return source
+    .replace(/\n$/, '')
+    .replace(/^>(?:$|\s|(?=>*(?:$|\s)))/mg, '');
 }
