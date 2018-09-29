@@ -1565,7 +1565,6 @@ require = function () {
             require('../source/unescapable');
             const parse_1 = require('../api/parse');
             const util_1 = require('../util');
-            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = combinator_1.block(combinator_1.build(() => combinator_1.union([
                 combinator_1.surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
@@ -1574,8 +1573,8 @@ require = function () {
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, textquote)),
-                combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(source => unindent(source.replace(/\n$/, '').replace(/ /g, String.fromCharCode(160))), source => [
-                    [typed_dom_1.html('p', format(source))],
+                combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, source => [
+                    [typed_dom_1.html('pre', { class: 'quote' }, source)],
                     ''
                 ]))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
@@ -1588,13 +1587,7 @@ require = function () {
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(line_1.contentline, /^>(?:\s|$)/), ''), false);
             function unindent(source) {
-                return source.replace(/^>(?:$|\s)|^>(?=>*(?:$|\s))/mg, '');
-            }
-            function format(source) {
-                return source.split('\n').reduce((acc, source) => concat_1.concat(acc, [
-                    typed_dom_1.html('br'),
-                    typed_dom_1.text(source)
-                ]), []).slice(1);
+                return source.replace(/\n$/, '').replace(/^>(?:$|\s|(?=>*(?:$|\s)))/mg, '');
             }
         },
         {
@@ -1603,7 +1596,6 @@ require = function () {
             '../source/line': 96,
             '../source/unescapable': 98,
             '../util': 100,
-            'spica/concat': 7,
             'typed-dom': 13
         }
     ],
@@ -3595,7 +3587,7 @@ require = function () {
                 }, opts);
                 void [
                     target,
-                    ...target.querySelectorAll('a > .media:not(img), img, pre, .math')
+                    ...target.querySelectorAll('img, a > .media:not(img), pre:not(.quote), .math')
                 ].forEach(target => void new Promise(() => {
                     switch (true) {
                     case target.matches('.invalid'):
