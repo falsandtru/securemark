@@ -5,7 +5,7 @@ import { math } from './render/math';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
   opts = { code, math, media: {}, ...opts };
-  void [target, ...target.querySelectorAll<HTMLElement>('img, a > .media:not(img), pre:not(.quote), .math')]
+  void [target, ...target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre:not(.quote), .math')]
     .forEach(target =>
       void new Promise(() => {
         switch (true) {
@@ -14,10 +14,11 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLEl
           case target.matches('a > .media:not(img)'):
             return void target.parentElement!.parentElement!.replaceChild(target, target.parentElement!);
           case !!opts.media
-            && target.matches('img:not([src])[data-src]'): {
+            && target.matches('img'): {
+            assert(target.matches('.media:not([src])[data-src]'));
             const el = media(target as HTMLImageElement, opts.media!);
             if (!el) return;
-            const scope = !el.matches('img') && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement
+            const scope = target.matches('a > .media') && !el.matches('img')
               ? target.closest('a')!
               : target;
             return void scope.parentElement!.replaceChild(el, scope);
