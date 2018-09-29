@@ -2,8 +2,12 @@
 import { cache } from '../../../parser/inline/media';
 import { html } from 'typed-dom';
 
+const extensions = new Set([
+  '.pdf',
+]);
+
 export function pdf(url: URL): HTMLElement | undefined {
-  if (!['.pdf'].includes(url.pathname.split(/(?=\.)/).pop()!)) return;
+  if (!extensions.has(url.pathname.split(/(?=\.)/).pop()!)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLAudioElement;
   return cache.set(
     url.href,

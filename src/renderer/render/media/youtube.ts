@@ -1,8 +1,13 @@
 ﻿import { cache } from '../../../parser/inline/media';
 import { html } from 'typed-dom';
 
+const origins = new Set([
+  'https://www.youtube.com',
+  'https://youtu.be',
+]);
+
 export function youtube(url: URL): HTMLElement | undefined {
-  if (!['https://www.youtube.com', 'https://youtu.be'].includes(url.origin)) return;
+  if (!origins.has(url.origin)) return;
   if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/)) return;
   if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w\-]+$/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLElement;

@@ -3,8 +3,12 @@ import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
 import DOM, { html, define } from 'typed-dom';
 
+const origins = new Set([
+  'https://gist.github.com',
+]);
+
 export function gist(url: URL): HTMLElement | undefined {
-  if (!['https://gist.github.com'].includes(url.origin)) return;
+  if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/[\w\-]+?\/\w{32}(?!\w)/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
   return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {

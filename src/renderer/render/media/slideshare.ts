@@ -3,8 +3,12 @@ import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
 import DOM, { define } from 'typed-dom';
 
+const origins = new Set([
+  'https://gist.github.com',
+]);
+
 export function slideshare(url: URL): HTMLElement | undefined {
-  if (!['https://www.slideshare.net'].includes(url.origin)) return;
+  if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
   return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {

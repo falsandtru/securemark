@@ -13,8 +13,12 @@ const cache = new Cache<string, HTMLElement>(10);
 
 let isWidgetScriptRequested = !!window.twttr;
 
+const origins = new Set([
+  'https://twitter.com',
+]);
+
 export function twitter(url: URL): HTMLElement | undefined {
-  if (!['https://twitter.com'].includes(url.origin)) return;
+  if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
   if (cache.has(url.href)) {
     const el = cache.get(url.href)!.cloneNode(true);
