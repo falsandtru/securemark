@@ -3585,31 +3585,31 @@ require = function () {
                     math: math_1.math,
                     media: {}
                 }, opts);
-                void [
-                    target,
-                    ...target.querySelectorAll('img, a > .media:not(img), pre:not(.quote), .math')
-                ].forEach(target => void new Promise(() => {
+                try {
                     switch (true) {
                     case target.matches('.invalid'):
                         return;
                     case target.matches('a > .media:not(img)'):
                         return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
-                    case !!opts.media && target.matches('img:not([src])[data-src]'): {
+                    case !!opts.media && target.matches('img.media:not([src])[data-src]'): {
                             const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
-                            const scope = !el.matches('img') && target.closest('a, h1, h2, h3, h4, h5, h6, p, li, dl, td') instanceof HTMLAnchorElement ? target.closest('a') : target;
+                            const scope = target.matches('a > .media') && !el.matches('img') ? target.closest('a') : target;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
-                    case !!opts.code && target.matches('pre') && target.children.length === 0:
+                    case !!opts.code && target.matches('pre:not(.quote)') && target.children.length === 0:
                         return void opts.code(target);
                     case !!opts.math && target.matches('.math') && target.children.length === 0:
                         return void opts.math(target);
                     default:
-                        return;
+                        return void target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre:not(.quote), .math').forEach(el => void render(el, opts));
                     }
-                }));
-                return target;
+                } catch (reason) {
+                    console.error(reason);
+                } finally {
+                    return target;
+                }
             }
             exports.render = render;
         },
