@@ -5,7 +5,7 @@ import { math } from './render/math';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
   opts = { code, math, media: {}, ...opts };
-  void [target, ...target.querySelectorAll<HTMLElement>('a > .media:not(img), img, pre, .math')]
+  void [target, ...target.querySelectorAll<HTMLElement>('img, a > .media:not(img), pre, .math')]
     .forEach(target =>
       void new Promise(() => {
         switch (true) {
