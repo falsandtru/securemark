@@ -5,6 +5,6 @@ import { html } from 'typed-dom';
 
 export const strong: StrongParser = verify(
   fmap(build(() =>
-    surround('**', compress(some(union([inline]), '**')), '**')),
+    surround(/^\*\*(?=\S[\s\S]*?\*\*)/, compress(some(union([inline]), '**')), '**')),
     ns => [html('strong', ns)]),
   ([el]) => startsWithTightText(el));

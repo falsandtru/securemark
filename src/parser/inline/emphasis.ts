@@ -6,6 +6,6 @@ import { html } from 'typed-dom';
 
 export const emphasis: EmphasisParser = verify(
   fmap(build(() =>
-    surround('*', compress(some(union([strong, some(inline, '*')]))), '*')),
+    surround(/^\*(?=\S[\s\S]*?\*)/, compress(some(union([strong, some(inline, '*')]))), '*')),
     ns => [html('em', ns)]),
   ([el]) => startsWithTightText(el));
