@@ -663,14 +663,23 @@ require = function () {
                     return define(el, undefined, attrs);
                 if (typeof children === 'string')
                     return define(el, attrs, [text(children)]);
-                void Object.entries(attrs).forEach(([name, value]) => typeof value === 'string' ? void el.setAttribute(name, value) : void el.addEventListener(name.slice(2), value, {
-                    passive: [
-                        'wheel',
-                        'mousewheel',
-                        'touchstart',
-                        'touchmove'
-                    ].includes(name.slice(2))
-                }));
+                void Object.entries(attrs).forEach(([name, value]) => {
+                    switch (typeof value) {
+                    case 'function':
+                        return void el.addEventListener(name.slice(2), value, {
+                            passive: [
+                                'wheel',
+                                'mousewheel',
+                                'touchstart',
+                                'touchmove'
+                            ].includes(name.slice(2))
+                        });
+                    case 'undefined':
+                        return void el.removeAttribute(name);
+                    default:
+                        return void el.setAttribute(name, value);
+                    }
+                });
                 if (children) {
                     el.innerHTML = '';
                     while (el.firstChild) {
@@ -1857,10 +1866,10 @@ require = function () {
                     ]))
                 ])
             ]), ([label, content, ...caption]) => [
-                [typed_dom_1.html('figure', {
+                [typed_dom_1.html('figure', Object.assign({
                         'data-label': label.getAttribute('data-label'),
                         'data-group': label.getAttribute('data-label').split('-', 1)[0]
-                    }, [
+                    }, label.getAttribute('data-label').match(/^[^-]+-\d.*\.0$/) ? { style: 'display: none;' } : {}), [
                         typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                         typed_dom_1.html('span', { class: 'figindex' }),
                         typed_dom_1.html('figcaption', caption)
@@ -2810,10 +2819,11 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[${ query }](#)`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
                     class: 'label',
-                    'data-label': el.textContent.split(':').pop()
+                    'data-label': el.textContent.split(':').pop(),
+                    href: undefined
                 })]), ([el]) => util_1.hasTightText(el)));
-            function index(label, figs) {
-                return isFixed(label) ? label.split('-').pop() : increment(figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index'), isGroup(label) ? label.split('-').pop().split('.').length : 1);
+            function index(label, index) {
+                return isFixed(label) ? label.split('-').pop() : increment(index, isGroup(label) ? label.split('-').pop().split('.').length : index.split('.').length);
             }
             exports.index = index;
             function isFixed(label) {
@@ -2826,11 +2836,11 @@ require = function () {
             exports.isGroup = isGroup;
             function increment(index, position) {
                 if (index === '0' && position > 1)
-                    return increment(index, 1);
+                    return increment('1', position);
                 const ns = index.split('.');
                 const idx = [];
                 for (let i = 0; i < position; ++i) {
-                    void idx.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1);
+                    void idx.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : 1);
                 }
                 return idx.join('.');
             }
@@ -3587,6 +3597,7 @@ require = function () {
                 }, opts);
                 try {
                     switch (true) {
+                    case target.style.display === 'none':
                     case target.matches('.invalid'):
                         return;
                     case target.matches('a > .media:not(img)'):
@@ -4048,12 +4059,18 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const label_1 = require('../parser/inline/extension/label');
             const inline_1 = require('../parser/inline');
-            const concat_1 = require('spica/concat');
+            const api_1 = require('../parser/api');
             const typed_dom_1 = require('typed-dom');
             function figure(source) {
-                const groups = new Map();
+                let base = '0';
+                const indexes = new Map();
                 const exclusions = new Set();
-                return void source.querySelectorAll('figure[data-label][data-group]').forEach(fig => {
+                return void source.querySelectorAll('figure[data-label][data-group], h2[id]').forEach(fig => {
+                    if (fig.matches('h2')) {
+                        if (base === '0')
+                            return;
+                        fig = api_1.parse(`[:$-${ +base.split('.')[0] + 1 }.0]\n$$\n$$`).querySelector('figure');
+                    }
                     if (fig.matches('.example figure'))
                         return;
                     if (fig.parentElement !== source && fig.parentElement instanceof HTMLQuoteElement) {
@@ -4061,12 +4078,18 @@ require = function () {
                     }
                     const label = fig.getAttribute('data-label');
                     const group = fig.getAttribute('data-group');
-                    void groups.set(group, concat_1.concat(groups.get(group) || [], [fig]));
-                    const idx = label_1.index(label, groups.get(group));
+                    let idx = label_1.index(label, indexes.get(group) || base);
+                    if (idx.endsWith('.0')) {
+                        base = idx = idx.startsWith('0.') ? `${ (indexes.get(group) || base).split('.', 1)[0] }.${ idx.slice(2) }` : idx;
+                        void indexes.clear();
+                    }
+                    void indexes.set(group, idx);
                     void fig.setAttribute('data-index', idx);
                     const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
                     if (fig.closest('blockquote'))
+                        return;
+                    if (idx.endsWith('.0'))
                         return;
                     void fig.setAttribute('id', `label:${ label.split('-', 1)[0] }-${ idx }`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
@@ -4079,9 +4102,9 @@ require = function () {
             }
         },
         {
+            '../parser/api': 41,
             '../parser/inline': 73,
             '../parser/inline/extension/label': 84,
-            'spica/concat': 7,
             'typed-dom': 13
         }
     ],
