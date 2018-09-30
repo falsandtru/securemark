@@ -3,6 +3,7 @@
 ## 0.85.0
 
 - Enable figure parser to set the base index number.
+- Increment the base index number for each h2 elements.
 - Keep figure index depth.
 - Fix figure index increment order.
 
