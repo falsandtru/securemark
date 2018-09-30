@@ -51,7 +51,7 @@ describe('Unit: util/figure', () => {
       const source = parse([
         '~~~figure [:fig-a-0.0]\n!https://host\n~~~',
         '~~~figure [:fig-b-0.0.0.0]\n!https://host\n~~~',
-        '~~~figure [:fig-c-0.0]\n!https://host\n~~~',
+        '~~~figure [:fig-c-0.0.0]\n!https://host\n~~~',
         '~~~figure [:fig-d]\n!https://host\n~~~',
         '[:fig-b]',
       ].join('\n\n'));
@@ -62,7 +62,7 @@ describe('Unit: util/figure', () => {
           [
             '<figure data-label="fig-a-0.0" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
             '<figure data-label="fig-b-0.0.0.0" data-group="fig" data-index="1.0.0.1" id="label:fig-1.0.0.1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.0.0.1.</span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-c-0.0" data-group="fig" data-index="1.1" id="label:fig-1.1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.1.</span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-c-0.0.0" data-group="fig" data-index="1.0.1" id="label:fig-1.0.1"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 1.0.1.</span><figcaption></figcaption></figure>',
             '<figure data-label="fig-d" data-group="fig" data-index="2" id="label:fig-2"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex">Fig. 2.</span><figcaption></figcaption></figure>',
             '<p><a href="#label:fig-1.0.0.1" rel="noopener" class="label" data-label="fig-b">Fig. 1.0.0.1</a></p>',
           ]);
