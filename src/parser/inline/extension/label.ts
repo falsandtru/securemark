@@ -15,7 +15,7 @@ export const label: ExtensionParser.LabelParser = subline(verify(
           query => `[${query}](#)`,
           union([link]))),
       ']'),
-    ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()! })]),
+    ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()!, href: undefined })]),
   ([el]) => hasTightText(el)));
 
 export function index(label: string, index: string): string {
