@@ -3,6 +3,7 @@
 ## 0.85.0
 
 - Enable figure parser to set the base index number.
+- Keep figure index depth.
 - Fix figure index increment order.
 
 ## 0.84.0

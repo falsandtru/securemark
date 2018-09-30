@@ -23,7 +23,9 @@ export function index(label: string, index: string): string {
     ? label.split('-').pop()!
     : increment(
         index,
-        isGroup(label) ? label.split('-').pop()!.split('.').length : 1);
+        isGroup(label)
+          ? label.split('-').pop()!.split('.').length
+          : index.split('.').length);
 }
 
 export function isFixed(label: string): boolean {
