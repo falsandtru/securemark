@@ -38,7 +38,7 @@ export function isGroup(label: string): boolean {
 function increment(index: string, position: number): string {
   assert(index.match(/^[0-9]+(?:\.[0-9]+)*$/));
   assert(position > 0);
-  if (index === '0' && position > 1) return increment(index, 1);
+  if (index === '0' && position > 1) return increment('1', position);
   const ns = index.split('.');
   const idx: number[] = [];
   for (let i = 0; i < position; ++i) {
@@ -47,9 +47,7 @@ function increment(index: string, position: number): string {
         ? i + 1 < position
           ? +ns[i]
           : +ns[i] + 1
-        : i + 1 < position
-          ? 0
-          : 1);
+        : 1);
   }
   return idx.join('.');
 }
