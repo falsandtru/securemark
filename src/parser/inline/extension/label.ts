@@ -18,12 +18,11 @@ export const label: ExtensionParser.LabelParser = subline(verify(
     ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()! })]),
   ([el]) => hasTightText(el)));
 
-export function index(label: string, figs: HTMLElement[]): string {
-  assert(figs.length > 0);
+export function index(label: string, index: string): string {
   return isFixed(label)
     ? label.split('-').pop()!
     : increment(
-        figs.length === 1 ? '0' : figs[figs.length - 2].getAttribute('data-index')!,
+        index,
         isGroup(label) ? label.split('-').pop()!.split('.').length : 1);
 }
 

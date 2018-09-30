@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.85.0
+
+- Enable figure parser to set the base index number.
+
 ## 0.84.0
 
 - Improve blockquote parser.

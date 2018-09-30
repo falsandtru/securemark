@@ -76,6 +76,9 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
           {
             'data-label': label.getAttribute('data-label')!,
             'data-group': label.getAttribute('data-label')!.split('-', 1)[0],
+            ...(label.getAttribute('data-label')!.match(/^[^-]+-\d.*\.0$/)
+              ? { style: 'display: none;' }
+              : {}),
           },
           [
             html('div', { class: 'figcontent' }, [content]),
