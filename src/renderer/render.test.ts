@@ -1,5 +1,11 @@
-﻿import { render } from './render';
+﻿import { render as render_ } from './render';
+import { RenderingOptions } from '../../';
 import { parse } from '../parser/api/parse';
+
+function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
+  void render_(target, opts);
+  return target;
+}
 
 describe('Unit: renderer/render', () => {
   describe('render', () => {
