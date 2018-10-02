@@ -14,8 +14,6 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('$0-$1')), undefined);
       assert.deepStrictEqual(inspect(parser('$0 - $1')), undefined);
       assert.deepStrictEqual(inspect(parser('${ }$')), undefined);
-      assert.deepStrictEqual(inspect(parser('${ a}$')), undefined);
-      assert.deepStrictEqual(inspect(parser('${ a }$')), undefined);
       assert.deepStrictEqual(inspect(parser('${\n}$')), undefined);
       assert.deepStrictEqual(inspect(parser('${a\nb}$')), undefined);
       assert.deepStrictEqual(inspect(parser('${a\\\nb}$')), undefined);
@@ -29,8 +27,10 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('${a}$0')), [['<span class="math notranslate" data-src="${a}$">${a}$</span>'], '0']);
       assert.deepStrictEqual(inspect(parser('${a}$b')), [['<span class="math notranslate" data-src="${a}$">${a}$</span>'], 'b']);
       assert.deepStrictEqual(inspect(parser('${ab}$')), [['<span class="math notranslate" data-src="${ab}$">${ab}$</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('${a }$')), [['<span class="math notranslate" data-src="${a }$">${a }$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${a b}$')), [['<span class="math notranslate" data-src="${a b}$">${a b}$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('${a }$')), [['<span class="math notranslate" data-src="${a}$">${a}$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('${ a}$')), [['<span class="math notranslate" data-src="${a}$">${a}$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('${ a }$')), [['<span class="math notranslate" data-src="${a}$">${a}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${$}$')), [['<span class="math notranslate" data-src="${$}$">${$}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${\\a}$')), [['<span class="math notranslate" data-src="${\\a}$">${\\a}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${\\$}$')), [['<span class="math notranslate" data-src="${\\$}$">${\\$}$</span>'], '']);

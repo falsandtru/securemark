@@ -1,7 +1,7 @@
 ﻿import { MathParser } from '../inline';
 import { union, some, fmap, surround, verify, subline } from '../../combinator';
 import { escsource } from '../source/escapable';
-import { stringify, compress, startsWithTightText } from '../util';
+import { stringify, compress, hasText } from '../util';
 import { Cache } from 'spica/cache';
 import { html, frag } from 'typed-dom';
 
@@ -10,12 +10,12 @@ export const cache = new Cache<string, HTMLElement>(20); // for rerendering in e
 export const math: MathParser = subline(verify(
   fmap(
     stringify(
-      surround(/^\$\{(?=\S.*?\}\$)/, compress(some(union([escsource]), /^}\$|^\n/)), /^}\$/)),
+      surround(/^\$\{(?=.+?\}\$)/, compress(some(union([escsource]), /^}\$|^\n/)), /^}\$/)),
     ([body]) => {
-      const source = `$\{${body}}$`; // TODO: Should use String.prototype.trimEnd.
+      const source = `$\{${body.trim()}}$`;
       if (cache.has(source)) return [cache.get(source)!.cloneNode(true)];
       const el = html('span', { class: 'math notranslate' }, source);
       void el.setAttribute('data-src', source);
       return [el];
     }),
-  ([el]) => startsWithTightText(frag(el.textContent!.slice(2, -2)))));
+  ([el]) => hasText(frag(el.textContent!.slice(2, -2)))));

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.85.1
+
+- Allow leading whitespace in math syntax.
+
 ## 0.85.0
 
 - Enable figure parser to set the base index number.
