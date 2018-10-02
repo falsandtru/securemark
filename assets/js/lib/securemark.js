@@ -3098,14 +3098,14 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround(/^\$\{(?=\S.*?\}\$)/, util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^}\$|^\n/)), /^}\$/)), ([body]) => {
-                const source = `$\{${ body }}$`;
+            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround(/^\$\{(?=.+?\}\$)/, util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^}\$|^\n/)), /^}\$/)), ([body]) => {
+                const source = `$\{${ body.trim() }}$`;
                 if (exports.cache.has(source))
                     return [exports.cache.get(source).cloneNode(true)];
                 const el = typed_dom_1.html('span', { class: 'math notranslate' }, source);
                 void el.setAttribute('data-src', source);
                 return [el];
-            }), ([el]) => util_1.startsWithTightText(typed_dom_1.frag(el.textContent.slice(2, -2)))));
+            }), ([el]) => util_1.hasText(typed_dom_1.frag(el.textContent.slice(2, -2)))));
         },
         {
             '../../combinator': 20,
@@ -3618,8 +3618,6 @@ require = function () {
                     }
                 } catch (reason) {
                     console.error(reason);
-                } finally {
-                    return target;
                 }
             }
             exports.render = render;
