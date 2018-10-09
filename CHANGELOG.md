@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.85.2
+
+- Fix rendering of slideshare.
+
 ## 0.85.1
 
 - Allow leading whitespace in math syntax.

@@ -4,7 +4,7 @@ import { sanitize } from 'dompurify';
 import DOM, { define } from 'typed-dom';
 
 const origins = new Set([
-  'https://gist.github.com',
+  'https://www.slideshare.net',
 ]);
 
 export function slideshare(url: URL): HTMLElement | undefined {
