@@ -3917,7 +3917,6 @@ require = function () {
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
                 const cache = new cache_1.Cache(10);
-                let isWidgetScriptRequested = !!window.twttr;
                 const origins = new Set(['https://twitter.com']);
                 function twitter(url) {
                     if (!origins.has(url.origin))
@@ -3931,29 +3930,22 @@ require = function () {
                     }
                     return typed_dom_1.default.div({ style: 'position: relative;' }, [typed_dom_1.default.em(`loading ${ url.href }`)], (f, tag) => {
                         const outer = f(tag);
-                        void $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }`, {
+                        void $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
                             cache: true,
                             success({html}) {
-                                outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`, { ADD_TAGS: ['script'] });
-                                const script = outer.querySelector('script');
-                                script && void script.remove();
+                                outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`);
                                 void cache.set(url.href, outer.cloneNode(true));
                                 if (window.twttr)
                                     return void window.twttr.widgets.load(outer);
-                                if (isWidgetScriptRequested)
+                                const id = 'twitter-wjs';
+                                if (document.getElementById(id))
                                     return;
-                                if (!script || !script.getAttribute('src').startsWith('https://platform.twitter.com/'))
-                                    return;
-                                if (document.querySelector(`script[src="${ script.getAttribute('src') }"]`))
-                                    return;
-                                isWidgetScriptRequested = true;
-                                void $.ajax(script.src, {
-                                    dataType: 'script',
-                                    cache: true,
-                                    complete: () => isWidgetScriptRequested = !!window.twttr
-                                });
+                                void document.body.appendChild(typed_dom_1.html('script', {
+                                    id,
+                                    src: 'https://platform.twitter.com/widgets.js'
+                                }));
                             },
                             error({status, statusText}) {
                                 void typed_dom_1.define(outer, [parser_1.parse(`*[]( ${ url.href } )*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
