@@ -1,7 +1,7 @@
 ﻿import { parse } from '../../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
-import DOM, { define } from 'typed-dom';
+import DOM, { html as h, define } from 'typed-dom';
 
 declare global {
   interface Window {
@@ -10,8 +10,6 @@ declare global {
 }
 
 const cache = new Cache<string, HTMLElement>(10);
-
-let isWidgetScriptRequested = !!window.twttr;
 
 const origins = new Set([
   'https://twitter.com',
@@ -27,25 +25,20 @@ export function twitter(url: URL): HTMLElement | undefined {
   }
   return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {
     const outer = f(tag);
-    void $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}`, {
+    void $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}&omit_script=true`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
       cache: true,
       success({ html }): void {
-        outer.innerHTML = sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${html}</div>`, { ADD_TAGS: ['script'] });
-        const script = outer.querySelector('script');
-        script && void script.remove();
+        outer.innerHTML = sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${html}</div>`);
         void cache.set(url.href, outer.cloneNode(true));
         if (window.twttr) return void window.twttr.widgets.load(outer);
-        if (isWidgetScriptRequested) return;
-        if (!script || !script.getAttribute('src')!.startsWith('https://platform.twitter.com/')) return;
-        if (document.querySelector(`script[src="${script.getAttribute('src')}"]`)) return;
-        isWidgetScriptRequested = true;
-        void $.ajax(script.src, {
-          dataType: 'script',
-          cache: true,
-          complete: () => isWidgetScriptRequested = !!window.twttr,
-        });
+        const id = 'twitter-wjs';
+        if (document.getElementById(id)) return;
+        void document.body.appendChild(h('script', {
+          id,
+          src: 'https://platform.twitter.com/widgets.js',
+        }));
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
