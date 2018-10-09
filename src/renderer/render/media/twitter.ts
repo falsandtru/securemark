@@ -1,26 +1,41 @@
 ﻿import { parse } from '../../../parser';
 import { Cache } from 'spica/cache';
+import { Cancellation } from 'spica/cancellation';
 import { sanitize } from 'dompurify';
-import DOM, { html as h, define } from 'typed-dom';
+import DOM, { html, define } from 'typed-dom';
 
 declare global {
   interface Window {
-    twttr?: { widgets: { load: (el: HTMLElement) => void; }; };
+    twttr?: {
+      ready: (f: () => void) => any;
+      widgets: {
+        load: (el: HTMLElement) => void;
+      };
+    };
   }
 }
-
-const cache = new Cache<string, HTMLElement>(10);
 
 const origins = new Set([
   'https://twitter.com',
 ]);
+const cache = new Cache<string, HTMLElement>(10);
+
+const jobs = new Cancellation();
+
+window.twttr
+  ? void window.twttr.ready(() => void setTimeout(jobs.cancel, 1000)) // Wait a moment to avoid a bug of twitter widget.
+  : void document.body.appendChild(html('script', {
+      id: 'twitter-wjs',
+      src: 'https://platform.twitter.com/widgets.js',
+      onload: () => void setTimeout(jobs.cancel, 1000), // Wait a moment to avoid a bug of twitter widget.
+    }));
 
 export function twitter(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
   if (cache.has(url.href)) {
     const el = cache.get(url.href)!.cloneNode(true);
-    window.twttr && void window.twttr.widgets.load(el);
+    void jobs.register(() => void window.twttr!.widgets.load(el));
     return el;
   }
   return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {
@@ -32,13 +47,7 @@ export function twitter(url: URL): HTMLElement | undefined {
       success({ html }): void {
         outer.innerHTML = sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${html}</div>`);
         void cache.set(url.href, outer.cloneNode(true));
-        if (window.twttr) return void window.twttr.widgets.load(outer);
-        const id = 'twitter-wjs';
-        if (document.getElementById(id)) return;
-        void document.body.appendChild(h('script', {
-          id,
-          src: 'https://platform.twitter.com/widgets.js',
-        }));
+        void jobs.register(() => void window.twttr!.widgets.load(outer));
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));

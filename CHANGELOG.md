@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.85.3
+
+- Avoid a bug of twitter widget.
+
 ## 0.85.2
 
 - Fix rendering of slideshare.
