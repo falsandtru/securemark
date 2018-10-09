@@ -3868,7 +3868,7 @@ require = function () {
                 const media_1 = require('../../../parser/inline/media');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                 const typed_dom_1 = require('typed-dom');
-                const origins = new Set(['https://gist.github.com']);
+                const origins = new Set(['https://www.slideshare.net']);
                 function slideshare(url) {
                     if (!origins.has(url.origin))
                         return;
