@@ -285,6 +285,7 @@
     document.getElementById('time').textContent = time;
   }
   function share() {
+    if (document.getElementById('editor').value.length > 10000) return;
     document.getElementById('share').href = '#' + encodeURIComponent(document.getElementById('editor').value);
     document.getElementById('share').textContent = document.getElementById('share').href;
   }
