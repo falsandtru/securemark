@@ -1495,7 +1495,7 @@ require = function () {
                         combinator_1.some(line_1.contentline),
                         combinator_1.some(line_1.blankline)
                     ])(source);
-                    const rest = result ? combinator_1.exec(result) : '';
+                    const rest = combinator_1.exec(result);
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
                 }
