@@ -2725,20 +2725,28 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
+            const typed_dom_1 = require('typed-dom');
             exports.comment = combinator_1.union([
-                combinator_1.focus(/^<(#+)\s+(?:\S+\s+)*?\1>/, _ => [
-                    [],
-                    ''
+                combinator_1.match(/^<(#+)\s+([\s\S]*?\s+)?\1>/, ([, , s = ''], rest) => [
+                    [typed_dom_1.html('sup', {
+                            class: 'comment',
+                            title: s.trim()
+                        })],
+                    rest
                 ]),
-                combinator_1.focus(/^<!-{2,}\s+(?:\S+\s+)*?-{2,}>/, _ => [
-                    [],
-                    ''
+                combinator_1.match(/^<!-{2,}\s+([\s\S]*?\s+)?-{2,}>/, ([, , s = ''], rest) => [
+                    [typed_dom_1.html('sup', {
+                            class: 'comment',
+                            title: s.trim()
+                        })],
+                    rest
                 ])
             ]);
         },
         {
             '../../combinator': 20,
-            '../source/unescapable': 98
+            '../source/unescapable': 98,
+            'typed-dom': 13
         }
     ],
     81: [
