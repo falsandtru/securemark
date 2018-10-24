@@ -20,19 +20,20 @@ describe('Unit: parser/inline/comment', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('<# #>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<# a #>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<# a b #>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<# a\nb #>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<# a\\ #>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<# <# #>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<## a ##>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<# #>a')), [[], 'a']);
-      assert.deepStrictEqual(inspect(parser('<# a #>b')), [[], 'b']);
-      assert.deepStrictEqual(inspect(parser('<!-- -->')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<!-- --->')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<!--- -->')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<!--- --->')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('<# #>')), [['<sup class="comment" title=""></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<sup class="comment" title="a"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a b #>')), [['<sup class="comment" title="a b"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a\nb #>')), [['<sup class="comment" title="a\nb"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a\\ #>')), [['<sup class="comment" title="a\\"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# <# #>')), [['<sup class="comment" title="<#"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<## a ##>')), [['<sup class="comment" title="a"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<## #> ##>')), [['<sup class="comment" title="#>"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# #>a')), [['<sup class="comment" title=""></sup>'], 'a']);
+      assert.deepStrictEqual(inspect(parser('<# a #>b')), [['<sup class="comment" title="a"></sup>'], 'b']);
+      assert.deepStrictEqual(inspect(parser('<!-- -->')), [['<sup class="comment" title=""></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<!-- --->')), [['<sup class="comment" title=""></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<!--- -->')), [['<sup class="comment" title=""></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('<!--- --->')), [['<sup class="comment" title=""></sup>'], '']);
     });
 
   });

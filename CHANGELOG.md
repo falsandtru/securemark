@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.85.4
+
+- Leave comment data.
+
 ## 0.85.3
 
 - Avoid a bug of twitter widget.
