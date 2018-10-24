@@ -19,9 +19,7 @@ export function segment(source: string): string[] {
       some(contentline),
       some(blankline)
     ])(source);
-    const rest = result
-      ? exec(result)
-      : '';
+    const rest = exec(result);
     assert(source.slice(1).endsWith(rest));
     void segments.push(source.slice(0, source.length - rest.length));
     source = rest;
