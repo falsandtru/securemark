@@ -255,13 +255,15 @@
   document.getElementById('share').textContent = document.getElementById('share').href;
   (async () => log(await display()))();
   var timer = 0;
-  document.getElementById('editor').addEventListener('keyup', function () {
+  function run() {
     clearTimeout(timer);
     timer = setTimeout(async function () {
       log(await display());
       share();
-    }, 300);
-  });
+    }, 200);
+  }
+  document.getElementById('editor').addEventListener('input', run);
+  document.getElementById('editor').addEventListener('change', run);
   async function display() {
     var time = Date.now();
     var resource = 100;
@@ -271,7 +273,7 @@
       elapsed += Date.now() - time;
       resource = resource > 0
         ? resource - (Date.now() - time)
-        : (await new Promise(requestAnimationFrame), 300);
+        : void await new Promise(requestAnimationFrame) || 300;
       time = Date.now();
     }
     figure(viewer);

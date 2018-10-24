@@ -57,6 +57,9 @@ const config = {
   return require('${pkg.name}');
 }));
 `,
+  clean: {
+    dist: 'dist'
+  }
 };
 
 function compile({ src, dest }, opts = {}) {
@@ -144,7 +147,7 @@ gulp.task('karma:ci', function (done) {
 });
 
 gulp.task('clean', function () {
-  return del([config.ts.dist.dest, './gh-pages/assets/**/lib']);
+  return del([config.clean.dist]);
 });
 
 gulp.task('install', function () {
