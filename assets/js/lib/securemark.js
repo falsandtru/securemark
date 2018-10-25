@@ -1393,7 +1393,7 @@ require = function () {
                             void target.insertBefore(el, ref);
                             yield el;
                             if (revision !== rev)
-                                return;
+                                throw new Error(`Reentered.`);
                         }
                     }
                 };
