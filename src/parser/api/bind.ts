@@ -36,7 +36,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         assert(revision === rev);
         void target.insertBefore(el, ref);
         yield el;
-        if (revision !== rev) return;
+        if (revision !== rev) throw new Error(`Reentered.`);
       }
     }
     assert(revision === rev);

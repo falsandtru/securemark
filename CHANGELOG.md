@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.85.5
+
+- Fix bind function to throw an exception when another process starts before finishing the current process.
+
 ## 0.85.4
 
 - Leave comment data.

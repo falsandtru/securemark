@@ -80,11 +80,16 @@ describe('Unit: parser/api/bind', () => {
       const el = html('div');
       const update = bind(el);
 
-      for (const _ of update('0\n\n1')) {
-        assert.deepStrictEqual(inspect(update('1')), ['<p>1</p>']);
-        assert(el.innerHTML === '<p>1</p>');
+      try {
+        for (const _ of update('0\n\n1')) {
+          assert.deepStrictEqual(inspect(update('2')), ['<p>2</p>']);
+          assert(el.innerHTML === '<p>2</p>');
+          assert.deepStrictEqual(inspect(update('3')), ['<p>3</p>']);
+        }
       }
-      assert(el.innerHTML === '<p>1</p>');
+      catch {
+        assert(el.innerHTML === '<p>3</p>');
+      }
     });
 
     it('normalize', () => {
