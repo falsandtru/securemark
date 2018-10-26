@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.86.0
+
+- Parse blockquote text with autolink parser.
+
 ## 0.85.5
 
 - Fix bind function to throw an exception when another process starts before finishing the current process.

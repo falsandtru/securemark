@@ -1,7 +1,7 @@
 ﻿import { BlockquoteParser } from '../block';
 import { Parser, union, some, fmap, surround, block, rewrite, convert, build } from '../../combinator';
 import { contentline } from '../source/line';
-import '../source/unescapable';
+import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { suppress } from '../util';
 import { html } from 'typed-dom';
@@ -22,7 +22,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
       some(contentline, opener),
       convert(
         unindent,
-        source => [[html('pre', { class: 'quote' }, source)], '']))
+        fmap(some(autolink), ns => [html('pre', { class: 'quote' }, ns)]))),
   ]))),
   ns => [html('blockquote', ns)]);
 

@@ -157,7 +157,7 @@ export namespace MarkdownParser {
       Block<'blockquote'>,
       Parser<HTMLQuoteElement, [
         Parser<HTMLElement | Text, [
-          SourceParser.UnescapableSourceParser
+          AutolinkParser
         ]>,
         Parser<HTMLElement | Text, [
           MarkdownParser
@@ -557,6 +557,14 @@ export namespace MarkdownParser {
         ]> {
       }
     }
+  }
+  export interface AutolinkParser extends
+    Markdown<'autolink'>,
+    Parser<HTMLElement | Text, [
+      InblockParser.AutolinkParser,
+      InlineParser.AutolinkParser,
+      SourceParser.UnescapableSourceParser
+    ]> {
   }
   export namespace SourceParser {
     interface Source<T> extends Markdown<['source', T]> { }

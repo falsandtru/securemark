@@ -1,7 +1,7 @@
 import { TextParser } from '../source';
 import { html, text as txt } from 'typed-dom';
 
-const separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s|(?!h?ttps?:)[0-9a-zA-Z][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|[0-9a-zA-Z]@[a-zA-Z0-9]/;
+export const separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s|(?!h?ttps?:)[0-9a-zA-Z][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|[0-9a-zA-Z]@[a-zA-Z0-9]/;
 
 export const text: TextParser = source => {
   if (source.length === 0) return;
