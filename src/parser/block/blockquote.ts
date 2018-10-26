@@ -33,7 +33,9 @@ const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
       convert(unindent, mdquote)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, source => [[parse(source)], ''])),
+      convert(
+        unindent,
+        source => [[parse(source)], ''])),
   ]))),
   ns => [html('blockquote', ns)]);
 
