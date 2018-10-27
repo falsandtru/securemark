@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.87.0
+
+- Disallow trailing backslash of end of line with hashtag syntax.
+
 ## 0.86.0
 
 - Parse blockquote text with autolink parser.
