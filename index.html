@@ -254,7 +254,7 @@
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   (async () => log(await display()))();
-  var timer = 0;
+  let timer = 0;
   function run() {
     clearTimeout(timer);
     timer = setTimeout(async function () {
@@ -265,10 +265,10 @@
   document.getElementById('editor').addEventListener('input', run);
   document.getElementById('editor').addEventListener('change', run);
   async function display() {
-    var time = Date.now();
-    var resource = 100;
-    var elapsed = 0;
-    for (var el of parse(document.getElementById('editor').value)) {
+    let time = Date.now();
+    let resource = 100;
+    let elapsed = 0;
+    for (const el of parse(document.getElementById('editor').value)) {
       observer.observe(el);
       elapsed += Date.now() - time;
       resource = resource > 0
