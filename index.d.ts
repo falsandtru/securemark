@@ -7,6 +7,7 @@
 
 export function parse(source: string): DocumentFragment;
 export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement>;
+export function breaklines(source: string): string;
 export function figure(source: DocumentFragment | HTMLElement): void;
 export function footnote(source: DocumentFragment | HTMLElement, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void;
 export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement;

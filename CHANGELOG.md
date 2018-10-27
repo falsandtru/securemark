@@ -2,6 +2,7 @@
 
 ## 0.87.0
 
+- Add breaklines function.
 - Disallow trailing backslash of end of line with hashtag syntax.
 
 ## 0.86.0
