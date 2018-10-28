@@ -2,13 +2,12 @@ import { eval } from '../../combinator';
 import { block } from '../block';
 import { segment } from './segment';
 import { normalize } from './normalization';
+import { concat } from 'spica/concat';
+import { frag } from 'typed-dom';
 
 export function parse(source: string): DocumentFragment {
-  return segment(normalize(source))
-    .reduce((parent, seg) => (
-      void eval(block(seg))
-        .forEach(el =>
-          void parent.appendChild(el)),
-      parent
-    ), document.createDocumentFragment());
+  return frag(segment(normalize(source))
+    .reduce((acc, seg) =>
+      concat(acc, eval(block(seg)))
+    , []));
 }

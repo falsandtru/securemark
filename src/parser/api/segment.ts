@@ -24,5 +24,6 @@ export function segment(source: string): string[] {
     void segments.push(source.slice(0, source.length - rest.length));
     source = rest;
   }
+  assert(segments.join('') === arguments[0]);
   return segments;
 }
