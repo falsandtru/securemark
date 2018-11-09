@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.87.1
+
+- Optimization.
+
 ## 0.87.0
 
 - Add breaklines function.

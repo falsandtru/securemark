@@ -12,8 +12,17 @@ export const authority = build('authority', n => `[${n}]`);
 function build(category: string, marker: (index: number) => string): (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => void {
   assert(category.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
+  const log = new WeakSet<Element>();
   return (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => {
     const exclusions = new Set(source.querySelectorAll('.example'));
+    let skip = true;
+    for (const el of source.children) {
+      if (log.has(el)) continue;
+      void log.add(el);
+      if (exclusions.has(el) || !el.querySelector(`.${category}`)) continue;
+      skip = false;
+    }
+    if (skip) return;
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
         if (exclusions.has(ref.closest('.example')!)) return acc;

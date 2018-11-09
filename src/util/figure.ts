@@ -3,7 +3,17 @@ import { isGroup } from '../parser/inline';
 import { parse } from '../parser/api';
 import { define } from 'typed-dom';
 
+const log = new WeakSet<Element>();
+
 export function figure(source: DocumentFragment | HTMLElement): void {
+  let skip = true;
+  for (const el of source.children) {
+    if (log.has(el)) continue;
+    void log.add(el);
+    if (!el.matches('figure') && !el.querySelector('figure, .label')) continue;
+    skip = false;
+  }
+  if (skip) return;
   let base = '0';
   const indexes = new Map<string, string>();
   const exclusions = new Set<Element>();

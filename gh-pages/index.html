@@ -79,6 +79,10 @@
     grid-column-start: 1;
     grid-column-end: 3;
   }
+  .annotation:not([id]),
+  .authority:not([id]) {
+    display: none;
+  }
   .comment:before {
     content: "†";
     color: red;
