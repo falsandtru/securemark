@@ -2,6 +2,7 @@
 import { union } from '../combinator';
 import { extension } from './inline/extension';
 import { link } from './inline/link';
+import { ruby } from './inline/ruby';
 import { html } from './inline/html';
 import { comment } from './inline/comment';
 import { emphasis } from './inline/emphasis';
@@ -17,6 +18,7 @@ import { text } from './source/text';
 export import InlineParser = MarkdownParser.InlineParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import LinkParser = InlineParser.LinkParser;
+export import RubyParser = InlineParser.RubyParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import CommentParser = InlineParser.CommentParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
@@ -31,6 +33,7 @@ export import AutolinkParser = InlineParser.AutolinkParser;
 export const inline: InlineParser = union<InlineParser>([
   extension,
   link,
+  ruby,
   html,
   comment,
   emphasis,

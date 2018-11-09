@@ -4,3 +4,6 @@ interface Node {
 interface HTMLObjectElement {
   typeMustMatch: boolean;
 }
+interface HTMLElementTagNameMap {
+  'rp': HTMLElement;
+}

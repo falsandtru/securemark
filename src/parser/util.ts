@@ -59,16 +59,16 @@ export function hasLink(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('a');
 }
 
-export function hasText(node: HTMLElement | DocumentFragment): boolean {
+export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {
   return node.textContent!.trim() !== '';
 }
 
-export function hasTightText(node: HTMLElement): boolean {
+export function hasTightText(node: HTMLElement | Text): boolean {
   return hasText(node)
       && node.textContent === node.textContent!.trim();
 }
 
-export function startsWithTightText(node: HTMLElement | DocumentFragment): boolean {
+export function startsWithTightText(node: HTMLElement | DocumentFragment | Text): boolean {
   return hasText(node)
       && node.textContent!.startsWith(node.textContent!.trim());
 }

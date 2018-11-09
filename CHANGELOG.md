@@ -2,6 +2,7 @@
 
 ## 0.88.0
 
+- Add ruby syntax.
 - Disallow linebreaks in authority syntax.
 
 ## 0.87.1

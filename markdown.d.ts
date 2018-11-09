@@ -334,6 +334,7 @@ export namespace MarkdownParser {
     Parser<HTMLElement | Text, [
       InlineParser.ExtensionParser,
       InlineParser.LinkParser,
+      InlineParser.RubyParser,
       InlineParser.HTMLParser,
       InlineParser.CommentParser,
       InlineParser.EmphasisParser,
@@ -427,6 +428,19 @@ export namespace MarkdownParser {
           ]> {
         }
       }
+    }
+    export interface RubyParser extends
+      // [AB]{a b}
+      Inline<'ruby'>,
+      Parser<HTMLElement, [
+        Parser<DocumentFragment, [
+          HTMLEntityParser,
+          SourceParser.TextParser
+        ]>,
+        Parser<DocumentFragment, [
+          SourceParser.TextParser
+        ]>
+      ]> {
     }
     export interface HTMLParser extends
       // <small>abc</small>
