@@ -131,7 +131,7 @@ describe('Unit: util/footnote', () => {
 
   describe('authority', () => {
     it('1', () => {
-      const source = parse('[[a \n b]]');
+      const source = parse('[[a b]]');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
         authority(source, target);
@@ -139,7 +139,7 @@ describe('Unit: util/footnote', () => {
           [...source.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "authority", id: "authority-ref:1", title: "a   b" }, [
+              html('sup', { class: "authority", id: "authority-ref:1", title: "a b" }, [
                 html('a', { href: "#authority-def:1", rel: "noopener" }, '[1]')
               ]),
             ]).outerHTML,
@@ -148,9 +148,7 @@ describe('Unit: util/footnote', () => {
           target.outerHTML,
           html('ol', [
             html('li', { id: 'authority-def:1' }, [
-              text('a '),
-              html('span', { class: 'linebreak' }, ' '),
-              text(' b'),
+              text('a b'),
               html('sup', [html('a', { href: '#authority-ref:1', rel: 'noopener' }, '[1]')])
             ]),
           ]).outerHTML);

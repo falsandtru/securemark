@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.88.0
+
+- Disallow linebreaks in authority syntax.
+
 ## 0.87.1
 
 - Optimization.

@@ -18,6 +18,8 @@ describe('Unit: parser/inblock/authority', () => {
       assert.deepStrictEqual(inspect(parser('[[\n]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\\]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[<wbr>]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a\nb]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[![](a)]]')), undefined);
       assert.deepStrictEqual(inspect(parser('a[[a]]')), undefined);
     });
@@ -26,8 +28,7 @@ describe('Unit: parser/inblock/authority', () => {
       assert.deepStrictEqual(inspect(parser('[[a]]')), [['<sup class="authority">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[ab]]')), [['<sup class="authority">ab</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a ]]')), [['<sup class="authority">a </sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[a\nb]]')), [['<sup class="authority">a<span class="linebreak"> </span>b</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), [['<sup class="authority">a<br>b</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[a b]]')), [['<sup class="authority">a b</sup>'], '']);
     });
 
     it('nest', () => {
