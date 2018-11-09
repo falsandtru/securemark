@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.88.1
+
+- Fix ruby parser.
+
 ## 0.88.0
 
 - Add ruby syntax.
