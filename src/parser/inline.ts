@@ -1,7 +1,7 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
 import { union } from '../combinator';
-import { link } from './inline/link';
 import { extension } from './inline/extension';
+import { link } from './inline/link';
 import { html } from './inline/html';
 import { comment } from './inline/comment';
 import { emphasis } from './inline/emphasis';
@@ -15,8 +15,8 @@ import { autolink } from './inline/autolink';
 import { text } from './source/text';
 
 export import InlineParser = MarkdownParser.InlineParser;
-export import LinkParser = InlineParser.LinkParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
+export import LinkParser = InlineParser.LinkParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import CommentParser = InlineParser.CommentParser;
 export import EmphasisParser = InlineParser.EmphasisParser;

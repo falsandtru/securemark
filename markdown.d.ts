@@ -349,6 +349,38 @@ export namespace MarkdownParser {
   }
   export namespace InlineParser {
     interface Inline<T> extends Markdown<['inline', T]> { }
+    export interface ExtensionParser extends
+      // [#abc]
+      Inline<'extension'>,
+      Parser<HTMLElement, [
+        ExtensionParser.IndexParser,
+        ExtensionParser.LabelParser,
+        ExtensionParser.PlaceholderParser
+      ]> {
+    }
+    export namespace ExtensionParser {
+      export interface IndexParser extends
+        // [#index]
+        Inline<'extension/index'>,
+        Parser<HTMLAnchorElement, [
+          LinkParser
+        ]> {
+      }
+      export interface LabelParser extends
+        // [:group-name]
+        Inline<'extension/label'>,
+        Parser<HTMLAnchorElement, [
+          LinkParser
+        ]> {
+      }
+      export interface PlaceholderParser extends
+        // [^abc]
+        Inline<'extension/placeholder'>,
+        Parser<HTMLSpanElement, [
+          InlineParser
+        ]> {
+      }
+    }
     export interface LinkParser extends
       // [abc](uri)
       Inline<'link'>,
@@ -396,47 +428,6 @@ export namespace MarkdownParser {
         }
       }
     }
-    export interface ExtensionParser extends
-      // [#abc]
-      Inline<'extension'>,
-      Parser<HTMLElement, [
-        ExtensionParser.IndexParser,
-        ExtensionParser.LabelParser,
-        ExtensionParser.PlaceholderParser
-      ]> {
-    }
-    export namespace ExtensionParser {
-      export interface IndexParser extends
-        // [#index]
-        Inline<'extension/index'>,
-        Parser<HTMLAnchorElement, [
-          LinkParser
-        ]> {
-      }
-      export interface LabelParser extends
-        // [:group-name]
-        Inline<'extension/label'>,
-        Parser<HTMLAnchorElement, [
-          LinkParser
-        ]> {
-      }
-      export interface PlaceholderParser extends
-        // [^abc]
-        Inline<'extension/placeholder'>,
-        Parser<HTMLSpanElement, [
-          InlineParser
-        ]> {
-      }
-    }
-    export interface CommentParser extends
-      // <# comment #>
-      // <!-- comment -->
-      Inline<'comment'>,
-      Parser<HTMLElement, [
-        Parser<HTMLElement, never>,
-        Parser<HTMLElement, never>
-      ]> {
-    }
     export interface HTMLParser extends
       // <small>abc</small>
       Inline<'html'>,
@@ -454,6 +445,15 @@ export namespace MarkdownParser {
           SourceParser.EscapableSourceParser
         ]> {
       }
+    }
+    export interface CommentParser extends
+      // <# comment #>
+      // <!-- comment -->
+      Inline<'comment'>,
+      Parser<HTMLElement, [
+        Parser<HTMLElement, never>,
+        Parser<HTMLElement, never>
+      ]> {
     }
     export interface EmphasisParser extends
       // *abc*
