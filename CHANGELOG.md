@@ -3,6 +3,7 @@
 ## 0.88.0
 
 - Add ruby syntax.
+- Remove `ruby`, `rt`, and `rp` html tags.
 - Disallow linebreaks in authority syntax.
 
 ## 0.87.1

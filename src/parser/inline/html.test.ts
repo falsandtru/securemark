@@ -11,9 +11,9 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script src="."></script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()">')), undefined);
-      assert.deepStrictEqual(inspect(parser('<ruby onclick="alert()"><small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small><ruby onclick="alert()"></small></small>')), [['<small>&lt;ruby onclick="alert()"&gt;</small>'], '</small>']);
+      assert.deepStrictEqual(inspect(parser('<bdi onclick="alert()">')), undefined);
+      assert.deepStrictEqual(inspect(parser('<bdi onclick="alert()"><small>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small><bdi onclick="alert()"></small></small>')), [['<small>&lt;bdi onclick="alert()"&gt;</small>'], '</small>']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl\\"><">a</bdo>')), [['<bdo class="invalid" data-invalid-type="parameter">a</bdo>'], '']);
     });
 
@@ -25,8 +25,8 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small>\n</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>a')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>a</RUBY>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<RUBY>a</small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<RUBY>a</RUBY>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<SMALL>a</bdi>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<SMALL>a</SMALL>')), undefined);
       assert.deepStrictEqual(inspect(parser('</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), undefined);
       assert.deepStrictEqual(inspect(parser('a<small>')), undefined);
