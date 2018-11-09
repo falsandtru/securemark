@@ -3269,7 +3269,7 @@ require = function () {
                 combinator_1.fmap(combinator_1.verify(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
                     text_1.text
-                ]), /^[\n|\]]/)), ']'), ([text]) => util_1.hasTightText(text)), ([text]) => [typed_dom_1.frag(text.textContent.split(/\s/).map(typed_dom_1.text))]),
+                ]), /^[\n\]]/)), ']'), ([text]) => util_1.hasTightText(text)), ([text]) => [typed_dom_1.frag(text.textContent.split(/\s/).map(typed_dom_1.text))]),
                 combinator_1.fmap(combinator_1.verify(combinator_1.surround('{', util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), /^[\n}]/)), '}'), ([text]) => util_1.hasText(text)), ([text]) => [typed_dom_1.frag(text.textContent.split(/\s/).map(typed_dom_1.text))])
             ])), ([text, ruby]) => text.childNodes.length === 1 && text.childNodes.length < ruby.childNodes.length ? [
                 [...text.textContent].map(typed_dom_1.text),
