@@ -4126,7 +4126,19 @@ require = function () {
             const inline_1 = require('../parser/inline');
             const api_1 = require('../parser/api');
             const typed_dom_1 = require('typed-dom');
+            const log = new WeakSet();
             function figure(source) {
+                let skip = true;
+                for (const el of source.children) {
+                    if (log.has(el))
+                        continue;
+                    void log.add(el);
+                    if (!el.matches('figure') && !el.querySelector('figure, .label'))
+                        continue;
+                    skip = false;
+                }
+                if (skip)
+                    return;
                 let base = '0';
                 const indexes = new Map();
                 const exclusions = new Set();
@@ -4187,15 +4199,27 @@ require = function () {
             exports.annotation = build('annotation', n => `*${ n }`);
             exports.authority = build('authority', n => `[${ n }]`);
             function build(category, marker) {
-                const memory = new WeakMap();
+                const contents = new WeakMap();
+                const log = new WeakSet();
                 return (source, target) => {
                     const exclusions = new Set(source.querySelectorAll('.example'));
+                    let skip = true;
+                    for (const el of source.children) {
+                        if (log.has(el))
+                            continue;
+                        void log.add(el);
+                        if (exclusions.has(el) || !el.querySelector(`.${ category }`))
+                            continue;
+                        skip = false;
+                    }
+                    if (skip)
+                        return;
                     return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].reduce((acc, ref, i) => {
                         if (exclusions.has(ref.closest('.example')))
                             return acc;
-                        if (!memory.has(ref) && ref.querySelector('a'))
+                        if (!contents.has(ref) && ref.querySelector('a'))
                             return acc;
-                        void memory.set(ref, memory.get(ref) || [...ref.childNodes]);
+                        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }-ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
@@ -4216,7 +4240,7 @@ require = function () {
                             }, marker(refIndex)));
                         } else {
                             void acc.set(title, typed_dom_1.html('li', { id: defId }, [
-                                ...memory.get(ref),
+                                ...contents.get(ref),
                                 typed_dom_1.html('sup', [typed_dom_1.html('a', {
                                         href: `#${ refId }`,
                                         rel: 'noopener'
