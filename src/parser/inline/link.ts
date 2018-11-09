@@ -11,10 +11,9 @@ const attributes: Record<string, Array<string | undefined>> = {
 
 export const link: LinkParser = subline(bind(build(() =>
   sequence<LinkParser>([
-    subline(verify(
-      fmap(
-        surround(/^\[(?=\]|\S.*?\]\(.*\))/, compress(some(union([inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false),
-        ns => [frag(ns)]),
+    verify(fmap(
+      surround(/^\[(?=\]|\S.*?\]\(.*\))/, compress(some(union([inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false),
+      ns => [frag(ns)]),
       ([text]) => {
         if (hasMedia(text)) {
           void text.querySelectorAll('a > .media')
@@ -29,10 +28,10 @@ export const link: LinkParser = subline(bind(build(() =>
         }
         assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
         return true;
-      })),
-    subline(fmap(
+      }),
+    fmap(
       surround('(', inits<LinkParser.ParamParser>([uri, some(compress(attribute)),]), /^ ?\)/, false),
-      ts => [frag(ts)])),
+      ts => [frag(ts)]),
   ])),
   ([text, param], rest) => {
     const [INSECURE_URL = '', ...args]: string[] = [...param.childNodes].map(t => t.textContent!);
