@@ -11,14 +11,14 @@ export const authority = build('authority', n => `[${n}]`);
 
 function build(category: string, marker: (index: number) => string): (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => void {
   assert(category.match(/^[a-z]+$/));
-  const memory = new WeakMap<HTMLElement, Node[]>();
+  const contents = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => {
     const exclusions = new Set(source.querySelectorAll('.example'));
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
         if (exclusions.has(ref.closest('.example')!)) return acc;
-        if (!memory.has(ref) && ref.querySelector('a')) return acc;
-        void memory.set(ref, memory.get(ref) || [...ref.childNodes]);
+        if (!contents.has(ref) && ref.querySelector('a')) return acc;
+        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         const refIndex = i + 1;
         const refId = ref.id || `${category}-ref:${i + 1}`;
         const title = ref.title || text(ref);
@@ -35,7 +35,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
         }
         else {
           void acc.set(title, html('li', { id: defId }, [
-            ...memory.get(ref)!,
+            ...contents.get(ref)!,
             html('sup', [
               html('a', { href: `#${refId}`, rel: 'noopener' }, marker(refIndex)),
             ])
