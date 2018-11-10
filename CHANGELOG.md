@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.88.3
+
+- Micro refactoring.
+
 ## 0.88.2
 
 - Enable HTML entity syntax with ruby part of ruby syntax.
