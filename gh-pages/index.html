@@ -136,14 +136,23 @@
 </script>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
+    Safe: {
+      allow: {
+        require: 'none',
+      },
+    },
     CommonHTML: {
       matchFontHeight: false,
     },
     messageStyle: 'none',
     skipStartupTypeset: true,
+    extensions: ['TeX/AMScd.js', 'TeX/mhchem.js', 'Safe.js'],
+    TeX: {
+      mhchem: { legacy: false }
+    },
   });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML,Safe"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML,Safe"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.0/purify.js"></script>
 <script src="/securemark/assets/js/lib/securemark.js"></script>
 
