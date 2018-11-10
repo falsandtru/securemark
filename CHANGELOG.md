@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.88.2
+
+- Enable HTML entity syntax with ruby part of ruby syntax.
+
 ## 0.88.1
 
 - Fix ruby parser.
@@ -7,7 +11,7 @@
 ## 0.88.0
 
 - Add ruby syntax.
-- Remove `ruby`, `rt`, and `rp` html tags.
+- Remove `ruby`, `rt`, and `rp` HTML tags.
 - Disallow linebreaks in authority syntax.
 
 ## 0.87.1

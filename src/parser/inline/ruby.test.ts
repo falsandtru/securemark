@@ -34,7 +34,7 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser('[ABC]{ b }')), [['<ruby>A<rt></rt>B<rp>(</rp><rt>b</rt><rp>)</rp>C<rt></rt></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[ABC]{a  c}')), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp>B<rt></rt>C<rp>(</rp><rt>c</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[東方]{とう ほう}')), [['<ruby>東<rp>(</rp><rt>とう</rt><rp>)</rp>方<rp>(</rp><rt>ほう</rt><rp>)</rp></ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('[&amp;]{&amp;}')), [['<ruby>&amp;<rp>(</rp><rt>&amp;amp;</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[&amp;]{&amp;}')), [['<ruby>&amp;<rp>(</rp><rt>&amp;</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[*A*]{*a*}')), [['<ruby>*A*<rp>(</rp><rt>*a*</rt><rp>)</rp></ruby>'], '']);
     });
 
