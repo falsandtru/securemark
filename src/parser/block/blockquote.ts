@@ -22,7 +22,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
       some(contentline, opener),
       convert(
         unindent,
-        fmap(some(autolink), ns => [html('pre', { class: 'quote' }, ns)]))),
+        fmap(some(autolink), ns => [html('pre', ns)]))),
   ]))),
   ns => [html('blockquote', ns)]);
 

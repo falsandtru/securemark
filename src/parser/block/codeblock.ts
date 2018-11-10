@@ -17,6 +17,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, match(
     assert(rest === '');
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
     if (lang) {
+      void el.classList.add('code');
       void el.classList.add(`language-${lang.toLowerCase()}`);
       void el.setAttribute('data-lang', lang);
     }

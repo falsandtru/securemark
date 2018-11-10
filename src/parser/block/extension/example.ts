@@ -9,12 +9,12 @@ import { html } from 'typed-dom';
 export const segment: ExtensionParser.ExampleParser = block(build(() => segment_));
 
 export const segment_: ExtensionParser.ExampleParser = block(focus(
-  /^(~{3,})example\/(?:markdown|math)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,
+  /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
 export const example: ExtensionParser.ExampleParser = block(rewrite(segment, suppress(union([
   match(
-    /^(~{3,})example\/markdown[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/,
+    /^(~{3,})example\/markdown[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/,
     ([, , body], rest) => {
       const view = html('div', [parse(body.slice(1, -1))]);
       const annotation = html('ol');
@@ -29,7 +29,7 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, sup
       ])], rest];
     }),
   match(
-    /^(~{3,})example\/math[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/,
+    /^(~{3,})example\/math[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/,
     ([, , body], rest) =>
       [[html('aside', { class: 'example', 'data-type': 'math' }, [
         html('pre', body.slice(1, -1)),
