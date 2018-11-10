@@ -9,10 +9,11 @@ export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
     case 1:
       return parsers[0];
     default:
+      let ps: S;
       return source => {
         const result = parsers[0](source);
         assert(validate(source, result));
-        if (!result) return union(parsers.slice(1))(source);
+        if (!result) return union(ps = ps || parsers.slice(1) as S)(source);
         return exec(result).length < source.length
           ? result
           : undefined;

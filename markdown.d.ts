@@ -440,7 +440,7 @@ export namespace MarkdownParser {
     export namespace RubyParser {
       export interface TextParser extends
         Inline<'ruby/text'>,
-        Parser<DocumentFragment, [
+        Parser<Array<HTMLElement | Text>, [
           HTMLEntityParser,
           SourceParser.TextParser
         ]> {

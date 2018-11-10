@@ -73,18 +73,18 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
       ]),
       ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) =>
         [[html('figure',
-          {
-            'data-label': label.getAttribute('data-label')!,
-            'data-group': label.getAttribute('data-label')!.split('-', 1)[0],
-            ...(label.getAttribute('data-label')!.match(/^[^-]+-\d.*\.0$/)
-              ? { style: 'display: none;' }
-              : {}),
-          },
-          [
-            html('div', { class: 'figcontent' }, [content]),
-            html('span', { class: 'figindex' }),
-            html('figcaption', caption)
-          ])
+            {
+              'data-label': label.getAttribute('data-label')!,
+              'data-group': label.getAttribute('data-label')!.split('-', 1)[0],
+              ...(label.getAttribute('data-label')!.match(/^[^-]+-\d.*\.0$/)
+                ? { style: 'display: none;' }
+                : {}),
+            },
+            [
+              html('div', { class: 'figcontent' }, [content]),
+              html('span', { class: 'figindex' }),
+              html('figcaption', caption)
+            ])
         ], rest])
       (`${note}\n${body.slice(0, -1)}`)),
   ([el]) =>

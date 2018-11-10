@@ -6,13 +6,14 @@ import { bind } from '../../control/monad/bind';
 export function inits<P extends Parser<any, any>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
 export function inits<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
   assert(parsers.every(f => !!f));
+  let ps: S;
   return parsers.length < 2
     ? union(parsers)
     : bind(parsers[0], (rs, rest) =>
         union([
           sequence([
             () => [rs, rest],
-            inits(parsers.slice(1)),
+            inits(ps = ps || parsers.slice(1) as S),
           ]),
           () => [rs, rest]
         ])(` ${rest}`));

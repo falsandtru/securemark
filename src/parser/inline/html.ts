@@ -26,8 +26,8 @@ export const html: HTMLParser = match(
             ts => [frag(ts)]),
           surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
         ]),
-        ([args, ...ns]: [DocumentFragment, ...Node[]]) =>
-          [elem(tag as 'span', [...args.childNodes].map(t => t.textContent!), ns)]),
+        ([args, ...contents]) =>
+          [elem(tag as 'span', [...args.childNodes].map(t => t.textContent!), contents)]),
       ([el]) => hasText(el))
       (source);
   });
