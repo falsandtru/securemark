@@ -1179,13 +1179,14 @@ require = function () {
             const sequence_1 = require('./sequence');
             const bind_1 = require('../../control/monad/bind');
             function inits(parsers) {
+                let ps;
                 return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs, rest) => union_1.union([
                     sequence_1.sequence([
                         () => [
                             rs,
                             rest
                         ],
-                        inits(parsers.slice(1))
+                        inits(ps = ps || parsers.slice(1))
                     ]),
                     () => [
                         rs,
@@ -1209,7 +1210,8 @@ require = function () {
             const bind_1 = require('../../control/monad/bind');
             const concat_1 = require('spica/concat');
             function sequence(parsers) {
-                return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs1, rest) => bind_1.bind(sequence(parsers.slice(1)), (rs2, rest) => [
+                let ps;
+                return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs1, rest) => bind_1.bind(sequence(ps = ps || parsers.slice(1)), (rs2, rest) => [
                     concat_1.concat(rs1, rs2),
                     rest
                 ])(rest));
@@ -1308,10 +1310,11 @@ require = function () {
                 case 1:
                     return parsers[0];
                 default:
+                    let ps;
                     return source => {
                         const result = parsers[0](source);
                         if (!result)
-                            return union(parsers.slice(1))(source);
+                            return union(ps = ps || parsers.slice(1))(source);
                         return parser_1.exec(result).length < source.length ? result : undefined;
                     };
                 }
@@ -2969,7 +2972,7 @@ require = function () {
                 return combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
                     combinator_1.fmap(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.compress(attribute)), /^ ?>/, false), ts => [typed_dom_1.frag(ts)]),
                     combinator_1.surround(``, util_1.compress(combinator_1.some(inline_1.inline, `</${ tag }>`)), `</${ tag }>`)
-                ]), ([args, ...ns]) => [elem(tag, [...args.childNodes].map(t => t.textContent), ns)]), ([el]) => util_1.hasText(el))(source);
+                ]), ([args, ...contents]) => [elem(tag, [...args.childNodes].map(t => t.textContent), contents)]), ([el]) => util_1.hasText(el))(source);
             });
             const attribute = combinator_1.subline(combinator_1.fmap(combinator_1.surround(' ', combinator_1.inits([
                 combinator_1.focus(/^[a-z]+(?=[= >])/, util_1.compress(combinator_1.some(unescapable_1.unescsource, /^[^a-z]/))),
@@ -3269,17 +3272,17 @@ require = function () {
                 combinator_1.fmap(combinator_1.verify(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
                     text_1.text
-                ]), /^[\n\]]/)), ']'), ([text]) => util_1.hasTightText(text)), ([text]) => [typed_dom_1.frag(text.textContent.split(/\s/).map(typed_dom_1.text))]),
+                ]), /^[\n\]]/)), ']'), ([text]) => util_1.hasTightText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)]),
                 combinator_1.fmap(combinator_1.verify(combinator_1.surround('{', util_1.compress(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
                     text_1.text
-                ]), /^[\n}]/)), '}'), ([text]) => util_1.hasText(text)), ([text]) => [typed_dom_1.frag(text.textContent.split(/\s/).map(typed_dom_1.text))])
-            ])), ([text, ruby]) => text.childNodes.length === 1 && text.childNodes.length < ruby.childNodes.length ? [
-                [...text.textContent].map(typed_dom_1.text),
-                [...ruby.childNodes]
+                ]), /^[\n}]/)), '}'), ([text]) => util_1.hasText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)])
+            ])), ([text, ruby]) => text.length === 1 && text.length < ruby.length ? [
+                [...typed_dom_1.frag(text).textContent].map(typed_dom_1.text),
+                ruby
             ] : [
-                [...text.childNodes],
-                [...ruby.childNodes]
+                text,
+                ruby
             ]), ([text, ruby], rest) => [
                 [typed_dom_1.html('ruby', text.reduce((acc, _, i) => concat_1.concat(concat_1.concat(acc, [text[i]]), i < ruby.length && ruby[i].textContent.trim() !== '' ? [
                         typed_dom_1.html('rp', '('),
