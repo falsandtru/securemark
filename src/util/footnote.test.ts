@@ -125,6 +125,10 @@ describe('Unit: util/footnote', () => {
             ]),
           ]).outerHTML);
       }
+      annotation(parse(''), target);
+      assert.deepStrictEqual(
+        target.outerHTML,
+        html('ol').outerHTML);
     });
 
   });
