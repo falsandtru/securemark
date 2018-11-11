@@ -1,5 +1,5 @@
 ﻿import { UListParser, ListItemParser } from '../block';
-import { union, inits, some, fmap, surround, verify, block, line, rewrite, indent, trim, build } from '../../combinator';
+import { union, inits, some, fmap, surround, verify, block, line, rewrite, indent, trim, lazy } from '../../combinator';
 import { contentline } from '../source/line';
 import { olist_ } from './olist';
 import { ilist } from './ilist';
@@ -8,7 +8,7 @@ import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, frag } from 'typed-dom';
 
-export const ulist: UListParser = block(fmap<UListParser>(build(() =>
+export const ulist: UListParser = block(fmap<UListParser>(lazy(() =>
   some(union([
     fmap(
       inits<ListItemParser>([

@@ -1,11 +1,11 @@
 ﻿import { CodeBlockParser } from '../block';
-import { some, match, block, focus, rewrite, build, eval } from '../../combinator';
+import { some, match, block, focus, rewrite, lazy, eval } from '../../combinator';
 import { escsource } from '../source/escapable';
 import '../source/unescapable';
 import { stringify } from '../util';
 import { html } from 'typed-dom';
 
-export const segment: CodeBlockParser = block(build(() => segment_));
+export const segment: CodeBlockParser = block(lazy(() => segment_));
 
 export const segment_: CodeBlockParser = block(focus(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,

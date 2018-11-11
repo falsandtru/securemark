@@ -1,12 +1,12 @@
 ﻿import { RubyParser } from '../inline';
-import { union, sequence, some, fmap, bind, surround, subline, verify, build } from '../../combinator';
+import { union, sequence, some, fmap, bind, surround, subline, verify, lazy } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text } from '../source/text';
 import { compress, hasText, hasTightText } from '../util';
 import { concat } from 'spica/concat';
 import { html, text as txt, frag } from 'typed-dom';
 
-export const ruby: RubyParser = subline(bind(fmap(build(() =>
+export const ruby: RubyParser = subline(bind(fmap(lazy(() =>
   sequence<RubyParser>([
     fmap(verify(
       surround('[', compress(some(union([htmlentity, text]), /^[\n\]]/)), ']'),

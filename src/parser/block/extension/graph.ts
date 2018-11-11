@@ -1,9 +1,9 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, match, block, focus, rewrite, build } from '../../../combinator';
+import { union, match, block, focus, rewrite, lazy } from '../../../combinator';
 import '../../source/unescapable';
 import { html } from 'typed-dom';
 
-export const segment: ExtensionParser.GraphParser = block(build(() => segment_));
+export const segment: ExtensionParser.GraphParser = block(lazy(() => segment_));
 
 export const segment_: ExtensionParser.GraphParser = block(union([
   focus(

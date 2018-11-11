@@ -1,12 +1,12 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, fmap, bind, surround, contract, block, line, focus, rewrite, trim, build } from '../../combinator';
+import { union, sequence, some, fmap, bind, surround, contract, block, line, focus, rewrite, trim, lazy } from '../../combinator';
 import { contentline } from '../source/line';
 import { incell } from '../inblock';
 import { squash, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, frag, text } from 'typed-dom';
 
-export const table: TableParser = block(fmap(build(() =>
+export const table: TableParser = block(fmap(lazy(() =>
   sequence<TableParser>([
     row(cell(data), false),
     row(cell(align), true),

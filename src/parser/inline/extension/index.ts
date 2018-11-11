@@ -1,11 +1,11 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, fmap, surround, verify, subline, rewrite, convert, build } from '../../../combinator';
+import { union, some, fmap, surround, verify, subline, rewrite, convert, lazy } from '../../../combinator';
 import { link } from '../link';
 import { defineIndex } from '../../block/indexer';
 import { startsWithTightText, hasMedia } from '../../util';
 
 export const index: ExtensionParser.IndexParser = subline(verify(
-  fmap(build(() =>
+  fmap(lazy(() =>
     surround(
       '[#',
       rewrite(

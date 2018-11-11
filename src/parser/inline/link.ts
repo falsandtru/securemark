@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, sequence, some, fmap, bind, match, surround, subline, focus, verify, build } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, subline, focus, verify, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { compress, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
@@ -9,7 +9,7 @@ const attributes: Record<string, Array<string | undefined>> = {
   nofollow: [undefined],
 };
 
-export const link: LinkParser = subline(bind(build(() =>
+export const link: LinkParser = subline(bind(lazy(() =>
   sequence<LinkParser>([
     verify(fmap(
       surround(/^\[(?=\]|\S.*?\]{.*})/, compress(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
@@ -70,7 +70,7 @@ export const uri: LinkParser.ParamParser.UriParser = subline(match(
       flag === ' ' ? /^\s/ : /^[\s}]/))
       (rest)));
 
-export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(build(() => union([
+export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(lazy(() => union([
   fmap(
     surround('(', some(union([bracket, unescsource]), /^[\s\)]/), ')', false),
     ts => [text('('), ...ts, text(')')]),

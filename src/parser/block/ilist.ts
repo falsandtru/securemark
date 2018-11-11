@@ -1,5 +1,5 @@
 ﻿import { IListParser, ListItemParser } from '../block';
-import { union, inits, some, fmap, surround, verify, block, line, indent, rewrite, trim, build, eval } from '../../combinator';
+import { union, inits, some, fmap, surround, verify, block, line, indent, rewrite, trim, lazy, eval } from '../../combinator';
 import { contentline } from '../source/line';
 import { ulist } from './ulist';
 import { olist_ } from './olist';
@@ -7,7 +7,7 @@ import { compress, hasMedia } from '../util';
 import { html, frag } from 'typed-dom';
 import { inblock } from '../inblock';
 
-export const ilist: IListParser = block(fmap<IListParser>(build(() =>
+export const ilist: IListParser = block(fmap<IListParser>(lazy(() =>
   some(union([
     fmap(
       inits<ListItemParser>([

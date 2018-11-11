@@ -16,4 +16,4 @@ export * from './combinator/control/manipulation/indent';
 export * from './combinator/control/manipulation/surround';
 export * from './combinator/control/manipulation/match';
 export * from './combinator/control/manipulation/trim';
-export * from './combinator/control/manipulation/build';
+export * from './combinator/control/manipulation/lazy';

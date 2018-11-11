@@ -1,12 +1,12 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, match, block, focus, rewrite, eval, build } from '../../../combinator';
+import { union, match, block, focus, rewrite, eval, lazy } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { suppress } from '../../util';
 import { figure, footnote } from '../../../util';
 import { html } from 'typed-dom';
 
-export const segment: ExtensionParser.ExampleParser = block(build(() => segment_));
+export const segment: ExtensionParser.ExampleParser = block(lazy(() => segment_));
 
 export const segment_: ExtensionParser.ExampleParser = block(focus(
   /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,

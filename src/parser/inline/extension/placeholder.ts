@@ -1,9 +1,9 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, fmap, surround, validate, subline, build, eval } from '../../../combinator';
+import { union, some, fmap, surround, validate, subline, lazy, eval } from '../../../combinator';
 import { html } from 'typed-dom';
 
 // Already used symbols: !@$&*<
-export const placeholder: ExtensionParser.PlaceholderParser = subline(fmap(build(() =>
+export const placeholder: ExtensionParser.PlaceholderParser = subline(fmap(lazy(() =>
   surround(
     '[',
     validate(/^[~^@](?!\])/, some(union<ExtensionParser.PlaceholderParser>([inline]), /^[\n\]]/)),

@@ -1,19 +1,19 @@
 ﻿import { BlockquoteParser } from '../block';
-import { Parser, union, some, fmap, surround, block, rewrite, convert, build } from '../../combinator';
+import { Parser, union, some, fmap, surround, block, rewrite, convert, lazy } from '../../combinator';
 import { contentline } from '../source/line';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { suppress } from '../util';
 import { html } from 'typed-dom';
 
-export const blockquote: BlockquoteParser = block(build(() => union([
+export const blockquote: BlockquoteParser = block(lazy(() => union([
   surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
   surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, suppress(mdquote), ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
 
-const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
+const textquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
   some(union([
     rewrite(
       indent,
@@ -26,7 +26,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
   ]))),
   ns => [html('blockquote', ns)]);
 
-const mdquote: Parser<HTMLQuoteElement, any> = fmap(build(() =>
+const mdquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
   some(union([
     rewrite(
       indent,

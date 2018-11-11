@@ -1,10 +1,10 @@
 ﻿import { AutolinkParser } from '../../inblock';
-import { union, some, match, verify, subline, focus, build } from '../../../combinator';
+import { union, some, match, verify, subline, focus, lazy } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { compress } from '../../util';
 import { html } from 'typed-dom';
 
-export const hashtag: AutolinkParser.HashtagParser = verify(build(() =>
+export const hashtag: AutolinkParser.HashtagParser = verify(lazy(() =>
   hashtag_),
   (_, rest) => !rest.startsWith('#'));
 

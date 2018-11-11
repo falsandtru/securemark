@@ -1,9 +1,9 @@
 ﻿import { MathBlockParser } from '../block';
-import { match, block, focus, rewrite, build } from '../../combinator';
+import { match, block, focus, rewrite, lazy } from '../../combinator';
 import '../source/unescapable';
 import { html } from 'typed-dom';
 
-export const segment: MathBlockParser = block(build(() => segment_));
+export const segment: MathBlockParser = block(lazy(() => segment_));
 
 export const segment_: MathBlockParser = block(focus(
   /^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/,

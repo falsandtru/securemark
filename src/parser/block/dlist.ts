@@ -1,5 +1,5 @@
 ﻿import { DListParser } from '../block';
-import { union, inits, some, fmap, surround, verify, block, line, rewrite, trim, build } from '../../combinator';
+import { union, inits, some, fmap, surround, verify, block, line, rewrite, trim, lazy } from '../../combinator';
 import { anyline, contentline } from '../source/line';
 import { inblock } from '../inblock';
 import { indexer, defineIndex } from './indexer';
@@ -7,7 +7,7 @@ import { compress, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-export const dlist: DListParser = block(fmap(build(() =>
+export const dlist: DListParser = block(fmap(lazy(() =>
   some(inits<DListParser>([
     some(term),
     some(desc)
@@ -15,7 +15,7 @@ export const dlist: DListParser = block(fmap(build(() =>
   es => [html('dl', fillTrailingDescription(es))]));
 
 const term: DListParser.TermParser = line(rewrite(contentline, verify(
-  fmap<DListParser.TermParser>(build(() =>
+  fmap<DListParser.TermParser>(lazy(() =>
     surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inblock])))), '', false)),
     ns => {
       const dt = html('dt', ns);
@@ -25,7 +25,7 @@ const term: DListParser.TermParser = line(rewrite(contentline, verify(
   ([el]) => !hasMedia(el))));
 
 const desc: DListParser.DescriptionParser = block(
-  fmap<DListParser.DescriptionParser>(build(() =>
+  fmap<DListParser.DescriptionParser>(lazy(() =>
     rewrite(
       surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
       surround(/^:(?=\s|$)|/, compress(trim(some(union([inblock])))), '', false))),
