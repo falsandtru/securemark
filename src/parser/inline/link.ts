@@ -30,7 +30,7 @@ export const link: LinkParser = subline(bind(build(() =>
         return true;
       }),
     fmap(
-      surround('{', inits<LinkParser.ParamParser>([uri, some(compress(attribute)),]), /^ ?}/, false),
+      surround('{', inits<LinkParser.ParamParser>([uri, some(compress(attribute))]), /^ ?}/),
       ts => [frag(ts)]),
   ])),
   ([text, param], rest) => {

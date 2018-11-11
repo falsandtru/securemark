@@ -19,7 +19,7 @@ export const media: MediaParser = subline(bind(
       surround(/^!\[(?=\]|\S.*?\]{.*})/, compress(some(union([text]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
       ns => ns.length === 0 || startsWithTightText(frag(ns))),
       ns => [frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
-    surround('{', inits<MediaParser.ParamParser>([uri, some(compress(attribute)),]), /^ ?}/, false),
+    surround('{', inits<MediaParser.ParamParser>([uri, some(compress(attribute))]), /^ ?}/),
   ]),
   (ts, rest) => {
     const [caption, INSECURE_URL = '', ...args]: string[] = ts.map(t => t.textContent!);

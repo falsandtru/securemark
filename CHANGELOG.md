@@ -3,6 +3,7 @@
 ## 0.90.0
 
 - Refine link, media, and ruby syntax.
+- Disallow link and media syntax having no url.
 
 ## 0.89.0
 
