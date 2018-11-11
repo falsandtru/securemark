@@ -2,9 +2,10 @@
 import { code } from './render/code';
 import { math } from './render/math';
 import { media } from './render/media';
+import { graph } from './render/graph';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
-  opts = { code, math, media: {}, ...opts };
+  opts = { code, math, media: {}, graph: {}, ...opts };
   try {
     switch (true) {
       case target.style.display === 'none':
@@ -29,11 +30,14 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
           : target;
         return void scope.parentElement!.replaceChild(el, scope);
       }
+      case !!opts.graph
+        && target.matches('.graph'):
+        return void graph(target, opts.graph!);
       case target.childNodes.length === 0:
-      case target.matches('pre, .math'):
+      case target.matches('pre, .math, .graph'):
         return;
       default:
-        return void target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .math')
+        return void target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .graph, .math')
           .forEach(el =>
             void render(el, opts));
     }

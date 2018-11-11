@@ -5,6 +5,7 @@ import { table } from '../table';
 import { blockquote } from '../blockquote';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
+import { graph , segment_ as seg_graph } from './graph';
 import { example, segment_ as seg_example } from './example';
 import { inblock } from '../../inblock';
 import { label, media, link, uri } from '../../inline';
@@ -29,6 +30,7 @@ export const segment: FigureParser = block(union([
             union([
               seg_code,
               seg_math,
+              seg_graph,
               seg_example,
               some(contentline, closer(bracket)),
             ]),
@@ -55,6 +57,7 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
             table,
             codeblock,
             mathblock,
+            graph,
             example,
             blockquote,
             line(rewrite(

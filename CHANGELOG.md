@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.89.0
+
+- Add graph syntax.
+
 ## 0.88.4
 
 - Micro refactoring.

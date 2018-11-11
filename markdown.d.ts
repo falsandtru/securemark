@@ -191,6 +191,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         ExtensionParser.FigureParser,
         ExtensionParser.FigureParser,
+        ExtensionParser.GraphParser,
         ExtensionParser.ExampleParser,
         ExtensionParser.PlaceholderParser
       ]> {
@@ -222,6 +223,7 @@ export namespace MarkdownParser {
             TableParser,
             CodeBlockParser,
             MathBlockParser,
+            ExtensionParser.GraphParser,
             ExtensionParser.ExampleParser,
             BlockquoteParser,
             InlineParser.LinkParser, // Take media syntax and convert to link syntax.
@@ -235,6 +237,15 @@ export namespace MarkdownParser {
             InblockParser
           ]> {
         }
+      }
+      export interface GraphParser extends
+        // ~~~graph
+        // ~~~
+        Block<'extension/graph'>,
+        Parser<HTMLDivElement, [
+          SourceParser.UnescapableSourceParser,
+          SourceParser.UnescapableSourceParser
+        ]> {
       }
       export interface ExampleParser extends
         // ~~~example

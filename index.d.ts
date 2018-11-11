@@ -26,6 +26,11 @@ export interface RenderingOptions {
     audio?: (url: URL, alt: string) => HTMLAudioElement | undefined;
     image?: (url: URL, alt: string) => HTMLImageElement;
   };
+  graph?: {
+    sequence?: (target: HTMLElement) => void;
+    flowchart?: (target: HTMLElement) => void;
+    graphviz?: (target: HTMLElement) => void;
+  };
 }
 
 import { Cache } from 'spica/cache';
