@@ -242,10 +242,7 @@ export namespace MarkdownParser {
         // ~~~graph
         // ~~~
         Block<'extension/graph'>,
-        Parser<HTMLDivElement, [
-          SourceParser.UnescapableSourceParser,
-          SourceParser.UnescapableSourceParser
-        ]> {
+        Parser<HTMLPreElement, SourceParser.UnescapableSourceParser[]> {
       }
       export interface ExampleParser extends
         // ~~~example
