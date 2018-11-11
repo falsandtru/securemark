@@ -13,7 +13,7 @@ export const ruby: RubyParser = subline(bind(fmap(build(() =>
       ([text]) => hasTightText(text)),
       ([text]) => [text.textContent!.split(/\s/).map(txt)]),
     fmap(verify(
-      surround('{', compress(some(union([htmlentity, text]), /^[\n}]/)), '}'),
+      surround('(', compress(some(union([htmlentity, text]), /^[\n)]/)), ')'),
       ([text]) => hasText(text)),
       ([text]) => [text.textContent!.split(/\s/).map(txt)]),
   ])),

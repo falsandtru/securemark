@@ -20,7 +20,7 @@ describe('Unit: parser/inblock/authority', () => {
       assert.deepStrictEqual(inspect(parser('[[<wbr>]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a\nb]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[[![](a)]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[![]{a}]]')), undefined);
       assert.deepStrictEqual(inspect(parser('a[[a]]')), undefined);
     });
 

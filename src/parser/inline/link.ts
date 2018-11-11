@@ -12,7 +12,7 @@ const attributes: Record<string, Array<string | undefined>> = {
 export const link: LinkParser = subline(bind(build(() =>
   sequence<LinkParser>([
     verify(fmap(
-      surround(/^\[(?=\]|\S.*?\]\(.*\))/, compress(some(union([inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false),
+      surround(/^\[(?=\]|\S.*?\]{.*})/, compress(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
       ns => [frag(ns)]),
       ([text]) => {
         if (hasMedia(text)) {
@@ -30,7 +30,7 @@ export const link: LinkParser = subline(bind(build(() =>
         return true;
       }),
     fmap(
-      surround('(', inits<LinkParser.ParamParser>([uri, some(compress(attribute)),]), /^ ?\)/, false),
+      surround('{', inits<LinkParser.ParamParser>([uri, some(compress(attribute)),]), /^ ?}/, false),
       ts => [frag(ts)]),
   ])),
   ([text, param], rest) => {
@@ -67,31 +67,31 @@ export const uri: LinkParser.ParamParser.UriParser = subline(match(
   ([flag], rest) =>
     compress(some(
       union<LinkParser.ParamParser.UriParser>([bracket, unescsource]),
-      flag === ' ' ? /^\s/ : /^\s|^\)/))
+      flag === ' ' ? /^\s/ : /^[\s}]/))
       (rest)));
 
 export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(build(() => union([
   fmap(
-    surround('(', some(union([bracket, unescsource]), /^[\)\s]/), ')', false),
+    surround('(', some(union([bracket, unescsource]), /^[\s\)]/), ')', false),
     ts => [text('('), ...ts, text(')')]),
   fmap(
-    surround('[', some(union([bracket, unescsource]), /^[\]\s]/), ']', false),
+    surround('[', some(union([bracket, unescsource]), /^[\s\]]/), ']', false),
     ts => [text('['), ...ts, text(']')]),
   fmap(
-    surround('{', some(union([bracket, unescsource]), /^[\}\s]/), '}', false),
+    surround('{', some(union([bracket, unescsource]), /^[\s\}]/), '}', false),
     ts => [text('{'), ...ts, text('}')]),
   fmap(
-    surround('<', some(union([bracket, unescsource]), /^[\>\s]/), '>', false),
+    surround('<', some(union([bracket, unescsource]), /^[\s\>]/), '>', false),
     ts => [text('<'), ...ts, text('>')]),
   fmap(
-    surround('"', some(union([bracket, unescsource]), /^[\"\s]/), '"', false),
+    surround('"', some(union([bracket, unescsource]), /^[\s\"]/), '"', false),
     ts => [text('"'), ...ts, text('"')]),
 ])));
 
 export const attribute: LinkParser.ParamParser.AttributeParser = subline(
   surround(
     ' ',
-    focus(/^[a-z]+(?:=[^\s)]+)?/, some(union([unescsource]))),
+    focus(/^[a-z]+(?:=[^\s}]+)?/, some(union([unescsource]))),
     ''));
 
 export function check(

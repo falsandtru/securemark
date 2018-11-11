@@ -12,7 +12,7 @@ export const label: ExtensionParser.LabelParser = subline(verify(
       focus(
         /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
         convert(
-          query => `[${query}](#)`,
+          query => `[${query}]{#}`,
           union([link]))),
       ']'),
     ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()!, href: undefined })]),

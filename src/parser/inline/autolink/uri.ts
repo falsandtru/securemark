@@ -13,7 +13,7 @@ export const uri: AutolinkParser.UriParser = subline(union([
     verify(rewrite(build(() =>
       some(union([ipv6, bracket, some(unescsource, closer)]))),
       convert(
-        source => `[](${address(source)}${attribute(source)})`,
+        source => `[]{${address(source)}${attribute(source)}}`,
         link)),
       ([node]) => node instanceof HTMLAnchorElement),
     ''),
@@ -22,7 +22,7 @@ export const uri: AutolinkParser.UriParser = subline(union([
     verify(rewrite(build(() =>
       some(union([ipv6, bracket, some(unescsource, closer)]))),
       convert(
-        source => `[![](${address(source)})](${address(source)}${attribute(source)})`,
+        source => `[![]{${address(source)}}]{${address(source)}${attribute(source)}}`,
         link)),
       ([node]) => node instanceof HTMLAnchorElement),
     ''),

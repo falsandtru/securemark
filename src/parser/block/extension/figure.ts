@@ -63,7 +63,7 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
             line(rewrite(
               media,
               convert(
-                source => `[${source}]( ${eval(media(source))[0].getAttribute('data-src') || '#'} )`,
+                source => `[${source}]{ ${eval(media(source))[0].getAttribute('data-src') || '#'} }`,
                 link))),
             line(contract('!', uri, ([node]) => node instanceof Element)),
           ])),

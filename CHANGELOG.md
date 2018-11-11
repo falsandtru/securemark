@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.90.0
+
+- Refine link, media, and ruby syntax.
+
 ## 0.89.0
 
 - Add graph syntax.

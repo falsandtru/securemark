@@ -11,7 +11,7 @@ export const index: ExtensionParser.IndexParser = subline(verify(
       rewrite(
         some(inline, /^[\n\]]/),
         convert(
-          query => `[${query}]()`,
+          query => `[${query}]{}`,
           union([link]))),
       ']')),
     ([el]) => {

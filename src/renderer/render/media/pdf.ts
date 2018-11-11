@@ -21,6 +21,6 @@ export function pdf(url: URL): HTMLElement | undefined {
         }),
       ]),
       html('div', { style: 'word-wrap: break-word;' },
-        parse(`**[]( ${url.href} )**`).firstElementChild!.childNodes),
+        parse(`**[]{ ${url.href} }**`).firstElementChild!.childNodes),
     ]));
 }

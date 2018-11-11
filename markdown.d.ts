@@ -394,7 +394,7 @@ export namespace MarkdownParser {
       }
     }
     export interface LinkParser extends
-      // [abc](uri)
+      // [abc]{uri}
       Inline<'link'>,
       Parser<HTMLAnchorElement, [
         LinkParser.TextParser,
@@ -441,7 +441,7 @@ export namespace MarkdownParser {
       }
     }
     export interface RubyParser extends
-      // [AB]{a b}
+      // [AB](a b)
       Inline<'ruby'>,
       Parser<HTMLElement, [
         RubyParser.TextParser,
@@ -515,7 +515,7 @@ export namespace MarkdownParser {
       ]> {
     }
     export interface MediaParser extends
-      // ![abc](uri)
+      // ![abc]{uri}
       Inline<'media'>,
       Parser<HTMLElement, [
         MediaParser.TextParser,

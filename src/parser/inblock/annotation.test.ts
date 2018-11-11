@@ -18,7 +18,7 @@ describe('Unit: parser/inblock/annotation', () => {
       assert.deepStrictEqual(inspect(parser('((\n))')), undefined);
       assert.deepStrictEqual(inspect(parser('((\\))')), undefined);
       assert.deepStrictEqual(inspect(parser('((<wbr>))')), undefined);
-      assert.deepStrictEqual(inspect(parser('((![](a)))')), undefined);
+      assert.deepStrictEqual(inspect(parser('((![]{a}))')), undefined);
       assert.deepStrictEqual(inspect(parser('a((a))')), undefined);
     });
 
