@@ -185,7 +185,7 @@ gulp.task('site', ['dist'], function () {
   return gulp.src([
     `dist/${pkg.name}.js`,
   ])
-    .pipe(gulp.dest('./gh-pages/assets/js/lib'));
+    .pipe(gulp.dest('./gh-pages/assets/js'));
 });
 
 gulp.task('view', ['site'], function () {
