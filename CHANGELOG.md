@@ -3,7 +3,7 @@
 ## 0.90.0
 
 - Refine link, media, and ruby syntax.
-- Disallow link and media syntax having no url.
+- Disallow link and media syntax having no URL.
 
 ## 0.89.0
 
@@ -273,7 +273,7 @@
 
 ## 0.65.0
 
-- Fix link, media, and url parser.
+- Fix link, media, and URL parser.
   - Don't escape any character by `\`.
 
 ## 0.64.0
@@ -441,7 +441,7 @@
 ## 0.40.0
 
 - Add hashtag syntax.
-- Improve url parser.
+- Improve URL parser.
   - Allow escaped whitespace.
 - Improve account parser.
   - Don't escape URI after `@` symbol.
@@ -449,7 +449,7 @@
 
 ## 0.39.1
 
-- Fix url parser.
+- Fix URL parser.
   - Support IPv6 addresses.
   - Fix rules of trailing symbols detection.
 - Fix escape function.
@@ -466,7 +466,7 @@
 
 ## 0.38.2
 
-- Fix url parser.
+- Fix URL parser.
 
 ## 0.38.1
 
@@ -664,7 +664,7 @@
 
 ## 0.17.1
 
-- Fix url processing.
+- Fix URL processing.
 
 ## 0.17.0
 
