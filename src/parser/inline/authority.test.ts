@@ -2,7 +2,7 @@
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/inblock/authority', () => {
+describe('Unit: parser/inline/authority', () => {
   describe('authority', () => {
     const parser = some(authority);
 
@@ -21,6 +21,7 @@ describe('Unit: parser/inblock/authority', () => {
       assert.deepStrictEqual(inspect(parser('[[a\nb]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a\\\nb]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[![]{a}]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[[[a]]]]')), undefined);
       assert.deepStrictEqual(inspect(parser('a[[a]]')), undefined);
     });
 
@@ -36,7 +37,6 @@ describe('Unit: parser/inblock/authority', () => {
       assert.deepStrictEqual(inspect(parser('[[<a>]]')), [['<sup class="authority">&lt;a&gt;</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[`a`]]')), [['<sup class="authority"><code data-src="`a`">a</code></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]]')), [['<sup class="authority">[a]</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[[[a]]]]')), [['<sup class="authority">[[a]]</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[@a]]')), [['<sup class="authority"><a class="account" rel="noopener">@a</a></sup>'], '']);
     });
 

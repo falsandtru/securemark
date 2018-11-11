@@ -4,6 +4,7 @@
 
 - Refine link, media, and ruby syntax.
 - Disallow link and media syntax having no URL.
+- Change annotation and authority syntax from inblock-level syntax to inline-level syntax.
 
 ## 0.89.0
 

@@ -23,6 +23,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('<small>*<bdi>a</bdi>*</small>')), [['<small><em><bdi>a</bdi></em></small>'], '']);
       assert.deepStrictEqual(inspect(parser('``a`')), [['`', '`', 'a', '`'], '']);
       assert.deepStrictEqual(inspect(parser('[::1]')), [['[::1]'], '']);
+      assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation">b</sup></em>'], '']);
     });
 
     it('link', () => {

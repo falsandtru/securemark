@@ -56,7 +56,11 @@ export function hasMedia(node: HTMLElement | DocumentFragment): boolean {
 }
 
 export function hasLink(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('a');
+  return !!node.querySelector('a, .annotation, .authority');
+}
+
+export function hasAnnotationOrAuthority(node: HTMLElement | DocumentFragment): boolean {
+  return !!node.querySelector('.annotation, .authority');
 }
 
 export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {

@@ -2,7 +2,7 @@
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
-describe('Unit: parser/inblock/annotation', () => {
+describe('Unit: parser/inline/annotation', () => {
   describe('annotation', () => {
     const parser = some(annotation);
 
@@ -19,6 +19,7 @@ describe('Unit: parser/inblock/annotation', () => {
       assert.deepStrictEqual(inspect(parser('((\\))')), undefined);
       assert.deepStrictEqual(inspect(parser('((<wbr>))')), undefined);
       assert.deepStrictEqual(inspect(parser('((![]{a}))')), undefined);
+      assert.deepStrictEqual(inspect(parser('((((a))))')), undefined);
       assert.deepStrictEqual(inspect(parser('a((a))')), undefined);
     });
 
@@ -35,7 +36,6 @@ describe('Unit: parser/inblock/annotation', () => {
       assert.deepStrictEqual(inspect(parser('((<a>))')), [['<sup class="annotation">&lt;a&gt;</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((`a`))')), [['<sup class="annotation"><code data-src="`a`">a</code></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation">((a))</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((@a))')), [['<sup class="annotation"><a class="account" rel="noopener">@a</a></sup>'], '']);
     });
 

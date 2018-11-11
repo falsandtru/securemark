@@ -289,30 +289,12 @@ export namespace MarkdownParser {
   export interface InblockParser extends
     Markdown<'inblock'>,
     Parser<HTMLElement | Text, [
-      InblockParser.AnnotationParser,
-      InblockParser.AuthorityParser,
       InblockParser.AutolinkParser,
       InlineParser, InlineParser
     ]> {
   }
   export namespace InblockParser {
     interface Inblock<T> extends Markdown<['inblock', T]> { }
-    export interface AnnotationParser extends
-      // ((abc))
-      Inblock<'annotation'>,
-      Parser<HTMLElement, [
-        AutolinkParser,
-        InlineParser
-      ]> {
-    }
-    export interface AuthorityParser extends
-      // [[abc]]
-      Inblock<'authority'>,
-      Parser<HTMLElement, [
-        AutolinkParser,
-        InlineParser
-      ]> {
-    }
     export interface AutolinkParser extends
       Inblock<'autolink'>,
       Parser<HTMLAnchorElement | Text, [
@@ -343,6 +325,8 @@ export namespace MarkdownParser {
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
+      InlineParser.AnnotationParser,
+      InlineParser.AuthorityParser,
       InlineParser.ExtensionParser,
       InlineParser.LinkParser,
       InlineParser.RubyParser,
@@ -361,6 +345,20 @@ export namespace MarkdownParser {
   }
   export namespace InlineParser {
     interface Inline<T> extends Markdown<['inline', T]> { }
+    export interface AnnotationParser extends
+      // ((abc))
+      Inline<'annotation'>,
+      Parser<HTMLElement, [
+        InblockParser
+      ]> {
+    }
+    export interface AuthorityParser extends
+      // [[abc]]
+      Inline<'authority'>,
+      Parser<HTMLElement, [
+        InblockParser
+      ]> {
+    }
     export interface ExtensionParser extends
       // [#abc]
       Inline<'extension'>,
