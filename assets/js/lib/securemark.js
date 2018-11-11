@@ -1652,7 +1652,7 @@ require = function () {
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, textquote)),
-                combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, combinator_1.fmap(combinator_1.some(autolink_1.autolink), ns => [typed_dom_1.html('pre', { class: 'quote' }, ns)])))
+                combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, combinator_1.fmap(combinator_1.some(autolink_1.autolink), ns => [typed_dom_1.html('pre', ns)])))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const mdquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, mdquote)),
@@ -1692,6 +1692,7 @@ require = function () {
             exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , lang, notes, body], rest) => {
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
+                    void el.classList.add('code');
                     void el.classList.add(`language-${ lang.toLowerCase() }`);
                     void el.setAttribute('data-lang', lang);
                 }
@@ -1792,12 +1793,12 @@ require = function () {
             const util_2 = require('../../../util');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
             exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, util_1.suppress(combinator_1.union([
-                combinator_1.match(/^(~{3,})example\/markdown[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => {
+                combinator_1.match(/^(~{3,})example\/markdown[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => {
                     const view = typed_dom_1.html('div', [parse_1.parse(body.slice(1, -1))]);
                     const annotation = typed_dom_1.html('ol');
                     const authority = typed_dom_1.html('ol');
@@ -1819,7 +1820,7 @@ require = function () {
                         rest
                     ];
                 }),
-                combinator_1.match(/^(~{3,})example\/math[^\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => [
+                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body], rest) => [
                     [typed_dom_1.html('aside', {
                             class: 'example',
                             'data-type': 'math'
@@ -3710,9 +3711,9 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const media_1 = require('./render/media');
             const code_1 = require('./render/code');
             const math_1 = require('./render/math');
+            const media_1 = require('./render/media');
             function render(target, opts = {}) {
                 opts = Object.assign({
                     code: code_1.code,
@@ -3724,6 +3725,10 @@ require = function () {
                     case target.style.display === 'none':
                     case target.matches('.invalid'):
                         return;
+                    case !!opts.code && target.matches('pre.code') && target.children.length === 0:
+                        return void opts.code(target);
+                    case !!opts.math && target.matches('.math') && target.children.length === 0:
+                        return void opts.math(target);
                     case target.matches('a > .media:not(img)'):
                         return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
                     case !!opts.media && target.matches('img.media:not([src])[data-src]'): {
@@ -3733,12 +3738,11 @@ require = function () {
                             const scope = target.matches('a > .media') && !el.matches('img') ? target.closest('a') : target;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
-                    case !!opts.code && target.matches('pre:not(.quote)') && target.children.length === 0:
-                        return void opts.code(target);
-                    case !!opts.math && target.matches('.math') && target.children.length === 0:
-                        return void opts.math(target);
+                    case target.childNodes.length === 0:
+                    case target.matches('pre, .math'):
+                        return;
                     default:
-                        return void target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre:not(.quote), .math').forEach(el => void render(el, opts));
+                        return void target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre.code, .math').forEach(el => void render(el, opts));
                     }
                 } catch (reason) {
                     console.error(reason);
@@ -4249,20 +4253,8 @@ require = function () {
             exports.authority = build('authority', n => `[${ n }]`);
             function build(category, marker) {
                 const contents = new WeakMap();
-                const log = new WeakSet();
                 return (source, target) => {
                     const exclusions = new Set(source.querySelectorAll('.example'));
-                    let skip = true;
-                    for (const el of source.children) {
-                        if (log.has(el))
-                            continue;
-                        void log.add(el);
-                        if (exclusions.has(el) || !el.querySelector(`.${ category }`))
-                            continue;
-                        skip = false;
-                    }
-                    if (skip)
-                        return;
                     return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].reduce((acc, ref, i) => {
                         if (exclusions.has(ref.closest('.example')))
                             return acc;
