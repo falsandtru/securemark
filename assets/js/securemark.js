@@ -795,16 +795,16 @@ require = function () {
             __export(require('./combinator/control/manipulation/surround'));
             __export(require('./combinator/control/manipulation/match'));
             __export(require('./combinator/control/manipulation/trim'));
-            __export(require('./combinator/control/manipulation/build'));
+            __export(require('./combinator/control/manipulation/lazy'));
         },
         {
             './combinator/control/constraint/block': 21,
             './combinator/control/constraint/contract': 22,
             './combinator/control/constraint/line': 23,
             './combinator/control/constraint/scope': 24,
-            './combinator/control/manipulation/build': 25,
-            './combinator/control/manipulation/convert': 26,
-            './combinator/control/manipulation/indent': 27,
+            './combinator/control/manipulation/convert': 25,
+            './combinator/control/manipulation/indent': 26,
+            './combinator/control/manipulation/lazy': 27,
             './combinator/control/manipulation/match': 28,
             './combinator/control/manipulation/surround': 29,
             './combinator/control/manipulation/trim': 30,
@@ -974,18 +974,6 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function build(builder) {
-                let parser;
-                return source => (parser = parser || builder())(source);
-            }
-            exports.build = build;
-        },
-        {}
-    ],
-    26: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
             function convert(conv, parser) {
                 return source => {
                     if (source === '')
@@ -1001,7 +989,7 @@ require = function () {
         },
         {}
     ],
-    27: [
+    26: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1038,6 +1026,18 @@ require = function () {
             './match': 28,
             './surround': 29
         }
+    ],
+    27: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            function lazy(builder) {
+                let parser;
+                return source => (parser = parser || builder())(source);
+            }
+            exports.lazy = lazy;
+        },
+        {}
     ],
     28: [
         function (require, module, exports) {
@@ -1108,7 +1108,7 @@ require = function () {
             }
             exports.trim = trim;
         },
-        { './convert': 26 }
+        { './convert': 25 }
     ],
     31: [
         function (require, module, exports) {
@@ -1575,7 +1575,7 @@ require = function () {
         },
         {
             '../combinator': 20,
-            './inblock/autolink': 73,
+            './inblock/autolink': 71,
             './inline/autolink': 77,
             './source/unescapable': 102
         }
@@ -1645,16 +1645,16 @@ require = function () {
             const parse_1 = require('../api/parse');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.blockquote = combinator_1.block(combinator_1.build(() => combinator_1.union([
+            exports.blockquote = combinator_1.block(combinator_1.lazy(() => combinator_1.union([
                 combinator_1.surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
                 combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.suppress(mdquote), '')
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
-            const textquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
+            const textquote = combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, textquote)),
                 combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, combinator_1.fmap(combinator_1.some(autolink_1.autolink), ns => [typed_dom_1.html('pre', ns)])))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
-            const mdquote = combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([
+            const mdquote = combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, mdquote)),
                 combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, source => [
                     [parse_1.parse(source)],
@@ -1684,7 +1684,7 @@ require = function () {
             require('../source/unescapable');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
+            exports.segment = combinator_1.block(combinator_1.lazy(() => exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
@@ -1725,11 +1725,11 @@ require = function () {
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            exports.dlist = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.inits([
+            exports.dlist = combinator_1.block(combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ]))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))]));
-            const term = combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround(/^~(?=\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([
+            const term = combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround(/^~(?=\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([
                 indexer_1.indexer,
                 inblock_1.inblock
             ])))), '', false)), ns => {
@@ -1737,7 +1737,7 @@ require = function () {
                 void indexer_1.defineIndex(dt);
                 return [dt];
             }), ([el]) => !util_1.hasMedia(el))));
-            const desc = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.rewrite(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.some(line_1.anyline, /^[~:](?=\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inblock_1.inblock])))), '', false))), ns => [typed_dom_1.html('dd', ns)]), false);
+            const desc = combinator_1.block(combinator_1.fmap(combinator_1.lazy(() => combinator_1.rewrite(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.some(line_1.anyline, /^[~:](?=\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.compress(combinator_1.trim(combinator_1.some(combinator_1.union([inblock_1.inblock])))), '', false))), ns => [typed_dom_1.html('dd', ns)]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
             }
@@ -1796,7 +1796,7 @@ require = function () {
             const util_1 = require('../../util');
             const util_2 = require('../../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
+            exports.segment = combinator_1.block(combinator_1.lazy(() => exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
@@ -1875,7 +1875,7 @@ require = function () {
         },
         {
             '../../../combinator': 20,
-            '../../inline': 76,
+            '../../inline': 74,
             '../../source/line': 100,
             '../codeblock': 51,
             '../extension/example': 54,
@@ -1931,7 +1931,7 @@ require = function () {
                         graph_1.graph,
                         example_1.example,
                         blockquote_1.blockquote,
-                        combinator_1.line(combinator_1.rewrite(inline_1.media, combinator_1.convert(source => `[${ source }]( ${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') || '#' } )`, inline_1.link))),
+                        combinator_1.line(combinator_1.rewrite(inline_1.media, combinator_1.convert(source => `[${ source }]{ ${ combinator_1.eval(inline_1.media(source))[0].getAttribute('data-src') || '#' } }`, inline_1.link))),
                         combinator_1.line(combinator_1.contract('!', inline_1.uri, ([node]) => node instanceof Element))
                     ])),
                     line_1.emptyline,
@@ -1955,7 +1955,7 @@ require = function () {
         {
             '../../../combinator': 20,
             '../../inblock': 70,
-            '../../inline': 76,
+            '../../inline': 74,
             '../../source/line': 100,
             '../../util': 104,
             '../blockquote': 50,
@@ -1975,7 +1975,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             require('../../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
+            exports.segment = combinator_1.block(combinator_1.lazy(() => exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.union([
                 combinator_1.focus(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
                     [],
@@ -2039,7 +2039,7 @@ require = function () {
         },
         {
             '../../../combinator': 20,
-            '../../inline': 76,
+            '../../inline': 74,
             'typed-dom': 13
         }
     ],
@@ -2096,7 +2096,7 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             const inblock_1 = require('../inblock');
-            exports.ilist = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.ilist = combinator_1.block(combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inblock_1.inblock))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))))),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
@@ -2151,7 +2151,7 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            '../inline': 76
+            '../inline': 74
         }
     ],
     63: [
@@ -2161,7 +2161,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.build(() => exports.segment_));
+            exports.segment = combinator_1.block(combinator_1.lazy(() => exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
@@ -2303,7 +2303,7 @@ require = function () {
         },
         {
             '../../../combinator': 20,
-            '../../inline': 76,
+            '../../inline': 74,
             '../../source/line': 100,
             '../../source/unescapable': 102,
             'typed-dom': 13
@@ -2319,7 +2319,7 @@ require = function () {
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            exports.table = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.sequence([
+            exports.table = combinator_1.block(combinator_1.fmap(combinator_1.lazy(() => combinator_1.sequence([
                 row(cell(data), false),
                 row(cell(align), true),
                 combinator_1.some(row(cell(data), false))
@@ -2395,7 +2395,7 @@ require = function () {
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            exports.ulist = combinator_1.block(combinator_1.fmap(combinator_1.build(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.ulist = combinator_1.block(combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.compress(combinator_1.trim(combinator_1.some(inblock_1.inblock))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))))),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist,
@@ -2427,45 +2427,23 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../combinator');
-            const annotation_1 = require('./inblock/annotation');
-            const authority_1 = require('./inblock/authority');
             const autolink_1 = require('./inblock/autolink');
             const inline_1 = require('./inline');
-            const char_1 = require('./source/char');
-            exports.inblock = combinator_1.union([
-                combinator_1.inits([
-                    annotation_1.annotation,
-                    combinator_1.some(char_1.char('#'))
-                ]),
-                combinator_1.inits([
-                    authority_1.authority,
-                    combinator_1.some(char_1.char('#'))
-                ]),
+            exports.inblock = combinator_1.lazy(() => combinator_1.union([
                 autolink_1.autolink,
-                combinator_1.some(inline_1.inline, /^(?:([\[\]\(\)])\1|[0-9a-zA-Z@]?@|\s#\S|\s+\[)/),
+                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|[0-9a-zA-Z@]?@|\s#\S|\s+\[)/),
                 inline_1.inline
-            ]);
-            exports.incell = combinator_1.union([
-                combinator_1.inits([
-                    annotation_1.annotation,
-                    combinator_1.some(char_1.char('#'))
-                ]),
-                combinator_1.inits([
-                    authority_1.authority,
-                    combinator_1.some(char_1.char('#'))
-                ]),
+            ]));
+            exports.incell = combinator_1.lazy(() => combinator_1.union([
                 autolink_1.autolink,
-                combinator_1.some(inline_1.inline, /^(?:([\[\]\(\)])\1|[0-9a-zA-Z@]?@|\s#\S|\s*\|)/),
+                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|[0-9a-zA-Z@]?@|\s#\S|\s*\|)/),
                 inline_1.inline
-            ]);
+            ]));
         },
         {
             '../combinator': 20,
-            './inblock/annotation': 71,
-            './inblock/authority': 72,
-            './inblock/autolink': 73,
-            './inline': 76,
-            './source/char': 98
+            './inblock/autolink': 71,
+            './inline': 74
         }
     ],
     71: [
@@ -2473,67 +2451,23 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const autolink_1 = require('./autolink');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
-            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('((', util_1.compress(combinator_1.some(combinator_1.union([
-                autolink_1.autolink,
-                inline_1.inline
-            ]), '))')), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el));
-        },
-        {
-            '../../combinator': 20,
-            '../inline': 76,
-            '../util': 104,
-            './autolink': 73,
-            'typed-dom': 13
-        }
-    ],
-    72: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const autolink_1 = require('./autolink');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
-            exports.authority = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[[', util_1.compress(combinator_1.some(combinator_1.union([
-                autolink_1.autolink,
-                inline_1.inline
-            ]), /^\n|^]]/)), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el)));
-        },
-        {
-            '../../combinator': 20,
-            '../inline': 76,
-            '../util': 104,
-            './autolink': 73,
-            'typed-dom': 13
-        }
-    ],
-    73: [
-        function (require, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
             const inline_1 = require('../inline');
             const channel_1 = require('./autolink/channel');
             const hashtag_1 = require('./autolink/hashtag');
-            exports.autolink = combinator_1.union([
+            exports.autolink = combinator_1.lazy(() => combinator_1.union([
                 inline_1.email,
                 channel_1.channel,
                 hashtag_1.hashtag
-            ]);
+            ]));
         },
         {
             '../../combinator': 20,
-            '../inline': 76,
-            './autolink/channel': 74,
-            './autolink/hashtag': 75
+            '../inline': 74,
+            './autolink/channel': 72,
+            './autolink/hashtag': 73
         }
     ],
-    74: [
+    72: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2542,7 +2476,7 @@ require = function () {
             const inline_1 = require('../../inline');
             const hashtag_1 = require('./hashtag');
             const typed_dom_1 = require('typed-dom');
-            exports.channel = combinator_1.subline(combinator_1.rewrite(combinator_1.sequence([
+            exports.channel = combinator_1.subline(combinator_1.lazy(() => combinator_1.rewrite(combinator_1.sequence([
                 combinator_1.verify(inline_1.account, ([node]) => node instanceof HTMLAnchorElement),
                 combinator_1.verify(combinator_1.some(hashtag_1.hashtag_), ns => ns.every(node => node instanceof HTMLAnchorElement))
             ]), source => [
@@ -2551,17 +2485,17 @@ require = function () {
                         rel: 'noopener'
                     }, source)],
                 ''
-            ]));
+            ])));
         },
         {
             '../../../combinator': 20,
-            '../../inline': 76,
+            '../../inline': 74,
             '../../source/unescapable': 102,
-            './hashtag': 75,
+            './hashtag': 73,
             'typed-dom': 13
         }
     ],
-    75: [
+    73: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2569,7 +2503,7 @@ require = function () {
             const unescapable_1 = require('../../source/unescapable');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.hashtag = combinator_1.verify(combinator_1.build(() => exports.hashtag_), (_, rest) => !rest.startsWith('#'));
+            exports.hashtag = combinator_1.verify(combinator_1.lazy(() => exports.hashtag_), (_, rest) => !rest.startsWith('#'));
             exports.hashtag_ = combinator_1.subline(combinator_1.union([
                 combinator_1.match(/^(#{1,3})(?!\\(?:\n|$))[^#\s]+?(?=[#\s]|\\?(?:\n|$))/, ([tag, {length: level}], rest) => [
                     [typed_dom_1.html('a', {
@@ -2589,11 +2523,13 @@ require = function () {
             'typed-dom': 13
         }
     ],
-    76: [
+    74: [
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../combinator');
+            const annotation_1 = require('./inline/annotation');
+            const authority_1 = require('./inline/authority');
             const extension_1 = require('./inline/extension');
             const link_1 = require('./inline/link');
             const ruby_1 = require('./inline/ruby');
@@ -2608,7 +2544,16 @@ require = function () {
             const htmlentity_1 = require('./inline/htmlentity');
             const autolink_1 = require('./inline/autolink');
             const text_1 = require('./source/text');
+            const char_1 = require('./source/char');
             exports.inline = combinator_1.union([
+                combinator_1.inits([
+                    annotation_1.annotation,
+                    combinator_1.some(char_1.char('#'))
+                ]),
+                combinator_1.inits([
+                    authority_1.authority,
+                    combinator_1.some(char_1.char('#'))
+                ]),
                 extension_1.extension,
                 link_1.link,
                 ruby_1.ruby,
@@ -2643,6 +2588,8 @@ require = function () {
         },
         {
             '../combinator': 20,
+            './inline/annotation': 75,
+            './inline/authority': 76,
             './inline/autolink': 77,
             './inline/autolink/account': 78,
             './inline/autolink/email': 79,
@@ -2661,7 +2608,42 @@ require = function () {
             './inline/media': 93,
             './inline/ruby': 94,
             './inline/strong': 95,
+            './source/char': 98,
             './source/text': 101
+        }
+    ],
+    75: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const combinator_1 = require('../../combinator');
+            const inblock_1 = require('../inblock');
+            const util_1 = require('../util');
+            const typed_dom_1 = require('typed-dom');
+            exports.annotation = combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('((', util_1.compress(combinator_1.some(combinator_1.union([inblock_1.inblock]), '))')), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasAnnotationOrAuthority(el) && !util_1.hasMedia(el));
+        },
+        {
+            '../../combinator': 20,
+            '../inblock': 70,
+            '../util': 104,
+            'typed-dom': 13
+        }
+    ],
+    76: [
+        function (require, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const combinator_1 = require('../../combinator');
+            const inblock_1 = require('../inblock');
+            const util_1 = require('../util');
+            const typed_dom_1 = require('typed-dom');
+            exports.authority = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('[[', util_1.compress(combinator_1.some(combinator_1.union([inblock_1.inblock]), /^\n|^]]/)), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.startsWithTightText(el) && !util_1.hasAnnotationOrAuthority(el) && !util_1.hasMedia(el)));
+        },
+        {
+            '../../combinator': 20,
+            '../inblock': 70,
+            '../util': 104,
+            'typed-dom': 13
         }
     ],
     77: [
@@ -2749,16 +2731,16 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
             exports.uri = combinator_1.subline(combinator_1.union([
-                combinator_1.surround(/^(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.build(() => combinator_1.some(combinator_1.union([
+                combinator_1.surround(/^(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                     ipv6,
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ]))), combinator_1.convert(source => `[](${ address(source) }${ attribute(source) })`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
-                combinator_1.surround(/^!(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.build(() => combinator_1.some(combinator_1.union([
+                ]))), combinator_1.convert(source => `[]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
+                combinator_1.surround(/^!(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                     ipv6,
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ]))), combinator_1.convert(source => `[![](${ address(source) })](${ address(source) }${ attribute(source) })`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
+                ]))), combinator_1.convert(source => `[![]{${ address(source) }}]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
                 combinator_1.focus(/^[0-9a-zA-Z!?][!?]*h?ttps?(?=:)/, util_1.compress(combinator_1.some(unescapable_1.unescsource)))
             ]));
             const ipv6 = combinator_1.subline(combinator_1.fmap(combinator_1.surround('[', combinator_1.focus(/^[:0-9a-z]+/, addr => [
@@ -2792,7 +2774,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.bracket = combinator_1.build(() => util_1.compress(combinator_1.union([
+            exports.bracket = combinator_1.lazy(() => util_1.compress(combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(inline_1.inline, ')'), ')', false), ns => [
                     typed_dom_1.text('('),
                     ...ns,
@@ -2822,7 +2804,7 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            '../inline': 76,
+            '../inline': 74,
             '../util': 104,
             'typed-dom': 13
         }
@@ -2887,14 +2869,14 @@ require = function () {
             const strong_1 = require('./strong');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.emphasis = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround(/^\*(?=\S[\s\S]*?\*)/, util_1.compress(combinator_1.some(combinator_1.union([
+            exports.emphasis = combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround(/^\*(?=\S[\s\S]*?\*)/, util_1.compress(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
             ]))), '*')), ns => [typed_dom_1.html('em', ns)]), ([el]) => util_1.startsWithTightText(el));
         },
         {
             '../../combinator': 20,
-            '../inline': 76,
+            '../inline': 74,
             '../util': 104,
             './strong': 95,
             'typed-dom': 13
@@ -2930,7 +2912,7 @@ require = function () {
             const link_1 = require('../link');
             const indexer_1 = require('../../block/indexer');
             const util_1 = require('../../util');
-            exports.index = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]()`, combinator_1.union([link_1.link]))), ']')), ([el]) => {
+            exports.index = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => {
                 void indexer_1.defineIndex(el);
                 void el.setAttribute('href', `#${ el.id }`);
                 void el.removeAttribute('id');
@@ -2940,7 +2922,7 @@ require = function () {
         {
             '../../../combinator': 20,
             '../../block/indexer': 62,
-            '../../inline': 76,
+            '../../inline': 74,
             '../../util': 104,
             '../link': 91
         }
@@ -2954,7 +2936,7 @@ require = function () {
             const link_1 = require('../link');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[${ query }](#)`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
+            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
                     class: 'label',
                     'data-label': el.textContent.split(':').pop(),
                     href: undefined
@@ -2997,14 +2979,14 @@ require = function () {
             const inline_1 = require('../../inline');
             const combinator_1 = require('../../../combinator');
             const typed_dom_1 = require('typed-dom');
-            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.build(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']')), () => [typed_dom_1.html('span', {
+            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']')), () => [typed_dom_1.html('span', {
                     class: 'invalid',
                     'data-invalid-type': 'syntax'
                 }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`)))]));
         },
         {
             '../../../combinator': 20,
-            '../../inline': 76,
+            '../../inline': 74,
             'typed-dom': 13
         }
     ],
@@ -3074,7 +3056,7 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            '../inline': 76,
+            '../inline': 74,
             '../source/escapable': 99,
             '../source/unescapable': 102,
             '../util': 104,
@@ -3115,8 +3097,8 @@ require = function () {
             const uri_1 = require('../string/uri');
             const typed_dom_1 = require('typed-dom');
             const attributes = { nofollow: [undefined] };
-            exports.link = combinator_1.subline(combinator_1.bind(combinator_1.build(() => combinator_1.sequence([
-                combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^\[(?=\]|\S.*?\]\(.*\))/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => [typed_dom_1.frag(ns)]), ([text]) => {
+            exports.link = combinator_1.subline(combinator_1.bind(combinator_1.lazy(() => combinator_1.sequence([
+                combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^\[(?=\]|\S.*?\]{.*})/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false), ns => [typed_dom_1.frag(ns)]), ([text]) => {
                     if (util_1.hasMedia(text)) {
                         void text.querySelectorAll('a > .media').forEach(el => void el.parentNode.parentNode.replaceChild(el, el.parentNode));
                         if (text.childNodes.length !== 1)
@@ -3131,10 +3113,10 @@ require = function () {
                     }
                     return true;
                 }),
-                combinator_1.fmap(combinator_1.surround('(', combinator_1.inits([
+                combinator_1.fmap(combinator_1.surround('{', combinator_1.inits([
                     exports.uri,
                     combinator_1.some(util_1.compress(exports.attribute))
-                ]), /^ ?\)/, false), ts => [typed_dom_1.frag(ts)])
+                ]), /^ ?}/), ts => [typed_dom_1.frag(ts)])
             ])), ([text, param], rest) => {
                 const [INSECURE_URL = '', ...args] = [...param.childNodes].map(t => t.textContent);
                 const path = uri_1.sanitize(INSECURE_URL);
@@ -3167,12 +3149,12 @@ require = function () {
             exports.uri = combinator_1.subline(combinator_1.match(/^ ?(?! )/, ([flag], rest) => util_1.compress(combinator_1.some(combinator_1.union([
                 exports.bracket,
                 unescapable_1.unescsource
-            ]), flag === ' ' ? /^\s/ : /^\s|^\)/))(rest)));
-            exports.bracket = combinator_1.subline(combinator_1.build(() => combinator_1.union([
+            ]), flag === ' ' ? /^\s/ : /^[\s}]/))(rest)));
+            exports.bracket = combinator_1.subline(combinator_1.lazy(() => combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
                     unescapable_1.unescsource
-                ]), /^[\)\s]/), ')', false), ts => [
+                ]), /^[\s\)]/), ')', false), ts => [
                     typed_dom_1.text('('),
                     ...ts,
                     typed_dom_1.text(')')
@@ -3180,7 +3162,7 @@ require = function () {
                 combinator_1.fmap(combinator_1.surround('[', combinator_1.some(combinator_1.union([
                     exports.bracket,
                     unescapable_1.unescsource
-                ]), /^[\]\s]/), ']', false), ts => [
+                ]), /^[\s\]]/), ']', false), ts => [
                     typed_dom_1.text('['),
                     ...ts,
                     typed_dom_1.text(']')
@@ -3188,7 +3170,7 @@ require = function () {
                 combinator_1.fmap(combinator_1.surround('{', combinator_1.some(combinator_1.union([
                     exports.bracket,
                     unescapable_1.unescsource
-                ]), /^[\}\s]/), '}', false), ts => [
+                ]), /^[\s\}]/), '}', false), ts => [
                     typed_dom_1.text('{'),
                     ...ts,
                     typed_dom_1.text('}')
@@ -3196,7 +3178,7 @@ require = function () {
                 combinator_1.fmap(combinator_1.surround('<', combinator_1.some(combinator_1.union([
                     exports.bracket,
                     unescapable_1.unescsource
-                ]), /^[\>\s]/), '>', false), ts => [
+                ]), /^[\s\>]/), '>', false), ts => [
                     typed_dom_1.text('<'),
                     ...ts,
                     typed_dom_1.text('>')
@@ -3204,13 +3186,13 @@ require = function () {
                 combinator_1.fmap(combinator_1.surround('"', combinator_1.some(combinator_1.union([
                     exports.bracket,
                     unescapable_1.unescsource
-                ]), /^[\"\s]/), '"', false), ts => [
+                ]), /^[\s\"]/), '"', false), ts => [
                     typed_dom_1.text('"'),
                     ...ts,
                     typed_dom_1.text('"')
                 ])
             ])));
-            exports.attribute = combinator_1.subline(combinator_1.surround(' ', combinator_1.focus(/^[a-z]+(?:=[^\s)]+)?/, combinator_1.some(combinator_1.union([unescapable_1.unescsource]))), ''));
+            exports.attribute = combinator_1.subline(combinator_1.surround(' ', combinator_1.focus(/^[a-z]+(?:=[^\s}]+)?/, combinator_1.some(combinator_1.union([unescapable_1.unescsource]))), ''));
             function check(attrs, args, spec) {
                 return attrs.size === args.length && attrs.size >= [...Object.values(spec)].filter(Object.isFrozen).length && [...attrs.entries()].every(([key, value]) => spec.hasOwnProperty(key) && spec[key].includes(value));
             }
@@ -3218,7 +3200,7 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            '../inline': 76,
+            '../inline': 74,
             '../source/unescapable': 102,
             '../string/uri': 103,
             '../util': 104,
@@ -3267,11 +3249,11 @@ require = function () {
             const attributes = {};
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.sequence([
-                combinator_1.fmap(combinator_1.verify(combinator_1.surround(/^!\[(?=\]|\S.*?\]\(.*\))/, util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), /^\](?=\(( ?)[^\n]*?\1\))/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
-                combinator_1.surround('(', combinator_1.inits([
+                combinator_1.fmap(combinator_1.verify(combinator_1.surround(/^!\[(?=\]|\S.*?\]{.*})/, util_1.compress(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
+                combinator_1.surround('{', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(util_1.compress(link_1.attribute))
-                ]), /^ ?\)/, false)
+                ]), /^ ?}/)
             ]), (ts, rest) => {
                 const [caption, INSECURE_URL = '', ...args] = ts.map(t => t.textContent);
                 const path = uri_1.sanitize(INSECURE_URL.trim());
@@ -3327,15 +3309,15 @@ require = function () {
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            exports.ruby = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.build(() => combinator_1.sequence([
+            exports.ruby = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.lazy(() => combinator_1.sequence([
                 combinator_1.fmap(combinator_1.verify(combinator_1.surround('[', util_1.compress(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
                     text_1.text
                 ]), /^[\n\]]/)), ']'), ([text]) => util_1.hasTightText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)]),
-                combinator_1.fmap(combinator_1.verify(combinator_1.surround('{', util_1.compress(combinator_1.some(combinator_1.union([
+                combinator_1.fmap(combinator_1.verify(combinator_1.surround('(', util_1.compress(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
                     text_1.text
-                ]), /^[\n}]/)), '}'), ([text]) => util_1.hasText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)])
+                ]), /^[\n)]/)), ')'), ([text]) => util_1.hasText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)])
             ])), ([text, ruby]) => text.length === 1 && text.length < ruby.length ? [
                 [...typed_dom_1.frag(text).textContent].map(typed_dom_1.text),
                 ruby
@@ -3368,11 +3350,11 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.strong = combinator_1.verify(combinator_1.fmap(combinator_1.build(() => combinator_1.surround(/^\*\*(?=\S[\s\S]*?\*\*)/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**')), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.startsWithTightText(el));
+            exports.strong = combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround(/^\*\*(?=\S[\s\S]*?\*\*)/, util_1.compress(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**')), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.startsWithTightText(el));
         },
         {
             '../../combinator': 20,
-            '../inline': 76,
+            '../inline': 74,
             '../util': 104,
             'typed-dom': 13
         }
@@ -3735,9 +3717,13 @@ require = function () {
             }
             exports.hasMedia = hasMedia;
             function hasLink(node) {
-                return !!node.querySelector('a');
+                return !!node.querySelector('a, .annotation, .authority');
             }
             exports.hasLink = hasLink;
+            function hasAnnotationOrAuthority(node) {
+                return !!node.querySelector('.annotation, .authority');
+            }
+            exports.hasAnnotationOrAuthority = hasAnnotationOrAuthority;
             function hasText(node) {
                 return node.textContent.trim() !== '';
             }
@@ -3753,7 +3739,7 @@ require = function () {
         },
         {
             '../combinator': 20,
-            './inline': 76
+            './inline': 74
         }
     ],
     105: [
@@ -4078,7 +4064,7 @@ require = function () {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`[]( ${ url.href } )`).querySelector('a')).element]), gist.firstChild);
+                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`[]{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
@@ -4089,7 +4075,7 @@ require = function () {
                                 }));
                             },
                             error({status, statusText}) {
-                                void typed_dom_1.define(outer, [parser_1.parse(`*[]( ${ url.href } )*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                void typed_dom_1.define(outer, [parser_1.parse(`*[]{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                             }
                         });
                         return outer;
@@ -4146,7 +4132,7 @@ require = function () {
                             style: 'width: 100%; height: 100%; min-height: 400px;',
                             typemustmatch: ''
                         })]),
-                    typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**[]( ${ url.href } )**`).firstElementChild.childNodes)
+                    typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**[]{ ${ url.href } }**`).firstElementChild.childNodes)
                 ]));
             }
             exports.pdf = pdf;
@@ -4190,7 +4176,7 @@ require = function () {
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                             },
                             error({status, statusText}) {
-                                void typed_dom_1.define(outer, [parser_1.parse(`*[]( ${ url.href } )*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                void typed_dom_1.define(outer, [parser_1.parse(`*[]{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                             }
                         });
                         return outer;
@@ -4246,7 +4232,7 @@ require = function () {
                                 }));
                             },
                             error({status, statusText}) {
-                                void typed_dom_1.define(outer, [parser_1.parse(`*[]( ${ url.href } )*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                void typed_dom_1.define(outer, [parser_1.parse(`*[]{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                             }
                         });
                         return outer;
@@ -4403,7 +4389,7 @@ require = function () {
         },
         {
             '../parser/api': 41,
-            '../parser/inline': 76,
+            '../parser/inline': 74,
             '../parser/inline/extension/label': 87,
             'typed-dom': 13
         }
