@@ -6,6 +6,7 @@ let viz: any;
 
 export function graphviz(target: HTMLElement): void {
   assert(target.children.length === 0);
+  if (typeof Viz === 'undefined') return;
   void requestAnimationFrame(() => {
     viz = new Viz();
     viz.renderSVGElement(target.textContent!, { engine: target.getAttribute('data-engine') || 'dot' })

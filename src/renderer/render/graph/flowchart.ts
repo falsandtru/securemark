@@ -8,6 +8,7 @@ declare global {
 
 export function flowchart(target: HTMLElement): void {
   assert(target.children.length === 0);
+  if (typeof window.flowchart === 'undefined') return;
   void requestAnimationFrame(() => {
     const observer = new MutationObserver(() => {
       void observer.disconnect();

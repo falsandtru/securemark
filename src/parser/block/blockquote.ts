@@ -3,7 +3,7 @@ import { Parser, union, some, fmap, surround, block, rewrite, convert, lazy } fr
 import { contentline } from '../source/line';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
-import { suppress } from '../util';
+import { compress, suppress } from '../util';
 import { html } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(lazy(() => union([
@@ -22,7 +22,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
       some(contentline, opener),
       convert(
         unindent,
-        fmap(some(autolink), ns => [html('pre', ns)]))),
+        fmap(compress(some(autolink)), ns => [html('pre', ns)]))),
   ]))),
   ns => [html('blockquote', ns)]);
 
