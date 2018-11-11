@@ -3876,9 +3876,16 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             function flowchart(target) {
                 void requestAnimationFrame(() => {
+                    const observer = new MutationObserver(() => {
+                        void observer.disconnect();
+                        void target.querySelectorAll('svg a').forEach(el => void el.removeAttribute('href'));
+                        const svg = target.querySelector('svg');
+                        svg.style.maxHeight = `${ Math.round(parseFloat(svg.getAttribute('height')) * svg.clientWidth / parseFloat(svg.getAttribute('width'))) }`;
+                    });
                     const diagram = window.flowchart.parse(target.textContent);
                     void typed_dom_1.define(target, []);
                     void diagram.drawSVG(target);
+                    void observer.observe(target, { childList: true });
                     void target.querySelectorAll('svg a').forEach(el => void el.removeAttribute('href'));
                     const svg = target.querySelector('svg');
                     svg.style.maxHeight = `${ Math.round(parseFloat(svg.getAttribute('height')) * svg.clientWidth / parseFloat(svg.getAttribute('width'))) }`;
@@ -3919,12 +3926,14 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             function sequence(target) {
                 void requestAnimationFrame(() => {
+                    const observer = new MutationObserver(() => {
+                        void observer.disconnect();
+                        void target.querySelectorAll('svg a').forEach(el => void el.removeAttribute('href'));
+                    });
                     const diagram = Diagram.parse(target.textContent);
                     void typed_dom_1.define(target, []);
+                    void observer.observe(target, { childList: true });
                     void diagram.drawSVG(target, { theme: 'simple' });
-                    void target.querySelectorAll('svg a').forEach(el => void el.removeAttribute('href'));
-                    const svg = target.querySelector('svg');
-                    svg.style.maxHeight = `${ Math.round(parseFloat(svg.getAttribute('height')) * svg.clientWidth / parseFloat(svg.getAttribute('width'))) }`;
                 });
             }
             exports.sequence = sequence;
