@@ -13,7 +13,7 @@ export const segment_: CodeBlockParser = block(focus(
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/,
-  ([, , lang, notes, body], rest) => {
+  ([, , lang, param, body], rest) => {
     assert(rest === '');
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
     if (lang) {
@@ -21,7 +21,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, match(
       void el.classList.add(`language-${lang.toLowerCase()}`);
       void el.setAttribute('data-lang', lang);
     }
-    const filepath = eval(stringify(some(escsource, /^\s/))(notes.trim())).join('');
+    const filepath = eval(stringify(some(escsource, /^\s/))(param.trim())).join('');
     if (filepath) {
       void el.setAttribute('data-file', filepath);
     }

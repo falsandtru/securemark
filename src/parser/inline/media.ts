@@ -22,20 +22,20 @@ export const media: MediaParser = subline(bind(
     surround('{', inits<MediaParser.ParamParser>([uri, some(compress(attribute))]), /^ ?}/),
   ]),
   (ts, rest) => {
-    const [caption, INSECURE_URL = '', ...args]: string[] = ts.map(t => t.textContent!);
+    const [caption, INSECURE_URL = '', ...params]: string[] = ts.map(t => t.textContent!);
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;
     const uri = new URL(path, window.location.href);
     if (uri.protocol === 'tel:') return;
-    const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
-      arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
+    const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
+      param => [param.split('=', 1)[0], param.includes('=') ? param.slice(param.split('=', 1)[0].length + 1) : undefined]));
     const el = cache.has(uri.href)
       ? cache.get(uri.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: caption });
     if (cache.has(uri.href) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
       void define(el, { alt: caption });
     }
-    if (!check(attrs, args, attributes)) {
+    if (!check(attrs, params, attributes)) {
       void el.classList.add('invalid');
       void el.setAttribute('data-invalid-type', 'parameter');
     }

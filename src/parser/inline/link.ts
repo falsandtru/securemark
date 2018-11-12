@@ -34,11 +34,11 @@ export const link: LinkParser = subline(bind(lazy(() =>
       ts => [frag(ts)]),
   ])),
   ([text, param], rest) => {
-    const [INSECURE_URL = '', ...args]: string[] = [...param.childNodes].map(t => t.textContent!);
+    const [INSECURE_URL = '', ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
     const path = sanitize(INSECURE_URL);
     if (path === '' && INSECURE_URL !== '') return;
-    const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
-      arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
+    const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
+      param => [param.split('=', 1)[0], param.includes('=') ? param.slice(param.split('=', 1)[0].length + 1) : undefined]));
     const el = html('a',
       {
         href: path,
@@ -55,7 +55,7 @@ export const link: LinkParser = subline(bind(lazy(() =>
     if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
       void el.setAttribute('target', '_blank');
     }
-    if (!check(attrs, args, attributes)) {
+    if (!check(attrs, params, attributes)) {
       void el.classList.add('invalid');
       void el.setAttribute('data-invalid-type', 'parameter');
     }
@@ -96,10 +96,10 @@ export const attribute: LinkParser.ParamParser.AttributeParser = subline(
 
 export function check(
   attrs: Map<string, string | undefined>,
-  args: string[],
+  params: string[],
   spec: Record<string, Array<string | undefined>>,
 ): boolean {
-  return attrs.size === args.length
+  return attrs.size === params.length
       && attrs.size >= [...Object.values(spec)].filter(Object.isFrozen).length
       && [...attrs.entries()]
           .every(([key, value]) =>

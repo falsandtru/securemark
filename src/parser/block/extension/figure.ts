@@ -20,7 +20,7 @@ const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}[^\\S\\
 export const segment: FigureParser = block(union([
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
-    ([, bracket, note], rest) =>
+    ([, bracket, param], rest) =>
       surround(
         '',
         sequence([
@@ -42,13 +42,13 @@ export const segment: FigureParser = block(union([
           ]),
         ]),
         closer(bracket))
-        (`${note}\n${rest}`)),
+        (`${param}\n${rest}`)),
   () => undefined,
 ]));
 
 export const figure: FigureParser = block(rewrite(segment, verify(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
-  ([, , note, body], rest) =>
+  ([, , param, body], rest) =>
     bind(
       sequence<FigureParser>([
         line(label),
@@ -89,7 +89,7 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
               html('figcaption', caption)
             ])
         ], rest])
-      (`${note}\n${body.slice(0, -1)}`)),
+      (`${param}\n${body.slice(0, -1)}`)),
   ([el]) =>
     el.matches('[data-group="$"]')
       ? el.firstElementChild!.firstElementChild!.matches('.math')

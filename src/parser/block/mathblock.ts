@@ -11,9 +11,9 @@ export const segment_: MathBlockParser = block(focus(
 
 export const mathblock: MathBlockParser = block(rewrite(segment, match(
   /^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/,
-  ([, arg, body], rest) => {
+  ([, param, body], rest) => {
     const el = html('div', { class: `math notranslate` }, `$$${body}$$`);
-    if (arg.trim() !== '') {
+    if (param.trim() !== '') {
       void el.classList.add('invalid');
       void el.setAttribute('data-invalid-type', 'parameter');
     }
