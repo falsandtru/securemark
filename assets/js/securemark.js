@@ -1652,7 +1652,7 @@ require = function () {
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, textquote)),
-                combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, combinator_1.fmap(combinator_1.some(autolink_1.autolink), ns => [typed_dom_1.html('pre', ns)])))
+                combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, combinator_1.fmap(util_1.compress(combinator_1.some(autolink_1.autolink)), ns => [typed_dom_1.html('pre', ns)])))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const mdquote = combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, mdquote)),
@@ -1987,30 +1987,18 @@ require = function () {
                 ])
             ]), false);
             exports.graph = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
-                combinator_1.match(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , name, body], rest) => check(name) ? [
-                    [typed_dom_1.html('pre', { class: `${ name } graph notranslate` }, body.slice(1, -1))],
+                combinator_1.match(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/, ([, , name, body], rest) => [
+                    [typed_dom_1.html('pre', { class: `${ name } graph notranslate` }, body.slice(0, -1))],
                     rest
-                ] : undefined),
-                combinator_1.match(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , name, engine, body], rest) => check(name) ? [
+                ]),
+                combinator_1.match(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , name, engine, body], rest) => [
                     [typed_dom_1.html('pre', {
                             class: `${ name } graph notranslate`,
                             'data-engine': engine.trim()
-                        }, body.slice(1, -1))],
+                        }, body.slice(0, -1))],
                     rest
-                ] : undefined)
+                ])
             ])));
-            function check(name) {
-                switch (name) {
-                case 'sequence':
-                    return typeof Diagram !== 'undefined';
-                case 'flowchart':
-                    return typeof flowchart !== 'undefined';
-                case 'graphviz':
-                    return typeof Viz !== 'undefined';
-                default:
-                    return false;
-                }
-            }
         },
         {
             '../../../combinator': 20,
@@ -3832,19 +3820,15 @@ require = function () {
                     flowchart: flowchart_1.flowchart,
                     graphviz: graphviz_1.graphviz
                 }, opts);
-                try {
-                    switch (true) {
-                    case !!opts.sequence && target.matches('.sequence') && target.children.length === 0:
-                        return void opts.sequence(target);
-                    case !!opts.flowchart && target.matches('.flowchart') && target.children.length === 0:
-                        return void opts.flowchart(target);
-                    case !!opts.graphviz && target.matches('.graphviz') && target.children.length === 0:
-                        return void opts.graphviz(target);
-                    default:
-                        return;
-                    }
-                } catch (reason) {
-                    console.error(reason);
+                switch (true) {
+                case !!opts.sequence && target.matches('.sequence') && target.children.length === 0:
+                    return void opts.sequence(target);
+                case !!opts.flowchart && target.matches('.flowchart') && target.children.length === 0:
+                    return void opts.flowchart(target);
+                case !!opts.graphviz && target.matches('.graphviz') && target.children.length === 0:
+                    return void opts.graphviz(target);
+                default:
+                    return;
                 }
             }
             exports.graph = graph;
@@ -3861,6 +3845,8 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
             function flowchart(target) {
+                if (typeof window.flowchart === 'undefined')
+                    return;
                 void requestAnimationFrame(() => {
                     const observer = new MutationObserver(() => {
                         void observer.disconnect();
@@ -3888,6 +3874,8 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             let viz;
             function graphviz(target) {
+                if (typeof Viz === 'undefined')
+                    return;
                 void requestAnimationFrame(() => {
                     viz = new Viz();
                     viz.renderSVGElement(target.textContent, { engine: target.getAttribute('data-engine') || 'dot' }).then(el => {
@@ -3911,6 +3899,8 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
             function sequence(target) {
+                if (typeof Diagram === 'undefined')
+                    return;
                 void requestAnimationFrame(() => {
                     const observer = new MutationObserver(() => {
                         void observer.disconnect();
