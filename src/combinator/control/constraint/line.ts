@@ -2,6 +2,7 @@
 
 export function line<P extends Parser<any, any>>(parser: P, allowTrailingWhitespace?: boolean): P;
 export function line<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, allowTrailingWhitespace = true): Parser<T, S> {
+  assert(parser);
   return source => {
     if (source === '') return;
     const result = parser(source);
@@ -20,6 +21,7 @@ export function line<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, allo
 
 export function subline<P extends Parser<any, any>>(parser: P): P;
 export function subline<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  assert(parser);
   return source => {
     if (source === '') return;
     const result = parser(source);

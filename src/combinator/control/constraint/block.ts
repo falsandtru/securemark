@@ -3,6 +3,7 @@ import { firstline } from './line';
 
 export function block<P extends Parser<any, any>>(parser: P, separation?: boolean): P;
 export function block<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, separation = true): Parser<T, S> {
+  assert(parser);
   return source => {
     if (source.length === 0) return;
     const result = parser(source);
