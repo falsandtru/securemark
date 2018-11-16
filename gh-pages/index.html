@@ -15,7 +15,7 @@
 <link href="/securemark/assets/lib/sequence-diagram-min.css" rel="stylesheet">
 <style>
   #viewer .media {
-    display: initial;
+    display: unset;
   }
   blockquote {
     padding: .3em;
@@ -25,7 +25,8 @@
     margin-inline-start: .5em;
   }
   pre:not(.notranslate) {
-    font-size: inherit;
+    all: unset;
+    white-space: pre-wrap;
   }
   pre[class*="language-"] {
     background-color: #fbfbfb;
