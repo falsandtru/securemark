@@ -430,6 +430,7 @@ export namespace MarkdownParser {
         export interface AttributeParser extends
           Inline<'link/attribute'>,
           Parser<Text, [
+            SourceParser.UnescapableSourceParser,
             SourceParser.UnescapableSourceParser
           ]> {
         }

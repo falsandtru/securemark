@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, sequence, some, fmap, bind, match, surround, subline, focus, verify, lazy } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, validate, subline, focus, verify, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { compress, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
@@ -91,7 +91,10 @@ export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(l
 export const attribute: LinkParser.ParamParser.AttributeParser = subline(
   surround(
     ' ',
-    focus(/^[a-z]+(?:=[^\s}]+)?/, some(union([unescsource]))),
+    inits([
+      focus(/^[a-z]+(?=[= }])/, some(unescsource, /^[^a-z]/)),
+      validate(/^=[^\s}]/, some(unescsource, /^[\s}]/))
+    ]),
     ''));
 
 export function check(

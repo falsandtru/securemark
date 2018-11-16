@@ -35,7 +35,7 @@ export const html: HTMLParser = match(
 const attribute: HTMLParser.AttributeParser = subline(fmap(
   surround(
     ' ',
-    inits<HTMLParser.AttributeParser>([
+    inits([
       focus(/^[a-z]+(?=[= >])/, compress(some(unescsource, /^[^a-z]/))),
       surround('="', compress(some(escsource, '"')), '"', false)
     ]),
