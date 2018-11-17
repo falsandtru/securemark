@@ -70,7 +70,7 @@ https://falsandtru.github.io/securemark/
 - Audio (.oga, .ogg)
 - Images
 
-# Graph
+## Graph
 
 - [Sequence](https://github.com/bramp/js-sequence-diagrams)
 - [Flowchart](https://github.com/adrai/flowchart.js)
