@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.90.1
+
+- Allow leading `@` in square brackets.
+
 ## 0.90.0
 
 - Refine link, media, and ruby syntax.

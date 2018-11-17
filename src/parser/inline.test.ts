@@ -23,6 +23,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('<small>*<bdi>a</bdi>*</small>')), [['<small><em><bdi>a</bdi></em></small>'], '']);
       assert.deepStrictEqual(inspect(parser('``a`')), [['`', '`', 'a', '`'], '']);
       assert.deepStrictEqual(inspect(parser('[::1]')), [['[::1]'], '']);
+      assert.deepStrictEqual(inspect(parser('[@a]')), [['[', '<a class="account" rel="noopener">@a</a>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation">b</sup></em>'], '']);
       assert.deepStrictEqual(inspect(parser('[#1][#2]')), [['<a href="#index:1" rel="noopener">1</a>', '<a href="#index:2" rel="noopener">2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[:$-1][:$-2]')), [['<a rel="noopener" class="label" data-label="$-1">$-1</a>', '<a rel="noopener" class="label" data-label="$-2">$-2</a>'], '']);
@@ -30,7 +31,7 @@ describe('Unit: parser/inline', () => {
 
     it('link', () => {
       assert.deepStrictEqual(inspect(parser('[#a]{b}')), [['<a href="#index:a" rel="noopener">a</a>', '{b}'], '']);
-      assert.deepStrictEqual(inspect(parser('[@a]{b}')), [['<span class="invalid" data-invalid-type="syntax">Invalid syntax: Extension: Invalid flag.</span>', '{b}'], '']);
+      assert.deepStrictEqual(inspect(parser('[@a]{b}')), [['[', '<a class="account" rel="noopener">@a</a>', ']', '{b}'], '']);
       assert.deepStrictEqual(inspect(parser('[http://host]{http://host}')), [['[', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', ']', '{', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', '}'], '']);
     });
 
