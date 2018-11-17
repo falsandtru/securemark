@@ -15,8 +15,8 @@ export const dlist: DListParser = block(fmap(lazy(() =>
   es => [html('dl', fillTrailingDescription(es))]));
 
 const term: DListParser.TermParser = line(rewrite(contentline, verify(
-  fmap<DListParser.TermParser>(lazy(() =>
-    surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inblock])))), '', false)),
+  fmap<DListParser.TermParser>(
+    surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inblock])))), '', false),
     ns => {
       const dt = html('dt', ns);
       void defineIndex(dt);
@@ -25,10 +25,10 @@ const term: DListParser.TermParser = line(rewrite(contentline, verify(
   ([el]) => !hasMedia(el))));
 
 const desc: DListParser.DescriptionParser = block(
-  fmap<DListParser.DescriptionParser>(lazy(() =>
+  fmap<DListParser.DescriptionParser>(
     rewrite(
       surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
-      surround(/^:(?=\s|$)|/, compress(trim(some(union([inblock])))), '', false))),
+      surround(/^:(?=\s|$)|/, compress(trim(some(union([inblock])))), '', false)),
     ns => [html('dd', ns)]),
   false);
 

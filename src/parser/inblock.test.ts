@@ -27,6 +27,10 @@ describe('Unit: parser/inblock', () => {
       assert.deepStrictEqual(inspect(parser(' #a')), [[' ', '<a class="hashtag" rel="noopener" data-level="1">#a</a>'], '']);
     });
 
+    it('email', () => {
+      assert.deepStrictEqual(inspect(parser('a@b')), [['<a class="email" href="mailto:a@b" rel="noopener">a@b</a>'], '']);
+    });
+
   });
 
 });

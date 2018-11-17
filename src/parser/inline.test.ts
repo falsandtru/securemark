@@ -22,9 +22,9 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('*<small>`a`</small>*')), [['<em><small><code data-src="`a`">a</code></small></em>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>*<bdi>a</bdi>*</small>')), [['<small><em><bdi>a</bdi></em></small>'], '']);
       assert.deepStrictEqual(inspect(parser('``a`')), [['`', '`', 'a', '`'], '']);
+      assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation">b</sup></em>'], '']);
       assert.deepStrictEqual(inspect(parser('[::1]')), [['[::1]'], '']);
       assert.deepStrictEqual(inspect(parser('[@a]')), [['[', '<a class="account" rel="noopener">@a</a>', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation">b</sup></em>'], '']);
       assert.deepStrictEqual(inspect(parser('[#1][#2]')), [['<a href="#index:1" rel="noopener">1</a>', '<a href="#index:2" rel="noopener">2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[:$-1][:$-2]')), [['<a rel="noopener" class="label" data-label="$-1">$-1</a>', '<a rel="noopener" class="label" data-label="$-2">$-2</a>'], '']);
     });

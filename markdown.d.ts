@@ -295,7 +295,6 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inblock<'autolink'>,
       Parser<HTMLAnchorElement | Text, [
-        InlineParser.AutolinkParser.EmailParser,
         AutolinkParser.ChannelParser,
         AutolinkParser.HashtagParser
       ]> {
