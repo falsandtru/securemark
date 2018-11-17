@@ -2967,7 +2967,7 @@ require = function () {
             const inline_1 = require('../../inline');
             const combinator_1 = require('../../../combinator');
             const typed_dom_1 = require('typed-dom');
-            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('[', combinator_1.validate(/^[~^@](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']')), () => [typed_dom_1.html('span', {
+            exports.placeholder = combinator_1.subline(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('[', combinator_1.validate(/^[~^](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']')), () => [typed_dom_1.html('span', {
                     class: 'invalid',
                     'data-invalid-type': 'syntax'
                 }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`)))]));
@@ -3180,7 +3180,10 @@ require = function () {
                     typed_dom_1.text('"')
                 ])
             ])));
-            exports.attribute = combinator_1.subline(combinator_1.surround(' ', combinator_1.focus(/^[a-z]+(?:=[^\s}]+)?/, combinator_1.some(combinator_1.union([unescapable_1.unescsource]))), ''));
+            exports.attribute = combinator_1.subline(combinator_1.surround(' ', combinator_1.inits([
+                combinator_1.focus(/^[a-z]+(?=[= }])/, combinator_1.some(unescapable_1.unescsource, /^[^a-z]/)),
+                combinator_1.validate(/^=[^\s}]/, combinator_1.some(unescapable_1.unescsource, /^[\s}]/))
+            ]), ''));
             function check(attrs, params, spec) {
                 return attrs.size === params.length && attrs.size >= [...Object.values(spec)].filter(Object.isFrozen).length && [...attrs.entries()].every(([key, value]) => spec.hasOwnProperty(key) && spec[key].includes(value));
             }
