@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.90.3
+
+- Fix account parser.
+
 ## 0.90.2
 
 - Fix hashtag parser.
