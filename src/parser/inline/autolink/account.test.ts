@@ -8,11 +8,11 @@ describe('Unit: parser/inline/autolink/account', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('@')), undefined);
-      assert.deepStrictEqual(inspect(parser('@_')), undefined);
-      assert.deepStrictEqual(inspect(parser('@-')), undefined);
-      assert.deepStrictEqual(inspect(parser('@_a')), undefined);
-      assert.deepStrictEqual(inspect(parser('@-a')), undefined);
+      assert.deepStrictEqual(inspect(parser('@')), [['@'], '']);
+      assert.deepStrictEqual(inspect(parser('@_')), [['@'], '_']);
+      assert.deepStrictEqual(inspect(parser('@-')), [['@'], '-']);
+      assert.deepStrictEqual(inspect(parser('@_a')), [['@'], '_a']);
+      assert.deepStrictEqual(inspect(parser('@-a')), [['@'], '-a']);
       assert.deepStrictEqual(inspect(parser('@@')), [['@@'], '']);
       assert.deepStrictEqual(inspect(parser('@@a')), [['@@'], 'a']);
       assert.deepStrictEqual(inspect(parser('a@b')), undefined);
@@ -30,7 +30,7 @@ describe('Unit: parser/inline/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser('@a--b')), [['<a class="account" rel="noopener">@a</a>'], '--b']);
       assert.deepStrictEqual(inspect(parser('@http://host')), [['<a class="account" rel="noopener">@http</a>'], '://host']);
       assert.deepStrictEqual(inspect(parser('@ttp://host')), [['<a class="account" rel="noopener">@ttp</a>'], '://host']);
-      assert.deepStrictEqual(inspect(parser('@a@')), [['<a class="account" rel="noopener">@a</a>'], '@']);
+      assert.deepStrictEqual(inspect(parser('@a@')), [['<a class="account" rel="noopener">@a</a>', '@'], '']);
       assert.deepStrictEqual(inspect(parser('@a@b')), [['<a class="account" rel="noopener">@a</a>', '<a class="account" rel="noopener">@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a#')), [['<a class="account" rel="noopener">@a</a>'], '#']);
       assert.deepStrictEqual(inspect(parser('@a#1')), [['<a class="account" rel="noopener">@a</a>'], '#1']);

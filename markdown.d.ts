@@ -574,10 +574,10 @@ export namespace MarkdownParser {
         // @account
         Inline<'account'>,
         Parser<HTMLAnchorElement | Text, [
-          SourceParser.UnescapableSourceParser,
           Parser<HTMLAnchorElement, [
             SourceParser.UnescapableSourceParser
-          ]>
+          ]>,
+          SourceParser.UnescapableSourceParser
         ]> {
       }
     }
