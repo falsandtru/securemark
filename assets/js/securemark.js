@@ -2419,12 +2419,12 @@ require = function () {
             const inline_1 = require('./inline');
             exports.inblock = combinator_1.lazy(() => combinator_1.union([
                 autolink_1.autolink,
-                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|@[a-zA-Z0-9]|\s#\S|\s+\[)/),
+                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|@[a-zA-Z0-9]|\\?\s#\S|\s+\[)/),
                 inline_1.inline
             ]));
             exports.incell = combinator_1.lazy(() => combinator_1.union([
                 autolink_1.autolink,
-                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|@[a-zA-Z0-9]|\s#\S|\s*\|)/),
+                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|@[a-zA-Z0-9]|\\?\s#\S|\s*\|)/),
                 inline_1.inline
             ]));
         },
@@ -3544,7 +3544,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
-            exports.separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s|(?!h?ttps?:)[0-9a-zA-Z][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|[0-9a-zA-Z]@[a-zA-Z0-9]/;
+            exports.separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s|(?!h?ttps?:)[a-zA-Z0-9][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]/;
             exports.text = source => {
                 if (source.length === 0)
                     return;
