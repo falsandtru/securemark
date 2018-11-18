@@ -3,6 +3,7 @@
 ## 0.90.3
 
 - Fix account parser.
+- Fix email parser.
 
 ## 0.90.2
 
