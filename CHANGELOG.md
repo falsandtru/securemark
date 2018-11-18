@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.90.2
+
+- Fix hashtag parser.
+
 ## 0.90.1
 
 - Allow leading `@` in square brackets.
