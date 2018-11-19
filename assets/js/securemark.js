@@ -2661,14 +2661,14 @@ require = function () {
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
             exports.account = combinator_1.subline(combinator_1.union([
-                combinator_1.focus(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*/, source => [
+                combinator_1.verify(combinator_1.focus(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*/, source => [
                     [typed_dom_1.html('a', {
                             class: 'account',
                             rel: 'noopener'
                         }, source)],
                     ''
-                ]),
-                combinator_1.focus(/^@+/, util_1.compress(combinator_1.some(unescapable_1.unescsource)))
+                ]), (_, rest) => !rest.startsWith('@')),
+                combinator_1.focus(/^(?:@[a-zA-Z0-9.+_-]*)+/, util_1.compress(combinator_1.some(unescapable_1.unescsource)))
             ]));
         },
         {
@@ -2687,15 +2687,15 @@ require = function () {
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
             exports.email = combinator_1.subline(combinator_1.union([
-                combinator_1.focus(/^[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/, source => [
+                combinator_1.verify(combinator_1.focus(/^[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/, source => [
                     [typed_dom_1.html('a', {
                             class: 'email',
                             href: `mailto:${ source }`,
                             rel: 'noopener'
                         }, source)],
                     ''
-                ]),
-                combinator_1.focus(/^[a-zA-Z0-9][a-zA-Z0-9.+_-]*@+/, util_1.compress(combinator_1.some(unescapable_1.unescsource)))
+                ]), (_, rest) => !rest.startsWith('@')),
+                combinator_1.focus(/^[a-zA-Z0-9][a-zA-Z0-9.+_-]*(?:@[a-zA-Z0-9.+_-]*)+/, util_1.compress(combinator_1.some(unescapable_1.unescsource)))
             ]));
         },
         {
