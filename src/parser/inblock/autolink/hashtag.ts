@@ -10,9 +10,9 @@ export const hashtag: AutolinkParser.HashtagParser = verify(lazy(() =>
 
 export const hashtag_: AutolinkParser.HashtagParser = subline(union([
   match(
-    /^(#{1,3})(?!\\(?:\n|$))[^#\s]+?(?=[#\s]|\\?(?:\n|$))/,
-    ([tag, { length: level }], rest) =>
-      [[html('a', { class: 'hashtag', rel: 'noopener', 'data-level': `${level}` }, tag)], rest]),
+    /^#(?!\\(?:\n|$))[^#\s]+?(?=[#\s]|\\?(?:\n|$))/,
+    ([tag], rest) =>
+      [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], rest]),
   focus(
     /^#+/,
     compress(some(unescsource))),

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.91.0
+
+- Remove tag level of hashtag syntax.
+
 ## 0.90.3
 
 - Fix account parser.
