@@ -10,7 +10,7 @@ export const cache = new Cache<string, HTMLElement>(20); // for rerendering in e
 export const math: MathParser = subline(verify(
   fmap(
     stringify(
-      surround(/^\$\{(?=.+?\}\$)/, compress(some(union([escsource]), /^}\$|^\n/)), /^}\$/)),
+      surround('${', compress(some(union([escsource]), /^}\$|^\n/)), '}$')),
     ([body]) => {
       const source = `$\{${body.trim()}}$`;
       if (cache.has(source)) return [cache.get(source)!.cloneNode(true)];
