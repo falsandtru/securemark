@@ -2490,11 +2490,10 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.hashtag = combinator_1.verify(combinator_1.lazy(() => exports.hashtag_), (_, rest) => !rest.startsWith('#'));
             exports.hashtag_ = combinator_1.subline(combinator_1.union([
-                combinator_1.match(/^(#{1,3})(?!\\(?:\n|$))[^#\s]+?(?=[#\s]|\\?(?:\n|$))/, ([tag, {length: level}], rest) => [
+                combinator_1.match(/^#(?!\\(?:\n|$))[^#\s]+?(?=[#\s]|\\?(?:\n|$))/, ([tag], rest) => [
                     [typed_dom_1.html('a', {
                             class: 'hashtag',
-                            rel: 'noopener',
-                            'data-level': `${ level }`
+                            rel: 'noopener'
                         }, tag)],
                     rest
                 ]),
@@ -3205,7 +3204,7 @@ require = function () {
             const cache_1 = require('spica/cache');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround(/^\$\{(?=.+?\}\$)/, util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^}\$|^\n/)), /^}\$/)), ([body]) => {
+            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.stringify(combinator_1.surround('${', util_1.compress(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^}\$|^\n/)), '}$')), ([body]) => {
                 const source = `$\{${ body.trim() }}$`;
                 if (exports.cache.has(source))
                     return [exports.cache.get(source).cloneNode(true)];
