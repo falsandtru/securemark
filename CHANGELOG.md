@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.92.0
+
+- Don't format indexes.
+
 ## 0.91.0
 
 - Remove tag level of hashtag syntax.

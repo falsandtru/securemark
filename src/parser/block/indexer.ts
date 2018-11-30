@@ -30,5 +30,5 @@ export function text(source: Element): string {
 
 function makeIndex(text: string): string {
   assert(!text.includes('\n'));
-  return `index:${text.trim().replace(/\s+/g, '-').toLowerCase()}`;
+  return `index:${text.trim().replace(/\s+/g, '-')}`;
 }
