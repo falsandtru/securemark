@@ -60,7 +60,7 @@ require = function () {
                 case 'Array':
                     return target[key] = exports.clone([], source[key]);
                 case 'Object':
-                    return target[key] = source[key] instanceof Object ? exports.clone({}, source[key]) : source[key];
+                    return target[key] = type_1.isObject(source[key]) ? exports.clone(source[key] instanceof Object ? {} : Object.create(null), source[key]) : source[key];
                 default:
                     return target[key] = source[key];
                 }
@@ -72,9 +72,9 @@ require = function () {
                 case 'Object':
                     switch (type_1.type(target[key])) {
                     case 'Object':
-                        return target[key] = source[key] instanceof Object ? exports.extend(target[key], source[key]) : source[key];
+                        return target[key] = type_1.isObject(source[key]) ? exports.extend(target[key], source[key]) : source[key];
                     default:
-                        return target[key] = source[key] instanceof Object ? exports.extend({}, source[key]) : source[key];
+                        return target[key] = type_1.isObject(source[key]) ? exports.extend(source[key] instanceof Object ? {} : Object.create(null), source[key]) : source[key];
                     }
                 default:
                     return target[key] = source[key];
@@ -334,11 +334,15 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             function type(target) {
                 const type = Object.prototype.toString.call(target).split(' ').pop().slice(0, -1);
-                if (typeof target !== 'object' && target instanceof Object === false || target === null)
+                if (target === null || typeof target !== 'object' && target instanceof Object === false)
                     return type.toLowerCase();
                 return type;
             }
             exports.type = type;
+            function isObject(target) {
+                return target !== null && (typeof target === 'object' || target instanceof Object);
+            }
+            exports.isObject = isObject;
         },
         {}
     ],
@@ -2134,7 +2138,7 @@ require = function () {
             }
             exports.text = text;
             function makeIndex(text) {
-                return `index:${ text.trim().replace(/\s+/g, '-').toLowerCase() }`;
+                return `index:${ text.trim().replace(/\s+/g, '-') }`;
             }
         },
         {
