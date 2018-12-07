@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.92.1
+
+- Mark invalid HTML as invalid.
+
 ## 0.92.0
 
 - Don't format indexes.

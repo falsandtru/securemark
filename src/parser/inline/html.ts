@@ -1,5 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
-import { inits, sequence, some, fmap, match, surround, subline, verify, focus } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, subline, verify, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { compress, hasText } from '../util';
@@ -12,25 +12,37 @@ assert([...tags].every(tag => !['strong', 'em', 'code', 's', 'u', 'mark'].includ
 const emptytags = new Set('wbr'.split('|'));
 assert([...emptytags].every(tag => tags.has(tag)));
 
-export const html: HTMLParser = match(
-  /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
-  ([, tag], source) => {
-    if (!tags.has(tag)) return;
-    if (emptytags.has(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
-    assert(tags.has(tag));
-    return verify(
-      fmap(
-        sequence<HTMLParser>([
-          fmap(
-            surround(`<${tag}`, some(compress(attribute)), /^ ?>/, false),
-            ts => [frag(ts)]),
-          surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
+export const html: HTMLParser = union([
+  match(
+    /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+    ([, tag], source) => {
+      if (!tags.has(tag)) return;
+      if (emptytags.has(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
+      assert(tags.has(tag));
+      return verify(
+        fmap(
+          sequence([
+            fmap(
+              surround(`<${tag}`, some(compress(attribute)), /^ ?>/, false),
+              ts => [frag(ts)]),
+            surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
+          ]),
+          ([attrs, ...contents]) =>
+            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), contents)]),
+        ([el]) => hasText(el))
+        (source);
+    }),
+  match(
+    /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+    ([, tag], source) =>
+      bind(
+        sequence([
+          surround(`<${tag}`, some(compress(attribute)), /^ ?\/?>/, false),
         ]),
-        ([attrs, ...contents]) =>
-          [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), contents)]),
-      ([el]) => hasText(el))
-      (source);
-  });
+        (_, rest) =>
+          [[htm('span', { class: 'invalid', 'data-invalid-type': 'html' }, source.slice(0, source.length - rest.length))], rest])
+        (source)),
+]);
 
 const attribute: HTMLParser.AttributeParser = subline(fmap(
   surround(

@@ -456,8 +456,13 @@ export namespace MarkdownParser {
       // <small>abc</small>
       Inline<'html'>,
       Parser<HTMLElement, [
-        HTMLParser.AttributeParser,
-        InlineParser
+        Parser<HTMLElement, [
+          HTMLParser.AttributeParser,
+          InlineParser
+        ]>,
+        Parser<HTMLElement, [
+          HTMLParser.AttributeParser
+        ]>
       ]> {
     }
     export namespace HTMLParser {

@@ -15,7 +15,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{\\}')), [['<a href="\\" rel="noopener">\\</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{"}')), [['<a href="&quot;" rel="noopener">"</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{"#}')), [['<a href="&quot;#" rel="noopener">"#</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[<img>]{/}')), [['<a href="/" rel="noopener">&lt;img&gt;</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[<img>]{/}')), [['<a href="/" rel="noopener"><span class="invalid" data-invalid-type="html">&lt;img&gt;</span></a>'], '']);
     });
 
     it('fishing', () => {

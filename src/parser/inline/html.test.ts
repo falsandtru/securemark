@@ -7,26 +7,26 @@ describe('Unit: parser/inline/html', () => {
     const parser = some(html);
 
     it('xss', () => {
-      assert.deepStrictEqual(inspect(parser('<script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<script src="."></script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<bdi onclick="alert()">')), undefined);
-      assert.deepStrictEqual(inspect(parser('<bdi onclick="alert()"><small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small><bdi onclick="alert()"></small></small>')), [['<small>&lt;bdi onclick="alert()"&gt;</small>'], '</small>']);
+      assert.deepStrictEqual(inspect(parser('<script>')), [['<span class="invalid" data-invalid-type="html">&lt;script&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), [['<span class="invalid" data-invalid-type="html">&lt;script&gt;</span>'], 'alert()<script>']);
+      assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), [['<span class="invalid" data-invalid-type="html">&lt;script&gt;</span>'], 'alert()</script>']);
+      assert.deepStrictEqual(inspect(parser('<script src="."></script>')), [['<span class="invalid" data-invalid-type="html">&lt;script src="."&gt;</span>'], '</script>']);
+      assert.deepStrictEqual(inspect(parser('<small onclick="alert()">')), [['<span class="invalid" data-invalid-type="html">&lt;small onclick="alert()"&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small onclick="alert()"></small>')), [['<span class="invalid" data-invalid-type="html">&lt;small onclick="alert()"&gt;</span>'], '</small>']);
+      assert.deepStrictEqual(inspect(parser('<small><small onclick="alert()"></small></small>')), [['<small><span class="invalid" data-invalid-type="html">&lt;small onclick="alert()"&gt;</span></small>'], '</small>']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl\\"><">a</bdo>')), [['<bdo class="invalid" data-invalid-type="parameter">a</bdo>'], '']);
     });
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small></small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small> </small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small>\n</small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small>a')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small>a</RUBY>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<SMALL>a</bdi>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small>')), [['<span class="invalid" data-invalid-type="html">&lt;small&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small></small>')), [['<span class="invalid" data-invalid-type="html">&lt;small&gt;</span>'], '</small>']);
+      assert.deepStrictEqual(inspect(parser('<small> </small>')), [['<span class="invalid" data-invalid-type="html">&lt;small&gt;</span>'], ' </small>']);
+      assert.deepStrictEqual(inspect(parser('<small>\n</small>')), [['<span class="invalid" data-invalid-type="html">&lt;small&gt;</span>'], '\n</small>']);
+      assert.deepStrictEqual(inspect(parser('<small>a')), [['<span class="invalid" data-invalid-type="html">&lt;small&gt;</span>'], 'a']);
+      assert.deepStrictEqual(inspect(parser('<small>a</BDO>')), [['<span class="invalid" data-invalid-type="html">&lt;small&gt;</span>'], 'a</BDO>']);
       assert.deepStrictEqual(inspect(parser('<SMALL>a</SMALL>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<SMALL>a</bdo>')), undefined);
       assert.deepStrictEqual(inspect(parser('</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), undefined);
       assert.deepStrictEqual(inspect(parser('a<small>')), undefined);
@@ -50,13 +50,13 @@ describe('Unit: parser/inline/html', () => {
     });
 
     it('escape', () => {
-      assert.deepStrictEqual(inspect(parser('<a>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small><a></a></small>')), [['<small>&lt;a&gt;&lt;/a&gt;</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>a<a>b</a>c</small>')), [['<small>a&lt;a&gt;b&lt;/a&gt;c</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<img>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small><img></small>')), [['<small>&lt;img&gt;</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<img />')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small><img /></small>')), [['<small>&lt;img /&gt;</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<a>')), [['<span class="invalid" data-invalid-type="html">&lt;a&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><a></a></small>')), [['<small><span class="invalid" data-invalid-type="html">&lt;a&gt;</span>&lt;/a&gt;</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a<a>b</a>c</small>')), [['<small>a<span class="invalid" data-invalid-type="html">&lt;a&gt;</span>b&lt;/a&gt;c</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<img>')), [['<span class="invalid" data-invalid-type="html">&lt;img&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><img></small>')), [['<small><span class="invalid" data-invalid-type="html">&lt;img&gt;</span></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<img />')), [['<span class="invalid" data-invalid-type="html">&lt;img /&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small><img /></small>')), [['<small><span class="invalid" data-invalid-type="html">&lt;img /&gt;</span></small>'], '']);
     });
 
     it('attribute', () => {
