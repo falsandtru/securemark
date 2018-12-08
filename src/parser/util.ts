@@ -1,5 +1,6 @@
 ﻿import { Parser, fmap } from '../combinator';
 import { isFixed } from './inline';
+import { frag } from 'typed-dom';
 
 export function suppress<P extends Parser<HTMLElement, any>>(parser: P): P;
 export function suppress<T extends HTMLElement, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
@@ -19,6 +20,10 @@ export function suppress<T extends HTMLElement, S extends Parser<any, any>[]>(pa
     });
     return es;
   });
+}
+
+export function wrap<S extends Parser<any, any>[]>(parser: Parser<Node, S>): Parser<DocumentFragment, S> {
+  return fmap(parser, ns => [frag(ns)]);
 }
 
 export function stringify<S extends Parser<any, any>[]>(parser: Parser<Node, S>): Parser<string, S> {

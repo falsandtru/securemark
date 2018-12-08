@@ -2,8 +2,8 @@
 import { union, inits, sequence, some, fmap, bind, match, surround, subline, verify, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
-import { defrag, hasText } from '../util';
-import { html as htm, text, frag } from 'typed-dom';
+import { defrag, hasText, wrap } from '../util';
+import { html as htm, text } from 'typed-dom';
 
 const tags = new Set('ins|del|sup|sub|small|bdi|bdo|wbr'.split('|'));
 assert([...tags].every(tag => /^[a-z]+$/.test(tag)));
@@ -22,13 +22,11 @@ export const html: HTMLParser = union([
       return verify(
         fmap(
           sequence([
-            fmap(
-              surround(`<${tag}`, some(defrag(attribute)), /^ ?>/, false),
-              ts => [frag(ts)]),
-            surround(``, defrag(some(inline, `</${tag}>`)), `</${tag}>`),
+            wrap(surround(`<${tag}`, some(defrag(attribute)), /^ ?>/, false)),
+            wrap(surround(``, defrag(some(inline, `</${tag}>`)), `</${tag}>`)),
           ]),
-          ([attrs, ...contents]) =>
-            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), contents)]),
+          ([attrs, contents]) =>
+            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), [contents])]),
         ([el]) => hasText(el))
         (source);
     }),

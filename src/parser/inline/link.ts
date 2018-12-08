@@ -1,9 +1,9 @@
 ﻿import { LinkParser, inline } from '../inline';
 import { union, inits, sequence, some, fmap, bind, match, surround, validate, subline, focus, verify, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
-import { defrag, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
+import { defrag, wrap, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
-import { html, text, frag } from 'typed-dom';
+import { html, text } from 'typed-dom';
 
 const attributes: Record<string, Array<string | undefined>> = {
   nofollow: [undefined],
@@ -11,9 +11,8 @@ const attributes: Record<string, Array<string | undefined>> = {
 
 export const link: LinkParser = subline(bind(lazy(() =>
   sequence<LinkParser>([
-    verify(fmap(
-      surround(/^\[(?=\]|\S.*?\]{.*})/, defrag(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
-      ns => [frag(ns)]),
+    verify(
+      wrap(surround(/^\[(?=\]|\S.*?\]{.*})/, defrag(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false)),
       ([text]) => {
         if (hasMedia(text)) {
           void text.querySelectorAll('a > .media')
@@ -29,9 +28,7 @@ export const link: LinkParser = subline(bind(lazy(() =>
         assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
         return true;
       }),
-    fmap(
-      surround('{', inits<LinkParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/),
-      ts => [frag(ts)]),
+      wrap(surround('{', inits<LinkParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/)),
   ])),
   ([text, param], rest) => {
     const [INSECURE_URL = '', ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
