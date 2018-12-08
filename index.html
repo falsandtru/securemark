@@ -93,6 +93,13 @@
     color: red;
     font-weight: bold;
   }
+  .invalid {
+    color: red;
+    font-style: italic;
+  }
+  .invalid:before {
+    content: "Invalid " attr(data-invalid-type) ": ";
+  }
 </style>
 
 </head>
@@ -227,7 +234,7 @@
     '',
     '### Index',
     '',
-    '[#Title], [#Link], [#normal link], [#nofollow link], [#index link]',
+    '[#Title], [#Link], [#normal link], [#nofollow link]',
     '',
     '### Label',
     '',
