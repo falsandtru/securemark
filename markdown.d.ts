@@ -462,6 +462,9 @@ export namespace MarkdownParser {
         ]>,
         Parser<HTMLElement, [
           HTMLParser.AttributeParser
+        ]>,
+        Parser<HTMLElement, [
+          HTMLParser.AttributeParser
         ]>
       ]> {
     }

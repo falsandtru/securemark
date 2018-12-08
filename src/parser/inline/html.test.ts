@@ -70,6 +70,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl" dir="rtl">a</bdo>')), [['<bdo class="invalid" dir="rtl" data-invalid-type="parameter">a</bdo>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl">a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdo dir="rtl" >a</bdo>')), [['<bdo dir="rtl">a</bdo>'], '']);
+      assert.deepStrictEqual(inspect(parser('<wbr constructor>')), [['<span class="invalid" data-invalid-type="html">&lt;wbr constructor&gt;</span>'], '']);
     });
 
   });

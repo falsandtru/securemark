@@ -6,20 +6,18 @@ import { escsource } from '../source/escapable';
 import { defrag, hasText, wrap } from '../util';
 import { html as htm, text } from 'typed-dom';
 
-const tags = new Set('ins|del|sup|sub|small|bdi|bdo|wbr'.split('|'));
+const tags = new Set('ins|del|sup|sub|small|bdi|bdo'.split('|'));
 assert([...tags].every(tag => /^[a-z]+$/.test(tag)));
 assert([...tags].every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
 assert([...tags].every(tag => !['strong', 'em', 'code', 's', 'u', 'mark'].includes(tag)));
 const emptytags = new Set('wbr'.split('|'));
-assert([...emptytags].every(tag => tags.has(tag)));
+assert([...emptytags].every(tag => !tags.has(tag)));
 
 export const html: HTMLParser = union([
   match(
     /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
     ([, tag], source) => {
       if (!tags.has(tag)) return;
-      if (emptytags.has(tag)) return [[htm(tag as 'wbr')], source.slice(tag.length + 2)];
-      assert(tags.has(tag));
       return verify(
         fmap(
           sequence<SubParsers<HTMLParser>[0]>([
@@ -33,9 +31,23 @@ export const html: HTMLParser = union([
     }),
   match(
     /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+    ([, tag], source) => {
+      if (!emptytags.has(tag)) return;
+      return verify(
+        fmap(
+          sequence<SubParsers<HTMLParser>[1]>([
+            wrap(surround(`<${tag}`, some(defrag(attribute)), /^ ?>/, false)),
+          ]),
+          ([attrs]) =>
+            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), [])]),
+        ([el]) => el.matches(':not(.invalid)'))
+        (source);
+    }),
+  match(
+    /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
     ([, tag], source) =>
       bind(
-        sequence<SubParsers<HTMLParser>[1]>([
+        sequence<SubParsers<HTMLParser>[2]>([
           surround(`<${tag}`, some(defrag(attribute)), /^ ?\/?>/, false),
         ]),
         (_, rest) =>
