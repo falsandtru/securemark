@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.92.2
+
+- Add license notice.
+
 ## 0.92.1
 
 - Mark invalid HTML as invalid.

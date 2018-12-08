@@ -23,6 +23,7 @@
     "*.js",
     "*.json",
     "*.md",
+    "NOTICE",
     "LICENSE"
   ],
   "browserify-shim": {
