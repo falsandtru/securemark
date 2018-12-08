@@ -1,4 +1,5 @@
 ﻿import { HTMLParser, inline } from '../inline';
+import { SubParsers } from '../../combinator/data/parser';
 import { union, inits, sequence, some, fmap, bind, match, surround, subline, verify, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
@@ -21,12 +22,12 @@ export const html: HTMLParser = union([
       assert(tags.has(tag));
       return verify(
         fmap(
-          sequence([
+          sequence<SubParsers<HTMLParser>[0]>([
             wrap(surround(`<${tag}`, some(defrag(attribute)), /^ ?>/, false)),
-            wrap(surround(``, defrag(some(inline, `</${tag}>`)), `</${tag}>`)),
+            surround(``, defrag(some(inline, `</${tag}>`)), `</${tag}>`),
           ]),
-          ([attrs, contents]) =>
-            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), [contents])]),
+          ([attrs, ...contents]) =>
+            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), contents)]),
         ([el]) => hasText(el))
         (source);
     }),
@@ -34,7 +35,7 @@ export const html: HTMLParser = union([
     /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
     ([, tag], source) =>
       bind(
-        sequence([
+        sequence<SubParsers<HTMLParser>[1]>([
           surround(`<${tag}`, some(defrag(attribute)), /^ ?\/?>/, false),
         ]),
         (_, rest) =>
