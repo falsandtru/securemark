@@ -7,5 +7,5 @@ export function subsequence<T, S extends Parser<T, any>[]>(parsers: S): Parser<T
   assert(parsers.every(f => !!f));
   return parsers.length < 2
     ? union(parsers)
-    : union([inits(parsers), subsequence(parsers.slice(1))] as S);
+    : union([inits(parsers), subsequence(parsers.slice(1))] as any as S);
 }
