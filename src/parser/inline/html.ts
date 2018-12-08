@@ -26,7 +26,7 @@ export const html: HTMLParser = union([
           ]),
           ([attrs, ...contents]) =>
             [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), contents)]),
-        ([el]) => hasText(el))
+        ([el]) => el.matches(':not(.invalid)') && hasText(el))
         (source);
     }),
   match(
