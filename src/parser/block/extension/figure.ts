@@ -9,7 +9,7 @@ import { graph , segment_ as seg_graph } from './graph';
 import { example, segment_ as seg_example } from './example';
 import { inblock } from '../../inblock';
 import { label, media, link, uri } from '../../inline';
-import { compress } from '../../util';
+import { defrag } from '../../util';
 import { memoize } from 'spica/memoization';
 import { html } from 'typed-dom';
 
@@ -70,7 +70,7 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
           emptyline,
           block(union<FigureParser.CaptionParser>([
             blankline,
-            compress(trim(some(inblock))),
+            defrag(trim(some(inblock))),
           ])),
         ]),
       ]),

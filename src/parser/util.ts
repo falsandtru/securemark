@@ -25,8 +25,8 @@ export function stringify<S extends Parser<any, any>[]>(parser: Parser<Node, S>)
   return fmap(parser, ns => ns.map(n => n.textContent!));
 }
 
-export function compress<P extends Parser<Node, any>>(parser: P): P;
-export function compress<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+export function defrag<P extends Parser<Node, any>>(parser: P): P;
+export function defrag<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   return fmap(parser, squash);
 }
 

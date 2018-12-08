@@ -1,7 +1,7 @@
 ﻿import { LinkParser, inline } from '../inline';
 import { union, inits, sequence, some, fmap, bind, match, surround, validate, subline, focus, verify, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
-import { compress, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
+import { defrag, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { html, text, frag } from 'typed-dom';
 
@@ -12,7 +12,7 @@ const attributes: Record<string, Array<string | undefined>> = {
 export const link: LinkParser = subline(bind(lazy(() =>
   sequence<LinkParser>([
     verify(fmap(
-      surround(/^\[(?=\]|\S.*?\]{.*})/, compress(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
+      surround(/^\[(?=\]|\S.*?\]{.*})/, defrag(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
       ns => [frag(ns)]),
       ([text]) => {
         if (hasMedia(text)) {
@@ -30,7 +30,7 @@ export const link: LinkParser = subline(bind(lazy(() =>
         return true;
       }),
     fmap(
-      surround('{', inits<LinkParser.ParamParser>([uri, some(compress(attribute))]), /^ ?}/),
+      surround('{', inits<LinkParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/),
       ts => [frag(ts)]),
   ])),
   ([text, param], rest) => {
@@ -65,7 +65,7 @@ export const link: LinkParser = subline(bind(lazy(() =>
 export const uri: LinkParser.ParamParser.UriParser = subline(match(
   /^ ?(?! )/,
   ([flag], rest) =>
-    compress(some(
+    defrag(some(
       union<LinkParser.ParamParser.UriParser>([bracket, unescsource]),
       flag === ' ' ? /^\s/ : /^[\s}]/))
       (rest)));

@@ -2,7 +2,7 @@
 import { union, inits, sequence, some, fmap, bind, match, surround, subline, verify, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
-import { compress, hasText } from '../util';
+import { defrag, hasText } from '../util';
 import { html as htm, text, frag } from 'typed-dom';
 
 const tags = new Set('ins|del|sup|sub|small|bdi|bdo|wbr'.split('|'));
@@ -23,9 +23,9 @@ export const html: HTMLParser = union([
         fmap(
           sequence([
             fmap(
-              surround(`<${tag}`, some(compress(attribute)), /^ ?>/, false),
+              surround(`<${tag}`, some(defrag(attribute)), /^ ?>/, false),
               ts => [frag(ts)]),
-            surround(``, compress(some(inline, `</${tag}>`)), `</${tag}>`),
+            surround(``, defrag(some(inline, `</${tag}>`)), `</${tag}>`),
           ]),
           ([attrs, ...contents]) =>
             [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), contents)]),
@@ -37,7 +37,7 @@ export const html: HTMLParser = union([
     ([, tag], source) =>
       bind(
         sequence([
-          surround(`<${tag}`, some(compress(attribute)), /^ ?\/?>/, false),
+          surround(`<${tag}`, some(defrag(attribute)), /^ ?\/?>/, false),
         ]),
         (_, rest) =>
           [[htm('span', { class: 'invalid', 'data-invalid-type': 'html' }, source.slice(0, source.length - rest.length))], rest])
@@ -48,8 +48,8 @@ const attribute: HTMLParser.AttributeParser = subline(fmap(
   surround(
     ' ',
     inits([
-      focus(/^[a-z]+(?=[= >])/, compress(some(unescsource, /^[^a-z]/))),
-      surround('="', compress(some(escsource, '"')), '"', false)
+      focus(/^[a-z]+(?=[= >])/, defrag(some(unescsource, /^[^a-z]/))),
+      surround('="', defrag(some(escsource, '"')), '"', false)
     ]),
     ''),
   ([key, value = undefined]) =>

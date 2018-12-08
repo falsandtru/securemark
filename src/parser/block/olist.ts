@@ -4,7 +4,7 @@ import { contentline } from '../source/line';
 import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inblock } from '../inblock';
-import { compress, hasMedia } from '../util';
+import { defrag, hasMedia } from '../util';
 import { memoize } from 'spica/memoization';
 import { html, frag } from 'typed-dom';
 
@@ -17,7 +17,7 @@ export const olist: OListParser = block(match(
       some(union([
         fmap(
           inits<ListItemParser>([
-            line(rewrite(contentline, verify(surround(opener(pattern(type(index))), compress(trim(some(inblock))), '', false), rs => !hasMedia(frag(rs))))),
+            line(rewrite(contentline, verify(surround(opener(pattern(type(index))), defrag(trim(some(inblock))), '', false), rs => !hasMedia(frag(rs))))),
             indent(union([ulist, olist_, ilist]))
           ]),
           ns => [html('li', fillFirstLine(ns))])

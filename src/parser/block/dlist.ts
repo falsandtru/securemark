@@ -3,7 +3,7 @@ import { union, inits, some, fmap, surround, verify, block, line, rewrite, trim,
 import { anyline, contentline } from '../source/line';
 import { inblock } from '../inblock';
 import { indexer, defineIndex } from './indexer';
-import { compress, hasMedia } from '../util';
+import { defrag, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
@@ -16,7 +16,7 @@ export const dlist: DListParser = block(fmap(lazy(() =>
 
 const term: DListParser.TermParser = line(rewrite(contentline, verify(
   fmap<DListParser.TermParser>(
-    surround(/^~(?=\s|$)/, compress(trim(some(union([indexer, inblock])))), '', false),
+    surround(/^~(?=\s|$)/, defrag(trim(some(union([indexer, inblock])))), '', false),
     ns => {
       const dt = html('dt', ns);
       void defineIndex(dt);
@@ -28,7 +28,7 @@ const desc: DListParser.DescriptionParser = block(
   fmap<DListParser.DescriptionParser>(
     rewrite(
       surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
-      surround(/^:(?=\s|$)|/, compress(trim(some(union([inblock])))), '', false)),
+      surround(/^:(?=\s|$)|/, defrag(trim(some(union([inblock])))), '', false)),
     ns => [html('dd', ns)]),
   false);
 

@@ -3,7 +3,7 @@ import { union, inits, some, fmap, surround, verify, block, line, indent, rewrit
 import { contentline } from '../source/line';
 import { ulist } from './ulist';
 import { olist_ } from './olist';
-import { compress, hasMedia } from '../util';
+import { defrag, hasMedia } from '../util';
 import { html, frag } from 'typed-dom';
 import { inblock } from '../inblock';
 
@@ -11,7 +11,7 @@ export const ilist: IListParser = block(fmap<IListParser>(lazy(() =>
   some(union([
     fmap(
       inits<ListItemParser>([
-        line(rewrite(contentline, verify(surround(/^[-+*](?:\s|$)/, compress(trim(some(inblock))), '', false), rs => !hasMedia(frag(rs))))),
+        line(rewrite(contentline, verify(surround(/^[-+*](?:\s|$)/, defrag(trim(some(inblock))), '', false), rs => !hasMedia(frag(rs))))),
         indent(union([ulist, olist_, ilist]))
       ]),
       () => [html('li', eval(some(inblock)('Invalid syntax: UList: Use `-` instead.')))])

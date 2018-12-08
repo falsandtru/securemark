@@ -2,7 +2,7 @@
 import { union, some, fmap, surround, verify, subline, focus, rewrite, convert, lazy } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { link, bracket } from '../link';
-import { compress } from '../../util';
+import { defrag } from '../../util';
 import { text } from 'typed-dom';
 
 const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
@@ -28,7 +28,7 @@ export const uri: AutolinkParser.UriParser = subline(union([
     ''),
   focus(
     /^[0-9a-zA-Z!?][!?]*h?ttps?(?=:)/,
-    compress(some(unescsource))),
+    defrag(some(unescsource))),
 ]));
 
 const ipv6 = subline(fmap(

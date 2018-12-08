@@ -1,7 +1,7 @@
 ﻿import { AutolinkParser } from '../../inblock';
 import { union, some, match, verify, subline, focus, lazy } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
-import { compress } from '../../util';
+import { defrag } from '../../util';
 import { html } from 'typed-dom';
 
 export const hashtag: AutolinkParser.HashtagParser = verify(lazy(() =>
@@ -15,5 +15,5 @@ export const hashtag_: AutolinkParser.HashtagParser = subline(union([
       [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], rest]),
   focus(
     /^#+/,
-    compress(some(unescsource))),
+    defrag(some(unescsource))),
 ]));

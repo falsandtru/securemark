@@ -4,7 +4,7 @@ import { text } from '../source/text';
 import '../source/unescapable';
 import { uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
-import { compress, startsWithTightText } from '../util';
+import { defrag, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { html, frag, define } from 'typed-dom';
 
@@ -16,10 +16,10 @@ export const cache = new Cache<string, HTMLElement>(10);
 export const media: MediaParser = subline(bind(
   sequence<MediaParser>([
     fmap(verify(
-      surround(/^!\[(?=\]|\S.*?\]{.*})/, compress(some(union([text]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
+      surround(/^!\[(?=\]|\S.*?\]{.*})/, defrag(some(union([text]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
       ns => ns.length === 0 || startsWithTightText(frag(ns))),
       ns => [frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
-    surround('{', inits<MediaParser.ParamParser>([uri, some(compress(attribute))]), /^ ?}/),
+    surround('{', inits<MediaParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/),
   ]),
   (ts, rest) => {
     const [caption, INSECURE_URL = '', ...params]: string[] = ts.map(t => t.textContent!);
