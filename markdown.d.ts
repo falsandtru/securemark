@@ -480,11 +480,9 @@ export namespace MarkdownParser {
     }
     export interface CommentParser extends
       // <# comment #>
-      // <!-- comment -->
       Inline<'comment'>,
       Parser<HTMLElement, [
-        Parser<HTMLElement, never>,
-        Parser<HTMLElement, never>
+        SourceParser.UnescapableSourceParser
       ]> {
     }
     export interface EmphasisParser extends

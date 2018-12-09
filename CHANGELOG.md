@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.93.0
+
+- Remove traditional comment syntax.
+
 ## 0.92.2
 
 - Add license notice.
