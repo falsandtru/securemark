@@ -2244,10 +2244,7 @@ require = function () {
             exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.subsequence([
                 combinator_1.some(reference_1.reference),
                 util_1.defrag(combinator_1.trim(combinator_1.some(inblock_1.inblock)))
-            ]), ns => {
-                const el = typed_dom_1.html('p', dropTrailingLinebreak(ns));
-                return util_1.hasContent(el) ? [el] : [];
-            }));
+            ]), ns => [typed_dom_1.html('p', dropTrailingLinebreak(ns))].filter(util_1.hasContent)));
             function dropTrailingLinebreak(ns) {
                 return ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement ? ns.slice(0, -1) : ns;
             }
@@ -2423,12 +2420,12 @@ require = function () {
             const inline_1 = require('./inline');
             exports.inblock = combinator_1.lazy(() => combinator_1.union([
                 autolink_1.autolink,
-                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|@[a-zA-Z0-9]|\\?\s#\S|\s+\[)/),
+                combinator_1.some(inline_1.inline, /^(?:\n|([)\]])\1|@[a-zA-Z0-9]|\\?\s#\S|\s+\[)/),
                 inline_1.inline
             ]));
             exports.incell = combinator_1.lazy(() => combinator_1.union([
                 autolink_1.autolink,
-                combinator_1.some(inline_1.inline, /^(?:([)\]])\1|@[a-zA-Z0-9]|\\?\s#\S|\s*\|)/),
+                combinator_1.some(inline_1.inline, /^(?:\n|([)\]])\1|@[a-zA-Z0-9]|\\?\s#\S|\s*\|)/),
                 inline_1.inline
             ]));
         },
@@ -2825,22 +2822,13 @@ require = function () {
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.comment = combinator_1.union([
-                combinator_1.match(/^<(#+)\s+([\s\S]*?\s+)?\1>/, ([, , s = ''], rest) => [
-                    [typed_dom_1.html('sup', {
-                            class: 'comment',
-                            title: s.trim()
-                        })],
-                    rest
-                ]),
-                combinator_1.match(/^<!-{2,}\s+([\s\S]*?\s+)?-{2,}>/, ([, , s = ''], rest) => [
-                    [typed_dom_1.html('sup', {
-                            class: 'comment',
-                            title: s.trim()
-                        })],
-                    rest
-                ])
-            ]);
+            exports.comment = combinator_1.verify(combinator_1.match(/^<(#+)\s+([\s\S]*?\s+)?\1>/, ([, , s = ''], rest) => [
+                [typed_dom_1.html('sup', {
+                        class: 'comment',
+                        title: s.trim()
+                    })],
+                rest
+            ]), ([el]) => el.title.trim() !== '');
         },
         {
             '../../combinator': 20,
