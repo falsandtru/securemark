@@ -3,6 +3,7 @@
 ## 0.93.0
 
 - Remove traditional comment syntax.
+- Disallow empty comment.
 
 ## 0.92.2
 

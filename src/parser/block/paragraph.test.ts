@@ -41,9 +41,8 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('<# #>')), [[], '']);
       assert.deepStrictEqual(inspect(parser('<# a #>')), [[], '']);
-      assert.deepStrictEqual(inspect(parser('<# #>a')), [['<p><sup class="comment" title=""></sup>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a #>b')), [['<p><sup class="comment" title="a"></sup>b</p>'], '']);
     });
 
   });
