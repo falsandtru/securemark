@@ -10,12 +10,7 @@ export const paragraph: ParagraphParser = block(fmap(
     some(reference),
     defrag(trim(some(inblock))),
   ]),
-  ns => {
-    const el = html('p', dropTrailingLinebreak(ns));
-    return hasContent(el)
-      ? [el]
-      : [];
-  }));
+  ns => [html('p', dropTrailingLinebreak(ns))].filter(hasContent)));
 
 function dropTrailingLinebreak(ns: Node[]): Node[] {
   return ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement
