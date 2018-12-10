@@ -2822,7 +2822,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.comment = combinator_1.match(/^<(#+)\s+(\S[\s\S]*?)\s+\1>/, ([, , title], rest) => [
+            exports.comment = combinator_1.match(/^<(#+)\s+(\S+(?:\s+\S+)*?)\s+\1>/, ([, , title], rest) => [
                 [typed_dom_1.html('sup', {
                         class: 'comment',
                         title
