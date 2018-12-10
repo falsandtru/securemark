@@ -57,7 +57,7 @@ https://falsandtru.github.io/securemark/
 - Index (# title [#section], ~ term [#term], [#some words])
 - Channel (@account#tag)
 - Hashtag (#tag)
-- Comment (<# comment #>, \<!-- comment -->)
+- Comment (<# comment #>)
 
 ## Media
 
