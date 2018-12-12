@@ -191,11 +191,6 @@ gulp.task('dist',
       'ts:dist',
     )));
 
-gulp.task('site',
-  series(
-    'dist',
-  ));
-
 gulp.task('view',
   series(
     'clean',
@@ -217,5 +212,4 @@ gulp.task('ci',
       'karma:ci',
       'karma:ci',
       'dist',
-      'site',
     )));
