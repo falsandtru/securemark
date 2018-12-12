@@ -21,7 +21,7 @@ export function breaklines(source: string): string {
         .map((line, i) =>
           breaks[i] &&
           breaks[i].matches('.linebreak') &&
-          !breaks[i].matches('.annotation .linebreak')
+          !breaks[i].closest('.annotation')
             ? `${line}\\`
             : line)
         .join('\n');
