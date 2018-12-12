@@ -19,7 +19,9 @@ export function breaklines(source: string): string {
       return sources.get(el)!
         .split('\n')
         .map((line, i) =>
-          breaks[i] && breaks[i].matches('.linebreak')
+          breaks[i] &&
+          breaks[i].matches('.linebreak') &&
+          !breaks[i].matches('.annotation .linebreak')
             ? `${line}\\`
             : line)
         .join('\n');

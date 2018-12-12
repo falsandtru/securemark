@@ -3,6 +3,7 @@
 ## 0.93.1
 
 - Fix breaklines function.
+- Change breaklines function to ignore linebreaks in annotation syntax.
 
 ## 0.93.0
 
