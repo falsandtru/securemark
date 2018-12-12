@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.93.1
+
+- Fix breaklines function.
+
 ## 0.93.0
 
 - Remove traditional comment syntax.
