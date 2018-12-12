@@ -1532,12 +1532,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             const parse_1 = require('./parse');
+            const concat_1 = require('spica/concat');
             const sources = new WeakMap();
             function breaklines(source) {
                 return [...parse_1.parse(source).children].map(el => {
                     if (el instanceof HTMLParagraphElement === false)
                         return sources.get(el);
-                    const breaks = el.querySelectorAll('br, .linebreak');
+                    const breaks = [...el.querySelectorAll('br, .linebreak, .comment')].reduce((acc, el) => concat_1.concat(acc, el.matches('.comment') ? Array(el.title.split('\n').length - 1).fill(el) : [el]), []);
                     return sources.get(el).split('\n').map((line, i) => breaks[i] && breaks[i].matches('.linebreak') ? `${ line }\\` : line).join('\n');
                 }).join('\n');
             }
@@ -1560,7 +1561,8 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            './parse': 45
+            './parse': 45,
+            'spica/concat': 7
         }
     ],
     48: [
