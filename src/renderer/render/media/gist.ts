@@ -18,7 +18,7 @@ export function gist(url: URL): HTMLElement | undefined {
       timeout: 10 * 1e3,
       cache: true,
       success({ div, stylesheet, description }) {
-        if (!stylesheet.startsWith('https://assets-cdn.github.com/')) return;
+        if (!stylesheet.startsWith('https://github.githubassets.com/')) return;
         outer.innerHTML = sanitize(`<div style="position: relative; margin-bottom: -1em;">${div}</div>`);
         const gist = outer.querySelector('.gist')! as HTMLElement;
         void gist.insertBefore(

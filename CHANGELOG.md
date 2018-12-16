@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.93.2
+
+- Update Gist renderer.
+
 ## 0.93.1
 
 - Fix breaklines function.
