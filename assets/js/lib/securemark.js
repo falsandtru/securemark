@@ -4058,7 +4058,7 @@ require = function () {
                             timeout: 10 * 1000,
                             cache: true,
                             success({div, stylesheet, description}) {
-                                if (!stylesheet.startsWith('https://assets-cdn.github.com/'))
+                                if (!stylesheet.startsWith('https://github.githubassets.com/'))
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
