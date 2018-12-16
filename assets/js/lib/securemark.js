@@ -1539,7 +1539,7 @@ require = function () {
                     if (el instanceof HTMLParagraphElement === false)
                         return sources.get(el);
                     const breaks = [...el.querySelectorAll('br, .linebreak, .comment')].reduce((acc, el) => concat_1.concat(acc, el.matches('.comment') ? Array(el.title.split('\n').length - 1).fill(el) : [el]), []);
-                    return sources.get(el).split('\n').map((line, i) => breaks[i] && breaks[i].matches('.linebreak') && !breaks[i].matches('.annotation .linebreak') ? `${ line }\\` : line).join('\n');
+                    return sources.get(el).split('\n').map((line, i) => breaks[i] && breaks[i].matches('.linebreak') && !breaks[i].closest('.annotation') ? `${ line }\\` : line).join('\n');
                 }).join('\n');
             }
             exports.breaklines = breaklines;
