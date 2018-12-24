@@ -2,7 +2,7 @@
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: parser/inblock/autolink/channel', () => {
+describe('Unit: parser/inline/autolink/channel', () => {
   describe('channel', () => {
     const parser = some(channel);
 

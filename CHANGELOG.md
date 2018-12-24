@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.0
+
+- Change channel syntax from inblock-level to inline-level syntax.
+
 ## 0.93.2
 
 - Update Gist renderer.

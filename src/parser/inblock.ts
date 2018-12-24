@@ -15,3 +15,5 @@ export const incell: InblockParser = lazy(() => union<InblockParser>([
   autolink,
   some(inline, /^(?:\n|([)\]])\1|@[a-zA-Z0-9]|\\?\s#\S|\s*\|)/), inline
 ]));
+
+export { hashtag_ } from './inblock/autolink/hashtag';

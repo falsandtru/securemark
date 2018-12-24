@@ -59,5 +59,3 @@ export { label, isGroup, isFixed } from './inline/extension/label';
 export { link } from './inline/link';
 export { media } from './inline/media';
 export { uri } from './inline/autolink/uri';
-export { email } from './inline/autolink/email';
-export { account } from './inline/autolink/account';

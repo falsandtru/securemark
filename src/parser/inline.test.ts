@@ -59,6 +59,12 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser(' a@b')), [[' ', '<a class="email" href="mailto:a@b" rel="noopener">a@b</a>'], '']);
     });
 
+    it('channel', () => {
+      assert.deepStrictEqual(inspect(parser('@a#1')), [['<a class="channel" rel="noopener">@a#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('_@a#1')), [['_', '<a class="channel" rel="noopener">@a#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser(' @a#1')), [[' ', '<a class="channel" rel="noopener">@a#1</a>'], '']);
+    });
+
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('@a')), [['<a class="account" rel="noopener">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('_@a')), [['_', '<a class="account" rel="noopener">@a</a>'], '']);

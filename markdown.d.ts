@@ -295,19 +295,10 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inblock<'autolink'>,
       Parser<HTMLAnchorElement | Text, [
-        AutolinkParser.ChannelParser,
         AutolinkParser.HashtagParser
       ]> {
     }
     export namespace AutolinkParser {
-      export interface ChannelParser extends
-        // @account#tag
-        Inblock<'channel'>,
-        Parser<HTMLAnchorElement, [
-          InlineParser.AutolinkParser.AccountParser,
-          HashtagParser
-        ]> {
-      }
       export interface HashtagParser extends
         // #tag
         Inblock<'hashtag'>,
@@ -553,6 +544,7 @@ export namespace MarkdownParser {
       Parser<HTMLAnchorElement | HTMLImageElement | Text, [
         AutolinkParser.UriParser,
         AutolinkParser.EmailParser,
+        AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser
       ]> {
     }
@@ -574,6 +566,14 @@ export namespace MarkdownParser {
             SourceParser.UnescapableSourceParser
           ]>,
           SourceParser.UnescapableSourceParser
+        ]> {
+      }
+      export interface ChannelParser extends
+        // @account#tag
+        Inline<'channel'>,
+        Parser<HTMLAnchorElement, [
+          InlineParser.AutolinkParser.AccountParser,
+          InblockParser.AutolinkParser.HashtagParser
         ]> {
       }
       export interface AccountParser extends

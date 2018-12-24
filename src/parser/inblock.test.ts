@@ -6,11 +6,6 @@ describe('Unit: parser/inblock', () => {
   describe('inblock', () => {
     const parser = some(inblock);
 
-    it('channel', () => {
-      assert.deepStrictEqual(inspect(parser('@a#1')), [['<a class="channel" rel="noopener">@a#1</a>'], '']);
-      assert.deepStrictEqual(inspect(parser(' @a#1')), [[' ', '<a class="channel" rel="noopener">@a#1</a>'], '']);
-    });
-
     it('hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#a#')), [['#', 'a', '#'], '']);
       assert.deepStrictEqual(inspect(parser('#a#b')), [['#', 'a', '#', 'b'], '']);
