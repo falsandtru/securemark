@@ -612,12 +612,5 @@ export namespace MarkdownParser {
       Source<'contentline'>,
       Parser<never, []> {
     }
-    export namespace CharParser {
-      export interface SharpParser extends
-        // #
-        Source<'char/sharp'>,
-        Parser<Text, []> {
-      }
-    }
   }
 }

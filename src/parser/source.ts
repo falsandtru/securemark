@@ -8,4 +8,3 @@ export import AnyLineParser = SourceParser.AnyLineParser;
 export import EmptyLineParser = SourceParser.EmptyLineParser;
 export import BlankLineParser = SourceParser.BlankLineParser;
 export import ContentLineParser = SourceParser.ContentLineParser;
-export import CharParser = SourceParser.CharParser;
