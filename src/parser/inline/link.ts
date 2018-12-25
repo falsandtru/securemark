@@ -12,7 +12,7 @@ const attributes: Record<string, Array<string | undefined>> = {
 export const link: LinkParser = subline(bind(lazy(() => contract(
   /^\[.*?\]{( ?).*?\1}/,
   sequence<LinkParser>([
-    wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false)),
+    wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ]),
   ([text]) => {

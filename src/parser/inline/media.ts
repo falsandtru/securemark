@@ -17,7 +17,7 @@ export const media: MediaParser = subline(bind(validate(
   /^!\[.*?\]{( ?).*?\1}/,
   sequence<MediaParser>([
     fmap(verify(
-      surround('![', defrag(some(union([text]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
+      surround('![', defrag(some(union([text]), /^[\n\]]/)), ']', false),
       ns => ns.length === 0 || startsWithTightText(frag(ns))),
       ns => [frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
     surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/),
