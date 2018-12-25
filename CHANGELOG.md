@@ -3,6 +3,7 @@
 ## 0.94.1
 
 - Fix ruby syntax to allow trailing whitespace.
+- Fix ruby syntax to disallow unused ruby text.
 
 ## 0.94.0
 

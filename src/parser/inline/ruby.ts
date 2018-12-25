@@ -6,7 +6,7 @@ import { defrag, hasText, startsWithTightText } from '../util';
 import { concat } from 'spica/concat';
 import { html, text as txt, frag } from 'typed-dom';
 
-export const ruby: RubyParser = subline(bind(fmap(
+export const ruby: RubyParser = subline(bind(verify(fmap(
   sequence<RubyParser>([
     fmap(verify(
       surround('[', defrag(some(union([htmlentity, text]), /^[\n\]]/)), ']'),
@@ -21,6 +21,8 @@ export const ruby: RubyParser = subline(bind(fmap(
     text.length === 1 && text.length < ruby.length
       ? [[...frag(text).textContent!].map(txt), ruby]
       : [text, ruby]),
+  ([text, ruby]) =>
+    text.length >= ruby.length),
   ([text, ruby], rest) =>
     [[html('ruby',
         text
