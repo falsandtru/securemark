@@ -10,6 +10,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert(!parser('[a]'));
       assert(!parser('[ab]'));
       assert(!parser('[^]'));
+      assert(!parser('[^]]'));
       assert(!parser('[^a\nb]'));
       assert(!parser('[^a\\\nb]'));
       assert(!parser('[^\n]'));

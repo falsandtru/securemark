@@ -13,7 +13,7 @@ describe('Unit: parser/block/indexer', () => {
       assert.deepStrictEqual(inspect(parser(' #')), undefined);
       assert.deepStrictEqual(inspect(parser(' #a')), undefined);
       assert.deepStrictEqual(inspect(parser(' [#]')), undefined);
-      assert.deepStrictEqual(inspect(parser(' [#[]')), undefined);
+      assert.deepStrictEqual(inspect(parser(' [#]]')), undefined);
       assert.deepStrictEqual(inspect(parser(' [#a]]')), undefined);
     });
 

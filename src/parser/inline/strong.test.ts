@@ -12,6 +12,7 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('**')), undefined);
       assert.deepStrictEqual(inspect(parser('***')), undefined);
       assert.deepStrictEqual(inspect(parser('****')), undefined);
+      assert.deepStrictEqual(inspect(parser('*****')), undefined);
       assert.deepStrictEqual(inspect(parser('** **')), undefined);
       assert.deepStrictEqual(inspect(parser('** a**')), undefined);
       assert.deepStrictEqual(inspect(parser('** a **')), undefined);
