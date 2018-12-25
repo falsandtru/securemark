@@ -14,7 +14,7 @@ export const hashtag_: AutolinkParser.HashtagParser = subline(union([
     ([, tag], rest) =>
       [[html('a', { class: 'hashtag', rel: 'noopener' }, `#${tag}`)], rest]),
   match(
-    /^#{(?!})([^#\s]+?)}/,
+    /^#{([^#\s{}]+?)}/,
     ([, tag], rest) =>
       [[html('a', { class: 'hashtag', rel: 'noopener' }, `#${tag}`)], rest]),
   focus(
