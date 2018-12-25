@@ -1,7 +1,7 @@
 ﻿import { TableParser } from '../block';
 import { union, sequence, some, fmap, bind, surround, contract, block, line, focus, rewrite, trim, lazy } from '../../combinator';
 import { contentline } from '../source/line';
-import { incell } from '../inblock';
+import { inline } from '../inline';
 import { squash, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, frag, text } from 'typed-dom';
@@ -66,7 +66,7 @@ const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser
 const data: TableParser.DataParser = bind(
   surround(
     /^\|\s*/,
-    union([some(incell, /^\s*(?:\||$)/)]),
+    union([some(inline, /^\s*(?:\||$)/)]),
     /^\s*/,
     false),
   (ns, rest) =>

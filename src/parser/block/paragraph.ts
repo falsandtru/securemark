@@ -1,14 +1,14 @@
 ﻿import { ParagraphParser } from '../block';
 import { subsequence, some, fmap, block, trim } from '../../combinator';
 import { reference } from './paragraph/reference';
-import { inblock } from '../inblock';
+import { inline } from '../inline';
 import { defrag, hasContent } from '../util';
 import { html } from 'typed-dom';
 
 export const paragraph: ParagraphParser = block(fmap(
   subsequence<ParagraphParser>([
     some(reference),
-    defrag(trim(some(inblock))),
+    defrag(trim(some(inline))),
   ]),
   ns => [html('p', dropTrailingLinebreak(ns))].filter(hasContent)));
 

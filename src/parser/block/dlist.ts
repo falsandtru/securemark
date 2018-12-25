@@ -1,7 +1,7 @@
 ﻿import { DListParser } from '../block';
 import { union, inits, some, fmap, surround, verify, block, line, rewrite, trim, lazy } from '../../combinator';
 import { anyline, contentline } from '../source/line';
-import { inblock } from '../inblock';
+import { inline } from '../inline';
 import { indexer, defineIndex } from './indexer';
 import { defrag, hasMedia } from '../util';
 import { concat } from 'spica/concat';
@@ -16,7 +16,7 @@ export const dlist: DListParser = block(fmap(lazy(() =>
 
 const term: DListParser.TermParser = line(rewrite(contentline, verify(
   fmap<DListParser.TermParser>(
-    surround(/^~(?=\s|$)/, defrag(trim(some(union([indexer, inblock])))), '', false),
+    surround(/^~(?=\s|$)/, defrag(trim(some(union([indexer, inline])))), '', false),
     ns => {
       const dt = html('dt', ns);
       void defineIndex(dt);
@@ -28,7 +28,7 @@ const desc: DListParser.DescriptionParser = block(
   fmap<DListParser.DescriptionParser>(
     rewrite(
       surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
-      surround(/^:(?=\s|$)|/, defrag(trim(some(union([inblock])))), '', false)),
+      surround(/^:(?=\s|$)|/, defrag(trim(some(union([inline])))), '', false)),
     ns => [html('dd', ns)]),
   false);
 

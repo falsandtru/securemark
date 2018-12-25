@@ -7,7 +7,7 @@ import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { graph , segment_ as seg_graph } from './graph';
 import { example, segment_ as seg_example } from './example';
-import { inblock } from '../../inblock';
+import { inline } from '../../inline';
 import { label, media, link, uri } from '../../inline';
 import { defrag } from '../../util';
 import { memoize } from 'spica/memoization';
@@ -70,7 +70,7 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
           emptyline,
           block(union<FigureParser.CaptionParser>([
             blankline,
-            defrag(trim(some(inblock))),
+            defrag(trim(some(inline))),
           ])),
         ]),
       ]),

@@ -3,7 +3,7 @@ import { union, inits, some, fmap, surround, verify, block, line, rewrite, inden
 import { contentline } from '../source/line';
 import { olist_ } from './olist';
 import { ilist } from './ilist';
-import { inblock } from '../inblock';
+import { inline } from '../inline';
 import { defrag, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, frag } from 'typed-dom';
@@ -12,7 +12,7 @@ export const ulist: UListParser = block(fmap<UListParser>(lazy(() =>
   some(union([
     fmap(
       inits<ListItemParser>([
-        line(rewrite(contentline, verify(surround(/^-(?:\s|$)/, defrag(trim(some(inblock))), '', false), rs => !hasMedia(frag(rs))))),
+        line(rewrite(contentline, verify(surround(/^-(?:\s|$)/, defrag(trim(some(inline))), '', false), rs => !hasMedia(frag(rs))))),
         indent(union([ulist, olist_, ilist]))
       ]),
       ns => [html('li', fillFirstLine(ns))])
