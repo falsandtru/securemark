@@ -1,5 +1,5 @@
 ﻿import { MarkdownParser } from '../../markdown.d';
-import { union, inits, some } from '../combinator';
+import { union } from '../combinator';
 import { annotation } from './inline/annotation';
 import { authority } from './inline/authority';
 import { extension } from './inline/extension';
@@ -16,7 +16,6 @@ import { bracket } from './inline/bracket';
 import { htmlentity } from './inline/htmlentity';
 import { autolink } from './inline/autolink';
 import { text } from './source/text';
-import { char } from './source/char';
 
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
@@ -36,8 +35,8 @@ export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 
 export const inline: InlineParser = union<InlineParser>([
-  inits([annotation, some(char('#'))]) as any as AnnotationParser,
-  inits([authority, some(char('#'))]) as any as AuthorityParser,
+  annotation,
+  authority,
   extension,
   link,
   ruby,

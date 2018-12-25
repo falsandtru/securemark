@@ -1,4 +1,4 @@
-﻿import { AutolinkParser } from '../../inblock';
+﻿import { AutolinkParser } from '../../inline';
 import { union, some, match, verify, subline, focus, lazy } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { defrag } from '../../util';
@@ -14,6 +14,6 @@ export const hashtag_: AutolinkParser.HashtagParser = subline(union([
     ([tag], rest) =>
       [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], rest]),
   focus(
-    /^#+/,
+    /^[a-zA-Z0-9]*#+/,
     defrag(some(unescsource))),
 ]));

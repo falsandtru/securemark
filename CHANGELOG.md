@@ -3,6 +3,7 @@
 ## 0.94.0
 
 - Change channel syntax from inblock-level to inline-level syntax.
+- Change hashtag syntax from inblock-level to inline-level syntax.
 
 ## 0.93.2
 

@@ -2,7 +2,7 @@
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: parser/inblock/autolink/hashtag', () => {
+describe('Unit: parser/inline/autolink/hashtag', () => {
   describe('hashtag', () => {
     const parser = some(hashtag);
 
@@ -15,8 +15,8 @@ describe('Unit: parser/inblock/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#\\\n')), [['#'], '\\\n']);
       assert.deepStrictEqual(inspect(parser('##')), [['##'], '']);
       assert.deepStrictEqual(inspect(parser('##a')), [['##'], 'a']);
-      assert.deepStrictEqual(inspect(parser('a#b')), undefined);
-      assert.deepStrictEqual(inspect(parser('a##b')), undefined);
+      assert.deepStrictEqual(inspect(parser('a#b')), [['a#'], 'b']);
+      assert.deepStrictEqual(inspect(parser('a##b')), [['a##'], 'b']);
       assert.deepStrictEqual(inspect(parser(' #a')), undefined);
     });
 

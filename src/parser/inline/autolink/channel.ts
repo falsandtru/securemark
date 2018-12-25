@@ -2,7 +2,7 @@
 import { sequence, some, verify, subline, rewrite, lazy } from '../../../combinator';
 import '../../source/unescapable';
 import { account } from './account';
-import { hashtag_ } from '../../inblock';
+import { hashtag_ } from './hashtag';
 import { html } from 'typed-dom';
 
 export const channel: AutolinkParser.ChannelParser = subline(lazy(() =>

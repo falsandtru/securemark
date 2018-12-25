@@ -73,7 +73,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('0#sec')), [['0', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('a#sec')), [['a', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('A#sec')), [['A', '#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('0aA#sec')), [['0aA', '#', 'sec'], '']);
+      assert.deepStrictEqual(inspect(parser('0aA#sec')), [['0', 'a', 'A', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('!#sec')), [['!', '#', 'sec'], '']);
       assert.deepStrictEqual(inspect(parser('?#sec')), [['?', '#', 'sec'], '']);
     });
@@ -90,6 +90,20 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('0aA@0')), [['0', 'a', 'A', '@', '0'], '']);
       assert.deepStrictEqual(inspect(parser(' @0')), [[' ', '@', '0'], '']);
       assert.deepStrictEqual(inspect(parser('@@0')), [['@', '@', '0'], '']);
+    });
+
+    it('hashtag', () => {
+      assert.deepStrictEqual(inspect(parser('#0')), [['#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('_#0')), [['_', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('$#0')), [['$', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('+#0')), [['+', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('-#0')), [['-', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('0#0')), [['0', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('a#0')), [['a', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('A#0')), [['A', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('0aA#0')), [['0', 'a', 'A', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser(' #0')), [[' ', '#', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('##0')), [['#', '#', '0'], '']);
     });
 
   });
