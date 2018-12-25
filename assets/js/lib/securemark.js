@@ -2643,7 +2643,7 @@ require = function () {
                         }, `#${ tag }`)],
                     rest
                 ]),
-                combinator_1.match(/^#{(?!})([^#\s]+?)}/, ([, tag], rest) => [
+                combinator_1.match(/^#{([^#\s{}]+?)}/, ([, tag], rest) => [
                     [typed_dom_1.html('a', {
                             class: 'hashtag',
                             rel: 'noopener'
