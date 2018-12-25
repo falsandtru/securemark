@@ -1,5 +1,5 @@
 ﻿import { MediaParser } from '../inline';
-import { union, inits, sequence, some, fmap, bind, surround, verify, subline } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, surround, validate, verify, subline } from '../../combinator';
 import { text } from '../source/text';
 import '../source/unescapable';
 import { uri, attribute, check } from './link';
@@ -13,14 +13,15 @@ const attributes: Record<string, Array<string | undefined>> = {
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = subline(bind(
+export const media: MediaParser = subline(bind(validate(
+  /^!\[.*?\]{( ?).*?\1}/,
   sequence<MediaParser>([
     fmap(verify(
-      surround(/^!\[(?=\]|\S.*?\]{.*})/, defrag(some(union([text]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
+      surround('![', defrag(some(union([text]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false),
       ns => ns.length === 0 || startsWithTightText(frag(ns))),
       ns => [frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
-    surround('{', inits<MediaParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/),
-  ]),
+    surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/),
+  ])),
   (ts, rest) => {
     const [caption, INSECURE_URL = '', ...params]: string[] = ts.map(t => t.textContent!);
     const path = sanitize(INSECURE_URL.trim());

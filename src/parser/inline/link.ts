@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, sequence, some, fmap, bind, match, surround, validate, subline, focus, verify, lazy } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, contract, validate, subline, focus, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { defrag, wrap, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
@@ -9,27 +9,27 @@ const attributes: Record<string, Array<string | undefined>> = {
   nofollow: [undefined],
 };
 
-export const link: LinkParser = subline(bind(lazy(() =>
+export const link: LinkParser = subline(bind(lazy(() => contract(
+  /^\[.*?\]{( ?).*?\1}/,
   sequence<LinkParser>([
-    verify(
-      wrap(surround(/^\[(?=\]|\S.*?\]{.*})/, defrag(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false)),
-      ([text]) => {
-        if (hasMedia(text)) {
-          void text.querySelectorAll('a > .media')
-            .forEach(el =>
-              void el.parentNode!.parentNode!.replaceChild(el, el.parentNode!))
-          if (text.childNodes.length !== 1) return false;
-          if (!text.firstElementChild!.matches('.media')) return false;
-        }
-        else {
-          if (text.childNodes.length > 0 && !startsWithTightText(text)) return false;
-          if (hasLink(text)) return false;
-        }
-        assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
-        return true;
-      }),
-      wrap(surround('{', inits<LinkParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/)),
-  ])),
+    wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), /^\](?={( ?)[^\n]*?\1})/, false)),
+    wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
+  ]),
+  ([text]) => {
+    if (hasMedia(text)) {
+      void text.querySelectorAll('a > .media')
+        .forEach(el =>
+          void el.parentNode!.parentNode!.replaceChild(el, el.parentNode!));
+      if (text.childNodes.length !== 1) return false;
+      if (!text.firstElementChild!.matches('.media')) return false;
+    }
+    else {
+      if (text.childNodes.length > 0 && !startsWithTightText(text)) return false;
+      if (hasLink(text)) return false;
+    }
+    assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
+    return true;
+  })),
   ([text, param], rest) => {
     const [INSECURE_URL = '', ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
     const path = sanitize(INSECURE_URL);
