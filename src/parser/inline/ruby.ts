@@ -2,7 +2,7 @@
 import { union, sequence, some, fmap, bind, surround, subline, verify } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text } from '../source/text';
-import { defrag, hasText, hasTightText } from '../util';
+import { defrag, hasText, startsWithTightText } from '../util';
 import { concat } from 'spica/concat';
 import { html, text as txt, frag } from 'typed-dom';
 
@@ -10,8 +10,8 @@ export const ruby: RubyParser = subline(bind(fmap(
   sequence<RubyParser>([
     fmap(verify(
       surround('[', defrag(some(union([htmlentity, text]), /^[\n\]]/)), ']'),
-      ([text]) => hasTightText(text)),
-      ([text]) => [text.textContent!.split(/\s/).map(txt)]),
+      ([text]) => startsWithTightText(text)),
+      ([text]) => [text.textContent!.trim().split(/\s/).map(txt)]),
     fmap(verify(
       surround('(', defrag(some(union([htmlentity, text]), /^[\n)]/)), ')'),
       ([text]) => hasText(text)),

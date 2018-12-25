@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.1
+
+- Fix ruby syntax to allow trailing whitespace.
+
 ## 0.94.0
 
 - Refine hashtag syntax.
