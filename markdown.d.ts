@@ -566,6 +566,7 @@ export namespace MarkdownParser {
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
+          SourceParser.UnescapableSourceParser,
           SourceParser.UnescapableSourceParser
         ]> {
       }

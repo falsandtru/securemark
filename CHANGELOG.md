@@ -2,6 +2,7 @@
 
 ## 0.94.0
 
+- Refine hashtag syntax.
 - Change channel syntax from inblock-level to inline-level syntax.
 - Change hashtag syntax from inblock-level to inline-level syntax.
 
