@@ -1,21 +1,21 @@
 ﻿import { MathParser } from '../inline';
-import { union, some, fmap, surround, verify, subline } from '../../combinator';
+import { union, some, surround, verify, subline, rewrite, convert } from '../../combinator';
 import { escsource } from '../source/escapable';
-import { stringify, defrag, hasText } from '../util';
+import { hasText } from '../util';
 import { Cache } from 'spica/cache';
 import { html, frag } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(20); // for rerendering in editing
 
 export const math: MathParser = subline(verify(
-  fmap(
-    stringify(
-      surround('${', defrag(some(union([escsource]), /^}\$|^\n/)), '}$')),
-    ([body]) => {
-      const source = `$\{${body.trim()}}$`;
-      if (cache.has(source)) return [cache.get(source)!.cloneNode(true)];
-      const el = html('span', { class: 'math notranslate' }, source);
-      void el.setAttribute('data-src', source);
-      return [el];
-    }),
+  rewrite(
+    surround('${', some(union<MathParser>([escsource]), /^}\$|^\n/), '}$'),
+    convert(
+      source => `\${${source.slice(2, -2).trim()}}$`,
+      source => [
+        cache.has(source)
+          ? [cache.get(source)!.cloneNode(true)]
+          : [html('span', { class: 'math notranslate', 'data-src': source }, source)],
+        ''
+      ])),
   ([el]) => hasText(frag(el.textContent!.slice(2, -2)))));
