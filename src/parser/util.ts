@@ -26,10 +26,6 @@ export function wrap<S extends Parser<any, any>[]>(parser: Parser<Node, S>): Par
   return fmap(parser, ns => [frag(ns)]);
 }
 
-export function stringify<S extends Parser<any, any>[]>(parser: Parser<Node, S>): Parser<string, S> {
-  return fmap(parser, ns => ns.map(n => n.textContent!));
-}
-
 export function defrag<P extends Parser<Node, any>>(parser: P): P;
 export function defrag<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   return fmap(parser, squash);
@@ -49,6 +45,10 @@ export function squash(nodes: Node[]): Node[] {
       return curr;
     }, undefined);
   return acc;
+}
+
+export function stringify(nodes: Node[]): string {
+  return nodes.reduce((acc, node) => acc + node.textContent!, '');
 }
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {

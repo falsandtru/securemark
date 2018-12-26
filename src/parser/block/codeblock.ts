@@ -21,7 +21,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, match(
       void el.classList.add(`language-${lang.toLowerCase()}`);
       void el.setAttribute('data-lang', lang);
     }
-    const filepath = eval(stringify(some(escsource, /^\s/))(param.trim())).join('');
+    const filepath = stringify(eval(some(escsource, /^\s/)(param.trim())));
     if (filepath) {
       void el.setAttribute('data-file', filepath);
     }

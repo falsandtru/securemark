@@ -4,7 +4,7 @@ import { text } from '../source/text';
 import '../source/unescapable';
 import { uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
-import { defrag, startsWithTightText } from '../util';
+import { defrag, stringify, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { html, frag, define } from 'typed-dom';
 
@@ -19,7 +19,7 @@ export const media: MediaParser = subline(bind(validate(
     fmap(verify(
       surround('![', defrag(some(union([text]), /^[\n\]]/)), ']', false),
       ns => ns.length === 0 || startsWithTightText(frag(ns))),
-      ns => [frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
+      ns => [frag(stringify(ns).trim())]),
     surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/),
   ])),
   (ts, rest) => {

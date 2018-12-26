@@ -2,9 +2,9 @@
 import { union, sequence, some, fmap, bind, surround, subline, contract, verify } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text } from '../source/text';
-import { defrag, hasText, startsWithTightText } from '../util';
+import { defrag, stringify, hasText, startsWithTightText } from '../util';
 import { concat } from 'spica/concat';
-import { html, text as txt, frag } from 'typed-dom';
+import { html, text as txt } from 'typed-dom';
 
 export const ruby: RubyParser = subline(bind(contract(
   /^\[.+?\]\(.+?\)/,
@@ -21,7 +21,7 @@ export const ruby: RubyParser = subline(bind(contract(
     ]),
     ([text, ruby]) =>
       text.length === 1 && text.length < ruby.length
-        ? [[...frag(text).textContent!].map(txt), ruby]
+        ? [[...stringify(text)].map(txt), ruby]
         : [text, ruby]),
   ([text, ruby]) =>
     text.length >= ruby.length),
