@@ -73,8 +73,7 @@ function compile(src) {
   })
     .require(`./index.ts`, { expose: pkg.name })
     .plugin(tsify, { global: true, ...require('./tsconfig.json').compilerOptions })
-    .transform('browserify-shim', { global: true })
-    .on('update', () => void bundle());
+    .transform('browserify-shim', { global: true });
   return bundle();
 
   function bundle() {
