@@ -1699,7 +1699,7 @@ require = function () {
                     void el.classList.add(`language-${ lang.toLowerCase() }`);
                     void el.setAttribute('data-lang', lang);
                 }
-                const filepath = combinator_1.eval(util_1.stringify(combinator_1.some(escapable_1.escsource, /^\s/))(param.trim())).join('');
+                const filepath = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param.trim())));
                 if (filepath) {
                     void el.setAttribute('data-file', filepath);
                 }
@@ -3191,7 +3191,7 @@ require = function () {
             const attributes = {};
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.validate(/^!\[.*?\]{( ?).*?\1}/, combinator_1.sequence([
-                combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.defrag(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), ']', false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(ns.reduce((s, n) => s + n.textContent, '').trim())]),
+                combinator_1.fmap(combinator_1.verify(combinator_1.surround('![', util_1.defrag(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), ']', false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(util_1.stringify(ns).trim())]),
                 combinator_1.surround('{', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(util_1.defrag(link_1.attribute))
@@ -3261,7 +3261,7 @@ require = function () {
                     text_1.text
                 ]), /^[\n)]/)), ')'), ([text]) => util_1.hasText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)])
             ]), ([text, ruby]) => text.length === 1 && text.length < ruby.length ? [
-                [...typed_dom_1.frag(text).textContent].map(typed_dom_1.text),
+                [...util_1.stringify(text)].map(typed_dom_1.text),
                 ruby
             ] : [
                 text,
@@ -3606,10 +3606,6 @@ require = function () {
                 return combinator_1.fmap(parser, ns => [typed_dom_1.frag(ns)]);
             }
             exports.wrap = wrap;
-            function stringify(parser) {
-                return combinator_1.fmap(parser, ns => ns.map(n => n.textContent));
-            }
-            exports.stringify = stringify;
             function defrag(parser) {
                 return combinator_1.fmap(parser, squash);
             }
@@ -3630,6 +3626,10 @@ require = function () {
                 return acc;
             }
             exports.squash = squash;
+            function stringify(nodes) {
+                return nodes.reduce((acc, node) => acc + node.textContent, '');
+            }
+            exports.stringify = stringify;
             function hasContent(node) {
                 return hasText(node) || hasMedia(node);
             }
