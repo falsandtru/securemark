@@ -183,9 +183,7 @@ export namespace MarkdownParser {
       ]> {
     }
     export interface ExtensionParser extends
-      // ~~~
-      // ABC
-      // : abc
+      // ~~~abc
       // ~~~
       Block<'extension'>,
       Parser<HTMLElement, [
@@ -562,7 +560,7 @@ export namespace MarkdownParser {
         ]> {
       }
       export interface HashtagParser extends
-        // #tag
+        // #tag, #{tag}
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
