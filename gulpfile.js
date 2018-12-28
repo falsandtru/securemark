@@ -116,7 +116,7 @@ gulp.task('ts:view', () =>
       .pipe(gulp.dest(config.site.js))));
 
 gulp.task('karma:dev', done =>
-  new Server({
+  void new Server({
     configFile: __dirname + '/karma.conf.js',
     browsers: config.browsers,
     preprocessors: {
@@ -125,7 +125,7 @@ gulp.task('karma:dev', done =>
   }, done).start());
 
 gulp.task('karma:test', done =>
-  new Server({
+  void new Server({
     configFile: __dirname + '/karma.conf.js',
     browsers: config.browsers,
     preprocessors: {
@@ -137,7 +137,7 @@ gulp.task('karma:test', done =>
   }, done).start());
 
 gulp.task('karma:ci', done =>
-  new Server({
+  void new Server({
     configFile: __dirname + '/karma.conf.js',
     browsers: config.browsers,
     preprocessors: {
