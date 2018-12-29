@@ -2668,28 +2668,17 @@ require = function () {
             const unescapable_1 = require('../../source/unescapable');
             const link_1 = require('../link');
             const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
-            const closer = /^['"`|\[\](){}<>]|^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|$)|^\\?(?:\s|$)/;
+            const closer = /^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|\\?(?:\s|$))|^["]/;
             exports.uri = combinator_1.subline(combinator_1.union([
-                combinator_1.surround(/^(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
-                    ipv6,
+                combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
                 ]))), combinator_1.convert(source => `[]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
-                combinator_1.surround(/^!(?=h?ttps?:\/\/\S)/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
-                    ipv6,
+                combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
                 ]))), combinator_1.convert(source => `[![]{${ address(source) }}]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
                 combinator_1.focus(/^[0-9a-zA-Z!?][!?]*h?ttps?(?=:)/, util_1.defrag(combinator_1.some(unescapable_1.unescsource)))
-            ]));
-            const ipv6 = combinator_1.subline(combinator_1.fmap(combinator_1.surround('[', combinator_1.focus(/^[:0-9a-z]+/, addr => [
-                [typed_dom_1.text(addr)],
-                ''
-            ]), ']'), ts => [
-                typed_dom_1.text('['),
-                ...ts,
-                typed_dom_1.text(']')
             ]));
             function address(source) {
                 return source.startsWith('ttp') ? `h${ source }` : source;
@@ -2702,8 +2691,7 @@ require = function () {
             '../../../combinator': 20,
             '../../source/unescapable': 99,
             '../../util': 101,
-            '../link': 89,
-            'typed-dom': 13
+            '../link': 89
         }
     ],
     79: [
@@ -3086,10 +3074,10 @@ require = function () {
                     rest
                 ];
             }));
-            exports.uri = combinator_1.subline(combinator_1.match(/^ ?(?! )/, ([flag], rest) => util_1.defrag(combinator_1.some(combinator_1.union([
+            exports.uri = combinator_1.subline(util_1.defrag(combinator_1.match(/^ ?(?! )/, ([flag], rest) => combinator_1.some(combinator_1.union([
                 exports.bracket,
                 unescapable_1.unescsource
-            ]), flag === ' ' ? /^\s/ : /^[\s}]/))(rest)));
+            ]), flag === ' ' ? /^\s/ : /^[\s}]/)(rest))));
             exports.bracket = combinator_1.subline(combinator_1.lazy(() => combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
