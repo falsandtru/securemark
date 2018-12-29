@@ -3,6 +3,7 @@
 ## 0.94.2
 
 - Fix uri parser behavior with backslash.
+- Fix uri parser to allow single quote and backquote.
 
 ## 0.94.1
 

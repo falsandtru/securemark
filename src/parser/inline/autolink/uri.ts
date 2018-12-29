@@ -5,7 +5,7 @@ import { link, bracket } from '../link';
 import { defrag } from '../../util';
 import { text } from 'typed-dom';
 
-const closer = /^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|\\?(?:\s|$))|^['"`]/;
+const closer = /^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|\\?(?:\s|$))|^["]/;
 
 export const uri: AutolinkParser.UriParser = subline(union([
   surround(
