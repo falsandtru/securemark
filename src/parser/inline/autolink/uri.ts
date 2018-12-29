@@ -9,7 +9,7 @@ const closer = /^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|\\?(?:\s|$))|^["]/;
 
 export const uri: AutolinkParser.UriParser = subline(union([
   surround(
-    /^(?=h?ttps?:\/\/\S)/,
+    /^(?=h?ttps?:\/\/[^/?#\s])/,
     verify(rewrite(lazy(() =>
       some(union([ipv6, bracket, some(unescsource, closer)]))),
       convert(
@@ -18,7 +18,7 @@ export const uri: AutolinkParser.UriParser = subline(union([
       ([node]) => node instanceof HTMLAnchorElement),
     ''),
   surround(
-    /^!(?=h?ttps?:\/\/\S)/,
+    /^!(?=h?ttps?:\/\/[^/?#\s])/,
     verify(rewrite(lazy(() =>
       some(union([ipv6, bracket, some(unescsource, closer)]))),
       convert(
