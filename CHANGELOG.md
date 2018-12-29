@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.2
+
+- Fix uri parser behavior with backslash.
+
 ## 0.94.1
 
 - Fix ruby syntax to allow trailing whitespace.
