@@ -59,13 +59,11 @@ export const link: LinkParser = subline(bind(lazy(() => contract(
     return [[el], rest];
   }));
 
-export const uri: LinkParser.ParamParser.UriParser = subline(match(
+export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
   /^ ?(?! )/,
   ([flag], rest) =>
-    defrag(some(
-      union<LinkParser.ParamParser.UriParser>([bracket, unescsource]),
-      flag === ' ' ? /^\s/ : /^[\s}]/))
-      (rest)));
+    some(union<LinkParser.ParamParser.UriParser>([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)
+      (rest))));
 
 export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(lazy(() => union([
   fmap(
