@@ -1,16 +1,16 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { union, some, surround, verify, subline, focus, rewrite, convert, lazy } from '../../../combinator';
+import { union, some, surround, verify, subline, focus, rewrite, convert } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { link, bracket } from '../link';
 import { defrag } from '../../util';
 
-const closer = /^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|\\?(?:\s|$))|^["]/;
+const closer = /^[-+*~^,.;:!?]*(?=[\s"|\[\](){}<>]|\\?(?:\s|$))/;
 
 export const uri: AutolinkParser.UriParser = subline(union([
   surround(
     /^(?=h?ttps?:\/\/[^/?#\s])/,
-    verify(rewrite(lazy(() =>
-      some(union([bracket, some(unescsource, closer)]))),
+    verify(rewrite(
+      some(union([bracket, some(unescsource, closer)])),
       convert(
         source => `[]{${address(source)}${attribute(source)}}`,
         link)),
@@ -18,8 +18,8 @@ export const uri: AutolinkParser.UriParser = subline(union([
     ''),
   surround(
     /^!(?=h?ttps?:\/\/[^/?#\s])/,
-    verify(rewrite(lazy(() =>
-      some(union([bracket, some(unescsource, closer)]))),
+    verify(rewrite(
+      some(union([bracket, some(unescsource, closer)])),
       convert(
         source => `[![]{${address(source)}}]{${address(source)}${attribute(source)}}`,
         link)),
