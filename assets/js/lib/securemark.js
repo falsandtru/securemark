@@ -2668,16 +2668,16 @@ require = function () {
             const unescapable_1 = require('../../source/unescapable');
             const link_1 = require('../link');
             const util_1 = require('../../util');
-            const closer = /^[-+*~^,.;:!?]*(?=[\s|\[\](){}<>]|\\?(?:\s|$))|^["]/;
+            const closer = /^[-+*~^,.;:!?]*(?=[\s"|\[\](){}<>]|\\?(?:\s|$))/;
             exports.uri = combinator_1.subline(combinator_1.union([
-                combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
+                combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ]))), combinator_1.convert(source => `[]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
-                combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
+                ])), combinator_1.convert(source => `[]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
+                combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ]))), combinator_1.convert(source => `[![]{${ address(source) }}]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
+                ])), combinator_1.convert(source => `[![]{${ address(source) }}]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
                 combinator_1.focus(/^[0-9a-zA-Z!?][!?]*h?ttps?(?=:)/, util_1.defrag(combinator_1.some(unescapable_1.unescsource)))
             ]));
             function address(source) {
