@@ -2264,7 +2264,7 @@ require = function () {
             require('../../source/unescapable');
             const inline_1 = require('../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.reference = combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.validate(/^(>+)[^>\s].*/, combinator_1.union([
+            exports.reference = combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.union([
                 combinator_1.match(/^(>+)[0-9a-z]+\s*$/, ([ref, {length: level}], rest) => [
                     [
                         typed_dom_1.html('a', {
@@ -2276,7 +2276,7 @@ require = function () {
                     ],
                     rest
                 ]),
-                () => [
+                combinator_1.match(/^(>+)(?!>)\S.*$/, () => [
                     [
                         typed_dom_1.html('span', {
                             class: 'invalid',
@@ -2285,8 +2285,8 @@ require = function () {
                         typed_dom_1.html('br')
                     ],
                     ''
-                ]
-            ]))));
+                ])
+            ])));
         },
         {
             '../../../combinator': 20,
