@@ -7,8 +7,8 @@ import { defrag, suppress } from '../util';
 import { html } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(lazy(() => union([
-  surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
-  surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, suppress(mdquote), ''),
+  surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, textquote, ''),
+  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, suppress(mdquote), ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
@@ -20,9 +20,7 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
       convert(unindent, textquote)),
     rewrite(
       some(contentline, opener),
-      convert(
-        unindent,
-        fmap(defrag(some(autolink)), ns => [html('pre', ns)]))),
+      convert(unindent, fmap(defrag(some(autolink)), ns => [html('pre', ns)]))),
   ]))),
   ns => [html('blockquote', ns)]);
 
@@ -33,9 +31,7 @@ const mdquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
       convert(unindent, mdquote)),
     rewrite(
       some(contentline, opener),
-      convert(
-        unindent,
-        source => [[parse(source)], ''])),
+      convert(unindent, source => [[parse(source)], ''])),
   ]))),
   ns => [html('blockquote', ns)]);
 
@@ -44,5 +40,5 @@ const indent = block(surround(opener, some(contentline, /^>(?:\s|$)/), ''), fals
 function unindent(source: string): string {
   return source
     .replace(/\n$/, '')
-    .replace(/^>(?:$|\s|(?=>*(?:$|\s)))/mg, '');
+    .replace(/^>(?:$|\s|(?=>+(?:$|\s)))/mg, '');
 }
