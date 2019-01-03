@@ -4,7 +4,7 @@ import { unescsource } from '../../source/unescapable';
 import { link, bracket } from '../link';
 import { defrag } from '../../util';
 
-const closer = /^[-+*~^,.;:!?]*(?=[\s"|\[\](){}<>]|\\?(?:\s|$))/;
+const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
 
 export const uri: AutolinkParser.UriParser = subline(union([
   surround(

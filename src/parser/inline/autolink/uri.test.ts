@@ -57,7 +57,7 @@ describe('Unit: parser/inline/autolink/uri', () => {
       assert.deepStrictEqual(inspect(parser('http://host^')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '^']);
       assert.deepStrictEqual(inspect(parser(`http://host'`)), [['<a href="http://host\'" rel="noopener" target="_blank">http://host\'</a>'], '']);
       assert.deepStrictEqual(inspect(parser('http://host"')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '"']);
-      assert.deepStrictEqual(inspect(parser('http://host`')), [['<a href="http://host`" rel="noopener" target="_blank">http://host`</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('http://host`')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '`']);
       assert.deepStrictEqual(inspect(parser('http://host|')), [['<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '|']);
       assert.deepStrictEqual(inspect(parser('http://host&')), [['<a href="http://host&amp;" rel="noopener" target="_blank">http://host&amp;</a>'], '']);
       assert.deepStrictEqual(inspect(parser('http://host_')), [['<a href="http://host_" rel="noopener" target="_blank">http://host_</a>'], '']);

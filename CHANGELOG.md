@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.3
+
+- Fix uri parser to disallow backquote.
+
 ## 0.94.2
 
 - Fix uri parser behavior with backslash.
