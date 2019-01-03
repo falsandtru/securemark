@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.4
+
+- Fix autolink parser to exclude media.
+
 ## 0.94.3
 
 - Fix uri parser to disallow backquote.

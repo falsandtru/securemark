@@ -42,6 +42,7 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('>\n>')), [['<blockquote><pre>\n</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('>\n> a')), [['<blockquote><pre>\na</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> http://host')), [['<blockquote><pre><a href="http://host" rel="noopener" target="_blank">http://host</a></pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('> !http://host')), [['<blockquote><pre>!<a href="http://host" rel="noopener" target="_blank">http://host</a></pre></blockquote>'], '']);
     });
 
     it('nest', () => {
