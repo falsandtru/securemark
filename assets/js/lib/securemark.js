@@ -1649,8 +1649,8 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = combinator_1.block(combinator_1.lazy(() => combinator_1.union([
-                combinator_1.surround(/^(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, textquote, ''),
-                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.suppress(mdquote), '')
+                combinator_1.surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, textquote, ''),
+                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, util_1.suppress(mdquote), '')
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.fmap(combinator_1.lazy(() => combinator_1.some(combinator_1.union([
@@ -1666,7 +1666,7 @@ require = function () {
             ]))), ns => [typed_dom_1.html('blockquote', ns)]);
             const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(line_1.contentline, /^>(?:\s|$)/), ''), false);
             function unindent(source) {
-                return source.replace(/\n$/, '').replace(/^>(?:$|\s|(?=>*(?:$|\s)))/mg, '');
+                return source.replace(/\n$/, '').replace(/^>(?:$|\s|(?=>+(?:$|\s)))/mg, '');
             }
         },
         {
@@ -2668,7 +2668,7 @@ require = function () {
             const unescapable_1 = require('../../source/unescapable');
             const link_1 = require('../link');
             const util_1 = require('../../util');
-            const closer = /^[-+*~^,.;:!?]*(?=[\s"|\[\](){}<>]|\\?(?:\s|$))/;
+            const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
             exports.uri = combinator_1.subline(combinator_1.union([
                 combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.bracket,
