@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.5
+
+- Fix uri escaping.
+
 ## 0.94.4
 
 - Fix autolink parser to exclude media.
