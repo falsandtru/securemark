@@ -1573,7 +1573,7 @@ require = function () {
             const autolink_1 = require('./inline/autolink');
             const unescapable_1 = require('./source/unescapable');
             exports.autolink = combinator_1.union([
-                autolink_1.autolink,
+                combinator_1.validate(/^[^!]/, autolink_1.autolink),
                 unescapable_1.unescsource
             ]);
         },
