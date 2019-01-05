@@ -32,7 +32,7 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = memorize(localize(union<BlockParser>([
+export const block: BlockParser = memorize(localize(union([
   newline,
   horizontalrule,
   heading,

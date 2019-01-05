@@ -34,7 +34,7 @@ export import BracketParser = InlineParser.BracketParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 
-export const inline: InlineParser = union<InlineParser>([
+export const inline: InlineParser = union([
   annotation,
   authority,
   extension,

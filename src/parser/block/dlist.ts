@@ -7,14 +7,14 @@ import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
 export const dlist: DListParser = block(fmap(lazy(() =>
-  some(inits<DListParser>([
+  some(inits([
     some(term),
     some(desc)
   ]))),
   es => [html('dl', fillTrailingDescription(es))]));
 
 const term: DListParser.TermParser = line(rewrite(contentline, verify(
-  fmap<DListParser.TermParser>(
+  fmap(
     surround(/^~(?=\s|$)/, defrag(trim(some(union([indexer, inline])))), '', false),
     ns => {
       const dt = html('dt', ns);
@@ -24,7 +24,7 @@ const term: DListParser.TermParser = line(rewrite(contentline, verify(
   ([el]) => !hasMedia(el))));
 
 const desc: DListParser.DescriptionParser = block(
-  fmap<DListParser.DescriptionParser>(
+  fmap(
     rewrite(
       surround(/^:(?=\s|$)|/, some(anyline, /^[~:](?=\s|$)/), '', false),
       surround(/^:(?=\s|$)|/, defrag(trim(some(union([inline])))), '', false)),

@@ -4,7 +4,7 @@ import { index } from './index';
 import { html, define } from 'typed-dom';
 
 export const indexer: ExtensionParser.IndexerParser = line(lazy(() =>
-  fmap<ExtensionParser.IndexerParser>(
+  fmap(
     surround(/^\s+(?=\[#)/, trim(union([index])), /^(?=\s*$)/),
     ([el]) =>
       [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));

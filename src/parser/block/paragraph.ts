@@ -6,7 +6,7 @@ import { defrag, hasContent } from '../util';
 import { html } from 'typed-dom';
 
 export const paragraph: ParagraphParser = block(fmap(
-  subsequence<ParagraphParser>([
+  subsequence([
     some(reference),
     defrag(trim(some(inline))),
   ]),

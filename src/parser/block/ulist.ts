@@ -8,7 +8,7 @@ import { defrag, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, frag } from 'typed-dom';
 
-export const ulist: UListParser = block(fmap<UListParser>(lazy(() =>
+export const ulist: UListParser = block(fmap(lazy(() =>
   some(union([
     fmap(
       inits<ListItemParser>([

@@ -10,7 +10,7 @@ import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
 
 export const table: TableParser = block(fmap(lazy(() =>
-  sequence<TableParser>([
+  sequence([
     row(cell(data), false),
     row(cell(align), true),
     some(row(cell(data), false)),

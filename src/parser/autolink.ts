@@ -5,7 +5,7 @@ import { unescsource } from './source/unescapable';
 
 export import AutolinkParser = MarkdownParser.AutolinkParser;
 
-export const autolink: AutolinkParser = union<AutolinkParser>([
+export const autolink: AutolinkParser = union([
   validate(/^[^!]/, al),
   unescsource
 ]);

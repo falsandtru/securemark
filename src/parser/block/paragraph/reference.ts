@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 
 export const reference: ParagraphParser.ReferenceParser = line(rewrite(
   contentline,
-  union<ParagraphParser.ReferenceParser>([
+  union([
     match(
       /^(>+)[0-9a-z]+\s*$/,
       ([ref, { length: level }], rest) =>
