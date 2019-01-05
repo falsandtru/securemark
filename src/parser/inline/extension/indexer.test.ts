@@ -18,9 +18,10 @@ describe('Unit: parser/inline/extension/indexer', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser(' [#a]')), [['<a href="#index:a" rel="noopener" class="index">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#a] ')), [['<a href="#index:a" rel="noopener" class="index">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('  [#a]')), [['<a href="#index:a" rel="noopener" class="index">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a]')), [['<small class="index" data-index="a"></small>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a] ')), [['<small class="index" data-index="a"></small>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a b]')), [['<small class="index" data-index="a-b"></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('  [#a]')), [['<small class="index" data-index="a"></small>'], '']);
     });
 
   });

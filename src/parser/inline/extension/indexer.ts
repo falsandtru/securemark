@@ -1,26 +1,23 @@
 ﻿import { ExtensionParser } from '../../inline';
 import { union, fmap, surround, line, trim, lazy } from '../../../combinator';
-import { index } from './index';
-import { define } from 'typed-dom';
+import { index as idx } from './index';
+import { html, define } from 'typed-dom';
 
 export const indexer: ExtensionParser.IndexerParser = line(lazy(() =>
   fmap<ExtensionParser.IndexerParser>(
-    surround(/^\s+(?=\[#)/, trim(union([index])), /^(?=\s*$)/),
-    ([el]) => {
-      assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
-      return [define(el, { class: 'index' })];
-    })));
+    surround(/^\s+(?=\[#)/, trim(union([idx])), /^(?=\s*$)/),
+    ([el]) =>
+      [html('small', { class: 'index', 'data-index': el.getAttribute('href')!.slice(7) })])));
 
 export function defineIndex(source: HTMLElement): void {
-  if (source.hasAttribute('id')) return;
-  const index = source.querySelector('.index');
-  const id = text(index || source);
-  if (id === '') return;
-  index && void index.remove();
-  void source.setAttribute('id', makeIndex(id));
+  void define(source, { id: identifier(index(source)) });
 }
 
-export function text(source: Element): string {
+export function index(source: Element): string {
+  const indexer = source.matches('.index')
+    ? source
+    : source.querySelector('.index');
+  if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   void [...target.querySelectorAll('code[data-src], .math[data-src]')]
     .forEach(el =>
@@ -28,7 +25,9 @@ export function text(source: Element): string {
   return target.textContent!.trim();
 }
 
-function makeIndex(text: string): string {
-  assert(!text.includes('\n'));
-  return `index:${text.trim().replace(/\s+/g, '-')}`;
+function identifier(index: string): string | undefined {
+  assert(!index.includes('\n'));
+  return index
+    ? `index:${index.trim().replace(/\s+/g, '-')}`
+    : undefined;
 }
