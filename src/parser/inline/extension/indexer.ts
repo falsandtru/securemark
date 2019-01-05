@@ -7,16 +7,16 @@ export const indexer: ExtensionParser.IndexerParser = line(lazy(() =>
   fmap<ExtensionParser.IndexerParser>(
     surround(/^\s+(?=\[#)/, trim(union([idx])), /^(?=\s*$)/),
     ([el]) =>
-      [html('small', { class: 'index', 'data-index': el.getAttribute('href')!.slice(7) })])));
+      [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(7) })])));
 
 export function defineIndex(source: HTMLElement): void {
   void define(source, { id: identifier(index(source)) });
 }
 
 export function index(source: Element): string {
-  const indexer = source.matches('.index')
+  const indexer = source.matches('.indexer')
     ? source
-    : source.querySelector('.index');
+    : source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   void [...target.querySelectorAll('code[data-src], .math[data-src]')]
