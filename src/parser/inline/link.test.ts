@@ -111,6 +111,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[!http://host]{/}')), [['<a href="/" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[\\[]{/}')), [['<a href="/" rel="noopener">[</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[\\]]{/}')), [['<a href="/" rel="noopener">]</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[*a]{b}\n*')), undefined);
       assert.deepStrictEqual(inspect(parser('[*a*]{b}')), [['<a href="b" rel="noopener"><em>a</em></a>'], '']);
     });
 

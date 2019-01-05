@@ -25,6 +25,7 @@ export function subline<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): 
   return source => {
     if (source === '') return;
     const result = parser(source);
+    assert(validate(source, result));
     if (!result) return result;
     return source.length - exec(result).length <= source.split('\n', 1)[0].length
       ? result
