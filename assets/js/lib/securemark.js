@@ -2809,15 +2809,15 @@ require = function () {
             const index_1 = require('./index');
             const typed_dom_1 = require('typed-dom');
             exports.indexer = combinator_1.line(combinator_1.lazy(() => combinator_1.fmap(combinator_1.surround(/^\s+(?=\[#)/, combinator_1.trim(combinator_1.union([index_1.index])), /^(?=\s*$)/), ([el]) => [typed_dom_1.html('small', {
-                    class: 'index',
-                    'data-index': el.getAttribute('href').slice(7)
+                    class: 'indexer',
+                    'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                 })])));
             function defineIndex(source) {
                 void typed_dom_1.define(source, { id: identifier(index(source)) });
             }
             exports.defineIndex = defineIndex;
             function index(source) {
-                const indexer = source.matches('.index') ? source : source.querySelector('.index');
+                const indexer = source.matches('.indexer') ? source : source.querySelector('.indexer');
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
