@@ -1,5 +1,5 @@
 ﻿import { BlockquoteParser } from '../block';
-import { Parser, union, some, fmap, surround, block, rewrite, convert, lazy } from '../../combinator';
+import { union, some, fmap, surround, block, rewrite, convert, lazy } from '../../combinator';
 import { contentline } from '../source/line';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
@@ -8,12 +8,12 @@ import { html } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = block(lazy(() => union([
   surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, textquote, ''),
-  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, suppress(mdquote), ''),
+  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, suppress(sourcequote), ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
 
-const textquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
+const textquote: BlockquoteParser.TextquoteParser = fmap(lazy(() =>
   some(union([
     rewrite(
       indent,
@@ -24,11 +24,11 @@ const textquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
   ]))),
   ns => [html('blockquote', ns)]);
 
-const mdquote: Parser<HTMLQuoteElement, any> = fmap(lazy(() =>
+const sourcequote: BlockquoteParser.SourcequoteParser = fmap(lazy(() =>
   some(union([
     rewrite(
       indent,
-      convert(unindent, mdquote)),
+      convert(unindent, sourcequote)),
     rewrite(
       some(contentline, opener),
       convert(unindent, source => [[parse(source)], ''])),

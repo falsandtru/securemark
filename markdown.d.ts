@@ -5,7 +5,7 @@ declare abstract class Markdown<T> {
 }
 export interface MarkdownParser extends
   Markdown<'markdown'>,
-  Parser<HTMLElement, [
+  Parser<DocumentFragment, [
     MarkdownParser.BlockParser
   ]> {
 }
@@ -166,13 +166,25 @@ export namespace MarkdownParser {
       // > abc
       Block<'blockquote'>,
       Parser<HTMLQuoteElement, [
-        Parser<HTMLElement | Text, [
-          AutolinkParser
-        ]>,
-        Parser<HTMLElement | Text, [
-          MarkdownParser
-        ]>,
+        BlockquoteParser.TextquoteParser,
+        BlockquoteParser.SourcequoteParser,
       ]> {
+    }
+    export namespace BlockquoteParser {
+      export interface TextquoteParser extends
+        Block<'blockquote/textquote'>,
+        Parser<HTMLQuoteElement, [
+          TextquoteParser,
+          AutolinkParser,
+        ]> {
+      }
+      export interface SourcequoteParser extends
+        Block<'blockquote/sourcequote'>,
+        Parser<HTMLQuoteElement, [
+          SourcequoteParser,
+          MarkdownParser,
+        ]> {
+      }
     }
     export interface CodeBlockParser extends
       // ```
