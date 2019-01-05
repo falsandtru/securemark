@@ -1,14 +1,14 @@
 ﻿import { IndexerParser } from '../block';
 import { union, fmap, surround, line, trim } from '../../combinator';
 import { index } from '../inline';
+import { define } from 'typed-dom';
 
 export const indexer: IndexerParser = line(
   fmap<IndexerParser>(
-    surround(/^\s+?(?=\[#)/, trim(union([index])), /$/),
+    surround(/^\s+(?=\[#)/, trim(union([index])), /^(?=\s*$)/),
     ([el]) => {
       assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
-      void el.setAttribute('class', 'index');
-      return [el];
+      return [define(el, { class: 'index' })];
     }));
 
 export function defineIndex(source: HTMLElement): void {
