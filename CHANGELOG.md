@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.6
+
+- Micro refactoring.
+
 ## 0.94.5
 
 - Fix uri escaping.
