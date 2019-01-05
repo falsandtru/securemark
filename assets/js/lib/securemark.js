@@ -2670,14 +2670,14 @@ require = function () {
             const util_1 = require('../../util');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
             exports.uri = combinator_1.subline(combinator_1.union([
-                combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.some(combinator_1.union([
+                combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ])), combinator_1.convert(source => `[]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
-                combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.verify(combinator_1.rewrite(combinator_1.some(combinator_1.union([
+                ])), combinator_1.convert(source => `[]{${ address(source) }${ attribute(source) }}`, link_1.link)), ''),
+                combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ])), combinator_1.convert(source => `[![]{${ address(source) }}]{${ address(source) }${ attribute(source) }}`, link_1.link)), ([node]) => node instanceof HTMLAnchorElement), ''),
+                ])), combinator_1.convert(source => `[![]{${ address(source) }}]{${ address(source) }${ attribute(source) }}`, link_1.link)), ''),
                 combinator_1.focus(/^[0-9a-zA-Z!?][!?]*h?ttps?(?=:)/, util_1.defrag(combinator_1.some(unescapable_1.unescsource)))
             ]));
             function address(source) {
@@ -3461,7 +3461,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = require('typed-dom');
-            exports.separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s|(?!h?ttps?:)[a-zA-Z0-9][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|[a-zA-Z0-9]+#/;
+            exports.separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s|(?!h?ttps?:)[a-zA-Z0-9!?][!?]*h?ttps?:|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|[a-zA-Z0-9]+#/;
             exports.text = source => {
                 if (source.length === 0)
                     return;
