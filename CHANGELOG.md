@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.94.7
+
+- Micro refactoring.
+
 ## 0.94.6
 
 - Micro refactoring.
