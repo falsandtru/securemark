@@ -1,7 +1,7 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
 import { union, some, fmap, surround, verify, subline, rewrite, convert, lazy } from '../../../combinator';
 import { link } from '../link';
-import { defineIndex } from '../../block/indexer';
+import { defineIndex } from './indexer';
 import { startsWithTightText, hasMedia } from '../../util';
 import { define } from 'typed-dom';
 

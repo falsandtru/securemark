@@ -1,15 +1,15 @@
-﻿import { IndexerParser } from '../block';
-import { union, fmap, surround, line, trim } from '../../combinator';
-import { index } from '../inline';
+﻿import { ExtensionParser } from '../../inline';
+import { union, fmap, surround, line, trim, lazy } from '../../../combinator';
+import { index } from './index';
 import { define } from 'typed-dom';
 
-export const indexer: IndexerParser = line(
-  fmap<IndexerParser>(
+export const indexer: ExtensionParser.IndexerParser = line(lazy(() =>
+  fmap<ExtensionParser.IndexerParser>(
     surround(/^\s+(?=\[#)/, trim(union([index])), /^(?=\s*$)/),
     ([el]) => {
       assert(el.getAttribute('href')!.startsWith(`#${makeIndex('')}`));
       return [define(el, { class: 'index' })];
-    }));
+    })));
 
 export function defineIndex(source: HTMLElement): void {
   if (source.hasAttribute('id')) return;
@@ -24,7 +24,7 @@ export function text(source: Element): string {
   const target = source.cloneNode(true);
   void [...target.querySelectorAll('code[data-src], .math[data-src]')]
     .forEach(el =>
-      el.textContent = el.getAttribute('data-src'));
+      void define(el, el.getAttribute('data-src')!));
   return target.textContent!.trim();
 }
 

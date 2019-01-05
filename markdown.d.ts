@@ -57,7 +57,7 @@ export namespace MarkdownParser {
       // # Title
       Block<'header'>,
       Parser<HTMLHeadingElement, [
-        IndexerParser,
+        InlineParser.ExtensionParser.IndexerParser,
         InlineParser
       ]> {
     }
@@ -106,7 +106,7 @@ export namespace MarkdownParser {
       export interface TermParser extends
         Block<'dlist/term'>,
         Parser<HTMLElement, [
-          IndexerParser,
+          InlineParser.ExtensionParser.IndexerParser,
           InlineParser
         ]> {
       }
@@ -273,13 +273,6 @@ export namespace MarkdownParser {
         ]> {
       }
     }
-    export interface IndexerParser extends
-      // [#index]
-      Block<'indexer'>,
-      Parser<HTMLAnchorElement, [
-        InlineParser.ExtensionParser.IndexParser
-      ]> {
-    }
   }
   export interface InlineParser extends
     Markdown<'inline'>,
@@ -333,6 +326,13 @@ export namespace MarkdownParser {
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, [
           LinkParser
+        ]> {
+      }
+      export interface IndexerParser extends
+        // [#index]
+        Inline<'extension/indexer'>,
+        Parser<HTMLAnchorElement, [
+          IndexParser
         ]> {
       }
       export interface LabelParser extends

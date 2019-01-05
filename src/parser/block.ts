@@ -31,7 +31,6 @@ export import MathBlockParser = BlockParser.MathBlockParser;
 export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
-export import IndexerParser = BlockParser.IndexerParser;
 
 export const block: BlockParser = memorize(localize(union<BlockParser>([
   newline,

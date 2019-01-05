@@ -1,7 +1,6 @@
 ﻿import { HeadingParser } from '../block';
 import { union, some, fmap, match, verify, block, line, trim } from '../../combinator';
-import { indexer, defineIndex } from './indexer';
-import { inline } from '../inline';
+import { inline, indexer, defineIndex } from '../inline';
 import { defrag, hasText, hasMedia } from '../util';
 import { html } from 'typed-dom';
 

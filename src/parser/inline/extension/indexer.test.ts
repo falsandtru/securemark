@@ -1,8 +1,8 @@
 ﻿import { indexer } from './indexer';
-import { some } from '../../combinator';
-import { inspect } from '../../debug.test';
+import { some } from '../../../combinator';
+import { inspect } from '../../../debug.test';
 
-describe('Unit: parser/block/indexer', () => {
+describe('Unit: parser/inline/extension/indexer', () => {
   describe('indexer', () => {
     const parser = some(indexer);
 
