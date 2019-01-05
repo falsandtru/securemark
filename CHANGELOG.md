@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.95.0
+
+- Improve codeblock parser to parse its text with autolink parser.
+
 ## 0.94.7
 
 - Micro refactoring.

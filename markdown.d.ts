@@ -192,7 +192,7 @@ export namespace MarkdownParser {
       // ```
       Block<'codeblock'>,
       Parser<HTMLPreElement, [
-        SourceParser.UnescapableSourceParser
+        AutolinkParser
       ]> {
     }
     export interface MathBlockParser extends

@@ -3,7 +3,8 @@ import { some, match, block, focus, rewrite, lazy, eval } from '../../combinator
 import { escsource } from '../source/escapable';
 import '../source/unescapable';
 import { stringify } from '../util';
-import { html } from 'typed-dom';
+import { html, define } from 'typed-dom';
+import { autolink } from '../autolink';
 
 export const segment: CodeBlockParser = block(lazy(() => segment_));
 
@@ -20,6 +21,9 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, match(
       void el.classList.add('code');
       void el.classList.add(`language-${lang.toLowerCase()}`);
       void el.setAttribute('data-lang', lang);
+    }
+    else {
+      void define(el, eval(some(autolink)(el.textContent!)));
     }
     const filepath = stringify(eval(some(escsource, /^\s/)(param.trim())));
     if (filepath) {

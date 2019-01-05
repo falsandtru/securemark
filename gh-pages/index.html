@@ -28,11 +28,15 @@
     all: unset;
     white-space: pre-wrap;
   }
-  pre[class*="language-"] {
+  pre,
+  pre.code {
     background-color: #fbfbfb;
     position: relative;
     border: solid 1px #eee;
     border-radius: unset;
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
   }
   pre[data-file]:before {
     content: attr(data-file);
