@@ -123,33 +123,43 @@ export namespace MarkdownParser {
       // |data|
       Block<'table'>,
       Parser<HTMLTableElement, [
-        TableParser.RowParser,
-        TableParser.RowParser,
-        TableParser.RowParser
+        TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>,
+        TableParser.RowParser<TableParser.RowParser.CellParser.AlignParser>,
+        TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>
       ]> {
     }
     export namespace TableParser {
-      export interface RowParser extends
+      export interface RowParser<P extends RowParser.CellParser.IncellParser> extends
         Block<'table/row'>,
         Parser<HTMLTableRowElement, [
-          CellParser
+          RowParser.CellParser<P>
         ]> {
       }
-      export interface CellParser extends
-        Block<'table/cell'>,
-        Parser<HTMLTableDataCellElement, [
-          DataParser | AlignParser
-        ]> {
-      }
-      export interface DataParser extends
-        Block<'table/data'>,
-        Parser<HTMLElement | Text, [
-          InlineParser
-        ]> {
-      }
-      export interface AlignParser extends
-        Block<'table/align'>,
-        Parser<Text, Parser<Text, []>[]> {
+      export namespace RowParser {
+        export interface CellParser<P extends CellParser.IncellParser> extends
+          Block<'table/row/cell'>,
+          Parser<HTMLTableDataCellElement, [
+            P
+          ]> {
+        }
+        export namespace CellParser {
+          export type IncellParser = DataParser | AlignParser;
+          export interface DataParser extends
+            Block<'table/row/cell/data'>,
+            Parser<HTMLElement | Text, [
+              InlineParser
+            ]> {
+          }
+          export interface AlignParser extends
+            Block<'table/row/cell/align'>,
+            Parser<Text, [
+              SourceParser.UnescapableSourceParser,
+              SourceParser.UnescapableSourceParser,
+              SourceParser.UnescapableSourceParser,
+              SourceParser.UnescapableSourceParser
+            ]> {
+          }
+        }
       }
     }
     export interface BlockquoteParser extends

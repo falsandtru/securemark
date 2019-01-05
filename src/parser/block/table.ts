@@ -6,6 +6,9 @@ import { squash, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html, frag, text } from 'typed-dom';
 
+import RowParser = TableParser.RowParser;
+import CellParser = RowParser.CellParser;
+
 export const table: TableParser = block(fmap(lazy(() =>
   sequence<TableParser>([
     row(cell(data), false),
@@ -55,15 +58,15 @@ export const table: TableParser = block(fmap(lazy(() =>
     }
   }));
 
-const row = <P extends TableParser.CellParser>(parser: P, strict: boolean): TableParser.RowParser => fmap(
+const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
   line(rewrite(contentline, contract('|', trim(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(frag(ns))))),
   es => [html('tr', es)]);
 
-const cell = <P extends TableParser.DataParser | TableParser.AlignParser>(parser: P): TableParser.CellParser => fmap(
+const cell = <P extends CellParser.IncellParser>(parser: P): CellParser<P> => fmap(
   union([parser]),
   ns => [html('td', ns)]);
 
-const data: TableParser.DataParser = bind(
+const data: CellParser.DataParser = bind(
   surround(
     /^\|\s*/,
     union([some(inline, /^\s*(?:\||$)/)]),
@@ -74,7 +77,7 @@ const data: TableParser.DataParser = bind(
       ? undefined
       : [squash(ns), rest]);
 
-const align: TableParser.AlignParser =
+const align: CellParser.AlignParser =
   surround(
     '|',
     union([
