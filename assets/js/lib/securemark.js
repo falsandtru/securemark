@@ -896,20 +896,10 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = require('../../data/parser');
+            const scope_1 = require('./scope');
+            const surround_1 = require('../manipulation/surround');
             function line(parser, allowTrailingWhitespace = true) {
-                return source => {
-                    if (source === '')
-                        return;
-                    const result = parser(source);
-                    if (!result)
-                        return result;
-                    const src = source.slice(0, source.length - parser_1.exec(result).length);
-                    const fst = firstline(source);
-                    return src.length <= fst.length ? src.length === fst.length ? result : allowTrailingWhitespace && firstline(parser_1.exec(result)).trim() === '' ? [
-                        parser_1.eval(result),
-                        source.slice(fst.length)
-                    ] : undefined : undefined;
-                };
+                return scope_1.focus(/^[^\n]*(?:\n|$)/, surround_1.surround('', parser, allowTrailingWhitespace ? /^\s*$/ : /^$/));
             }
             exports.line = line;
             function subline(parser) {
@@ -929,7 +919,11 @@ require = function () {
             }
             exports.firstline = firstline;
         },
-        { '../../data/parser': 33 }
+        {
+            '../../data/parser': 33,
+            '../manipulation/surround': 29,
+            './scope': 24
+        }
     ],
     24: [
         function (require, module, exports) {
@@ -1005,7 +999,7 @@ require = function () {
             const line_1 = require('../constraint/line');
             const scope_1 = require('../constraint/scope');
             function indent(parser) {
-                return bind_1.bind(match_1.match(/^(?=(\s+))/, ([, indent], source) => some_1.some(line_1.line(scope_1.rewrite(s => [
+                return bind_1.bind(match_1.match(/^(?=([^\S\n]+))/, ([, indent], source) => some_1.some(line_1.line(scope_1.rewrite(s => [
                     [],
                     s.slice(line_1.firstline(s).length)
                 ], surround_1.surround(indent, s => [
@@ -1097,7 +1091,7 @@ require = function () {
                 if (typeof pattern === 'string')
                     return source.startsWith(pattern) ? pattern : undefined;
                 const result = source.match(pattern);
-                return result ? result[0] : undefined;
+                return result && source.startsWith(result[0]) ? result[0] : undefined;
             }
         },
         {}
@@ -3419,42 +3413,25 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const parser_1 = require('../../combinator/data/parser');
-            exports.anyline = combinator_1.line(takeLine(_ => [
+            exports.anyline = combinator_1.line(_ => [
                 [],
                 ''
-            ]), false);
-            exports.emptyline = combinator_1.line(takeLine(s => s.trim() === '' ? [
+            ], false);
+            exports.emptyline = combinator_1.line(s => s.trim() === '' ? [
                 [],
                 ''
-            ] : undefined), false);
+            ] : undefined, false);
             const invisible = /^(?:\\?\s)*$/;
-            exports.blankline = combinator_1.line(takeLine(s => s.search(invisible) === 0 ? [
+            exports.blankline = combinator_1.line(s => s.search(invisible) === 0 ? [
                 [],
                 ''
-            ] : undefined), false);
-            exports.contentline = combinator_1.line(takeLine(s => s.search(invisible) !== 0 ? [
+            ] : undefined, false);
+            exports.contentline = combinator_1.line(s => s.search(invisible) !== 0 ? [
                 [],
                 ''
-            ] : undefined), false);
-            function takeLine(parser) {
-                return source => {
-                    if (source === '')
-                        return;
-                    const src = combinator_1.firstline(source);
-                    const rst = source.slice(src.length);
-                    const result = parser(src);
-                    return result ? [
-                        combinator_1.eval(result),
-                        combinator_1.exec(result) + rst
-                    ] : undefined;
-                };
-            }
+            ] : undefined, false);
         },
-        {
-            '../../combinator': 20,
-            '../../combinator/data/parser': 33
-        }
+        { '../../combinator': 20 }
     ],
     98: [
         function (require, module, exports) {
