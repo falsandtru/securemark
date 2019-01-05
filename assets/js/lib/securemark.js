@@ -2108,9 +2108,9 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
             const inline_1 = require('../inline');
-            exports.indexer = combinator_1.line(combinator_1.fmap(combinator_1.surround(/^\s+?(?=\[#)/, combinator_1.trim(combinator_1.union([inline_1.index])), /$/), ([el]) => {
-                void el.setAttribute('class', 'index');
-                return [el];
+            const typed_dom_1 = require('typed-dom');
+            exports.indexer = combinator_1.line(combinator_1.fmap(combinator_1.surround(/^\s+(?=\[#)/, combinator_1.trim(combinator_1.union([inline_1.index])), /^(?=\s*$)/), ([el]) => {
+                return [typed_dom_1.define(el, { class: 'index' })];
             }));
             function defineIndex(source) {
                 if (source.hasAttribute('id'))
@@ -2135,7 +2135,8 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            '../inline': 70
+            '../inline': 70,
+            'typed-dom': 13
         }
     ],
     63: [
@@ -2825,19 +2826,19 @@ require = function () {
             const link_1 = require('../link');
             const indexer_1 = require('../../block/indexer');
             const util_1 = require('../../util');
-            exports.index = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => {
-                void indexer_1.defineIndex(el);
-                void el.setAttribute('href', `#${ el.id }`);
-                void el.removeAttribute('id');
-                return [el];
-            }), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el)));
+            const typed_dom_1 = require('typed-dom');
+            exports.index = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => (void indexer_1.defineIndex(el), [typed_dom_1.define(el, {
+                    id: undefined,
+                    href: `#${ el.id }`
+                })])), ([el]) => util_1.startsWithTightText(el) && !util_1.hasMedia(el)));
         },
         {
             '../../../combinator': 20,
             '../../block/indexer': 62,
             '../../inline': 70,
             '../../util': 101,
-            '../link': 89
+            '../link': 89,
+            'typed-dom': 13
         }
     ],
     85: [
