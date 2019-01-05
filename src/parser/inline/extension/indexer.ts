@@ -14,6 +14,7 @@ export function defineIndex(source: HTMLElement): void {
 }
 
 export function index(source: Element): string {
+  //const indexer = source.querySelector(':scope.indexer, :scope > .indexer');
   const indexer = source.matches('.indexer')
     ? source
     : source.querySelector('.indexer');
