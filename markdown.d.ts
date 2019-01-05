@@ -247,7 +247,7 @@ export namespace MarkdownParser {
             ExtensionParser.ExampleParser,
             BlockquoteParser,
             InlineParser.LinkParser, // Take media syntax and convert to link syntax.
-            InlineParser.AutolinkParser.UriParser,
+            InlineParser.ShortmediaParser,
           ]> {
         }
         export interface CaptionParser extends
@@ -313,6 +313,7 @@ export namespace MarkdownParser {
       InlineParser.MediaParser,
       InlineParser.BracketParser,
       InlineParser.HTMLEntityParser,
+      InlineParser.ShortmediaParser,
       InlineParser.AutolinkParser,
       SourceParser.TextParser,
     ]> {
@@ -533,6 +534,13 @@ export namespace MarkdownParser {
       Inline<'htmlentity'>,
       Parser<Text, []> {
     }
+    export interface ShortmediaParser extends
+      // !https://host
+      Inline<'shortmedia'>,
+      Parser<HTMLAnchorElement, [
+        LinkParser
+      ]> {
+    }
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLAnchorElement | HTMLImageElement | Text, [
@@ -547,10 +555,8 @@ export namespace MarkdownParser {
       export interface UriParser extends
         // https://host
         Inline<'uri'>,
-        Parser<HTMLAnchorElement | Text, [
-          LinkParser,
-          LinkParser,
-          SourceParser.UnescapableSourceParser,
+        Parser<HTMLAnchorElement, [
+          LinkParser
         ]> {
       }
       export interface EmailParser extends

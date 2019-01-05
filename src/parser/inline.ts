@@ -14,6 +14,7 @@ import { math } from './inline/math';
 import { media } from './inline/media';
 import { bracket } from './inline/bracket';
 import { htmlentity } from './inline/htmlentity';
+import { shortmedia } from './inline/shortmedia';
 import { autolink } from './inline/autolink';
 import { text } from './source/text';
 
@@ -32,6 +33,7 @@ export import MathParser = InlineParser.MathParser;
 export import MediaParser = InlineParser.MediaParser;
 export import BracketParser = InlineParser.BracketParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
+export import ShortmediaParser = InlineParser.ShortmediaParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 
 export const inline: InlineParser = union([
@@ -49,6 +51,7 @@ export const inline: InlineParser = union([
   media,
   bracket,
   htmlentity,
+  shortmedia,
   autolink,
   text
 ]);
@@ -58,3 +61,4 @@ export { label, isGroup, isFixed } from './inline/extension/label';
 export { link } from './inline/link';
 export { media } from './inline/media';
 export { uri } from './inline/autolink/uri';
+export { shortmedia } from './inline/shortmedia';

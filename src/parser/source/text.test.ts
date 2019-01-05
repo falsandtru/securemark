@@ -54,30 +54,6 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('\\\\\\\n')), [['\\', '<br>'], '']);
     });
 
-    it('uri', () => {
-      assert.deepStrictEqual(inspect(parser('http:')), [['http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('https:')), [['https', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('_http:')), [['_', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('$http:')), [['$', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('+http:')), [['+', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('-http:')), [['-', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('00http:')), [['0', '0', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('aahttp:')), [['a', 'a', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('AAhttp:')), [['A', 'A', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser(' http:')), [[' ', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('0!http:')), [['0', '!', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('?!http:')), [['?', '!', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('0?http:')), [['0', '?', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('!?http:')), [['!', '?', 'http', ':'], '']);
-      assert.deepStrictEqual(inspect(parser('#sec')), [['#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('0#sec')), [['0', '#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('a#sec')), [['a', '#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('A#sec')), [['A', '#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('0aA#sec')), [['0', 'a', 'A', '#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('!#sec')), [['!', '#', 'sec'], '']);
-      assert.deepStrictEqual(inspect(parser('?#sec')), [['?', '#', 'sec'], '']);
-    });
-
     it('account', () => {
       assert.deepStrictEqual(inspect(parser('@0')), [['@', '0'], '']);
       assert.deepStrictEqual(inspect(parser('_@0')), [['_', '@', '0'], '']);

@@ -7,6 +7,7 @@ describe('Unit: parser/autolink', () => {
     const parser = some(autolink);
 
     it('basic', () => {
+      assert.deepStrictEqual(inspect(parser(' http://host')), [[' ', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('!http://host')), [['!', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
     });
 

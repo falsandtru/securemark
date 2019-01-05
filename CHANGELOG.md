@@ -2,6 +2,7 @@
 
 ## 0.95.0
 
+- Refine autolink parser.
 - Improve codeblock parser to parse its text with autolink parser.
 
 ## 0.94.7
