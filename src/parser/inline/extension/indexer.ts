@@ -1,19 +1,19 @@
 ﻿import { ExtensionParser } from '../../inline';
 import { union, fmap, surround, line, trim, lazy } from '../../../combinator';
-import { index as idx } from './index';
+import { index } from './index';
 import { html, define } from 'typed-dom';
 
 export const indexer: ExtensionParser.IndexerParser = line(lazy(() =>
   fmap<ExtensionParser.IndexerParser>(
-    surround(/^\s+(?=\[#)/, trim(union([idx])), /^(?=\s*$)/),
+    surround(/^\s+(?=\[#)/, trim(union([index])), /^(?=\s*$)/),
     ([el]) =>
       [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
 
 export function defineIndex(source: HTMLElement): void {
-  void define(source, { id: identifier(index(source)) });
+  void define(source, { id: identifier(text(source)) || undefined });
 }
 
-export function index(source: Element): string {
+export function text(source: Element): string {
   //const indexer = source.querySelector(':scope.indexer, :scope > .indexer');
   const indexer = source.matches('.indexer')
     ? source
@@ -26,9 +26,9 @@ export function index(source: Element): string {
   return target.textContent!.trim();
 }
 
-function identifier(index: string): string | undefined {
+function identifier(index: string): string {
   assert(!index.includes('\n'));
   return index
     ? `index:${index.trim().replace(/\s+/g, '-')}`
-    : undefined;
+    : '';
 }

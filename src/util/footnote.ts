@@ -1,4 +1,4 @@
-﻿import { index } from '../parser/inline/extension/indexer';
+﻿import { text } from '../parser/inline/extension/indexer';
 import { html, define } from 'typed-dom';
 
 export function footnote(source: DocumentFragment | HTMLElement, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void {
@@ -21,7 +21,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         const refIndex = i + 1;
         const refId = ref.id || `${category}-ref:${i + 1}`;
-        const title = ref.title || index(ref);
+        const title = ref.title || text(ref);
         const def = acc.get(title);
         const defIndex = def
           ? +def.id.match(/[0-9]+/)![0]
