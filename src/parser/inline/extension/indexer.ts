@@ -7,7 +7,7 @@ export const indexer: ExtensionParser.IndexerParser = line(lazy(() =>
   fmap<ExtensionParser.IndexerParser>(
     surround(/^\s+(?=\[#)/, trim(union([idx])), /^(?=\s*$)/),
     ([el]) =>
-      [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(7) })])));
+      [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
 
 export function defineIndex(source: HTMLElement): void {
   void define(source, { id: identifier(index(source)) });
