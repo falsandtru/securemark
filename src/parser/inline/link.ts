@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, sequence, some, fmap, bind, match, surround, contract, validate, subline, focus, lazy } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, contract, validate, subline, focus, convert, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { defrag, wrap, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
@@ -10,11 +10,12 @@ export const attributes: Record<string, Array<string | undefined>> = {
 };
 
 export const link: LinkParser = subline(bind(lazy(() => contract(
-  /^\[.*?\]{( ?).*?\1}/,
+  /^(?:\[.*?\])?{.+?}/,
+  convert(source => source[0] === '{' ? '[]' + source : source,
   sequence<LinkParser>([
     wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
-  ]),
+  ])),
   ([text]) => {
     if (hasMedia(text)) {
       if (text.firstChild && text.firstChild.firstChild &&

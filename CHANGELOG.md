@@ -2,6 +2,7 @@
 
 ## 0.95.0
 
+- Extend link syntax to be possible to omit content part.
 - Extend media syntax to be possible to omit alt text part.
 - Improve media parser to make a link.
 - Refine autolink parser.

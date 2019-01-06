@@ -44,6 +44,6 @@ export const media: MediaParser = subline(bind(surround(
           link,
           ([link]) =>
             [define(link, [el])])
-          (`[]{ ${INSECURE_URL}${params.reduce((acc, param) => acc + ' ' + param, '')} }${rest}`) as [[HTMLAnchorElement], string]
+          (`{ ${INSECURE_URL}${params.reduce((acc, param) => acc + ' ' + param, '')} }${rest}`) as [[HTMLAnchorElement], string]
       : [[el], rest];
   }));

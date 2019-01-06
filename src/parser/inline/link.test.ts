@@ -39,6 +39,8 @@ describe('Unit: parser/inline/link', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]')), undefined);
+      assert.deepStrictEqual(inspect(parser('{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{ }')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{  }')), undefined);
@@ -82,6 +84,9 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[a ]{b}')), [['<a href="b" rel="noopener">a </a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a b]{c}')), [['<a href="c" rel="noopener">a b</a>'], '']);
       assert.deepStrictEqual(inspect(parser(`[]{?#${encodeURIComponent(':/[]{}<>?#=& ')}}`)), [['<a href="?#%3A%2F%5B%5D%7B%7D%3C%3E%3F%23%3D%26%20" rel="noopener">?#%3A%2F[]{}&lt;&gt;%3F%23%3D%26%20</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('{b}')), [['<a href="b" rel="noopener">b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('{ ][ }')), [['<a href="][" rel="noopener">][</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('{ }{ }')), [['<a href="}{" rel="noopener">}{</a>'], '']);
     });
 
     it('tel', () => {
@@ -129,11 +134,11 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{/ nofollow=nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer" class="invalid" data-invalid-type="parameter">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{/ nofollow nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer" class="invalid" data-invalid-type="parameter">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{/ nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{/ nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{/ nofollow }')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{ / nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{ / nofollow }')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{http://host nofollow}')), [['<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('{/ nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
     });
 
   });

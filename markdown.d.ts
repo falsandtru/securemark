@@ -374,6 +374,7 @@ export namespace MarkdownParser {
       }
     }
     export interface LinkParser extends
+      // {uri}
       // [abc]{uri}
       Inline<'link'>,
       Parser<HTMLAnchorElement, [
