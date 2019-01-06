@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, bind, match, surround, verify, block, line, rewrite, convert, trim, eval } from '../../../combinator';
+import { union, sequence, inits, some, bind, match, surround, verify, block, line, rewrite, trim } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
@@ -8,7 +8,7 @@ import { mathblock, segment_ as seg_math } from '../mathblock';
 import { graph , segment_ as seg_graph } from './graph';
 import { example, segment_ as seg_example } from './example';
 import { inline } from '../../inline';
-import { label, media, link, shortmedia } from '../../inline';
+import { label, media, shortmedia } from '../../inline';
 import { defrag } from '../../util';
 import { memoize } from 'spica/memoization';
 import { html } from 'typed-dom';
@@ -60,11 +60,7 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
             graph,
             example,
             blockquote,
-            line(rewrite(
-              media,
-              convert(
-                source => `[${source}]{ ${eval(media(source))[0].getAttribute('data-src') || '#'} }`,
-                link))),
+            line(media),
             line(shortmedia),
           ])),
           emptyline,

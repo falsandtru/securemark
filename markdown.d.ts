@@ -246,7 +246,7 @@ export namespace MarkdownParser {
             ExtensionParser.GraphParser,
             ExtensionParser.ExampleParser,
             BlockquoteParser,
-            InlineParser.LinkParser, // Take media syntax and convert to link syntax.
+            InlineParser.MediaParser,
             InlineParser.ShortmediaParser,
           ]> {
         }

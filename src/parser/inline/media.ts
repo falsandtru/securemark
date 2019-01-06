@@ -2,14 +2,11 @@
 import { union, inits, sequence, some, fmap, bind, surround, validate, verify, subline } from '../../combinator';
 import { text } from '../source/text';
 import '../source/unescapable';
-import { uri, attribute, check } from './link';
+import { link, attributes, uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
 import { defrag, stringify, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { html, frag, define } from 'typed-dom';
-
-const attributes: Record<string, Array<string | undefined>> = {
-};
 
 export const cache = new Cache<string, HTMLElement>(10);
 
@@ -40,5 +37,11 @@ export const media: MediaParser = subline(bind(validate(
       void el.classList.add('invalid');
       void el.setAttribute('data-invalid-type', 'parameter');
     }
-    return [[el], rest];
+    return el.matches('img')
+      ? fmap(
+          link,
+          ([link]) =>
+            [define(link, [el])])
+          (`[]{ ${INSECURE_URL}${params.reduce((acc, param) => acc + ' ' + param, '')} }${rest}`) as [[HTMLAnchorElement], string]
+      : [[el], rest];
   }));

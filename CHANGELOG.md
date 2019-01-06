@@ -2,6 +2,7 @@
 
 ## 0.95.0
 
+- Improve media parser to make a link.
 - Refine autolink parser.
 - Improve codeblock parser to parse its text with autolink parser.
 

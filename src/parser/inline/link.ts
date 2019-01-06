@@ -5,7 +5,7 @@ import { defrag, wrap, startsWithTightText, hasContent, hasMedia, hasLink } from
 import { sanitize, decode } from '../string/uri';
 import { html, text } from 'typed-dom';
 
-const attributes: Record<string, Array<string | undefined>> = {
+export const attributes: Record<string, Array<string | undefined>> = {
   nofollow: [undefined],
 };
 
@@ -17,9 +17,10 @@ export const link: LinkParser = subline(bind(lazy(() => contract(
   ]),
   ([text]) => {
     if (hasMedia(text)) {
-      void text.querySelectorAll('a > .media')
-        .forEach(el =>
-          void el.parentNode!.parentNode!.replaceChild(el, el.parentNode!));
+      if (text.firstChild && text.firstChild.firstChild &&
+          text.firstChild.firstChild === text.querySelector('a > .media')) {
+        void text.replaceChild(text.firstChild.firstChild, text.firstChild);
+      }
       if (text.childNodes.length !== 1) return false;
       if (!text.firstElementChild!.matches('.media')) return false;
     }
