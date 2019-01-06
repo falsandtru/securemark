@@ -640,5 +640,12 @@ export namespace MarkdownParser {
       Source<'contentline'>,
       Parser<never, []> {
     }
+    export namespace CharParser {
+      export interface EqualParser extends
+        // =
+        Source<'char/equal'>,
+        Parser<Text, []> {
+      }
+    }
   }
 }

@@ -1,6 +1,8 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, sequence, some, fmap, bind, match, surround, contract, validate, subline, focus, convert, lazy } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, contract, subline, rewrite, focus, convert, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
+import { escsource } from '../source/escapable';
+import { char } from '../source/char';
 import { defrag, wrap, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { html, text } from 'typed-dom';
@@ -89,8 +91,16 @@ export const attribute: LinkParser.ParamParser.AttributeParser = subline(
   surround(
     ' ',
     inits([
-      focus(/^[a-z]+(?=[= }])/, some(unescsource, /^[^a-z]/)),
-      validate(/^=[^\s}]/, some(unescsource, /^[\s}]/))
+      focus(/^[a-z]+(?=[= }])/, some(unescsource)),
+      rewrite(
+        sequence([
+          char('='),
+          union([
+            focus(/^[a-z]+(?=[= }])/, some(unescsource)),
+            surround('"', some(escsource, '"'), '"', false),
+          ]),
+        ]),
+        some(unescsource)),
     ]),
     ''));
 

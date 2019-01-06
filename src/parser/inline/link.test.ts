@@ -49,10 +49,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{a  }')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{ a}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{a\nb}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{a\\\nb}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{a  nofollow}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[]{a\nnofollow}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{ a\n}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{{\n}}')), undefined);
       assert.deepStrictEqual(inspect(parser('[ ]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[ ]{ }')), undefined);
@@ -126,7 +123,18 @@ describe('Unit: parser/inline/link', () => {
     });
 
     it('attribute', () => {
+      assert.deepStrictEqual(inspect(parser('[]{/ name=}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/ name="}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/ name="""}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/ name}')), [['<a href="/" rel="noopener" class="invalid" data-invalid-type="parameter">/</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{/ name=""}')), [['<a href="/" rel="noopener" class="invalid" data-invalid-type="parameter">/</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{/ name=" "}')), [['<a href="/" rel="noopener" class="invalid" data-invalid-type="parameter">/</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{/ name="\\""}')), [['<a href="/" rel="noopener" class="invalid" data-invalid-type="parameter">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{/ constructor}')), [['<a href="/" rel="noopener" class="invalid" data-invalid-type="parameter">/</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{/ =}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/  name}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/\nname}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/\nname}')), undefined);
     });
 
     it('nofollow', () => {
