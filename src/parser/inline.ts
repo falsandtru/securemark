@@ -41,6 +41,7 @@ export const inline: InlineParser = union([
   authority,
   extension,
   link,
+  media,
   ruby,
   html,
   comment,
@@ -48,9 +49,8 @@ export const inline: InlineParser = union([
   strong,
   code,
   math,
-  media,
-  bracket,
   htmlentity,
+  bracket,
   shortmedia,
   autolink,
   text

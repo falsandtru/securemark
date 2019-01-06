@@ -303,6 +303,7 @@ export namespace MarkdownParser {
       InlineParser.AuthorityParser,
       InlineParser.ExtensionParser,
       InlineParser.LinkParser,
+      InlineParser.MediaParser,
       InlineParser.RubyParser,
       InlineParser.HTMLParser,
       InlineParser.CommentParser,
@@ -310,9 +311,8 @@ export namespace MarkdownParser {
       InlineParser.StrongParser,
       InlineParser.CodeParser,
       InlineParser.MathParser,
-      InlineParser.MediaParser,
-      InlineParser.BracketParser,
       InlineParser.HTMLEntityParser,
+      InlineParser.BracketParser,
       InlineParser.ShortmediaParser,
       InlineParser.AutolinkParser,
       SourceParser.TextParser,
@@ -421,6 +421,29 @@ export namespace MarkdownParser {
         }
       }
     }
+    export interface MediaParser extends
+      // ![abc]{uri}
+      Inline<'media'>,
+      Parser<HTMLElement, [
+        MediaParser.TextParser,
+        MediaParser.ParamParser,
+      ]> {
+    }
+    export namespace MediaParser {
+      export interface TextParser extends
+        Inline<'media/text'>,
+        Parser<DocumentFragment, [
+          SourceParser.TextParser
+        ]> {
+      }
+      export interface ParamParser extends
+        Inline<'media/param'>,
+        Parser<Text, [
+          LinkParser.ParamParser.UriParser,
+          LinkParser.ParamParser.AttributeParser,
+        ]> {
+      }
+    }
     export interface RubyParser extends
       // [AB](a b)
       Inline<'ruby'>,
@@ -501,38 +524,15 @@ export namespace MarkdownParser {
         SourceParser.EscapableSourceParser
       ]> {
     }
-    export interface MediaParser extends
-      // ![abc]{uri}
-      Inline<'media'>,
-      Parser<HTMLElement, [
-        MediaParser.TextParser,
-        MediaParser.ParamParser,
-      ]> {
-    }
-    export namespace MediaParser {
-      export interface TextParser extends
-        Inline<'media/text'>,
-        Parser<DocumentFragment, [
-          SourceParser.TextParser
-        ]> {
-      }
-      export interface ParamParser extends
-        Inline<'media/param'>,
-        Parser<Text, [
-          LinkParser.ParamParser.UriParser,
-          LinkParser.ParamParser.AttributeParser,
-        ]> {
-      }
+    export interface HTMLEntityParser extends
+      // &copy;
+      Inline<'htmlentity'>,
+      Parser<Text, []> {
     }
     export interface BracketParser extends
       // [abc]
       Inline<'bracket'>,
       Parser<HTMLElement | Text, InlineParser[]> {
-    }
-    export interface HTMLEntityParser extends
-      // &copy;
-      Inline<'htmlentity'>,
-      Parser<Text, []> {
     }
     export interface ShortmediaParser extends
       // !https://host
