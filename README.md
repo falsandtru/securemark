@@ -44,7 +44,7 @@ https://falsandtru.github.io/securemark/
 - Blockquote (>, !>)
 - Preformattedtext (```)
 - HorizontalRule (---)
-- Inline markups (*, `, []{}, ![]{}, \[](), (()), ...)
+- Inline markups (*, `, []{}, ![]{}, !{}, \[](), (()), ...)
 - Inline HTML tags (\<small>, \<bdi>, ...)
 - Autolink (https://host, ttps://host, account@host, @account)
 - Shortmedia (!https://host/image.png)

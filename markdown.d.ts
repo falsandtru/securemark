@@ -422,6 +422,7 @@ export namespace MarkdownParser {
       }
     }
     export interface MediaParser extends
+      // !{uri}
       // ![abc]{uri}
       Inline<'media'>,
       Parser<HTMLElement, [

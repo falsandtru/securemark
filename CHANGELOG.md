@@ -2,6 +2,7 @@
 
 ## 0.95.0
 
+- Extend media syntax to be possible to omit alt text part.
 - Improve media parser to make a link.
 - Refine autolink parser.
 - Improve codeblock parser to parse its text with autolink parser.

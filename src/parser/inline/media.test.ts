@@ -19,6 +19,10 @@ describe('Unit: parser/inline/media', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]')), undefined);
+      assert.deepStrictEqual(inspect(parser('{}')), undefined);
+      assert.deepStrictEqual(inspect(parser('![]')), undefined);
+      assert.deepStrictEqual(inspect(parser('!{}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{ }')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{  }')), undefined);
@@ -52,6 +56,9 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![]{a b}')), [['<a href="a" rel="noopener" class="invalid" data-invalid-type="parameter"><img class="media invalid" data-src="a" alt="" data-invalid-type="parameter"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a ]{b}')), [['<a href="b" rel="noopener"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a b]{c}')), [['<a href="c" rel="noopener"><img class="media" data-src="c" alt="a b"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{b}')), [['<a href="b" rel="noopener"><img class="media" data-src="b" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{ ][ }')), [['<a href="][" rel="noopener"><img class="media" data-src="][" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{ }{ }')), [['<a href="}{" rel="noopener"><img class="media" data-src="}{" alt=""></a>'], '']);
     });
 
     it('nest', () => {
@@ -70,6 +77,7 @@ describe('Unit: parser/inline/media', () => {
     it('attribute', () => {
       assert.deepStrictEqual(inspect(parser('![]{/ nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer"><img class="media" data-src="/" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{/ constructor}')), [['<a href="/" rel="noopener" class="invalid" data-invalid-type="parameter"><img class="media invalid" data-src="/" alt="" data-invalid-type="parameter"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{/ nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer"><img class="media" data-src="/" alt=""></a>'], '']);
     });
 
   });

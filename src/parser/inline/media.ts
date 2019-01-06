@@ -1,5 +1,5 @@
 ﻿import { MediaParser } from '../inline';
-import { union, inits, sequence, some, fmap, bind, surround, validate, verify, subline } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, surround, verify, subline, convert } from '../../combinator';
 import { text } from '../source/text';
 import '../source/unescapable';
 import { link, attributes, uri, attribute, check } from './link';
@@ -10,15 +10,17 @@ import { html, frag, define } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = subline(bind(validate(
-  /^!\[.*?\]{( ?).*?\1}/,
+export const media: MediaParser = subline(bind(surround(
+  /^!(?=(?:\[.*?\])?{.+?})/,
+  convert(source => source[0] === '{' ? '[]' + source : source,
   sequence<MediaParser>([
     fmap(verify(
-      surround('![', defrag(some(union([text]), /^[\n\]]/)), ']', false),
+      surround('[', defrag(some(union([text]), /^[\n\]]/)), ']', false),
       ns => ns.length === 0 || startsWithTightText(frag(ns))),
       ns => [frag(stringify(ns).trim())]),
     surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/),
   ])),
+  ''),
   (ts, rest) => {
     const [caption, INSECURE_URL = '', ...params]: string[] = ts.map(t => t.textContent!);
     const path = sanitize(INSECURE_URL.trim());
