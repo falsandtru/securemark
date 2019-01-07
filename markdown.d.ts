@@ -378,13 +378,13 @@ export namespace MarkdownParser {
       // [abc]{uri}
       Inline<'link'>,
       Parser<HTMLAnchorElement, [
-        LinkParser.TextParser,
+        LinkParser.ContentParser,
         LinkParser.ParamParser,
       ]> {
     }
     export namespace LinkParser {
-      export interface TextParser extends
-        Inline<'link/text'>,
+      export interface ContentParser extends
+        Inline<'link/content'>,
         Parser<DocumentFragment, [
           InlineParser
         ]> {
@@ -470,7 +470,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         Parser<HTMLElement, [
           HTMLParser.ParamParser,
-          HTMLParser.TextParser,
+          HTMLParser.ContentParser,
         ]>,
         Parser<HTMLElement, [
           HTMLParser.ParamParser
@@ -489,7 +489,6 @@ export namespace MarkdownParser {
       }
       export namespace ParamParser {
         export interface AttributeParser extends
-          // attr=""
           Inline<'html/param/attribute'>,
           Parser<Text, [
             SourceParser.UnescapableSourceParser,
@@ -498,8 +497,8 @@ export namespace MarkdownParser {
           ]> {
         }
       }
-      export interface TextParser extends
-        Inline<'html/text'>,
+      export interface ContentParser extends
+        Inline<'html/content'>,
         Parser<Array<HTMLElement | Text>, [
           InlineParser
         ]> {
