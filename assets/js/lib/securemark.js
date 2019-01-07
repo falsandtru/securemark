@@ -2908,25 +2908,20 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const unescapable_1 = require('../source/unescapable');
             const escapable_1 = require('../source/escapable');
+            const char_1 = require('../source/char');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            const tags = new Set('ins|del|sup|sub|small|bdi|bdo'.split('|'));
-            const emptytags = new Set('wbr'.split('|'));
             exports.html = combinator_1.union([
-                combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, ([, tag], source) => {
-                    if (!tags.has(tag))
-                        return;
+                combinator_1.match(/^(?=<(ins|del|sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/, ([, tag], source) => {
                     return combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
-                        util_1.wrap(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(attribute)), /^ ?>/, false)),
-                        combinator_1.surround(``, util_1.defrag(combinator_1.some(inline_1.inline, `</${ tag }>`)), `</${ tag }>`)
-                    ]), ([attrs, ...contents]) => [elem(tag, [...attrs.childNodes].map(t => t.textContent), contents)]), ([el]) => el.matches(':not(.invalid)') && util_1.hasText(el))(source);
+                        util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([attribute]))), /^ ?>/, false)),
+                        util_1.dup(combinator_1.surround(``, util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`))
+                    ]), ([attrs, contents]) => [elem(tag, attrs.map(t => t.textContent), contents)]), ([el]) => el.matches(':not(.invalid)') && util_1.hasText(el))(source);
                 }),
-                combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, ([, tag], source) => {
-                    if (!emptytags.has(tag))
-                        return;
-                    return combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.wrap(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(attribute)), /^ ?>/, false))]), ([attrs]) => [elem(tag, [...attrs.childNodes].map(t => t.textContent), [])]), ([el]) => el.matches(':not(.invalid)'))(source);
+                combinator_1.match(/^(?=<(wbr)(?: [^\n]*?)?>)/, ([, tag], source) => {
+                    return combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([attribute]))), /^ ?>/, false))]), ([attrs]) => [elem(tag, attrs.map(t => t.textContent), [])]), ([el]) => el.matches(':not(.invalid)'))(source);
                 }),
-                combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, ([, tag], source) => combinator_1.bind(combinator_1.sequence([combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(attribute)), /^ ?\/?>/, false)]), (_, rest) => [
+                combinator_1.match(/^(?=<([a-z]+)(?: [^\n]*?)?>)/, ([, tag], source) => combinator_1.bind(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([attribute]))), /^ ?\/?>/, false))]), (_, rest) => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
                             'data-invalid-type': 'html'
@@ -2934,14 +2929,11 @@ require = function () {
                     rest
                 ])(source))
             ]);
-            const attribute = combinator_1.subline(combinator_1.fmap(combinator_1.surround(' ', combinator_1.inits([
-                combinator_1.focus(/^[a-z]+(?=[= >])/, util_1.defrag(combinator_1.some(unescapable_1.unescsource, /^[^a-z]/))),
-                combinator_1.surround('="', util_1.defrag(combinator_1.some(escapable_1.escsource, '"')), '"', false)
-            ]), ''), ([key, value = undefined]) => value === undefined ? [key] : [
-                key,
-                typed_dom_1.text('='),
-                value
-            ]));
+            const attribute = combinator_1.subline(combinator_1.verify(combinator_1.surround(' ', combinator_1.inits([
+                util_1.defrag(combinator_1.focus(/^[a-z]+(?:-[a-z]+)*/, combinator_1.some(unescapable_1.unescsource))),
+                char_1.char('='),
+                util_1.defrag(combinator_1.rewrite(combinator_1.surround('"', combinator_1.some(escapable_1.escsource, '"'), '"', false), combinator_1.some(escapable_1.escsource)))
+            ]), ''), ts => ts.length !== 2));
             const attributes = {
                 bdo: {
                     dir: Object.freeze([
@@ -2954,7 +2946,7 @@ require = function () {
                 const el = typed_dom_1.html(tag, children);
                 const attrs = new Map(args.map(arg => [
                     arg.split('=', 1)[0],
-                    arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined
+                    arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined
                 ]));
                 if (!attributes[tag] && args.length > 0 || attrs.size !== args.length) {
                     void el.classList.add('invalid');
@@ -2976,6 +2968,7 @@ require = function () {
         {
             '../../combinator': 20,
             '../inline': 69,
+            '../source/char': 97,
             '../source/escapable': 98,
             '../source/unescapable': 101,
             '../util': 103,
@@ -3016,15 +3009,16 @@ require = function () {
             const char_1 = require('../source/char');
             const util_1 = require('../util');
             const uri_1 = require('../string/uri');
+            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.attributes = { nofollow: [undefined] };
-            exports.link = combinator_1.subline(combinator_1.bind(combinator_1.lazy(() => combinator_1.contract(/^(?:\[.*?\])?{.+?}/, combinator_1.convert(source => source[0] === '{' ? '[]' + source : source, combinator_1.sequence([
+            exports.link = combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.lazy(() => combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.tails([
                 util_1.wrap(combinator_1.surround('[', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']', false)),
                 util_1.wrap(combinator_1.surround('{', combinator_1.inits([
                     exports.uri,
                     combinator_1.some(util_1.defrag(exports.attribute))
                 ]), /^ ?}/))
-            ])), ([text]) => {
+            ]))), ns => concat_1.concat(Array(2 - ns.length).fill(0).map(() => typed_dom_1.frag()), ns)), ([text]) => {
                 if (util_1.hasMedia(text)) {
                     if (text.firstChild && text.firstChild.firstChild && text.firstChild.firstChild === text.querySelector('a > .media')) {
                         void text.replaceChild(text.firstChild.firstChild, text.firstChild);
@@ -3040,14 +3034,14 @@ require = function () {
                         return false;
                 }
                 return true;
-            })), ([text, param], rest) => {
-                const [INSECURE_URL = '', ...params] = [...param.childNodes].map(t => t.textContent);
+            }), ([text, param], rest) => {
+                const [INSECURE_URL, ...params] = [...param.childNodes].map(t => t.textContent);
                 const path = uri_1.sanitize(INSECURE_URL);
                 if (path === '' && INSECURE_URL !== '')
                     return;
                 const attrs = new Map(params.map(param => [
                     param.split('=', 1)[0],
-                    param.includes('=') ? param.slice(param.split('=', 1)[0].length + 1) : undefined
+                    param.includes('=') ? param.slice(param.split('=', 1)[0].length + 2, -1) : undefined
                 ]));
                 const el = typed_dom_1.html('a', {
                     href: path,
@@ -3115,16 +3109,14 @@ require = function () {
                     typed_dom_1.text('"')
                 ])
             ])));
-            exports.attribute = combinator_1.subline(combinator_1.surround(' ', combinator_1.inits([
-                combinator_1.focus(/^[a-z]+(?=[= }])/, combinator_1.some(unescapable_1.unescsource)),
-                combinator_1.rewrite(combinator_1.sequence([
-                    char_1.char('='),
-                    combinator_1.union([
-                        combinator_1.focus(/^[a-z]+(?=[= }])/, combinator_1.some(unescapable_1.unescsource)),
-                        combinator_1.surround('"', combinator_1.some(escapable_1.escsource, '"'), '"', false)
-                    ])
-                ]), combinator_1.some(unescapable_1.unescsource))
-            ]), ''));
+            exports.attribute = combinator_1.subline(combinator_1.verify(combinator_1.surround(' ', combinator_1.inits([
+                util_1.defrag(combinator_1.focus(/^[a-z]+/, combinator_1.some(unescapable_1.unescsource))),
+                char_1.char('='),
+                util_1.defrag(combinator_1.rewrite(combinator_1.union([
+                    combinator_1.focus(/^[a-z]+/, combinator_1.some(unescapable_1.unescsource)),
+                    combinator_1.surround('"', combinator_1.some(escapable_1.escsource, '"'), '"', false)
+                ]), combinator_1.some(unescapable_1.unescsource)))
+            ]), ''), ts => ts.length !== 2));
             function check(attrs, params, spec) {
                 return attrs.size === params.length && attrs.size >= [...Object.values(spec)].filter(Object.isFrozen).length && [...attrs.entries()].every(([key, value]) => spec.hasOwnProperty(key) && spec[key].includes(value));
             }
@@ -3138,6 +3130,7 @@ require = function () {
             '../source/unescapable': 101,
             '../string/uri': 102,
             '../util': 103,
+            'spica/concat': 7,
             'typed-dom': 13
         }
     ],
@@ -3178,16 +3171,19 @@ require = function () {
             const uri_1 = require('../string/uri');
             const util_1 = require('../util');
             const cache_1 = require('spica/cache');
+            const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(10);
-            exports.media = combinator_1.subline(combinator_1.bind(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.convert(source => source[0] === '{' ? '[]' + source : source, combinator_1.sequence([
-                combinator_1.fmap(combinator_1.verify(combinator_1.surround('[', util_1.defrag(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), ']', false), ns => ns.length === 0 || util_1.startsWithTightText(typed_dom_1.frag(ns))), ns => [typed_dom_1.frag(util_1.stringify(ns).trim())]),
-                combinator_1.surround('{', combinator_1.inits([
+            exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.tails([
+                util_1.dup(combinator_1.surround('[', util_1.defrag(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/)), ']', false)),
+                util_1.dup(combinator_1.surround('{', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(util_1.defrag(link_1.attribute))
-                ]), /^ ?}/)
-            ])), ''), (ts, rest) => {
-                const [caption, INSECURE_URL = '', ...params] = ts.map(t => t.textContent);
+                ]), /^ ?}/))
+            ]), ''), ns => concat_1.concat(Array(2 - ns.length).fill(0).map(() => [typed_dom_1.text('')]), ns)), ([[text = typed_dom_1.text('')]]) => text.textContent === '' || util_1.startsWithTightText(text)), ([[text = typed_dom_1.text('')], param]) => [
+                text.textContent.trim(),
+                ...param.map(t => t.textContent)
+            ]), ([text, INSECURE_URL, ...params], rest) => {
                 const path = uri_1.sanitize(INSECURE_URL.trim());
                 if (path === '' && INSECURE_URL !== '')
                     return;
@@ -3201,20 +3197,20 @@ require = function () {
                 const el = exports.cache.has(uri.href) ? exports.cache.get(uri.href).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': path,
-                    alt: caption
+                    alt: text
                 });
                 if (exports.cache.has(uri.href) && [
                         'img',
                         'audio',
                         'video'
                     ].includes(el.tagName.toLowerCase())) {
-                    void typed_dom_1.define(el, { alt: caption });
+                    void typed_dom_1.define(el, { alt: text });
                 }
                 if (!link_1.check(attrs, params, link_1.attributes)) {
                     void el.classList.add('invalid');
                     void el.setAttribute('data-invalid-type', 'parameter');
                 }
-                return el.matches('img') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, [el])])(`{ ${ INSECURE_URL }${ params.reduce((acc, param) => acc + ' ' + param, '') } }${ rest }`) : [
+                return el.matches('img') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`) : [
                     [el],
                     rest
                 ];
@@ -3228,6 +3224,7 @@ require = function () {
             '../util': 103,
             './link': 89,
             'spica/cache': 6,
+            'spica/concat': 7,
             'typed-dom': 13
         }
     ],
@@ -3615,6 +3612,10 @@ require = function () {
                 });
             }
             exports.suppress = suppress;
+            function dup(parser) {
+                return combinator_1.fmap(parser, ns => [ns]);
+            }
+            exports.dup = dup;
             function wrap(parser) {
                 return combinator_1.fmap(parser, ns => [typed_dom_1.frag(ns)]);
             }
