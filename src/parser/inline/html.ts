@@ -1,10 +1,11 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { SubParsers } from '../../combinator/data/parser';
-import { union, inits, sequence, some, fmap, bind, match, surround, subline, verify, focus } from '../../combinator';
+import { union, inits, sequence, some, fmap, bind, match, surround, verify, subline, rewrite, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
+import { char } from '../source/char';
 import { defrag, dup, hasText } from '../util';
-import { html as htm, text } from 'typed-dom';
+import { html as htm } from 'typed-dom';
 
 export const html: HTMLParser = union([
   match(
@@ -46,18 +47,18 @@ export const html: HTMLParser = union([
         (source)),
 ]);
 
-const attribute: HTMLParser.ParamParser.AttributeParser = subline(fmap(
+const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
   surround(
     ' ',
     inits([
-      focus(/^[a-z]+(?=[= >])/, defrag(some(unescsource, /^[^a-z]/))),
-      surround('="', defrag(some(escsource, '"')), '"', false)
+      defrag(focus(/^[a-z]+(?:-[a-z]+)*/, some(unescsource))),
+      char('='),
+      defrag(rewrite(
+        surround('"', some(escsource, '"'), '"', false),
+        some(escsource))),
     ]),
     ''),
-  ([key, value = undefined]) =>
-    value === undefined
-      ? [key]
-      : [key, text('='), value]));
+  ts => ts.length !== 2));
 
 const attributes: Partial<Record<keyof HTMLElementTagNameMap, Record<string, ReadonlyArray<string | undefined>> | undefined>> = {
   bdo: {
@@ -68,7 +69,7 @@ const attributes: Partial<Record<keyof HTMLElementTagNameMap, Record<string, Rea
 function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]): HTMLElement {
   const el = htm(tag, children);
   const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
-    arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 1) : undefined]));
+    arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined]));
   if (!attributes[tag] && args.length > 0 || attrs.size !== args.length) {
     void el.classList.add('invalid');
   }

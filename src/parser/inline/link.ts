@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, tails, sequence, some, fmap, bind, match, surround, validate, verify, subline, rewrite, focus, lazy } from '../../combinator';
+import { union, inits, tails, some, fmap, bind, match, surround, validate, verify, subline, rewrite, focus, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
@@ -40,7 +40,7 @@ export const link: LinkParser = subline(bind(verify(fmap(lazy(() => validate(
     const path = sanitize(INSECURE_URL);
     if (path === '' && INSECURE_URL !== '') return;
     const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
-      param => [param.split('=', 1)[0], param.includes('=') ? param.slice(param.split('=', 1)[0].length + 1) : undefined]));
+      param => [param.split('=', 1)[0], param.includes('=') ? param.slice(param.split('=', 1)[0].length + 2, -1) : undefined]));
     const el = html('a',
       {
         href: path,
@@ -88,22 +88,21 @@ export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(l
     ts => [text('"'), ...ts, text('"')]),
 ])));
 
-export const attribute: LinkParser.ParamParser.AttributeParser = subline(
+export const attribute: LinkParser.ParamParser.AttributeParser = subline(verify(
   surround(
     ' ',
     inits([
-      focus(/^[a-z]+(?=[= }])/, some(unescsource)),
-      rewrite(
-        sequence([
-          char('='),
-          union([
-            focus(/^[a-z]+(?=[= }])/, some(unescsource)),
-            surround('"', some(escsource, '"'), '"', false),
-          ]),
+      defrag(focus(/^[a-z]+/, some(unescsource))),
+      char('='),
+      defrag(rewrite(
+        union([
+          focus(/^[a-z]+/, some(unescsource)),
+          surround('"', some(escsource, '"'), '"', false),
         ]),
-        some(unescsource)),
+        some(unescsource))),
     ]),
-    ''));
+    ''),
+  ts => ts.length !== 2));
 
 export function check(
   attrs: Map<string, string | undefined>,

@@ -417,7 +417,8 @@ export namespace MarkdownParser {
           Inline<'link/attribute'>,
           Parser<Text, [
             SourceParser.UnescapableSourceParser,
-            SourceParser.UnescapableSourceParser,
+            SourceParser.CharParser.EqualParser,
+            SourceParser.UnescapableSourceParser | SourceParser.EscapableSourceParser,
           ]> {
         }
       }
@@ -492,6 +493,7 @@ export namespace MarkdownParser {
           Inline<'html/param/attribute'>,
           Parser<Text, [
             SourceParser.UnescapableSourceParser,
+            SourceParser.CharParser.EqualParser,
             SourceParser.EscapableSourceParser,
           ]> {
         }
