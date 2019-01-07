@@ -22,6 +22,10 @@ export function suppress<T extends HTMLElement, S extends Parser<any, any>[]>(pa
   });
 }
 
+export function dup<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T[], S> {
+  return fmap(parser, ns => [ns]);
+}
+
 export function wrap<S extends Parser<any, any>[]>(parser: Parser<Node, S>): Parser<DocumentFragment, S> {
   return fmap(parser, ns => [frag(ns)]);
 }

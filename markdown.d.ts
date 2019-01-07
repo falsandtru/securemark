@@ -434,13 +434,13 @@ export namespace MarkdownParser {
     export namespace MediaParser {
       export interface TextParser extends
         Inline<'media/text'>,
-        Parser<DocumentFragment, [
+        Parser<Text[], [
           SourceParser.TextParser
         ]> {
       }
       export interface ParamParser extends
         Inline<'media/param'>,
-        Parser<DocumentFragment, [
+        Parser<Text[], [
           LinkParser.ParamParser.UriParser,
           LinkParser.ParamParser.AttributeParser,
         ]> {
@@ -468,24 +468,38 @@ export namespace MarkdownParser {
       Inline<'html'>,
       Parser<HTMLElement, [
         Parser<HTMLElement, [
-          HTMLParser.AttributeParser,
-          InlineParser,
+          HTMLParser.ParamParser,
+          HTMLParser.TextParser,
         ]>,
         Parser<HTMLElement, [
-          HTMLParser.AttributeParser
+          HTMLParser.ParamParser
         ]>,
         Parser<HTMLElement, [
-          HTMLParser.AttributeParser
+          HTMLParser.ParamParser
         ]>,
       ]> {
     }
     export namespace HTMLParser {
-      export interface AttributeParser extends
-        // attr=""
-        Inline<'html/attribute'>,
-        Parser<Text | DocumentFragment, [
-          SourceParser.UnescapableSourceParser,
-          SourceParser.EscapableSourceParser,
+      export interface ParamParser extends
+        Inline<'html/param'>,
+        Parser<Text[], [
+          ParamParser.AttributeParser
+        ]> {
+      }
+      export namespace ParamParser {
+        export interface AttributeParser extends
+          // attr=""
+          Inline<'html/param/attribute'>,
+          Parser<Text, [
+            SourceParser.UnescapableSourceParser,
+            SourceParser.EscapableSourceParser,
+          ]> {
+        }
+      }
+      export interface TextParser extends
+        Inline<'html/text'>,
+        Parser<Array<HTMLElement | Text>, [
+          InlineParser
         ]> {
       }
     }

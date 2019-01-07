@@ -3,59 +3,50 @@ import { SubParsers } from '../../combinator/data/parser';
 import { union, inits, sequence, some, fmap, bind, match, surround, subline, verify, focus } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
-import { defrag, hasText, wrap } from '../util';
+import { defrag, dup, hasText } from '../util';
 import { html as htm, text } from 'typed-dom';
-
-const tags = new Set('ins|del|sup|sub|small|bdi|bdo'.split('|'));
-assert([...tags].every(tag => /^[a-z]+$/.test(tag)));
-assert([...tags].every(tag => !['script', 'style', 'link', 'a', 'img'].includes(tag)));
-assert([...tags].every(tag => !['strong', 'em', 'code', 's', 'u', 'mark'].includes(tag)));
-const emptytags = new Set('wbr'.split('|'));
-assert([...emptytags].every(tag => !tags.has(tag)));
 
 export const html: HTMLParser = union([
   match(
-    /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+    /^(?=<(ins|del|sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
     ([, tag], source) => {
-      if (!tags.has(tag)) return;
       return verify(
         fmap(
           sequence<SubParsers<HTMLParser>[0]>([
-            wrap(surround(`<${tag}`, some(defrag(attribute)), /^ ?>/, false)),
-            surround(``, defrag(some(inline, `</${tag}>`)), `</${tag}>`),
+            dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
+            dup(surround(``, defrag(some(union([inline]), `</${tag}>`)), `</${tag}>`)),
           ]),
-          ([attrs, ...contents]) =>
-            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), contents)]),
+          ([attrs, contents]: [Text[], (HTMLElement | Text)[]]) =>
+            [elem(tag as 'span', attrs.map(t => t.textContent!), contents)]),
         ([el]) => el.matches(':not(.invalid)') && hasText(el))
         (source);
     }),
   match(
-    /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+    /^(?=<(wbr)(?: [^\n]*?)?>)/,
     ([, tag], source) => {
-      if (!emptytags.has(tag)) return;
       return verify(
         fmap(
           sequence<SubParsers<HTMLParser>[1]>([
-            wrap(surround(`<${tag}`, some(defrag(attribute)), /^ ?>/, false)),
+            dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
           ]),
           ([attrs]) =>
-            [elem(tag as 'span', [...attrs.childNodes].map(t => t.textContent!), [])]),
+            [elem(tag as 'span', attrs.map(t => t.textContent!), [])]),
         ([el]) => el.matches(':not(.invalid)'))
         (source);
     }),
   match(
-    /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+    /^(?=<([a-z]+)(?: [^\n]*?)?>)/,
     ([, tag], source) =>
       bind(
         sequence<SubParsers<HTMLParser>[2]>([
-          surround(`<${tag}`, some(defrag(attribute)), /^ ?\/?>/, false),
+          dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?\/?>/, false)),
         ]),
         (_, rest) =>
           [[htm('span', { class: 'invalid', 'data-invalid-type': 'html' }, source.slice(0, source.length - rest.length))], rest])
         (source)),
 ]);
 
-const attribute: HTMLParser.AttributeParser = subline(fmap(
+const attribute: HTMLParser.ParamParser.AttributeParser = subline(fmap(
   surround(
     ' ',
     inits([

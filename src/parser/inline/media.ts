@@ -4,23 +4,23 @@ import { text } from '../source/text';
 import '../source/unescapable';
 import { link, attributes, uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
-import { defrag, wrap, startsWithTightText } from '../util';
+import { defrag, dup, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
-import { html, frag, define } from 'typed-dom';
+import { html, text as txt, define } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(10);
 
 export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
   tails<MediaParser>([
-    wrap(surround('[', defrag(some(union([text]), /^[\n\]]/)), ']', false)),
-    wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
+    dup(surround('[', defrag(some(union([text]), /^[\n\]]/)), ']', false)),
+    dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ]),
   ''),
-  ns => concat(Array(2 - ns.length).fill(0).map(() => frag()), ns)),
-  ([text]) => text.childNodes.length === 0 || startsWithTightText(text)),
-  ([text, param]) => [text.textContent!.trim(), ...[...param.childNodes].map(t => t.textContent!)]),
+  ns => concat(Array(2 - ns.length).fill(0).map(() => [txt('')]), ns)),
+  ([[text = txt('')]]) => text.textContent! === '' || startsWithTightText(text)),
+  ([[text = txt('')], param]) => [text.textContent!.trim(), ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;
