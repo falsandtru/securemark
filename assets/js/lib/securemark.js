@@ -3018,7 +3018,7 @@ require = function () {
                     exports.uri,
                     combinator_1.some(util_1.defrag(exports.attribute))
                 ]), /^ ?}/))
-            ]))), ns => concat_1.concat(Array(2 - ns.length).fill(0).map(() => typed_dom_1.frag()), ns)), ([text]) => {
+            ]))), ns => concat_1.concat([...Array(2 - ns.length)].map(() => typed_dom_1.frag()), ns)), ([text]) => {
                 if (util_1.hasMedia(text)) {
                     if (text.firstChild && text.firstChild.firstChild && text.firstChild.firstChild === text.querySelector('a > .media')) {
                         void text.replaceChild(text.firstChild.firstChild, text.firstChild);
@@ -3180,7 +3180,7 @@ require = function () {
                     link_1.uri,
                     combinator_1.some(util_1.defrag(link_1.attribute))
                 ]), /^ ?}/))
-            ]), ''), ns => concat_1.concat(Array(2 - ns.length).fill(0).map(() => [typed_dom_1.text('')]), ns)), ([[text = typed_dom_1.text('')]]) => text.textContent === '' || util_1.startsWithTightText(text)), ([[text = typed_dom_1.text('')], param]) => [
+            ]), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => [typed_dom_1.text('')]), ns)), ([[text = typed_dom_1.text('')]]) => text.textContent === '' || util_1.startsWithTightText(text)), ([[text = typed_dom_1.text('')], param]) => [
                 text.textContent.trim(),
                 ...param.map(t => t.textContent)
             ]), ([text, INSECURE_URL, ...params], rest) => {
