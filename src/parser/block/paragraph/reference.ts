@@ -1,5 +1,5 @@
 ﻿import { ParagraphParser } from '../../block';
-import { union, some, match, line, rewrite, eval } from '../../../combinator';
+import { union, some, line, match, rewrite, eval } from '../../../combinator';
 import { contentline } from '../../source/line';
 import '../../source/unescapable';
 import { inline } from '../../inline';

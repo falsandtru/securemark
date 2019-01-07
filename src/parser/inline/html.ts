@@ -1,13 +1,13 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { SubParsers } from '../../combinator/data/parser';
-import { union, inits, sequence, some, fmap, bind, match, surround, verify, subline, rewrite, focus } from '../../combinator';
+import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, fmap, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
 import { defrag, dup, hasText } from '../util';
 import { html as htm } from 'typed-dom';
 
-export const html: HTMLParser = union([
+export const html: HTMLParser = validate('<', union([
   match(
     /^(?=<(ins|del|sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
     ([, tag], source) => {
@@ -45,7 +45,7 @@ export const html: HTMLParser = union([
         (_, rest) =>
           [[htm('span', { class: 'invalid', 'data-invalid-type': 'html' }, source.slice(0, source.length - rest.length))], rest])
         (source)),
-]);
+]));
 
 const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
   surround(

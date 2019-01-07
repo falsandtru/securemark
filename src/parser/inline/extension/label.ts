@@ -1,21 +1,20 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { union, fmap, surround, verify, subline, focus, convert } from '../../../combinator';
+import { union, subline, focus, verify, surround, convert, fmap } from '../../../combinator';
 import '../../source/unescapable';
 import { link } from '../link';
 import { hasTightText } from '../../util';
 import { define } from 'typed-dom';
 
-export const label: ExtensionParser.LabelParser = subline(verify(
-  fmap(
-    surround(
-      '[:',
-      focus(
-        /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
-        convert(
-          query => `[${query}]{#}`,
-          union([link]))),
-      ']'),
-    ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()!, href: undefined })]),
+export const label: ExtensionParser.LabelParser = subline(verify(fmap(
+  surround(
+    '[:',
+    focus(
+      /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
+      convert(
+        query => `[${query}]{#}`,
+        union([link]))),
+    ']'),
+  ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()!, href: undefined })]),
   ([el]) => hasTightText(el)));
 
 export function index(label: string, index: string): string {

@@ -1,5 +1,5 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { union, some, verify, subline, focus } from '../../../combinator';
+import { union, some, subline, focus, verify } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { defrag } from '../../util';
 import { html } from 'typed-dom';

@@ -1,5 +1,5 @@
 ﻿import { ShortmediaParser } from '../inline';
-import { union, surround, subline, rewrite, convert } from '../../combinator';
+import { union, subline, rewrite, surround, convert } from '../../combinator';
 import { link } from './link';
 import { uri, address, attribute } from './autolink/uri';
 

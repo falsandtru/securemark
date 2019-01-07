@@ -1,13 +1,15 @@
 ﻿import { ExtensionParser } from '../../inline';
-import { union, fmap, surround, line, trim, lazy } from '../../../combinator';
+import { union, line, surround, trim, lazy, fmap } from '../../../combinator';
 import { index } from './index';
 import { html, define } from 'typed-dom';
 
-export const indexer: ExtensionParser.IndexerParser = line(lazy(() =>
-  fmap(
-    surround(/^\s+(?=\[#)/, trim(union([index])), /^(?=\s*$)/),
-    ([el]) =>
-      [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
+export const indexer: ExtensionParser.IndexerParser = lazy(() => line(fmap(
+  surround(
+    /^\s+(?=\[#)/,
+    trim(union([index])),
+    /^(?=\s*$)/),
+  ([el]) =>
+    [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
 
 export function defineIndex(source: HTMLElement): void {
   void define(source, { id: identifier(text(source)) || undefined });

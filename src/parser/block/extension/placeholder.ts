@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { some, block, focus, rewrite, eval } from '../../../combinator';
+import { some, block, rewrite, focus, eval } from '../../../combinator';
 import { inline } from '../../inline';
 import { html } from 'typed-dom';
 

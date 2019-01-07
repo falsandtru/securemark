@@ -1,5 +1,5 @@
 ﻿import { BracketParser, inline } from '../inline';
-import { union, some, fmap, surround, lazy } from '../../combinator';
+import { union, some, surround, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { text } from 'typed-dom';
 

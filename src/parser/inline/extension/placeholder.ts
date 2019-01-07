@@ -1,12 +1,12 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, some, fmap, surround, validate, subline, lazy, eval } from '../../../combinator';
+import { union, some, subline, validate, surround, lazy, fmap, eval } from '../../../combinator';
 import { html } from 'typed-dom';
 
 // Already used symbols: !@$&*<
-export const placeholder: ExtensionParser.PlaceholderParser = subline(fmap(lazy(() =>
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => subline(fmap(
   surround(
     '[',
     validate(/^[~^](?!\])/, some(union([inline]), /^[\n\]]/)),
-    ']')),
+    ']'),
   () =>
-    [html('span', { class: 'invalid', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`)))]));
+    [html('span', { class: 'invalid', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`)))])));

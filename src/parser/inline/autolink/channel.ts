@@ -1,5 +1,5 @@
 ﻿import { AutolinkParser } from '../../inline';
-import { sequence, some, verify, subline, rewrite } from '../../../combinator';
+import { sequence, some, subline, rewrite, verify } from '../../../combinator';
 import '../../source/unescapable';
 import { account } from './account';
 import { hashtag_ } from './hashtag';

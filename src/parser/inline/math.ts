@@ -1,5 +1,5 @@
 ﻿import { MathParser } from '../inline';
-import { union, some, surround, verify, subline, rewrite, convert } from '../../combinator';
+import { union, some, subline, rewrite, verify, surround, convert } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { hasText } from '../util';
 import { Cache } from 'spica/cache';

@@ -1,5 +1,5 @@
-﻿import { line } from '../../combinator';
-import { AnyLineParser, EmptyLineParser, BlankLineParser, ContentLineParser } from '../source';
+﻿import { AnyLineParser, EmptyLineParser, BlankLineParser, ContentLineParser } from '../source';
+import { line } from '../../combinator';
 
 export const anyline: AnyLineParser = line(_ => [[], ''], false);
 export const emptyline: EmptyLineParser = line(s => s.trim() === '' ? [[], ''] : undefined, false);

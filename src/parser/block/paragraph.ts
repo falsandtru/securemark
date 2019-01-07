@@ -1,5 +1,5 @@
 ﻿import { ParagraphParser } from '../block';
-import { subsequence, some, fmap, block, trim } from '../../combinator';
+import { subsequence, some, block, trim, fmap } from '../../combinator';
 import { reference } from './paragraph/reference';
 import { inline } from '../inline';
 import { defrag, hasContent } from '../util';

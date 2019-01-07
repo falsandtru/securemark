@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../block';
-import { union, validate, rewrite } from '../../combinator';
+import { union, rewrite, validate } from '../../combinator';
 import { fig, segment as seg_fig } from './extension/fig';
 import { figure, segment as seg_figure } from './extension/figure';
 import { graph, segment as seg_graph } from './extension/graph';

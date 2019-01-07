@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, tails, some, fmap, bind, match, surround, validate, verify, subline, rewrite, focus, lazy } from '../../combinator';
+import { union, inits, tails, some, subline, rewrite, focus, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
@@ -12,12 +12,12 @@ export const attributes: Record<string, Array<string | undefined>> = {
   nofollow: [undefined],
 };
 
-export const link: LinkParser = subline(bind(verify(fmap(lazy(() => validate(
+export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
   tails<LinkParser>([
     wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
-  ]))),
+  ])),
   ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),
   ([text]) => {
     if (hasMedia(text)) {
@@ -62,7 +62,7 @@ export const link: LinkParser = subline(bind(verify(fmap(lazy(() => validate(
       void el.setAttribute('data-invalid-type', 'parameter');
     }
     return [[el], rest];
-  }));
+  })));
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
   /^ ?(?! )/,
@@ -70,7 +70,7 @@ export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
     some(union<LinkParser.ParamParser.UriParser>([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)
       (rest))));
 
-export const bracket: LinkParser.ParamParser.UriParser.BracketParser = subline(lazy(() => union([
+export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() => subline(union([
   fmap(
     surround('(', some(union([bracket, unescsource]), /^[\s\)]/), ')', false),
     ts => [text('('), ...ts, text(')')]),

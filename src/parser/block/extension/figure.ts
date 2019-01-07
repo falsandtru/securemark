@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, bind, match, surround, verify, block, line, rewrite, trim } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, trim, bind } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';

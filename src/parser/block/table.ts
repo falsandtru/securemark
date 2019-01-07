@@ -1,5 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, fmap, bind, surround, contract, block, line, focus, rewrite, trim, lazy } from '../../combinator';
+import { union, sequence, some, block, line, rewrite, focus, contract, surround, trim, lazy, fmap, bind } from '../../combinator';
 import { contentline } from '../source/line';
 import { inline } from '../inline';
 import { squash, hasMedia } from '../util';
@@ -9,12 +9,12 @@ import { html, frag, text } from 'typed-dom';
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
 
-export const table: TableParser = block(fmap(lazy(() =>
+export const table: TableParser = lazy(() => block(fmap(
   sequence([
     row(cell(data), false),
     row(cell(align), true),
     some(row(cell(data), false)),
-  ])),
+  ]),
   ([head, as, ...rows]) => {
     assert(as.children.length > 0);
     void align();
@@ -56,7 +56,7 @@ export const table: TableParser = block(fmap(lazy(() =>
           : '';
       }
     }
-  }));
+  })));
 
 const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
   line(rewrite(contentline, contract('|', trim(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(frag(ns))))),
