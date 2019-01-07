@@ -18,7 +18,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ]),
   ''),
-  ns => concat(Array(2 - ns.length).fill(0).map(() => [txt('')]), ns)),
+  ns => concat([...Array(2 - ns.length)].map(() => [txt('')]), ns)),
   ([[text = txt('')]]) => text.textContent! === '' || startsWithTightText(text)),
   ([[text = txt('')], param]) => [text.textContent!.trim(), ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params], rest) => {

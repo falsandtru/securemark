@@ -18,7 +18,7 @@ export const link: LinkParser = subline(bind(verify(fmap(lazy(() => validate(
     wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ]))),
-  ns => concat(Array(2 - ns.length).fill(0).map(() => frag()), ns)),
+  ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),
   ([text]) => {
     if (hasMedia(text)) {
       if (text.firstChild && text.firstChild.firstChild &&
