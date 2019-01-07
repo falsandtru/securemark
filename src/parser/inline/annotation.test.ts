@@ -21,7 +21,7 @@ describe('Unit: parser/inline/annotation', () => {
       assert.deepStrictEqual(inspect(parser('((<wbr>))')), undefined);
       assert.deepStrictEqual(inspect(parser('((![]{a}))')), undefined);
       assert.deepStrictEqual(inspect(parser('((((a))))')), undefined);
-      assert.deepStrictEqual(inspect(parser('a((a))')), undefined);
+      assert.deepStrictEqual(inspect(parser('a((b))')), undefined);
     });
 
     it('basic', () => {
