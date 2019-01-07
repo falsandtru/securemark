@@ -440,7 +440,7 @@ export namespace MarkdownParser {
       }
       export interface ParamParser extends
         Inline<'media/param'>,
-        Parser<Text, [
+        Parser<DocumentFragment, [
           LinkParser.ParamParser.UriParser,
           LinkParser.ParamParser.AttributeParser,
         ]> {

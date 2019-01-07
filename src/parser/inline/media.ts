@@ -1,28 +1,27 @@
 ﻿import { MediaParser } from '../inline';
-import { union, inits, sequence, some, fmap, bind, surround, verify, subline, convert } from '../../combinator';
+import { union, inits, tails, some, fmap, bind, surround, verify, subline } from '../../combinator';
 import { text } from '../source/text';
 import '../source/unescapable';
 import { link, attributes, uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
-import { defrag, stringify, startsWithTightText } from '../util';
+import { defrag, wrap, startsWithTightText } from '../util';
 import { Cache } from 'spica/cache';
+import { concat } from 'spica/concat';
 import { html, frag, define } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = subline(bind(surround(
+export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
-  convert(source => source[0] === '{' ? '[]' + source : source,
-  sequence<MediaParser>([
-    fmap(verify(
-      surround('[', defrag(some(union([text]), /^[\n\]]/)), ']', false),
-      ns => ns.length === 0 || startsWithTightText(frag(ns))),
-      ns => [frag(stringify(ns).trim())]),
-    surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/),
-  ])),
+  tails<MediaParser>([
+    wrap(surround('[', defrag(some(union([text]), /^[\n\]]/)), ']', false)),
+    wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
+  ]),
   ''),
-  (ts, rest) => {
-    const [caption, INSECURE_URL = '', ...params]: string[] = ts.map(t => t.textContent!);
+  ns => concat(Array(2 - ns.length).fill(0).map(() => frag()), ns)),
+  ([text]) => text.childNodes.length === 0 || startsWithTightText(text)),
+  ([text, param]) => [text.textContent!.trim(), ...[...param.childNodes].map(t => t.textContent!)]),
+  ([text, INSECURE_URL, ...params], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;
     const uri = new URL(path, window.location.href);
@@ -31,9 +30,9 @@ export const media: MediaParser = subline(bind(surround(
       param => [param.split('=', 1)[0], param.includes('=') ? param.slice(param.split('=', 1)[0].length + 1) : undefined]));
     const el = cache.has(uri.href)
       ? cache.get(uri.href)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': path, alt: caption });
+      : html('img', { class: 'media', 'data-src': path, alt: text });
     if (cache.has(uri.href) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
-      void define(el, { alt: caption });
+      void define(el, { alt: text });
     }
     if (!check(attrs, params, attributes)) {
       void el.classList.add('invalid');
@@ -44,6 +43,6 @@ export const media: MediaParser = subline(bind(surround(
           link,
           ([link]) =>
             [define(link, [el])])
-          (`{ ${INSECURE_URL}${params.reduce((acc, param) => acc + ' ' + param, '')} }${rest}`) as [[HTMLAnchorElement], string]
+          (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`) as [[HTMLAnchorElement], string]
       : [[el], rest];
   }));

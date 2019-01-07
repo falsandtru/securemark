@@ -1,23 +1,24 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, sequence, some, fmap, bind, match, surround, contract, subline, rewrite, focus, convert, lazy } from '../../combinator';
+import { union, inits, tails, sequence, some, fmap, bind, match, surround, validate, verify, subline, rewrite, focus, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
 import { defrag, wrap, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
-import { html, text } from 'typed-dom';
+import { concat } from 'spica/concat';
+import { html, text, frag } from 'typed-dom';
 
 export const attributes: Record<string, Array<string | undefined>> = {
   nofollow: [undefined],
 };
 
-export const link: LinkParser = subline(bind(lazy(() => contract(
+export const link: LinkParser = subline(bind(verify(fmap(lazy(() => validate(
   /^(?:\[.*?\])?{.+?}/,
-  convert(source => source[0] === '{' ? '[]' + source : source,
-  sequence<LinkParser>([
+  tails<LinkParser>([
     wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
-  ])),
+  ]))),
+  ns => concat(Array(2 - ns.length).fill(0).map(() => frag()), ns)),
   ([text]) => {
     if (hasMedia(text)) {
       if (text.firstChild && text.firstChild.firstChild &&
@@ -33,9 +34,9 @@ export const link: LinkParser = subline(bind(lazy(() => contract(
     }
     assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
     return true;
-  })),
+  }),
   ([text, param], rest) => {
-    const [INSECURE_URL = '', ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
+    const [INSECURE_URL, ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
     const path = sanitize(INSECURE_URL);
     if (path === '' && INSECURE_URL !== '') return;
     const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
