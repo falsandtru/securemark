@@ -29,7 +29,7 @@ describe('Unit: parser/inline/authority', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('[[a]]')), [['<sup class="authority">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[ab]]')), [['<sup class="authority">ab</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[a ]]')), [['<sup class="authority">a </sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[a ]]')), [['<sup class="authority">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[a b]]')), [['<sup class="authority">a b</sup>'], '']);
     });
 

@@ -4,7 +4,7 @@ import { text } from '../source/text';
 import '../source/unescapable';
 import { link, attributes, uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
-import { defrag, dup, startsWithTightText } from '../util';
+import { defrag, dup, trimEnd, hasTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, text as txt, define } from 'typed-dom';
@@ -14,13 +14,13 @@ export const cache = new Cache<string, HTMLElement>(10);
 export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
   tails<MediaParser>([
-    dup(surround('[', defrag(some(union([text]), /^[\n\]]/)), ']', false)),
+    dup(surround('[', trimEnd(defrag(some(union([text]), /^[\n\]]/))), ']', false)),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ]),
   ''),
   ns => concat([...Array(2 - ns.length)].map(() => [txt('')]), ns)),
-  ([[text = txt('')]]) => text.textContent! === '' || startsWithTightText(text)),
-  ([[text = txt('')], param]) => [text.textContent!.trim(), ...param.map(t => t.textContent!)]),
+  ([[text = txt('')]]) => text.textContent! === '' || hasTightText(text)),
+  ([[text = txt('')], param]) => [text.textContent!, ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;

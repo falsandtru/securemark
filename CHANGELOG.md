@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.96.0
+
+- Remove trailing whitespace.
+
 ## 0.95.0
 
 - Extend link syntax to be possible to omit content part.

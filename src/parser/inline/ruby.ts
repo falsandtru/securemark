@@ -2,17 +2,17 @@
 import { union, sequence, some, subline, validate, verify, surround, fmap, bind } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text } from '../source/text';
-import { defrag, stringify, hasText, startsWithTightText } from '../util';
+import { defrag, trimEnd, stringify, hasText, hasTightText } from '../util';
 import { concat } from 'spica/concat';
 import { html, text as txt } from 'typed-dom';
 
 export const ruby: RubyParser = subline(bind(verify(fmap(validate(
   /^\[.+?\]\(.+?\)/,
   sequence<RubyParser>([
-    fmap(verify(
-      surround('[', defrag(some(union([htmlentity, text]), /^[\n\]]/)), ']'),
-      ([text]) => startsWithTightText(text)),
-      ([text]) => [text.textContent!.trim().split(/\s/).map(txt)]),
+    fmap(verify(trimEnd(
+      surround('[', defrag(some(union([htmlentity, text]), /^[\n\]]/)), ']')),
+      ([text]) => hasTightText(text)),
+      ([text]) => [text.textContent!.split(/\s/).map(txt)]),
     fmap(verify(
       surround('(', defrag(some(union([htmlentity, text]), /^[\n)]/)), ')'),
       ([text]) => hasText(text)),

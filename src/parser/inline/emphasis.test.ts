@@ -22,7 +22,7 @@ describe('Unit: parser/inline/emphasis', () => {
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('*a*')), [['<em>a</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*a *')), [['<em>a </em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*a *')), [['<em>a</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*ab*')), [['<em>ab</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a\nb*')), [['<em>a<span class="linebreak"> </span>b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a\\\nb*')), [['<em>a<br>b</em>'], '']);

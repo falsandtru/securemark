@@ -3,7 +3,7 @@ import { union, inits, tails, some, subline, rewrite, focus, validate, verify, s
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
-import { defrag, wrap, startsWithTightText, hasContent, hasMedia, hasLink } from '../util';
+import { defrag, wrap, trimEnd, hasTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { html, text, frag } from 'typed-dom';
@@ -15,7 +15,7 @@ export const attributes: Record<string, Array<string | undefined>> = {
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
   tails<LinkParser>([
-    wrap(surround('[', defrag(some(union([inline]), /^[\n\]]/)), ']', false)),
+    wrap(surround('[', trimEnd(defrag(some(union([inline]), /^[\n\]]/))), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])),
   ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),
@@ -29,7 +29,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       if (!text.firstElementChild!.matches('.media')) return false;
     }
     else {
-      if (text.childNodes.length > 0 && !startsWithTightText(text)) return false;
+      if (text.childNodes.length > 0 && !hasTightText(text)) return false;
       if (hasLink(text)) return false;
     }
     assert(!hasLink(text) || text.firstElementChild!.matches('.media'));

@@ -2,7 +2,7 @@
 import { union, sequence, some, block, line, rewrite, focus, contract, surround, trim, lazy, fmap, bind } from '../../combinator';
 import { contentline } from '../source/line';
 import { inline } from '../inline';
-import { squash, hasMedia } from '../util';
+import { hasMedia, squash } from '../util';
 import { concat } from 'spica/concat';
 import { html, frag, text } from 'typed-dom';
 

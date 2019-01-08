@@ -4,7 +4,7 @@ import { union, inits, sequence, some, subline, rewrite, focus, validate, verify
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
-import { defrag, dup, hasText } from '../util';
+import { defrag, dup, trim, hasTightText } from '../util';
 import { html as htm } from 'typed-dom';
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
@@ -14,11 +14,11 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
       verify(fmap(
         sequence<SubParsers<HTMLParser>[0]>([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
-          dup(surround(``, defrag(some(union([inline]), `</${tag}>`)), `</${tag}>`)),
+          dup(surround(``, trim(defrag(some(union([inline]), `</${tag}>`))), `</${tag}>`)),
         ]),
         ([attrs, contents]: [Text[], (HTMLElement | Text)[]]) =>
           [elem(tag as 'span', attrs.map(t => t.textContent!), contents)]),
-        ([el]) => !el.matches('.invalid') && hasText(el))),
+        ([el]) => !el.matches('.invalid') && hasTightText(el))),
   match(
     /^(?=<(wbr)(?: [^\n]*?)?>)/,
     ([, tag]) =>
