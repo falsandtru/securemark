@@ -3515,7 +3515,7 @@ require = function () {
                             source.slice(1)
                         ];
                     default:
-                        const i = source[0].trim() === '' ? source.search(next) : 0;
+                        const i = source.slice(0, 2).trim() === '' ? source.search(next) : 0;
                         return i === source.length ? [
                             [],
                             ''
