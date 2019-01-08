@@ -1,7 +1,7 @@
 ﻿import { EscapableSourceParser } from '../source';
 import { text } from 'typed-dom';
 
-const separator = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
+const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]/;
 
 export const escsource: EscapableSourceParser = source => {
   if (source.length === 0) return;
