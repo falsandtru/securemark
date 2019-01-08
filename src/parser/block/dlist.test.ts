@@ -49,7 +49,7 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a\n: b\nc')), [['<dl><dt id="index:a">a</dt><dd>b<span class="linebreak"> </span>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a~ b')), [['<dl><dt id="index:a~-b">a~ b</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a: b')), [['<dl><dt id="index:a:-b">a: b</dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a \n: b \nc ')), [['<dl><dt id="index:a">a</dt><dd>b <span class="linebreak"> </span>c</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a \n: b \nc ')), [['<dl><dt id="index:a">a</dt><dd>b<span class="linebreak"> </span>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b\n c ')), [['<dl><dt id="index:a">a</dt><dd>b<span class="linebreak"> </span> c</dd></dl>'], '']);
     });
 

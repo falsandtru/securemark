@@ -4,7 +4,7 @@ import { text } from '../source/text';
 import '../source/unescapable';
 import { link, attributes, uri, attribute, check } from './link';
 import { sanitize } from '../string/uri';
-import { defrag, dup, trimEnd, hasTightText } from '../util';
+import { defrag, dup, trimEdgeEnd, hasTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, text as txt, define } from 'typed-dom';
@@ -14,7 +14,7 @@ export const cache = new Cache<string, HTMLElement>(10);
 export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
   tails<MediaParser>([
-    dup(surround('[', trimEnd(defrag(some(union([text]), /^[\n\]]/))), ']', false)),
+    dup(surround('[', trimEdgeEnd(defrag(some(union([text]), /^[\n\]]/))), ']', false)),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ]),
   ''),

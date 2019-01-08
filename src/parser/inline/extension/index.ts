@@ -2,10 +2,10 @@
 import { union, some, subline, rewrite, verify, surround, convert, lazy, fmap } from '../../../combinator';
 import { link } from '../link';
 import { defineIndex } from './indexer';
-import { trimEnd, hasTightText, hasMedia } from '../../util';
+import { trimEdgeEnd, hasTightText, hasMedia } from '../../util';
 import { define } from 'typed-dom';
 
-export const index: ExtensionParser.IndexParser = lazy(() => subline(verify(fmap(trimEnd(
+export const index: ExtensionParser.IndexParser = lazy(() => subline(verify(fmap(trimEdgeEnd(
   surround(
     '[#',
     rewrite(

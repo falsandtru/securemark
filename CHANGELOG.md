@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.96.1
+
+- Remove trailing whitespace.
+
 ## 0.96.0
 
 - Remove trailing whitespace.
