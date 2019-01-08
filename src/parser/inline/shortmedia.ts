@@ -1,7 +1,7 @@
 ﻿import { ShortmediaParser } from '../inline';
 import { union, subline, rewrite, surround, convert } from '../../combinator';
-import { link } from './link';
 import { uri, address, attribute } from './autolink/uri';
+import { media } from './media';
 
 export const shortmedia: ShortmediaParser = subline(union([
   surround(
@@ -9,7 +9,7 @@ export const shortmedia: ShortmediaParser = subline(union([
     rewrite(
       uri,
       convert(
-        source => `[!{${address(source)}}]{${address(source)}${attribute(source)}}`,
-        link)),
+        source => `!{${address(source)}${attribute(source)}}`,
+        media)),
     ''),
 ]));

@@ -555,7 +555,7 @@ export namespace MarkdownParser {
       // !https://host
       Inline<'shortmedia'>,
       Parser<HTMLAnchorElement, [
-        LinkParser
+        MediaParser
       ]> {
     }
     export interface AutolinkParser extends
