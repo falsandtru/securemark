@@ -23,7 +23,7 @@ export const text: TextParser = source => {
           return [[html('span', { class: 'linebreak' }, ' ')], source.slice(1)];
         default:
           assert(source[0] !== '\n');
-          const i = source[0].trim() === '' ? source.search(next) : 0;
+          const i = source.slice(0, 2).trim() === '' ? source.search(next) : 0;
           return i === source.length
             ? [[], '']
             : i > 0 && source[i] === '\n'
