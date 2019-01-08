@@ -1,4 +1,4 @@
-﻿import { Parser, convert, fmap } from '../combinator';
+﻿import { Parser, fmap } from '../combinator';
 import { isFixed } from './inline';
 import { frag } from 'typed-dom';
 
@@ -35,30 +35,57 @@ export function defrag<T extends Node, S extends Parser<any, any>[]>(parser: Par
   return fmap(parser, squash);
 }
 
-export function trim<P extends Parser<Node, any>>(parser: P): P;
-export function trim<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+export function trim<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trim<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   return trimStart(trimEnd(parser));
 }
 
-export function trimStart<P extends Parser<Node, any>>(parser: P): P;
-export function trimStart<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return convert(
-    //source => source.trimStart(),
-    source => source.slice(source.indexOf(source.trim())),
-    parser);
+export function trimStart<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trimStart<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return trim_(parser, 'start');
 }
 
-export function trimEnd<P extends Parser<Node, any>>(parser: P): P;
-export function trimEnd<T extends Node, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+export function trimEnd<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trimEnd<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return trim_(parser, 'end');
+}
+
+function trim_<P extends Parser<HTMLElement | Text, any>>(parser: P, mode: 'start' | 'end'): P;
+function trim_<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>, mode: 'start' | 'end'): Parser<T, S> {
   return fmap(parser, ns => {
     if (ns.length === 0) return ns;
-    const node = ns[ns.length - 1];
-    if (node instanceof HTMLElement && node.className === 'linebreak') return ns.slice(0, -1);
-    if (!(node instanceof Text)) return ns;
-    const text = node.textContent!;
-    if (text === '') return ns;
-    //node.textContent = text.trimEnd();
-    node.textContent = text.slice(0, text.lastIndexOf(text.trim()) + text.trim().length);
+    const node = ns[mode === 'start' ? 0 : ns.length - 1];
+    switch (node.nodeType) {
+      case 3:
+        const text = node.textContent!;
+        if (text === '') return ns;
+        switch (mode) {
+          case 'start':
+            //node.textContent = text.trimStart();
+            node.textContent = text.slice(text.lastIndexOf(text.trim()));
+            break;
+          case 'end':
+            //node.textContent = text.trimEnd();
+            node.textContent = text.slice(0, text.lastIndexOf(text.trim()) + text.trim().length);
+            break;
+        }
+        break;
+      case 1:
+        switch (true) {
+          case (node as HTMLElement).tagName === 'BR':
+          case (node as HTMLElement).className === 'linebreak' && node.childNodes.length === 1:
+            switch (mode) {
+              case 'start':
+                void ns.shift();
+                break;
+              case 'end':
+                void ns.pop();
+                break;
+            }
+            break;
+        }
+        break;
+    }
     return ns;
   });
 }
@@ -106,5 +133,7 @@ export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {
 
 export function hasTightText(node: HTMLElement | DocumentFragment | Text): boolean {
   return hasText(node)
-      && node.textContent === node.textContent!.trim();
+      && node.textContent === node.textContent!.trim()
+      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR')
+      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR');
 }

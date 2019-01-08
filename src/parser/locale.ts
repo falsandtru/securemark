@@ -6,18 +6,18 @@ import { html } from 'typed-dom';
 export function localize(block: BlockParser): BlockParser {
   return fmap(block, es => {
     void es.forEach(el =>
-      void el.querySelectorAll('.linebreak')
+      void el.querySelectorAll<HTMLElement>('.linebreak')
         .forEach(el => {
-          if (el.children.length === 1) return;
+          if (!el.firstChild || el.firstElementChild) return;
           if (!check(el)) return;
-          assert(el.firstChild!.textContent === ' ');
-          void el.replaceChild(html('wbr'), el.firstChild!);
+          assert(el.firstChild.textContent === ' ');
+          void el.replaceChild(html('wbr'), el.firstChild);
         }));
     return es;
   });
 }
 
-function check(el: Element): boolean {
+function check(el: HTMLElement): boolean {
   const char = endingChar(el.previousSibling);
   if (!char) return false;
   assert([...char].length === 1);
@@ -34,22 +34,27 @@ function endingChar(node: Node | null): string {
 }
 
 function text(node: Node): string {
-  if (node instanceof Text) return node.wholeText;
-  if (!(node instanceof Element)) return node.textContent!;
-  switch (node.tagName.toLowerCase()) {
-    case 'ruby':
-      return [...node.childNodes]
-        .reduceRight((str, node: Text | Element) => {
-          if (str) return str;
-          if (node instanceof Text) return node.wholeText;
-          switch (node.tagName.toLowerCase()) {
-            case 'rt':
-            case 'rp':
-              return '';
-            default:
-              return node.textContent!;
-          }
-        }, '');
+  switch (node.nodeType) {
+    case 3:
+      return node.textContent!;
+    case 1:
+      switch ((node as HTMLElement).tagName) {
+        case 'RUBY':
+          return [...node.childNodes]
+            .reduceRight((str, node: Text | HTMLElement) => {
+              if (str) return str;
+              if (node.nodeType === 3) return node.textContent!;
+              switch ((node as HTMLElement).tagName) {
+                case 'RT':
+                case 'RP':
+                  return '';
+                default:
+                  return node.textContent!;
+              }
+            }, '');
+        default:
+          return node.textContent!;
+      }
     default:
       return node.textContent!;
   }
