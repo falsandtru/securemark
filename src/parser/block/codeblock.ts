@@ -14,7 +14,7 @@ export const segment_: CodeBlockParser = block(focus(
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/,
-  ([, , lang, param, body], rest) => {
+  ([, , lang, param, body]) => rest => {
     assert(rest === '');
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
     if (lang) {

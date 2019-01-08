@@ -11,11 +11,10 @@ export function indent<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): P
   assert(parser);
   return bind<string, T, S>(match(
     /^(?=([^\S\n]+))/,
-    ([, indent], source) =>
+    ([, indent]) =>
       some(line(rewrite(
         s => [[], s.slice(firstline(s).length)],
-        surround(indent, s => [[s.split('\n', 1)[0]], ''], ''))))
-      (source)),
+        surround(indent, s => [[s.split('\n', 1)[0]], ''], ''))))),
     (rs, rest) => {
       const result = parser(rs.join('\n'));
       return result && exec(result) === ''

@@ -17,10 +17,10 @@ export const segment_: ExtensionParser.GraphParser = block(union([
 export const graph: ExtensionParser.GraphParser = block(rewrite(segment, union([
   match(
     /^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
-    ([, , name, body], rest) =>
+    ([, , name, body]) => rest =>
       [[html('pre', { class: `${name} graph notranslate` }, body.slice(0, -1))], rest]),
   match(
     /^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n((?:[^\n]*\n)*?)\1\s*$/,
-    ([, , name, engine, body], rest) =>
+    ([, , name, engine, body]) => rest =>
       [[html('pre', { class: `${name} graph notranslate`, 'data-engine': engine.trim() }, body.slice(0, -1))], rest]),
 ])));

@@ -66,9 +66,8 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
   /^ ?(?! )/,
-  ([flag], rest) =>
-    some(union<LinkParser.ParamParser.UriParser>([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)
-      (rest))));
+  ([flag]) =>
+    some(union([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/))));
 
 export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() => subline(union([
   fmap(

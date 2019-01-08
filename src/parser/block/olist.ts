@@ -12,7 +12,7 @@ const opener = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\
 
 export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
-  ([, index], source) =>
+  ([, index]) =>
     fmap<OListParser>(
       some(union([
         fmap(
@@ -22,8 +22,7 @@ export const olist: OListParser = block(match(
           ]),
           ns => [html('li', fillFirstLine(ns))])
       ])),
-      es => [html('ol', { start: index, type: type(index) }, es)])
-      (source)));
+      es => [html('ol', { start: index, type: type(index) }, es)])));
 
 function type(index: string): string {
   return Number.isInteger(+index)

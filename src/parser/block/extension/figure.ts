@@ -20,7 +20,7 @@ const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}[^\\S\\
 export const segment: FigureParser = block(union([
   match(
     /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
-    ([, bracket, param], rest) =>
+    ([, bracket, param]) => rest =>
       surround(
         '',
         sequence([
@@ -48,7 +48,7 @@ export const segment: FigureParser = block(union([
 
 export const figure: FigureParser = block(rewrite(segment, verify(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
-  ([, , param, body], rest) =>
+  ([, , param, body]) => rest =>
     bind(
       sequence<FigureParser>([
         line(label),

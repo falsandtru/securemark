@@ -262,7 +262,7 @@ export namespace MarkdownParser {
         // ~~~graph
         // ~~~
         Block<'extension/graph'>,
-        Parser<HTMLPreElement, SourceParser.UnescapableSourceParser[]> {
+        Parser<HTMLPreElement, Parser<HTMLPreElement, [SourceParser.UnescapableSourceParser]>[]> {
       }
       export interface ExampleParser extends
         // ~~~example
@@ -529,8 +529,10 @@ export namespace MarkdownParser {
     export interface CodeParser extends
       // `abc`
       Inline<'code'>,
-      Parser<HTMLElement, [
-        SourceParser.UnescapableSourceParser,
+      Parser<HTMLElement | Text, [
+        Parser<HTMLElement, [
+          SourceParser.UnescapableSourceParser
+        ]>,
         SourceParser.UnescapableSourceParser,
       ]> {
     }
@@ -607,9 +609,13 @@ export namespace MarkdownParser {
       export interface HashtagParser extends
         // #tag, #{tag}
         Inline<'hashtag'>,
-        Parser<HTMLAnchorElement, [
-          SourceParser.UnescapableSourceParser,
-          SourceParser.UnescapableSourceParser,
+        Parser<HTMLAnchorElement | Text, [
+          Parser<HTMLAnchorElement, [
+            SourceParser.UnescapableSourceParser
+          ]>,
+          Parser<HTMLAnchorElement, [
+            SourceParser.UnescapableSourceParser
+          ]>,
           SourceParser.UnescapableSourceParser,
         ]> {
       }
