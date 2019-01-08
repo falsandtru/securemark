@@ -11,7 +11,7 @@ export const uri: AutolinkParser.UriParser = subline(union([
     rewrite(
       some(union([bracket, some(unescsource, closer)])),
       convert(
-        source => `[]{${address(source)}${attribute(source)}}`,
+        source => `{${address(source)}${attribute(source)}}`,
         link)),
     ''),
 ]));

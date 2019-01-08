@@ -24,7 +24,7 @@ export function gist(url: URL): HTMLElement | undefined {
         void gist.insertBefore(
           html('div', { class: 'gist-description' }, [
             DOM.a({ style: 'color: #555; font-weight: 600;' }, description, () =>
-              parse(`[]{ ${url.href} }`).querySelector('a')!).element,
+              parse(`{ ${url.href} }`).querySelector('a')!).element,
           ]),
           gist.firstChild);
         void cache.set(url.href, outer.cloneNode(true));
@@ -37,7 +37,7 @@ export function gist(url: URL): HTMLElement | undefined {
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        void define(outer, [parse(`*[]{ ${url.href} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
+        void define(outer, [parse(`*{ ${url.href} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
       },
     });
     return outer;

@@ -9,7 +9,7 @@ export const shortmedia: ShortmediaParser = subline(union([
     rewrite(
       uri,
       convert(
-        source => `[![]{${address(source)}}]{${address(source)}${attribute(source)}}`,
+        source => `[!{${address(source)}}]{${address(source)}${attribute(source)}}`,
         link)),
     ''),
 ]));
