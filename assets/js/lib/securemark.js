@@ -3309,7 +3309,7 @@ require = function () {
             function localize(block) {
                 return combinator_1.fmap(block, es => {
                     void es.forEach(el => void el.querySelectorAll('.linebreak').forEach(el => {
-                        if (el.children.length === 1)
+                        if (!el.firstChild || el.firstElementChild)
                             return;
                         if (!check(el))
                             return;
@@ -3335,25 +3335,28 @@ require = function () {
                 return '';
             }
             function text(node) {
-                if (node instanceof Text)
-                    return node.wholeText;
-                if (!(node instanceof Element))
+                switch (node.nodeType) {
+                case 3:
                     return node.textContent;
-                switch (node.tagName.toLowerCase()) {
-                case 'ruby':
-                    return [...node.childNodes].reduceRight((str, node) => {
-                        if (str)
-                            return str;
-                        if (node instanceof Text)
-                            return node.wholeText;
-                        switch (node.tagName.toLowerCase()) {
-                        case 'rt':
-                        case 'rp':
-                            return '';
-                        default:
-                            return node.textContent;
-                        }
-                    }, '');
+                case 1:
+                    switch (node.tagName) {
+                    case 'RUBY':
+                        return [...node.childNodes].reduceRight((str, node) => {
+                            if (str)
+                                return str;
+                            if (node.nodeType === 3)
+                                return node.textContent;
+                            switch (node.tagName) {
+                            case 'RT':
+                            case 'RP':
+                                return '';
+                            default:
+                                return node.textContent;
+                            }
+                        }, '');
+                    default:
+                        return node.textContent;
+                    }
                 default:
                     return node.textContent;
                 }
@@ -3625,26 +3628,51 @@ require = function () {
             }
             exports.trim = trim;
             function trimStart(parser) {
-                return combinator_1.convert(source => source.slice(source.indexOf(source.trim())), parser);
+                return trim_(parser, 'start');
             }
             exports.trimStart = trimStart;
             function trimEnd(parser) {
+                return trim_(parser, 'end');
+            }
+            exports.trimEnd = trimEnd;
+            function trim_(parser, mode) {
                 return combinator_1.fmap(parser, ns => {
                     if (ns.length === 0)
                         return ns;
-                    const node = ns[ns.length - 1];
-                    if (node instanceof HTMLElement && node.className === 'linebreak')
-                        return ns.slice(0, -1);
-                    if (!(node instanceof Text))
-                        return ns;
-                    const text = node.textContent;
-                    if (text === '')
-                        return ns;
-                    node.textContent = text.slice(0, text.lastIndexOf(text.trim()) + text.trim().length);
+                    const node = ns[mode === 'start' ? 0 : ns.length - 1];
+                    switch (node.nodeType) {
+                    case 3:
+                        const text = node.textContent;
+                        if (text === '')
+                            return ns;
+                        switch (mode) {
+                        case 'start':
+                            node.textContent = text.slice(text.lastIndexOf(text.trim()));
+                            break;
+                        case 'end':
+                            node.textContent = text.slice(0, text.lastIndexOf(text.trim()) + text.trim().length);
+                            break;
+                        }
+                        break;
+                    case 1:
+                        switch (true) {
+                        case node.tagName === 'BR':
+                        case node.className === 'linebreak' && node.childNodes.length === 1:
+                            switch (mode) {
+                            case 'start':
+                                void ns.shift();
+                                break;
+                            case 'end':
+                                void ns.pop();
+                                break;
+                            }
+                            break;
+                        }
+                        break;
+                    }
                     return ns;
                 });
             }
-            exports.trimEnd = trimEnd;
             function squash(nodes) {
                 const acc = [];
                 void nodes.reduce((prev, curr) => {
@@ -3686,7 +3714,7 @@ require = function () {
             }
             exports.hasText = hasText;
             function hasTightText(node) {
-                return hasText(node) && node.textContent === node.textContent.trim();
+                return hasText(node) && node.textContent === node.textContent.trim() && (!node.firstChild || node.firstChild.nodeType !== 1 || node.tagName !== 'BR') && (!node.firstChild || node.firstChild.nodeType !== 1 || node.tagName !== 'BR');
             }
             exports.hasTightText = hasTightText;
         },
