@@ -2635,7 +2635,7 @@ require = function () {
             exports.uri = combinator_1.subline(combinator_1.union([combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.bracket,
                     combinator_1.some(unescapable_1.unescsource, closer)
-                ])), combinator_1.convert(source => `[]{${ address(source) }${ attribute(source) }}`, link_1.link)), '')]));
+                ])), combinator_1.convert(source => `{${ address(source) }${ attribute(source) }}`, link_1.link)), '')]));
             function address(source) {
                 return source.startsWith('ttp') ? `h${ source }` : source;
             }
@@ -3278,7 +3278,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const link_1 = require('./link');
             const uri_1 = require('./autolink/uri');
-            exports.shortmedia = combinator_1.subline(combinator_1.union([combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(uri_1.uri, combinator_1.convert(source => `[![]{${ uri_1.address(source) }}]{${ uri_1.address(source) }${ uri_1.attribute(source) }}`, link_1.link)), '')]));
+            exports.shortmedia = combinator_1.subline(combinator_1.union([combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(uri_1.uri, combinator_1.convert(source => `[!{${ uri_1.address(source) }}]{${ uri_1.address(source) }${ uri_1.attribute(source) }}`, link_1.link)), '')]));
         },
         {
             '../../combinator': 20,
@@ -4003,7 +4003,7 @@ require = function () {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`[]{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
+                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.default.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
@@ -4014,7 +4014,7 @@ require = function () {
                                 }));
                             },
                             error({status, statusText}) {
-                                void typed_dom_1.define(outer, [parser_1.parse(`*[]{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                void typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                             }
                         });
                         return outer;
@@ -4071,7 +4071,7 @@ require = function () {
                             style: 'width: 100%; height: 100%; min-height: 400px;',
                             typemustmatch: ''
                         })]),
-                    typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**[]{ ${ url.href } }**`).firstElementChild.childNodes)
+                    typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**{ ${ url.href } }**`).firstElementChild.childNodes)
                 ]));
             }
             exports.pdf = pdf;
@@ -4115,7 +4115,7 @@ require = function () {
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                             },
                             error({status, statusText}) {
-                                void typed_dom_1.define(outer, [parser_1.parse(`*[]{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                void typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                             }
                         });
                         return outer;
@@ -4171,7 +4171,7 @@ require = function () {
                                 }));
                             },
                             error({status, statusText}) {
-                                void typed_dom_1.define(outer, [parser_1.parse(`*[]{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                void typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                             }
                         });
                         return outer;
