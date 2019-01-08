@@ -3276,14 +3276,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const link_1 = require('./link');
             const uri_1 = require('./autolink/uri');
-            exports.shortmedia = combinator_1.subline(combinator_1.union([combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(uri_1.uri, combinator_1.convert(source => `[!{${ uri_1.address(source) }}]{${ uri_1.address(source) }${ uri_1.attribute(source) }}`, link_1.link)), '')]));
+            const media_1 = require('./media');
+            exports.shortmedia = combinator_1.subline(combinator_1.union([combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(uri_1.uri, combinator_1.convert(source => `!{${ uri_1.address(source) }${ uri_1.attribute(source) }}`, media_1.media)), '')]));
         },
         {
             '../../combinator': 20,
             './autolink/uri': 77,
-            './link': 89
+            './media': 91
         }
     ],
     94: [
