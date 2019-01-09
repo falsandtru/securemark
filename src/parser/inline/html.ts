@@ -5,7 +5,13 @@ import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
 import { defrag, dup, trimNode, hasTightText } from '../util';
-import { html as htm, define } from 'typed-dom';
+import { html as htm } from 'typed-dom';
+
+const attributes: Record<string, Record<string, ReadonlyArray<string | undefined>> | undefined> = {
+  bdo: {
+    dir: Object.freeze(['ltr', 'rtl']),
+  },
+};
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
@@ -17,7 +23,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           dup(surround(``, trimNode(defrag(some(union([inline]), `</${tag}>`))), `</${tag}>`)),
         ]),
         ([attrs, contents]: [Text[], (HTMLElement | Text)[]]) =>
-          [elem(tag as 'span', attrs.map(t => t.textContent!), contents)]),
+          [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), contents)]),
         ([el]) => !el.matches('.invalid') && hasTightText(el))),
   match(
     /^(?=<(wbr)(?: [^\n]*?)?>)/,
@@ -27,7 +33,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
         ]),
         ([attrs]) =>
-          [elem(tag as 'span', attrs.map(t => t.textContent!), [])]),
+          [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), [])]),
         ([el]) => !el.matches('.invalid'))),
   rewrite(
     sequence<SubParsers<HTMLParser>[2]>([
@@ -37,7 +43,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
       [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '']),
 ])));
 
-const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
+export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
   surround(
     ' ',
     inits([
@@ -50,34 +56,33 @@ const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
     ''),
   ts => ts.length !== 2));
 
-const attributes: Record<string, Record<string, ReadonlyArray<string | undefined>> | undefined> = {
-  bdo: {
-    dir: Object.freeze(['ltr', 'rtl']),
-  },
-};
-
-function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]): HTMLElement {
-  const el = htm(tag, children);
-  const attrs: Map<string, string | undefined> = new Map(args.map<[string, string | undefined]>(
+export function attr(
+  spec: Record<string, ReadonlyArray<string | undefined>> | undefined,
+  params: string[],
+  classes: Set<string>,
+  syntax: string,
+): Record<string, string | undefined> {
+  const result: Record<string, string | undefined> = {
+  };
+  const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
     arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined]));
-  if (!attributes[tag] && args.length > 0 || attrs.size !== args.length) {
-    void el.classList.add('invalid');
+  if (!spec && params.length > 0 || attrs.size !== params.length) {
+    void classes.add('invalid');
   }
-  if (attributes[tag]) {
-    if (Object.entries(attributes[tag]!).filter(([, v]) => Object.isFrozen(v)).some(([k]) => !attrs.has(k))) {
-      void el.classList.add('invalid');
+  if (spec) {
+    if (!Object.entries(spec!).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k))) {
+      void classes.add('invalid');
     }
     for (const [key, value] of attrs) {
-      attributes[tag]!.hasOwnProperty(key) && attributes[tag]![key].includes(value)
-        ? void el.setAttribute(key, value || '')
-        : void el.classList.add('invalid');
+      spec!.hasOwnProperty(key) && spec![key].includes(value)
+        ? result[key] = value
+        : void classes.add('invalid');
     }
   }
-  if (el.matches('.invalid')) {
-    void define(el, {
-      'data-invalid-syntax': 'html',
-      'data-invalid-type': 'parameter',
-    });
+  if (classes.has('invalid')) {
+    result.class = [...classes].join(' ');
+    result['data-invalid-syntax'] = syntax;
+    result['data-invalid-type'] = 'parameter';
   }
-  return el;
+  return result;
 }

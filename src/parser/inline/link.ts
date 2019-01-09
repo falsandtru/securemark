@@ -1,8 +1,7 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, tails, some, subline, rewrite, focus, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
-import { escsource } from '../source/escapable';
-import { char } from '../source/char';
+import { attribute, attr } from './html';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
@@ -39,32 +38,23 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     const [INSECURE_URL, ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
     const path = sanitize(INSECURE_URL);
     if (path === '' && INSECURE_URL !== '') return;
-    const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
-      param => [param.split('=', 1)[0], param.includes('=') ? param.slice(param.split('=', 1)[0].length + 2, -1) : undefined]));
     const el = html('a',
       {
         href: path,
-        rel: `noopener${attrs.has('nofollow') ? ' nofollow noreferrer' : ''}`,
+        rel: `noopener${params.includes('nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       hasContent(text)
         ? text.childNodes
         : sanitize(decode(INSECURE_URL || '.'))
             .replace(/^tel:/, '')
-            .replace(/^h(?=ttps?:\/\/)/, attrs.has('nofollow') ? '' : 'h'));
+            .replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
     assert(hasContent(el));
     if (el.textContent!.trim().match(/^[#@]/)) return;
     if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
     if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
       void el.setAttribute('target', '_blank');
     }
-    if (!check(attrs, params, attributes)) {
-      void el.classList.add('invalid');
-      void define(el, {
-        'data-invalid-syntax': 'link',
-        'data-invalid-type': 'parameter',
-      });
-    }
-    return [[el], rest];
+    return [[define(el, attr(attributes, params, new Set(el.classList), 'link'))], rest];
   })));
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
@@ -89,32 +79,3 @@ export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() =
     surround('"', some(union([bracket, unescsource]), /^[\s\"]/), '"', false),
     ts => [text('"'), ...ts, text('"')]),
 ])));
-
-export const attribute: LinkParser.ParamParser.AttributeParser = subline(verify(
-  surround(
-    ' ',
-    inits([
-      defrag(focus(/^[a-z]+/, some(unescsource))),
-      char('='),
-      defrag(rewrite(
-        union([
-          focus(/^[a-z]+/, some(unescsource)),
-          surround('"', some(escsource, '"'), '"', false),
-        ]),
-        some(unescsource))),
-    ]),
-    ''),
-  ts => ts.length !== 2));
-
-export function check(
-  attrs: Map<string, string | undefined>,
-  params: string[],
-  spec: Record<string, Array<string | undefined>>,
-): boolean {
-  return attrs.size === params.length
-      && Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k))
-      && [...attrs]
-          .every(([key, value]) =>
-            spec.hasOwnProperty(key) &&
-            spec[key].includes(value));
-}

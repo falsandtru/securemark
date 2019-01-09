@@ -2,7 +2,8 @@
 import { union, inits, tails, some, subline, verify, surround, fmap, bind } from '../../combinator';
 import { text } from '../source/text';
 import '../source/unescapable';
-import { link, attributes, uri, attribute, check } from './link';
+import { link, attributes, uri } from './link';
+import { attribute, attr } from './html';
 import { sanitize } from '../string/uri';
 import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
 import { Cache } from 'spica/cache';
@@ -26,21 +27,13 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
     if (path === '' && INSECURE_URL !== '') return;
     const uri = new URL(path, window.location.href);
     if (uri.protocol === 'tel:') return;
-    const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
-      param => [param.split('=', 1)[0], param.includes('=') ? param.slice(param.split('=', 1)[0].length + 1) : undefined]));
     const el = cache.has(uri.href)
       ? cache.get(uri.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: text });
     if (cache.has(uri.href) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
       void define(el, { alt: text });
     }
-    if (!check(attrs, params, attributes)) {
-      void el.classList.add('invalid');
-      void define(el, {
-        'data-invalid-syntax': 'media',
-        'data-invalid-type': 'parameter',
-      });
-    }
+    void define(el, attr(attributes, params, new Set(el.classList), 'media'));
     return el.matches('img')
       ? fmap(
           link,

@@ -393,7 +393,7 @@ export namespace MarkdownParser {
         Inline<'link/param'>,
         Parser<DocumentFragment, [
           LinkParser.ParamParser.UriParser,
-          LinkParser.ParamParser.AttributeParser,
+          HTMLParser.ParamParser.AttributeParser,
         ]> {
       }
       export namespace ParamParser {
@@ -412,14 +412,6 @@ export namespace MarkdownParser {
               SourceParser.UnescapableSourceParser,
             ]>[]> {
           }
-        }
-        export interface AttributeParser extends
-          Inline<'link/attribute'>,
-          Parser<Text, [
-            SourceParser.UnescapableSourceParser,
-            SourceParser.CharParser.EqualParser,
-            SourceParser.UnescapableSourceParser | SourceParser.EscapableSourceParser,
-          ]> {
         }
       }
     }
@@ -443,7 +435,7 @@ export namespace MarkdownParser {
         Inline<'media/param'>,
         Parser<Text[], [
           LinkParser.ParamParser.UriParser,
-          LinkParser.ParamParser.AttributeParser,
+          HTMLParser.ParamParser.AttributeParser,
         ]> {
       }
     }
