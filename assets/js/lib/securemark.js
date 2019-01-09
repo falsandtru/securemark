@@ -2018,6 +2018,7 @@ require = function () {
             exports.placeholder = combinator_1.block(combinator_1.rewrite(exports.segment, () => [
                 [typed_dom_1.html('p', {
                         class: 'invalid',
+                        'data-invalid-syntax': 'extension',
                         'data-invalid-type': 'syntax'
                     }, combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: Extension: Invalid extension name, attribute, or content.')))],
                 ''
@@ -2089,6 +2090,7 @@ require = function () {
                     ]))
                 ]), () => [typed_dom_1.html('li', combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: UList: Use `-` instead.')))])])), es => [typed_dom_1.html('ul', {
                     class: 'invalid',
+                    'data-invalid-syntax': 'list',
                     'data-invalid-type': 'syntax'
                 }, es)])));
         },
@@ -2118,7 +2120,10 @@ require = function () {
                 const el = typed_dom_1.html('div', { class: `math notranslate` }, `$$${ body }$$`);
                 if (param.trim() !== '') {
                     void el.classList.add('invalid');
-                    void el.setAttribute('data-invalid-type', 'parameter');
+                    void typed_dom_1.define(el, {
+                        'data-invalid-syntax': 'math',
+                        'data-invalid-type': 'parameter'
+                    });
                 }
                 return [
                     [el],
@@ -2238,6 +2243,7 @@ require = function () {
                     [
                         typed_dom_1.html('span', {
                             class: 'invalid',
+                            'data-invalid-syntax': 'reference',
                             'data-invalid-type': 'syntax'
                         }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Reference: Use lower-case alphanumeric characters in reference syntax.`))),
                         typed_dom_1.html('br')
@@ -2456,7 +2462,7 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.annotation = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimEdgeEnd(combinator_1.surround('((', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '))')), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el)));
+            exports.annotation = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.surround('((', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '))')), '))')), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el)));
         },
         {
             '../../combinator': 20,
@@ -2473,7 +2479,7 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.authority = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.trimEdgeEnd(combinator_1.surround('[[', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\n|^]]/)), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el))));
+            exports.authority = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.surround('[[', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\n|^]]/)), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el))));
         },
         {
             '../../combinator': 20,
@@ -2745,7 +2751,7 @@ require = function () {
             const strong_1 = require('./strong');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.emphasis = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimEdgeEnd(combinator_1.validate(/^\*\S[\s\S]*?\*/, combinator_1.surround('*', util_1.defrag(combinator_1.some(combinator_1.union([
+            exports.emphasis = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.validate(/^\*\S[\s\S]*?\*/, combinator_1.surround('*', util_1.defrag(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
             ]))), '*'))), ns => [typed_dom_1.html('em', ns)]), ([el]) => util_1.hasTightText(el)));
@@ -2789,7 +2795,7 @@ require = function () {
             const indexer_1 = require('./indexer');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.trimEdgeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => (void indexer_1.defineIndex(el), [typed_dom_1.define(el, {
+            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => (void indexer_1.defineIndex(el), [typed_dom_1.define(el, {
                     id: undefined,
                     href: `#${ el.id }`
                 })])), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))));
@@ -2891,6 +2897,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.placeholder = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.surround('[', combinator_1.validate(/^[~^](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']'), () => [typed_dom_1.html('span', {
                     class: 'invalid',
+                    'data-invalid-syntax': 'extension',
                     'data-invalid-type': 'syntax'
                 }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`)))])));
         },
@@ -2914,13 +2921,14 @@ require = function () {
             exports.html = combinator_1.lazy(() => combinator_1.validate(/^<[a-z]+[ >]/, combinator_1.union([
                 combinator_1.match(/^(?=<(ins|del|sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/, ([, tag]) => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
                     util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([attribute]))), /^ ?>/, false)),
-                    util_1.dup(combinator_1.surround(``, util_1.trimEdge(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
+                    util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
                 ]), ([attrs, contents]) => [elem(tag, attrs.map(t => t.textContent), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el))),
                 combinator_1.match(/^(?=<(wbr)(?: [^\n]*?)?>)/, ([, tag]) => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([attribute]))), /^ ?>/, false))]), ([attrs]) => [elem(tag, attrs.map(t => t.textContent), [])]), ([el]) => !el.matches('.invalid'))),
                 combinator_1.rewrite(combinator_1.sequence([util_1.dup(combinator_1.surround(/<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([attribute]))), /^ ?\/?>/, false))]), source => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
-                            'data-invalid-type': 'html'
+                            'data-invalid-syntax': 'html',
+                            'data-invalid-type': 'syntax'
                         }, source)],
                     ''
                 ])
@@ -2956,7 +2964,10 @@ require = function () {
                     }
                 }
                 if (el.matches('.invalid')) {
-                    void el.setAttribute('data-invalid-type', 'parameter');
+                    void typed_dom_1.define(el, {
+                        'data-invalid-syntax': 'html',
+                        'data-invalid-type': 'parameter'
+                    });
                 }
                 return el;
             }
@@ -3009,7 +3020,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.attributes = { nofollow: [undefined] };
             exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.tails([
-                util_1.wrap(combinator_1.surround('[', util_1.trimEdgeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/))), ']', false)),
+                util_1.wrap(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/))), ']', false)),
                 util_1.wrap(combinator_1.surround('{', combinator_1.inits([
                     exports.uri,
                     combinator_1.some(util_1.defrag(exports.attribute))
@@ -3052,7 +3063,10 @@ require = function () {
                 }
                 if (!check(attrs, params, exports.attributes)) {
                     void el.classList.add('invalid');
-                    void el.setAttribute('data-invalid-type', 'parameter');
+                    void typed_dom_1.define(el, {
+                        'data-invalid-syntax': 'link',
+                        'data-invalid-type': 'parameter'
+                    });
                 }
                 return [
                     [el],
@@ -3171,7 +3185,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.tails([
-                util_1.dup(combinator_1.surround('[', util_1.trimEdgeEnd(util_1.defrag(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/))), ']', false)),
+                util_1.dup(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/))), ']', false)),
                 util_1.dup(combinator_1.surround('{', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(util_1.defrag(link_1.attribute))
@@ -3204,7 +3218,10 @@ require = function () {
                 }
                 if (!link_1.check(attrs, params, link_1.attributes)) {
                     void el.classList.add('invalid');
-                    void el.setAttribute('data-invalid-type', 'parameter');
+                    void typed_dom_1.define(el, {
+                        'data-invalid-syntax': 'media',
+                        'data-invalid-type': 'parameter'
+                    });
                 }
                 return el.matches('img') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`) : [
                     [el],
@@ -3235,7 +3252,7 @@ require = function () {
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.ruby = combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\[.+?\]\(.+?\)/, combinator_1.sequence([
-                combinator_1.fmap(combinator_1.verify(util_1.trimEdgeEnd(combinator_1.surround('[', util_1.defrag(combinator_1.some(combinator_1.union([
+                combinator_1.fmap(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[', util_1.defrag(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
                     text_1.text
                 ]), /^[\n\]]/)), ']')), ([text]) => util_1.hasTightText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)]),
@@ -3290,7 +3307,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimEdgeEnd(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.surround('**', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**'))), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.hasTightText(el)));
+            exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.surround('**', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**'))), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.hasTightText(el)));
         },
         {
             '../../combinator': 20,
@@ -3628,21 +3645,21 @@ require = function () {
                 return combinator_1.fmap(parser, squash);
             }
             exports.defrag = defrag;
-            function trimEdge(parser) {
-                return trimEdge_(parser, 'both');
+            function trimNode(parser) {
+                return trimNode_(parser, 'both');
             }
-            exports.trimEdge = trimEdge;
-            function trimEdgeStart(parser) {
-                return trimEdge_(parser, 'start');
+            exports.trimNode = trimNode;
+            function trimNodeStart(parser) {
+                return trimNode_(parser, 'start');
             }
-            exports.trimEdgeStart = trimEdgeStart;
-            function trimEdgeEnd(parser) {
-                return trimEdge_(parser, 'end');
+            exports.trimNodeStart = trimNodeStart;
+            function trimNodeEnd(parser) {
+                return trimNode_(parser, 'end');
             }
-            exports.trimEdgeEnd = trimEdgeEnd;
-            function trimEdge_(parser, mode) {
+            exports.trimNodeEnd = trimNodeEnd;
+            function trimNode_(parser, mode) {
                 if (mode === 'both')
-                    return trimEdge_(trimEdge_(parser, 'start'), 'end');
+                    return trimNode_(trimNode_(parser, 'start'), 'end');
                 return combinator_1.fmap(parser, ns => {
                     if (ns.length === 0)
                         return ns;
@@ -3664,7 +3681,7 @@ require = function () {
                     case 1:
                         switch (true) {
                         case node.tagName === 'BR':
-                        case node.className === 'linebreak' && node.childNodes.length === 1:
+                        case node.className === 'linebreak':
                             switch (mode) {
                             case 'start':
                                 void ns.shift();
