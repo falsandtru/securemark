@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.97.0
+
+- Improve parse failure messages.
+
 ## 0.96.1
 
 - Remove trailing whitespace.

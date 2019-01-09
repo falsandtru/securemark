@@ -36,7 +36,10 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
     }
     if (!check(attrs, params, attributes)) {
       void el.classList.add('invalid');
-      void el.setAttribute('data-invalid-type', 'parameter');
+      void define(el, {
+        'data-invalid-syntax': 'media',
+        'data-invalid-type': 'parameter',
+      });
     }
     return el.matches('img')
       ? fmap(

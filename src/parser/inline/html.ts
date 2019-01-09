@@ -5,7 +5,7 @@ import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
 import { defrag, dup, trimNode, hasTightText } from '../util';
-import { html as htm } from 'typed-dom';
+import { html as htm, define } from 'typed-dom';
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
@@ -34,7 +34,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
       dup(surround(/<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false)),
     ]),
     source =>
-      [[htm('span', { class: 'invalid', 'data-invalid-type': 'html' }, source)], '']),
+      [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '']),
 ])));
 
 const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
@@ -74,7 +74,10 @@ function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]
     }
   }
   if (el.matches('.invalid')) {
-    void el.setAttribute('data-invalid-type', 'parameter');
+    void define(el, {
+      'data-invalid-syntax': 'html',
+      'data-invalid-type': 'parameter',
+    });
   }
   return el;
 }

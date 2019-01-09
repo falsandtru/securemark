@@ -1,7 +1,7 @@
 ﻿import { MathBlockParser } from '../block';
 import { block, rewrite, focus, match, lazy } from '../../combinator';
 import '../source/unescapable';
-import { html } from 'typed-dom';
+import { html, define } from 'typed-dom';
 
 export const segment: MathBlockParser = lazy(() => block(segment_));
 
@@ -15,7 +15,10 @@ export const mathblock: MathBlockParser = block(rewrite(segment, match(
     const el = html('div', { class: `math notranslate` }, `$$${body}$$`);
     if (param.trim() !== '') {
       void el.classList.add('invalid');
-      void el.setAttribute('data-invalid-type', 'parameter');
+      void define(el, {
+        'data-invalid-syntax': 'math',
+        'data-invalid-type': 'parameter',
+      });
     }
     return [[el], rest];
   })));

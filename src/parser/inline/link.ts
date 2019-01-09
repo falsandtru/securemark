@@ -6,7 +6,7 @@ import { char } from '../source/char';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
-import { html, text, frag } from 'typed-dom';
+import { html, text, frag, define } from 'typed-dom';
 
 export const attributes: Record<string, Array<string | undefined>> = {
   nofollow: [undefined],
@@ -59,7 +59,10 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     }
     if (!check(attrs, params, attributes)) {
       void el.classList.add('invalid');
-      void el.setAttribute('data-invalid-type', 'parameter');
+      void define(el, {
+        'data-invalid-syntax': 'link',
+        'data-invalid-type': 'parameter',
+      });
     }
     return [[el], rest];
   })));

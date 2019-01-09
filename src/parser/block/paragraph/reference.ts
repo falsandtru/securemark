@@ -15,5 +15,5 @@ export const reference: ParagraphParser.ReferenceParser = line(rewrite(
     match(
       /^(>+)(?!>)\S.*$/,
       () => () =>
-        [[html('span', { class: 'invalid', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Reference: Use lower-case alphanumeric characters in reference syntax.`))), html('br')], '']),
+        [[html('span', { class: 'invalid', 'data-invalid-syntax': 'reference', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Reference: Use lower-case alphanumeric characters in reference syntax.`))), html('br')], '']),
   ])));

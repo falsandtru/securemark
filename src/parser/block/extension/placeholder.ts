@@ -8,4 +8,4 @@ export const segment: ExtensionParser.PlaceholderParser = block(focus(
   _ => [[], '']));
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(rewrite(segment,
-  () => [[html('p', { class: 'invalid', 'data-invalid-type': 'syntax' }, eval(some(inline)('Invalid syntax: Extension: Invalid extension name, attribute, or content.')))], '']));
+  () => [[html('p', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax' }, eval(some(inline)('Invalid syntax: Extension: Invalid extension name, attribute, or content.')))], '']));

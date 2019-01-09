@@ -27,7 +27,7 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$\n\\\n$$')), [['<div class="math notranslate">$$\n\\\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$\n$$')), [['<div class="math notranslate">$$\n$\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math notranslate">$$\n$$$\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<div class="math notranslate invalid" data-invalid-type="parameter">$$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<div class="math notranslate invalid" data-invalid-syntax="math" data-invalid-type="parameter">$$\n$$</div>'], '']);
     });
 
   });

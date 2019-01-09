@@ -35,7 +35,7 @@ describe('Unit: parser/inline/authority', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('[["]]')), [['<sup class="authority">"</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[<a>]]')), [['<sup class="authority"><span class="invalid" data-invalid-type="html">&lt;a&gt;</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[<a>]]')), [['<sup class="authority"><span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;a&gt;</span></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[`a`]]')), [['<sup class="authority"><code data-src="`a`">a</code></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]]')), [['<sup class="authority">[a]</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[@a]]')), [['<sup class="authority"><a class="account" rel="noopener">@a</a></sup>'], '']);

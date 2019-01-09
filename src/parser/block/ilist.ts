@@ -16,4 +16,4 @@ export const ilist: IListParser = lazy(() => block(fmap(
       ]),
       () => [html('li', eval(some(inline)('Invalid syntax: UList: Use `-` instead.')))])
   ])),
-  es => [html('ul', { class: 'invalid', 'data-invalid-type': 'syntax' }, es)])));
+  es => [html('ul', { class: 'invalid', 'data-invalid-syntax': 'list', 'data-invalid-type': 'syntax' }, es)])));
