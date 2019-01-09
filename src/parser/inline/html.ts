@@ -50,7 +50,7 @@ const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
     ''),
   ts => ts.length !== 2));
 
-const attributes: Partial<Record<keyof HTMLElementTagNameMap, Record<string, ReadonlyArray<string | undefined>> | undefined>> = {
+const attributes: Record<string, Record<string, ReadonlyArray<string | undefined>> | undefined> = {
   bdo: {
     dir: Object.freeze(['ltr', 'rtl']),
   },
@@ -64,10 +64,10 @@ function elem(tag: keyof HTMLElementTagNameMap, args: string[], children: Node[]
     void el.classList.add('invalid');
   }
   if (attributes[tag]) {
-    if (attrs.size < [...Object.values(attributes[tag]!)].filter(Object.isFrozen).length) {
+    if (Object.entries(attributes[tag]!).filter(([, v]) => Object.isFrozen(v)).some(([k]) => !attrs.has(k))) {
       void el.classList.add('invalid');
     }
-    for (const [key, value] of attrs.entries()) {
+    for (const [key, value] of attrs) {
       attributes[tag]!.hasOwnProperty(key) && attributes[tag]![key].includes(value)
         ? void el.setAttribute(key, value || '')
         : void el.classList.add('invalid');

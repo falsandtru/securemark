@@ -112,8 +112,8 @@ export function check(
   spec: Record<string, Array<string | undefined>>,
 ): boolean {
   return attrs.size === params.length
-      && attrs.size >= [...Object.values(spec)].filter(Object.isFrozen).length
-      && [...attrs.entries()]
+      && Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k))
+      && [...attrs]
           .every(([key, value]) =>
             spec.hasOwnProperty(key) &&
             spec[key].includes(value));

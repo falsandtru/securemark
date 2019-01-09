@@ -22,7 +22,7 @@ export function text(source: Element): string {
     : source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
-  void [...target.querySelectorAll('code[data-src], .math[data-src]')]
+  void target.querySelectorAll('code[data-src], .math[data-src]')
     .forEach(el =>
       void define(el, el.getAttribute('data-src')!));
   return target.textContent!.trim();
