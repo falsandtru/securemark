@@ -35,24 +35,24 @@ export function defrag<T extends Node, S extends Parser<any, any>[]>(parser: Par
   return fmap(parser, squash);
 }
 
-export function trimEdge<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
-export function trimEdge<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return trimEdge_(parser, 'both');
+export function trimNode<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trimNode<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return trimNode_(parser, 'both');
 }
 
-export function trimEdgeStart<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
-export function trimEdgeStart<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return trimEdge_(parser, 'start');
+export function trimNodeStart<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trimNodeStart<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return trimNode_(parser, 'start');
 }
 
-export function trimEdgeEnd<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
-export function trimEdgeEnd<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return trimEdge_(parser, 'end');
+export function trimNodeEnd<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trimNodeEnd<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+  return trimNode_(parser, 'end');
 }
 
-function trimEdge_<P extends Parser<HTMLElement | Text, any>>(parser: P, mode: 'start' | 'end' | 'both'): P;
-function trimEdge_<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>, mode: 'start' | 'end' | 'both'): Parser<T, S> {
-  if (mode === 'both') return trimEdge_(trimEdge_(parser, 'start'), 'end');
+function trimNode_<P extends Parser<HTMLElement | Text, any>>(parser: P, mode: 'start' | 'end' | 'both'): P;
+function trimNode_<T extends HTMLElement | Text, S extends Parser<any, any>[]>(parser: Parser<T, S>, mode: 'start' | 'end' | 'both'): Parser<T, S> {
+  if (mode === 'both') return trimNode_(trimNode_(parser, 'start'), 'end');
   return fmap(parser, ns => {
     if (ns.length === 0) return ns;
     const node = ns[mode === 'start' ? 0 : ns.length - 1];
@@ -76,7 +76,7 @@ function trimEdge_<T extends HTMLElement | Text, S extends Parser<any, any>[]>(p
       case 1:
         switch (true) {
           case (node as HTMLElement).tagName === 'BR':
-          case (node as HTMLElement).className === 'linebreak' && node.childNodes.length === 1:
+          case (node as HTMLElement).className === 'linebreak':
             switch (mode) {
               case 'start':
                 void ns.shift();

@@ -2,14 +2,14 @@
 import { union, sequence, some, subline, validate, verify, surround, fmap, bind } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text } from '../source/text';
-import { defrag, trimEdgeEnd, stringify, hasText, hasTightText } from '../util';
+import { defrag, trimNodeEnd, stringify, hasText, hasTightText } from '../util';
 import { concat } from 'spica/concat';
 import { html, text as txt } from 'typed-dom';
 
 export const ruby: RubyParser = subline(bind(verify(fmap(validate(
   /^\[.+?\]\(.+?\)/,
   sequence<RubyParser>([
-    fmap(verify(trimEdgeEnd(
+    fmap(verify(trimNodeEnd(
       surround('[', defrag(some(union([htmlentity, text]), /^[\n\]]/)), ']')),
       ([text]) => hasTightText(text)),
       ([text]) => [text.textContent!.split(/\s/).map(txt)]),
