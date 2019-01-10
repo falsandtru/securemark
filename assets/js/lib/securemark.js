@@ -1739,7 +1739,7 @@ require = function () {
             }), ([el]) => !util_1.hasMedia(el))));
             const desc = combinator_1.block(combinator_1.fmap(combinator_1.rewrite(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.some(line_1.anyline, /^[~:](?=\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), '', false)), ns => [typed_dom_1.html('dd', ns)]), false);
             function fillTrailingDescription(es) {
-                return es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
+                return es.length > 0 && es[es.length - 1].tagName === 'DT' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
             }
         },
         {
@@ -3181,11 +3181,7 @@ require = function () {
                     'data-src': path,
                     alt: text
                 });
-                if (exports.cache.has(uri.href) && [
-                        'img',
-                        'audio',
-                        'video'
-                    ].includes(el.tagName.toLowerCase())) {
+                if (exports.cache.has(uri.href) && el.hasAttribute('alt')) {
                     void typed_dom_1.define(el, { alt: text });
                 }
                 void typed_dom_1.define(el, html_1.attr(link_1.attributes, params, new Set(el.classList), 'media'));
