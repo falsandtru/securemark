@@ -2,8 +2,12 @@
 
 ## 0.97.0
 
+- Add insertion syntax.
+- Add deletion syntax.
 - Add data syntax.
 - Improve parse failure messages.
+- Remove `ins` html tag.
+- Remove `del` html tag.
 
 ## 0.96.1
 

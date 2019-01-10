@@ -15,7 +15,7 @@ const attributes: Record<string, Record<string, ReadonlyArray<string | undefined
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
-    /^(?=<(ins|del|sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
+    /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
     ([, tag]) =>
       verify(fmap(
         sequence<SubParsers<HTMLParser>[0]>([

@@ -7,6 +7,8 @@ import { link } from './inline/link';
 import { ruby } from './inline/ruby';
 import { html } from './inline/html';
 import { comment } from './inline/comment';
+import { insertion } from './inline/insertion';
+import { deletion } from './inline/deletion';
 import { emphasis } from './inline/emphasis';
 import { strong } from './inline/strong';
 import { code } from './inline/code';
@@ -26,6 +28,8 @@ export import LinkParser = InlineParser.LinkParser;
 export import RubyParser = InlineParser.RubyParser;
 export import HTMLParser = InlineParser.HTMLParser;
 export import CommentParser = InlineParser.CommentParser;
+export import InsertionParser = InlineParser.InsertionParser;
+export import DeletionParser = InlineParser.DeletionParser;
 export import EmphasisParser = InlineParser.EmphasisParser;
 export import StrongParser = InlineParser.StrongParser;
 export import CodeParser = InlineParser.CodeParser;
@@ -45,6 +49,8 @@ export const inline: InlineParser = union([
   ruby,
   html,
   comment,
+  insertion,
+  deletion,
   emphasis,
   strong,
   code,

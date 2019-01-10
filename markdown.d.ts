@@ -307,6 +307,8 @@ export namespace MarkdownParser {
       InlineParser.RubyParser,
       InlineParser.HTMLParser,
       InlineParser.CommentParser,
+      InlineParser.InsertionParser,
+      InlineParser.DeletionParser,
       InlineParser.EmphasisParser,
       InlineParser.StrongParser,
       InlineParser.CodeParser,
@@ -511,6 +513,22 @@ export namespace MarkdownParser {
       Inline<'comment'>,
       Parser<HTMLElement, [
         SourceParser.UnescapableSourceParser
+      ]> {
+    }
+    export interface InsertionParser extends
+      // ++abc++
+      Inline<'insertion'>,
+      Parser<HTMLElement | Text, [
+        InlineParser,
+        SourceParser.UnescapableSourceParser,
+      ]> {
+    }
+    export interface DeletionParser extends
+      // ~~abc~~
+      Inline<'deletion'>,
+      Parser<HTMLElement | Text, [
+        InlineParser,
+        SourceParser.UnescapableSourceParser,
       ]> {
     }
     export interface EmphasisParser extends
