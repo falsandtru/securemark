@@ -30,7 +30,7 @@ const desc: DListParser.DescriptionParser = block(fmap(
   false);
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {
-  return es.length > 0 && es[es.length - 1].tagName.toLowerCase() === 'dt'
+  return es.length > 0 && es[es.length - 1].tagName === 'DT'
     ? concat(es, [html('dd')])
     : es;
 }

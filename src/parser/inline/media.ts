@@ -30,7 +30,8 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
     const el = cache.has(uri.href)
       ? cache.get(uri.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: text });
-    if (cache.has(uri.href) && ['img', 'audio', 'video'].includes(el.tagName.toLowerCase())) {
+    if (cache.has(uri.href) && el.hasAttribute('alt')) {
+      assert(['IMG', 'AUDIO', 'VIDEO'].includes(el.tagName));
       void define(el, { alt: text });
     }
     void define(el, attr(attributes, params, new Set(el.classList), 'media'));
