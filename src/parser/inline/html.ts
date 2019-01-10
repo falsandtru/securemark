@@ -70,11 +70,11 @@ export function attr(
     void classes.add('invalid');
   }
   if (spec) {
-    if (!Object.entries(spec!).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k))) {
+    if (!Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k))) {
       void classes.add('invalid');
     }
     for (const [key, value] of attrs) {
-      spec!.hasOwnProperty(key) && spec![key].includes(value)
+      spec.hasOwnProperty(key) && spec[key].includes(value)
         ? result[key] = value
         : void classes.add('invalid');
     }
