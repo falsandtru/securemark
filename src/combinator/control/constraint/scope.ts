@@ -33,7 +33,7 @@ export function rewrite<T, S extends Parser<any, any>[]>(scope: Parser<never, an
     const res2 = parser(src);
     assert(validate(src, res2));
     if (!res2) return;
-    //assert(exec(res2) === '');
+    assert(exec(res2) === '');
     return exec(res2).length < src.length
       ? [eval(res2), exec(res2) + exec(res1)]
       : undefined;
