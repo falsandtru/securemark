@@ -36,5 +36,5 @@ export function memorize(parser: BlockParser): BlockParser {
       assert(rs.length === 1);
       void sources.set(rs[0], source.slice(0, source.length - rest.length));
       return [rs, rest];
-    })(source)) as BlockParser;
+    })(source));
 }
