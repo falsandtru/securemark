@@ -340,6 +340,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         ExtensionParser.IndexParser,
         ExtensionParser.LabelParser,
+        ExtensionParser.DataParser,
         ExtensionParser.PlaceholderParser,
       ]> {
     }
@@ -363,6 +364,15 @@ export namespace MarkdownParser {
         Inline<'extension/label'>,
         Parser<HTMLAnchorElement, [
           LinkParser
+        ]> {
+      }
+      export interface DataParser extends
+        // [~name|text]
+        // [~name=value|text]
+        Inline<'extension/data'>,
+        Parser<HTMLSpanElement, [
+          SourceParser.UnescapableSourceParser,
+          InlineParser,
         ]> {
       }
       export interface PlaceholderParser extends

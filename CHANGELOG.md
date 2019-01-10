@@ -2,6 +2,7 @@
 
 ## 0.97.0
 
+- Add data syntax.
 - Improve parse failure messages.
 
 ## 0.96.1
