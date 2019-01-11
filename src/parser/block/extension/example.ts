@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, block, rewrite, focus, match, lazy, eval } from '../../../combinator';
+import { union, block, rewrite, focus, match, trim, lazy, eval } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { suppress } from '../../util';
@@ -12,9 +12,9 @@ export const segment_: ExtensionParser.ExampleParser = block(focus(
   /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
-export const example: ExtensionParser.ExampleParser = block(rewrite(segment, suppress(union([
+export const example: ExtensionParser.ExampleParser = block(rewrite(segment, suppress(trim(union([
   match(
-    /^(~{3,})example\/markdown[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/,
+    /^(~{3,})example\/markdown[^\S\n]*(\n(?:[^\n]*\n)*?)\1$/,
     ([, , body]) => rest => {
       const view = html('div', [parse(body.slice(1, -1))]);
       const annotation = html('ol');
@@ -29,10 +29,10 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, sup
       ])], rest];
     }),
   match(
-    /^(~{3,})example\/math[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/,
+    /^(~{3,})example\/math[^\S\n]*(\n(?:[^\n]*\n)*?)\1$/,
     ([, , body]) => rest =>
       [[html('aside', { class: 'example', 'data-type': 'math' }, [
         html('pre', body.slice(1, -1)),
         ...eval(mathblock(`$$${body}$$`))
       ])], rest]),
-]))));
+])))));

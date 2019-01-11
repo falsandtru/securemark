@@ -1,5 +1,5 @@
 ﻿import { CodeBlockParser } from '../block';
-import { some, block, rewrite, focus, match, lazy, eval } from '../../combinator';
+import { some, block, rewrite, focus, match, trim, lazy, eval } from '../../combinator';
 import { escsource } from '../source/escapable';
 import '../source/unescapable';
 import { stringify } from '../util';
@@ -12,8 +12,8 @@ export const segment_: CodeBlockParser = block(focus(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
-export const codeblock: CodeBlockParser = block(rewrite(segment, match(
-  /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/,
+export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
+  /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1$/,
   ([, , lang, param, body]) => rest => {
     assert(rest === '');
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
@@ -30,4 +30,4 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, match(
       void el.setAttribute('data-file', filepath);
     }
     return [[el], rest];
-  })));
+  }))));

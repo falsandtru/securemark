@@ -1,17 +1,17 @@
 ﻿import { MathBlockParser } from '../block';
-import { block, rewrite, focus, match, lazy } from '../../combinator';
+import { block, rewrite, focus, match, trim, lazy } from '../../combinator';
 import '../source/unescapable';
 import { html, define } from 'typed-dom';
 
 export const segment: MathBlockParser = lazy(() => block(segment_));
 
 export const segment_: MathBlockParser = block(focus(
-  /^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/,
+  /^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
-export const mathblock: MathBlockParser = block(rewrite(segment, match(
-  /^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/,
-  ([, param, body]) => rest => {
+export const mathblock: MathBlockParser = block(rewrite(segment, trim(match(
+  /^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\1$/,
+  ([, , param, body]) => rest => {
     const el = html('div', { class: `math notranslate` }, `$$${body}$$`);
     if (param.trim() !== '') {
       void el.classList.add('invalid');
@@ -21,4 +21,4 @@ export const mathblock: MathBlockParser = block(rewrite(segment, match(
       });
     }
     return [[el], rest];
-  })));
+  }))));

@@ -46,8 +46,8 @@ export const segment: FigureParser = block(union([
   () => undefined,
 ]));
 
-export const figure: FigureParser = block(rewrite(segment, verify(match(
-  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/,
+export const figure: FigureParser = block(rewrite(segment, verify(trim(match(
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
   ([, , param, body]) => rest =>
     bind(
       sequence<FigureParser>([
@@ -85,7 +85,7 @@ export const figure: FigureParser = block(rewrite(segment, verify(match(
               html('figcaption', caption)
             ])
         ], rest])
-      (`${param}\n${body.slice(0, -1)}`)),
+      (`${param}\n${body.slice(0, -1)}`))),
   ([el]) =>
     el.matches('[data-group="$"]')
       ? el.firstElementChild!.firstElementChild!.matches('.math')
