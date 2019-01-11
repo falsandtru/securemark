@@ -9,7 +9,7 @@ import { autolink } from '../autolink';
 export const segment: CodeBlockParser = lazy(() => block(segment_));
 
 export const segment_: CodeBlockParser = block(focus(
-  /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,999})\1[^\S\n]*(?:\n|$)/,
+  /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300})\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(

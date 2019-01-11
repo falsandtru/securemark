@@ -2,7 +2,7 @@
 
 ## 0.98.0
 
-- Change codeblock syntax to limit the maximum number of contained lines to 999.
+- Change codeblock syntax to limit the maximum number of contained lines to 300.
 - Change mathblock syntax to limit the maximum number of contained lines to 99.
 - Change extension syntax to require its own name.
 
