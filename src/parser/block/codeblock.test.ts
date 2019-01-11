@@ -37,13 +37,17 @@ describe('Unit: parser/block/codeblock', () => {
     });
 
     it('attribute', () => {
-      assert.deepStrictEqual(inspect(parser('```abc\na\n```')), [['<pre class="notranslate code language-abc" data-lang="abc">a</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```abc \na\n```')), [['<pre class="notranslate code language-abc" data-lang="abc">a</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```0\n```')), [['<pre class="notranslate code language-invalid" data-lang="invalid"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a\n```')), [['<pre class="notranslate code language-a" data-lang="a"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```A\n```')), [['<pre class="notranslate code language-invalid" data-lang="invalid"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a-b\n```')), [['<pre class="notranslate code language-a-b" data-lang="a-b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a-b0\n```')), [['<pre class="notranslate code language-a-b0" data-lang="a-b0"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a--b\n```')), [['<pre class="notranslate code language-invalid" data-lang="invalid"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` b\n```')), [['<pre class="notranslate" data-file="b"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` b c \n```')), [['<pre class="notranslate" data-file="b"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` b.c\n```')), [['<pre class="notranslate" data-file="b.c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```  b.c \n```')), [['<pre class="notranslate" data-file="b.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```"0A ~/.\\ b\n```')), [['<pre class="notranslate code language-&quot;0a" data-lang="&quot;0A" data-file="~/.\\ b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` ~/.\\ b\n```')), [['<pre class="notranslate" data-file="~/.\\ b"></pre>'], '']);
     });
 
   });

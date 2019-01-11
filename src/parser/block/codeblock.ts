@@ -18,8 +18,11 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
     assert(rest === '');
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
     if (lang) {
+      lang = lang.match(/^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/)
+        ? lang
+        : 'invalid';
       void el.classList.add('code');
-      void el.classList.add(`language-${lang.toLowerCase()}`);
+      void el.classList.add(`language-${lang}`);
       void el.setAttribute('data-lang', lang);
     }
     else {
