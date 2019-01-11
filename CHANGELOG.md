@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.98.0
+
+- Change extension syntax to require its own name.
+
 ## 0.97.0
 
 - Add insertion syntax.

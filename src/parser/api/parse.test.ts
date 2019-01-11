@@ -38,10 +38,10 @@ describe('Unit: parser/api/parse', () => {
         [...parse('a\n\\\nb').children].map(el => el.outerHTML),
         ['<p>a</p>', '<p>b</p>']);
       assert.deepStrictEqual(
-        [...parse('~~~\ninvalid\n~~~').children].map(el => el.outerHTML),
+        [...parse('~~~a\ninvalid\n~~~').children].map(el => el.outerHTML),
         ['<p class="invalid" data-invalid-syntax="extension" data-invalid-type="syntax">Invalid syntax: Extension: Invalid extension name, attribute, or content.</p>']);
       assert.deepStrictEqual(
-        [...parse('~~~\ninvalid\n\ncaption\n~~~').children].map(el => el.outerHTML),
+        [...parse('~~~a\ninvalid\n\ncaption\n~~~').children].map(el => el.outerHTML),
         ['<p class="invalid" data-invalid-syntax="extension" data-invalid-type="syntax">Invalid syntax: Extension: Invalid extension name, attribute, or content.</p>', '<p>caption<span class="linebreak"> </span>~~~</p>']);
     });
 
