@@ -47,7 +47,7 @@ export const segment: FigureParser = block(union([
 ]));
 
 export const figure: FigureParser = block(rewrite(segment, verify(trim(match(
-  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1$/,
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n([\s\S]*)\1$/,
   ([, , param, body]) => rest =>
     bind(
       sequence<FigureParser>([

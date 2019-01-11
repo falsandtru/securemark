@@ -14,7 +14,7 @@ export const segment_: ExtensionParser.ExampleParser = block(focus(
 
 export const example: ExtensionParser.ExampleParser = block(rewrite(segment, suppress(trim(union([
   match(
-    /^(~{3,})example\/markdown[^\S\n]*(\n(?:[^\n]*\n)*?)\1$/,
+    /^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/,
     ([, , body]) => rest => {
       const view = html('div', [parse(body.slice(1, -1))]);
       const annotation = html('ol');
@@ -29,7 +29,7 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, sup
       ])], rest];
     }),
   match(
-    /^(~{3,})example\/math[^\S\n]*(\n(?:[^\n]*\n)*?)\1$/,
+    /^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/,
     ([, , body]) => rest =>
       [[html('aside', { class: 'example', 'data-type': 'math' }, [
         html('pre', body.slice(1, -1)),
