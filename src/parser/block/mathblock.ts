@@ -6,11 +6,11 @@ import { html, define } from 'typed-dom';
 export const segment: MathBlockParser = lazy(() => block(segment_));
 
 export const segment_: MathBlockParser = block(focus(
-  /^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/,
+  /^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99})\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
 export const mathblock: MathBlockParser = block(rewrite(segment, trim(match(
-  /^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\1$/,
+  /^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99})\1$/,
   ([, , param, body]) => rest => {
     const el = html('div', { class: `math notranslate` }, `$$${body}$$`);
     if (param.trim() !== '') {
