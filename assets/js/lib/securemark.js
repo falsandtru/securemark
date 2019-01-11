@@ -1683,15 +1683,16 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const autolink_1 = require('../autolink');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300})\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
-            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , lang, param, body]) => rest => {
+            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => rest => {
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
+                    lang = lang.match(/^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/) ? lang : 'invalid';
                     void el.classList.add('code');
-                    void el.classList.add(`language-${ lang.toLowerCase() }`);
+                    void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
                     void typed_dom_1.define(el, combinator_1.eval(combinator_1.some(autolink_1.autolink)(el.textContent)));
@@ -1704,7 +1705,7 @@ require = function () {
                     [el],
                     rest
                 ];
-            })));
+            }))));
         },
         {
             '../../combinator': 20,
@@ -1761,7 +1762,7 @@ require = function () {
             const graph_1 = require('./extension/graph');
             const example_1 = require('./extension/example');
             const placeholder_1 = require('./extension/placeholder');
-            exports.segment = combinator_1.validate(/^~~~|^\[:[^\]\s]+\][^\S\n]*\n/, combinator_1.union([
+            exports.segment = combinator_1.validate(/^~{3,}[a-z]|^\[:[^\]\s]+\][^\S\n]*\n/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
                 graph_1.segment,
@@ -1800,8 +1801,8 @@ require = function () {
                 [],
                 ''
             ]), false);
-            exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, util_1.suppress(combinator_1.union([
-                combinator_1.match(/^(~{3,})example\/markdown[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body]) => rest => {
+            exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, util_1.suppress(combinator_1.trim(combinator_1.union([
+                combinator_1.match(/^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => rest => {
                     const view = typed_dom_1.html('div', [parse_1.parse(body.slice(1, -1))]);
                     const annotation = typed_dom_1.html('ol');
                     const authority = typed_dom_1.html('ol');
@@ -1823,7 +1824,7 @@ require = function () {
                         rest
                     ];
                 }),
-                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n(?:[^\n]*\n)*?)\1\s*$/, ([, , body]) => rest => [
+                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => rest => [
                     [typed_dom_1.html('aside', {
                             class: 'example',
                             'data-type': 'math'
@@ -1833,7 +1834,7 @@ require = function () {
                         ])],
                     rest
                 ])
-            ]))));
+            ])))));
         },
         {
             '../../../combinator': 20,
@@ -1920,7 +1921,7 @@ require = function () {
                 ]), closer(bracket))(`${ param }\n${ rest }`)),
                 () => undefined
             ]));
-            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.verify(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/, ([, , param, body]) => rest => combinator_1.bind(combinator_1.sequence([
+            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.verify(combinator_1.trim(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n([\s\S]*)\1$/, ([, , param, body]) => rest => combinator_1.bind(combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
@@ -1949,7 +1950,7 @@ require = function () {
                         typed_dom_1.html('figcaption', caption)
                     ])],
                 rest
-            ])(`${ param }\n${ body.slice(0, -1) }`)), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.math') : true)));
+            ])(`${ param }\n${ body.slice(0, -1) }`))), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.math') : true)));
         },
         {
             '../../../combinator': 20,
@@ -1984,19 +1985,19 @@ require = function () {
                     ''
                 ])
             ]), false);
-            exports.graph = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
-                combinator_1.match(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n((?:[^\n]*\n)*?)\1\s*$/, ([, , name, body]) => rest => [
+            exports.graph = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.union([
+                combinator_1.match(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n([\s\S]*)\1$/, ([, , name, body]) => rest => [
                     [typed_dom_1.html('pre', { class: `${ name } graph notranslate` }, body.slice(0, -1))],
                     rest
                 ]),
-                combinator_1.match(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n((?:[^\n]*\n)*?)\1\s*$/, ([, , name, engine, body]) => rest => [
+                combinator_1.match(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n([\s\S]*)\1$/, ([, , name, engine, body]) => rest => [
                     [typed_dom_1.html('pre', {
                             class: `${ name } graph notranslate`,
                             'data-engine': engine.trim()
                         }, body.slice(0, -1))],
                     rest
                 ])
-            ])));
+            ]))));
         },
         {
             '../../../combinator': 20,
@@ -2011,7 +2012,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const inline_1 = require('../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[^\n]*(?:\n|$)(?=[^\S\n]*(?:\n|$))|^(~{3,})(?!~)[^\n]*\n(?:[^\n]*(?:\n|$))*?\1?[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*(?:\n|$)(?=[^\S\n]*(?:\n|$))|^(~{3,})(?!~)[a-z][^\n]*\n(?:[^\n]*(?:\n|$))*?\1?[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]));
@@ -2112,11 +2113,11 @@ require = function () {
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99})\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
-            exports.mathblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.match(/^\$\$(?!\$)([^\n]*)(\n(?:[^\n]*\n)*?)\$\$\s*$/, ([, param, body]) => rest => {
+            exports.mathblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(\$\$)(?!\$)([^\n]*)(\n[\s\S]*)\1$/, ([, , param, body]) => rest => {
                 const el = typed_dom_1.html('div', { class: `math notranslate` }, `$$${ body }$$`);
                 if (param.trim() !== '') {
                     void el.classList.add('invalid');
@@ -2129,7 +2130,7 @@ require = function () {
                     [el],
                     rest
                 ];
-            })));
+            }))));
         },
         {
             '../../combinator': 20,
@@ -3577,12 +3578,12 @@ require = function () {
                         ];
                     default:
                         const i = source.slice(0, 2).trim() === '' ? source.search(next) : 0;
-                        return i === source.length ? [
+                        return source[i] === '\n' || i === source.length ? [
                             [],
-                            ''
-                        ] : i > 0 && source[i] === '\n' ? exports.text(source.slice(i)) : [
-                            [typed_dom_1.text(source.slice(0, 1))],
-                            source.slice(1)
+                            source.slice(i)
+                        ] : [
+                            [typed_dom_1.text(source.slice(0, i || 1))],
+                            source.slice(i || 1)
                         ];
                     }
                 default:
