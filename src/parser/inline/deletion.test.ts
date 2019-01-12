@@ -10,12 +10,9 @@ describe('Unit: parser/inline/deletion', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~')), [['~~~'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~~')), [['~~~~'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~~~')), [['~~~~~'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~a~~')), [['~~~'], 'a~~']);
-      assert.deepStrictEqual(inspect(parser('~~~a~~~')), [['~~~'], 'a~~~']);
-      assert.deepStrictEqual(inspect(parser('~~~~a~~~~')), [['~~~~'], 'a~~~~']);
+      assert.deepStrictEqual(inspect(parser('~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('a~~a~~')), undefined);
     });
 
@@ -26,6 +23,10 @@ describe('Unit: parser/inline/deletion', () => {
       assert.deepStrictEqual(inspect(parser('~~ a~~')), [['<del> a</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~ a ~~')), [['<del> a </del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~ ~~')), [['<del> </del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~a~~')), [['<del>~a</del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~a~~~')), [['<del>~a</del>'], '~']);
+      assert.deepStrictEqual(inspect(parser('~~a~~b~~~~')), [['<del>a<del>b</del></del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~~a~~b~~')), [['<del><del>a</del>b</del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~\n~~')), [['<del><span class="linebreak"> </span></del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~\\\n~~')), [['<del><br></del>'], '']);
       assert.deepStrictEqual(inspect(parser('~~<wbr>~~')), [['<del><wbr></del>'], '']);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.99.0
+
+- Change insertion and deletion parsers to work recursively.
+
 ## 0.98.0
 
 - Change codeblock syntax to limit the maximum number of contained lines to 300.
