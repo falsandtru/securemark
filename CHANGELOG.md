@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.99.1
+
+- Change insertion and deletion parsers to work flatly.
+
 ## 0.99.0
 
 - Change insertion and deletion parsers to work recursively.

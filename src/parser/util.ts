@@ -126,6 +126,10 @@ export function hasLink(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('a, .annotation, .authority');
 }
 
+export function hasInsOrDel(node: HTMLElement | DocumentFragment): boolean {
+  return !!node.querySelector('ins, del');
+}
+
 export function hasAnnotationOrAuthority(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('.annotation, .authority');
 }

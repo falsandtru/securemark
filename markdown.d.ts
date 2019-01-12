@@ -519,22 +519,14 @@ export namespace MarkdownParser {
       // ++abc++
       Inline<'insertion'>,
       Parser<HTMLElement, [
-        Parser<HTMLElement, [
-          InsertionParser,
-          InlineParser,
-        ]>,
-        InlineParser,
+        InlineParser
       ]> {
     }
     export interface DeletionParser extends
       // ~~abc~~
       Inline<'deletion'>,
       Parser<HTMLElement, [
-        Parser<HTMLElement, [
-          DeletionParser,
-          InlineParser,
-        ]>,
-        InlineParser,
+        InlineParser
       ]> {
     }
     export interface EmphasisParser extends
