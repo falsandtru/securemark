@@ -369,7 +369,8 @@ export namespace MarkdownParser {
         ]> {
       }
       export interface DataParser extends
-        // [~name|text]
+        // [~name]
+        // [~name=value]
         // [~name=value|text]
         Inline<'extension/data'>,
         Parser<HTMLSpanElement, [
