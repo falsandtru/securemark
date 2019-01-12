@@ -1,10 +1,10 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, block, line, rewrite, focus, contract, surround, trim, lazy, fmap, bind } from '../../combinator';
+import { union, sequence, some, block, line, rewrite, focus, verify, surround, trimEnd, lazy, fmap, bind } from '../../combinator';
 import { contentline } from '../source/line';
 import { inline } from '../inline';
 import { hasMedia, squash } from '../util';
 import { concat } from 'spica/concat';
-import { html, frag, text } from 'typed-dom';
+import { html, text } from 'typed-dom';
 
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
@@ -58,9 +58,10 @@ export const table: TableParser = lazy(() => block(fmap(
     }
   })));
 
-const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
-  line(rewrite(contentline, contract('|', trim(surround('', some(union([parser])), /^\|?$/, strict)), ns => !hasMedia(frag(ns))))),
-  es => [html('tr', es)]);
+const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => verify(fmap(
+  line(rewrite(contentline, trimEnd(surround(/^(?=\|)/, some(union([parser])), /^\|?$/, strict)))),
+  es => [html('tr', es)]),
+  ([el]) => !hasMedia(el));
 
 const cell = <P extends CellParser.IncellParser>(parser: P): CellParser<P> => fmap(
   union([parser]),
