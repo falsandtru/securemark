@@ -2755,18 +2755,19 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
-            const unescapable_1 = require('../source/unescapable');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.deletion = combinator_1.lazy(() => combinator_1.union([
-                combinator_1.fmap(combinator_1.validate(/^~~(?!~)[\s\S]+?~~/, combinator_1.surround('~~', util_1.defrag(combinator_1.some(inline_1.inline, '~~')), '~~')), ns => [typed_dom_1.html('del', ns)]),
-                combinator_1.focus(/^~{3,}/, util_1.defrag(combinator_1.some(unescapable_1.unescsource)))
-            ]));
+            exports.deletion = combinator_1.lazy(() => combinator_1.fmap(combinator_1.validate(/^~~[\s\S]+?~~/, combinator_1.union([
+                combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.union([
+                    exports.deletion,
+                    combinator_1.some(inline_1.inline, '~~')
+                ]))), '~~'),
+                combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.some(inline_1.inline, '~~'))), '~~')
+            ])), ns => [typed_dom_1.html('del', ns)]));
         },
         {
             '../../combinator': 20,
             '../inline': 69,
-            '../source/unescapable': 104,
             '../util': 106,
             'typed-dom': 13
         }
@@ -3074,18 +3075,19 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const inline_1 = require('../inline');
             const combinator_1 = require('../../combinator');
-            const unescapable_1 = require('../source/unescapable');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.insertion = combinator_1.lazy(() => combinator_1.union([
-                combinator_1.fmap(combinator_1.validate(/^\+\+(?!\+)[\s\S]+?\+\+/, combinator_1.surround('++', util_1.defrag(combinator_1.some(inline_1.inline, '++')), '++')), ns => [typed_dom_1.html('ins', ns)]),
-                combinator_1.focus(/^\+{3,}/, util_1.defrag(combinator_1.some(unescapable_1.unescsource)))
-            ]));
+            exports.insertion = combinator_1.lazy(() => combinator_1.fmap(combinator_1.validate(/^\+\+[\s\S]+?\+\+/, combinator_1.union([
+                combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.union([
+                    exports.insertion,
+                    combinator_1.some(inline_1.inline, '++')
+                ]))), '++'),
+                combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.some(inline_1.inline, '++'))), '++')
+            ])), ns => [typed_dom_1.html('ins', ns)]));
         },
         {
             '../../combinator': 20,
             '../inline': 69,
-            '../source/unescapable': 104,
             '../util': 106,
             'typed-dom': 13
         }
