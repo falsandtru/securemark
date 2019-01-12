@@ -37,6 +37,7 @@ describe('Unit: parser/inline/insertion', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('++a++b++++')), [['<ins>a</ins>'], 'b++++']);
       assert.deepStrictEqual(inspect(parser('++++a++b++')), undefined);
+      assert.deepStrictEqual(inspect(parser('++++a++b++c++++')), undefined);
       assert.deepStrictEqual(inspect(parser('++*++a++*++')), undefined);
     });
 
