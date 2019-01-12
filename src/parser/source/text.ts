@@ -25,7 +25,7 @@ export const text: TextParser = source => {
           assert(source[0] !== '\n');
           const i = source.slice(0, 2).trim() === '' ? source.search(next) : 0;
           assert(i !== -1);
-          return source[i] === '\n' || i === source.length
+          return i === source.length || source[i] === '\n'
             ? [[], source.slice(i)]
             : [[txt(source.slice(0, i || 1))], source.slice(i || 1)];
       }
