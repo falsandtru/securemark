@@ -1105,6 +1105,14 @@ require = function () {
                 return convert_1.convert(source => source.trim(), parser);
             }
             exports.trim = trim;
+            function trimStart(parser) {
+                return convert_1.convert(source => source.slice(source.lastIndexOf(source.trim())), parser);
+            }
+            exports.trimStart = trimStart;
+            function trimEnd(parser) {
+                return convert_1.convert((source, str) => source.slice(0, source.lastIndexOf(str = source.trim()) + str.length), parser);
+            }
+            exports.trimEnd = trimEnd;
         },
         { './convert': 25 }
     ],
@@ -2301,7 +2309,7 @@ require = function () {
                     }
                 }
             })));
-            const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.contract('|', combinator_1.trim(combinator_1.surround('', combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)), ns => !util_1.hasMedia(typed_dom_1.frag(ns))))), es => [typed_dom_1.html('tr', es)]);
+            const row = (parser, strict) => combinator_1.verify(combinator_1.fmap(combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.trimEnd(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)))), es => [typed_dom_1.html('tr', es)]), ([el]) => !util_1.hasMedia(el));
             const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
             const data = combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
                 util_1.squash(ns),
@@ -2757,13 +2765,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.deletion = combinator_1.lazy(() => combinator_1.fmap(combinator_1.validate(/^~~[\s\S]+?~~/, combinator_1.union([
-                combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.union([
-                    exports.deletion,
-                    combinator_1.some(inline_1.inline, '~~')
-                ]))), '~~'),
-                combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.some(inline_1.inline, '~~'))), '~~')
-            ])), ns => [typed_dom_1.html('del', ns)]));
+            exports.deletion = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^~~[\s\S]+?~~/, combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.some(combinator_1.union([inline_1.inline]), '~~'))), '~~')), ns => [typed_dom_1.html('del', ns)]), ([el]) => !util_1.hasInsOrDel(el)));
         },
         {
             '../../combinator': 20,
@@ -3077,13 +3079,7 @@ require = function () {
             const combinator_1 = require('../../combinator');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.insertion = combinator_1.lazy(() => combinator_1.fmap(combinator_1.validate(/^\+\+[\s\S]+?\+\+/, combinator_1.union([
-                combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.union([
-                    exports.insertion,
-                    combinator_1.some(inline_1.inline, '++')
-                ]))), '++'),
-                combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.some(inline_1.inline, '++'))), '++')
-            ])), ns => [typed_dom_1.html('ins', ns)]));
+            exports.insertion = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\+\+[\s\S]+?\+\+/, combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.some(combinator_1.union([inline_1.inline]), '++'))), '++')), ns => [typed_dom_1.html('ins', ns)]), ([el]) => !util_1.hasInsOrDel(el)));
         },
         {
             '../../combinator': 20,
@@ -3580,7 +3576,7 @@ require = function () {
                         ];
                     default:
                         const i = source.slice(0, 2).trim() === '' ? source.search(next) : 0;
-                        return source[i] === '\n' || i === source.length ? [
+                        return i === source.length || source[i] === '\n' ? [
                             [],
                             source.slice(i)
                         ] : [
@@ -3776,6 +3772,10 @@ require = function () {
                 return !!node.querySelector('a, .annotation, .authority');
             }
             exports.hasLink = hasLink;
+            function hasInsOrDel(node) {
+                return !!node.querySelector('ins, del');
+            }
+            exports.hasInsOrDel = hasInsOrDel;
             function hasAnnotationOrAuthority(node) {
                 return !!node.querySelector('.annotation, .authority');
             }
