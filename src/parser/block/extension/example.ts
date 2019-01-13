@@ -12,7 +12,7 @@ export const segment_: ExtensionParser.ExampleParser = block(focus(
   /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
-export const example: ExtensionParser.ExampleParser = block(rewrite(segment, suppress(trim(union([
+export const example: ExtensionParser.ExampleParser = block(rewrite(segment, trim(union([
   match(
     /^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/,
     ([, , body]) => rest => {
@@ -23,9 +23,9 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, sup
       void footnote(view, { annotation, authority });
       return [[html('aside', { class: 'example', 'data-type': 'markdown' }, [
         html('pre', body.slice(1, -1)),
-        view,
-        annotation,
-        authority,
+        suppress(view),
+        suppress(annotation),
+        suppress(authority),
       ])], rest];
     }),
   match(
@@ -35,4 +35,4 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, sup
         html('pre', body.slice(1, -1)),
         ...eval(mathblock(`$$${body}$$`))
       ])], rest]),
-])))));
+]))));

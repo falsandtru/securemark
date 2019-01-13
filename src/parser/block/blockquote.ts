@@ -8,7 +8,7 @@ import { html } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = lazy(() => block(union([
   surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, textquote, ''),
-  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, suppress(sourcequote), ''),
+  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, sourcequote, ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
@@ -31,7 +31,7 @@ const sourcequote: BlockquoteParser.SourcequoteParser = lazy(() => fmap(
       convert(unindent, sourcequote)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, source => [[parse(source)], ''])),
+      convert(unindent, source => [[suppress(parse(source))], ''])),
   ])),
   ns => [html('blockquote', ns)]));
 

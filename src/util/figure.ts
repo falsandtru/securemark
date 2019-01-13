@@ -45,7 +45,7 @@ export function figure(source: DocumentFragment | HTMLElement): void {
       const figindex = fig.lastElementChild!.previousElementSibling!;
       assert(figindex.matches('.figindex'));
       void define(figindex, group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}.`);
-      if (fig.closest('blockquote')) return;
+      if (fig.matches('blockquote *')) return;
       if (idx.endsWith('.0')) return;
       void fig.setAttribute('id', `label:${label.split('-', 1)[0]}-${idx}`);
       const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
