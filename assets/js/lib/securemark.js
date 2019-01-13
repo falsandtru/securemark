@@ -1738,11 +1738,11 @@ require = function () {
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ])), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.line(combinator_1.rewrite(line_1.contentline, inline_1.index(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
+            const term = combinator_1.line(inline_1.index(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ])))), '', false), ns => [typed_dom_1.html('dt', ns)]), ([el]) => !util_1.hasMedia(el)))));
-            const desc = combinator_1.block(combinator_1.fmap(combinator_1.rewrite(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.some(line_1.anyline, /^[~:](?=\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), '', false)), ns => [typed_dom_1.html('dd', ns)]), false);
+            ])))), '', false), ns => [typed_dom_1.html('dt', ns)]), ([el]) => !util_1.hasMedia(el))));
+            const desc = combinator_1.block(combinator_1.fmap(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.rewrite(combinator_1.some(line_1.anyline, /^[~:](?=\s|$)/), util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))))), '', false), ns => [typed_dom_1.html('dd', ns)]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
             }
@@ -2076,14 +2076,13 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const line_1 = require('../source/line');
             const ulist_1 = require('./ulist');
             const olist_1 = require('./olist');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             const inline_1 = require('../inline');
             exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))))),
+                    combinator_1.line(combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs)))),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         olist_1.olist_,
@@ -2098,7 +2097,6 @@ require = function () {
         {
             '../../combinator': 20,
             '../inline': 69,
-            '../source/line': 102,
             '../util': 106,
             './olist': 64,
             './ulist': 68,
@@ -2156,7 +2154,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const line_1 = require('../source/line');
             const ulist_1 = require('./ulist');
             const ilist_1 = require('./ilist');
             const inline_1 = require('../inline');
@@ -2165,7 +2162,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             const opener = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`));
             exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/, ([, index]) => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.surround(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))))),
+                    combinator_1.line(combinator_1.verify(combinator_1.surround(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs)))),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         exports.olist_,
@@ -2186,7 +2183,6 @@ require = function () {
         {
             '../../combinator': 20,
             '../inline': 69,
-            '../source/line': 102,
             '../util': 106,
             './ilist': 61,
             './ulist': 68,
@@ -2224,11 +2220,10 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../combinator');
-            const line_1 = require('../../source/line');
             require('../../source/unescapable');
             const inline_1 = require('../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.reference = combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.union([
+            exports.reference = combinator_1.line(combinator_1.union([
                 combinator_1.match(/^(>+)[0-9a-z]+\s*$/, ([ref, {length: level}]) => rest => [
                     [
                         typed_dom_1.html('a', {
@@ -2251,12 +2246,11 @@ require = function () {
                     ],
                     ''
                 ])
-            ])));
+            ]));
         },
         {
             '../../../combinator': 20,
             '../../inline': 69,
-            '../../source/line': 102,
             '../../source/unescapable': 104,
             'typed-dom': 13
         }
@@ -2266,7 +2260,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const line_1 = require('../source/line');
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
@@ -2301,7 +2294,7 @@ require = function () {
                     }
                 }
             })));
-            const row = (parser, strict) => combinator_1.verify(combinator_1.fmap(combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.trimEnd(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict)))), es => [typed_dom_1.html('tr', es)]), ([el]) => !util_1.hasMedia(el));
+            const row = (parser, strict) => combinator_1.verify(combinator_1.fmap(combinator_1.line(combinator_1.trimEnd(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict))), es => [typed_dom_1.html('tr', es)]), ([el]) => !util_1.hasMedia(el));
             const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
             const data = combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
                 util_1.squash(ns),
@@ -2329,7 +2322,6 @@ require = function () {
         {
             '../../combinator': 20,
             '../inline': 69,
-            '../source/line': 102,
             '../util': 106,
             'spica/concat': 7,
             'typed-dom': 13
@@ -2340,7 +2332,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            const line_1 = require('../source/line');
             const olist_1 = require('./olist');
             const ilist_1 = require('./ilist');
             const inline_1 = require('../inline');
@@ -2348,7 +2339,7 @@ require = function () {
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs))))),
+                    combinator_1.line(combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs)))),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist,
                         olist_1.olist_,
@@ -2366,7 +2357,6 @@ require = function () {
         {
             '../../combinator': 20,
             '../inline': 69,
-            '../source/line': 102,
             '../util': 106,
             './ilist': 61,
             './olist': 64,
@@ -3777,6 +3767,8 @@ require = function () {
                     if (el.matches('figure[data-label]:not([data-index])') && !inline_1.isFixed(el.getAttribute('data-label'))) {
                         void el.setAttribute('data-label', el.getAttribute('data-label').split('-')[0] + '-0');
                     }
+                    if (el.matches('figure'))
+                        return void suppress(el.lastElementChild);
                     void el.querySelectorAll('[id]').forEach(el => void el.removeAttribute('id'));
                     void el.querySelectorAll('a[href^="#"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
                 });
