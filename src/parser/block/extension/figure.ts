@@ -88,5 +88,8 @@ export const figure: FigureParser = block(rewrite(segment, verify(trim(match(
       (`${param}\n${body.slice(0, -1)}`))),
   ([el]) =>
     el.matches('[data-group="$"]')
-      ? el.firstElementChild!.firstElementChild!.matches('.math')
+      // !!el.querySelector(':scope > .figcontent > .math')
+      // !!el.querySelector(':scope > figcaption:empty')
+      ? el.firstElementChild!.firstElementChild!.matches('.figcontent > .math') &&
+        el.lastElementChild!.matches('figcaption:empty')
       : true)));

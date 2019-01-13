@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.99.2
+
+- Fix figure syntax to disallow to set a caption with formula number.
+
 ## 0.99.1
 
 - Change insertion and deletion parsers to work flatly.
