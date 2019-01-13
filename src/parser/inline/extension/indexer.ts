@@ -17,10 +17,8 @@ export function index<T extends HTMLElement, S extends Parser<any, any>[]>(parse
 }
 
 export function text(source: Element): string {
-  //const indexer = source.querySelector(':scope.indexer, :scope > .indexer');
-  const indexer = source.matches('.indexer')
-    ? source
-    : source.querySelector('.indexer');
+  assert(!source.matches('.indexer'));
+  const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   void target.querySelectorAll('code[data-src], .math[data-src]')
