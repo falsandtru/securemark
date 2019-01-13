@@ -135,6 +135,8 @@ export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
       if (el.matches('figure[data-label]:not([data-index])') && !isFixed(el.getAttribute('data-label')!)) {
         void el.setAttribute('data-label', el.getAttribute('data-label')!.split('-')[0] + '-0');
       }
+      //if (el.matches('figure')) return void suppress(el.querySelector(':scope > figcaption')!);
+      if (el.matches('figure')) return void suppress(el.lastElementChild as HTMLElement);
       void el.querySelectorAll('[id]')
         .forEach(el =>
           void el.removeAttribute('id'));
