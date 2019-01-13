@@ -21,11 +21,11 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   ([text]) => {
     if (hasMedia(text)) {
       if (text.firstChild && text.firstChild.firstChild &&
-          text.firstChild.firstChild === text.querySelector('a > .media')) {
+          text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
         void text.replaceChild(text.firstChild.firstChild, text.firstChild);
       }
       if (text.childNodes.length !== 1) return false;
-      if (!text.firstElementChild!.matches('.media')) return false;
+      if (!text.firstElementChild!.matches('.media:last-child')) return false;
     }
     else {
       if (text.childNodes.length > 0 && !hasTightText(text)) return false;
