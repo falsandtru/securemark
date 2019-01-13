@@ -1652,7 +1652,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.union([
                 combinator_1.surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, textquote, ''),
-                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, util_1.suppress(sourcequote), '')
+                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, sourcequote, '')
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
             const textquote = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.union([
@@ -1662,7 +1662,7 @@ require = function () {
             const sourcequote = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, sourcequote)),
                 combinator_1.rewrite(combinator_1.some(line_1.contentline, opener), combinator_1.convert(unindent, source => [
-                    [parse_1.parse(source)],
+                    [util_1.suppress(parse_1.parse(source))],
                     ''
                 ]))
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
@@ -1738,14 +1738,10 @@ require = function () {
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ])), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.line(combinator_1.rewrite(line_1.contentline, combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
+            const term = combinator_1.line(combinator_1.rewrite(line_1.contentline, inline_1.index(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ])))), '', false), ns => {
-                const dt = typed_dom_1.html('dt', ns);
-                void inline_1.defineIndex(dt);
-                return [dt];
-            }), ([el]) => !util_1.hasMedia(el))));
+            ])))), '', false), ns => [typed_dom_1.html('dt', ns)]), ([el]) => !util_1.hasMedia(el)))));
             const desc = combinator_1.block(combinator_1.fmap(combinator_1.rewrite(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.some(line_1.anyline, /^[~:](?=\s|$)/), '', false), combinator_1.surround(/^:(?=\s|$)|/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), '', false)), ns => [typed_dom_1.html('dd', ns)]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
@@ -1809,7 +1805,7 @@ require = function () {
                 [],
                 ''
             ]), false);
-            exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, util_1.suppress(combinator_1.trim(combinator_1.union([
+            exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.union([
                 combinator_1.match(/^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => rest => {
                     const view = typed_dom_1.html('div', [parse_1.parse(body.slice(1, -1))]);
                     const annotation = typed_dom_1.html('ol');
@@ -1825,9 +1821,9 @@ require = function () {
                                 'data-type': 'markdown'
                             }, [
                                 typed_dom_1.html('pre', body.slice(1, -1)),
-                                view,
-                                annotation,
-                                authority
+                                util_1.suppress(view),
+                                util_1.suppress(annotation),
+                                util_1.suppress(authority)
                             ])],
                         rest
                     ];
@@ -1842,7 +1838,7 @@ require = function () {
                         ])],
                     rest
                 ])
-            ])))));
+            ]))));
         },
         {
             '../../../combinator': 20,
@@ -2047,14 +2043,10 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.heading = combinator_1.block(combinator_1.line(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, ([, {length: level}]) => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
+            exports.heading = combinator_1.block(combinator_1.line(inline_1.index(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, ([, {length: level}]) => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ])))), ns => {
-                const el = typed_dom_1.html(`h${ level }`, ns);
-                void inline_1.defineIndex(el);
-                return [el];
-            })), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el))));
+            ])))), ns => [typed_dom_1.html(`h${ level }`, ns)])), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el)))));
         },
         {
             '../../combinator': 20,
@@ -2429,7 +2421,7 @@ require = function () {
             ]);
             var indexer_1 = require('./inline/extension/indexer');
             exports.indexer = indexer_1.indexer;
-            exports.defineIndex = indexer_1.defineIndex;
+            exports.index = indexer_1.index;
             var label_1 = require('./inline/extension/label');
             exports.label = label_1.label;
             exports.isGroup = label_1.isGroup;
@@ -2861,10 +2853,10 @@ require = function () {
             const indexer_1 = require('./indexer');
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => (void indexer_1.defineIndex(el), [typed_dom_1.define(el, {
+            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexer_1.index(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))), ([el]) => [typed_dom_1.define(el, {
                     id: undefined,
                     href: `#${ el.id }`
-                })])), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))));
+                })])));
         },
         {
             '../../../combinator': 20,
@@ -2886,12 +2878,12 @@ require = function () {
                     class: 'indexer',
                     'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                 })])));
-            function defineIndex(source) {
-                void typed_dom_1.define(source, { id: identifier(text(source)) || undefined });
+            function index(parser) {
+                return combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, { id: identifier(text(el)) || undefined })]);
             }
-            exports.defineIndex = defineIndex;
+            exports.index = index;
             function text(source) {
-                const indexer = source.matches('.indexer') ? source : source.querySelector('.indexer');
+                const indexer = source.querySelector('.indexer');
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
@@ -3249,7 +3241,7 @@ require = function () {
                     link_1.uri,
                     combinator_1.some(util_1.defrag(html_1.attribute))
                 ]), /^ ?}/))
-            ]), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => [typed_dom_1.text('')]), ns)), ([[text = typed_dom_1.text('')]]) => text.textContent === '' || util_1.hasTightText(text)), ([[text = typed_dom_1.text('')], param]) => [
+            ]), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([[text = typed_dom_1.text('')]]) => text.textContent === '' || util_1.hasTightText(text)), ([[text = typed_dom_1.text('')], param]) => [
                 text.textContent,
                 ...param.map(t => t.textContent)
             ]), ([text, INSECURE_URL, ...params], rest) => {
@@ -3665,17 +3657,6 @@ require = function () {
             const combinator_1 = require('../combinator');
             const inline_1 = require('./inline');
             const typed_dom_1 = require('typed-dom');
-            function suppress(parser) {
-                return combinator_1.fmap(parser, es => {
-                    void es.forEach(target => {
-                        void target.querySelectorAll('[id]').forEach(el => !el.closest('.math') && void el.removeAttribute('id'));
-                        void target.querySelectorAll('figure[data-label]:not([data-index])').forEach(el => !inline_1.isFixed(el.getAttribute('data-label')) && void el.setAttribute('data-label', el.getAttribute('data-label').split('-')[0] + '-0'));
-                        void target.querySelectorAll('a[href^="#"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
-                    });
-                    return es;
-                });
-            }
-            exports.suppress = suppress;
             function dup(parser) {
                 return combinator_1.fmap(parser, ns => [ns]);
             }
@@ -3788,6 +3769,20 @@ require = function () {
                 return hasText(node) && node.textContent === node.textContent.trim() && (!node.firstChild || node.firstChild.nodeType !== 1 || node.tagName !== 'BR') && (!node.firstChild || node.firstChild.nodeType !== 1 || node.tagName !== 'BR');
             }
             exports.hasTightText = hasTightText;
+            function suppress(el) {
+                void [...el.children].filter(el => !el.matches('blockquote, .example')).forEach(el => {
+                    if (el.matches('[id]')) {
+                        void el.removeAttribute('id');
+                    }
+                    if (el.matches('figure[data-label]:not([data-index])') && !inline_1.isFixed(el.getAttribute('data-label'))) {
+                        void el.setAttribute('data-label', el.getAttribute('data-label').split('-')[0] + '-0');
+                    }
+                    void el.querySelectorAll('[id]').forEach(el => void el.removeAttribute('id'));
+                    void el.querySelectorAll('a[href^="#"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
+                });
+                return el;
+            }
+            exports.suppress = suppress;
         },
         {
             '../combinator': 20,
@@ -4428,7 +4423,7 @@ require = function () {
                     void fig.setAttribute('data-index', idx);
                     const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
-                    if (fig.closest('blockquote'))
+                    if (fig.matches('blockquote *'))
                         return;
                     if (idx.endsWith('.0'))
                         return;
