@@ -1703,7 +1703,7 @@ require = function () {
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
-                    void typed_dom_1.define(el, combinator_1.eval(combinator_1.some(autolink_1.autolink)(el.textContent)));
+                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent)));
                 }
                 const filepath = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param.trim())));
                 if (filepath) {
@@ -1958,7 +1958,7 @@ require = function () {
                         typed_dom_1.html('figcaption', caption)
                     ])],
                 rest
-            ])(`${ param }\n${ body.slice(0, -1) }`))), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.math') : true)));
+            ])(`${ param }\n${ body.slice(0, -1) }`))), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.figcontent > .math') && el.lastElementChild.matches('figcaption:empty') : true)));
         },
         {
             '../../../combinator': 20,
@@ -2628,7 +2628,7 @@ require = function () {
                         }, `#${ tag }`)],
                     rest
                 ]),
-                combinator_1.match(/^#{([^#\s{}]+?)}/, ([, tag]) => rest => [
+                combinator_1.match(/^#{([^\s#{}]+)}/, ([, tag]) => rest => [
                     [typed_dom_1.html('a', {
                             class: 'hashtag',
                             rel: 'noopener'
@@ -3109,12 +3109,12 @@ require = function () {
                 ]), /^ ?}/))
             ])), ns => concat_1.concat([...Array(2 - ns.length)].map(() => typed_dom_1.frag()), ns)), ([text]) => {
                 if (util_1.hasMedia(text)) {
-                    if (text.firstChild && text.firstChild.firstChild && text.firstChild.firstChild === text.querySelector('a > .media')) {
+                    if (text.firstChild && text.firstChild.firstChild && text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
                         void text.replaceChild(text.firstChild.firstChild, text.firstChild);
                     }
                     if (text.childNodes.length !== 1)
                         return false;
-                    if (!text.firstElementChild.matches('.media'))
+                    if (!text.firstElementChild.matches('.media:last-child'))
                         return false;
                 } else {
                     if (text.childNodes.length > 0 && !util_1.hasTightText(text))
