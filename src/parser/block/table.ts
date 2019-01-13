@@ -1,6 +1,5 @@
 ﻿import { TableParser } from '../block';
-import { union, sequence, some, block, line, rewrite, focus, verify, surround, trimEnd, lazy, fmap, bind } from '../../combinator';
-import { contentline } from '../source/line';
+import { union, sequence, some, block, line, focus, verify, surround, trimEnd, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { hasMedia, squash } from '../util';
 import { concat } from 'spica/concat';
@@ -59,7 +58,7 @@ export const table: TableParser = lazy(() => block(fmap(
   })));
 
 const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => verify(fmap(
-  line(rewrite(contentline, trimEnd(surround(/^(?=\|)/, some(union([parser])), /^\|?$/, strict)))),
+  line(trimEnd(surround(/^(?=\|)/, some(union([parser])), /^\|?$/, strict))),
   es => [html('tr', es)]),
   ([el]) => !hasMedia(el));
 
