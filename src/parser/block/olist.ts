@@ -1,5 +1,5 @@
 ﻿import { OListParser, ListItemParser } from '../block';
-import { union, inits, some, block, line, verify, surround, match, indent, trim, fmap } from '../../combinator';
+import { union, inits, some, block, line, verify, surround, match, indent, trim, memoize, fmap } from '../../combinator';
 import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
@@ -8,7 +8,7 @@ import { html, frag } from 'typed-dom';
 
 export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
-  ([, index]) => [index, type(index), pattern(type(index))],
+  memoize(([, index]) => [index, type(index), pattern(type(index))],
   ([start, type, pattern]) =>
     fmap<OListParser>(
       some(union([
@@ -19,7 +19,7 @@ export const olist: OListParser = block(match(
           ]),
           ns => [html('li', fillFirstLine(ns))])
       ])),
-      es => [html('ol', { start, type }, es)])));
+      es => [html('ol', { start, type }, es)]))));
 
 function type(index: string): string {
   return Number.isInteger(+index)

@@ -1,6 +1,6 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { SubParsers } from '../../combinator/data/parser';
-import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, lazy, fmap } from '../../combinator';
+import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, memoize, lazy, fmap } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
@@ -16,7 +16,7 @@ const attributes: Record<string, Record<string, ReadonlyArray<string | undefined
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
     /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
-    ([, tag]) => [tag],
+    memoize(([, tag]) => [tag],
     ([tag]) =>
       verify(fmap(
         sequence<SubParsers<HTMLParser>[0]>([
@@ -25,10 +25,10 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ]),
         ([attrs, contents]: [Text[], (HTMLElement | Text)[]]) =>
           [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), contents)]),
-        ([el]) => !el.matches('.invalid') && hasTightText(el))),
+        ([el]) => !el.matches('.invalid') && hasTightText(el)))),
   match(
     /^(?=<(wbr)(?: [^\n]*?)?>)/,
-    ([, tag]) => [tag],
+    memoize(([, tag]) => [tag],
     ([tag]) =>
       verify(fmap(
         sequence<SubParsers<HTMLParser>[1]>([
@@ -36,7 +36,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ]),
         ([attrs]) =>
           [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), [])]),
-        ([el]) => !el.matches('.invalid'))),
+        ([el]) => !el.matches('.invalid')))),
   rewrite(
     sequence<SubParsers<HTMLParser>[2]>([
       dup(surround(/<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false)),

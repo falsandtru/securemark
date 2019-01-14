@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, memoize, fmap } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
@@ -16,7 +16,7 @@ import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[:\S+?\][^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/,
-  ([, bracket]) => [bracket],
+  memoize(([, bracket]) => [bracket],
   ([bracket], closer = new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)) =>
     surround(
       '',
@@ -38,7 +38,7 @@ export const segment: FigureParser = block(match(
           ]),
         ]),
       ]),
-      closer)));
+      closer))));
 
 export const figure: FigureParser = block(rewrite(segment, verify(trim(fmap(
   convert(

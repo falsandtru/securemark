@@ -1,14 +1,14 @@
 ﻿import { HeadingParser } from '../block';
-import { union, some, block, line, verify, match, trim, fmap } from '../../combinator';
+import { union, some, block, line, verify, match, trim, memoize, fmap } from '../../combinator';
 import { inline, indexer, index } from '../inline';
 import { defrag, hasText, hasMedia } from '../util';
 import { html } from 'typed-dom';
 
 export const heading: HeadingParser = block(line(index(verify(match(
   /^(#{1,6})\s+(?=\S)/,
-  ([, { length: level }]) => [level],
+  memoize(([, { length: level }]) => [level],
   ([level]) =>
     fmap(
       defrag(trim(some(union([indexer, inline])))),
-      ns => [html(`h${level}` as 'h1', ns)])),
+      ns => [html(`h${level}` as 'h1', ns)]))),
   ([el]) => hasText(el) && !hasMedia(el)))));

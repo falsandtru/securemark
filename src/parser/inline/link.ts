@@ -1,5 +1,5 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { attribute, attr } from './html';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink } from '../util';
@@ -59,9 +59,9 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
   /^ ?(?! )/,
-  ([flag]) => [flag],
+  memoize(([flag]) => [flag],
   ([flag]) =>
-    some(union([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/))));
+    some(union([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)))));
 
 export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() => subline(union<LinkParser.ParamParser.UriParser.BracketParser>([
   fmap(
