@@ -1,4 +1,4 @@
-﻿import { Parser, SubParsers, exec, validate } from '../parser';
+﻿import { Parser, SubParsers } from '../parser';
 
 export function union<P extends Parser<any, any>>(parsers: SubParsers<P>): P;
 export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
@@ -8,15 +8,9 @@ export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
       return () => undefined;
     case 1:
       return parsers[0];
+    case 2:
+      return source => parsers[0](source) || parsers[1](source);
     default:
-      let ps: S;
-      return source => {
-        const result = parsers[0](source);
-        assert(validate(source, result));
-        if (!result) return union(ps = ps || parsers.slice(1) as S)(source);
-        return exec(result).length < source.length
-          ? result
-          : undefined;
-      };
+      return union([parsers[0], union(parsers.slice(1))] as S);
   }
 }
