@@ -9,7 +9,7 @@ import { html } from 'typed-dom';
 export const segment: ExtensionParser.ExampleParser = lazy(() => block(segment_));
 
 export const segment_: ExtensionParser.ExampleParser = block(focus(
-  /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/,
+  /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 
 export const example: ExtensionParser.ExampleParser = block(rewrite(segment, trim(union([
