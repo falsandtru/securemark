@@ -9,5 +9,6 @@ export const heading: HeadingParser = block(line(index(verify(match(
   ([, { length: level }]) =>
     fmap(
       defrag(trim(some(union([indexer, inline])))),
-      ns => [html(`h${level}` as 'h1', ns)])),
+      ns => [html(`h${level}` as 'h1', ns)]),
+  1),
   ([el]) => hasText(el) && !hasMedia(el)))));

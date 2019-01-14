@@ -6,8 +6,8 @@ export function convert<T, S extends Parser<any, any>[]>(conv: (source: string) 
   return source => {
     if (source === '') return;
     source = conv(source);
-    return source !== ''
-      ? parser(source)
-      : [[], ''];
+    return source === ''
+      ? [[], '']
+      : parser(source);
   };
 }

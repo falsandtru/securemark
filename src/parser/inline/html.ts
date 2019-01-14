@@ -24,7 +24,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ]),
         ([attrs, contents]: [Text[], (HTMLElement | Text)[]]) =>
           [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), contents)]),
-        ([el]) => !el.matches('.invalid') && hasTightText(el))),
+        ([el]) => !el.matches('.invalid') && hasTightText(el)),
+    1),
   match(
     /^(?=<(wbr)(?: [^\n]*?)?>)/,
     ([, tag]) =>
@@ -34,7 +35,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ]),
         ([attrs]) =>
           [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), [])]),
-        ([el]) => !el.matches('.invalid'))),
+        ([el]) => !el.matches('.invalid')),
+    1),
   rewrite(
     sequence<SubParsers<HTMLParser>[2]>([
       dup(surround(/<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false)),

@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, trim, bind } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, fmap } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
@@ -10,16 +10,13 @@ import { example, segment_ as seg_example } from './example';
 import { inline } from '../../inline';
 import { label, media, shortmedia } from '../../inline';
 import { defrag } from '../../util';
-import { memoize } from 'spica/memoization';
 import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 
-const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}[^\\S\\n]*(?:\\n|$)`));
-
 export const segment: FigureParser = block(match(
-  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/,
-  ([, bracket, param]) => rest =>
+  /^(~{3,})figure[^\S\n]+(?=\[:\S+?\][^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/,
+  ([, bracket, closer = new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)]) =>
     surround(
       '',
       sequence<FigureParser>([
@@ -31,58 +28,56 @@ export const segment: FigureParser = block(match(
             seg_math,
             seg_graph,
             seg_example,
-            some(contentline, closer(bracket)),
+            some(contentline, closer),
           ]),
           emptyline,
           union([
             blankline,
-            some(contentline, closer(bracket)),
+            some(contentline, closer),
           ]),
         ]),
       ]),
-      closer(bracket))
-      (`${param}\n${rest}`)));
+      closer),
+  1));
 
-export const figure: FigureParser = block(rewrite(segment, verify(trim(match(
-  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n([\s\S]*)\1$/,
-  ([, , param, body]) => rest =>
-    bind(
-      sequence<FigureParser>([
-        line(label),
-        inits([
-          block(union<FigureParser.ContentParser>([
-            table,
-            codeblock,
-            mathblock,
-            graph,
-            example,
-            blockquote,
-            line(media),
-            line(shortmedia),
-          ])),
-          emptyline,
-          block(union<FigureParser.CaptionParser>([
-            blankline,
-            defrag(trim(some(inline))),
-          ])),
-        ]),
+export const figure: FigureParser = block(rewrite(segment, verify(trim(fmap(
+  convert(
+    source => source.slice(source.indexOf('['), source.lastIndexOf('\n')),
+    sequence<FigureParser>([
+      line(label),
+      inits([
+        block(union<FigureParser.ContentParser>([
+          table,
+          codeblock,
+          mathblock,
+          graph,
+          example,
+          blockquote,
+          line(media),
+          line(shortmedia),
+        ])),
+        emptyline,
+        block(union<FigureParser.CaptionParser>([
+          blankline,
+          defrag(trim(some(inline))),
+        ])),
       ]),
-      ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) =>
-        [[html('figure',
-            {
-              'data-label': label.getAttribute('data-label')!,
-              'data-group': label.getAttribute('data-label')!.split('-', 1)[0],
-              ...(label.getAttribute('data-label')!.match(/^[^-]+-\d.*\.0$/)
-                ? { style: 'display: none;' }
-                : {}),
-            },
-            [
-              html('div', { class: 'figcontent' }, [content]),
-              html('span', { class: 'figindex' }),
-              html('figcaption', caption)
-            ])
-        ], rest])
-      (`${param}\n${body.slice(0, -1)}`))),
+    ])),
+  ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
+    html('figure',
+      {
+        'data-label': label.getAttribute('data-label')!,
+        'data-group': label.getAttribute('data-label')!.split('-', 1)[0],
+        ...(label.getAttribute('data-label')!.match(/^[^-]+-\d.*\.0$/)
+          ? { style: 'display: none;' }
+          : {}),
+      },
+      [
+        html('div', { class: 'figcontent' }, [content]),
+        html('span', { class: 'figindex' }),
+        html('figcaption', caption)
+      ])
+  ])),
   ([el]) =>
     el.matches('[data-group="$"]')
       // !!el.querySelector(':scope > .figcontent > .math')

@@ -21,7 +21,8 @@ export const olist: OListParser = block(match(
           ]),
           ns => [html('li', fillFirstLine(ns))])
       ])),
-      es => [html('ol', { start: index, type: type(index) }, es)])));
+      es => [html('ol', { start: index, type: type(index) }, es)]),
+  1));
 
 function type(index: string): string {
   return Number.isInteger(+index)
