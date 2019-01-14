@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.99.5
+
+- Fix lightweight figure syntax to be possible to take graph syntax.
+
 ## 0.99.4
 
 - Fix figure syntax to limit the maximum number of contained lines to 300.

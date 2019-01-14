@@ -4,6 +4,7 @@ import { contentline } from '../../source/line';
 import { figure } from './figure';
 import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
+import { segment as seg_graph } from './graph';
 import { segment as seg_example } from '../extension/example';
 import { label } from '../../inline';
 
@@ -15,6 +16,7 @@ export const segment: FigureParser = block(
     union([
       seg_code,
       seg_math,
+      seg_graph,
       seg_example,
       some(contentline),
     ]),
