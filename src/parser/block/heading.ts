@@ -6,9 +6,9 @@ import { html } from 'typed-dom';
 
 export const heading: HeadingParser = block(line(index(verify(match(
   /^(#{1,6})\s+(?=\S)/,
-  ([, { length: level }]) =>
+  ([, { length: level }]) => [level],
+  ([level]) =>
     fmap(
       defrag(trim(some(union([indexer, inline])))),
-      ns => [html(`h${level}` as 'h1', ns)]),
-  1),
+      ns => [html(`h${level}` as 'h1', ns)])),
   ([el]) => hasText(el) && !hasMedia(el)))));

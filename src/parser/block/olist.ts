@@ -4,25 +4,22 @@ import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
 import { defrag, hasMedia } from '../util';
-import { memoize } from 'spica/memoization';
 import { html, frag } from 'typed-dom';
-
-const opener = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
 export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
-  ([, index]) =>
+  ([, index]) => [index, type(index), pattern(type(index))],
+  ([start, type, pattern]) =>
     fmap<OListParser>(
       some(union([
         fmap(
           inits<ListItemParser>([
-            line(verify(surround(opener(pattern(type(index))), defrag(trim(some(inline))), '', false), rs => !hasMedia(frag(rs)))),
+            line(verify(surround(new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`), defrag(trim(some(inline))), '', false), rs => !hasMedia(frag(rs)))),
             indent(union([ulist, olist_, ilist]))
           ]),
           ns => [html('li', fillFirstLine(ns))])
       ])),
-      es => [html('ol', { start: index, type: type(index) }, es)]),
-  1));
+      es => [html('ol', { start, type }, es)])));
 
 function type(index: string): string {
   return Number.isInteger(+index)

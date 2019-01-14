@@ -16,7 +16,8 @@ import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[:\S+?\][^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/,
-  ([, bracket, closer = new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)]) =>
+  ([, bracket]) => [bracket],
+  ([bracket], closer = new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)) =>
     surround(
       '',
       sequence([
@@ -37,8 +38,7 @@ export const segment: FigureParser = block(match(
           ]),
         ]),
       ]),
-      closer),
-  1));
+      closer)));
 
 export const figure: FigureParser = block(rewrite(segment, verify(trim(fmap(
   convert(

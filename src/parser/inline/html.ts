@@ -16,7 +16,8 @@ const attributes: Record<string, Record<string, ReadonlyArray<string | undefined
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
     /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
-    ([, tag]) =>
+    ([, tag]) => [tag],
+    ([tag]) =>
       verify(fmap(
         sequence<SubParsers<HTMLParser>[0]>([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
@@ -24,19 +25,18 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ]),
         ([attrs, contents]: [Text[], (HTMLElement | Text)[]]) =>
           [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), contents)]),
-        ([el]) => !el.matches('.invalid') && hasTightText(el)),
-    1),
+        ([el]) => !el.matches('.invalid') && hasTightText(el))),
   match(
     /^(?=<(wbr)(?: [^\n]*?)?>)/,
-    ([, tag]) =>
+    ([, tag]) => [tag],
+    ([tag]) =>
       verify(fmap(
         sequence<SubParsers<HTMLParser>[1]>([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
         ]),
         ([attrs]) =>
           [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), [])]),
-        ([el]) => !el.matches('.invalid')),
-    1),
+        ([el]) => !el.matches('.invalid'))),
   rewrite(
     sequence<SubParsers<HTMLParser>[2]>([
       dup(surround(/<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false)),
