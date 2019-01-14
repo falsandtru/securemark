@@ -19,7 +19,7 @@ export const segment: FigureParser = block(match(
   ([, bracket, closer = new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)]) =>
     surround(
       '',
-      sequence<FigureParser>([
+      sequence([
         line(label),
         inits([
           // All parsers which can include closing terms.
@@ -43,7 +43,7 @@ export const segment: FigureParser = block(match(
 export const figure: FigureParser = block(rewrite(segment, verify(trim(fmap(
   convert(
     source => source.slice(source.indexOf('['), source.lastIndexOf('\n')),
-    sequence<FigureParser>([
+    sequence([
       line(label),
       inits([
         block(union<FigureParser.ContentParser>([

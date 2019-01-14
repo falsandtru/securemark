@@ -1,7 +1,6 @@
 ﻿import { MediaParser } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, fmap, bind } from '../../combinator';
 import { text } from '../source/text';
-import '../source/unescapable';
 import { link, attributes, uri } from './link';
 import { attribute, attr } from './html';
 import { sanitize } from '../string/uri';
@@ -21,7 +20,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ''),
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([[text = txt('')]]) => text.textContent! === '' || hasTightText(text)),
-  ([[text = txt('')], param]) => [text.textContent!, ...param.map(t => t.textContent!)]),
+  ([[text = txt('')], param]: (HTMLElement | Text)[][]) => [text.textContent!, ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;

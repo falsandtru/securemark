@@ -252,7 +252,7 @@ export namespace MarkdownParser {
         }
         export interface CaptionParser extends
           Block<'extension/figure/caption'>,
-          Parser<HTMLElement, [
+          Parser<HTMLElement | Text, [
             SourceParser.BlankLineParser,
             InlineParser,
           ]> {
@@ -440,7 +440,7 @@ export namespace MarkdownParser {
     export namespace MediaParser {
       export interface TextParser extends
         Inline<'media/text'>,
-        Parser<Text[], [
+        Parser<Array<HTMLElement | Text>, [
           SourceParser.TextParser
         ]> {
       }
@@ -575,7 +575,7 @@ export namespace MarkdownParser {
     export interface ShortmediaParser extends
       // !https://host
       Inline<'shortmedia'>,
-      Parser<HTMLAnchorElement, [
+      Parser<HTMLElement, [
         MediaParser
       ]> {
     }
