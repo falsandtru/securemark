@@ -14,6 +14,7 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$\na$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na\n$$b')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\na\n$$\nb')), undefined);
+      assert.deepStrictEqual(inspect(parser('$$\n$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser(' $$\na\n$$')), undefined);
       assert(!parser('$$\n' + '\n'.repeat(100) + '$$'));
@@ -26,8 +27,10 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$\na\n$$\n')), [['<div class="math notranslate">$$\na\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\na\nb\n$$')), [['<div class="math notranslate">$$\na\nb\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n\\\n$$')), [['<div class="math notranslate">$$\n\\\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$\n$$')), [['<div class="math notranslate">$$\n$\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$\n\n$$')), [['<div class="math notranslate">$$\n$\n\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$$\n\n$$')), [['<div class="math notranslate">$$\n$$</div>'], '\n$$']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math notranslate">$$\n$$$\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$$$\n\n$$')), [['<div class="math notranslate">$$\n$$$\n\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<div class="math notranslate invalid" data-invalid-syntax="math" data-invalid-type="parameter">$$\n$$</div>'], '']);
       assert(parser('$$\n' + '\n'.repeat(99) + '$$'));

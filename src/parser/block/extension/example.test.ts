@@ -7,6 +7,7 @@ describe('Unit: parser/block/extension/example', () => {
     const parser = some(example);
 
     it('invalid', () => {
+      assert.deepStrictEqual(inspect(parser('~~~example/markdown\n~~~\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\na\n~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~~example/markdown\na\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser(' ~~~example/markdown\na\n~~~')), undefined);

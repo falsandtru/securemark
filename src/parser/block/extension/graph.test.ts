@@ -7,6 +7,7 @@ describe('Unit: parser/block/extension/graph', () => {
     const parser = some(graph);
 
     it('invalid', () => {
+      assert.deepStrictEqual(inspect(parser('~~~graph/sequence\na\n~~~\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~graph/sequence\na\n~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~~graph/sequence\na\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser(' ~~~graph/sequence\na\n~~~')), undefined);

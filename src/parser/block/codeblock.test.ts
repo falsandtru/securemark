@@ -14,6 +14,7 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```\na```')), undefined);
       assert.deepStrictEqual(inspect(parser('```\na\n```b')), undefined);
       assert.deepStrictEqual(inspect(parser('```\na\n```\nb')), undefined);
+      assert.deepStrictEqual(inspect(parser('```\n```\n```')), undefined);
       assert.deepStrictEqual(inspect(parser('````\n```')), undefined);
       assert.deepStrictEqual(inspect(parser(' ```\n```')), undefined);
       assert(!parser('```\n' + '\n'.repeat(301) + '```'));
@@ -28,7 +29,9 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```\n\n\n```')), [['<pre class="notranslate">\n</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n`\n```')), [['<pre class="notranslate">`</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n```\n\n```')), [['<pre class="notranslate"></pre>'], '\n```']);
+      assert.deepStrictEqual(inspect(parser('```\n````\n```')), [['<pre class="notranslate">````</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n````\n\n```')), [['<pre class="notranslate">````\n</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('````\n```\n````')), [['<pre class="notranslate">```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('````\n```\n\n````')), [['<pre class="notranslate">```\n</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n\n```\n')), [['<pre class="notranslate"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\nhttp://host\n```')), [['<pre class="notranslate"><a href="http://host" rel="noopener" target="_blank">http://host</a></pre>'], '']);
