@@ -2,10 +2,6 @@
 import { isFixed } from './inline';
 import { frag } from 'typed-dom';
 
-export function stringify(nodes: Node[]): string {
-  return nodes.reduce((acc, node) => acc + node.textContent!, '');
-}
-
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
       || hasMedia(node);
@@ -38,27 +34,6 @@ export function hasTightText(node: HTMLElement | DocumentFragment | Text): boole
       && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR');
 }
 
-export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
-  void [...el.children]
-    .filter(el => !el.matches('blockquote, .example'))
-    .forEach(el => {
-      if (el.matches('[id]')) {
-        void el.removeAttribute('id');
-      }
-      if (el.matches('figure[data-label]:not([data-index])') && !isFixed(el.getAttribute('data-label')!)) {
-        void el.setAttribute('data-label', el.getAttribute('data-label')!.split('-')[0] + '-0');
-      }
-      //if (el.matches('figure')) return void suppress(el.querySelector(':scope > figcaption')!);
-      if (el.matches('figure')) return void suppress(el.lastElementChild as HTMLElement);
-      void el.querySelectorAll('[id]')
-        .forEach(el =>
-          void el.removeAttribute('id'));
-      void el.querySelectorAll('a[href^="#"]')
-        .forEach(el =>
-          void el.setAttribute('onclick', 'return false;'));
-    });
-  return el;
-}
 export function dup<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T[], S> {
   return fmap(parser, ns => [ns]);
 }
@@ -144,6 +119,32 @@ export function squash(nodes: Node[]): Node[] {
       return curr;
     }, undefined);
   return acc;
+}
+
+export function stringify(nodes: Node[]): string {
+  return nodes.reduce((acc, node) => acc + node.textContent!, '');
+}
+
+export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
+  void [...el.children]
+    .filter(el => !el.matches('blockquote, .example'))
+    .forEach(el => {
+      if (el.matches('[id]')) {
+        void el.removeAttribute('id');
+      }
+      if (el.matches('figure[data-label]:not([data-index])') && !isFixed(el.getAttribute('data-label')!)) {
+        void el.setAttribute('data-label', el.getAttribute('data-label')!.split('-')[0] + '-0');
+      }
+      //if (el.matches('figure')) return void suppress(el.querySelector(':scope > figcaption')!);
+      if (el.matches('figure')) return void suppress(el.lastElementChild as HTMLElement);
+      void el.querySelectorAll('[id]')
+        .forEach(el =>
+          void el.removeAttribute('id'));
+      void el.querySelectorAll('a[href^="#"]')
+        .forEach(el =>
+          void el.setAttribute('onclick', 'return false;'));
+    });
+  return el;
 }
 
 export function memoize<a, b extends [unknown, ...unknown[]], c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
