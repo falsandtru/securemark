@@ -2,6 +2,63 @@
 import { isFixed } from './inline';
 import { frag } from 'typed-dom';
 
+export function stringify(nodes: Node[]): string {
+  return nodes.reduce((acc, node) => acc + node.textContent!, '');
+}
+
+export function hasContent(node: HTMLElement | DocumentFragment): boolean {
+  return hasText(node)
+      || hasMedia(node);
+}
+
+export function hasMedia(node: HTMLElement | DocumentFragment): boolean {
+  return !!node.querySelector('.media');
+}
+
+export function hasLink(node: HTMLElement | DocumentFragment): boolean {
+  return !!node.querySelector('a, .annotation, .authority');
+}
+
+export function hasInsOrDel(node: HTMLElement | DocumentFragment): boolean {
+  return !!node.querySelector('ins, del');
+}
+
+export function hasAnnotationOrAuthority(node: HTMLElement | DocumentFragment): boolean {
+  return !!node.querySelector('.annotation, .authority');
+}
+
+export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {
+  return node.textContent!.trim() !== '';
+}
+
+export function hasTightText(node: HTMLElement | DocumentFragment | Text): boolean {
+  return hasText(node)
+      && node.textContent === node.textContent!.trim()
+      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR')
+      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR');
+}
+
+export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
+  void [...el.children]
+    .filter(el => !el.matches('blockquote, .example'))
+    .forEach(el => {
+      if (el.matches('[id]')) {
+        void el.removeAttribute('id');
+      }
+      if (el.matches('figure[data-label]:not([data-index])') && !isFixed(el.getAttribute('data-label')!)) {
+        void el.setAttribute('data-label', el.getAttribute('data-label')!.split('-')[0] + '-0');
+      }
+      //if (el.matches('figure')) return void suppress(el.querySelector(':scope > figcaption')!);
+      if (el.matches('figure')) return void suppress(el.lastElementChild as HTMLElement);
+      void el.querySelectorAll('[id]')
+        .forEach(el =>
+          void el.removeAttribute('id'));
+      void el.querySelectorAll('a[href^="#"]')
+        .forEach(el =>
+          void el.setAttribute('onclick', 'return false;'));
+    });
+  return el;
+}
 export function dup<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T[], S> {
   return fmap(parser, ns => [ns]);
 }
@@ -87,62 +144,4 @@ export function squash(nodes: Node[]): Node[] {
       return curr;
     }, undefined);
   return acc;
-}
-
-export function stringify(nodes: Node[]): string {
-  return nodes.reduce((acc, node) => acc + node.textContent!, '');
-}
-
-export function hasContent(node: HTMLElement | DocumentFragment): boolean {
-  return hasText(node)
-      || hasMedia(node);
-}
-
-export function hasMedia(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('.media');
-}
-
-export function hasLink(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('a, .annotation, .authority');
-}
-
-export function hasInsOrDel(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('ins, del');
-}
-
-export function hasAnnotationOrAuthority(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('.annotation, .authority');
-}
-
-export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {
-  return node.textContent!.trim() !== '';
-}
-
-export function hasTightText(node: HTMLElement | DocumentFragment | Text): boolean {
-  return hasText(node)
-      && node.textContent === node.textContent!.trim()
-      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR')
-      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR');
-}
-
-export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
-  void [...el.children]
-    .filter(el => !el.matches('blockquote, .example'))
-    .forEach(el => {
-      if (el.matches('[id]')) {
-        void el.removeAttribute('id');
-      }
-      if (el.matches('figure[data-label]:not([data-index])') && !isFixed(el.getAttribute('data-label')!)) {
-        void el.setAttribute('data-label', el.getAttribute('data-label')!.split('-')[0] + '-0');
-      }
-      //if (el.matches('figure')) return void suppress(el.querySelector(':scope > figcaption')!);
-      if (el.matches('figure')) return void suppress(el.lastElementChild as HTMLElement);
-      void el.querySelectorAll('[id]')
-        .forEach(el =>
-          void el.removeAttribute('id'));
-      void el.querySelectorAll('a[href^="#"]')
-        .forEach(el =>
-          void el.setAttribute('onclick', 'return false;'));
-    });
-  return el;
 }
