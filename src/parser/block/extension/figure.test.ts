@@ -21,6 +21,7 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure [:group-name]\n!https://host\n~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~~figure [:group-name]\n!https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser(' ~~~figure [:group-name]\n!https://host\n~~~')), undefined);
+      assert(!parser('~~~figure [:group-name]\n!https://host\n\n' + 'a\n'.repeat(301 - 2) + '~~~'));
     });
 
     it('valid', () => {
@@ -39,6 +40,7 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure [:group-name]\n![]{https://host}\n~~~')), [['<figure data-label="group-name" data-group="group"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [:group-1.0]\n> \n~~~')), [['<figure data-label="group-1.0" data-group="group" style="display: none;"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~~figure [:group-name]\n!https://host\n~~~~')), [['<figure data-label="group-name" data-group="group"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
+      assert(parser('~~~figure [:group-name]\n!https://host\n\n' + 'a\n'.repeat(300 - 2) + '~~~'));
     });
 
   });

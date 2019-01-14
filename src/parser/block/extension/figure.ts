@@ -18,7 +18,7 @@ import FigureParser = ExtensionParser.FigureParser;
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}[^\\S\\n]*(?:\\n|$)`));
 
 export const segment: FigureParser = block(match(
-  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/,
   ([, bracket, param]) => rest =>
     surround(
       '',

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.99.4
+
+- Fix figure syntax to limit the maximum number of contained lines to 300.
+
 ## 0.99.3
 
 - Fix example syntax to limit the maximum number of contained lines to 99.
