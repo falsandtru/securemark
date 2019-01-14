@@ -3,6 +3,7 @@
 ## 0.99.3
 
 - Fix example syntax to limit the maximum number of contained lines to 99.
+- Fix graph syntax to limit the maximum number of contained lines to 99.
 
 ## 0.99.2
 
