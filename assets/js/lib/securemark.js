@@ -1801,7 +1801,7 @@ require = function () {
             const util_2 = require('../../../util');
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
@@ -1905,26 +1905,23 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }[^\\S\\n]*(?:\\n|$)`));
-            exports.segment = combinator_1.block(combinator_1.union([
-                combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/, ([, bracket, param]) => rest => combinator_1.surround('', combinator_1.sequence([
-                    combinator_1.line(inline_2.label),
-                    combinator_1.inits([
-                        combinator_1.union([
-                            codeblock_1.segment_,
-                            mathblock_1.segment_,
-                            graph_1.segment_,
-                            example_1.segment_,
-                            combinator_1.some(line_1.contentline, closer(bracket))
-                        ]),
-                        line_1.emptyline,
-                        combinator_1.union([
-                            line_1.blankline,
-                            combinator_1.some(line_1.contentline, closer(bracket))
-                        ])
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/, ([, bracket, param]) => rest => combinator_1.surround('', combinator_1.sequence([
+                combinator_1.line(inline_2.label),
+                combinator_1.inits([
+                    combinator_1.union([
+                        codeblock_1.segment_,
+                        mathblock_1.segment_,
+                        graph_1.segment_,
+                        example_1.segment_,
+                        combinator_1.some(line_1.contentline, closer(bracket))
+                    ]),
+                    line_1.emptyline,
+                    combinator_1.union([
+                        line_1.blankline,
+                        combinator_1.some(line_1.contentline, closer(bracket))
                     ])
-                ]), closer(bracket))(`${ param }\n${ rest }`)),
-                () => undefined
-            ]));
+                ])
+            ]), closer(bracket))(`${ param }\n${ rest }`)));
             exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.verify(combinator_1.trim(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n([\s\S]*)\1$/, ([, , param, body]) => rest => combinator_1.bind(combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
@@ -1980,11 +1977,11 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.union([
-                combinator_1.focus(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
+                combinator_1.focus(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
                     [],
                     ''
                 ]),
-                combinator_1.focus(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$)/, _ => [
+                combinator_1.focus(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
                     [],
                     ''
                 ])
@@ -2016,7 +2013,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const inline_1 = require('../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*(?:\n|$)(?=[^\S\n]*(?:\n|$))|^(~{3,})(?!~)[a-z][^\n]*\n(?:[^\n]*(?:\n|$))*?\1?[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]));
