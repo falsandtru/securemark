@@ -17,34 +17,31 @@ import FigureParser = ExtensionParser.FigureParser;
 
 const closer = memoize<string, RegExp>(pattern => new RegExp(`^${pattern}[^\\S\\n]*(?:\\n|$)`));
 
-export const segment: FigureParser = block(union([
-  match(
-    /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
-    ([, bracket, param]) => rest =>
-      surround(
-        '',
-        sequence([
-          line(label),
-          inits([
-            // All parsers which can include a closing term.
-            union([
-              seg_code,
-              seg_math,
-              seg_graph,
-              seg_example,
-              some(contentline, closer(bracket)),
-            ]),
-            emptyline,
-            union([
-              blankline,
-              some(contentline, closer(bracket)),
-            ]),
+export const segment: FigureParser = block(match(
+  /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=((?:[^\n]*\n)*?)\1[^\S\n]*(?:\n|$))/,
+  ([, bracket, param]) => rest =>
+    surround(
+      '',
+      sequence<FigureParser>([
+        line(label),
+        inits([
+          // All parsers which can include a closing term.
+          union([
+            seg_code,
+            seg_math,
+            seg_graph,
+            seg_example,
+            some(contentline, closer(bracket)),
+          ]),
+          emptyline,
+          union([
+            blankline,
+            some(contentline, closer(bracket)),
           ]),
         ]),
-        closer(bracket))
-        (`${param}\n${rest}`)),
-  () => undefined,
-]));
+      ]),
+      closer(bracket))
+      (`${param}\n${rest}`)));
 
 export const figure: FigureParser = block(rewrite(segment, verify(trim(match(
   /^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n([\s\S]*)\1$/,
