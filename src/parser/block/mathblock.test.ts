@@ -16,7 +16,7 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$\na\n$$\nb')), undefined);
       assert.deepStrictEqual(inspect(parser('$$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser(' $$\na\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$\n' + '\n'.repeat(100) + '$$')), undefined);
+      assert(!parser('$$\n' + '\n'.repeat(100) + '$$'));
     });
 
     it('basic', () => {

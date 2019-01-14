@@ -16,7 +16,7 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```\na\n```\nb')), undefined);
       assert.deepStrictEqual(inspect(parser('````\n```')), undefined);
       assert.deepStrictEqual(inspect(parser(' ```\n```')), undefined);
-      assert.deepStrictEqual(inspect(parser('```\n' + '\n'.repeat(301) + '```')), undefined);
+      assert(!parser('```\n' + '\n'.repeat(301) + '```'));
     });
 
     it('basic', () => {
