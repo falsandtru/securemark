@@ -14,14 +14,14 @@ describe('Unit: parser/block/extension', () => {
       assert(!parser('~~~\na~~~'));
       assert(!parser('~~~\n~~~'));
       assert(!parser('~~~\na\n~~~'));
+      assert(!parser('~~~a'));
+      assert(!parser('~~~a\n'));
+      assert(!parser('~~~a\n\n'));
+      assert(!parser('~~~a\nb~~~'));
       assert(!parser(' ~~~\n~~~'));
     });
 
     it('valid', () => {
-      assert(parser('~~~a'));
-      assert(parser('~~~a\n'));
-      assert(parser('~~~a\n\n'));
-      assert(parser('~~~a\nb~~~'));
       assert(parser('~~~a\n~~~'));
       assert(parser('~~~a\nb\n~~~'));
     });

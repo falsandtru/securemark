@@ -9,9 +9,11 @@ describe('Unit: parser/block/extension/placeholder', () => {
       assert(!parser('~~~'));
       assert(!parser('~~~\n'));
       assert(!parser('~~~\n~~~'));
-      assert(!parser('~~~\n~~~~'));
-      assert(!parser('~~~\n~~~~\n'));
       assert(!parser('~~~\n~~~\n'));
+      assert(!parser('~~~a\n~~~~'));
+      assert(!parser('~~~a\n~~~~\n'));
+      assert(!parser('~~~~a\n~~~'));
+      assert(!parser('~~~~a\n~~~\n'));
       assert(!parser('~~~ a\n~~~'));
       assert(!parser('~~~\n<"\n~~~'));
       assert(!parser(' ~~~\n~~~'));
@@ -21,7 +23,6 @@ describe('Unit: parser/block/extension/placeholder', () => {
       assert(parser('~~~a\n~~~'));
       assert(parser('~~~a \n~~~'));
       assert(parser('~~~a b \n~~~'));
-      assert(parser('~~~~a\n~~~'));
       assert(parser('~~~~a\n~~~~'));
       assert(parser('~~~~a\n~~~~\n'));
     });

@@ -42,7 +42,7 @@ describe('Unit: parser/api/parse', () => {
         ['<p class="invalid" data-invalid-syntax="extension" data-invalid-type="syntax">Invalid syntax: Extension: Invalid extension name, attribute, or content.</p>']);
       assert.deepStrictEqual(
         [...parse('~~~a\ninvalid\n\ncaption\n~~~').children].map(el => el.outerHTML),
-        ['<p class="invalid" data-invalid-syntax="extension" data-invalid-type="syntax">Invalid syntax: Extension: Invalid extension name, attribute, or content.</p>', '<p>caption<span class="linebreak"> </span>~~~</p>']);
+        ['<p class="invalid" data-invalid-syntax="extension" data-invalid-type="syntax">Invalid syntax: Extension: Invalid extension name, attribute, or content.</p>']);
     });
 
     it('normalize', () => {
