@@ -440,7 +440,7 @@ export namespace MarkdownParser {
     export namespace MediaParser {
       export interface TextParser extends
         Inline<'media/text'>,
-        Parser<Array<HTMLElement | Text>, [
+        Parser<(HTMLElement | Text)[], [
           SourceParser.TextParser
         ]> {
       }
@@ -463,7 +463,7 @@ export namespace MarkdownParser {
     export namespace RubyParser {
       export interface TextParser extends
         Inline<'ruby/text'>,
-        Parser<Array<HTMLElement | Text>, [
+        Parser<(HTMLElement | Text)[], [
           HTMLEntityParser,
           SourceParser.TextParser,
         ]> {
@@ -504,7 +504,7 @@ export namespace MarkdownParser {
       }
       export interface ContentParser extends
         Inline<'html/content'>,
-        Parser<Array<HTMLElement | Text>, [
+        Parser<(HTMLElement | Text)[], [
           InlineParser
         ]> {
       }
