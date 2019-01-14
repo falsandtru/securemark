@@ -977,10 +977,10 @@ require = function () {
                     if (source === '')
                         return;
                     source = conv(source);
-                    return source !== '' ? parser(source) : [
+                    return source === '' ? [
                         [],
                         ''
-                    ];
+                    ] : parser(source);
                 };
             }
             exports.convert = convert;
@@ -1042,21 +1042,26 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = require('../../data/parser');
-            function match(pattern, f) {
+            function match(pattern, f, memidx) {
+                const parser = memory();
                 return source => {
                     if (source === '')
                         return;
-                    const res = source.match(pattern);
-                    if (!res)
+                    const param = source.match(pattern);
+                    if (!param)
                         return;
-                    const rest = source.slice(res[0].length);
-                    const result = f(res)(rest);
+                    const rest = source.slice(param[0].length);
+                    const result = memidx === undefined ? f(param)(rest) : parser(param[memidx], f, param)(rest);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length && parser_1.exec(result).length <= rest.length ? result : undefined;
                 };
             }
             exports.match = match;
+            function memory() {
+                const memo = new Map();
+                return (k, f, p) => memo.has(k) ? memo.get(k) : memo.set(k, f(p)).get(k);
+            }
         },
         { '../../data/parser': 33 }
     ],
@@ -1308,26 +1313,24 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../parser');
             function union(parsers) {
                 switch (parsers.length) {
                 case 0:
                     return () => undefined;
                 case 1:
                     return parsers[0];
+                case 2:
+                    return source => parsers[0](source) || parsers[1](source);
                 default:
-                    let ps;
-                    return source => {
-                        const result = parsers[0](source);
-                        if (!result)
-                            return union(ps = ps || parsers.slice(1))(source);
-                        return parser_1.exec(result).length < source.length ? result : undefined;
-                    };
+                    return union([
+                        parsers[0],
+                        union(parsers.slice(1))
+                    ]);
                 }
             }
             exports.union = union;
         },
-        { '../parser': 33 }
+        {}
     ],
     40: [
         function (require, module, exports) {
@@ -1858,19 +1861,18 @@ require = function () {
             const figure_1 = require('./figure');
             const codeblock_1 = require('../codeblock');
             const mathblock_1 = require('../mathblock');
+            const graph_1 = require('./graph');
             const example_1 = require('../extension/example');
             const inline_1 = require('../../inline');
-            exports.segment = combinator_1.block(combinator_1.union([
-                combinator_1.sequence([
-                    combinator_1.line(inline_1.label),
-                    combinator_1.union([
-                        codeblock_1.segment,
-                        mathblock_1.segment,
-                        example_1.segment,
-                        combinator_1.some(line_1.contentline)
-                    ])
-                ]),
-                () => undefined
+            exports.segment = combinator_1.block(combinator_1.sequence([
+                combinator_1.line(inline_1.label),
+                combinator_1.union([
+                    codeblock_1.segment,
+                    mathblock_1.segment,
+                    graph_1.segment,
+                    example_1.segment,
+                    combinator_1.some(line_1.contentline)
+                ])
             ]));
             exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, source => {
                 const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
@@ -1884,7 +1886,8 @@ require = function () {
             '../codeblock': 51,
             '../extension/example': 54,
             '../mathblock': 62,
-            './figure': 56
+            './figure': 56,
+            './graph': 57
         }
     ],
     56: [
@@ -1902,10 +1905,8 @@ require = function () {
             const inline_1 = require('../../inline');
             const inline_2 = require('../../inline');
             const util_1 = require('../../util');
-            const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
-            const closer = memoization_1.memoize(pattern => new RegExp(`^${ pattern }[^\\S\\n]*(?:\\n|$)`));
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n(?=(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/, ([, bracket, param]) => rest => combinator_1.surround('', combinator_1.sequence([
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[:\S+?\][^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/, ([, bracket, closer = new RegExp(`^${ bracket }[^\\S\\n]*(?:\\n|$)`)]) => combinator_1.surround('', combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
                     combinator_1.union([
@@ -1913,16 +1914,16 @@ require = function () {
                         mathblock_1.segment_,
                         graph_1.segment_,
                         example_1.segment_,
-                        combinator_1.some(line_1.contentline, closer(bracket))
+                        combinator_1.some(line_1.contentline, closer)
                     ]),
                     line_1.emptyline,
                     combinator_1.union([
                         line_1.blankline,
-                        combinator_1.some(line_1.contentline, closer(bracket))
+                        combinator_1.some(line_1.contentline, closer)
                     ])
                 ])
-            ]), closer(bracket))(`${ param }\n${ rest }`)));
-            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.verify(combinator_1.trim(combinator_1.match(/^(~{3,})figure[^\S\n]+(\[:\S+?\])[^\S\n]*\n([\s\S]*)\1$/, ([, , param, body]) => rest => combinator_1.bind(combinator_1.sequence([
+            ]), closer), 1));
+            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.verify(combinator_1.trim(combinator_1.fmap(combinator_1.convert(source => source.slice(source.indexOf('['), source.lastIndexOf('\n')), combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
@@ -1941,17 +1942,14 @@ require = function () {
                         util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))
                     ]))
                 ])
-            ]), ([label, content, ...caption]) => [
-                [typed_dom_1.html('figure', Object.assign({
-                        'data-label': label.getAttribute('data-label'),
-                        'data-group': label.getAttribute('data-label').split('-', 1)[0]
-                    }, label.getAttribute('data-label').match(/^[^-]+-\d.*\.0$/) ? { style: 'display: none;' } : {}), [
-                        typed_dom_1.html('div', { class: 'figcontent' }, [content]),
-                        typed_dom_1.html('span', { class: 'figindex' }),
-                        typed_dom_1.html('figcaption', caption)
-                    ])],
-                rest
-            ])(`${ param }\n${ body.slice(0, -1) }`))), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.figcontent > .math') && el.lastElementChild.matches('figcaption:empty') : true)));
+            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', Object.assign({
+                    'data-label': label.getAttribute('data-label'),
+                    'data-group': label.getAttribute('data-label').split('-', 1)[0]
+                }, label.getAttribute('data-label').match(/^[^-]+-\d.*\.0$/) ? { style: 'display: none;' } : {}), [
+                    typed_dom_1.html('div', { class: 'figcontent' }, [content]),
+                    typed_dom_1.html('span', { class: 'figindex' }),
+                    typed_dom_1.html('figcaption', caption)
+                ])])), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.figcontent > .math') && el.lastElementChild.matches('figcaption:empty') : true)));
         },
         {
             '../../../combinator': 20,
@@ -1964,7 +1962,6 @@ require = function () {
             '../table': 67,
             './example': 54,
             './graph': 57,
-            'spica/memoization': 9,
             'typed-dom': 13
         }
     ],
@@ -2043,7 +2040,7 @@ require = function () {
             exports.heading = combinator_1.block(combinator_1.line(inline_1.index(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, ([, {length: level}]) => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ])))), ns => [typed_dom_1.html(`h${ level }`, ns)])), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el)))));
+            ])))), ns => [typed_dom_1.html(`h${ level }`, ns)]), 1), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el)))));
         },
         {
             '../../combinator': 20,
@@ -2168,7 +2165,7 @@ require = function () {
                 ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))])])), es => [typed_dom_1.html('ol', {
                     start: index,
                     type: type(index)
-                }, es)])));
+                }, es)]), 1));
             function type(index) {
                 return Number.isInteger(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A';
             }
@@ -2975,8 +2972,8 @@ require = function () {
                 combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/, ([, tag]) => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
                     util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
                     util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
-                ]), ([attrs, contents]) => [typed_dom_1.html(tag, attr(attributes[tag], attrs.map(t => t.textContent), new Set(), 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el))),
-                combinator_1.match(/^(?=<(wbr)(?: [^\n]*?)?>)/, ([, tag]) => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs]) => [typed_dom_1.html(tag, attr(attributes[tag], attrs.map(t => t.textContent), new Set(), 'html'), [])]), ([el]) => !el.matches('.invalid'))),
+                ]), ([attrs, contents]) => [typed_dom_1.html(tag, attr(attributes[tag], attrs.map(t => t.textContent), new Set(), 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)), 1),
+                combinator_1.match(/^(?=<(wbr)(?: [^\n]*?)?>)/, ([, tag]) => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs]) => [typed_dom_1.html(tag, attr(attributes[tag], attrs.map(t => t.textContent), new Set(), 'html'), [])]), ([el]) => !el.matches('.invalid')), 1),
                 combinator_1.rewrite(combinator_1.sequence([util_1.dup(combinator_1.surround(/<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false))]), source => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
@@ -3126,7 +3123,7 @@ require = function () {
             exports.uri = combinator_1.subline(util_1.defrag(combinator_1.match(/^ ?(?! )/, ([flag]) => combinator_1.some(combinator_1.union([
                 exports.bracket,
                 unescapable_1.unescsource
-            ]), flag === ' ' ? /^\s/ : /^[\s}]/))));
+            ]), flag === ' ' ? /^\s/ : /^[\s}]/), 0)));
             exports.bracket = combinator_1.lazy(() => combinator_1.subline(combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
