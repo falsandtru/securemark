@@ -9,7 +9,7 @@ import { label } from '../../inline';
 
 import FigureParser = ExtensionParser.FigureParser;
 
-export const segment: FigureParser = block(union([
+export const segment: FigureParser = block(
   sequence([
     line(label),
     union([
@@ -18,9 +18,7 @@ export const segment: FigureParser = block(union([
       seg_example,
       some(contentline),
     ]),
-  ]),
-  () => undefined,
-]));
+  ]));
 
 export const fig: FigureParser = block(rewrite(segment, source => {
   const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || [])

@@ -25,7 +25,7 @@ export const segment: FigureParser = block(match(
       sequence<FigureParser>([
         line(label),
         inits([
-          // All parsers which can include a closing term.
+          // All parsers which can include closing terms.
           union([
             seg_code,
             seg_math,
