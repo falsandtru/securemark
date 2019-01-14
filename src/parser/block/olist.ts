@@ -1,9 +1,9 @@
 ﻿import { OListParser, ListItemParser } from '../block';
-import { union, inits, some, block, line, verify, surround, match, indent, trim, memoize, fmap } from '../../combinator';
+import { union, inits, some, block, line, verify, surround, match, indent, trim, fmap } from '../../combinator';
 import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
-import { defrag, hasMedia } from '../util';
+import { defrag, hasMedia, memoize } from '../util';
 import { html, frag } from 'typed-dom';
 
 export const olist: OListParser = block(match(

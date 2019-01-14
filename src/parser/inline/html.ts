@@ -1,10 +1,10 @@
 ﻿import { HTMLParser, inline } from '../inline';
 import { SubParsers } from '../../combinator/data/parser';
-import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, memoize, lazy, fmap } from '../../combinator';
+import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, lazy, fmap } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
-import { defrag, dup, trimNode, hasTightText } from '../util';
+import { defrag, dup, trimNode, hasTightText, memoize } from '../util';
 import { html as htm } from 'typed-dom';
 
 const attributes: Record<string, Record<string, ReadonlyArray<string | undefined>> | undefined> = {

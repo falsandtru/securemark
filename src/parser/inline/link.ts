@@ -1,8 +1,8 @@
 ﻿import { LinkParser, inline } from '../inline';
-import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { attribute, attr } from './html';
-import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink } from '../util';
+import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink, memoize } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { html, text, frag, define } from 'typed-dom';

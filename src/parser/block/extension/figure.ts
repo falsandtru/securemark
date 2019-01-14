@@ -1,5 +1,5 @@
 ﻿import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, memoize, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, fmap } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
 import { blockquote } from '../blockquote';
@@ -9,7 +9,7 @@ import { graph , segment_ as seg_graph } from './graph';
 import { example, segment_ as seg_example } from './example';
 import { inline } from '../../inline';
 import { label, media, shortmedia } from '../../inline';
-import { defrag } from '../../util';
+import { defrag, memoize } from '../../util';
 import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;

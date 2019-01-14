@@ -14,7 +14,6 @@ export * from './combinator/control/manipulation/match';
 export * from './combinator/control/manipulation/convert';
 export * from './combinator/control/manipulation/indent';
 export * from './combinator/control/manipulation/trim';
-export * from './combinator/control/manipulation/memoize';
 export * from './combinator/control/manipulation/lazy';
 export * from './combinator/control/monad/fmap';
 export * from './combinator/control/monad/bind';
