@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.99.6
+
+- Fix figure function by removing optimization.
+
 ## 0.99.5
 
 - Fix lightweight figure syntax to be possible to take graph syntax.
