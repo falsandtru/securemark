@@ -20,7 +20,9 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1.1.')), undefined);
       assert.deepStrictEqual(inspect(parser('1.a')), undefined);
       assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), undefined);
-      assert.deepStrictEqual(inspect(parser('1. !http://host')), undefined);
+      assert.deepStrictEqual(inspect(parser('1. !http://host')), [['<ol start="1" type="1"><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. !http://host\n1. 0')), [['<ol start="1" type="1"><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li><li>0</li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. 1\n 1. !http://host\n1. 2')), [['<ol start="1" type="1"><li>1<ol start="1" type="1"><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li></ol></li><li>2</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser(' 1.')), undefined);
     });
 

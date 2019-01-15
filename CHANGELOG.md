@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.99.7
+
+- Improve ulist and olist parsers to give parse failure messages.
+
 ## 0.99.6
 
 - Fix figure function by removing optimization.
