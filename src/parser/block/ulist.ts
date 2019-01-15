@@ -20,7 +20,7 @@ export const ulist: UListParser = lazy(() => block(fmap(
   es => [html('ul', es)])));
 
 export function fillFirstLine(ns: Node[]): Node[] {
-  return [HTMLUListElement, HTMLOListElement].some(E => ns[0] instanceof E)
+  return ns[0] instanceof HTMLUListElement || ns[0] instanceof HTMLOListElement
     ? concat([html('br')], ns)
     : ns;
 }
