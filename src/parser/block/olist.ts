@@ -4,7 +4,7 @@ import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
 import { defrag, hasMedia, memoize } from '../util';
-import { html, frag } from 'typed-dom';
+import { html } from 'typed-dom';
 
 export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
@@ -12,12 +12,13 @@ export const olist: OListParser = block(match(
   ([start, type, pattern]) =>
     fmap<OListParser>(
       some(union([
-        fmap(
+        verify(fmap(
           inits<ListItemParser>([
-            line(verify(surround(new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`), defrag(trim(some(inline))), '', false), rs => !hasMedia(frag(rs)))),
+            line(surround(new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`), defrag(trim(some(inline))), '', false)),
             indent(union([ulist, olist_, ilist]))
           ]),
-          ns => [html('li', fillFirstLine(ns))])
+          ns => [html('li', fillFirstLine(ns))]),
+          ([el]) => !hasMedia(el))
       ])),
       es => [html('ol', { start, type }, es)]))));
 

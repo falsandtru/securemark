@@ -5,16 +5,17 @@ import { ilist } from './ilist';
 import { inline } from '../inline';
 import { defrag, hasMedia } from '../util';
 import { concat } from 'spica/concat';
-import { html, frag } from 'typed-dom';
+import { html } from 'typed-dom';
 
 export const ulist: UListParser = lazy(() => block(fmap(
   some(union([
-    fmap(
+    verify(fmap(
       inits<ListItemParser>([
-        line(verify(surround(/^-(?:\s|$)/, defrag(trim(some(inline))), '', false), rs => !hasMedia(frag(rs)))),
+        line(surround(/^-(?:\s|$)/, defrag(trim(some(inline))), '', false)),
         indent(union([ulist, olist_, ilist]))
       ]),
-      ns => [html('li', fillFirstLine(ns))])
+      ns => [html('li', fillFirstLine(ns))]),
+      ([el]) => !hasMedia(el))
   ])),
   es => [html('ul', es)])));
 
