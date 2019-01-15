@@ -1,7 +1,7 @@
 ﻿import { OListParser, ListItemParser } from '../block';
-import { union, inits, some, block, line, surround, match, indent, trim, fmap, eval } from '../../combinator';
-import { ulist, fillFirstLine } from './ulist';
-import { ilist } from './ilist';
+import { union, inits, some, block, line, surround, match, convert, indent, trim, fmap, eval } from '../../combinator';
+import { ulist_, fillFirstLine } from './ulist';
+import { ilist_ } from './ilist';
 import { inline } from '../inline';
 import { defrag, hasMedia, memoize } from '../util';
 import { memoize as memorize } from 'spica/memoization';
@@ -10,7 +10,7 @@ import { html, define } from 'typed-dom';
 const opener = memorize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
 export const olist: OListParser = block(match(
-  /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
+  /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
   memoize(([, index]) => index,
   index =>
     fmap<OListParser>(
@@ -18,7 +18,7 @@ export const olist: OListParser = block(match(
         fmap(fmap(
           inits<ListItemParser>([
             line(surround(opener(pattern(type(index))), defrag(trim(some(inline))), '', false)),
-            indent(union([ulist, olist_, ilist]))
+            indent(union([ulist_, olist_, ilist_]))
           ]),
           ns => [html('li', fillFirstLine(ns))]),
           ([el]) => hasMedia(el)
@@ -26,6 +26,10 @@ export const olist: OListParser = block(match(
             : [el])
       ])),
       es => [html('ol', { start: index, type: type(index) }, es)]))));
+
+export const olist_: OListParser = convert(
+  source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
+  olist);
 
 function type(index: string): string {
   return Number.isInteger(+index)
@@ -43,6 +47,3 @@ function pattern(type: string): string {
       ? '[a-z]+'
       : '[0-9]+';
 }
-
-export const olist_: OListParser = (source: string) =>
-  olist(source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, `$&.`));

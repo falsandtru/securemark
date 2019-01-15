@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.99.7
+## 0.100.0
 
+- Improve ulist, olist, and ilist parsers not to match flag symbols with no trailing whitespace at first.
 - Improve ulist and olist parsers to give parse failure messages.
 
 ## 0.99.6

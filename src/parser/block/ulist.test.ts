@@ -9,12 +9,14 @@ describe('Unit: parser/block/ulist', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('-')), undefined);
       assert.deepStrictEqual(inspect(parser('--')), undefined);
       assert.deepStrictEqual(inspect(parser('-0')), undefined);
       assert.deepStrictEqual(inspect(parser('-a')), undefined);
       assert.deepStrictEqual(inspect(parser('-[]')), undefined);
       assert.deepStrictEqual(inspect(parser('-[ ]')), undefined);
       assert.deepStrictEqual(inspect(parser('-[x]')), undefined);
+      assert.deepStrictEqual(inspect(parser('-\n')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n+')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n0')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n -\n 0')), undefined);
@@ -29,9 +31,7 @@ describe('Unit: parser/block/ulist', () => {
 
     it('single', () => {
       // pending
-      assert.deepStrictEqual(inspect(parser('-')), [['<ul><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- ')), [['<ul><li></li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('-\n')), [['<ul><li></li></ul>'], '']);
       // filled
       assert.deepStrictEqual(inspect(parser('- \\')), [['<ul><li></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- \\\n')), [['<ul><li></li></ul>'], '']);

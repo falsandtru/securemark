@@ -16,9 +16,11 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1')), undefined);
       assert.deepStrictEqual(inspect(parser('1 ')), undefined);
       assert.deepStrictEqual(inspect(parser('1\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('1.')), undefined);
       assert.deepStrictEqual(inspect(parser('1.1')), undefined);
       assert.deepStrictEqual(inspect(parser('1.1.')), undefined);
       assert.deepStrictEqual(inspect(parser('1.a')), undefined);
+      assert.deepStrictEqual(inspect(parser('1.\n')), undefined);
       assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), undefined);
       assert.deepStrictEqual(inspect(parser('1. !http://host')), [['<ol start="1" type="1"><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. !http://host\n1. 0')), [['<ol start="1" type="1"><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li><li>0</li></ol>'], '']);
@@ -28,9 +30,7 @@ describe('Unit: parser/block/olist', () => {
 
     it('single', () => {
       // pending
-      assert.deepStrictEqual(inspect(parser('1.')), [['<ol start="1" type="1"><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. ')), [['<ol start="1" type="1"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1.\n')), [['<ol start="1" type="1"><li></li></ol>'], '']);
       // filled
       assert.deepStrictEqual(inspect(parser('1. \\')), [['<ol start="1" type="1"><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. \\\n')), [['<ol start="1" type="1"><li></li></ol>'], '']);
@@ -62,16 +62,16 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('index', () => {
-      assert.deepStrictEqual(inspect(parser('1.')), [['<ol start="1" type="1"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. ')), [['<ol start="1" type="1"><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('99. 1')), [['<ol start="99" type="1"><li>1</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1. 1\n 9. 2')), [['<ol start="1" type="1"><li>1<ol start="9" type="1"><li>2</li></ol></li></ol>'], '']);
     });
 
     it('alphabet', () => {
-      assert.deepStrictEqual(inspect(parser('a.')), [['<ol start="a" type="a"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('A.')), [['<ol start="A" type="A"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('z.')), [['<ol start="z" type="a"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('Z.')), [['<ol start="Z" type="A"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('a. ')), [['<ol start="a" type="a"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('A. ')), [['<ol start="A" type="A"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('z. ')), [['<ol start="z" type="a"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('Z. ')), [['<ol start="Z" type="A"><li></li></ol>'], '']);
     });
 
   });
