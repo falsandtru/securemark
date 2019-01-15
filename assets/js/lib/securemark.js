@@ -2141,20 +2141,16 @@ require = function () {
             const inline_1 = require('../inline');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/, util_1.memoize(([, index]) => [
-                index,
-                type(index),
-                pattern(type(index))
-            ], ([start, type, pattern]) => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.surround(new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
+            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/, util_1.memoize(([, index]) => [index], ([index]) => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+                    combinator_1.line(combinator_1.surround(new RegExp(`^${ pattern(type(index)) }(?:\\.\\s|\\.?(?=\\n|$))`), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         exports.olist_,
                         ilist_1.ilist
                     ]))
                 ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))]), ([el]) => !util_1.hasMedia(el))])), es => [typed_dom_1.html('ol', {
-                    start,
-                    type
+                    start: index,
+                    type: type(index)
                 }, es)]))));
             function type(index) {
                 return Number.isInteger(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A';
@@ -4364,19 +4360,7 @@ require = function () {
             const inline_1 = require('../parser/inline');
             const api_1 = require('../parser/api');
             const typed_dom_1 = require('typed-dom');
-            const log = new WeakSet();
             function figure(source) {
-                let skip = true;
-                for (const el of source.children) {
-                    if (log.has(el))
-                        continue;
-                    void log.add(el);
-                    if (!el.matches('figure') && !el.querySelector('figure, .label'))
-                        continue;
-                    skip = false;
-                }
-                if (skip)
-                    return;
                 let base = '0';
                 const indexes = new Map();
                 const exclusions = new Set();
