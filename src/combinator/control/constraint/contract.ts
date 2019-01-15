@@ -1,7 +1,7 @@
 ﻿import { Parser, Data, eval, exec, validate as vali } from '../../data/parser';
 
-export function contract<P extends Parser<any, any>>(pattern: RegExp | string, parser: P, cond: (results: Data<P>[], rest: string) => boolean): P;
-export function contract<T, S extends Parser<any, any>[]>(pattern: RegExp | string, parser: Parser<T, S>, cond: (results: T[], rest: string) => boolean): Parser<T, S> {
+export function contract<P extends Parser<any, any>>(pattern: RegExp | string, parser: P, cond: (results: ReadonlyArray<Data<P>>, rest: string) => boolean): P;
+export function contract<T, S extends Parser<any, any>[]>(pattern: RegExp | string, parser: Parser<T, S>, cond: (results: ReadonlyArray<T>, rest: string) => boolean): Parser<T, S> {
   return verify(validate(pattern, parser), cond);
 }
 
@@ -22,8 +22,8 @@ export function validate<T, S extends Parser<any, any>[]>(pattern: RegExp | stri
   };
 }
 
-export function verify<P extends Parser<any, any>>(parser: P, cond: (results: Data<P>[], rest: string) => boolean): P;
-export function verify<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, cond: (results: T[], rest: string) => boolean): Parser<T, S> {
+export function verify<P extends Parser<any, any>>(parser: P, cond: (results: ReadonlyArray<Data<P>>, rest: string) => boolean): P;
+export function verify<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, cond: (results: ReadonlyArray<T>, rest: string) => boolean): Parser<T, S> {
   assert(parser);
   return source => {
     if (source === '') return;
