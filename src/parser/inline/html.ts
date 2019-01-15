@@ -16,8 +16,8 @@ const attributes: Record<string, Record<string, ReadonlyArray<string | undefined
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
     /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
-    memoize(([, tag]) => [tag],
-    ([tag]) =>
+    memoize(([, tag]) => tag,
+    tag =>
       verify(fmap(
         sequence<SubParsers<HTMLParser>[0]>([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
@@ -28,8 +28,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ([el]) => !el.matches('.invalid') && hasTightText(el)))),
   match(
     /^(?=<(wbr)(?: [^\n]*?)?>)/,
-    memoize(([, tag]) => [tag],
-    ([tag]) =>
+    memoize(([, tag]) => tag,
+    tag =>
       verify(fmap(
         sequence<SubParsers<HTMLParser>[1]>([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),

@@ -147,14 +147,12 @@ export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
   return el;
 }
 
-export function memoize<a, b extends [unknown, ...unknown[]], c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
-  const mem = new Map<b[0], c>();
+export function memoize<a, b, c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
+  const mem = new Map<b, c>();
   return a => {
-    const b = f(a)
-    assert(b.length > 0);
-    const k = b[0];
+    const k = f(a)
     return mem.has(k)
       ? mem.get(k)!
-      : mem.set(k, g(b)).get(k)!;
+      : mem.set(k, g(k)).get(k)!;
   };
 }

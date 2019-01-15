@@ -8,8 +8,8 @@ import { html } from 'typed-dom';
 
 export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
-  memoize(([, index]) => [index],
-  ([index]) =>
+  memoize(([, index]) => index,
+  index =>
     fmap<OListParser>(
       some(union([
         verify(fmap(
