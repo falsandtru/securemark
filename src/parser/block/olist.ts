@@ -4,7 +4,10 @@ import { ulist, fillFirstLine } from './ulist';
 import { ilist } from './ilist';
 import { inline } from '../inline';
 import { defrag, hasMedia, memoize } from '../util';
+import { memoize as memorize } from 'spica/memoization';
 import { html } from 'typed-dom';
+
+const opener = memorize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
 export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
@@ -14,7 +17,7 @@ export const olist: OListParser = block(match(
       some(union([
         verify(fmap(
           inits<ListItemParser>([
-            line(surround(new RegExp(`^${pattern(type(index))}(?:\\.\\s|\\.?(?=\\n|$))`), defrag(trim(some(inline))), '', false)),
+            line(surround(opener(pattern(type(index))), defrag(trim(some(inline))), '', false)),
             indent(union([ulist, olist_, ilist]))
           ]),
           ns => [html('li', fillFirstLine(ns))]),
