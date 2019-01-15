@@ -1910,7 +1910,7 @@ require = function () {
                     ])
                 ])
             ]), closer))));
-            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.verify(combinator_1.trim(combinator_1.fmap(combinator_1.convert(source => source.slice(source.indexOf('['), source.lastIndexOf('\n')), combinator_1.sequence([
+            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.fmap(combinator_1.verify(combinator_1.convert(source => source.slice(source.indexOf('['), source.lastIndexOf('\n')), combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
@@ -1929,14 +1929,15 @@ require = function () {
                         util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))
                     ]))
                 ])
-            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', Object.assign({
+            ])), ([label, content, ...caption]) => label.getAttribute('data-label').startsWith('$') ? content.matches('.math') && caption.length === 0 : true), ([label, content, ...caption]) => [typed_dom_1.html('figure', {
                     'data-label': label.getAttribute('data-label'),
-                    'data-group': label.getAttribute('data-label').split('-', 1)[0]
-                }, label.getAttribute('data-label').match(/^[^-]+-\d.*\.0$/) ? { style: 'display: none;' } : {}), [
+                    'data-group': label.getAttribute('data-label').split('-', 1)[0],
+                    style: label.getAttribute('data-label').match(/^[^-]+-(?:\d+\.)+0$/) ? 'display: none;' : undefined
+                }, [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
                     typed_dom_1.html('figcaption', caption)
-                ])])), ([el]) => el.matches('[data-group="$"]') ? el.firstElementChild.firstElementChild.matches('.figcontent > .math') && el.lastElementChild.matches('figcaption:empty') : true)));
+                ])]))));
         },
         {
             '../../../combinator': 19,
@@ -2062,14 +2063,14 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             const inline_1 = require('../inline');
-            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.verify(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs)))),
+            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+                    combinator_1.line(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         olist_1.olist_,
                         exports.ilist
                     ]))
-                ]), () => [typed_dom_1.html('li', combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: UList: Use `-` instead.')))])])), es => [typed_dom_1.html('ul', {
+                ]), () => [typed_dom_1.html('li', combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: UList: Use `-` instead.')))]), ([el]) => !util_1.hasMedia(el))])), es => [typed_dom_1.html('ul', {
                     class: 'invalid',
                     'data-invalid-syntax': 'list',
                     'data-invalid-type': 'syntax'
@@ -2144,14 +2145,14 @@ require = function () {
                 index,
                 type(index),
                 pattern(type(index))
-            ], ([start, type, pattern]) => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.verify(combinator_1.surround(new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs)))),
+            ], ([start, type, pattern]) => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+                    combinator_1.line(combinator_1.surround(new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist,
                         exports.olist_,
                         ilist_1.ilist
                     ]))
-                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))])])), es => [typed_dom_1.html('ol', {
+                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))]), ([el]) => !util_1.hasMedia(el))])), es => [typed_dom_1.html('ol', {
                     start,
                     type
                 }, es)]))));
@@ -2320,19 +2321,16 @@ require = function () {
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.verify(combinator_1.surround(/^-(?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false), rs => !util_1.hasMedia(typed_dom_1.frag(rs)))),
+            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+                    combinator_1.line(combinator_1.surround(/^-(?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist,
                         olist_1.olist_,
                         ilist_1.ilist
                     ]))
-                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))])])), es => [typed_dom_1.html('ul', es)])));
+                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))]), ([el]) => !util_1.hasMedia(el))])), es => [typed_dom_1.html('ul', es)])));
             function fillFirstLine(ns) {
-                return [
-                    HTMLUListElement,
-                    HTMLOListElement
-                ].some(E => ns[0] instanceof E) ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
+                return ns[0] instanceof HTMLUListElement || ns[0] instanceof HTMLOListElement ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
             }
             exports.fillFirstLine = fillFirstLine;
         },
