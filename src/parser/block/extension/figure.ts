@@ -64,7 +64,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
       ]),
     ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) =>
-    label.getAttribute('data-label')!.startsWith('$')
+    label.getAttribute('data-label')!.split('-', 1)[0] === '$'
       ? content.matches('.math') && caption.length === 0
       : true),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
