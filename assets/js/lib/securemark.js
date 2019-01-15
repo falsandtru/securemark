@@ -2074,18 +2074,19 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             const inline_1 = require('../inline');
-            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^[-+*](?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
-                        ulist_1.ulist,
+                        ulist_1.ulist_,
                         olist_1.olist_,
-                        exports.ilist
+                        exports.ilist_
                     ]))
-                ]), () => [typed_dom_1.html('li', combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: UList: Use `-` instead.')))]), ([el]) => !util_1.hasMedia(el))])), es => [typed_dom_1.html('ul', {
+                ]), () => [typed_dom_1.html('li', combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: UList: Use `-` instead.')))]), ([el]) => !util_1.hasMedia(el))]))), es => [typed_dom_1.html('ul', {
                     class: 'invalid',
                     'data-invalid-syntax': 'list',
                     'data-invalid-type': 'syntax'
                 }, es)])));
+            exports.ilist_ = combinator_1.convert(source => source.replace(/^[-+*](?=\n|$)/, `$& `), exports.ilist);
         },
         {
             '../../combinator': 20,
@@ -2154,24 +2155,28 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const opener = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`));
-            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
-                        ulist_1.ulist,
+                        ulist_1.ulist_,
                         exports.olist_,
-                        ilist_1.ilist
+                        ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))]), ([el]) => !util_1.hasMedia(el))])), es => [typed_dom_1.html('ol', {
+                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? [typed_dom_1.define(el, {
+                        class: 'invalid',
+                        'data-invalid-syntax': 'listitem',
+                        'data-invalid-type': 'content'
+                    }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))] : [el])])), es => [typed_dom_1.html('ol', {
                     start: index,
                     type: type(index)
                 }, es)]))));
+            exports.olist_ = combinator_1.convert(source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `), exports.olist);
             function type(index) {
                 return Number.isInteger(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A';
             }
             function pattern(type) {
                 return type === 'A' ? '[A-Z]+' : type === 'a' ? '[a-z]+' : '[0-9]+';
             }
-            exports.olist_ = source => exports.olist(source.replace(/^(?:[0-9]+|[A-Z]+|[a-z]+)(?=\n|$)/, `$&.`));
         },
         {
             '../../combinator': 20,
@@ -2331,14 +2336,20 @@ require = function () {
             const util_1 = require('../util');
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
-            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.surround(/^-(?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
+            const opener = /^-(?:\s|$)/;
+            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.fmap(combinator_1.inits([
+                    combinator_1.line(combinator_1.surround(opener, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
-                        exports.ulist,
+                        exports.ulist_,
                         olist_1.olist_,
-                        ilist_1.ilist
+                        ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))]), ([el]) => !util_1.hasMedia(el))])), es => [typed_dom_1.html('ul', es)])));
+                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? [typed_dom_1.define(el, {
+                        class: 'invalid',
+                        'data-invalid-syntax': 'listitem',
+                        'data-invalid-type': 'content'
+                    }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))] : [el])]))), es => [typed_dom_1.html('ul', es)])));
+            exports.ulist_ = combinator_1.convert(source => source.replace(/^-(?=\n|$)/, `$& `), exports.ulist);
             function fillFirstLine(ns) {
                 return ns[0] instanceof HTMLUListElement || ns[0] instanceof HTMLOListElement ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
             }
