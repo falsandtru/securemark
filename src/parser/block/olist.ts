@@ -8,19 +8,19 @@ import { html } from 'typed-dom';
 
 export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=\s|$))/,
-  memoize(([, index]) => [index, type(index), pattern(type(index))],
-  ([start, type, pattern]) =>
+  memoize(([, index]) => [index],
+  ([index]) =>
     fmap<OListParser>(
       some(union([
         verify(fmap(
           inits<ListItemParser>([
-            line(surround(new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`), defrag(trim(some(inline))), '', false)),
+            line(surround(new RegExp(`^${pattern(type(index))}(?:\\.\\s|\\.?(?=\\n|$))`), defrag(trim(some(inline))), '', false)),
             indent(union([ulist, olist_, ilist]))
           ]),
           ns => [html('li', fillFirstLine(ns))]),
           ([el]) => !hasMedia(el))
       ])),
-      es => [html('ol', { start, type }, es)]))));
+      es => [html('ol', { start: index, type: type(index) }, es)]))));
 
 function type(index: string): string {
   return Number.isInteger(+index)
