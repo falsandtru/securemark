@@ -2,6 +2,7 @@
 import { union } from '../combinator';
 import { annotation } from './inline/annotation';
 import { authority } from './inline/authority';
+import { template } from './inline/template';
 import { extension } from './inline/extension';
 import { link } from './inline/link';
 import { ruby } from './inline/ruby';
@@ -23,6 +24,7 @@ import { text } from './source/text';
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
 export import AuthorityParser = InlineParser.AuthorityParser;
+export import TemplateParser = InlineParser.TemplateParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import LinkParser = InlineParser.LinkParser;
 export import RubyParser = InlineParser.RubyParser;
@@ -43,6 +45,7 @@ export import AutolinkParser = InlineParser.AutolinkParser;
 export const inline: InlineParser = union([
   annotation,
   authority,
+  template,
   extension,
   link,
   media,

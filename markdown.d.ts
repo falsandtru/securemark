@@ -301,6 +301,7 @@ export namespace MarkdownParser {
     Parser<HTMLElement | Text, [
       InlineParser.AnnotationParser,
       InlineParser.AuthorityParser,
+      InlineParser.TemplateParser,
       InlineParser.ExtensionParser,
       InlineParser.LinkParser,
       InlineParser.MediaParser,
@@ -334,6 +335,13 @@ export namespace MarkdownParser {
       Inline<'authority'>,
       Parser<HTMLElement, [
         InlineParser
+      ]> {
+    }
+    export interface TemplateParser extends
+      // {{ abc }}
+      Inline<'template'>,
+      Parser<HTMLElement, [
+        SourceParser.EscapableSourceParser
       ]> {
     }
     export interface ExtensionParser extends

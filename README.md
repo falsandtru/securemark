@@ -59,6 +59,7 @@ https://falsandtru.github.io/securemark/
 - Authority ([[authority]])
 - Channel (@account#tag)
 - Hashtag (#tag, #{tag})
+- Template ({{ template }})
 - Comment (<# comment #>)
 
 ## Media

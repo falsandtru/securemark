@@ -29,6 +29,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[:$-1][:$-2]')), [['<a rel="noopener" class="label" data-label="$-1">$-1</a>', '<a rel="noopener" class="label" data-label="$-2">$-2</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[#1]]')), [['<sup class="authority"><a class="hashtag" rel="noopener">#1</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[:$-1]]')), [['<sup class="authority">:$-1</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('{{}}')), [['<span class="template">{{}}</span>'], '']);
     });
 
     it('link', () => {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.101.0
+
+- Add template syntax.
+
 ## 0.100.0
 
 - Improve ulist, olist, and ilist parsers not to match flag symbols with no trailing whitespace at first.
