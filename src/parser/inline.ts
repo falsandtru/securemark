@@ -15,10 +15,10 @@ import { strong } from './inline/strong';
 import { code } from './inline/code';
 import { math } from './inline/math';
 import { media } from './inline/media';
-import { bracket } from './inline/bracket';
 import { htmlentity } from './inline/htmlentity';
 import { shortmedia } from './inline/shortmedia';
 import { autolink } from './inline/autolink';
+import { bracket } from './inline/bracket';
 import { text } from './source/text';
 
 export import InlineParser = MarkdownParser.InlineParser;
@@ -37,10 +37,10 @@ export import StrongParser = InlineParser.StrongParser;
 export import CodeParser = InlineParser.CodeParser;
 export import MathParser = InlineParser.MathParser;
 export import MediaParser = InlineParser.MediaParser;
-export import BracketParser = InlineParser.BracketParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
 export import ShortmediaParser = InlineParser.ShortmediaParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
+export import BracketParser = InlineParser.BracketParser;
 
 export const inline: InlineParser = union([
   annotation,
@@ -59,9 +59,9 @@ export const inline: InlineParser = union([
   code,
   math,
   htmlentity,
-  bracket,
   shortmedia,
   autolink,
+  bracket,
   text
 ]);
 

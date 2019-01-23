@@ -315,9 +315,9 @@ export namespace MarkdownParser {
       InlineParser.CodeParser,
       InlineParser.MathParser,
       InlineParser.HTMLEntityParser,
-      InlineParser.BracketParser,
       InlineParser.ShortmediaParser,
       InlineParser.AutolinkParser,
+      InlineParser.BracketParser,
       SourceParser.TextParser,
     ]> {
   }
@@ -575,11 +575,6 @@ export namespace MarkdownParser {
       Inline<'htmlentity'>,
       Parser<Text, []> {
     }
-    export interface BracketParser extends
-      // [abc]
-      Inline<'bracket'>,
-      Parser<HTMLElement | Text, InlineParser[]> {
-    }
     export interface ShortmediaParser extends
       // !https://host
       Inline<'shortmedia'>,
@@ -646,6 +641,11 @@ export namespace MarkdownParser {
           SourceParser.UnescapableSourceParser,
         ]> {
       }
+    }
+    export interface BracketParser extends
+      // [abc]
+      Inline<'bracket'>,
+      Parser<HTMLElement | Text, InlineParser[]> {
     }
   }
   export interface AutolinkParser extends
