@@ -2770,13 +2770,13 @@ require = function () {
             const combinator_1 = require('../../combinator');
             require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
-            exports.emoji = combinator_1.focus(/^:([a-z0-9]+(?:_[a-z0-9]+)*):/, source => [
+            exports.emoji = combinator_1.subline(combinator_1.focus(/^:([a-z0-9]+(?:_[a-z0-9]+)*):/, source => [
                 [typed_dom_1.html('span', {
                         class: 'emoji',
                         'data-name': source.slice(1, -1)
                     }, source)],
                 ''
-            ]);
+            ]));
         },
         {
             '../../combinator': 20,
