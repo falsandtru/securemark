@@ -2385,10 +2385,10 @@ require = function () {
             const code_1 = require('./inline/code');
             const math_1 = require('./inline/math');
             const media_1 = require('./inline/media');
-            const bracket_1 = require('./inline/bracket');
             const htmlentity_1 = require('./inline/htmlentity');
             const shortmedia_1 = require('./inline/shortmedia');
             const autolink_1 = require('./inline/autolink');
+            const bracket_1 = require('./inline/bracket');
             const text_1 = require('./source/text');
             exports.inline = combinator_1.union([
                 annotation_1.annotation,
@@ -2407,9 +2407,9 @@ require = function () {
                 code_1.code,
                 math_1.math,
                 htmlentity_1.htmlentity,
-                bracket_1.bracket,
                 shortmedia_1.shortmedia,
                 autolink_1.autolink,
+                bracket_1.bracket,
                 text_1.text
             ]);
             var indexer_1 = require('./inline/extension/indexer');
@@ -3668,6 +3668,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../combinator');
             const inline_1 = require('./inline');
+            const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             function hasContent(node) {
                 return hasText(node) || hasMedia(node);
@@ -3798,17 +3799,15 @@ require = function () {
             }
             exports.suppress = suppress;
             function memoize(f, g) {
-                const mem = new Map();
-                return a => {
-                    const k = f(a);
-                    return mem.has(k) ? mem.get(k) : mem.set(k, g(k)).get(k);
-                };
+                g = memoization_1.memoize(g);
+                return a => g(f(a));
             }
             exports.memoize = memoize;
         },
         {
             '../combinator': 20,
             './inline': 69,
+            'spica/memoization': 9,
             'typed-dom': 13
         }
     ],
