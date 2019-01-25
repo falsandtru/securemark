@@ -1,5 +1,6 @@
 ﻿import { Parser, fmap } from '../combinator';
 import { isFixed } from './inline';
+import { memoize as memoize_ } from 'spica/memoization';
 import { frag } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
@@ -148,11 +149,6 @@ export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
 }
 
 export function memoize<a, b, c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
-  const mem = new Map<b, c>();
-  return a => {
-    const k = f(a)
-    return mem.has(k)
-      ? mem.get(k)!
-      : mem.set(k, g(k)).get(k)!;
-  };
+  g = memoize_(g);
+  return a => g(f(a));
 }
