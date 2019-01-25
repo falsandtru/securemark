@@ -41,7 +41,6 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a=b]')), [['<span class="data-a" data-name="a" data-value="b"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=b-c]')), [['<span class="data-a" data-name="a" data-value="b-c"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=b|c]')), [['<span class="data-a" data-name="a" data-value="b">c</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[~emoji=smile]')), [['<span class="data-emoji" data-name="emoji" data-value="smile"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~color=red|a]')), [['<span class="data-color" data-name="color" data-value="red">a</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~size=large|a]')), [['<span class="data-size" data-name="size" data-value="large">a</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~button=submit|a]')), [['<span class="data-button" data-name="button" data-value="submit">a</span>'], '']);

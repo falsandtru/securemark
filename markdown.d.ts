@@ -315,6 +315,7 @@ export namespace MarkdownParser {
       InlineParser.CodeParser,
       InlineParser.MathParser,
       InlineParser.HTMLEntityParser,
+      InlineParser.EmojiParser,
       InlineParser.ShortmediaParser,
       InlineParser.AutolinkParser,
       InlineParser.BracketParser,
@@ -574,6 +575,13 @@ export namespace MarkdownParser {
       // &copy;
       Inline<'htmlentity'>,
       Parser<Text, []> {
+    }
+    export interface EmojiParser extends
+      // :smile:
+      Inline<'emoji'>,
+      Parser<HTMLElement, [
+        SourceParser.UnescapableSourceParser
+      ]> {
     }
     export interface ShortmediaParser extends
       // !https://host

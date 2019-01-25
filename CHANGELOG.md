@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.102.0
+
+- Add emoji syntax.
+
 ## 0.101.0
 
 - Add template syntax.
