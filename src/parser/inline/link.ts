@@ -5,9 +5,10 @@ import { attribute, attr } from './html';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink, memoize } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
+import { DeepReadonly } from 'spica/type';
 import { html, text, frag, define } from 'typed-dom';
 
-export const attributes: Record<string, Array<string | undefined>> = {
+export const attributes: DeepReadonly<Record<string, Array<string | undefined>>> = {
   nofollow: [undefined],
 };
 

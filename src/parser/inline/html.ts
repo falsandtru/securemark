@@ -5,9 +5,10 @@ import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
 import { char } from '../source/char';
 import { defrag, dup, trimNode, hasTightText, memoize } from '../util';
+import { DeepReadonly } from 'spica/type';
 import { html as htm } from 'typed-dom';
 
-const attributes: Record<string, Record<string, ReadonlyArray<string | undefined>> | undefined> = {
+const attributes: DeepReadonly<Record<string, Record<string, Array<string | undefined>> | undefined>> = {
   bdo: {
     dir: Object.freeze(['ltr', 'rtl']),
   },
@@ -59,7 +60,7 @@ export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
   ts => ts.length !== 2));
 
 export function attr(
-  spec: Record<string, ReadonlyArray<string | undefined>> | undefined,
+  spec: DeepReadonly<Record<string, ReadonlyArray<string | undefined>>> | undefined,
   params: string[],
   classes: Set<string>,
   syntax: string,
