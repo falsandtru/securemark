@@ -13,7 +13,7 @@ interface Tree extends Array<[HTMLHeadingElement, Tree]> { }
 
 function parse(node: Tree, index: number[] = []): HTMLUListElement {
   return html('ul', node.map(([el, node], i) => {
-    const idx = index.concat([i + 1]);
+    const idx = [...index, i + 1];
     return html('li', [
       html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx.join('.') }, el.textContent!),
       node.length > 0 ? parse(node, idx) : frag()
