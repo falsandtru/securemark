@@ -4550,7 +4550,10 @@ require = function () {
             exports.toc = toc;
             function parse(node, index = []) {
                 return typed_dom_1.html('ul', node.map(([el, node], i) => {
-                    const idx = index.concat([i + 1]);
+                    const idx = [
+                        ...index,
+                        i + 1
+                    ];
                     return typed_dom_1.html('li', [
                         typed_dom_1.html('a', {
                             href: `#${ el.id }`,
