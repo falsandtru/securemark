@@ -2553,21 +2553,20 @@ require = function () {
             require('../../source/unescapable');
             const account_1 = require('./account');
             const hashtag_1 = require('./hashtag');
+            const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.channel = combinator_1.subline(combinator_1.rewrite(combinator_1.sequence([
+            exports.channel = combinator_1.subline(combinator_1.fmap(combinator_1.sequence([
                 combinator_1.verify(account_1.account, ([node]) => node instanceof HTMLAnchorElement),
-                combinator_1.verify(combinator_1.some(hashtag_1.hashtag_), ns => ns.every(node => node instanceof HTMLAnchorElement))
-            ]), source => [
-                [typed_dom_1.html('a', {
-                        class: 'channel',
-                        rel: 'noopener'
-                    }, source)],
-                ''
-            ]));
+                combinator_1.some(combinator_1.verify(hashtag_1.hashtag_, ns => ns.every(node => node instanceof HTMLAnchorElement)))
+            ]), ns => [typed_dom_1.html('a', {
+                    class: 'channel',
+                    rel: 'noopener'
+                }, util_1.stringify(ns))]));
         },
         {
             '../../../combinator': 20,
             '../../source/unescapable': 106,
+            '../../util': 108,
             './account': 73,
             './hashtag': 76,
             'typed-dom': 13
