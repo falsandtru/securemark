@@ -13,10 +13,6 @@ export const hashtag_: AutolinkParser.HashtagParser = subline(union([
     /^#((?:[a-zA-Z0-9]|[^\x00-\x7F])+)/,
     ([, tag]) => rest =>
       [[html('a', { class: 'hashtag', rel: 'noopener' }, `#${tag}`)], rest]),
-  match(
-    /^#{([^\s#{}]+)}/,
-    ([, tag]) => rest =>
-      [[html('a', { class: 'hashtag', rel: 'noopener' }, `#${tag}`)], rest]),
   focus(
     /^[a-zA-Z0-9]*#+/,
     defrag(some(unescsource))),

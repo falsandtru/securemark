@@ -637,12 +637,9 @@ export namespace MarkdownParser {
         ]> {
       }
       export interface HashtagParser extends
-        // #tag, #{tag}
+        // #tag
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement | Text, [
-          Parser<HTMLAnchorElement, [
-            SourceParser.UnescapableSourceParser
-          ]>,
           Parser<HTMLAnchorElement, [
             SourceParser.UnescapableSourceParser
           ]>,

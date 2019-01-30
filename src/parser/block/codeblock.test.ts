@@ -36,6 +36,8 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```\n\n```\n')), [['<pre class="notranslate"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\nhttp://host\n```')), [['<pre class="notranslate"><a href="http://host" rel="noopener" target="_blank">http://host</a></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n!http://host\n```')), [['<pre class="notranslate">!<a href="http://host" rel="noopener" target="_blank">http://host</a></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n#{1}\n```')), [['<pre class="notranslate">#{1}</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n@a#{1}\n```')), [['<pre class="notranslate"><a class="account" rel="noopener">@a</a>#{1}</pre>'], '']);
       assert(parser('```\n' + '\n'.repeat(300) + '```'));
     });
 

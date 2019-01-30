@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.102.1
+## 0.103.0
 
+- Fix hashtag syntax to remove `#{tag}` syntax for consistency with autolinking.
 - Fix channel parser.
 
 ## 0.102.0
