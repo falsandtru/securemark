@@ -2557,7 +2557,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.channel = combinator_1.subline(combinator_1.fmap(combinator_1.sequence([
                 combinator_1.verify(account_1.account, ([node]) => node instanceof HTMLAnchorElement),
-                combinator_1.some(combinator_1.verify(hashtag_1.hashtag_, ns => ns.every(node => node instanceof HTMLAnchorElement)))
+                combinator_1.some(combinator_1.verify(hashtag_1.hashtag_, ([node]) => node instanceof HTMLAnchorElement))
             ]), ns => [typed_dom_1.html('a', {
                     class: 'channel',
                     rel: 'noopener'
@@ -2610,13 +2610,6 @@ require = function () {
             exports.hashtag = combinator_1.lazy(() => combinator_1.verify(exports.hashtag_, (_, rest) => !rest.startsWith('#')));
             exports.hashtag_ = combinator_1.subline(combinator_1.union([
                 combinator_1.match(/^#((?:[a-zA-Z0-9]|[^\x00-\x7F])+)/, ([, tag]) => rest => [
-                    [typed_dom_1.html('a', {
-                            class: 'hashtag',
-                            rel: 'noopener'
-                        }, `#${ tag }`)],
-                    rest
-                ]),
-                combinator_1.match(/^#{([^\s#{}]+)}/, ([, tag]) => rest => [
                     [typed_dom_1.html('a', {
                             class: 'hashtag',
                             rel: 'noopener'
