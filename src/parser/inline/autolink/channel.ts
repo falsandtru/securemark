@@ -9,6 +9,6 @@ import { html } from 'typed-dom';
 export const channel: AutolinkParser.ChannelParser = subline(fmap(
   sequence([
     verify(account, ([node]) => node instanceof HTMLAnchorElement),
-    some(verify(hashtag_, ns => ns.every(node => node instanceof HTMLAnchorElement))),
+    some(verify(hashtag_, ([node]) => node instanceof HTMLAnchorElement)),
   ]),
   ns => [html('a', { class: 'channel', rel: 'noopener' }, stringify(ns))]));
