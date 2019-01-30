@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.102.1
+
+- Fix channel parser.
+
 ## 0.102.0
 
 - Add emoji syntax.

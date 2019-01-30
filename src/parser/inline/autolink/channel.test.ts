@@ -17,6 +17,8 @@ describe('Unit: parser/inline/autolink/channel', () => {
     it('valid', () => {
       assert.deepStrictEqual(inspect(parser('@a#1')), [['<a class="channel" rel="noopener">@a#1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a#1#2')), [['<a class="channel" rel="noopener">@a#1#2</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#{1}')), [['<a class="channel" rel="noopener">@a#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#1#')), [['<a class="channel" rel="noopener">@a#1</a>'], '#']);
     });
 
   });
