@@ -736,6 +736,8 @@ require = function () {
                     return define(el, attrs, [text(children)]);
                 void Object.entries(attrs).forEach(([name, value]) => {
                     switch (typeof value) {
+                    case 'string':
+                        return void el.setAttribute(name, value);
                     case 'function':
                         return void el.addEventListener(name.slice(2), value, {
                             passive: [
@@ -745,10 +747,10 @@ require = function () {
                                 'touchmove'
                             ].includes(name.slice(2))
                         });
-                    case 'undefined':
+                    case 'object':
                         return void el.removeAttribute(name);
                     default:
-                        return void el.setAttribute(name, value);
+                        return;
                     }
                 });
                 if (children) {
@@ -2927,7 +2929,7 @@ require = function () {
             const util_1 = require('../../util');
             const typed_dom_1 = require('typed-dom');
             exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexer_1.index(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))), ([el]) => [typed_dom_1.define(el, {
-                    id: undefined,
+                    id: null,
                     href: `#${ el.id }`
                 })])));
         },
@@ -2952,7 +2954,7 @@ require = function () {
                     'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                 })])));
             function index(parser) {
-                return combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, { id: identifier(text(el)) || undefined })]);
+                return combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, { id: identifier(text(el)) || null })]);
             }
             exports.index = index;
             function text(source) {
@@ -2986,7 +2988,7 @@ require = function () {
             exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
                     class: 'label',
                     'data-label': el.textContent.split(':').pop(),
-                    href: undefined
+                    href: null
                 })]), ([el]) => util_1.hasTightText(el)));
             function index(label, index) {
                 return isFixed(label) ? label.split('-').pop() : increment(index, isGroup(label) ? label.split('-').pop().split('.').length : index.split('.').length);
@@ -3061,8 +3063,8 @@ require = function () {
                 combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/, util_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
                     util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
                     util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
-                ]), ([attrs, contents]) => [typed_dom_1.html(tag, attr(attributes[tag], attrs.map(t => t.textContent), new Set(), 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)))),
-                combinator_1.match(/^(?=<(wbr)(?: [^\n]*?)?>)/, util_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs]) => [typed_dom_1.html(tag, attr(attributes[tag], attrs.map(t => t.textContent), new Set(), 'html'), [])]), ([el]) => !el.matches('.invalid')))),
+                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)))),
+                combinator_1.match(/^(?=<(wbr)(?: [^\n]*?)?>)/, util_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), [])]), ([el]) => !el.matches('.invalid')))),
                 combinator_1.rewrite(combinator_1.sequence([util_1.dup(combinator_1.surround(/<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false))]), source => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
@@ -3077,7 +3079,7 @@ require = function () {
                 char_1.char('='),
                 util_1.defrag(combinator_1.rewrite(combinator_1.surround('"', combinator_1.some(escapable_1.escsource, '"'), '"', false), combinator_1.some(escapable_1.escsource)))
             ]), ''), ts => ts.length !== 2));
-            function attr(spec, params, classes, syntax) {
+            function attrs(spec, params, classes, syntax) {
                 const result = {};
                 const attrs = new Map(params.map(arg => [
                     arg.split('=', 1)[0],
@@ -3091,7 +3093,7 @@ require = function () {
                         void classes.add('invalid');
                     }
                     for (const [key, value] of attrs) {
-                        spec.hasOwnProperty(key) && spec[key].includes(value) ? result[key] = value : void classes.add('invalid');
+                        spec.hasOwnProperty(key) && spec[key].includes(value) ? result[key] = value || '' : void classes.add('invalid');
                     }
                 }
                 if (classes.has('invalid')) {
@@ -3101,7 +3103,7 @@ require = function () {
                 }
                 return result;
             }
-            exports.attr = attr;
+            exports.attrs = attrs;
         },
         {
             '../../combinator': 20,
@@ -3205,7 +3207,7 @@ require = function () {
                     void el.setAttribute('target', '_blank');
                 }
                 return [
-                    [typed_dom_1.define(el, html_1.attr(exports.attributes, params, new Set(el.classList), 'link'))],
+                    [typed_dom_1.define(el, attrs(exports.attributes, params, new Set(el.classList), 'link'))],
                     rest
                 ];
             })));
@@ -3255,6 +3257,12 @@ require = function () {
                     typed_dom_1.text('"')
                 ])
             ])));
+            function attrs(spec, params, classes, syntax) {
+                const attrs = html_1.attrs(spec, params, classes, syntax);
+                void ['nofollow'].forEach(name => attrs[name] = undefined);
+                return attrs;
+            }
+            exports.attrs = attrs;
         },
         {
             '../../combinator': 20,
@@ -3331,7 +3339,7 @@ require = function () {
                 if (exports.cache.has(uri.href) && el.hasAttribute('alt')) {
                     void typed_dom_1.define(el, { alt: text });
                 }
-                void typed_dom_1.define(el, html_1.attr(link_1.attributes, params, new Set(el.classList), 'media'));
+                void typed_dom_1.define(el, link_1.attrs(link_1.attributes, params, new Set(el.classList), 'media'));
                 return el.matches('img') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`) : [
                     [el],
                     rest
