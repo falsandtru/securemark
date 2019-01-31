@@ -2609,7 +2609,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.hashtag = combinator_1.lazy(() => combinator_1.verify(exports.hashtag_, (_, rest) => !rest.startsWith('#')));
             exports.hashtag_ = combinator_1.subline(combinator_1.union([
-                combinator_1.match(/^#((?:[a-zA-Z0-9]|[^\x00-\x7F])+)/, ([, tag]) => rest => [
+                combinator_1.match(/^#((?:[a-zA-Z0-9]|[^\x00-\x7F\s])+)/, ([, tag]) => rest => [
                     [typed_dom_1.html('a', {
                             class: 'hashtag',
                             rel: 'noopener'
