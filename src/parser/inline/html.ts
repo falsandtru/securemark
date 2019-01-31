@@ -24,8 +24,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
           dup(surround(``, trimNode(defrag(some(union([inline]), `</${tag}>`))), `</${tag}>`)),
         ]),
-        ([attrs, contents]: [Text[], (HTMLElement | Text)[]]) =>
-          [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), contents)]),
+        ([attrs_, contents]: [Text[], (HTMLElement | Text)[]]) =>
+          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), new Set(), 'html'), contents)]),
         ([el]) => !el.matches('.invalid') && hasTightText(el)))),
   match(
     /^(?=<(wbr)(?: [^\n]*?)?>)/,
@@ -35,8 +35,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         sequence<SubParsers<HTMLParser>[1]>([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
         ]),
-        ([attrs]) =>
-          [htm(tag as 'span', attr(attributes[tag], attrs.map(t => t.textContent!), new Set(), 'html'), [])]),
+        ([attrs_]) =>
+          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), new Set(), 'html'), [])]),
         ([el]) => !el.matches('.invalid')))),
   rewrite(
     sequence<SubParsers<HTMLParser>[2]>([
@@ -59,13 +59,13 @@ export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
     ''),
   ts => ts.length !== 2));
 
-export function attr(
+export function attrs(
   spec: DeepReadonly<Record<string, ReadonlyArray<string | undefined>>> | undefined,
   params: string[],
   classes: Set<string>,
   syntax: string,
 ): Record<string, string | undefined> {
-  const result: Record<string, string | undefined> = {
+  const result: Record<string, string> = {
   };
   const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
     arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined]));
@@ -78,7 +78,7 @@ export function attr(
     }
     for (const [key, value] of attrs) {
       spec.hasOwnProperty(key) && spec[key].includes(value)
-        ? result[key] = value
+        ? result[key] = value || ''
         : void classes.add('invalid');
     }
   }

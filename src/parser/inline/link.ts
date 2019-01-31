@@ -1,7 +1,7 @@
 ﻿import { LinkParser, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
-import { attribute, attr } from './html';
+import { attribute, attrs as attrs_ } from './html';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink, memoize } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
@@ -55,7 +55,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
       void el.setAttribute('target', '_blank');
     }
-    return [[define(el, attr(attributes, params, new Set(el.classList), 'link'))], rest];
+    return [[define(el, attrs(attributes, params, new Set(el.classList), 'link'))], rest];
   })));
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
@@ -81,3 +81,16 @@ export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() =
     surround('"', some(union([bracket, unescsource]), /^[\s\"]/), '"', false),
     ts => [text('"'), ...ts, text('"')]),
 ])));
+
+export function attrs(
+  spec: DeepReadonly<Record<string, ReadonlyArray<string | undefined>>> | undefined,
+  params: string[],
+  classes: Set<string>,
+  syntax: string,
+): Record<string, string | undefined> {
+  const attrs = attrs_(spec, params, classes, syntax);
+  void ['nofollow']
+    .forEach(name =>
+      delete attrs[name]);
+  return attrs;
+}

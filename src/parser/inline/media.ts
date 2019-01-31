@@ -1,8 +1,8 @@
 ﻿import { MediaParser } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, fmap, bind } from '../../combinator';
 import { text } from '../source/text';
-import { link, attributes, uri } from './link';
-import { attribute, attr } from './html';
+import { link, attributes, uri, attrs } from './link';
+import { attribute } from './html';
 import { sanitize } from '../string/uri';
 import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
 import { Cache } from 'spica/cache';
@@ -33,7 +33,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(el.tagName));
       void define(el, { alt: text });
     }
-    void define(el, attr(attributes, params, new Set(el.classList), 'media'));
+    void define(el, attrs(attributes, params, new Set(el.classList), 'media'));
     return el.matches('img')
       ? fmap(
           link,
