@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.103.1
+
+- Fix hashtag parser to disallow multibyte whitespace.
+
 ## 0.103.0
 
 - Fix hashtag syntax to remove `#{tag}` syntax for consistency with autolinking.
