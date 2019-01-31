@@ -113,22 +113,23 @@ require = function () {
                 constructor(size, callback = () => undefined, opts = {}) {
                     this.size = size;
                     this.callback = callback;
-                    this.opts = {
+                    this.settings = {
                         ignore: {
                             delete: false,
                             clear: false
+                        },
+                        data: {
+                            stats: [
+                                [],
+                                []
+                            ],
+                            entries: []
                         }
                     };
                     if (size > 0 === false)
                         throw new Error(`Spica: Cache: Cache size must be greater than 0.`);
-                    void Object.freeze(assign_1.extend(this.opts, opts));
-                    const {stats, entries} = opts.data || {
-                        stats: [
-                            [],
-                            []
-                        ],
-                        entries: []
-                    };
+                    void assign_1.extend(this.settings, opts);
+                    const {stats, entries} = this.settings.data;
                     const LFU = stats[1].slice(0, size);
                     const LRU = stats[0].slice(0, size - LFU.length);
                     this.stats = {
@@ -196,7 +197,7 @@ require = function () {
                             continue;
                         const val = this.store.get(key);
                         void this.store.delete(stat.splice(index, 1)[0]);
-                        if (this.opts.ignore.delete)
+                        if (this.settings.ignore.delete)
                             return true;
                         void this.callback(key, val);
                         return true;
@@ -210,7 +211,7 @@ require = function () {
                         LRU: [],
                         LFU: []
                     };
-                    if (this.opts.ignore.clear)
+                    if (this.settings.ignore.clear)
                         return;
                     return void [...store].forEach(([key, val]) => void this.callback(key, val));
                 }
@@ -270,8 +271,8 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function concat(target, source) {
-                for (let i = 0, offset = target.length, len = source.length; i < len; ++i) {
-                    target[offset + i] = source[i];
+                for (let i = 0; i < source.length; ++i) {
+                    target.push(source[i]);
                 }
                 return target;
             }
@@ -350,10 +351,11 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const FORMAT_V4 = Object.freeze('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.split(''));
+            const FORMAT_V4 = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
             function uuid() {
                 let acc = '';
-                for (const c of FORMAT_V4) {
+                for (let i = 0; i < FORMAT_V4.length; ++i) {
+                    const c = FORMAT_V4[i];
                     if (c === 'x' || c === 'y') {
                         const r = Math.random() * 16 | 0;
                         const v = c == 'x' ? r : r & 3 | 8;
@@ -362,7 +364,7 @@ require = function () {
                         acc += c;
                     }
                 }
-                return acc.toLowerCase();
+                return acc;
             }
             exports.uuid = uuid;
         },
@@ -382,6 +384,8 @@ require = function () {
             exports.TypedHTML = builder_1.TypedHTML;
             exports.TypedSVG = builder_1.TypedSVG;
             exports.API = builder_1.API;
+            var manager_1 = require('./src/dom/manager');
+            exports.proxy = manager_1.proxy;
             var dom_1 = require('./src/util/dom');
             exports.html = dom_1.html;
             exports.svg = dom_1.svg;
@@ -393,6 +397,7 @@ require = function () {
         },
         {
             './src/dom/builder': 14,
+            './src/dom/manager': 16,
             './src/util/dom': 17,
             './src/util/listener': 18
         }
@@ -472,21 +477,26 @@ require = function () {
                 ElChildrenType.Collection = 'collection';
                 ElChildrenType.Record = 'record';
             }(ElChildrenType || (ElChildrenType = {})));
-            const memory = new WeakSet();
+            const memory = new WeakMap();
+            function proxy(el) {
+                return memory.get(el);
+            }
+            exports.proxy = proxy;
             class El {
                 constructor(element_, children_) {
                     this.element_ = element_;
                     this.children_ = children_;
                     this.type = this.children_ === undefined ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Record;
+                    this.initialChildren = new WeakSet();
                     this.tag;
                     void throwErrorIfNotUsable(this);
-                    void memory.add(element_);
+                    void memory.set(element_, this);
                     switch (this.type) {
                     case ElChildrenType.Void:
                         return;
                     case ElChildrenType.Text:
                         void dom_1.define(element_, []);
-                        this.children_ = element_.appendChild(document.createTextNode(''));
+                        this.children_ = element_.appendChild(dom_1.text(''));
                         this.children = children_;
                         return;
                     case ElChildrenType.Collection:
@@ -497,6 +507,7 @@ require = function () {
                     case ElChildrenType.Record:
                         void dom_1.define(element_, []);
                         this.children_ = observe(element_, Object.assign({}, children_));
+                        void Object.values(children_).forEach(child => void this.initialChildren.add(child.element_));
                         this.children = children_;
                         return;
                     }
@@ -514,7 +525,9 @@ require = function () {
                                     const oldChild = child;
                                     if (newChild === oldChild)
                                         return;
-                                    newChild.element_.parentElement === element || void throwErrorIfNotUsable(newChild);
+                                    if (newChild.element_.parentElement !== element) {
+                                        void throwErrorIfNotUsable(newChild);
+                                    }
                                     child = newChild;
                                     void element.replaceChild(newChild.element, oldChild.element);
                                 }
@@ -529,9 +542,11 @@ require = function () {
                 get query() {
                     return this.id === this.element_.id.trim() ? `#${ this.id }` : `.${ this.id }`;
                 }
-                scope(children) {
+                scope(child) {
                     const syntax = /^(\s*)\$scope(?!\w)/gm;
-                    return void children.forEach(child => child.element instanceof HTMLStyleElement && void parse(child.element, this.query));
+                    if (!(child.element instanceof HTMLStyleElement))
+                        return;
+                    return void parse(child.element, this.query);
                     function parse(style, query) {
                         if (style.innerHTML.search(syntax) === -1)
                             return;
@@ -555,40 +570,89 @@ require = function () {
                 get children() {
                     switch (this.type) {
                     case ElChildrenType.Text:
-                        return this.children_.data;
+                        this.children_ = this.children_.parentNode === this.element_ ? this.children_ : [...this.element_.childNodes].find(node => node instanceof Text) || this.children_.cloneNode();
+                        return this.children_.textContent;
                     default:
                         return this.children_;
                     }
                 }
                 set children(children) {
+                    const removedNodes = new Set();
+                    const addedNodes = new Set();
                     switch (this.type) {
                     case ElChildrenType.Void:
                         return;
-                    case ElChildrenType.Text:
-                        children = document.createTextNode(children);
-                        void this.element_.replaceChild(children, this.children_);
-                        this.children_ = children;
-                        return;
-                    case ElChildrenType.Collection:
-                        this.children_ = [];
-                        void children.forEach((child, i) => {
-                            child.element_.parentElement === this.element_ || void throwErrorIfNotUsable(child);
-                            this.children_[i] = child;
-                            if (this.children_[i] === this.element_.childNodes[i])
+                    case ElChildrenType.Text: {
+                            if (children === this.children && !this.initialChildren.has(this.children_))
                                 return;
-                            void this.element_.insertBefore(child.element, this.element_.childNodes[i]);
-                        });
-                        while (this.element_.childNodes.length > children.length) {
-                            void this.element_.removeChild(this.element_.lastChild);
+                            const targetChildren = this.children_;
+                            const oldText = targetChildren.textContent;
+                            const newText = children;
+                            targetChildren.textContent = newText;
+                            if (newText === oldText)
+                                return;
+                            break;
                         }
-                        void Object.freeze(this.children_);
-                        void this.scope(Object.values(this.children_));
-                        return;
-                    case ElChildrenType.Record:
-                        void Object.keys(this.children_).forEach(k => this.children_[k] = children[k]);
-                        void this.scope(Object.values(this.children_));
-                        return;
+                    case ElChildrenType.Collection: {
+                            const sourceChildren = children;
+                            const targetChildren = [];
+                            this.children_ = targetChildren;
+                            void sourceChildren.forEach((child, i) => {
+                                if (child.element_.parentElement !== this.element_) {
+                                    void throwErrorIfNotUsable(child);
+                                }
+                                targetChildren[i] = child;
+                                if (targetChildren[i].element_ === this.element_.childNodes[i])
+                                    return;
+                                if (child.element_.parentNode !== this.element_) {
+                                    void this.scope(child);
+                                    void addedNodes.add(child.element_);
+                                }
+                                void this.element_.insertBefore(child.element, this.element_.childNodes[i]);
+                            });
+                            while (this.element_.childNodes.length > sourceChildren.length) {
+                                void removedNodes.add(this.element_.removeChild(this.element_.childNodes[sourceChildren.length]));
+                            }
+                            void Object.freeze(targetChildren);
+                            break;
+                        }
+                    case ElChildrenType.Record: {
+                            const sourceChildren = children;
+                            const targetChildren = this.children_;
+                            const mem = new WeakSet();
+                            void Object.keys(targetChildren).forEach(k => {
+                                const oldChild = targetChildren[k];
+                                const newChild = sourceChildren[k];
+                                if (!newChild)
+                                    return;
+                                if (newChild.element_.parentElement !== this.element_) {
+                                    void throwErrorIfNotUsable(newChild);
+                                }
+                                if (mem.has(newChild.element_))
+                                    throw new Error(`TypedDOM: Cannot use an element again used in the same record.`);
+                                void mem.add(newChild.element_);
+                                if (oldChild.element_ !== newChild.element_ || this.initialChildren.has(oldChild.element_)) {
+                                    void this.scope(newChild);
+                                    void addedNodes.add(newChild.element_);
+                                    void removedNodes.add(oldChild.element_);
+                                }
+                                targetChildren[k] = sourceChildren[k];
+                            });
+                            break;
+                        }
                     }
+                    void removedNodes.forEach(node => !this.initialChildren.has(node) && void node.dispatchEvent(new Event('disconnect', {
+                        bubbles: false,
+                        cancelable: true
+                    })));
+                    void addedNodes.forEach(node => void node.dispatchEvent(new Event('connect', {
+                        bubbles: false,
+                        cancelable: true
+                    })));
+                    void this.element_.dispatchEvent(new Event('change', {
+                        bubbles: false,
+                        cancelable: true
+                    }));
                 }
             }
             exports.El = El;
@@ -731,7 +795,7 @@ require = function () {
                         }
                     }
                     void exports.currentTargets.set(ev, ev.currentTarget);
-                    void listener(ev);
+                    return listener(ev);
                 }
                 function adjustEventListenerOptions(option) {
                     return supportEventListenerOptions ? option : typeof option === 'boolean' ? option : !!option.capture;
@@ -742,10 +806,9 @@ require = function () {
                 return bind(target instanceof Document ? target.documentElement : target, type, ev => {
                     const cx = ev.target.closest(selector);
                     if (!cx)
-                        return;
-                    void [...target.querySelectorAll(selector)].filter(el => el === cx).forEach(el => void once(el, type, ev => {
-                        void listener(ev);
-                    }, option));
+                        return ev.returnValue;
+                    void [...target.querySelectorAll(selector)].filter(el => el === cx).forEach(el => void once(el, type, listener, option));
+                    return ev.returnValue;
                 }, Object.assign({}, option, { capture: true }));
             }
             exports.delegate = delegate;
@@ -757,7 +820,7 @@ require = function () {
                         return supportEventListenerOptions = true;
                     }
                 });
-            } catch (e) {
+            } catch (_a) {
             }
         },
         { './noop': 19 }
