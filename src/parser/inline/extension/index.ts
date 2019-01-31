@@ -15,4 +15,4 @@ export const index: ExtensionParser.IndexParser = lazy(() => subline(fmap(idx(ve
         union([link]))),
     ']')),
   ([el]) => hasTightText(el) && !hasMedia(el))),
-  ([el]) => [define(el, { id: undefined, href: `#${el.id}` })])));
+  ([el]) => [define(el, { id: null, href: `#${el.id}` })])));

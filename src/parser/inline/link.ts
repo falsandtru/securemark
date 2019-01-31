@@ -91,6 +91,6 @@ export function attrs(
   const attrs = attrs_(spec, params, classes, syntax);
   void ['nofollow']
     .forEach(name =>
-      delete attrs[name]);
+      attrs[name] = undefined);
   return attrs;
 }
