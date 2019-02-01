@@ -9,7 +9,7 @@ export const indexer: ExtensionParser.IndexerParser = lazy(() => line(fmap(
     trim(union([idx])),
     /^(?=\s*$)/),
   ([el]) =>
-    [html('small', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
+    [html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
 
 export function index<P extends Parser<HTMLElement, any>>(parser: P): P;
 export function index<T extends HTMLElement, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {

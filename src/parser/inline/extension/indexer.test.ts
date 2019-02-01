@@ -18,10 +18,10 @@ describe('Unit: parser/inline/extension/indexer', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser(' [#a]')), [['<small class="indexer" data-index="a"></small>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#a] ')), [['<small class="indexer" data-index="a"></small>'], '']);
-      assert.deepStrictEqual(inspect(parser(' [#a b]')), [['<small class="indexer" data-index="a-b"></small>'], '']);
-      assert.deepStrictEqual(inspect(parser('  [#a]')), [['<small class="indexer" data-index="a"></small>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a]')), [['<span class="indexer" data-index="a"></span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a] ')), [['<span class="indexer" data-index="a"></span>'], '']);
+      assert.deepStrictEqual(inspect(parser(' [#a b]')), [['<span class="indexer" data-index="a-b"></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('  [#a]')), [['<span class="indexer" data-index="a"></span>'], '']);
     });
 
   });
