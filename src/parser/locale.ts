@@ -5,14 +5,14 @@ import { html } from 'typed-dom';
 
 export function localize(block: BlockParser): BlockParser {
   return fmap(block, es => {
-    void es.forEach(el =>
-      void el.querySelectorAll<HTMLElement>('.linebreak')
-        .forEach(el => {
-          if (!el.firstChild || el.firstElementChild) return;
-          if (!check(el)) return;
-          assert(el.firstChild.textContent === ' ');
-          void el.replaceChild(html('wbr'), el.firstChild);
-        }));
+    for (const block of es) {
+      for (const el of block.querySelectorAll<HTMLElement>('.linebreak')) {
+        if (!el.firstChild || el.firstElementChild) continue;
+        if (!check(el)) continue;
+        assert(el.firstChild.textContent === ' ');
+        void el.replaceChild(html('wbr'), el.firstChild);
+      }
+    }
     return es;
   });
 }

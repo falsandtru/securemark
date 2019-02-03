@@ -127,24 +127,25 @@ export function stringify(nodes: Node[]): string {
 }
 
 export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
-  void [...el.children]
-    .filter(el => !el.matches('blockquote, .example'))
-    .forEach(el => {
-      if (el.matches('[id]')) {
-        void el.removeAttribute('id');
-      }
-      if (el.matches('figure[data-label]:not([data-index])') && !isFixed(el.getAttribute('data-label')!)) {
-        void el.setAttribute('data-label', el.getAttribute('data-label')!.split('-')[0] + '-0');
-      }
-      //if (el.matches('figure')) return void suppress(el.querySelector(':scope > figcaption')!);
-      if (el.matches('figure')) return void suppress(el.lastElementChild as HTMLElement);
-      void el.querySelectorAll('[id]')
-        .forEach(el =>
-          void el.removeAttribute('id'));
-      void el.querySelectorAll('a[href^="#"]')
-        .forEach(el =>
-          void el.setAttribute('onclick', 'return false;'));
-    });
+  for (const child of [...el.children].filter(child => !child.matches('blockquote, .example'))) {
+    if (child.matches('[id]')) {
+      void child.removeAttribute('id');
+    }
+    if (child.matches('figure[data-label]:not([data-index])') && !isFixed(child.getAttribute('data-label')!)) {
+      void child.setAttribute('data-label', child.getAttribute('data-label')!.split('-')[0] + '-0');
+    }
+    //if (el.matches('figure')) return void suppress(el.querySelector(':scope > figcaption')!);
+    if (child.matches('figure')) {
+      void suppress(child.lastElementChild as HTMLElement);
+      continue;
+    }
+    for (const el of child.querySelectorAll('[id]')) {
+      void el.removeAttribute('id');
+    }
+    for (const el of child.querySelectorAll('a[href^="#"]')) {
+      void el.setAttribute('onclick', 'return false;');
+    }
+  }
   return el;
 }
 

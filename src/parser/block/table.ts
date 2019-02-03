@@ -25,9 +25,9 @@ export const table: TableParser = lazy(() => block(fmap(
           concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
         , []);
       void align(head, extend(aligns.slice(0, 2), head.children.length));
-      void rows
-        .forEach(row =>
-          void align(row, extend(aligns, row.children.length)));
+      for (const row of rows) {
+        void align(row, extend(aligns, row.children.length));
+      }
       return;
 
       function extend(aligns: string[], size: number): string[] {

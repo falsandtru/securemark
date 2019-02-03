@@ -21,11 +21,11 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     for (; i + j < cs.length && i + j < ns.length; ++j) {
       if (cs[cs.length - j - 1] !== ns[ns.length - j - 1]) break;
     }
-    void pairs.splice(i, pairs.length - j - i)
-      .forEach(([, es]) =>
-        void es
-          .forEach(el =>
-            void el.remove()));
+    for (const [, es] of pairs.splice(i, pairs.length - j - i)) {
+      for (const el of es) {
+        void el.remove();
+      }
+    }
     const [, [ref = bottom()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
     for (const [seg, k] of ns.slice(i, ns.length - j).map<[string, number]>((seg, k) => [seg, i + k])) {
       assert(revision === rev);

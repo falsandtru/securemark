@@ -37,9 +37,10 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
       case target.matches('pre, .math, .graph'):
         return;
       default:
-        return void target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .graph, .math')
-          .forEach(el =>
-            void render(el, opts));
+        for (const el of target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .graph, .math')) {
+          void render(el, opts);
+        }
+        return;
     }
   }
   catch (reason) {

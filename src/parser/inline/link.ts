@@ -89,8 +89,8 @@ export function attrs(
   syntax: string,
 ): Record<string, string | undefined> {
   const attrs = attrs_(spec, params, classes, syntax);
-  void ['nofollow']
-    .forEach(name =>
-      attrs[name] = undefined);
+  for (const name of ['nofollow']) {
+    attrs[name] = undefined;
+  }
   return attrs;
 }
