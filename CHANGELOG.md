@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.103.2
+
+- Micro refactoring.
+
 ## 0.103.1
 
 - Fix hashtag parser to disallow multibyte whitespace.
