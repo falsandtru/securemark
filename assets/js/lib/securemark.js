@@ -137,10 +137,12 @@ require = function () {
                         LFU
                     };
                     this.store = new Map(entries);
-                    void [
-                        ...stats[1],
-                        ...stats[0]
-                    ].slice(LFU.length + LRU.length).forEach(k => void this.store.delete(k));
+                    for (const k of [
+                            ...stats[1],
+                            ...stats[0]
+                        ].slice(LFU.length + LRU.length)) {
+                        void this.store.delete(k);
+                    }
                     if (this.store.size !== LFU.length + LRU.length)
                         throw new Error(`Spica: Cache: Size of stats and entries is not matched.`);
                     if (![
@@ -213,7 +215,9 @@ require = function () {
                     };
                     if (this.settings.ignore.clear)
                         return;
-                    return void [...store].forEach(([key, val]) => void this.callback(key, val));
+                    for (const [key, val] of store) {
+                        void this.callback(key, val);
+                    }
                 }
                 [Symbol.iterator]() {
                     return this.store[Symbol.iterator]();
@@ -392,7 +396,6 @@ require = function () {
             exports.text = dom_1.text;
             exports.frag = dom_1.frag;
             exports.define = dom_1.define;
-            exports.observer = dom_1.observer;
             __export(require('./src/util/listener'));
         },
         {
@@ -453,9 +456,9 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const uuid_1 = require('spica/uuid');
             const sqid_1 = require('spica/sqid');
-            const id = uuid_1.uuid().split('-').pop();
+            const id = uuid_1.uuid().slice(-7);
             function uid() {
-                return `id-${ id }-${ String(+sqid_1.sqid()).padStart(6, '0') }`;
+                return `id-${ id }-${ +sqid_1.sqid() }`;
             }
             exports.uid = uid;
         },
@@ -479,37 +482,44 @@ require = function () {
             }(ElChildrenType || (ElChildrenType = {})));
             const memory = new WeakMap();
             function proxy(el) {
+                if (!memory.has(el))
+                    throw new Error(`TypedDOM: This element has no proxy.`);
                 return memory.get(el);
             }
             exports.proxy = proxy;
+            const tag = Symbol();
             class El {
-                constructor(element_, children_) {
-                    this.element_ = element_;
+                constructor(element, children_) {
+                    this.element = element;
                     this.children_ = children_;
+                    this.id_ = this.element.id.trim();
                     this.type = this.children_ === undefined ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Record;
-                    this.initialChildren = new WeakSet();
-                    this.tag;
                     void throwErrorIfNotUsable(this);
-                    void memory.set(element_, this);
+                    void memory.set(element, this);
                     switch (this.type) {
                     case ElChildrenType.Void:
+                        this.initialChildren = new WeakSet();
                         return;
                     case ElChildrenType.Text:
-                        void dom_1.define(element_, []);
-                        this.children_ = element_.appendChild(dom_1.text(''));
+                        this.initialChildren = new WeakSet();
+                        void dom_1.define(element, []);
+                        this.children_ = element.appendChild(dom_1.text(''));
                         this.children = children_;
                         return;
                     case ElChildrenType.Collection:
-                        void dom_1.define(element_, []);
+                        this.initialChildren = new WeakSet(children_);
+                        void dom_1.define(element, []);
                         this.children_ = [];
                         this.children = children_;
                         return;
                     case ElChildrenType.Record:
-                        void dom_1.define(element_, []);
-                        this.children_ = observe(element_, Object.assign({}, children_));
-                        void Object.values(children_).forEach(child => void this.initialChildren.add(child.element_));
+                        this.initialChildren = new WeakSet(Object.values(children_));
+                        void dom_1.define(element, []);
+                        this.children_ = observe(element, Object.assign({}, children_));
                         this.children = children_;
                         return;
+                    default:
+                        throw new Error(`TypedDOM: Undefined type children.`);
                     }
                     function observe(element, children) {
                         return Object.defineProperties(children, Object.entries(children).reduce((descs, [name, child]) => {
@@ -525,11 +535,11 @@ require = function () {
                                     const oldChild = child;
                                     if (newChild === oldChild)
                                         return;
-                                    if (newChild.element_.parentElement !== element) {
+                                    if (newChild.element.parentElement !== element) {
                                         void throwErrorIfNotUsable(newChild);
                                     }
-                                    child = newChild;
                                     void element.replaceChild(newChild.element, oldChild.element);
+                                    child = newChild;
                                 }
                             };
                             return descs;
@@ -537,17 +547,21 @@ require = function () {
                     }
                 }
                 get id() {
-                    return this.id_ = this.id_ || this.element_.id.trim() || identity_1.uid();
+                    if (this.id_)
+                        return this.id_;
+                    this.id_ = identity_1.uid();
+                    void this.element.classList.add(this.id_);
+                    return this.id_;
                 }
                 get query() {
-                    return this.id === this.element_.id.trim() ? `#${ this.id }` : `.${ this.id }`;
+                    return this.id === this.element.id.trim() ? `#${ this.id }` : `.${ this.id }`;
                 }
                 scope(child) {
-                    const syntax = /^(\s*)\$scope(?!\w)/gm;
                     if (!(child.element instanceof HTMLStyleElement))
                         return;
                     return void parse(child.element, this.query);
                     function parse(style, query) {
+                        const syntax = /^(\s*)\$scope(?!\w)/gm;
                         if (style.innerHTML.search(syntax) === -1)
                             return;
                         style.innerHTML = style.innerHTML.replace(syntax, (_, indent) => `${ indent }${ query }`);
@@ -564,21 +578,18 @@ require = function () {
                         void [...style.querySelectorAll('*')].forEach(el => void el.remove());
                     }
                 }
-                get element() {
-                    return this.element_;
-                }
                 get children() {
                     switch (this.type) {
                     case ElChildrenType.Text:
-                        this.children_ = this.children_.parentNode === this.element_ ? this.children_ : [...this.element_.childNodes].find(node => node instanceof Text) || this.children_.cloneNode();
+                        this.children_ = this.children_.parentElement === this.element ? this.children_ : [...this.element.childNodes].find(node => node instanceof Text) || this.children_.cloneNode();
                         return this.children_.textContent;
                     default:
                         return this.children_;
                     }
                 }
                 set children(children) {
-                    const removedNodes = new Set();
-                    const addedNodes = new Set();
+                    const removedChildren = new Set();
+                    const addedChildren = new Set();
                     switch (this.type) {
                     case ElChildrenType.Void:
                         return;
@@ -591,65 +602,80 @@ require = function () {
                             targetChildren.textContent = newText;
                             if (newText === oldText)
                                 return;
-                            break;
+                            void this.element.dispatchEvent(new Event('change', {
+                                bubbles: false,
+                                cancelable: true
+                            }));
+                            return;
                         }
                     case ElChildrenType.Collection: {
                             const sourceChildren = children;
                             const targetChildren = [];
                             this.children_ = targetChildren;
-                            void sourceChildren.forEach((child, i) => {
-                                if (child.element_.parentElement !== this.element_) {
-                                    void throwErrorIfNotUsable(child);
+                            for (let i = 0; i < sourceChildren.length; ++i) {
+                                const newChild = sourceChildren[i];
+                                if (newChild.element.parentElement !== this.element) {
+                                    void throwErrorIfNotUsable(newChild);
                                 }
-                                targetChildren[i] = child;
-                                if (targetChildren[i].element_ === this.element_.childNodes[i])
-                                    return;
-                                if (child.element_.parentNode !== this.element_) {
-                                    void this.scope(child);
-                                    void addedNodes.add(child.element_);
+                                if (newChild.element === this.element.children[i]) {
+                                    void targetChildren.push(newChild);
+                                } else {
+                                    if (newChild.element.parentElement !== this.element) {
+                                        void this.scope(newChild);
+                                        void addedChildren.add(newChild);
+                                    }
+                                    void this.element.insertBefore(newChild.element, this.element.children[i]);
+                                    void targetChildren.push(newChild);
                                 }
-                                void this.element_.insertBefore(child.element, this.element_.childNodes[i]);
-                            });
-                            while (this.element_.childNodes.length > sourceChildren.length) {
-                                void removedNodes.add(this.element_.removeChild(this.element_.childNodes[sourceChildren.length]));
                             }
                             void Object.freeze(targetChildren);
+                            for (let i = this.element.children.length; i >= sourceChildren.length; --i) {
+                                if (!memory.has(this.element.children[i]))
+                                    continue;
+                                void removedChildren.add(proxy(this.element.removeChild(this.element.children[i])));
+                            }
                             break;
                         }
                     case ElChildrenType.Record: {
                             const sourceChildren = children;
                             const targetChildren = this.children_;
-                            const mem = new WeakSet();
-                            void Object.keys(targetChildren).forEach(k => {
-                                const oldChild = targetChildren[k];
-                                const newChild = sourceChildren[k];
+                            const log = new WeakSet();
+                            for (const name in targetChildren) {
+                                const oldChild = targetChildren[name];
+                                const newChild = sourceChildren[name];
                                 if (!newChild)
-                                    return;
-                                if (newChild.element_.parentElement !== this.element_) {
+                                    continue;
+                                if (newChild.element.parentElement !== this.element) {
                                     void throwErrorIfNotUsable(newChild);
                                 }
-                                if (mem.has(newChild.element_))
+                                if (log.has(newChild))
                                     throw new Error(`TypedDOM: Cannot use an element again used in the same record.`);
-                                void mem.add(newChild.element_);
-                                if (oldChild.element_ !== newChild.element_ || this.initialChildren.has(oldChild.element_)) {
+                                void log.add(newChild);
+                                if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
                                     void this.scope(newChild);
-                                    void addedNodes.add(newChild.element_);
-                                    void removedNodes.add(oldChild.element_);
+                                    void addedChildren.add(newChild);
+                                    void removedChildren.add(oldChild);
                                 }
-                                targetChildren[k] = sourceChildren[k];
-                            });
+                                targetChildren[name] = sourceChildren[name];
+                            }
                             break;
                         }
                     }
-                    void removedNodes.forEach(node => !this.initialChildren.has(node) && void node.dispatchEvent(new Event('disconnect', {
-                        bubbles: false,
-                        cancelable: true
-                    })));
-                    void addedNodes.forEach(node => void node.dispatchEvent(new Event('connect', {
-                        bubbles: false,
-                        cancelable: true
-                    })));
-                    void this.element_.dispatchEvent(new Event('change', {
+                    for (const child of removedChildren) {
+                        if (this.initialChildren.has(child))
+                            continue;
+                        void child.element.dispatchEvent(new Event('disconnect', {
+                            bubbles: false,
+                            cancelable: true
+                        }));
+                    }
+                    for (const child of addedChildren) {
+                        void child.element.dispatchEvent(new Event('connect', {
+                            bubbles: false,
+                            cancelable: true
+                        }));
+                    }
+                    removedChildren.size + addedChildren.size > 0 && void this.element.dispatchEvent(new Event('change', {
                         bubbles: false,
                         cancelable: true
                     }));
@@ -657,7 +683,7 @@ require = function () {
             }
             exports.El = El;
             function throwErrorIfNotUsable({element}) {
-                if (element.parentElement === null || !memory.has(element.parentElement))
+                if (!element.parentElement || !memory.has(element.parentElement))
                     return;
                 throw new Error(`TypedDOM: Cannot add an element used in another typed dom.`);
             }
@@ -671,16 +697,6 @@ require = function () {
         function (require, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function observer(factory, callback, opts = { childList: true }) {
-                return (tag, ...args) => {
-                    const obs = new MutationObserver(callback);
-                    const el = factory(tag);
-                    void obs.observe(el, opts);
-                    void define(el, ...args);
-                    return el;
-                };
-            }
-            exports.observer = observer;
             var cache;
             (function (cache) {
                 cache.elem = new Map();
@@ -2224,18 +2240,18 @@ require = function () {
             const memoization_1 = require('spica/memoization');
             const typed_dom_1 = require('typed-dom');
             const opener = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`));
-            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.fmap(combinator_1.inits([
+            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist_,
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? [typed_dom_1.define(el, {
-                        class: 'invalid',
-                        'data-invalid-syntax': 'listitem',
-                        'data-invalid-type': 'content'
-                    }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))] : [el])])), es => [typed_dom_1.html('ol', {
+                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? !!typed_dom_1.define(el, {
+                    class: 'invalid',
+                    'data-invalid-syntax': 'listitem',
+                    'data-invalid-type': 'content'
+                }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.'))) : true)])), es => [typed_dom_1.html('ol', {
                     start: index,
                     type: type(index)
                 }, es)]))));
@@ -2408,18 +2424,18 @@ require = function () {
             const concat_1 = require('spica/concat');
             const typed_dom_1 = require('typed-dom');
             const opener = /^-(?:\s|$)/;
-            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.fmap(combinator_1.inits([
+            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(opener, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist_,
                         olist_1.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? [typed_dom_1.define(el, {
-                        class: 'invalid',
-                        'data-invalid-syntax': 'listitem',
-                        'data-invalid-type': 'content'
-                    }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))] : [el])]))), es => [typed_dom_1.html('ul', es)])));
+                ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? !!typed_dom_1.define(el, {
+                    class: 'invalid',
+                    'data-invalid-syntax': 'listitem',
+                    'data-invalid-type': 'content'
+                }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.'))) : true)]))), es => [typed_dom_1.html('ul', es)])));
             exports.ulist_ = combinator_1.convert(source => source.replace(/^-(?=\n|$)/, `$& `), exports.ulist);
             function fillFirstLine(ns) {
                 return ns[0] instanceof HTMLUListElement || ns[0] instanceof HTMLOListElement ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
@@ -2904,7 +2920,7 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             exports.data = combinator_1.lazy(() => combinator_1.fmap(combinator_1.surround('[~', combinator_1.inits([
                 combinator_1.focus(/^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?/, util_1.defrag(combinator_1.some(unescapable_1.unescsource))),
-                combinator_1.surround('|', combinator_1.union([util_1.defrag(combinator_1.some(inline_1.inline, ']'))]), '', false)
+                combinator_1.surround('|', util_1.defrag(combinator_1.some(inline_1.inline, ']')), '', false)
             ]), ']'), ([data, ...ns]) => [typed_dom_1.html('span', attr(data.textContent), ns)]));
             function attr(data) {
                 const name = data.split('=', 1)[0];
