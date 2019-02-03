@@ -4,7 +4,7 @@ import { block } from '../block';
 import { normalize } from './normalization';
 
 export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement> {
-  type Pair = [string, HTMLElement[]];
+  type Pair = [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   let revision: symbol;
   return function* (source: string): Iterable<HTMLElement> {
