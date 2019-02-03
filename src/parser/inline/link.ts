@@ -5,10 +5,10 @@ import { attribute, attrs as attrs_ } from './html';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink, memoize } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
-import { DeepReadonly } from 'spica/type';
+import { DeepImmutable } from 'spica/type';
 import { html, text, frag, define } from 'typed-dom';
 
-export const attributes: DeepReadonly<Record<string, Array<string | undefined>>> = {
+export const attributes: DeepImmutable<Record<string, Array<string | undefined>>> = {
   nofollow: [undefined],
 };
 
@@ -83,7 +83,7 @@ export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() =
 ])));
 
 export function attrs(
-  spec: DeepReadonly<Record<string, ReadonlyArray<string | undefined>>> | undefined,
+  spec: DeepImmutable<Record<string, Array<string | undefined>>> | undefined,
   params: string[],
   classes: Set<string>,
   syntax: string,

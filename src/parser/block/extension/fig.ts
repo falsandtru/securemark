@@ -20,7 +20,7 @@ export const segment: FigureParser = block(
       seg_example,
       some(contentline),
     ]),
-  ]));
+  ])) as any;
 
 export const fig: FigureParser = block(rewrite(segment, source => {
   const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || [])

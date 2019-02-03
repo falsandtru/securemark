@@ -38,7 +38,7 @@ export const segment: FigureParser = block(match(
           ]),
         ]),
       ]),
-      closer))));
+      closer)))) as any;
 
 export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
   convert(

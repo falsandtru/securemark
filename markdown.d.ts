@@ -229,7 +229,7 @@ export namespace MarkdownParser {
         Block<'extension/figure'>,
         Parser<HTMLElement, [
           InlineParser.ExtensionParser.LabelParser,
-          Parser<HTMLElement, [
+          Parser<HTMLElement | Text, [
             FigureParser.ContentParser,
             SourceParser.EmptyLineParser,
             FigureParser.CaptionParser,

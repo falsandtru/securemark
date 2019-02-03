@@ -1,5 +1,5 @@
 ﻿import { OListParser, ListItemParser } from '../block';
-import { union, inits, some, block, line, surround, match, convert, indent, trim, fmap, eval } from '../../combinator';
+import { union, inits, some, block, line, verify, surround, match, convert, indent, trim, fmap, eval } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
@@ -13,17 +13,17 @@ export const olist: OListParser = block(match(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
   memoize(([, index]) => index,
   index =>
-    fmap<OListParser>(
+    fmap(
       some(union([
-        fmap(fmap(
-          inits<ListItemParser>([
+        verify(fmap<ListItemParser>(
+          inits([
             line(surround(opener(pattern(type(index))), defrag(trim(some(inline))), '', false)),
             indent(union([ulist_, olist_, ilist_]))
           ]),
           ns => [html('li', fillFirstLine(ns))]),
           ([el]) => hasMedia(el)
-            ? [define(el, { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' }, eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))]
-            : [el])
+            ? !!define(el, { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' }, eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))
+            : true)
       ])),
       es => [html('ol', { start: index, type: type(index) }, es)]))));
 

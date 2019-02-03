@@ -1,8 +1,8 @@
 ﻿import { ExtensionParser, inline } from '../../inline';
-import { union, inits, some, focus, surround, fmap, lazy } from '../../../combinator';
+import { inits, some, focus, surround, fmap, lazy } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { defrag } from '../../util';
-import { DeepReadonly } from 'spica/type';
+import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
 
 import DataParser = ExtensionParser.DataParser;
@@ -16,7 +16,7 @@ export const data: DataParser = lazy(() => fmap(
         defrag(some(unescsource))),
       surround(
         '|',
-        union([defrag(some(inline, ']'))]),
+        defrag(some(inline, ']')),
         '',
         false),
     ]),
@@ -24,7 +24,7 @@ export const data: DataParser = lazy(() => fmap(
   ([data, ...ns]) =>
     [html('span', attr(data.textContent!), ns)]));
 
-function attr(data: string): DeepReadonly<Record<string, string>> {
+function attr(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');
   const name = data.split('=', 1)[0];
   const value = data.slice(name.length + 1);
