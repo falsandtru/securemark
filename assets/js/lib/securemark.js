@@ -1242,19 +1242,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function eval_(result, default_ = []) {
-                return (result || [default_])[0];
+                return result ? result[0] : default_;
             }
             exports.eval = eval_;
             function exec(result, default_ = '') {
-                return (result || [
-                    [],
-                    default_
-                ])[1];
+                return result ? result[1] : default_;
             }
             exports.exec = exec;
             function validate(source, result) {
-                if (!result)
-                    return true;
                 return true;
             }
             exports.validate = validate;
@@ -1587,17 +1582,17 @@ require = function () {
             const mathblock_1 = require('../block/mathblock');
             const extension_1 = require('../block/extension');
             const line_1 = require('../source/line');
+            const parser = combinator_1.union([
+                codeblock_1.segment,
+                mathblock_1.segment,
+                extension_1.segment,
+                combinator_1.some(line_1.contentline),
+                combinator_1.some(line_1.blankline)
+            ]);
             function segment(source) {
                 const segments = [];
                 while (source.length > 0) {
-                    const result = combinator_1.union([
-                        codeblock_1.segment,
-                        mathblock_1.segment,
-                        extension_1.segment,
-                        combinator_1.some(line_1.contentline),
-                        combinator_1.some(line_1.blankline)
-                    ])(source);
-                    const rest = combinator_1.exec(result);
+                    const rest = combinator_1.exec(parser(source));
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
                 }
