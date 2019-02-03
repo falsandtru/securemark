@@ -1456,7 +1456,11 @@ require = function () {
                         if (cs[cs.length - j - 1] !== ns[ns.length - j - 1])
                             break;
                     }
-                    void pairs.splice(i, pairs.length - j - i).forEach(([, es]) => void es.forEach(el => void el.remove()));
+                    for (const [, es] of pairs.splice(i, pairs.length - j - i)) {
+                        for (const el of es) {
+                            void el.remove();
+                        }
+                    }
                     const [, [ref = bottom()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
                     for (const [seg, k] of ns.slice(i, ns.length - j).map((seg, k) => [
                             seg,
@@ -2340,7 +2344,9 @@ require = function () {
                 function align() {
                     const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || '']), []);
                     void align(head, extend(aligns.slice(0, 2), head.children.length));
-                    void rows.forEach(row => void align(row, extend(aligns, row.children.length)));
+                    for (const row of rows) {
+                        void align(row, extend(aligns, row.children.length));
+                    }
                     return;
                     function extend(aligns, size) {
                         return size > aligns.length ? concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : aligns;
@@ -2949,7 +2955,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const index_1 = require('./index');
             const typed_dom_1 = require('typed-dom');
-            exports.indexer = combinator_1.lazy(() => combinator_1.line(combinator_1.fmap(combinator_1.surround(/^\s+(?=\[#)/, combinator_1.trim(combinator_1.union([index_1.index])), /^(?=\s*$)/), ([el]) => [typed_dom_1.html('small', {
+            exports.indexer = combinator_1.lazy(() => combinator_1.line(combinator_1.fmap(combinator_1.surround(/^\s+(?=\[#)/, combinator_1.trim(combinator_1.union([index_1.index])), /^(?=\s*$)/), ([el]) => [typed_dom_1.html('span', {
                     class: 'indexer',
                     'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                 })])));
@@ -2962,7 +2968,9 @@ require = function () {
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
-                void target.querySelectorAll('code[data-src], .math[data-src]').forEach(el => void typed_dom_1.define(el, el.getAttribute('data-src')));
+                for (const el of target.querySelectorAll('code[data-src], .math[data-src]')) {
+                    void typed_dom_1.define(el, el.getAttribute('data-src'));
+                }
                 return target.textContent.trim();
             }
             exports.text = text;
@@ -3259,7 +3267,9 @@ require = function () {
             ])));
             function attrs(spec, params, classes, syntax) {
                 const attrs = html_1.attrs(spec, params, classes, syntax);
-                void ['nofollow'].forEach(name => attrs[name] = undefined);
+                for (const name of ['nofollow']) {
+                    attrs[name] = undefined;
+                }
                 return attrs;
             }
             exports.attrs = attrs;
@@ -3459,13 +3469,15 @@ require = function () {
             const typed_dom_1 = require('typed-dom');
             function localize(block) {
                 return combinator_1.fmap(block, es => {
-                    void es.forEach(el => void el.querySelectorAll('.linebreak').forEach(el => {
-                        if (!el.firstChild || el.firstElementChild)
-                            return;
-                        if (!check(el))
-                            return;
-                        void el.replaceChild(typed_dom_1.html('wbr'), el.firstChild);
-                    }));
+                    for (const block of es) {
+                        for (const el of block.querySelectorAll('.linebreak')) {
+                            if (!el.firstChild || el.firstElementChild)
+                                continue;
+                            if (!check(el))
+                                continue;
+                            void el.replaceChild(typed_dom_1.html('wbr'), el.firstChild);
+                        }
+                    }
                     return es;
                 });
             }
@@ -3870,18 +3882,24 @@ require = function () {
             }
             exports.stringify = stringify;
             function suppress(el) {
-                void [...el.children].filter(el => !el.matches('blockquote, .example')).forEach(el => {
-                    if (el.matches('[id]')) {
+                for (const child of [...el.children].filter(child => !child.matches('blockquote, .example'))) {
+                    if (child.matches('[id]')) {
+                        void child.removeAttribute('id');
+                    }
+                    if (child.matches('figure[data-label]:not([data-index])') && !inline_1.isFixed(child.getAttribute('data-label'))) {
+                        void child.setAttribute('data-label', child.getAttribute('data-label').split('-')[0] + '-0');
+                    }
+                    if (child.matches('figure')) {
+                        void suppress(child.lastElementChild);
+                        continue;
+                    }
+                    for (const el of child.querySelectorAll('[id]')) {
                         void el.removeAttribute('id');
                     }
-                    if (el.matches('figure[data-label]:not([data-index])') && !inline_1.isFixed(el.getAttribute('data-label'))) {
-                        void el.setAttribute('data-label', el.getAttribute('data-label').split('-')[0] + '-0');
+                    for (const el of child.querySelectorAll('a[href^="#"]')) {
+                        void el.setAttribute('onclick', 'return false;');
                     }
-                    if (el.matches('figure'))
-                        return void suppress(el.lastElementChild);
-                    void el.querySelectorAll('[id]').forEach(el => void el.removeAttribute('id'));
-                    void el.querySelectorAll('a[href^="#"]').forEach(el => void el.setAttribute('onclick', 'return false;'));
-                });
+                }
                 return el;
             }
             exports.suppress = suppress;
@@ -3946,7 +3964,10 @@ require = function () {
                     case target.matches('pre, .math, .graph'):
                         return;
                     default:
-                        return void target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre.code, .graph, .math').forEach(el => void render(el, opts));
+                        for (const el of target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre.code, .graph, .math')) {
+                            void render(el, opts);
+                        }
+                        return;
                     }
                 } catch (reason) {
                     console.error(reason);
@@ -4497,16 +4518,17 @@ require = function () {
                 let base = '0';
                 const indexes = new Map();
                 const exclusions = new Set();
-                return void source.querySelectorAll('figure[data-label][data-group], h2[id]').forEach(fig => {
+                for (let fig of source.querySelectorAll('figure[data-label][data-group], h2[id]')) {
                     if (fig.matches('h2')) {
                         if (base === '0')
-                            return;
+                            continue;
                         fig = api_1.parse(`[:$-${ +base.split('.')[0] + 1 }.0]\n$$\n$$`).querySelector('figure');
                     }
                     if (fig.matches('.example figure'))
-                        return;
+                        continue;
                     if (fig.parentElement !== source && fig.parentElement instanceof HTMLQuoteElement) {
-                        return exclusions.has(fig.parentElement) ? undefined : void exclusions.add(fig.parentElement) || void figure(fig.parentElement);
+                        exclusions.has(fig.parentElement) ? undefined : void exclusions.add(fig.parentElement) || void figure(fig.parentElement);
+                        continue;
                     }
                     const label = fig.getAttribute('data-label');
                     const group = fig.getAttribute('data-group');
@@ -4520,13 +4542,15 @@ require = function () {
                     const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
                     if (fig.matches('blockquote *'))
-                        return;
+                        continue;
                     if (idx.endsWith('.0'))
-                        return;
+                        continue;
                     void fig.setAttribute('id', `label:${ label.split('-', 1)[0] }-${ idx }`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    void source.querySelectorAll(`a.label[data-label="${ query.replace(/[:$.]/g, '\\$&') }"]`).forEach(ref => void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, '')));
-                });
+                    for (const ref of source.querySelectorAll(`a.label[data-label="${ query.replace(/[:$.]/g, '\\$&') }"]`)) {
+                        void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, ''));
+                    }
+                }
             }
             exports.figure = figure;
             function capitalize(label) {
