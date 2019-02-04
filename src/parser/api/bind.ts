@@ -45,7 +45,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
       void ++position;
       if (skip) continue;
       base = base === undefined
-        ? bottom(start) || target.firstChild
+        ? bottom(start, position) || target.firstChild
         : base;
       assert(elements.length < 2);
       for (const el of elements) {
@@ -66,11 +66,11 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     assert(pairs.length === sourceSegments.length);
   };
 
-  function bottom(start: number): Node | null {
+  function bottom(start: number, position: number): Node | null {
     assert(start <= pairs.length);
     if (pairs.length === 0) return null;
     if (start === pairs.length) {
-      const el = bottom(pairs.length - 1);
+      const el = bottom(pairs.length - 1, position);
       return el && el.nextSibling;
     }
     for (let i = start; i >= 0 && i < pairs.length; --i) {
@@ -79,6 +79,14 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         const el = es[i];
         if (el.parentNode !== target) continue;
         return el.nextSibling;
+      }
+    }
+    for (let i = position; i < pairs.length; ++i) {
+      const [, es] = pairs[i];
+      for (let i = 0; i < es.length; ++i) {
+        const el = es[i];
+        if (el.parentNode !== target) continue;
+        return el;
       }
     }
     return null;
