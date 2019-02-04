@@ -24,7 +24,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     }
     assert(end <= targetSegments.length);
     assert(start + end <= targetSegments.length);
-    let base = bottom(start) || target.firstChild;
+    let base: Node | null | undefined;
     let position = start;
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(revision === rev);
@@ -36,7 +36,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         for (const el of es) {
           if (!el.parentNode) continue;
           assert(el.parentNode === target);
-          assert(el === base);
+          assert(el === base || base === undefined);
           base = el.nextSibling;
           if (skip) continue;
           void el.remove();
@@ -44,6 +44,9 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
       }
       void ++position;
       if (skip) continue;
+      base = base === undefined
+        ? bottom(start) || target.firstChild
+        : base;
       assert(elements.length < 2);
       for (const el of elements) {
         assert(revision === rev);
@@ -75,7 +78,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
       for (let i = es.length - 1; i >= 0; --i) {
         const el = es[i];
         if (el.parentNode !== target) continue;
-        return el;
+        return el.nextSibling;
       }
     }
     return null;
