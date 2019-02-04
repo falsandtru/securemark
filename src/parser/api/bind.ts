@@ -28,7 +28,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     let position = start;
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(revision === rev);
-      const skip = pairs.length > position && segment === pairs[position][0];
+      const skip = position < pairs.length && segment === pairs[position][0];
       const elements = skip
         ? pairs[position][1]
         : eval(block(segment));
