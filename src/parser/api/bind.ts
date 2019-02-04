@@ -31,8 +31,10 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
       const elements = eval(block(segment));
       for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
-          base = el.nextSibling;
           if (!el.parentNode) continue;
+          assert(el.parentNode === target);
+          assert(el === base);
+          base = el.nextSibling;
           void el.remove();
         }
       }
@@ -48,6 +50,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     for (const [, es] of pairs.splice(position, pairs.length - position - end)) {
       for (const el of es) {
         if (!el.parentNode) continue;
+        assert(el.parentNode === target);
         void el.remove();
       }
     }
