@@ -28,16 +28,22 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     let position = start;
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(revision === rev);
-      const elements = eval(block(segment));
+      const skip = pairs.length > position && segment === pairs[position][0];
+      const elements = skip
+        ? pairs[position][1]
+        : eval(block(segment));
       for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
           if (!el.parentNode) continue;
           assert(el.parentNode === target);
           assert(el === base);
           base = el.nextSibling;
+          if (skip) continue;
           void el.remove();
         }
       }
+      void ++position;
+      if (skip) continue;
       assert(elements.length < 2);
       for (const el of elements) {
         assert(revision === rev);
@@ -45,7 +51,6 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         yield el;
         if (revision !== rev) throw new Error(`Reentered.`);
       }
-      void ++position;
     }
     for (const [, es] of pairs.splice(position, pairs.length - position - end)) {
       for (const el of es) {

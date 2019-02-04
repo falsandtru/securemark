@@ -46,7 +46,7 @@ describe('Unit: parser/api/bind', () => {
       assert.deepStrictEqual(inspect(update('9\n\n5\n\n1\n\n')), ['<p>5</p>']);
       assert(el.innerHTML === '<p>9</p><p>5</p><p>1</p><ol></ol>');
       // change segments at the both ends 
-      assert.deepStrictEqual(inspect(update('1\n\n5\n\n9\n\n')), ['<p>1</p>', '<p>5</p>', '<p>9</p>']);
+      assert.deepStrictEqual(inspect(update('1\n\n5\n\n9\n\n')), ['<p>1</p>', '<p>9</p>']);
       assert(el.innerHTML === '<p>1</p><p>5</p><p>9</p><ol></ol>');
       // insert
       assert.deepStrictEqual(inspect(update('1\n\n2\n\n3\n\n9\n\n')), ['<p>2</p>', '<p>3</p>']);
