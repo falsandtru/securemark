@@ -1467,28 +1467,37 @@ require = function () {
                         if (targetSegments[targetSegments.length - end - 1] !== sourceSegments[sourceSegments.length - end - 1])
                             break;
                     }
-                    let base = bottom(start) || target.firstChild;
+                    let base;
                     let position = start;
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
-                        const elements = combinator_1.eval(block_1.block(segment));
-                        for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [
+                        const skip = pairs.length > position && segment === pairs[position][0];
+                        const elements = skip ? pairs[position][1] : combinator_1.eval(block_1.block(segment));
+                        for (const [, es] of position < pairs.length ? pairs.splice(position, position < pairs.length - end ? 1 : 0, [
                                 segment,
                                 elements
-                            ])) {
+                            ]) : void pairs.push([
+                                segment,
+                                elements
+                            ]) || []) {
                             for (const el of es) {
-                                base = el.nextSibling;
                                 if (!el.parentNode)
+                                    continue;
+                                base = el.nextSibling;
+                                if (skip)
                                     continue;
                                 void el.remove();
                             }
                         }
+                        void ++position;
+                        if (skip)
+                            continue;
+                        base = base === undefined ? bottom(start, position) || target.firstChild : base;
                         for (const el of elements) {
                             base = target.insertBefore(el, base).nextSibling;
                             yield el;
                             if (revision !== rev)
                                 throw new Error(`Reentered.`);
                         }
-                        void ++position;
                     }
                     for (const [, es] of pairs.splice(position, pairs.length - position - end)) {
                         for (const el of es) {
@@ -1498,16 +1507,25 @@ require = function () {
                         }
                     }
                 };
-                function bottom(start) {
+                function bottom(start, position) {
                     if (pairs.length === 0)
                         return null;
                     if (start === pairs.length) {
-                        const el = bottom(pairs.length - 1);
+                        const el = bottom(pairs.length - 1, position);
                         return el && el.nextSibling;
                     }
                     for (let i = start; i >= 0 && i < pairs.length; --i) {
                         const [, es] = pairs[i];
                         for (let i = es.length - 1; i >= 0; --i) {
+                            const el = es[i];
+                            if (el.parentNode !== target)
+                                continue;
+                            return el.nextSibling;
+                        }
+                    }
+                    for (let i = position; i < pairs.length; ++i) {
+                        const [, es] = pairs[i];
+                        for (let i = 0; i < es.length; ++i) {
                             const el = es[i];
                             if (el.parentNode !== target)
                                 continue;
