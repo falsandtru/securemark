@@ -1470,7 +1470,7 @@ require = function () {
                     let base;
                     let position = start;
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
-                        const skip = pairs.length > position && segment === pairs[position][0];
+                        const skip = position < pairs.length && segment === pairs[position][0];
                         const elements = skip ? pairs[position][1] : combinator_1.eval(block_1.block(segment));
                         for (const [, es] of position < pairs.length ? pairs.splice(position, position < pairs.length - end ? 1 : 0, [
                                 segment,
