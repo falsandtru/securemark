@@ -1453,53 +1453,68 @@ require = function () {
                 return function* (source) {
                     source = normalization_1.normalize(source);
                     const rev = revision = Symbol();
-                    const cs = pairs.map(([s]) => s);
-                    if (source === cs.join(''))
+                    const targetSegments = pairs.map(([seg]) => seg);
+                    if (source === targetSegments.join(''))
                         return;
-                    const ns = segment_1.segment(source);
-                    let i = 0;
-                    for (; i < cs.length; ++i) {
-                        if (cs[i] !== ns[i])
+                    const sourceSegments = segment_1.segment(source);
+                    let start = 0;
+                    for (; start < targetSegments.length; ++start) {
+                        if (targetSegments[start] !== sourceSegments[start])
                             break;
                     }
-                    let j = 0;
-                    for (; i + j < cs.length && i + j < ns.length; ++j) {
-                        if (cs[cs.length - j - 1] !== ns[ns.length - j - 1])
+                    let end = 0;
+                    for (; start + end < targetSegments.length && start + end < sourceSegments.length; ++end) {
+                        if (targetSegments[targetSegments.length - end - 1] !== sourceSegments[sourceSegments.length - end - 1])
                             break;
                     }
-                    for (const [, es] of pairs.splice(i, pairs.length - j - i)) {
-                        for (const el of es) {
-                            void el.remove();
+                    let base = bottom(start) || target.firstChild;
+                    let position = start;
+                    for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
+                        const elements = combinator_1.eval(block_1.block(segment));
+                        for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [
+                                segment,
+                                elements
+                            ])) {
+                            for (const el of es) {
+                                base = el.nextSibling;
+                                if (!el.parentNode)
+                                    continue;
+                                void el.remove();
+                            }
                         }
-                    }
-                    const [, [ref = bottom()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
-                    for (const [seg, k] of ns.slice(i, ns.length - j).map((seg, k) => [
-                            seg,
-                            i + k
-                        ])) {
-                        const es = combinator_1.eval(block_1.block(seg));
-                        void pairs.splice(k, 0, [
-                            seg,
-                            es
-                        ]);
-                        for (const el of es) {
-                            void target.insertBefore(el, ref);
+                        for (const el of elements) {
+                            base = target.insertBefore(el, base).nextSibling;
                             yield el;
                             if (revision !== rev)
                                 throw new Error(`Reentered.`);
                         }
+                        void ++position;
+                    }
+                    for (const [, es] of pairs.splice(position, pairs.length - position - end)) {
+                        for (const el of es) {
+                            if (!el.parentNode)
+                                continue;
+                            void el.remove();
+                        }
                     }
                 };
-                function bottom() {
+                function bottom(start) {
                     if (pairs.length === 0)
-                        return target.firstChild;
-                    for (let i = pairs.length - 1; i >= 0; --i) {
-                        const [, es] = pairs[i];
-                        if (es.length === 0)
-                            continue;
-                        return es[es.length - 1].nextSibling;
+                        return null;
+                    if (start === pairs.length) {
+                        const el = bottom(pairs.length - 1);
+                        return el && el.nextSibling;
                     }
-                    return target.firstChild;
+                    for (let i = start; i >= 0 && i < pairs.length; --i) {
+                        const [, es] = pairs[i];
+                        for (let i = es.length - 1; i >= 0; --i) {
+                            const el = es[i];
+                            if (el.parentNode !== target)
+                                continue;
+                            return el;
+                        }
+                    }
+                    return null;
                 }
             }
             exports.bind = bind;
