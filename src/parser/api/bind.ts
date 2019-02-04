@@ -21,13 +21,16 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
     for (; i + j < cs.length && i + j < ns.length; ++j) {
       if (cs[cs.length - j - 1] !== ns[ns.length - j - 1]) break;
     }
+    const [, [ref = bottom()] = []] = pairs.slice(pairs.length - j)
+      .find(([, [el = undefined]]) => !!el && !!el.parentNode) || [];
     for (const [, es] of pairs.splice(i, pairs.length - j - i)) {
       for (const el of es) {
-        void el.remove();
+        if (el.parentNode !== target) continue;
+        void target.removeChild(el);
       }
     }
-    const [, [ref = bottom()] = []] = pairs.slice(i).find(([, [el]]) => !!el) || [];
-    for (const [seg, k] of ns.slice(i, ns.length - j).map<[string, number]>((seg, k) => [seg, i + k])) {
+    let k = i;
+    for (const seg of ns.slice(i, ns.length - j)) {
       assert(revision === rev);
       const es = eval(block(seg));
       void pairs.splice(k, 0, [seg, es]);
@@ -38,16 +41,19 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         yield el;
         if (revision !== rev) throw new Error(`Reentered.`);
       }
+      void ++k;
     }
     assert(revision === rev);
+    assert(pairs.length === ns.length);
   };
 
   function bottom(): Node | null {
-    if (pairs.length === 0) return target.firstChild;
-    for (let i = pairs.length - 1; i >= 0; --i) {
+    for (let i = pairs.length - 1; i >= 0 && i < pairs.length; --i) {
       const [, es] = pairs[i];
-      if (es.length === 0) continue;
-      return es[es.length - 1].nextSibling;
+      for (let j = es.length - 1; j >= 0; --j) {
+        const el = es[j];
+        if (el.parentNode === target) return el.nextSibling;
+      }
     }
     return target.firstChild;
   }
