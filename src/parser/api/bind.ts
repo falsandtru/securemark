@@ -32,7 +32,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
       const elements = skip
         ? pairs[position][1]
         : eval(block(segment));
-      for (const [, es] of position < pairs.length ? pairs.splice(position, position < pairs.length - end ? 1 : 0, [segment, elements]) : void pairs.push([segment, elements]) || []) {
+      for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
           if (!el.parentNode) continue;
           assert(el.parentNode === target);
@@ -52,7 +52,7 @@ export function bind(target: DocumentFragment | HTMLElement): (source: string) =
         assert(revision === rev);
         base = target.insertBefore(el, base).nextSibling;
         yield el;
-        if (revision !== rev) throw new Error(`Reentered.`);
+        if (revision !== rev) throw new Error(`Abort by reentering.`);
       }
     }
     for (const [, es] of pairs.splice(position, pairs.length - position - end)) {
