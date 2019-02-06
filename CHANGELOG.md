@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.104.0
+
+- Allow reference syntax to use all ASCII characters.
+
 ## 0.103.4
 
 - Micro refactoring.
