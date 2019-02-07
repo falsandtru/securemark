@@ -1,7 +1,7 @@
 ﻿import { parse } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
-import DOM, { html, define } from 'typed-dom';
+import { HTML, html, define } from 'typed-dom';
 
 const origins = new Set([
   'https://gist.github.com',
@@ -11,7 +11,7 @@ export function gist(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/[\w\-]+?\/\w{32}(?!\w)/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
-  return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {
+  return HTML.div({ style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (f, tag) => {
     const outer = f(tag);
     void $.ajax(`${url.href}.json`, {
       dataType: 'jsonp',
@@ -23,7 +23,7 @@ export function gist(url: URL): HTMLElement | undefined {
         const gist = outer.querySelector('.gist')! as HTMLElement;
         void gist.insertBefore(
           html('div', { class: 'gist-description' }, [
-            DOM.a({ style: 'color: #555; font-weight: 600;' }, description, () =>
+            HTML.a({ style: 'color: #555; font-weight: 600;' }, description, () =>
               parse(`{ ${url.href} }`).querySelector('a')!).element,
           ]),
           gist.firstChild);

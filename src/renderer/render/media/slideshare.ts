@@ -1,7 +1,7 @@
 ﻿import { parse } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
-import DOM, { define } from 'typed-dom';
+import { HTML, define } from 'typed-dom';
 
 const origins = new Set([
   'https://www.slideshare.net',
@@ -11,7 +11,7 @@ export function slideshare(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
-  return DOM.div({ style: 'position: relative;' }, [DOM.em(`loading ${url.href}`)], (f, tag) => {
+  return HTML.div({ style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (f, tag) => {
     const outer = f(tag);
     void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${url.href}&format=json`, {
       dataType: 'jsonp',
