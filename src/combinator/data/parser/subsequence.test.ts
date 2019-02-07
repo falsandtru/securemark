@@ -14,18 +14,26 @@ describe('Unit: combinator/subsequence', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     }
-    const ab = subsequence<Parser<string, [typeof a, typeof b]>>([a, b]);
+    const c: Parser<string, never> = (source: string): Result<string, never> => {
+      return source && source[0] === 'c'
+        ? [['C'], source.slice(1)]
+        : undefined;
+    }
+    const abc = subsequence<Parser<string, [typeof a, typeof b, typeof c]>>([a, b, c]);
 
     it('basic', () => {
-      const parser = ab;
+      const parser = abc;
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('a')), [['A'], '']);
       assert.deepStrictEqual(inspect(parser('b')), [['B'], '']);
+      assert.deepStrictEqual(inspect(parser('c')), [['C'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['A', 'B'], '']);
       assert.deepStrictEqual(inspect(parser('ba')), [['B'], 'a']);
       assert.deepStrictEqual(inspect(parser('aab')), [['A'], 'ab']);
       assert.deepStrictEqual(inspect(parser('abb')), [['A', 'B'], 'b']);
       assert.deepStrictEqual(inspect(parser('bba')), [['B'], 'ba']);
+      assert.deepStrictEqual(inspect(parser('ac')), [['A', 'C'], '']);
+      assert.deepStrictEqual(inspect(parser('bc')), [['B', 'C'], '']);
     });
 
   });
