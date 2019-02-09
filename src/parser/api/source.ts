@@ -9,13 +9,17 @@ export function breaklines(source: string): string {
   return [...parse(source).children]
     .map<string>(el => {
       if (el instanceof HTMLParagraphElement === false) return sources.get(el)!;
-      const breaks = [...el.querySelectorAll<HTMLElement>('br, .linebreak, .comment')]
-        .reduce<Element[]>((acc, el) =>
-          concat(acc,
-            el.matches('.comment')
-              ? Array<Element>(el.title.split('\n').length - 1).fill(el)
-              : [el])
-        , []);
+      const breaks = [...el.querySelectorAll<HTMLElement>('.address, .quote, br, .linebreak, .comment')]
+        .reduce<Element[]>((acc, el) => {
+          switch (true) {
+            case el.matches('.quote'):
+              return concat(acc, Array<Element>(el.textContent!.split('\n').length).fill(el));
+            case el.matches('.comment'):
+              return concat(acc, Array<Element>(el.title.split('\n').length - 1).fill(el));
+            default:
+              return concat(acc, [el]);
+          }
+        }, []);
       return sources.get(el)!
         .split('\n')
         .map((line, i) =>

@@ -23,21 +23,24 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser(' a')), [['<p>a</p>'], '']);
     });
 
-    it('reference', () => {
-      assert.deepStrictEqual(inspect(parser('>a')), [['<p><a class="reference" rel="noopener" data-level="1">&gt;a</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a ')), [['<p><a class="reference" rel="noopener" data-level="1">&gt;a</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n')), [['<p><a class="reference" rel="noopener" data-level="1">&gt;a</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><a class="reference" rel="noopener" data-level="1">&gt;a</a><br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n b')), [['<p><a class="reference" rel="noopener" data-level="1">&gt;a</a><br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><a class="reference" rel="noopener" data-level="1">&gt;a</a><br><a class="reference" rel="noopener" data-level="1">&gt;b</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n>b\nc')), [['<p><a class="reference" rel="noopener" data-level="1">&gt;a</a><br><a class="reference" rel="noopener" data-level="1">&gt;b</a><br>c</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>a')), [['<p><a class="reference" rel="noopener" data-level="2">&gt;&gt;a</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>a\n>b')), [['<p><a class="reference" rel="noopener" data-level="2">&gt;&gt;a</a><br><a class="reference" rel="noopener" data-level="1">&gt;b</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a b')), [[`<p><span class="invalid" data-invalid-syntax="reference" data-invalid-type="syntax">Invalid syntax: Reference: Use ASCII characters in reference syntax.</span></p>`], '']);
+    it('mention', () => {
+      assert.deepStrictEqual(inspect(parser('>a')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a b')), [[`<p>&gt;a b</p>`], '']);
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="linebreak"> </span>&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser(' >a')), [['<p>&gt;a</p>'], '']);
+
+      assert.deepStrictEqual(inspect(parser('> a')), [['<p><span class="quote">&gt; a</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('> a b')), [[`<p><span class="quote">&gt; a b</span></p>`], '']);
+      assert.deepStrictEqual(inspect(parser('a> b')), [['<p>a&gt; b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a > b')), [['<p>a &gt; b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n> b')), [['<p>a<span class="linebreak"> </span>&gt; b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser(' > a')), [['<p>&gt; a</p>'], '']);
+
+      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a><a class="address" rel="noopener" data-level="1">&gt;b</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n> b')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a><span class="quote">&gt; b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('> a\n> b')), [['<p><span class="quote">&gt; a\n&gt; b</span></p>'], '']);
     });
 
     it('comment', () => {

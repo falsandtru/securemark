@@ -21,6 +21,10 @@ describe('Unit: parser/api/source', () => {
       assert(breaklines('((a\nb))c') === '((a\nb))c');
       assert(breaklines('>a') === '>a');
       assert(breaklines('>a\nb') === '>a\nb');
+      assert(breaklines('>a\n> b') === '>a\n> b');
+      assert(breaklines('>a\n>b\nc\nd') === '>a\n>b\nc\\\nd');
+      assert(breaklines('>a\n> b\nc\nd') === '>a\n> b\nc\\\nd');
+      assert(breaklines('>a\n> b\n> c\nd\ne') === '>a\n> b\n> c\nd\\\ne');
       assert(breaklines('a\n\nb\n') === 'a\n\nb\n');
     });
 

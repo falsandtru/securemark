@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.105.0
+
+- Replace reference syntax with address syntax and quote syntax.
+
 ## 0.104.0
 
 - Allow reference syntax to use all ASCII characters.

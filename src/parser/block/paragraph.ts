@@ -1,19 +1,13 @@
 ﻿import { ParagraphParser } from '../block';
 import { subsequence, some, block, trim, fmap } from '../../combinator';
-import { reference } from './paragraph/reference';
+import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { defrag, hasContent } from '../util';
 import { html } from 'typed-dom';
 
 export const paragraph: ParagraphParser = block(fmap(
   subsequence([
-    some(reference),
+    some(mention),
     defrag(trim(some(inline))),
   ]),
-  ns => [html('p', dropTrailingLinebreak(ns))].filter(hasContent)));
-
-function dropTrailingLinebreak(ns: Node[]): Node[] {
-  return ns.length > 0 && ns[ns.length - 1] instanceof HTMLBRElement
-    ? ns.slice(0, -1)
-    : ns;
-}
+  ns => [html('p', ns)].filter(hasContent)));

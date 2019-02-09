@@ -279,20 +279,34 @@ export namespace MarkdownParser {
       // abc
       Block<'paragraph'>,
       Parser<HTMLParagraphElement, [
-        ParagraphParser.ReferenceParser,
+        ParagraphParser.MentionParser,
         InlineParser,
       ]> {
     }
     export namespace ParagraphParser {
-      export interface ReferenceParser extends
-        // >0a
-        Block<'paragraph/reference'>,
-        Parser<HTMLElement | Text, [
-          Parser<HTMLAnchorElement | HTMLBRElement, [
-            SourceParser.UnescapableSourceParser
-          ]>,
-          InlineParser,
+      export interface MentionParser extends
+        // abc
+        Block<'paragraph/mention'>,
+        Parser<HTMLElement, [
+          ParagraphParser.MentionParser.AddressParser,
+          ParagraphParser.MentionParser.QuoteParser,
         ]> {
+      }
+      export namespace MentionParser {
+        export interface AddressParser extends
+          // >0a
+          Block<'paragraph/mention/address'>,
+          Parser<HTMLAnchorElement, [
+            SourceParser.UnescapableSourceParser
+          ]> {
+        }
+        export interface QuoteParser extends
+          // > text
+          Block<'paragraph/mention/quote'>,
+          Parser<HTMLElement, [
+            AutolinkParser
+          ]> {
+        }
       }
     }
   }
