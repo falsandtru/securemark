@@ -2346,7 +2346,7 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const address_1 = require('./mention/address');
             const quote_1 = require('./mention/quote');
-            exports.mention = combinator_1.block(combinator_1.subsequence([
+            exports.mention = combinator_1.block(combinator_1.inits([
                 address_1.address,
                 combinator_1.some(quote_1.quote)
             ]), false);
