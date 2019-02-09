@@ -166,22 +166,22 @@ export namespace MarkdownParser {
       // > abc
       Block<'blockquote'>,
       Parser<HTMLQuoteElement, [
-        BlockquoteParser.TextquoteParser,
-        BlockquoteParser.SourcequoteParser,
+        BlockquoteParser.TextParser,
+        BlockquoteParser.SourceParser,
       ]> {
     }
     export namespace BlockquoteParser {
-      export interface TextquoteParser extends
-        Block<'blockquote/textquote'>,
+      export interface TextParser extends
+        Block<'blockquote/text'>,
         Parser<HTMLQuoteElement, [
-          TextquoteParser,
+          TextParser,
           AutolinkParser,
         ]> {
       }
-      export interface SourcequoteParser extends
-        Block<'blockquote/sourcequote'>,
+      export interface SourceParser extends
+        Block<'blockquote/source'>,
         Parser<HTMLQuoteElement, [
-          SourcequoteParser,
+          SourceParser,
           MarkdownParser,
         ]> {
       }

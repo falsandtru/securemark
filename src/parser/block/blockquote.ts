@@ -7,33 +7,11 @@ import { defrag, suppress } from '../util';
 import { html } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = lazy(() => block(union([
-  surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, textquote, ''),
-  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, sourcequote, ''),
+  surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, text, ''),
+  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, source, ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
-
-const textquote: BlockquoteParser.TextquoteParser = lazy(() => fmap(
-  some(union([
-    rewrite(
-      indent,
-      convert(unindent, textquote)),
-    rewrite(
-      some(contentline, opener),
-      convert(unindent, fmap(defrag(some(autolink)), ns => [html('pre', ns)]))),
-  ])),
-  ns => [html('blockquote', ns)]));
-
-const sourcequote: BlockquoteParser.SourcequoteParser = lazy(() => fmap(
-  some(union([
-    rewrite(
-      indent,
-      convert(unindent, sourcequote)),
-    rewrite(
-      some(contentline, opener),
-      convert(unindent, source => [[suppress(parse(source))], ''])),
-  ])),
-  ns => [html('blockquote', ns)]));
 
 const indent = block(surround(opener, some(contentline, /^>(?:\s|$)/), ''), false);
 
@@ -42,3 +20,25 @@ function unindent(source: string): string {
     .replace(/\n$/, '')
     .replace(/^>(?:$|\s|(?=>+(?:$|\s)))/mg, '');
 }
+
+const text: BlockquoteParser.TextParser = lazy(() => fmap(
+  some(union([
+    rewrite(
+      indent,
+      convert(unindent, text)),
+    rewrite(
+      some(contentline, opener),
+      convert(unindent, fmap(defrag(some(autolink)), ns => [html('pre', ns)]))),
+  ])),
+  ns => [html('blockquote', ns)]));
+
+const source: BlockquoteParser.SourceParser = lazy(() => fmap(
+  some(union([
+    rewrite(
+      indent,
+      convert(unindent, source)),
+    rewrite(
+      some(contentline, opener),
+      convert(unindent, source => [[suppress(parse(source))], ''])),
+  ])),
+  ns => [html('blockquote', ns)]));
