@@ -24,12 +24,12 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('mention', () => {
-      assert.deepStrictEqual(inspect(parser('>a')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a')), [['<p><a rel="noopener" class="address" data-level="1">&gt;a</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('>a b')), [[`<p>&gt;a b</p>`], '']);
-      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a><a class="address" rel="noopener" data-level="1">&gt;b</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n> b')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a><span class="quote">&gt; b</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n> b\nc')), [['<p><a class="address" rel="noopener" data-level="1">&gt;a</a><span class="quote">&gt; b</span>c</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><a rel="noopener" class="address" data-level="1">&gt;a</a>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><a rel="noopener" class="address" data-level="1">&gt;a</a><a rel="noopener" class="address" data-level="1">&gt;b</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n> b')), [['<p><a rel="noopener" class="address" data-level="1">&gt;a</a><span class="quote">&gt; b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a\n> b\nc')), [['<p><a rel="noopener" class="address" data-level="1">&gt;a</a><span class="quote">&gt; b</span>c</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="linebreak"> </span>&gt;b</p>'], '']);

@@ -297,7 +297,7 @@ export namespace MarkdownParser {
           // >0a
           Block<'paragraph/mention/address'>,
           Parser<HTMLAnchorElement, [
-            SourceParser.UnescapableSourceParser
+            InlineParser.LinkParser
           ]> {
         }
         export interface QuoteParser extends
