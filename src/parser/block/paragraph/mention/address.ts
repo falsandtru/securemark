@@ -4,7 +4,7 @@ import { link } from '../../../inline/link';
 import { define } from 'typed-dom';
 
 export const address: ParagraphParser.MentionParser.AddressParser = line(match(
-  /^(?=((>+)[a-zA-Z0-9](?:(?!\s)[\x00-\x7F])*\s*$))/,
+  /^(?=((>+)(?:[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*|https?:\/\/[^/]\S*)\s*$))/,
   ([, addr, { length: level }]) =>
     convert(
       source => `{ ${addr.slice(level).trim()} }${source.slice(addr.length)}`,

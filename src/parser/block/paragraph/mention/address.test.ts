@@ -34,6 +34,7 @@ describe('Unit: parser/block/paragraph/mention/address', () => {
       assert.deepStrictEqual(inspect(parser('>0\n>1')), [['<a rel="noopener" class="address" data-level="1">&gt;0</a>', '<a rel="noopener" class="address" data-level="1">&gt;1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>0\n>>1')), [['<a rel="noopener" class="address" data-level="1">&gt;0</a>', '<a rel="noopener" class="address" data-level="2">&gt;&gt;1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<a rel="noopener" class="address" data-level="2">&gt;&gt;0</a>', '<a rel="noopener" class="address" data-level="1">&gt;1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>https://あ')), [['<a rel="noopener" target="_blank" class="address" data-level="1">&gt;https://あ</a>'], '']);
     });
 
   });

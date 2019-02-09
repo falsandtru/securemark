@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.106.0
+
+- Allow address syntax to use URL.
+
 ## 0.105.0
 
 - Replace reference syntax with address syntax and quote syntax.
