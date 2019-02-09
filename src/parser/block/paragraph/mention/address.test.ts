@@ -29,6 +29,8 @@ describe('Unit: parser/block/paragraph/mention/address', () => {
       assert.deepStrictEqual(inspect(parser('>A')), [[`<a class="address" rel="noopener" data-level="1">&gt;A</a>`], '']);
       assert.deepStrictEqual(inspect(parser('>a/b')), [['<a class="address" rel="noopener" data-level="1">&gt;a/b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>>0')), [['<a class="address" rel="noopener" data-level="2">&gt;&gt;0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0\n1')), [['<a class="address" rel="noopener" data-level="1">&gt;0</a>'], '1']);
+      assert.deepStrictEqual(inspect(parser('>0\n>')), [['<a class="address" rel="noopener" data-level="1">&gt;0</a>'], '>']);
       assert.deepStrictEqual(inspect(parser('>0\n>1')), [['<a class="address" rel="noopener" data-level="1">&gt;0</a>', '<a class="address" rel="noopener" data-level="1">&gt;1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>0\n>>1')), [['<a class="address" rel="noopener" data-level="1">&gt;0</a>', '<a class="address" rel="noopener" data-level="2">&gt;&gt;1</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<a class="address" rel="noopener" data-level="2">&gt;&gt;0</a>', '<a class="address" rel="noopener" data-level="1">&gt;1</a>'], '']);

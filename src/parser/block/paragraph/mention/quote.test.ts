@@ -28,6 +28,7 @@ describe('Unit: parser/block/paragraph/mention/quote', () => {
       assert.deepStrictEqual(inspect(parser('>\n>')), [['<span class="quote">&gt;\n&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('> 0\na')), [['<span class="quote">&gt; 0</span>'], 'a']);
       assert.deepStrictEqual(inspect(parser('> 0\n>')), [['<span class="quote">&gt; 0\n&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('> 0\n> ')), [['<span class="quote">&gt; 0\n&gt; </span>'], '']);
       assert.deepStrictEqual(inspect(parser('> 0\n> 1')), [['<span class="quote">&gt; 0\n&gt; 1</span>'], '']);
       assert.deepStrictEqual(inspect(parser('> 0\n>> 1')), [['<span class="quote">&gt; 0\n&gt;&gt; 1</span>'], '']);
       assert.deepStrictEqual(inspect(parser('>> 0\n> 1')), [['<span class="quote">&gt;&gt; 0\n&gt; 1</span>'], '']);
