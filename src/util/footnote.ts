@@ -19,7 +19,6 @@ function build(category: string, marker: (index: number) => string): (source: Do
         if (exclusions.has(ref.closest('.example')!)) return acc;
         if (!contents.has(ref) && ref.querySelector('a')) return acc;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
-        const refIndex = i + 1;
         const refId = ref.id || `${category}-ref:${i + 1}`;
         const title = ref.title || text(ref);
         const def = acc.get(title);
@@ -31,13 +30,13 @@ function build(category: string, marker: (index: number) => string): (source: Do
           : `${category}-def:${defIndex}`;
         void define(ref, { id: refId, title: title }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
         if (def) {
-          void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `↩${refIndex}`));
+          void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `↩`));
         }
         else {
           void acc.set(title, html('li', { id: defId }, [
             ...contents.get(ref)!,
             html('sup', [
-              html('a', { href: `#${refId}`, rel: 'noopener' }, `↩${refIndex}`),
+              html('a', { href: `#${refId}`, rel: 'noopener' }, `↩`),
             ])
           ]));
         }

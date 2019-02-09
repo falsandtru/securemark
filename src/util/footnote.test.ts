@@ -37,7 +37,7 @@ describe('Unit: util/footnote', () => {
               text('a'),
               html('span', { class: 'linebreak' }, ' '),
               text(' b'),
-              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '↩1')])
+              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '↩')])
             ]),
           ]).outerHTML);
       }
@@ -65,11 +65,11 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'annotation-def:1' }, [
               text('1'),
-              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '↩1')])
+              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '↩')])
             ]),
             html('li', { id: 'annotation-def:2' }, [
               text('12345678901234567890'),
-              html('sup', [html('a', { href: '#annotation-ref:2', rel: 'noopener' }, '↩2')])
+              html('sup', [html('a', { href: '#annotation-ref:2', rel: 'noopener' }, '↩')])
             ]),
           ]).outerHTML);
       }
@@ -106,22 +106,22 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'annotation-def:1' }, [
               text('1'),
-              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '↩1')])
+              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '↩')])
             ]),
             html('li', { id: 'annotation-def:2' }, [
               text('2'),
               html('sup', [
-                html('a', { href: '#annotation-ref:2', rel: 'noopener' }, '↩2'),
-                html('a', { href: '#annotation-ref:4', rel: 'noopener' }, '↩4'),
+                html('a', { href: '#annotation-ref:2', rel: 'noopener' }, '↩'),
+                html('a', { href: '#annotation-ref:4', rel: 'noopener' }, '↩'),
               ]),
             ]),
             html('li', { id: 'annotation-def:3' }, [
               text('3'),
-              html('sup', [html('a', { href: '#annotation-ref:3', rel: 'noopener' }, '↩3')])
+              html('sup', [html('a', { href: '#annotation-ref:3', rel: 'noopener' }, '↩')])
             ]),
             html('li', { id: 'annotation-def:4' }, [
               text('4'),
-              html('sup', [html('a', { href: '#annotation-ref:5', rel: 'noopener' }, '↩5')])
+              html('sup', [html('a', { href: '#annotation-ref:5', rel: 'noopener' }, '↩')])
             ]),
           ]).outerHTML);
       }
@@ -153,7 +153,7 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'authority-def:1' }, [
               text('a b'),
-              html('sup', [html('a', { href: '#authority-ref:1', rel: 'noopener' }, '↩1')])
+              html('sup', [html('a', { href: '#authority-ref:1', rel: 'noopener' }, '↩')])
             ]),
           ]).outerHTML);
       }
