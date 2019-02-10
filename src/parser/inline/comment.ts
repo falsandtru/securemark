@@ -1,6 +1,5 @@
 ﻿import { CommentParser } from '../inline';
 import { match } from '../../combinator';
-import '../source/unescapable';
 import { html } from 'typed-dom';
 
 export const comment: CommentParser = match(

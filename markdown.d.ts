@@ -622,9 +622,7 @@ export namespace MarkdownParser {
     export interface CommentParser extends
       // <# comment #>
       Inline<'comment'>,
-      Parser<HTMLElement, [
-        SourceParser.UnescapableSourceParser
-      ]> {
+      Parser<HTMLElement, []> {
     }
     export interface InsertionParser extends
       // ++abc++
@@ -680,9 +678,7 @@ export namespace MarkdownParser {
     export interface EmojiParser extends
       // :smile:
       Inline<'emoji'>,
-      Parser<HTMLSpanElement, [
-        SourceParser.UnescapableSourceParser
-      ]> {
+      Parser<HTMLSpanElement, []> {
     }
     export interface ShortmediaParser extends
       // !https://host

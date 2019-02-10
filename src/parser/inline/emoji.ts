@@ -1,6 +1,5 @@
 ﻿import { EmojiParser } from '../inline';
 import { subline, focus } from '../../combinator';
-import '../source/unescapable';
 import { html } from 'typed-dom';
 
 export const emoji: EmojiParser = subline(focus(
