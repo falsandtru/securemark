@@ -1,18 +1,18 @@
-﻿import { Parser, exec, validate } from '../../data/parser';
-import { focus } from './scope';
-import { surround } from '../manipulation/surround';
+﻿import { Parser, eval, exec, validate } from '../../data/parser';
 
 export function line<P extends Parser<any, any>>(parser: P, allowTrailingWhitespace?: boolean): P;
 export function line<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, allowTrailingWhitespace = true): Parser<T, S> {
   assert(parser);
-  return focus(
-    /^[^\n]*(?:\n|$)/,
-    surround(
-      '',
-      parser,
-      allowTrailingWhitespace
-        ? /^\s*$/
-        : /^$/));
+  return source => {
+    if (source === '') return;
+    const fst = firstline(source);
+    const result = parser(fst);
+    assert(validate(fst, result));
+    if (!result) return;
+    return (allowTrailingWhitespace ? exec(result).trim() === '' : exec(result) === '')
+      ? [eval(result), source.slice(fst.length)]
+      : undefined;
+  };
 }
 
 export function subline<P extends Parser<any, any>>(parser: P): P;
