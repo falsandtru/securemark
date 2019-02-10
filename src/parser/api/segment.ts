@@ -13,7 +13,7 @@ const parser: SegmentParser = union<SegmentParser>([
   mathblock,
   extension,
   some(contentline),
-  some(blankline)
+  some(blankline),
 ]);
 
 export function segment(source: string): string[] {
