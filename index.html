@@ -50,7 +50,11 @@
     padding-left: 5px;
     padding-right: 2px;
   }
-  .token.operator, .token.entity, .token.url, .language-css .token.string, .style .token.string {
+  .token.operator,
+  .token.entity,
+  .token.url,
+  .language-css .token.string,
+  .style .token.string {
     background: none;
   }
   svg {
@@ -92,8 +96,8 @@
   .authority:not([id]) {
     display: none;
   }
-  #annotation sup > a[href^="#"]:not([class]),
-  #authority sup > a[href^="#"]:not([class]) {
+  #annotation sup > a[href^="#annotation-ref:"],
+  #authority  sup > a[href^="#authority-ref:"] {
     font-family: initial;
   }
   .comment:before {
@@ -101,7 +105,7 @@
     color: red;
     font-weight: bold;
   }
-  .code .comment:before,
+  .code  .comment:before,
   .media .comment:before {
     all: unset;
   }
