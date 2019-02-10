@@ -6,9 +6,9 @@ import { defrag, stringify } from '../util';
 import { html, define } from 'typed-dom';
 import { autolink } from '../autolink';
 
-export const segment: CodeBlockParser = lazy(() => block(segment_));
+export const segment: CodeBlockParser.SegmentParser = lazy(() => block(segment_));
 
-export const segment_: CodeBlockParser = block(focus(
+export const segment_: CodeBlockParser.SegmentParser = block(focus(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300})\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 

@@ -3,9 +3,9 @@ import { union, block, rewrite, focus, match, trim, lazy } from '../../../combin
 import '../../source/unescapable';
 import { html } from 'typed-dom';
 
-export const segment: ExtensionParser.GraphParser = lazy(() => block(segment_));
+export const segment: ExtensionParser.GraphParser.SegmentParser = lazy(() => block(segment_));
 
-export const segment_: ExtensionParser.GraphParser = block(union([
+export const segment_: ExtensionParser.GraphParser.SegmentParser = block(union([
   focus(
     /^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/,
     _ => [[], '']),

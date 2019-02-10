@@ -3,9 +3,9 @@ import { block, rewrite, focus, match, trim, lazy } from '../../combinator';
 import '../source/unescapable';
 import { html, define } from 'typed-dom';
 
-export const segment: MathBlockParser = lazy(() => block(segment_));
+export const segment: MathBlockParser.SegmentParser = lazy(() => block(segment_));
 
-export const segment_: MathBlockParser = block(focus(
+export const segment_: MathBlockParser.SegmentParser = block(focus(
   /^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99})\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 

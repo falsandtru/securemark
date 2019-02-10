@@ -6,9 +6,9 @@ import { suppress } from '../../util';
 import { figure, footnote } from '../../../util';
 import { html } from 'typed-dom';
 
-export const segment: ExtensionParser.ExampleParser = lazy(() => block(segment_));
+export const segment: ExtensionParser.ExampleParser.SegmentParser = lazy(() => block(segment_));
 
-export const segment_: ExtensionParser.ExampleParser = block(focus(
+export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(focus(
   /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/,
   _ => [[], '']), false);
 

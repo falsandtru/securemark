@@ -14,7 +14,7 @@ import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 
-export const segment: FigureParser = block(match(
+export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[:\S+?\][^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/,
   memoize(([, bracket]) => bracket,
   (bracket, closer = new RegExp(`^${bracket}[^\\S\\n]*(?:\\n|$)`)) =>
@@ -39,7 +39,7 @@ export const segment: FigureParser = block(match(
           ]),
         ]),
       ]),
-      closer)))) as any;
+      closer))));
 
 export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
   convert(

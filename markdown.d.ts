@@ -13,9 +13,9 @@ export namespace MarkdownParser {
   export interface SegmentParser extends
     Markdown<'segment'>,
     Parser<HTMLElement, [
-      BlockParser.CodeBlockParser,
-      BlockParser.MathBlockParser,
-      BlockParser.ExtensionParser,
+      BlockParser.CodeBlockParser.SegmentParser,
+      BlockParser.MathBlockParser.SegmentParser,
+      BlockParser.ExtensionParser.SegmentParser,
       SourceParser.ContentLineParser,
       SourceParser.BlankLineParser,
     ]> {
@@ -171,6 +171,13 @@ export namespace MarkdownParser {
       ]> {
     }
     export namespace BlockquoteParser {
+      export interface SegmentParser extends
+        Block<'blockquote/segment'>,
+        Parser<never, [
+          SourceParser.ContentLineParser,
+          SourceParser.ContentLineParser,
+        ]> {
+      }
       export interface TextParser extends
         Block<'blockquote/text'>,
         Parser<HTMLQuoteElement, [
@@ -195,6 +202,14 @@ export namespace MarkdownParser {
         AutolinkParser
       ]> {
     }
+    export namespace CodeBlockParser {
+      export interface SegmentParser extends
+        Block<'codeblock/segment'>,
+        Parser<never, [
+          SourceParser.ContentLineParser
+        ]> {
+      }
+    }
     export interface MathBlockParser extends
       // $$
       // expr
@@ -203,6 +218,14 @@ export namespace MarkdownParser {
       Parser<HTMLDivElement, [
         SourceParser.EscapableSourceParser
       ]> {
+    }
+    export namespace MathBlockParser {
+      export interface SegmentParser extends
+        Block<'mathblock/segment'>,
+        Parser<never, [
+          SourceParser.ContentLineParser
+        ]> {
+      }
     }
     export interface ExtensionParser extends
       // ~~~abc
@@ -217,6 +240,16 @@ export namespace MarkdownParser {
       ]> {
     }
     export namespace ExtensionParser {
+      export interface SegmentParser extends
+        Block<'extension/segment'>,
+        Parser<HTMLElement, [
+          FigureParser.SegParser,
+          FigureParser.SegmentParser,
+          GraphParser.SegmentParser,
+          ExampleParser.SegmentParser,
+          PlaceholderParser.SegmentParser,
+        ]> {
+      }
       export interface FigureParser extends
         // ~~~figure [:group-name]
         // !https://host/image.png
@@ -237,6 +270,41 @@ export namespace MarkdownParser {
         ]> {
       }
       export namespace FigureParser {
+        export interface SegmentParser extends
+          Block<'extension/figure/segment'>,
+          Parser<HTMLElement, [
+            InlineParser.ExtensionParser.LabelParser,
+            Parser<never, [
+              Parser<never, [
+                CodeBlockParser.SegmentParser,
+                MathBlockParser.SegmentParser,
+                ExtensionParser.GraphParser.SegmentParser,
+                ExtensionParser.ExampleParser.SegmentParser,
+                BlockquoteParser.SegmentParser,
+                SourceParser.ContentLineParser,
+              ]>,
+              SourceParser.EmptyLineParser,
+              Parser<never, [
+                SourceParser.BlankLineParser,
+                SourceParser.ContentLineParser,
+              ]>,
+            ]>,
+          ]> {
+        }
+        export interface SegParser extends
+          Block<'extension/figure/seg'>,
+          Parser<HTMLElement, [
+            InlineParser.ExtensionParser.LabelParser,
+            Parser<never, [
+              CodeBlockParser.SegmentParser,
+              MathBlockParser.SegmentParser,
+              ExtensionParser.GraphParser.SegmentParser,
+              ExtensionParser.ExampleParser.SegmentParser,
+              BlockquoteParser.SegmentParser,
+              SourceParser.ContentLineParser,
+            ]>,
+          ]> {
+        }
         export interface ContentParser extends
           Block<'extension/figure/content'>,
           Parser<HTMLElement, [
@@ -264,15 +332,33 @@ export namespace MarkdownParser {
         Block<'extension/graph'>,
         Parser<HTMLPreElement, Parser<HTMLPreElement, [SourceParser.UnescapableSourceParser]>[]> {
       }
+      export namespace GraphParser {
+        export interface SegmentParser extends
+          Block<'extension/graph/segment'>,
+          Parser<never, SourceParser.ContentLineParser[]> {
+        }
+      }
       export interface ExampleParser extends
         // ~~~example
         // ~~~
         Block<'extension/example'>,
         Parser<HTMLElement, Parser<HTMLElement, []>[]> {
       }
+      export namespace ExampleParser {
+        export interface SegmentParser extends
+          Block<'extension/example/segment'>,
+          Parser<never, []> {
+        }
+      }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,
         Parser<HTMLElement, []> {
+      }
+      export namespace PlaceholderParser {
+        export interface SegmentParser extends
+          Block<'extension/placeholder/segment'>,
+          Parser<never, []> {
+        }
       }
     }
     export interface ParagraphParser extends

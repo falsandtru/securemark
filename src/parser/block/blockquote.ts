@@ -6,10 +6,10 @@ import { parse } from '../api/parse';
 import { defrag, suppress } from '../util';
 import { html } from 'typed-dom';
 
-export const segment: BlockquoteParser = block(union([
+export const segment: BlockquoteParser.SegmentParser = block(union([
   validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, some(contentline)),
   validate(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, some(contentline)),
-])) as any;
+]));
 
 export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
   surround(/^(?=>)/, text, ''),
