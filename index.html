@@ -92,6 +92,10 @@
   .authority:not([id]) {
     display: none;
   }
+  #annotation sup > a[href^="#"]:not([class]):first-child:last-child,
+  #authority sup > a[href^="#"]:not([class]):first-child:last-child {
+    font-family: initial;
+  }
   .comment:before {
     content: "†";
     color: red;
