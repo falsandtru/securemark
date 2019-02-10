@@ -1,4 +1,4 @@
-﻿import { Parser, eval, exec, validate } from '../../data/parser';
+﻿import { Parser, eval, exec, verify } from '../../data/parser';
 
 export function focus<P extends Parser<any, any>>(scope: RegExp, parser: P): P;
 export function focus<T, S extends Parser<any, any>[]>(scope: RegExp, parser: Parser<T, S>): Parser<T, S> {
@@ -9,7 +9,7 @@ export function focus<T, S extends Parser<any, any>[]>(scope: RegExp, parser: Pa
     assert(source.startsWith(src));
     if (src === '') return;
     const result = parser(src);
-    assert(validate(src, result));
+    assert(verify(src, result));
     if (!result) return;
     assert(exec(result)==='');
     return exec(result).length < src.length
@@ -25,13 +25,13 @@ export function rewrite<T, S extends Parser<any, any>[]>(scope: Parser<never, an
   return source => {
     if (source === '') return;
     const res1 = scope(source);
-    assert(validate(source, res1));
+    assert(verify(source, res1));
     if (!res1 || exec(res1).length >= source.length) return;
     const src = source.slice(0, source.length - exec(res1).length);
     assert(src !== '');
     assert(source.startsWith(src));
     const res2 = parser(src);
-    assert(validate(src, res2));
+    assert(verify(src, res2));
     if (!res2) return;
     assert(exec(res2) === '');
     return exec(res2).length < src.length

@@ -21,7 +21,7 @@ export function exec(result: Result<any, any>, default_: string = ''): string {
     : default_;
 }
 
-export function validate(source: string, result: Result<any, any>): true {
+export function verify(source: string, result: Result<any, any>): true {
   assert(source.slice(1).endsWith(exec(result)));
   return true;
 }
