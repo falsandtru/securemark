@@ -7,8 +7,8 @@ import { defrag, suppress } from '../util';
 import { html } from 'typed-dom';
 
 export const blockquote: BlockquoteParser = lazy(() => block(union([
-  surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, text, ''),
-  surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, source, ''),
+  surround(/^(?=>+(?:[^\S\n]|\n\s*\S))/, text, ''),
+  surround(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, source, ''),
 ])));
 
 const opener = /^(?=>>+(?:\s|$))/;
