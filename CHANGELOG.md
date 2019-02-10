@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.107.0
+
+- Enhance annotation parser to trim linebreaks.
+
 ## 0.106.0
 
 - Allow address syntax to use URL.
