@@ -1780,11 +1780,10 @@ require = function () {
             const parse_1 = require('../api/parse');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.union([
+            exports.segment = combinator_1.block(combinator_1.union([
                 combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline)),
                 combinator_1.validate(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline))
-            ]), false);
+            ]));
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.surround(/^(?=>)/, text, ''),
                 combinator_1.surround(/^!(?=>)/, source, '')
@@ -2004,7 +2003,7 @@ require = function () {
                     mathblock_1.segment,
                     graph_1.segment,
                     example_1.segment,
-                    blockquote_1.segment_,
+                    blockquote_1.segment,
                     combinator_1.some(line_1.contentline)
                 ])
             ]));
@@ -2049,7 +2048,7 @@ require = function () {
                         mathblock_1.segment_,
                         graph_1.segment_,
                         example_1.segment_,
-                        blockquote_1.segment_,
+                        blockquote_1.segment,
                         combinator_1.some(line_1.contentline, closer)
                     ]),
                     line_1.emptyline,
@@ -2878,7 +2877,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.comment = combinator_1.match(/^<(#+)\s+(\S+(?:\s+\S+)*?)\s+\1>/, ([, , title]) => rest => [
                 [typed_dom_1.html('sup', {
@@ -2890,7 +2888,6 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            '../source/unescapable': 108,
             'typed-dom': 13
         }
     ],
@@ -2916,7 +2913,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../combinator');
-            require('../source/unescapable');
             const typed_dom_1 = require('typed-dom');
             exports.emoji = combinator_1.subline(combinator_1.focus(/^:([a-z0-9]+(?:_[a-z0-9]+)*):/, source => [
                 [typed_dom_1.html('span', {
@@ -2928,7 +2924,6 @@ require = function () {
         },
         {
             '../../combinator': 20,
-            '../source/unescapable': 108,
             'typed-dom': 13
         }
     ],
