@@ -1781,8 +1781,8 @@ require = function () {
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.union([
-                combinator_1.surround(/^(?=>+(?:[^\S\n]|\n.*?\S))/, text, ''),
-                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n.*?\S))/, source, '')
+                combinator_1.surround(/^(?=>+(?:[^\S\n]|\n\s*\S))/, text, ''),
+                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, source, '')
             ])));
             const opener = /^(?=>>+(?:\s|$))/;
             const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(line_1.contentline, /^>(?:\s|$)/), ''), false);
@@ -2346,9 +2346,9 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const address_1 = require('./mention/address');
             const quote_1 = require('./mention/quote');
-            exports.mention = combinator_1.block(combinator_1.inits([
-                address_1.address,
-                combinator_1.some(quote_1.quote)
+            exports.mention = combinator_1.block(combinator_1.subsequence([
+                combinator_1.some(address_1.address),
+                quote_1.quote
             ]), false);
         },
         {
@@ -2362,20 +2362,17 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = require('../../../../combinator');
-            require('../../../source/unescapable');
+            const inline_1 = require('../../../inline');
             const typed_dom_1 = require('typed-dom');
-            exports.address = combinator_1.line(combinator_1.match(/^(>+)[a-zA-Z0-9](?:(?!\s)[\x00-\x7F])*\s*$/, ([ref, {length: level}]) => rest => [
-                [typed_dom_1.html('a', {
-                        class: 'address',
-                        rel: 'noopener',
-                        'data-level': `${ level }`
-                    }, ref.trim())],
-                rest
-            ]));
+            exports.address = combinator_1.line(combinator_1.match(/^(?=((>+)(?:[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*|https?:\/\/[^/]\S*)\s*$))/, ([, addr, {length: level}]) => combinator_1.convert(source => `{ ${ addr.slice(level).trim() } }${ source.slice(addr.length) }`, combinator_1.fmap(combinator_1.union([inline_1.link]), ([el]) => [typed_dom_1.html('span', {
+                    class: 'address',
+                    href: null,
+                    'data-level': `${ level }`
+                }, [typed_dom_1.define(el, { href: null }, addr.trim())])]))));
         },
         {
             '../../../../combinator': 20,
-            '../../../source/unescapable': 108,
+            '../../../inline': 71,
             'typed-dom': 13
         }
     ],
@@ -2388,7 +2385,10 @@ require = function () {
             const autolink_1 = require('../../../autolink');
             const util_1 = require('../../../util');
             const typed_dom_1 = require('typed-dom');
-            exports.quote = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^(?=>+(?:[^\S\n]|\n.*?\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+(?:\s|$))/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(combinator_1.union([autolink_1.autolink])))))), ns => [typed_dom_1.html('span', { class: 'quote' }, ns)]), false));
+            exports.quote = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.union([
+                combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+(?:\s|$))/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink))))),
+                combinator_1.validate(/^(?=>+(?:[^>\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+)/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink)))))
+            ]), ns => [typed_dom_1.html('span', { class: 'quote' }, ns)]), false));
         },
         {
             '../../../../combinator': 20,
@@ -4663,7 +4663,6 @@ require = function () {
                         if (!contents.has(ref) && ref.querySelector('a'))
                             return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
-                        const refIndex = i + 1;
                         const refId = ref.id || `${ category }-ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
                         const def = acc.get(title);
@@ -4680,14 +4679,14 @@ require = function () {
                             void def.lastChild.appendChild(typed_dom_1.html('a', {
                                 href: `#${ refId }`,
                                 rel: 'noopener'
-                            }, marker(refIndex)));
+                            }, `↩`));
                         } else {
                             void acc.set(title, typed_dom_1.html('li', { id: defId }, [
                                 ...contents.get(ref),
                                 typed_dom_1.html('sup', [typed_dom_1.html('a', {
                                         href: `#${ refId }`,
                                         rel: 'noopener'
-                                    }, marker(refIndex))])
+                                    }, `↩`)])
                             ]));
                         }
                         return acc;
