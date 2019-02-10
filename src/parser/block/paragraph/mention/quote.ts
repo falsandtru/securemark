@@ -5,10 +5,18 @@ import { autolink } from '../../../autolink';
 import { defrag } from '../../../util';
 import { html } from 'typed-dom';
 
-export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => block(fmap(validate(
-  /^(?=>+(?:[^\S\n]|\n.*?\S))/,
-  rewrite(
-    some(validate(/^(?=>+(?:\s|$))/, contentline)),
-    convert(source => source.replace(/\n$/, ''), defrag(some(union([autolink])))))),
+export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => block(fmap(
+  union([
+    validate(
+      /^(?=>+(?:[^\S\n]|\n.*?\S))/,
+      rewrite(
+        some(validate(/^(?=>+(?:\s|$))/, contentline)),
+        convert(source => source.replace(/\n$/, ''), defrag(some(autolink))))),
+    validate(
+      /^(?=>+(?:[^>\n]|\n.*?\S))/,
+      rewrite(
+        some(validate(/^(?=>+)/, contentline)),
+        convert(source => source.replace(/\n$/, ''), defrag(some(autolink))))),
+  ]),
   ns => [html('span', { class: 'quote' }, ns)]),
   false));

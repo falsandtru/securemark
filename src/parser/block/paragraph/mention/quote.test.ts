@@ -10,7 +10,6 @@ describe('Unit: parser/block/paragraph/mention/quote', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('>')), undefined);
       assert.deepStrictEqual(inspect(parser('>>')), undefined);
-      assert.deepStrictEqual(inspect(parser('>\\')), undefined);
       assert.deepStrictEqual(inspect(parser('>\n')), undefined);
       assert.deepStrictEqual(inspect(parser(' >0')), undefined);
       assert.deepStrictEqual(inspect(parser('\\>0')), undefined);
@@ -32,6 +31,11 @@ describe('Unit: parser/block/paragraph/mention/quote', () => {
       assert.deepStrictEqual(inspect(parser('> 0\n> 1')), [['<span class="quote">&gt; 0\n&gt; 1</span>'], '']);
       assert.deepStrictEqual(inspect(parser('> 0\n>> 1')), [['<span class="quote">&gt; 0\n&gt;&gt; 1</span>'], '']);
       assert.deepStrictEqual(inspect(parser('>> 0\n> 1')), [['<span class="quote">&gt;&gt; 0\n&gt; 1</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>\\')), [['<span class="quote">&gt;\\</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a')), [['<span class="quote">&gt;a</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a b')), [['<span class="quote">&gt;a b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>a b\nc')), [['<span class="quote">&gt;a b</span>'], 'c']);
+      assert.deepStrictEqual(inspect(parser('>a b\n> c')), [['<span class="quote">&gt;a b\n&gt; c</span>'], '']);
     });
 
   });

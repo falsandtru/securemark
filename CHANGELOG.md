@@ -3,6 +3,7 @@
 ## 0.106.0
 
 - Allow address syntax to use URL.
+- Extend quote syntax to enable to be used at the first lines of paragraphs.
 
 ## 0.105.0
 

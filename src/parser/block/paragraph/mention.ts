@@ -1,9 +1,9 @@
 ﻿import { ParagraphParser } from '../../block';
-import { inits, some, block } from '../../../combinator';
+import { subsequence, some, block } from '../../../combinator';
 import { address } from './mention/address';
 import { quote } from './mention/quote';
 
-export const mention: ParagraphParser.MentionParser = block(inits([
-  address,
-  some(quote),
+export const mention: ParagraphParser.MentionParser = block(subsequence([
+  some(address),
+  quote,
 ]), false);
