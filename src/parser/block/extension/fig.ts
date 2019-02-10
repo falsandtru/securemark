@@ -6,7 +6,7 @@ import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
 import { segment as seg_graph } from './graph';
 import { segment as seg_example } from '../extension/example';
-import { segment_ as seg_quote } from '../blockquote';
+import { segment as seg_quote } from '../blockquote';
 import { label } from '../../inline';
 
 import FigureParser = ExtensionParser.FigureParser;

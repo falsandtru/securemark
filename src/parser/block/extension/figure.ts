@@ -6,7 +6,7 @@ import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { graph , segment_ as seg_graph } from './graph';
 import { example, segment_ as seg_example } from './example';
-import { blockquote, segment_ as seg_quote } from '../blockquote';
+import { blockquote, segment as seg_quote } from '../blockquote';
 import { inline } from '../../inline';
 import { label, media, shortmedia } from '../../inline';
 import { defrag, memoize } from '../../util';
