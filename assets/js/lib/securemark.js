@@ -1780,10 +1780,15 @@ require = function () {
             const parse_1 = require('../api/parse');
             const util_1 = require('../util');
             const typed_dom_1 = require('typed-dom');
-            exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.union([
-                combinator_1.surround(/^(?=>+(?:[^\S\n]|\n\s*\S))/, text, ''),
-                combinator_1.surround(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, source, '')
-            ])));
+            exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
+            exports.segment_ = combinator_1.block(combinator_1.union([
+                combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline)),
+                combinator_1.validate(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline))
+            ]), false);
+            exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
+                combinator_1.surround(/^(?=>)/, text, ''),
+                combinator_1.surround(/^!(?=>)/, source, '')
+            ]))));
             const opener = /^(?=>>+(?:\s|$))/;
             const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(line_1.contentline, /^>(?:\s|$)/), ''), false);
             function unindent(source) {
@@ -1990,6 +1995,7 @@ require = function () {
             const mathblock_1 = require('../mathblock');
             const graph_1 = require('./graph');
             const example_1 = require('../extension/example');
+            const blockquote_1 = require('../blockquote');
             const inline_1 = require('../../inline');
             exports.segment = combinator_1.block(combinator_1.sequence([
                 combinator_1.line(inline_1.label),
@@ -1998,18 +2004,20 @@ require = function () {
                     mathblock_1.segment,
                     graph_1.segment,
                     example_1.segment,
+                    blockquote_1.segment_,
                     combinator_1.some(line_1.contentline)
                 ])
             ]));
             exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, source => {
                 const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
-                return figure_1.figure(`${ bracket }figure ${ source }\n${ bracket }`);
+                return figure_1.figure(`${ bracket }figure ${ source }\n\n${ bracket }`);
             }));
         },
         {
             '../../../combinator': 20,
             '../../inline': 71,
             '../../source/line': 106,
+            '../blockquote': 50,
             '../codeblock': 51,
             '../extension/example': 54,
             '../mathblock': 62,
@@ -2024,11 +2032,11 @@ require = function () {
             const combinator_1 = require('../../../combinator');
             const line_1 = require('../../source/line');
             const table_1 = require('../table');
-            const blockquote_1 = require('../blockquote');
             const codeblock_1 = require('../codeblock');
             const mathblock_1 = require('../mathblock');
             const graph_1 = require('./graph');
             const example_1 = require('./example');
+            const blockquote_1 = require('../blockquote');
             const inline_1 = require('../../inline');
             const inline_2 = require('../../inline');
             const util_1 = require('../../util');
@@ -2041,6 +2049,7 @@ require = function () {
                         mathblock_1.segment_,
                         graph_1.segment_,
                         example_1.segment_,
+                        blockquote_1.segment_,
                         combinator_1.some(line_1.contentline, closer)
                     ]),
                     line_1.emptyline,
