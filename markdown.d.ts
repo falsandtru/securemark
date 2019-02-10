@@ -287,7 +287,7 @@ export namespace MarkdownParser {
       export interface MentionParser extends
         // abc
         Block<'paragraph/mention'>,
-        Parser<HTMLElement, [
+        Parser<HTMLSpanElement, [
           ParagraphParser.MentionParser.AddressParser,
           ParagraphParser.MentionParser.QuoteParser,
         ]> {
@@ -296,15 +296,16 @@ export namespace MarkdownParser {
         export interface AddressParser extends
           // >0a
           Block<'paragraph/mention/address'>,
-          Parser<HTMLElement, [
+          Parser<HTMLSpanElement, [
             InlineParser.LinkParser
           ]> {
         }
         export interface QuoteParser extends
           // > text
           Block<'paragraph/mention/quote'>,
-          Parser<HTMLElement, [
-            AutolinkParser
+          Parser<HTMLSpanElement, [
+            AutolinkParser,
+            AutolinkParser,
           ]> {
         }
       }
@@ -355,7 +356,7 @@ export namespace MarkdownParser {
     export interface TemplateParser extends
       // {{ abc }}
       Inline<'template'>,
-      Parser<HTMLElement, [
+      Parser<HTMLSpanElement, [
         SourceParser.EscapableSourceParser
       ]> {
     }
@@ -380,7 +381,7 @@ export namespace MarkdownParser {
       export interface IndexerParser extends
         // [#index]
         Inline<'extension/indexer'>,
-        Parser<HTMLElement, [
+        Parser<HTMLSpanElement, [
           IndexParser
         ]> {
       }
@@ -593,7 +594,7 @@ export namespace MarkdownParser {
     export interface EmojiParser extends
       // :smile:
       Inline<'emoji'>,
-      Parser<HTMLElement, [
+      Parser<HTMLSpanElement, [
         SourceParser.UnescapableSourceParser
       ]> {
     }
