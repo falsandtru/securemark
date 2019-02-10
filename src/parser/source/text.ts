@@ -5,7 +5,7 @@ export const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]|[a-zA-Z0-9][a-zA-Z0-9
 const next = /[\S\n]|$/;
 
 export const text: TextParser = source => {
-  if (source.length === 0) return;
+  if (source === '') return;
   const i = source.search(separator);
   switch (i) {
     case -1:

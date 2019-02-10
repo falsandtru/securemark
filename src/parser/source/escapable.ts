@@ -4,7 +4,7 @@ import { text } from 'typed-dom';
 const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]/;
 
 export const escsource: EscapableSourceParser = source => {
-  if (source.length === 0) return;
+  if (source === '') return;
   const i = source.search(separator);
   switch (i) {
     case -1:

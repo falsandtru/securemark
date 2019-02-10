@@ -3,7 +3,7 @@ import { separator } from './text';
 import { text } from 'typed-dom';
 
 export const unescsource: UnescapableSourceParser = source => {
-  if (source.length === 0) return;
+  if (source === '') return;
   const i = source.search(separator);
   switch (i) {
     case -1:

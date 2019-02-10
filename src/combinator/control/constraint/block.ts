@@ -5,7 +5,7 @@ export function block<P extends Parser<any, any>>(parser: P, separation?: boolea
 export function block<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, separation = true): Parser<T, S> {
   assert(parser);
   return source => {
-    if (source.length === 0) return;
+    if (source === '') return;
     const result = parser(source);
     if (!result) return;
     const rest = exec(result);

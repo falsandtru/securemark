@@ -19,7 +19,7 @@ const parser: SegmentParser = union<SegmentParser>([
 export function segment(source: string): string[] {
   assert(source === normalize(source));
   const segments: string[] = [];
-  while (source.length > 0) {
+  while (source !== '') {
     const rest = exec(parser(source));
     assert(source.slice(1).endsWith(rest));
     void segments.push(source.slice(0, source.length - rest.length));
