@@ -1,6 +1,6 @@
 ﻿import { MarkdownParser } from '../../../markdown.d';
 import { normalize } from './normalization';
-import { exec, union, some } from '../../combinator';
+import { union, some, exec } from '../../combinator';
 import { segment as codeblock } from '../block/codeblock';
 import { segment as mathblock } from '../block/mathblock';
 import { segment as extension } from '../block/extension';
