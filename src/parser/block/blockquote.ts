@@ -1,15 +1,22 @@
 ﻿import { BlockquoteParser } from '../block';
-import { union, some, block, rewrite, surround, convert, lazy, fmap } from '../../combinator';
+import { union, some, block, validate, rewrite, surround, convert, lazy, fmap } from '../../combinator';
 import { contentline } from '../source/line';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { defrag, suppress } from '../util';
 import { html } from 'typed-dom';
 
-export const blockquote: BlockquoteParser = lazy(() => block(union([
-  surround(/^(?=>+(?:[^\S\n]|\n\s*\S))/, text, ''),
-  surround(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, source, ''),
-])));
+export const segment: BlockquoteParser = lazy(() => block(segment_));
+
+export const segment_: BlockquoteParser = block(union([
+  validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, some(contentline)),
+  validate(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, some(contentline)),
+]), false) as any;
+
+export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
+  surround(/^(?=>)/, text, ''),
+  surround(/^!(?=>)/, source, ''),
+]))));
 
 const opener = /^(?=>>+(?:\s|$))/;
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.108.0
+
+- Fix figure parser to take blockquote syntax correctly.
+
 ## 0.107.0
 
 - Enhance annotation parser to trim linebreaks.

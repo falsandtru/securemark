@@ -2,11 +2,11 @@
 import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, fmap } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';
-import { blockquote } from '../blockquote';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { graph , segment_ as seg_graph } from './graph';
 import { example, segment_ as seg_example } from './example';
+import { blockquote, segment_ as seg_quote } from '../blockquote';
 import { inline } from '../../inline';
 import { label, media, shortmedia } from '../../inline';
 import { defrag, memoize } from '../../util';
@@ -29,6 +29,7 @@ export const segment: FigureParser = block(match(
             seg_math,
             seg_graph,
             seg_example,
+            seg_quote,
             some(contentline, closer),
           ]),
           emptyline,
