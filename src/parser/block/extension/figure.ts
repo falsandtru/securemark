@@ -58,10 +58,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
           line(shortmedia),
         ])),
         emptyline,
-        block(union<FigureParser.CaptionParser>([
-          blankline,
-          defrag(trim(some(inline))),
-        ])),
+        block(defrag(trim(some(inline)))),
       ]),
     ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) =>

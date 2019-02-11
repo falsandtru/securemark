@@ -265,7 +265,7 @@ export namespace MarkdownParser {
           Parser<HTMLElement | Text, [
             FigureParser.ContentParser,
             SourceParser.EmptyLineParser,
-            FigureParser.CaptionParser,
+            InlineParser,
           ]>,
         ]> {
       }
@@ -316,13 +316,6 @@ export namespace MarkdownParser {
             BlockquoteParser,
             InlineParser.MediaParser,
             InlineParser.ShortmediaParser,
-          ]> {
-        }
-        export interface CaptionParser extends
-          Block<'extension/figure/caption'>,
-          Parser<HTMLElement | Text, [
-            SourceParser.BlankLineParser,
-            InlineParser,
           ]> {
         }
       }
