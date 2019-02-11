@@ -5,7 +5,7 @@ export function normalize(source: string): string {
         ? str
         : '\uFFFD')
     .replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
-      assert(!source.match(/^[\n\t]$/));
+      assert(!char.match(/^[\n\t]$/));
       switch (char) {
         case '\r':
         case '\v':
