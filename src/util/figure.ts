@@ -11,7 +11,7 @@ export function figure(source: DocumentFragment | HTMLElement): void {
     if (fig.matches('h2')) {
       assert(fig.parentNode === source);
       if (base === '0') continue;
-      fig = parse(`[:$-${+base.split('.')[0] + 1}.0]\n$$\n$$`).querySelector('figure')!;
+      fig = parse(`[:$-${+base.split('.', 1)[0] + 1}.0]\n$$\n$$`).querySelector('figure')!;
     }
     if (fig.matches('.example figure')) continue;
     if (fig.parentElement !== source && fig.parentElement instanceof HTMLQuoteElement) {
