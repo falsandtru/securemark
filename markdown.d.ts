@@ -263,7 +263,16 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           InlineParser.ExtensionParser.LabelParser,
           Parser<HTMLElement | Text, [
-            FigureParser.ContentParser,
+            Parser<HTMLElement, [
+              TableParser,
+              CodeBlockParser,
+              MathBlockParser,
+              ExtensionParser.GraphParser,
+              ExtensionParser.ExampleParser,
+              BlockquoteParser,
+              InlineParser.MediaParser,
+              InlineParser.ShortmediaParser,
+            ]>,
             SourceParser.EmptyLineParser,
             InlineParser,
           ]>,
@@ -303,19 +312,6 @@ export namespace MarkdownParser {
               BlockquoteParser.SegmentParser,
               SourceParser.ContentLineParser,
             ]>,
-          ]> {
-        }
-        export interface ContentParser extends
-          Block<'extension/figure/content'>,
-          Parser<HTMLElement, [
-            TableParser,
-            CodeBlockParser,
-            MathBlockParser,
-            ExtensionParser.GraphParser,
-            ExtensionParser.ExampleParser,
-            BlockquoteParser,
-            InlineParser.MediaParser,
-            InlineParser.ShortmediaParser,
           ]> {
         }
       }

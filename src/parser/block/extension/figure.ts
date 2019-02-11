@@ -47,7 +47,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
     sequence([
       line(label),
       inits([
-        block(union<FigureParser.ContentParser>([
+        block(union([
           table,
           codeblock,
           mathblock,
