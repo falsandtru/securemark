@@ -8,7 +8,7 @@ export function surround<T, S extends Parser<any, any>[]>(start: string | RegExp
     const l = match(lmr_, start);
     if (l === undefined) return;
     assert(lmr_.startsWith(l));
-    const mr_ = lmr_.slice(l.length);
+    const mr_ = l ? lmr_.slice(l.length) : lmr_;
     const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_) || [];
     if (strict && r_.length === mr_.length) return;
     if (r_.length > mr_.length) return;
@@ -17,12 +17,13 @@ export function surround<T, S extends Parser<any, any>[]>(start: string | RegExp
     if (r === undefined) return;
     assert(r_.startsWith(r));
     return l + r !== '' || r_.length - r.length < lmr_.length
-      ? [rs, r_.slice(r.length)]
+      ? [rs, r ? r_.slice(r.length) : r_]
       : undefined;
   };
 }
 
 function match(source: string, pattern: string | RegExp): string | undefined {
+  if (pattern === '') return pattern;
   if (typeof pattern === 'string') return source.startsWith(pattern)
     ? pattern
     : undefined;
