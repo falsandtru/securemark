@@ -9,9 +9,10 @@ import { segment as seg_example } from '../extension/example';
 import { segment as seg_quote } from '../blockquote';
 import { label } from '../../inline';
 
+import FigParser = ExtensionParser.FigParser;
 import FigureParser = ExtensionParser.FigureParser;
 
-export const segment: FigureParser.SegParser = block(
+export const segment: FigParser.SegmentParser = block(
   sequence([
     line(label),
     union([
