@@ -1,6 +1,6 @@
 import { eval } from '../../combinator';
 import { block } from '../block';
-import { segment } from './segment';
+import { segment } from '../segment';
 import { normalize } from './normalization';
 import { concat } from 'spica/concat';
 import { frag } from 'typed-dom';

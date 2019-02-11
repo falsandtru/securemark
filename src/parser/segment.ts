@@ -1,10 +1,10 @@
-﻿import { MarkdownParser } from '../../../markdown.d';
-import { normalize } from './normalization';
-import { union, some, exec } from '../../combinator';
-import { segment as codeblock } from '../block/codeblock';
-import { segment as mathblock } from '../block/mathblock';
-import { segment as extension } from '../block/extension';
-import { contentline, blankline } from '../source/line';
+﻿import { MarkdownParser } from '../../markdown';
+import { normalize } from './api/normalization';
+import { union, some, exec } from '../combinator';
+import { segment as codeblock } from './block/codeblock';
+import { segment as mathblock } from './block/mathblock';
+import { segment as extension } from './block/extension';
+import { contentline, blankline } from './source/line';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 

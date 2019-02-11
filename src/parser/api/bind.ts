@@ -1,5 +1,5 @@
 ﻿import { eval } from '../../combinator';
-import { segment } from './segment';
+import { segment } from '../segment';
 import { block } from '../block';
 import { normalize } from './normalization';
 
