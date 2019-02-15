@@ -1,10 +1,9 @@
 ﻿import { hashtag } from './hashtag';
-import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/hashtag', () => {
   describe('hashtag', () => {
-    const parser = some(hashtag);
+    const parser = hashtag;
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -24,6 +23,7 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#　')), [['#'], '　']);
       assert.deepStrictEqual(inspect(parser('a#b')), [['a#'], 'b']);
       assert.deepStrictEqual(inspect(parser('a##b')), [['a##'], 'b']);
+      assert.deepStrictEqual(inspect(parser('あ#b')), [['あ#'], 'b']);
       assert.deepStrictEqual(inspect(parser(' #a')), undefined);
     });
 

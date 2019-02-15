@@ -14,6 +14,6 @@ export const hashtag_: AutolinkParser.HashtagParser = subline(union([
     tag =>
       [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], '']),
   focus(
-    /^[a-zA-Z0-9]*#+/,
+    /^(?:[a-zA-Z0-9]|[^\x00-\x7F\s])?#+/,
     defrag(some(unescsource))),
 ]));
