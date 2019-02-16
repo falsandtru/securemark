@@ -432,7 +432,7 @@ require = function () {
                             return build(attrs, undefined, children);
                         if (attrs !== undefined && isChildren(attrs))
                             return build(undefined, attrs, factory);
-                        return new proxy_1.El(elem(factory || ((f, tag) => f(tag)), attrs || {}, children), children, shadowing);
+                        return new proxy_1.Elem(elem(factory || ((f, tag) => f(tag)), attrs || {}, children), children, shadowing);
                     };
                     function isChildren(children) {
                         return typeof children !== 'object' || Object.values(children).slice(-1).every(val => typeof val === 'object');
@@ -490,7 +490,7 @@ require = function () {
             }
             exports.proxy = proxy;
             const tag = Symbol();
-            class El {
+            class Elem {
                 constructor(element, children_, shadowing = false) {
                     this.element = element;
                     this.children_ = children_;
@@ -691,7 +691,7 @@ require = function () {
                     }));
                 }
             }
-            exports.El = El;
+            exports.Elem = Elem;
             function throwErrorIfNotUsable({element}) {
                 if (!element.parentElement || !memory.has(element.parentElement))
                     return;
@@ -725,7 +725,7 @@ require = function () {
                 if (children && !isChildren(children))
                     return shadow(el, undefined, children);
                 if (el.shadowRoot || shadows.has(el)) {
-                    return define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el) || el.attachShadow({ mode: 'open' }), children);
+                    return define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children);
                 } else {
                     return define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === undefined ? el.childNodes : children);
                 }
