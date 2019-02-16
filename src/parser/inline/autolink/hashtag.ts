@@ -10,7 +10,7 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => verify(
 
 export const hashtag_: AutolinkParser.HashtagParser = subline(union([
   focus(
-    /^#((?:[a-zA-Z0-9]|[^\x00-\x7F\s])+)/,
+    /^#(?:[a-zA-Z0-9]|[^\x00-\x7F\s])+/,
     tag =>
       [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], '']),
   focus(
