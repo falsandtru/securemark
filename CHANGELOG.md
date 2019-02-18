@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.108.3
+
+- Fix bundle processing.
+
 ## 0.108.2
 
 - Fix hashtag syntax to disallow to be started after any characters except non-alphanumeric ASCII characters.
