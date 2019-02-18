@@ -27,33 +27,33 @@ require = function () {
     return r;
 }()({
     1: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
         },
         {}
     ],
     2: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             arguments[4][1][0].apply(exports, arguments);
         },
         { 'dup': 1 }
     ],
     3: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             arguments[4][1][0].apply(exports, arguments);
         },
         { 'dup': 1 }
     ],
     4: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             arguments[4][1][0].apply(exports, arguments);
         },
         { 'dup': 1 }
     ],
     5: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const type_1 = require('./type');
+            const type_1 = _dereq_('./type');
             exports.assign = template((key, target, source) => target[key] = source[key]);
             exports.clone = template((key, target, source) => {
                 switch (type_1.type(source[key])) {
@@ -104,11 +104,11 @@ require = function () {
         { './type': 11 }
     ],
     6: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const assign_1 = require('./assign');
-            const equal_1 = require('./equal');
+            const assign_1 = _dereq_('./assign');
+            const equal_1 = _dereq_('./equal');
             class Cache {
                 constructor(size, callback = () => undefined, opts = {}) {
                     this.size = size;
@@ -271,7 +271,7 @@ require = function () {
         }
     ],
     7: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function concat(target, source) {
@@ -283,7 +283,7 @@ require = function () {
         {}
     ],
     8: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function findIndex(a1, as) {
@@ -300,7 +300,7 @@ require = function () {
         {}
     ],
     9: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function memoize(f, memory = new Map()) {
@@ -311,7 +311,7 @@ require = function () {
         {}
     ],
     10: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const zeros = '0'.repeat(15);
@@ -332,7 +332,7 @@ require = function () {
         {}
     ],
     11: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function type(target) {
@@ -350,7 +350,7 @@ require = function () {
         {}
     ],
     12: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const FORMAT_V4 = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
@@ -373,24 +373,24 @@ require = function () {
         {}
     ],
     13: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var builder_1 = require('./src/dom/builder');
+            var builder_1 = _dereq_('./src/dom/builder');
             exports.Shadow = builder_1.Shadow;
             exports.HTML = builder_1.HTML;
             exports.SVG = builder_1.SVG;
             exports.API = builder_1.API;
-            var proxy_1 = require('./src/dom/proxy');
+            var proxy_1 = _dereq_('./src/dom/proxy');
             exports.proxy = proxy_1.proxy;
-            var dom_1 = require('./src/util/dom');
+            var dom_1 = _dereq_('./src/util/dom');
             exports.frag = dom_1.frag;
             exports.shadow = dom_1.shadow;
             exports.html = dom_1.html;
             exports.svg = dom_1.svg;
             exports.text = dom_1.text;
             exports.define = dom_1.define;
-            var listener_1 = require('./src/util/listener');
+            var listener_1 = _dereq_('./src/util/listener');
             exports.listen = listener_1.listen;
             exports.once = listener_1.once;
             exports.delegate = listener_1.delegate;
@@ -405,19 +405,19 @@ require = function () {
         }
     ],
     14: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const proxy_1 = require('./proxy');
-            const dom_1 = require('../util/dom');
-            function API(baseFactory) {
-                return new Proxy(() => undefined, handle(baseFactory));
+            const proxy_1 = _dereq_('./proxy');
+            const dom_1 = _dereq_('../util/dom');
+            function API(baseFactory, formatter = el => el) {
+                return new Proxy(() => undefined, handle(baseFactory, formatter));
             }
             exports.API = API;
-            exports.Shadow = new Proxy(() => undefined, handle(dom_1.html, true));
+            exports.Shadow = API(dom_1.html, dom_1.shadow);
             exports.HTML = API(dom_1.html);
             exports.SVG = API(dom_1.svg);
-            function handle(baseFactory, shadowing) {
+            function handle(baseFactory, formatter) {
                 return {
                     apply(obj, _, [prop, ...args]) {
                         return this.get(obj, prop, undefined)(...args);
@@ -432,7 +432,8 @@ require = function () {
                             return build(attrs, undefined, children);
                         if (attrs !== undefined && isChildren(attrs))
                             return build(undefined, attrs, factory);
-                        return new proxy_1.Elem(elem(factory || ((f, tag) => f(tag)), attrs || {}, children), children, shadowing);
+                        const node = formatter(elem(factory || defaultFactory, attrs || {}, children));
+                        return node instanceof Element ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
                     };
                     function isChildren(children) {
                         return typeof children !== 'object' || Object.values(children).slice(-1).every(val => typeof val === 'object');
@@ -441,8 +442,18 @@ require = function () {
                         const el = factory(baseFactory, tag, attrs, children);
                         if (tag !== el.tagName.toLowerCase())
                             throw new Error(`TypedDOM: Tag name must be "${ tag }", but got "${ el.tagName.toLowerCase() }".`);
-                        void dom_1.define(el, attrs);
+                        if (factory !== defaultFactory) {
+                            for (const [k, v] of Object.entries(attrs)) {
+                                if (typeof v !== 'function')
+                                    continue;
+                                void el.removeEventListener(k, v);
+                            }
+                            void dom_1.define(el, attrs);
+                        }
                         return el;
+                    }
+                    function defaultFactory(factory, tag, attrs) {
+                        return factory(tag, attrs);
                     }
                 }
             }
@@ -453,11 +464,11 @@ require = function () {
         }
     ],
     15: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const uuid_1 = require('spica/uuid');
-            const sqid_1 = require('spica/sqid');
+            const uuid_1 = _dereq_('spica/uuid');
+            const sqid_1 = _dereq_('spica/sqid');
             const id = uuid_1.uuid().slice(-7);
             function uid() {
                 return `id-${ id }-${ +sqid_1.sqid() }`;
@@ -470,11 +481,11 @@ require = function () {
         }
     ],
     16: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const identity_1 = require('./identity');
-            const dom_1 = require('../util/dom');
+            const identity_1 = _dereq_('./identity');
+            const dom_1 = _dereq_('../util/dom');
             var ElChildrenType;
             (function (ElChildrenType) {
                 ElChildrenType.Void = 'void';
@@ -491,14 +502,14 @@ require = function () {
             exports.proxy = proxy;
             const tag = Symbol();
             class Elem {
-                constructor(element, children_, shadowing = false) {
+                constructor(element, children_, container = element) {
                     this.element = element;
                     this.children_ = children_;
+                    this.container = container;
                     this.id_ = this.element.id.trim();
                     this.type = this.children_ === undefined ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Record;
                     void throwErrorIfNotUsable(this);
                     void memory.set(this.element, this);
-                    this.container = shadowing ? dom_1.shadow(this.element) : this.element;
                     switch (this.type) {
                     case ElChildrenType.Void:
                         this.initialChildren = new WeakSet();
@@ -704,16 +715,16 @@ require = function () {
         }
     ],
     17: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const shadows = new WeakMap();
             var cache;
             (function (cache) {
                 cache.elem = new Map();
                 cache.text = document.createTextNode('');
                 cache.frag = document.createDocumentFragment();
             }(cache || (cache = {})));
-            const shadows = new WeakMap();
             function frag(children = []) {
                 children = typeof children === 'string' ? [text(children)] : children;
                 const frag = cache.frag.cloneNode();
@@ -805,10 +816,10 @@ require = function () {
         {}
     ],
     18: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const noop_1 = require('./noop');
+            const noop_1 = _dereq_('./noop');
             exports.currentTargets = new WeakMap();
             function listen(target, a, b, c = false, d = {}) {
                 return typeof b === 'string' ? delegate(target, a, b, c, d) : bind(target, a, b, c);
@@ -842,7 +853,7 @@ require = function () {
         { './noop': 19 }
     ],
     19: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function noop() {
@@ -853,7 +864,7 @@ require = function () {
         {}
     ],
     20: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             function __export(m) {
                 for (var p in m)
@@ -861,27 +872,27 @@ require = function () {
                         exports[p] = m[p];
             }
             Object.defineProperty(exports, '__esModule', { value: true });
-            var parser_1 = require('./combinator/data/parser');
+            var parser_1 = _dereq_('./combinator/data/parser');
             exports.eval = parser_1.eval;
             exports.exec = parser_1.exec;
-            __export(require('./combinator/data/parser/union'));
-            __export(require('./combinator/data/parser/sequence'));
-            __export(require('./combinator/data/parser/subsequence'));
-            __export(require('./combinator/data/parser/inits'));
-            __export(require('./combinator/data/parser/tails'));
-            __export(require('./combinator/data/parser/some'));
-            __export(require('./combinator/control/constraint/block'));
-            __export(require('./combinator/control/constraint/line'));
-            __export(require('./combinator/control/constraint/scope'));
-            __export(require('./combinator/control/constraint/contract'));
-            __export(require('./combinator/control/manipulation/surround'));
-            __export(require('./combinator/control/manipulation/match'));
-            __export(require('./combinator/control/manipulation/convert'));
-            __export(require('./combinator/control/manipulation/indent'));
-            __export(require('./combinator/control/manipulation/trim'));
-            __export(require('./combinator/control/manipulation/lazy'));
-            __export(require('./combinator/control/monad/fmap'));
-            __export(require('./combinator/control/monad/bind'));
+            __export(_dereq_('./combinator/data/parser/union'));
+            __export(_dereq_('./combinator/data/parser/sequence'));
+            __export(_dereq_('./combinator/data/parser/subsequence'));
+            __export(_dereq_('./combinator/data/parser/inits'));
+            __export(_dereq_('./combinator/data/parser/tails'));
+            __export(_dereq_('./combinator/data/parser/some'));
+            __export(_dereq_('./combinator/control/constraint/block'));
+            __export(_dereq_('./combinator/control/constraint/line'));
+            __export(_dereq_('./combinator/control/constraint/scope'));
+            __export(_dereq_('./combinator/control/constraint/contract'));
+            __export(_dereq_('./combinator/control/manipulation/surround'));
+            __export(_dereq_('./combinator/control/manipulation/match'));
+            __export(_dereq_('./combinator/control/manipulation/convert'));
+            __export(_dereq_('./combinator/control/manipulation/indent'));
+            __export(_dereq_('./combinator/control/manipulation/trim'));
+            __export(_dereq_('./combinator/control/manipulation/lazy'));
+            __export(_dereq_('./combinator/control/monad/fmap'));
+            __export(_dereq_('./combinator/control/monad/bind'));
         },
         {
             './combinator/control/constraint/block': 21,
@@ -906,11 +917,11 @@ require = function () {
         }
     ],
     21: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../data/parser');
-            const line_1 = require('./line');
+            const parser_1 = _dereq_('../../data/parser');
+            const line_1 = _dereq_('./line');
             function block(parser, separation = true) {
                 return source => {
                     if (source === '')
@@ -932,10 +943,10 @@ require = function () {
         }
     ],
     22: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../data/parser');
+            const parser_1 = _dereq_('../../data/parser');
             function contract(pattern, parser, cond) {
                 return verify(validate(pattern, parser), cond);
             }
@@ -974,10 +985,10 @@ require = function () {
         { '../../data/parser': 33 }
     ],
     23: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../data/parser');
+            const parser_1 = _dereq_('../../data/parser');
             function line(parser, allowTrailingWhitespace = true) {
                 return source => {
                     if (source === '')
@@ -1013,10 +1024,10 @@ require = function () {
         { '../../data/parser': 33 }
     ],
     24: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../data/parser');
+            const parser_1 = _dereq_('../../data/parser');
             function focus(scope, parser) {
                 return source => {
                     if (source === '')
@@ -1056,7 +1067,7 @@ require = function () {
         { '../../data/parser': 33 }
     ],
     25: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function convert(conv, parser) {
@@ -1075,16 +1086,16 @@ require = function () {
         {}
     ],
     26: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../data/parser');
-            const some_1 = require('../../data/parser/some');
-            const bind_1 = require('../monad/bind');
-            const match_1 = require('./match');
-            const surround_1 = require('./surround');
-            const line_1 = require('../constraint/line');
-            const scope_1 = require('../constraint/scope');
+            const parser_1 = _dereq_('../../data/parser');
+            const some_1 = _dereq_('../../data/parser/some');
+            const bind_1 = _dereq_('../monad/bind');
+            const match_1 = _dereq_('./match');
+            const surround_1 = _dereq_('./surround');
+            const line_1 = _dereq_('../constraint/line');
+            const scope_1 = _dereq_('../constraint/scope');
             function indent(parser) {
                 return bind_1.bind(match_1.match(/^(?=([^\S\n]+))/, ([, indent]) => some_1.some(line_1.line(scope_1.rewrite(s => [
                     [],
@@ -1113,7 +1124,7 @@ require = function () {
         }
     ],
     27: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function lazy(builder) {
@@ -1125,10 +1136,10 @@ require = function () {
         {}
     ],
     28: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../data/parser');
+            const parser_1 = _dereq_('../../data/parser');
             function match(pattern, f) {
                 return source => {
                     if (source === '')
@@ -1148,7 +1159,7 @@ require = function () {
         { '../../data/parser': 33 }
     ],
     29: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function surround(start, parser, end, strict = true) {
@@ -1186,10 +1197,10 @@ require = function () {
         {}
     ],
     30: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const convert_1 = require('./convert');
+            const convert_1 = _dereq_('./convert');
             function trim(parser) {
                 return convert_1.convert(source => source.trim(), parser);
             }
@@ -1206,10 +1217,10 @@ require = function () {
         { './convert': 25 }
     ],
     31: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../data/parser');
+            const parser_1 = _dereq_('../../data/parser');
             function bind(parser, f) {
                 return source => {
                     if (source === '')
@@ -1228,10 +1239,10 @@ require = function () {
         { '../../data/parser': 33 }
     ],
     32: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const bind_1 = require('./bind');
+            const bind_1 = _dereq_('./bind');
             function fmap(parser, f) {
                 return bind_1.bind(parser, (rs, r) => [
                     f(rs),
@@ -1243,7 +1254,7 @@ require = function () {
         { './bind': 31 }
     ],
     33: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function eval_(result, default_ = []) {
@@ -1262,12 +1273,12 @@ require = function () {
         {}
     ],
     34: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const union_1 = require('./union');
-            const sequence_1 = require('./sequence');
-            const bind_1 = require('../../control/monad/bind');
+            const union_1 = _dereq_('./union');
+            const sequence_1 = _dereq_('./sequence');
+            const bind_1 = _dereq_('../../control/monad/bind');
             function inits(parsers) {
                 let ps;
                 return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs, rest) => union_1.union([
@@ -1293,12 +1304,12 @@ require = function () {
         }
     ],
     35: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const union_1 = require('./union');
-            const bind_1 = require('../../control/monad/bind');
-            const concat_1 = require('spica/concat');
+            const union_1 = _dereq_('./union');
+            const bind_1 = _dereq_('../../control/monad/bind');
+            const concat_1 = _dereq_('spica/concat');
             function sequence(parsers) {
                 let ps;
                 return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs1, rest) => bind_1.bind(sequence(ps = ps || parsers.slice(1)), (rs2, rest) => [
@@ -1315,11 +1326,11 @@ require = function () {
         }
     ],
     36: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../parser');
-            const concat_1 = require('spica/concat');
+            const parser_1 = _dereq_('../parser');
+            const concat_1 = _dereq_('spica/concat');
             function some(parser, until) {
                 return source => {
                     let rest = source;
@@ -1354,11 +1365,11 @@ require = function () {
         }
     ],
     37: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const union_1 = require('./union');
-            const inits_1 = require('./inits');
+            const union_1 = _dereq_('./union');
+            const inits_1 = _dereq_('./inits');
             function subsequence(parsers) {
                 switch (parsers.length) {
                 case 0:
@@ -1384,11 +1395,11 @@ require = function () {
         }
     ],
     38: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const union_1 = require('./union');
-            const sequence_1 = require('./sequence');
+            const union_1 = _dereq_('./union');
+            const sequence_1 = _dereq_('./sequence');
             function tails(parsers) {
                 return union_1.union(parsers.map((_, i) => sequence_1.sequence(parsers.slice(i))));
             }
@@ -1400,7 +1411,7 @@ require = function () {
         }
     ],
     39: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function union(parsers) {
@@ -1423,7 +1434,7 @@ require = function () {
         {}
     ],
     40: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             function __export(m) {
                 for (var p in m)
@@ -1431,21 +1442,21 @@ require = function () {
                         exports[p] = m[p];
             }
             Object.defineProperty(exports, '__esModule', { value: true });
-            __export(require('./parser/api'));
+            __export(_dereq_('./parser/api'));
         },
         { './parser/api': 41 }
     ],
     41: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var parse_1 = require('./api/parse');
+            var parse_1 = _dereq_('./api/parse');
             exports.parse = parse_1.parse;
-            var bind_1 = require('./api/bind');
+            var bind_1 = _dereq_('./api/bind');
             exports.bind = bind_1.bind;
-            var source_1 = require('./api/source');
+            var source_1 = _dereq_('./api/source');
             exports.breaklines = source_1.breaklines;
-            var cache_1 = require('./api/cache');
+            var cache_1 = _dereq_('./api/cache');
             exports.caches = cache_1.caches;
         },
         {
@@ -1456,13 +1467,13 @@ require = function () {
         }
     ],
     42: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const segment_1 = require('../segment');
-            const block_1 = require('../block');
-            const normalization_1 = require('./normalization');
+            const combinator_1 = _dereq_('../../combinator');
+            const segment_1 = _dereq_('../segment');
+            const block_1 = _dereq_('../block');
+            const normalization_1 = _dereq_('./normalization');
             function bind(target) {
                 const pairs = [];
                 let revision;
@@ -1558,11 +1569,11 @@ require = function () {
         }
     ],
     43: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const math_1 = require('../inline/math');
-            const media_1 = require('../inline/media');
+            const math_1 = _dereq_('../inline/math');
+            const media_1 = _dereq_('../inline/media');
             exports.caches = {
                 math: math_1.cache,
                 media: media_1.cache
@@ -1574,7 +1585,7 @@ require = function () {
         }
     ],
     44: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function normalize(source) {
@@ -1595,15 +1606,15 @@ require = function () {
         {}
     ],
     45: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const block_1 = require('../block');
-            const segment_1 = require('../segment');
-            const normalization_1 = require('./normalization');
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const block_1 = _dereq_('../block');
+            const segment_1 = _dereq_('../segment');
+            const normalization_1 = _dereq_('./normalization');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             function parse(source) {
                 return typed_dom_1.frag(segment_1.segment(normalization_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg))), []));
             }
@@ -1619,12 +1630,12 @@ require = function () {
         }
     ],
     46: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const parse_1 = require('./parse');
-            const concat_1 = require('spica/concat');
+            const combinator_1 = _dereq_('../../combinator');
+            const parse_1 = _dereq_('./parse');
+            const concat_1 = _dereq_('spica/concat');
             const sources = new WeakMap();
             function breaklines(source) {
                 return [...parse_1.parse(source).children].map(el => {
@@ -1667,12 +1678,12 @@ require = function () {
         }
     ],
     47: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../combinator');
-            const autolink_1 = require('./inline/autolink');
-            const unescapable_1 = require('./source/unescapable');
+            const combinator_1 = _dereq_('../combinator');
+            const autolink_1 = _dereq_('./inline/autolink');
+            const unescapable_1 = _dereq_('./source/unescapable');
             exports.autolink = combinator_1.union([
                 autolink_1.autolink,
                 unescapable_1.unescsource
@@ -1685,25 +1696,25 @@ require = function () {
         }
     ],
     48: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../combinator');
-            const newline_1 = require('./block/newline');
-            const horizontalrule_1 = require('./block/horizontalrule');
-            const heading_1 = require('./block/heading');
-            const ulist_1 = require('./block/ulist');
-            const olist_1 = require('./block/olist');
-            const ilist_1 = require('./block/ilist');
-            const dlist_1 = require('./block/dlist');
-            const table_1 = require('./block/table');
-            const blockquote_1 = require('./block/blockquote');
-            const codeblock_1 = require('./block/codeblock');
-            const mathblock_1 = require('./block/mathblock');
-            const extension_1 = require('./block/extension');
-            const paragraph_1 = require('./block/paragraph');
-            const locale_1 = require('./locale');
-            const source_1 = require('./api/source');
+            const combinator_1 = _dereq_('../combinator');
+            const newline_1 = _dereq_('./block/newline');
+            const horizontalrule_1 = _dereq_('./block/horizontalrule');
+            const heading_1 = _dereq_('./block/heading');
+            const ulist_1 = _dereq_('./block/ulist');
+            const olist_1 = _dereq_('./block/olist');
+            const ilist_1 = _dereq_('./block/ilist');
+            const dlist_1 = _dereq_('./block/dlist');
+            const table_1 = _dereq_('./block/table');
+            const blockquote_1 = _dereq_('./block/blockquote');
+            const codeblock_1 = _dereq_('./block/codeblock');
+            const mathblock_1 = _dereq_('./block/mathblock');
+            const extension_1 = _dereq_('./block/extension');
+            const paragraph_1 = _dereq_('./block/paragraph');
+            const locale_1 = _dereq_('./locale');
+            const source_1 = _dereq_('./api/source');
             exports.block = source_1.memorize(locale_1.localize(combinator_1.union([
                 newline_1.newline,
                 horizontalrule_1.horizontalrule,
@@ -1740,15 +1751,15 @@ require = function () {
         }
     ],
     49: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const line_1 = require('../source/line');
-            const autolink_1 = require('../autolink');
-            const parse_1 = require('../api/parse');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const line_1 = _dereq_('../source/line');
+            const autolink_1 = _dereq_('../autolink');
+            const parse_1 = _dereq_('../api/parse');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.union([
                 combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline)),
                 combinator_1.validate(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline))
@@ -1784,15 +1795,15 @@ require = function () {
         }
     ],
     50: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const escapable_1 = require('../source/escapable');
-            require('../source/unescapable');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
-            const autolink_1 = require('../autolink');
+            const combinator_1 = _dereq_('../../combinator');
+            const escapable_1 = _dereq_('../source/escapable');
+            _dereq_('../source/unescapable');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
+            const autolink_1 = _dereq_('../autolink');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300})\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
@@ -1828,15 +1839,15 @@ require = function () {
         }
     ],
     51: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const line_1 = require('../source/line');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const line_1 = _dereq_('../source/line');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
@@ -1860,15 +1871,15 @@ require = function () {
         }
     ],
     52: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const fig_1 = require('./extension/fig');
-            const figure_1 = require('./extension/figure');
-            const graph_1 = require('./extension/graph');
-            const example_1 = require('./extension/example');
-            const placeholder_1 = require('./extension/placeholder');
+            const combinator_1 = _dereq_('../../combinator');
+            const fig_1 = _dereq_('./extension/fig');
+            const figure_1 = _dereq_('./extension/figure');
+            const graph_1 = _dereq_('./extension/graph');
+            const example_1 = _dereq_('./extension/example');
+            const placeholder_1 = _dereq_('./extension/placeholder');
             exports.segment = combinator_1.validate(/^~{3,}[a-z]|^\[:[^\]\s]+\][^\S\n]*\n/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
@@ -1894,15 +1905,15 @@ require = function () {
         }
     ],
     53: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const parse_1 = require('../../api/parse');
-            const mathblock_1 = require('../mathblock');
-            const util_1 = require('../../util');
-            const util_2 = require('../../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            const parse_1 = _dereq_('../../api/parse');
+            const mathblock_1 = _dereq_('../mathblock');
+            const util_1 = _dereq_('../../util');
+            const util_2 = _dereq_('../../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
@@ -1953,18 +1964,18 @@ require = function () {
         }
     ],
     54: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const line_1 = require('../../source/line');
-            const figure_1 = require('./figure');
-            const codeblock_1 = require('../codeblock');
-            const mathblock_1 = require('../mathblock');
-            const graph_1 = require('./graph');
-            const example_1 = require('../extension/example');
-            const blockquote_1 = require('../blockquote');
-            const inline_1 = require('../../inline');
+            const combinator_1 = _dereq_('../../../combinator');
+            const line_1 = _dereq_('../../source/line');
+            const figure_1 = _dereq_('./figure');
+            const codeblock_1 = _dereq_('../codeblock');
+            const mathblock_1 = _dereq_('../mathblock');
+            const graph_1 = _dereq_('./graph');
+            const example_1 = _dereq_('../extension/example');
+            const blockquote_1 = _dereq_('../blockquote');
+            const inline_1 = _dereq_('../../inline');
             exports.segment = combinator_1.block(combinator_1.sequence([
                 combinator_1.line(inline_1.label),
                 combinator_1.union([
@@ -1994,21 +2005,21 @@ require = function () {
         }
     ],
     55: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const line_1 = require('../../source/line');
-            const table_1 = require('../table');
-            const codeblock_1 = require('../codeblock');
-            const mathblock_1 = require('../mathblock');
-            const graph_1 = require('./graph');
-            const example_1 = require('./example');
-            const blockquote_1 = require('../blockquote');
-            const inline_1 = require('../../inline');
-            const inline_2 = require('../../inline');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            const line_1 = _dereq_('../../source/line');
+            const table_1 = _dereq_('../table');
+            const codeblock_1 = _dereq_('../codeblock');
+            const mathblock_1 = _dereq_('../mathblock');
+            const graph_1 = _dereq_('./graph');
+            const example_1 = _dereq_('./example');
+            const blockquote_1 = _dereq_('../blockquote');
+            const inline_1 = _dereq_('../../inline');
+            const inline_2 = _dereq_('../../inline');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[:\S+?\][^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/, util_1.memoize(([, bracket]) => bracket, (bracket, closer = new RegExp(`^${ bracket }[^\\S\\n]*(?:\\n|$)`)) => combinator_1.surround('', combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
@@ -2068,12 +2079,12 @@ require = function () {
         }
     ],
     56: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            require('../../source/unescapable');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            _dereq_('../../source/unescapable');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.union([
                 combinator_1.focus(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
@@ -2106,12 +2117,12 @@ require = function () {
         }
     ],
     57: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const inline_1 = require('../../inline');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            const inline_1 = _dereq_('../../inline');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
@@ -2132,13 +2143,13 @@ require = function () {
         }
     ],
     58: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.heading = combinator_1.block(combinator_1.line(inline_1.index(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, util_1.memoize(([, {length: level}]) => level, level => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
@@ -2152,11 +2163,11 @@ require = function () {
         }
     ],
     59: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.horizontalrule = combinator_1.block(combinator_1.line(combinator_1.focus(/^-{3,}[^\S\n]*(?:\n|$)/, _ => [
                 [typed_dom_1.html('hr')],
                 ''
@@ -2168,15 +2179,15 @@ require = function () {
         }
     ],
     60: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const ulist_1 = require('./ulist');
-            const olist_1 = require('./olist');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
-            const inline_1 = require('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const ulist_1 = _dereq_('./ulist');
+            const olist_1 = _dereq_('./olist');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
+            const inline_1 = _dereq_('../inline');
             exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^[-+*](?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
@@ -2201,12 +2212,12 @@ require = function () {
         }
     ],
     61: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            require('../source/unescapable');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            _dereq_('../source/unescapable');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99})\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
@@ -2234,11 +2245,11 @@ require = function () {
         }
     ],
     62: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const line_1 = require('../source/line');
+            const combinator_1 = _dereq_('../../combinator');
+            const line_1 = _dereq_('../source/line');
             exports.newline = combinator_1.some(combinator_1.union([line_1.blankline]));
         },
         {
@@ -2247,16 +2258,16 @@ require = function () {
         }
     ],
     63: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const ulist_1 = require('./ulist');
-            const ilist_1 = require('./ilist');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const memoization_1 = require('spica/memoization');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const ulist_1 = _dereq_('./ulist');
+            const ilist_1 = _dereq_('./ilist');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const memoization_1 = _dereq_('spica/memoization');
+            const typed_dom_1 = _dereq_('typed-dom');
             const opener = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`));
             exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
@@ -2292,14 +2303,14 @@ require = function () {
         }
     ],
     64: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const mention_1 = require('./paragraph/mention');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const mention_1 = _dereq_('./paragraph/mention');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.subsequence([
                 combinator_1.some(mention_1.mention),
                 util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))
@@ -2314,12 +2325,12 @@ require = function () {
         }
     ],
     65: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const address_1 = require('./mention/address');
-            const quote_1 = require('./mention/quote');
+            const combinator_1 = _dereq_('../../../combinator');
+            const address_1 = _dereq_('./mention/address');
+            const quote_1 = _dereq_('./mention/quote');
             exports.mention = combinator_1.block(combinator_1.subsequence([
                 combinator_1.some(address_1.address),
                 quote_1.quote
@@ -2332,12 +2343,12 @@ require = function () {
         }
     ],
     66: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../../combinator');
-            const inline_1 = require('../../../inline');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../../combinator');
+            const inline_1 = _dereq_('../../../inline');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.address = combinator_1.line(combinator_1.match(/^(?=((>+)(?:[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*|https?:\/\/[^/]\S*)\s*$))/, ([, addr, {length: level}]) => combinator_1.convert(source => `{ ${ addr.slice(level).trim() } }${ source.slice(addr.length) }`, combinator_1.fmap(combinator_1.union([inline_1.link]), ([el]) => [typed_dom_1.html('span', {
                     class: 'address',
                     href: null,
@@ -2351,14 +2362,14 @@ require = function () {
         }
     ],
     67: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../../combinator');
-            const line_1 = require('../../../source/line');
-            const autolink_1 = require('../../../autolink');
-            const util_1 = require('../../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../../combinator');
+            const line_1 = _dereq_('../../../source/line');
+            const autolink_1 = _dereq_('../../../autolink');
+            const util_1 = _dereq_('../../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.quote = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.union([
                 combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+(?:\s|$))/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink))))),
                 combinator_1.validate(/^(?=>+(?:[^>\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+)/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink)))))
@@ -2373,14 +2384,14 @@ require = function () {
         }
     ],
     68: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.sequence([
                 row(cell(data), false),
                 row(cell(align), true),
@@ -2447,16 +2458,16 @@ require = function () {
         }
     ],
     69: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const olist_1 = require('./olist');
-            const ilist_1 = require('./ilist');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const olist_1 = _dereq_('./olist');
+            const ilist_1 = _dereq_('./ilist');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^-(?:\s|$)/;
             exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(opener, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
@@ -2487,31 +2498,31 @@ require = function () {
         }
     ],
     70: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../combinator');
-            const annotation_1 = require('./inline/annotation');
-            const authority_1 = require('./inline/authority');
-            const template_1 = require('./inline/template');
-            const extension_1 = require('./inline/extension');
-            const link_1 = require('./inline/link');
-            const ruby_1 = require('./inline/ruby');
-            const html_1 = require('./inline/html');
-            const comment_1 = require('./inline/comment');
-            const insertion_1 = require('./inline/insertion');
-            const deletion_1 = require('./inline/deletion');
-            const emphasis_1 = require('./inline/emphasis');
-            const strong_1 = require('./inline/strong');
-            const code_1 = require('./inline/code');
-            const math_1 = require('./inline/math');
-            const media_1 = require('./inline/media');
-            const htmlentity_1 = require('./inline/htmlentity');
-            const emoji_1 = require('./inline/emoji');
-            const shortmedia_1 = require('./inline/shortmedia');
-            const autolink_1 = require('./inline/autolink');
-            const bracket_1 = require('./inline/bracket');
-            const text_1 = require('./source/text');
+            const combinator_1 = _dereq_('../combinator');
+            const annotation_1 = _dereq_('./inline/annotation');
+            const authority_1 = _dereq_('./inline/authority');
+            const template_1 = _dereq_('./inline/template');
+            const extension_1 = _dereq_('./inline/extension');
+            const link_1 = _dereq_('./inline/link');
+            const ruby_1 = _dereq_('./inline/ruby');
+            const html_1 = _dereq_('./inline/html');
+            const comment_1 = _dereq_('./inline/comment');
+            const insertion_1 = _dereq_('./inline/insertion');
+            const deletion_1 = _dereq_('./inline/deletion');
+            const emphasis_1 = _dereq_('./inline/emphasis');
+            const strong_1 = _dereq_('./inline/strong');
+            const code_1 = _dereq_('./inline/code');
+            const math_1 = _dereq_('./inline/math');
+            const media_1 = _dereq_('./inline/media');
+            const htmlentity_1 = _dereq_('./inline/htmlentity');
+            const emoji_1 = _dereq_('./inline/emoji');
+            const shortmedia_1 = _dereq_('./inline/shortmedia');
+            const autolink_1 = _dereq_('./inline/autolink');
+            const bracket_1 = _dereq_('./inline/bracket');
+            const text_1 = _dereq_('./source/text');
             exports.inline = combinator_1.union([
                 annotation_1.annotation,
                 authority_1.authority,
@@ -2535,20 +2546,20 @@ require = function () {
                 bracket_1.bracket,
                 text_1.text
             ]);
-            var indexer_1 = require('./inline/extension/indexer');
+            var indexer_1 = _dereq_('./inline/extension/indexer');
             exports.indexer = indexer_1.indexer;
             exports.index = indexer_1.index;
-            var label_1 = require('./inline/extension/label');
+            var label_1 = _dereq_('./inline/extension/label');
             exports.label = label_1.label;
             exports.isGroup = label_1.isGroup;
             exports.isFixed = label_1.isFixed;
-            var link_2 = require('./inline/link');
+            var link_2 = _dereq_('./inline/link');
             exports.link = link_2.link;
-            var media_2 = require('./inline/media');
+            var media_2 = _dereq_('./inline/media');
             exports.media = media_2.media;
-            var uri_1 = require('./inline/autolink/uri');
+            var uri_1 = _dereq_('./inline/autolink/uri');
             exports.uri = uri_1.uri;
-            var shortmedia_2 = require('./inline/shortmedia');
+            var shortmedia_2 = _dereq_('./inline/shortmedia');
             exports.shortmedia = shortmedia_2.shortmedia;
         },
         {
@@ -2580,13 +2591,13 @@ require = function () {
         }
     ],
     71: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.annotation = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.surround(/^\n?\(\((?:[^\S\n]*\n)?/, util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\n?\)\)/)), /^\n?\)\)/)), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el)));
         },
         {
@@ -2597,13 +2608,13 @@ require = function () {
         }
     ],
     72: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const inline_1 = require('../inline');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const inline_1 = _dereq_('../inline');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.authority = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.surround('[[', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\n|^]]/)), ']]')), ns => [typed_dom_1.html('sup', { class: 'authority' }, ns)]), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el) && !util_1.hasAnnotationOrAuthority(el))));
         },
         {
@@ -2614,15 +2625,15 @@ require = function () {
         }
     ],
     73: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const uri_1 = require('./autolink/uri');
-            const email_1 = require('./autolink/email');
-            const channel_1 = require('./autolink/channel');
-            const account_1 = require('./autolink/account');
-            const hashtag_1 = require('./autolink/hashtag');
+            const combinator_1 = _dereq_('../../combinator');
+            const uri_1 = _dereq_('./autolink/uri');
+            const email_1 = _dereq_('./autolink/email');
+            const channel_1 = _dereq_('./autolink/channel');
+            const account_1 = _dereq_('./autolink/account');
+            const hashtag_1 = _dereq_('./autolink/hashtag');
             exports.autolink = combinator_1.union([
                 uri_1.uri,
                 email_1.email,
@@ -2641,13 +2652,13 @@ require = function () {
         }
     ],
     74: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const unescapable_1 = require('../../source/unescapable');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            const unescapable_1 = _dereq_('../../source/unescapable');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.account = combinator_1.subline(combinator_1.union([
                 combinator_1.verify(combinator_1.focus(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*/, source => [
                     [typed_dom_1.html('a', {
@@ -2667,15 +2678,15 @@ require = function () {
         }
     ],
     75: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            require('../../source/unescapable');
-            const account_1 = require('./account');
-            const hashtag_1 = require('./hashtag');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            _dereq_('../../source/unescapable');
+            const account_1 = _dereq_('./account');
+            const hashtag_1 = _dereq_('./hashtag');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.channel = combinator_1.subline(combinator_1.fmap(combinator_1.sequence([
                 combinator_1.verify(account_1.account, ([node]) => node instanceof HTMLAnchorElement),
                 combinator_1.some(combinator_1.verify(hashtag_1.hashtag_, ([node]) => node instanceof HTMLAnchorElement))
@@ -2694,13 +2705,13 @@ require = function () {
         }
     ],
     76: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const unescapable_1 = require('../../source/unescapable');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            const unescapable_1 = _dereq_('../../source/unescapable');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.email = combinator_1.subline(combinator_1.union([
                 combinator_1.verify(combinator_1.focus(/^[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/, source => [
                     [typed_dom_1.html('a', {
@@ -2721,13 +2732,13 @@ require = function () {
         }
     ],
     77: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const unescapable_1 = require('../../source/unescapable');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            const unescapable_1 = _dereq_('../../source/unescapable');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.hashtag = combinator_1.lazy(() => combinator_1.verify(exports.hashtag_, (_, rest) => !rest.startsWith('#')));
             exports.hashtag_ = combinator_1.subline(combinator_1.union([
                 combinator_1.focus(/^#(?:[a-zA-Z0-9]|[^\x00-\x7F\s])+/, tag => [
@@ -2748,12 +2759,12 @@ require = function () {
         }
     ],
     78: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const unescapable_1 = require('../../source/unescapable');
-            const link_1 = require('../link');
+            const combinator_1 = _dereq_('../../../combinator');
+            const unescapable_1 = _dereq_('../../source/unescapable');
+            const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
             exports.uri = combinator_1.subline(combinator_1.union([combinator_1.surround(/^(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                     link_1.bracket,
@@ -2775,13 +2786,13 @@ require = function () {
         }
     ],
     79: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../inline');
-            const combinator_1 = require('../../combinator');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.bracket = combinator_1.lazy(() => util_1.defrag(combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(inline_1.inline, ')'), ')', false), ns => [
                     typed_dom_1.text('('),
@@ -2818,12 +2829,12 @@ require = function () {
         }
     ],
     80: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const unescapable_1 = require('../source/unescapable');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const unescapable_1 = _dereq_('../source/unescapable');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.code = combinator_1.subline(combinator_1.union([
                 combinator_1.match(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body]) => rest => [
                     [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
@@ -2839,11 +2850,11 @@ require = function () {
         }
     ],
     81: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.comment = combinator_1.match(/^<(#+)\s+(\S+(?:\s+\S+)*?)\s+\1>/, ([, , title]) => rest => [
                 [typed_dom_1.html('sup', {
                         class: 'comment',
@@ -2858,13 +2869,13 @@ require = function () {
         }
     ],
     82: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../inline');
-            const combinator_1 = require('../../combinator');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.deletion = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^~~[\s\S]+?~~/, combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.some(combinator_1.union([inline_1.inline]), '~~'))), '~~')), ns => [typed_dom_1.html('del', ns)]), ([el]) => !util_1.hasInsOrDel(el)));
         },
         {
@@ -2875,11 +2886,11 @@ require = function () {
         }
     ],
     83: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.emoji = combinator_1.subline(combinator_1.focus(/^:([a-z0-9]+(?:_[a-z0-9]+)*):/, source => [
                 [typed_dom_1.html('span', {
                         class: 'emoji',
@@ -2894,14 +2905,14 @@ require = function () {
         }
     ],
     84: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../inline');
-            const combinator_1 = require('../../combinator');
-            const strong_1 = require('./strong');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const strong_1 = _dereq_('./strong');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.emphasis = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.validate(/^\*\S[\s\S]*?\*/, combinator_1.surround('*', util_1.defrag(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
@@ -2916,14 +2927,14 @@ require = function () {
         }
     ],
     85: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const index_1 = require('./extension/index');
-            const label_1 = require('./extension/label');
-            const data_1 = require('./extension/data');
-            const placeholder_1 = require('./extension/placeholder');
+            const combinator_1 = _dereq_('../../combinator');
+            const index_1 = _dereq_('./extension/index');
+            const label_1 = _dereq_('./extension/label');
+            const data_1 = _dereq_('./extension/data');
+            const placeholder_1 = _dereq_('./extension/placeholder');
             exports.extension = combinator_1.validate('[', combinator_1.union([
                 index_1.index,
                 label_1.label,
@@ -2940,14 +2951,14 @@ require = function () {
         }
     ],
     86: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../../inline');
-            const combinator_1 = require('../../../combinator');
-            const unescapable_1 = require('../../source/unescapable');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../../inline');
+            const combinator_1 = _dereq_('../../../combinator');
+            const unescapable_1 = _dereq_('../../source/unescapable');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.data = combinator_1.lazy(() => combinator_1.fmap(combinator_1.surround('[~', combinator_1.inits([
                 combinator_1.focus(/^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?/, util_1.defrag(combinator_1.some(unescapable_1.unescsource))),
                 combinator_1.surround('|', util_1.defrag(combinator_1.some(inline_1.inline, ']')), '', false)
@@ -2971,15 +2982,15 @@ require = function () {
         }
     ],
     87: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../../inline');
-            const combinator_1 = require('../../../combinator');
-            const link_1 = require('../link');
-            const indexer_1 = require('./indexer');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../../inline');
+            const combinator_1 = _dereq_('../../../combinator');
+            const link_1 = _dereq_('../link');
+            const indexer_1 = _dereq_('./indexer');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexer_1.index(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^[\n\]]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     href: `#${ el.id }`
@@ -2995,12 +3006,12 @@ require = function () {
         }
     ],
     88: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            const index_1 = require('./index');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            const index_1 = _dereq_('./index');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.indexer = combinator_1.lazy(() => combinator_1.line(combinator_1.fmap(combinator_1.surround(/^\s+(?=\[#)/, combinator_1.trim(combinator_1.union([index_1.index])), /^(?=\s*$)/), ([el]) => [typed_dom_1.html('span', {
                     class: 'indexer',
                     'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
@@ -3031,14 +3042,14 @@ require = function () {
         }
     ],
     89: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../../combinator');
-            require('../../source/unescapable');
-            const link_1 = require('../link');
-            const util_1 = require('../../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../../combinator');
+            _dereq_('../../source/unescapable');
+            const link_1 = _dereq_('../link');
+            const util_1 = _dereq_('../../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
                     class: 'label',
                     'data-label': el.textContent.split(':').pop(),
@@ -3076,12 +3087,12 @@ require = function () {
         }
     ],
     90: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../../inline');
-            const combinator_1 = require('../../../combinator');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../../inline');
+            const combinator_1 = _dereq_('../../../combinator');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.placeholder = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.surround('[', combinator_1.validate(/^[\^](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']'), () => [typed_dom_1.html('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'extension',
@@ -3095,16 +3106,16 @@ require = function () {
         }
     ],
     91: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../inline');
-            const combinator_1 = require('../../combinator');
-            const unescapable_1 = require('../source/unescapable');
-            const escapable_1 = require('../source/escapable');
-            const char_1 = require('../source/char');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const unescapable_1 = _dereq_('../source/unescapable');
+            const escapable_1 = _dereq_('../source/escapable');
+            const char_1 = _dereq_('../source/char');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             const attributes = {
                 bdo: {
                     dir: Object.freeze([
@@ -3170,12 +3181,12 @@ require = function () {
         }
     ],
     92: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            require('../source/unescapable');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            _dereq_('../source/unescapable');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.htmlentity = combinator_1.subline(combinator_1.focus(/^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i, entity => [
                 [typed_dom_1.text(parse(entity))],
                 ''
@@ -3193,13 +3204,13 @@ require = function () {
         }
     ],
     93: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../inline');
-            const combinator_1 = require('../../combinator');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.insertion = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\+\+[\s\S]+?\+\+/, combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.some(combinator_1.union([inline_1.inline]), '++'))), '++')), ns => [typed_dom_1.html('ins', ns)]), ([el]) => !util_1.hasInsOrDel(el)));
         },
         {
@@ -3210,17 +3221,17 @@ require = function () {
         }
     ],
     94: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../inline');
-            const combinator_1 = require('../../combinator');
-            const unescapable_1 = require('../source/unescapable');
-            const html_1 = require('./html');
-            const util_1 = require('../util');
-            const uri_1 = require('../string/uri');
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const unescapable_1 = _dereq_('../source/unescapable');
+            const html_1 = _dereq_('./html');
+            const util_1 = _dereq_('../util');
+            const uri_1 = _dereq_('../string/uri');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.attributes = { nofollow: [undefined] };
             exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.tails([
                 util_1.wrap(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/))), ']', false)),
@@ -3332,14 +3343,14 @@ require = function () {
         }
     ],
     95: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const escapable_1 = require('../source/escapable');
-            const util_1 = require('../util');
-            const cache_1 = require('spica/cache');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const escapable_1 = _dereq_('../source/escapable');
+            const util_1 = _dereq_('../util');
+            const cache_1 = _dereq_('spica/cache');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.cache = new cache_1.Cache(20);
             exports.math = combinator_1.subline(combinator_1.verify(combinator_1.rewrite(combinator_1.surround('${', combinator_1.some(combinator_1.union([escapable_1.escsource]), /^}\$|^\n/), '}$'), combinator_1.convert(source => `\${${ source.slice(2, -2).trim() }}$`, source => [
                 exports.cache.has(source) ? [exports.cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
@@ -3358,18 +3369,18 @@ require = function () {
         }
     ],
     96: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const text_1 = require('../source/text');
-            const link_1 = require('./link');
-            const html_1 = require('./html');
-            const uri_1 = require('../string/uri');
-            const util_1 = require('../util');
-            const cache_1 = require('spica/cache');
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const text_1 = _dereq_('../source/text');
+            const link_1 = _dereq_('./link');
+            const html_1 = _dereq_('./html');
+            const uri_1 = _dereq_('../string/uri');
+            const util_1 = _dereq_('../util');
+            const cache_1 = _dereq_('spica/cache');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.tails([
                 util_1.dup(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([text_1.text]), /^[\n\]]/))), ']', false)),
@@ -3415,15 +3426,15 @@ require = function () {
         }
     ],
     97: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const htmlentity_1 = require('./htmlentity');
-            const text_1 = require('../source/text');
-            const util_1 = require('../util');
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const htmlentity_1 = _dereq_('./htmlentity');
+            const text_1 = _dereq_('../source/text');
+            const util_1 = _dereq_('../util');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.ruby = combinator_1.subline(combinator_1.fmap(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\[.+?\]\(.+?\)/, combinator_1.sequence([
                 combinator_1.fmap(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[', util_1.defrag(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
@@ -3455,12 +3466,12 @@ require = function () {
         }
     ],
     98: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const uri_1 = require('./autolink/uri');
-            const media_1 = require('./media');
+            const combinator_1 = _dereq_('../../combinator');
+            const uri_1 = _dereq_('./autolink/uri');
+            const media_1 = _dereq_('./media');
             exports.shortmedia = combinator_1.subline(combinator_1.union([combinator_1.surround(/^!(?=h?ttps?:\/\/[^/?#\s])/, combinator_1.rewrite(uri_1.uri, combinator_1.convert(source => `!{${ uri_1.address(source) }${ uri_1.attribute(source) }}`, media_1.media)), '')]));
         },
         {
@@ -3470,13 +3481,13 @@ require = function () {
         }
     ],
     99: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = require('../inline');
-            const combinator_1 = require('../../combinator');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(util_1.trimNodeEnd(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.surround('**', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '**')), '**'))), ns => [typed_dom_1.html('strong', ns)]), ([el]) => util_1.hasTightText(el)));
         },
         {
@@ -3487,13 +3498,13 @@ require = function () {
         }
     ],
     100: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
-            const escapable_1 = require('../source/escapable');
-            const util_1 = require('../util');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../../combinator');
+            const escapable_1 = _dereq_('../source/escapable');
+            const util_1 = _dereq_('../util');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.rewrite(combinator_1.surround('{{', util_1.defrag(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^\n|^}}/)), '}}', false), source => [
                 [typed_dom_1.html('span', { class: 'template' }, source)],
                 ''
@@ -3507,12 +3518,12 @@ require = function () {
         }
     ],
     101: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../combinator');
-            const ja_1 = require('./locale/ja');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../combinator');
+            const ja_1 = _dereq_('./locale/ja');
+            const typed_dom_1 = _dereq_('typed-dom');
             function localize(block) {
                 return combinator_1.fmap(block, es => {
                     for (const block of es) {
@@ -3578,7 +3589,7 @@ require = function () {
         }
     ],
     102: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const endings = /[、。！？]/;
@@ -3590,15 +3601,15 @@ require = function () {
         {}
     ],
     103: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const normalization_1 = require('./api/normalization');
-            const combinator_1 = require('../combinator');
-            const codeblock_1 = require('./block/codeblock');
-            const mathblock_1 = require('./block/mathblock');
-            const extension_1 = require('./block/extension');
-            const line_1 = require('./source/line');
+            const normalization_1 = _dereq_('./api/normalization');
+            const combinator_1 = _dereq_('../combinator');
+            const codeblock_1 = _dereq_('./block/codeblock');
+            const mathblock_1 = _dereq_('./block/mathblock');
+            const extension_1 = _dereq_('./block/extension');
+            const line_1 = _dereq_('./source/line');
             const parser = combinator_1.union([
                 codeblock_1.segment,
                 mathblock_1.segment,
@@ -3627,10 +3638,10 @@ require = function () {
         }
     ],
     104: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
+            const typed_dom_1 = _dereq_('typed-dom');
             function char(char) {
                 return source => {
                     if (source === '')
@@ -3652,10 +3663,10 @@ require = function () {
         { 'typed-dom': 13 }
     ],
     105: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
+            const typed_dom_1 = _dereq_('typed-dom');
             const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]/;
             exports.escsource = source => {
                 if (source === '')
@@ -3699,10 +3710,10 @@ require = function () {
         { 'typed-dom': 13 }
     ],
     106: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../../combinator');
+            const combinator_1 = _dereq_('../../combinator');
             exports.anyline = combinator_1.line(_ => [
                 [],
                 ''
@@ -3724,10 +3735,10 @@ require = function () {
         { '../../combinator': 20 }
     ],
     107: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|\S#/;
             const next = /[\S\n]|$/;
             exports.text = source => {
@@ -3781,11 +3792,11 @@ require = function () {
         { 'typed-dom': 13 }
     ],
     108: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const text_1 = require('./text');
-            const typed_dom_1 = require('typed-dom');
+            const text_1 = _dereq_('./text');
+            const typed_dom_1 = _dereq_('typed-dom');
             exports.unescsource = source => {
                 if (source === '')
                     return;
@@ -3815,10 +3826,10 @@ require = function () {
         }
     ],
     109: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
+            const typed_dom_1 = _dereq_('typed-dom');
             function sanitize(uri) {
                 uri = uri.replace(/\s/g, encodeURI);
                 return isAcceptedProtocol(uri) ? uri : '';
@@ -3845,13 +3856,13 @@ require = function () {
         { 'typed-dom': 13 }
     ],
     110: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = require('../combinator');
-            const inline_1 = require('./inline');
-            const memoization_1 = require('spica/memoization');
-            const typed_dom_1 = require('typed-dom');
+            const combinator_1 = _dereq_('../combinator');
+            const inline_1 = _dereq_('./inline');
+            const memoization_1 = _dereq_('spica/memoization');
+            const typed_dom_1 = _dereq_('typed-dom');
             function hasContent(node) {
                 return hasText(node) || hasMedia(node);
             }
@@ -4000,22 +4011,22 @@ require = function () {
         }
     ],
     111: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var render_1 = require('./renderer/render');
+            var render_1 = _dereq_('./renderer/render');
             exports.render = render_1.render;
         },
         { './renderer/render': 112 }
     ],
     112: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const code_1 = require('./render/code');
-            const math_1 = require('./render/math');
-            const media_1 = require('./render/media');
-            const graph_1 = require('./render/graph');
+            const code_1 = _dereq_('./render/code');
+            const math_1 = _dereq_('./render/math');
+            const media_1 = _dereq_('./render/media');
+            const graph_1 = _dereq_('./render/graph');
             function render(target, opts = {}) {
                 opts = Object.assign({
                     code: code_1.code,
@@ -4066,7 +4077,7 @@ require = function () {
         }
     ],
     113: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
@@ -4080,12 +4091,12 @@ require = function () {
         {}
     ],
     114: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const sequence_1 = require('./graph/sequence');
-            const flowchart_1 = require('./graph/flowchart');
-            const graphviz_1 = require('./graph/graphviz');
+            const sequence_1 = _dereq_('./graph/sequence');
+            const flowchart_1 = _dereq_('./graph/flowchart');
+            const graphviz_1 = _dereq_('./graph/graphviz');
             function graph(target, opts) {
                 opts = Object.assign({
                     sequence: sequence_1.sequence,
@@ -4112,10 +4123,10 @@ require = function () {
         }
     ],
     115: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
+            const typed_dom_1 = _dereq_('typed-dom');
             function flowchart(target) {
                 if (typeof window.flowchart === 'undefined')
                     return;
@@ -4140,10 +4151,10 @@ require = function () {
         { 'typed-dom': 13 }
     ],
     116: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
+            const typed_dom_1 = _dereq_('typed-dom');
             let viz;
             function graphviz(target) {
                 if (typeof Viz === 'undefined')
@@ -4166,10 +4177,10 @@ require = function () {
         { 'typed-dom': 13 }
     ],
     117: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const typed_dom_1 = require('typed-dom');
+            const typed_dom_1 = _dereq_('typed-dom');
             function sequence(target) {
                 if (typeof Diagram === 'undefined')
                     return;
@@ -4189,11 +4200,11 @@ require = function () {
         { 'typed-dom': 13 }
     ],
     118: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const math_1 = require('../../parser/inline/math');
-            const typed_dom_1 = require('typed-dom');
+            const math_1 = _dereq_('../../parser/inline/math');
+            const typed_dom_1 = _dereq_('typed-dom');
             void MathJax.Hub.Config({
                 tex2jax: {
                     inlineMath: [[
@@ -4226,17 +4237,17 @@ require = function () {
         }
     ],
     119: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const twitter_1 = require('./media/twitter');
-            const youtube_1 = require('./media/youtube');
-            const gist_1 = require('./media/gist');
-            const slideshare_1 = require('./media/slideshare');
-            const pdf_1 = require('./media/pdf');
-            const video_1 = require('./media/video');
-            const audio_1 = require('./media/audio');
-            const image_1 = require('./media/image');
+            const twitter_1 = _dereq_('./media/twitter');
+            const youtube_1 = _dereq_('./media/youtube');
+            const gist_1 = _dereq_('./media/gist');
+            const slideshare_1 = _dereq_('./media/slideshare');
+            const pdf_1 = _dereq_('./media/pdf');
+            const video_1 = _dereq_('./media/video');
+            const audio_1 = _dereq_('./media/audio');
+            const image_1 = _dereq_('./media/image');
             function media(target, opts) {
                 opts = Object.assign({
                     twitter: twitter_1.twitter,
@@ -4270,11 +4281,11 @@ require = function () {
         }
     ],
     120: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const media_1 = require('../../../parser/inline/media');
-            const typed_dom_1 = require('typed-dom');
+            const media_1 = _dereq_('../../../parser/inline/media');
+            const typed_dom_1 = _dereq_('typed-dom');
             const extensions = new Set([
                 '.oga',
                 '.ogg'
@@ -4299,14 +4310,14 @@ require = function () {
         }
     ],
     121: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const parser_1 = require('../../../parser');
-                const media_1 = require('../../../parser/inline/media');
+                const parser_1 = _dereq_('../../../parser');
+                const media_1 = _dereq_('../../../parser/inline/media');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const typed_dom_1 = require('typed-dom');
+                const typed_dom_1 = _dereq_('typed-dom');
                 const origins = new Set(['https://gist.github.com']);
                 function gist(url) {
                     if (!origins.has(url.origin))
@@ -4353,11 +4364,11 @@ require = function () {
         }
     ],
     122: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const media_1 = require('../../../parser/inline/media');
-            const typed_dom_1 = require('typed-dom');
+            const media_1 = _dereq_('../../../parser/inline/media');
+            const typed_dom_1 = _dereq_('typed-dom');
             function image(url, alt) {
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
@@ -4375,12 +4386,12 @@ require = function () {
         }
     ],
     123: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = require('../../../parser');
-            const media_1 = require('../../../parser/inline/media');
-            const typed_dom_1 = require('typed-dom');
+            const parser_1 = _dereq_('../../../parser');
+            const media_1 = _dereq_('../../../parser/inline/media');
+            const typed_dom_1 = _dereq_('typed-dom');
             const extensions = new Set(['.pdf']);
             function pdf(url) {
                 if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
@@ -4406,14 +4417,14 @@ require = function () {
         }
     ],
     124: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const parser_1 = require('../../../parser');
-                const media_1 = require('../../../parser/inline/media');
+                const parser_1 = _dereq_('../../../parser');
+                const media_1 = _dereq_('../../../parser/inline/media');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const typed_dom_1 = require('typed-dom');
+                const typed_dom_1 = _dereq_('typed-dom');
                 const origins = new Set(['https://www.slideshare.net']);
                 function slideshare(url) {
                     if (!origins.has(url.origin))
@@ -4454,14 +4465,14 @@ require = function () {
         }
     ],
     125: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const parser_1 = require('../../../parser');
-                const cache_1 = require('spica/cache');
+                const parser_1 = _dereq_('../../../parser');
+                const cache_1 = _dereq_('spica/cache');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const typed_dom_1 = require('typed-dom');
+                const typed_dom_1 = _dereq_('typed-dom');
                 const origins = new Set(['https://twitter.com']);
                 const cache = new cache_1.Cache(10);
                 function twitter(url) {
@@ -4510,11 +4521,11 @@ require = function () {
         }
     ],
     126: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const media_1 = require('../../../parser/inline/media');
-            const typed_dom_1 = require('typed-dom');
+            const media_1 = _dereq_('../../../parser/inline/media');
+            const typed_dom_1 = _dereq_('typed-dom');
             const extensions = new Set([
                 '.webm',
                 '.ogv'
@@ -4540,11 +4551,11 @@ require = function () {
         }
     ],
     127: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const media_1 = require('../../../parser/inline/media');
-            const typed_dom_1 = require('typed-dom');
+            const media_1 = _dereq_('../../../parser/inline/media');
+            const typed_dom_1 = _dereq_('typed-dom');
             const origins = new Set([
                 'https://www.youtube.com',
                 'https://youtu.be'
@@ -4573,14 +4584,14 @@ require = function () {
         }
     ],
     128: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var figure_1 = require('./util/figure');
+            var figure_1 = _dereq_('./util/figure');
             exports.figure = figure_1.figure;
-            var footnote_1 = require('./util/footnote');
+            var footnote_1 = _dereq_('./util/footnote');
             exports.footnote = footnote_1.footnote;
-            var toc_1 = require('./util/toc');
+            var toc_1 = _dereq_('./util/toc');
             exports.toc = toc_1.toc;
         },
         {
@@ -4590,13 +4601,13 @@ require = function () {
         }
     ],
     129: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const label_1 = require('../parser/inline/extension/label');
-            const inline_1 = require('../parser/inline');
-            const api_1 = require('../parser/api');
-            const typed_dom_1 = require('typed-dom');
+            const label_1 = _dereq_('../parser/inline/extension/label');
+            const inline_1 = _dereq_('../parser/inline');
+            const api_1 = _dereq_('../parser/api');
+            const typed_dom_1 = _dereq_('typed-dom');
             function figure(source) {
                 let base = '0';
                 const indexes = new Map();
@@ -4648,11 +4659,11 @@ require = function () {
         }
     ],
     130: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const indexer_1 = require('../parser/inline/extension/indexer');
-            const typed_dom_1 = require('typed-dom');
+            const indexer_1 = _dereq_('../parser/inline/extension/indexer');
+            const typed_dom_1 = _dereq_('typed-dom');
             function footnote(source, targets) {
                 void exports.annotation(source, targets.annotation);
                 void exports.authority(source, targets.authority);
@@ -4707,11 +4718,11 @@ require = function () {
         }
     ],
     131: [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const concat_1 = require('spica/concat');
-            const typed_dom_1 = require('typed-dom');
+            const concat_1 = _dereq_('spica/concat');
+            const typed_dom_1 = _dereq_('typed-dom');
             function toc(source) {
                 const hs = [...source.children].filter(el => el instanceof HTMLHeadingElement);
                 return parse(cons(hs));
@@ -4755,7 +4766,7 @@ require = function () {
         }
     ],
     'securemark': [
-        function (require, module, exports) {
+        function (_dereq_, module, exports) {
             'use strict';
             function __export(m) {
                 for (var p in m)
@@ -4763,9 +4774,9 @@ require = function () {
                         exports[p] = m[p];
             }
             Object.defineProperty(exports, '__esModule', { value: true });
-            __export(require('./src/parser'));
-            __export(require('./src/renderer'));
-            __export(require('./src/util'));
+            __export(_dereq_('./src/parser'));
+            __export(_dereq_('./src/renderer'));
+            __export(_dereq_('./src/util'));
         },
         {
             './src/parser': 40,
