@@ -16,10 +16,9 @@
   "main": "./dist/securemark.js",
   "files": [
     "dist",
-    "index.*",
+    "*.d.ts",
     "src",
     "test",
-    "*.ts",
     "*.js",
     "*.json",
     "*.md",

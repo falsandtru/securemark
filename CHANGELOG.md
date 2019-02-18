@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.108.4
+
+- Fix distribution.
+
 ## 0.108.3
 
 - Fix bundle processing.
