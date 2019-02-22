@@ -3502,17 +3502,22 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
+            const unescapable_1 = _dereq_('../source/unescapable');
             const escapable_1 = _dereq_('../source/escapable');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.rewrite(combinator_1.surround('{{', util_1.defrag(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^\n|^}}/)), '}}', false), source => [
-                [typed_dom_1.html('span', { class: 'template' }, source)],
-                ''
+            exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.tails([
+                combinator_1.focus(/^!/, unescapable_1.unescsource),
+                combinator_1.rewrite(combinator_1.surround('{{', util_1.defrag(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^\n|^}}/)), '}}', false), source => [
+                    [typed_dom_1.html('span', { class: 'template' }, source)],
+                    ''
+                ])
             ])));
         },
         {
             '../../combinator': 20,
             '../source/escapable': 105,
+            '../source/unescapable': 108,
             '../util': 110,
             'typed-dom': 13
         }
