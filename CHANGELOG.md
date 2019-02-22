@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.108.5
+
+- Fix template parser.
+
 ## 0.108.4
 
 - Fix distribution.

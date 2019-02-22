@@ -19,6 +19,7 @@ describe('Unit: parser/inline/template', () => {
       assert.deepStrictEqual(inspect(parser('{{a b}}')), [['<span class="template">{{a b}}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('{{ a }}')), [['<span class="template">{{ a }}</span>'], '']);
       assert.deepStrictEqual(inspect(parser('{{\\}}}')), [['<span class="template">{{\\}}}</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{{}}')), [['!', '<span class="template">{{}}</span>'], '']);
     });
 
     it('nest', () => {

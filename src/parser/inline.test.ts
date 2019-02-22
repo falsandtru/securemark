@@ -30,6 +30,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[#1]]')), [['<sup class="authority"><a class="hashtag" rel="noopener">#1</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[:$-1]]')), [['<sup class="authority">:$-1</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('{{}}')), [['<span class="template">{{}}</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('!{{}}')), [['!', '<span class="template">{{}}</span>'], '']);
     });
 
     it('link', () => {

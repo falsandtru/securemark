@@ -433,8 +433,11 @@ export namespace MarkdownParser {
     export interface TemplateParser extends
       // {{ abc }}
       Inline<'template'>,
-      Parser<HTMLSpanElement, [
-        SourceParser.EscapableSourceParser,
+      Parser<HTMLSpanElement | Text, [
+        SourceParser.UnescapableSourceParser,
+        Parser<HTMLSpanElement, [
+          SourceParser.EscapableSourceParser,
+        ]>,
       ]> {
     }
     export interface ExtensionParser extends
