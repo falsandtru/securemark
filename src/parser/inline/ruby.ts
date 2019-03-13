@@ -24,13 +24,14 @@ export const ruby: RubyParser = subline(fmap(fmap(verify(fmap(validate(
       : [text, ruby]),
   ([text, ruby]) =>
     text.length >= ruby.length),
-  ([text, ruby]) =>
+  ([text, ruby]) => [
     text
       .reduce((acc, _, i) =>
         concat(concat(acc, [text[i]]),
           i < ruby.length && ruby[i].textContent!.trim() !== ''
             ? [html('rp', '('), html('rt', [ruby[i]]), html('rp', ')')]
             : [html('rt')])
-      , [])),
-  ns =>
+      , [])
+  ]),
+  ([ns]) =>
     [html('ruby', ns)]));

@@ -21,7 +21,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([[text = txt('')]]) => text.textContent! === '' || hasTightText(text)),
   ([[text = txt('')], param]: (HTMLElement | Text)[][]) => [text.textContent!, ...param.map(t => t.textContent!)]),
-  ([text, INSECURE_URL, ...params], rest) => {
+  ([text, INSECURE_URL, ...params]: string[], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;
     const uri = new URL(path, window.location.href);
