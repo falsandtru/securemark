@@ -3985,11 +3985,11 @@ require = function () {
             ] : [
                 text,
                 ruby
-            ]), ([text, ruby]) => text.length >= ruby.length), ([text, ruby]) => text.reduce((acc, _, i) => concat_1.concat(concat_1.concat(acc, [text[i]]), i < ruby.length && ruby[i].textContent.trim() !== '' ? [
-                typed_dom_1.html('rp', '('),
-                typed_dom_1.html('rt', [ruby[i]]),
-                typed_dom_1.html('rp', ')')
-            ] : [typed_dom_1.html('rt')]), [])), ns => [typed_dom_1.html('ruby', ns)]));
+            ]), ([text, ruby]) => text.length >= ruby.length), ([text, ruby]) => [text.reduce((acc, _, i) => concat_1.concat(concat_1.concat(acc, [text[i]]), i < ruby.length && ruby[i].textContent.trim() !== '' ? [
+                    typed_dom_1.html('rp', '('),
+                    typed_dom_1.html('rt', [ruby[i]]),
+                    typed_dom_1.html('rp', ')')
+                ] : [typed_dom_1.html('rt')]), [])]), ([ns]) => [typed_dom_1.html('ruby', ns)]));
         },
         {
             '../../combinator': 29,
