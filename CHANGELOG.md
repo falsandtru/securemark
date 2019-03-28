@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.109.0
+
+- Remove emoji syntax.
+
 ## 0.108.5
 
 - Fix template parser.

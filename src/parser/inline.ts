@@ -16,7 +16,6 @@ import { code } from './inline/code';
 import { math } from './inline/math';
 import { media } from './inline/media';
 import { htmlentity } from './inline/htmlentity';
-import { emoji } from './inline/emoji';
 import { shortmedia } from './inline/shortmedia';
 import { autolink } from './inline/autolink';
 import { bracket } from './inline/bracket';
@@ -39,7 +38,6 @@ export import CodeParser = InlineParser.CodeParser;
 export import MathParser = InlineParser.MathParser;
 export import MediaParser = InlineParser.MediaParser;
 export import HTMLEntityParser = InlineParser.HTMLEntityParser;
-export import EmojiParser = InlineParser.EmojiParser;
 export import ShortmediaParser = InlineParser.ShortmediaParser;
 export import AutolinkParser = InlineParser.AutolinkParser;
 export import BracketParser = InlineParser.BracketParser;
@@ -61,7 +59,6 @@ export const inline: InlineParser = union([
   code,
   math,
   htmlentity,
-  emoji,
   shortmedia,
   autolink,
   bracket,
