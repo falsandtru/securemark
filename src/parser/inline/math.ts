@@ -3,7 +3,7 @@ import { union, some, subline, rewrite, verify, surround, convert } from '../../
 import { escsource } from '../source/escapable';
 import { hasText } from '../util';
 import { Cache } from 'spica/cache';
-import { html, frag } from 'typed-dom';
+import { html, text } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(20); // for rerendering in editing
 
@@ -18,4 +18,4 @@ export const math: MathParser = subline(verify(
           : [html('span', { class: 'math notranslate', 'data-src': source }, source)],
         ''
       ])),
-  ([el]) => hasText(frag(el.textContent!.slice(2, -2)))));
+  ([el]) => hasText(text(el.textContent!.slice(2, -2)))));
