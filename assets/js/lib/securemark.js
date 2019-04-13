@@ -3338,7 +3338,7 @@ require = function () {
                         'data-src': source
                     }, source)],
                 ''
-            ])), ([el]) => util_1.hasText(typed_dom_1.frag(el.textContent.slice(2, -2)))));
+            ])), ([el]) => util_1.hasText(typed_dom_1.text(el.textContent.slice(2, -2)))));
         },
         {
             '../../combinator': 20,
