@@ -2272,7 +2272,7 @@ require = function () {
             const memoization_1 = _dereq_('spica/memoization');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`));
-            exports.olist = combinator_1.block(combinator_1.match(/^(?=(#|[0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+            exports.olist = combinator_1.block(combinator_1.match(/^(?=(0|[0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.inits([
                         combinator_1.focus(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.surround('', combinator_1.some(unescapable_1.unescsource, /^[.\n]/), /^\.?/)))),
                         util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))
@@ -2282,18 +2282,18 @@ require = function () {
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ([{textContent: index}, ...ns]) => [typed_dom_1.html('li', { value: type(index[0]) === '1' ? index : undefined }, ulist_1.fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? !!typed_dom_1.define(el, {
+                ]), ([{textContent: index}, ...ns]) => [typed_dom_1.html('li', { value: type(index) === '1' ? format(index) : undefined }, ulist_1.fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? !!typed_dom_1.define(el, {
                     class: 'invalid',
                     'data-invalid-syntax': 'listitem',
                     'data-invalid-type': 'content'
                 }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.'))) : true)])), es => [typed_dom_1.html('ol', {
-                    start: type(index) ? index : undefined,
+                    start: format(index),
                     type: type(index)
                 }, es)]))));
-            exports.olist_ = combinator_1.convert(source => source.replace(/^(#|[0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `), exports.olist);
+            exports.olist_ = combinator_1.convert(source => source.replace(/^(0|[0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `), exports.olist);
             function type(index) {
                 switch (true) {
-                case index === '#':
+                case +index === 0:
                     return undefined;
                 case Number.isInteger(+index):
                     return '1';
@@ -2310,11 +2310,23 @@ require = function () {
                 case undefined:
                     return `(?:${ pattern('1') }|${ pattern('a') }|${ pattern('A') })`;
                 case '1':
-                    return '(?:#|[0-9]+)';
+                    return '(?:0|[0-9]+)';
                 case 'a':
-                    return '(?:#|[a-z]+)';
+                    return '(?:0|[a-z]+)';
                 case 'A':
-                    return '(?:#|[A-Z]+)';
+                    return '(?:0|[A-Z]+)';
+                }
+            }
+            function format(index) {
+                switch (type(index)) {
+                case undefined:
+                    return undefined;
+                case '1':
+                    return `${ +index }`;
+                case 'a':
+                    return index;
+                case 'A':
+                    return index;
                 }
             }
         },
