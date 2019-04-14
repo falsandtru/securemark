@@ -82,7 +82,7 @@ export namespace MarkdownParser {
       }
     }
     export interface OListParser extends
-      // #. item
+      // 0. item
       Block<'olist'>,
       Parser<HTMLOListElement, [
         OListParser.ListItemParser,

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.111.0
+
+- Refine olist syntax.
+
 ## 0.110.0
 
 - Refine olist syntax.
