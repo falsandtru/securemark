@@ -65,33 +65,54 @@ export namespace MarkdownParser {
       // - item
       Block<'ulist'>,
       Parser<HTMLUListElement, [
-        ListItemParser,
+        UListParser.ListItemParser,
       ]> {
     }
+    export namespace UListParser {
+      export interface ListItemParser extends
+        Block<'ulist/listitem'>,
+        Parser<HTMLLIElement, [
+          InlineParser,
+          Parser<HTMLUListElement | HTMLOListElement, [
+            UListParser,
+            OListParser,
+            IListParser,
+          ]>,
+        ]> {
+      }
+    }
     export interface OListParser extends
-      // 0. item
+      // #. item
       Block<'olist'>,
       Parser<HTMLOListElement, [
-        ListItemParser,
+        OListParser.ListItemParser,
       ]> {
+    }
+    export namespace OListParser {
+      export interface ListItemParser extends
+        Block<'olist/listitem'>,
+        Parser<HTMLLIElement, [
+          Parser<HTMLElement | Text, [
+            SourceParser.UnescapableSourceParser,
+            InlineParser,
+          ]>,
+          Parser<HTMLUListElement | HTMLOListElement, [
+            UListParser,
+            OListParser,
+            IListParser,
+          ]>,
+        ]> {
+      }
     }
     export interface IListParser extends
       // + item
       Block<'ilist'>,
       Parser<HTMLUListElement, [
-        ListItemParser,
+        IListParser.ListItemParser,
       ]> {
     }
-    export interface ListItemParser extends
-      Block<'listitem'>,
-      Parser<HTMLLIElement, [
-        InlineParser,
-        Parser<HTMLUListElement | HTMLOListElement, [
-          UListParser,
-          OListParser,
-          IListParser,
-        ]>,
-      ]> {
+    export namespace IListParser {
+      export type ListItemParser = UListParser.ListItemParser;
     }
     export interface DListParser extends
       // ~ term

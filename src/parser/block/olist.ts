@@ -1,8 +1,9 @@
-﻿import { OListParser, ListItemParser } from '../block';
-import { union, inits, some, block, line, verify, surround, match, convert, indent, trim, fmap, eval } from '../../combinator';
+﻿import { OListParser } from '../block';
+import { union, inits, some, block, line, focus, verify, match, surround, convert, indent, trim, fmap, eval } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
+import { unescsource } from '../source/unescapable';
 import { defrag, hasMedia, memoize } from '../util';
 import { memoize as memorize } from 'spica/memoization';
 import { html, define } from 'typed-dom';
@@ -10,40 +11,56 @@ import { html, define } from 'typed-dom';
 const opener = memorize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
 export const olist: OListParser = block(match(
-  /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
+  /^(?=(#|[0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
   memoize(([, index]) => index,
   index =>
     fmap(
       some(union([
-        verify(fmap<ListItemParser>(
+        verify(fmap<OListParser.ListItemParser>(
           inits([
-            line(surround(opener(pattern(type(index))), defrag(trim(some(inline))), '', false)),
+            line(inits([
+              focus(opener(pattern(type(index))), defrag(trim(surround('', some(unescsource, /^[.\n]/), /^\.?/)))),
+              defrag(trim(some(inline))),
+            ])),
             indent(union([ulist_, olist_, ilist_]))
           ]),
-          ns => [html('li', fillFirstLine(ns))]),
+          ([{ textContent: index }, ...ns]) => [html('li', { value: type(index![0]) === '1' ? index! : undefined }, fillFirstLine(ns))]),
           ([el]) => hasMedia(el)
             ? !!define(el, { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' }, eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))
             : true)
       ])),
-      es => [html('ol', { start: index, type: type(index) }, es)]))));
+      es => [html('ol', { start: type(index) ? index : undefined, type: type(index) }, es)]))));
 
 export const olist_: OListParser = convert(
-  source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
+  source => source.replace(/^(#|[0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
   olist);
 
-function type(index: string): string {
-  return Number.isInteger(+index)
-    ? '1'
-    : index === index.toLowerCase()
-      ? 'a'
-      : 'A';
+type IndexType = undefined | '1' | 'a' | 'A';
+
+function type(index: string): IndexType {
+  switch (true) {
+    case index === '#':
+      return undefined;
+    case Number.isInteger(+index):
+      return '1';
+    case index === index.toLowerCase():
+      return 'a';
+    case index === index.toUpperCase():
+      return 'A';
+    default:
+      throw new Error(`${index}`);
+  }
 }
 
-function pattern(type: string): string {
-  assert(['1', 'a', 'A'].includes(type));
-  return type === 'A'
-    ? '[A-Z]+'
-    : type === 'a'
-      ? '[a-z]+'
-      : '[0-9]+';
+function pattern(type: IndexType): string {
+  switch (type) {
+    case undefined:
+      return `(?:${pattern('1')}|${pattern('a')}|${pattern('A')})`;
+    case '1':
+      return '(?:#|[0-9]+)';
+    case 'a':
+      return '(?:#|[a-z]+)';
+    case 'A':
+      return '(?:#|[A-Z]+)';
+  }
 }

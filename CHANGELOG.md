@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.110.0
+
+- Refine olist syntax.
+
 ## 0.109.0
 
 - Remove emoji syntax.
