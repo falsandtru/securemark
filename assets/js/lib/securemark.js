@@ -2267,36 +2267,61 @@ require = function () {
             const ulist_1 = _dereq_('./ulist');
             const ilist_1 = _dereq_('./ilist');
             const inline_1 = _dereq_('../inline');
+            const unescapable_1 = _dereq_('../source/unescapable');
             const util_1 = _dereq_('../util');
             const memoization_1 = _dereq_('spica/memoization');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = memoization_1.memoize(pattern => new RegExp(`^${ pattern }(?:\\.\\s|\\.?(?=\\n|$))`));
-            exports.olist = combinator_1.block(combinator_1.match(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.surround(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
+            exports.olist = combinator_1.block(combinator_1.match(/^(?=(#|[0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, util_1.memoize(([, index]) => index, index => combinator_1.fmap(combinator_1.some(combinator_1.union([combinator_1.verify(combinator_1.fmap(combinator_1.inits([
+                    combinator_1.line(combinator_1.inits([
+                        combinator_1.focus(opener(pattern(type(index))), util_1.defrag(combinator_1.trim(combinator_1.surround('', combinator_1.some(unescapable_1.unescsource, /^[.\n]/), /^\.?/)))),
+                        util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))
+                    ])),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist_,
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', ulist_1.fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? !!typed_dom_1.define(el, {
+                ]), ([{textContent: index}, ...ns]) => [typed_dom_1.html('li', { value: type(index[0]) === '1' ? index : undefined }, ulist_1.fillFirstLine(ns))]), ([el]) => util_1.hasMedia(el) ? !!typed_dom_1.define(el, {
                     class: 'invalid',
                     'data-invalid-syntax': 'listitem',
                     'data-invalid-type': 'content'
                 }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.'))) : true)])), es => [typed_dom_1.html('ol', {
-                    start: index,
+                    start: type(index) ? index : undefined,
                     type: type(index)
                 }, es)]))));
-            exports.olist_ = combinator_1.convert(source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `), exports.olist);
+            exports.olist_ = combinator_1.convert(source => source.replace(/^(#|[0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `), exports.olist);
             function type(index) {
-                return Number.isInteger(+index) ? '1' : index === index.toLowerCase() ? 'a' : 'A';
+                switch (true) {
+                case index === '#':
+                    return undefined;
+                case Number.isInteger(+index):
+                    return '1';
+                case index === index.toLowerCase():
+                    return 'a';
+                case index === index.toUpperCase():
+                    return 'A';
+                default:
+                    throw new Error(`${ index }`);
+                }
             }
             function pattern(type) {
-                return type === 'A' ? '[A-Z]+' : type === 'a' ? '[a-z]+' : '[0-9]+';
+                switch (type) {
+                case undefined:
+                    return `(?:${ pattern('1') }|${ pattern('a') }|${ pattern('A') })`;
+                case '1':
+                    return '(?:#|[0-9]+)';
+                case 'a':
+                    return '(?:#|[a-z]+)';
+                case 'A':
+                    return '(?:#|[A-Z]+)';
+                }
             }
         },
         {
             '../../combinator': 20,
             '../inline': 70,
+            '../source/unescapable': 107,
             '../util': 109,
             './ilist': 60,
             './ulist': 69,
