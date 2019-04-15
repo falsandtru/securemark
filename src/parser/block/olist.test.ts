@@ -75,11 +75,11 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('alphabet', () => {
-      assert.deepStrictEqual(inspect(parser('a. ')), [['<ol start="a" type="a"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('A. ')), [['<ol start="A" type="A"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('z. ')), [['<ol start="z" type="a"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('Z. ')), [['<ol start="Z" type="A"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('a.\n0.\nc')), [['<ol start="a" type="a"><li></li><li></li><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('a. ')), [['<ol type="a"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('A. ')), [['<ol type="A"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('z. ')), [['<ol type="a"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('Z. ')), [['<ol type="A"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('a.\n0.\nc')), [['<ol type="a"><li></li><li></li><li></li></ol>'], '']);
     });
 
   });

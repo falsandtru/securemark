@@ -31,7 +31,7 @@ export const olist: OListParser = block(match(
             ? !!define(el, { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' }, eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))
             : true)
       ])),
-      es => [html('ol', { start: format(index), type: type(index) }, es)]))));
+      es => [html('ol', { start: type(index) === '1' ? format(index) : undefined, type: type(index) }, es)]))));
 
 export const olist_: OListParser = convert(
   source => source.replace(/^(0|[0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
