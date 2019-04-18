@@ -20,7 +20,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
         if (!contents.has(ref) && ref.querySelector('a')) return acc;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         const refIndex = i + 1;
-        const refId = ref.id || `${category}-ref:${i + 1}`;
+        const refId = ref.id || `${category}:ref:${i + 1}`;
         const title = ref.title || text(ref);
         const def = acc.get(title);
         const defIndex = def
@@ -28,7 +28,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
           : acc.size + 1;
         const defId = def
           ? def.id
-          : `${category}-def:${defIndex}`;
+          : `${category}:def:${defIndex}`;
         void define(ref, { id: refId, title: title }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
         if (def) {
           void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));

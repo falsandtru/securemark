@@ -25,19 +25,19 @@ describe('Unit: util/footnote', () => {
           [...source.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "annotation", id: "annotation-ref:1", title: "a  b" }, [
-                html('a', { href: "#annotation-def:1", rel: "noopener" }, '*1')
+              html('sup', { class: "annotation", id: "annotation:ref:1", title: "a  b" }, [
+                html('a', { href: "#annotation:def:1", rel: "noopener" }, '*1')
               ]),
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
           target.outerHTML,
           html('ol', [
-            html('li', { id: 'annotation-def:1' }, [
+            html('li', { id: 'annotation:def:1' }, [
               text('a'),
               html('span', { class: 'linebreak' }, ' '),
               text(' b'),
-              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
             ]),
           ]).outerHTML);
       }
@@ -52,24 +52,24 @@ describe('Unit: util/footnote', () => {
           [...source.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "annotation", id: "annotation-ref:1", title: "1" }, [
-                html('a', { href: "#annotation-def:1", rel: "noopener" }, '*1')
+              html('sup', { class: "annotation", id: "annotation:ref:1", title: "1" }, [
+                html('a', { href: "#annotation:def:1", rel: "noopener" }, '*1')
               ]),
-              html('sup', { class: "annotation", id: "annotation-ref:2", title: "12345678901234567890" }, [
-                html('a', { href: "#annotation-def:2", rel: "noopener" }, '*2')
+              html('sup', { class: "annotation", id: "annotation:ref:2", title: "12345678901234567890" }, [
+                html('a', { href: "#annotation:def:2", rel: "noopener" }, '*2')
               ]),
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
           target.outerHTML,
           html('ol', [
-            html('li', { id: 'annotation-def:1' }, [
+            html('li', { id: 'annotation:def:1' }, [
               text('1'),
-              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
             ]),
-            html('li', { id: 'annotation-def:2' }, [
+            html('li', { id: 'annotation:def:2' }, [
               text('12345678901234567890'),
-              html('sup', [html('a', { href: '#annotation-ref:2', rel: 'noopener' }, '~2')])
+              html('sup', [html('a', { href: '#annotation:ref:2', rel: 'noopener' }, '~2')])
             ]),
           ]).outerHTML);
       }
@@ -84,44 +84,44 @@ describe('Unit: util/footnote', () => {
           [...source.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "annotation", id: "annotation-ref:1", title: "1" }, [
-                html('a', { href: "#annotation-def:1", rel: "noopener" }, '*1')
+              html('sup', { class: "annotation", id: "annotation:ref:1", title: "1" }, [
+                html('a', { href: "#annotation:def:1", rel: "noopener" }, '*1')
               ]),
-              html('sup', { class: "annotation", id: "annotation-ref:2", title: "2" }, [
-                html('a', { href: "#annotation-def:2", rel: "noopener" }, '*2')
+              html('sup', { class: "annotation", id: "annotation:ref:2", title: "2" }, [
+                html('a', { href: "#annotation:def:2", rel: "noopener" }, '*2')
               ]),
-              html('sup', { class: "annotation", id: "annotation-ref:3", title: "3" }, [
-                html('a', { href: "#annotation-def:3", rel: "noopener" }, '*3')
+              html('sup', { class: "annotation", id: "annotation:ref:3", title: "3" }, [
+                html('a', { href: "#annotation:def:3", rel: "noopener" }, '*3')
               ]),
-              html('sup', { class: "annotation", id: "annotation-ref:4", title: "2" }, [
-                html('a', { href: "#annotation-def:2", rel: "noopener" }, '*2')
+              html('sup', { class: "annotation", id: "annotation:ref:4", title: "2" }, [
+                html('a', { href: "#annotation:def:2", rel: "noopener" }, '*2')
               ]),
-              html('sup', { class: "annotation", id: "annotation-ref:5", title: "4" }, [
-                html('a', { href: "#annotation-def:4", rel: "noopener" }, '*4')
+              html('sup', { class: "annotation", id: "annotation:ref:5", title: "4" }, [
+                html('a', { href: "#annotation:def:4", rel: "noopener" }, '*4')
               ]),
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
           target.outerHTML,
           html('ol', [
-            html('li', { id: 'annotation-def:1' }, [
+            html('li', { id: 'annotation:def:1' }, [
               text('1'),
-              html('sup', [html('a', { href: '#annotation-ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
             ]),
-            html('li', { id: 'annotation-def:2' }, [
+            html('li', { id: 'annotation:def:2' }, [
               text('2'),
               html('sup', [
-                html('a', { href: '#annotation-ref:2', rel: 'noopener' }, '~2'),
-                html('a', { href: '#annotation-ref:4', rel: 'noopener' }, '~4'),
+                html('a', { href: '#annotation:ref:2', rel: 'noopener' }, '~2'),
+                html('a', { href: '#annotation:ref:4', rel: 'noopener' }, '~4'),
               ]),
             ]),
-            html('li', { id: 'annotation-def:3' }, [
+            html('li', { id: 'annotation:def:3' }, [
               text('3'),
-              html('sup', [html('a', { href: '#annotation-ref:3', rel: 'noopener' }, '~3')])
+              html('sup', [html('a', { href: '#annotation:ref:3', rel: 'noopener' }, '~3')])
             ]),
-            html('li', { id: 'annotation-def:4' }, [
+            html('li', { id: 'annotation:def:4' }, [
               text('4'),
-              html('sup', [html('a', { href: '#annotation-ref:5', rel: 'noopener' }, '~5')])
+              html('sup', [html('a', { href: '#annotation:ref:5', rel: 'noopener' }, '~5')])
             ]),
           ]).outerHTML);
       }
@@ -143,17 +143,17 @@ describe('Unit: util/footnote', () => {
           [...source.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "authority", id: "authority-ref:1", title: "a b" }, [
-                html('a', { href: "#authority-def:1", rel: "noopener" }, '[1]')
+              html('sup', { class: "authority", id: "authority:ref:1", title: "a b" }, [
+                html('a', { href: "#authority:def:1", rel: "noopener" }, '[1]')
               ]),
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
           target.outerHTML,
           html('ol', [
-            html('li', { id: 'authority-def:1' }, [
+            html('li', { id: 'authority:def:1' }, [
               text('a b'),
-              html('sup', [html('a', { href: '#authority-ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#authority:ref:1', rel: 'noopener' }, '~1')])
             ]),
           ]).outerHTML);
       }
