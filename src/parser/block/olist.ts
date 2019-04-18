@@ -11,7 +11,7 @@ import { html, define } from 'typed-dom';
 const opener = memorize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
 export const olist: OListParser = block(match(
-  /^(?=(0|[0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
+  /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
   memoize(([, index]) => index,
   index =>
     fmap(
@@ -34,7 +34,7 @@ export const olist: OListParser = block(match(
       es => [html('ol', { start: type(index) === '1' ? format(index) : undefined, type: type(index) }, es)]))));
 
 export const olist_: OListParser = convert(
-  source => source.replace(/^(0|[0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
+  source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
   olist);
 
 type IndexType = undefined | '1' | 'a' | 'A';
@@ -59,11 +59,11 @@ function pattern(type: IndexType): string {
     case undefined:
       return `(?:${pattern('1')}|${pattern('a')}|${pattern('A')})`;
     case '1':
-      return '(?:0|[0-9]+)';
+      return '(?:[0-9]+)';
     case 'a':
-      return '(?:0|[a-z]+)';
+      return '(?:[a-z]+|0)';
     case 'A':
-      return '(?:0|[A-Z]+)';
+      return '(?:[A-Z]+|0)';
   }
 }
 
