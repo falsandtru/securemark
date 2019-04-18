@@ -1,12 +1,12 @@
 ﻿import { OListParser } from '../block';
-import { union, inits, some, block, line, focus, verify, match, surround, convert, indent, trim, fmap, eval } from '../../combinator';
-import { ulist_, fillFirstLine } from './ulist';
+import { union, inits, some, block, line, focus, match, surround, convert, indent, trim, fmap } from '../../combinator';
+import { ulist_, fillFirstLine, verifyListItem } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
 import { unescsource } from '../source/unescapable';
-import { defrag, hasMedia, memoize } from '../util';
+import { defrag, memoize } from '../util';
 import { memoize as memorize } from 'spica/memoization';
-import { html, define } from 'typed-dom';
+import { html } from 'typed-dom';
 
 const opener = memorize<string, RegExp>(pattern => new RegExp(`^${pattern}(?:\\.\\s|\\.?(?=\\n|$))`));
 
@@ -16,7 +16,7 @@ export const olist: OListParser = block(match(
   index =>
     fmap(
       some(union([
-        verify(fmap<OListParser.ListItemParser>(
+        fmap(
           inits([
             line(inits([
               focus(
@@ -26,10 +26,7 @@ export const olist: OListParser = block(match(
             ])),
             indent(union([ulist_, olist_, ilist_]))
           ]),
-          ([{ textContent: index }, ...ns]) => [html('li', { value: type(index!) === '1' ? format(index!) : undefined }, fillFirstLine(ns))]),
-          ([el]) => hasMedia(el)
-            ? !!define(el, { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' }, eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to contain media syntax in lists.')))
-            : true)
+          ([{ textContent: index }, ...ns]) => [html('li', { value: type(index!) === '1' ? format(index!) : undefined }, fillFirstLine(ns))].map(verifyListItem)),
       ])),
       es => [html('ol', { start: type(index) === '1' ? format(index) : undefined, type: type(index) }, es)]))));
 

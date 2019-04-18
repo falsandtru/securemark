@@ -21,9 +21,9 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('-\n0')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n -\n 0')), undefined);
       assert.deepStrictEqual(inspect(parser('- 0\n  - 0\n - 0')), undefined);
-      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- !http://host\n- 0')), [['<ul><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li><li>0</li></ul>'], '']);
-      assert.deepStrictEqual(inspect(parser('- 1\n - !http://host\n- 2')), [['<ul><li>1<ul><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to contain media syntax in lists.</li></ul></li><li>2</li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to use media syntax in lists.</li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- !http://host\n- 0')), [['<ul><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to use media syntax in lists.</li><li>0</li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- 1\n - !http://host\n- 2')), [['<ul><li>1<ul><li class="invalid" data-invalid-syntax="listitem" data-invalid-type="content">Invalid syntax: ListItem: Unable to use media syntax in lists.</li></ul></li><li>2</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser(' -')), undefined);
       assert.deepStrictEqual(inspect(parser('+')), undefined);
       assert.deepStrictEqual(inspect(parser('*')), undefined);
