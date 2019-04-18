@@ -4704,11 +4704,11 @@ require = function () {
                             return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         const refIndex = i + 1;
-                        const refId = ref.id || `${ category }-ref:${ i + 1 }`;
+                        const refId = ref.id || `${ category }:ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
                         const def = acc.get(title);
                         const defIndex = def ? +def.id.match(/[0-9]+/)[0] : acc.size + 1;
-                        const defId = def ? def.id : `${ category }-def:${ defIndex }`;
+                        const defId = def ? def.id : `${ category }:def:${ defIndex }`;
                         void typed_dom_1.define(ref, {
                             id: refId,
                             title: title
