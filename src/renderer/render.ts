@@ -25,6 +25,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         && target.matches('img.media:not([src])[data-src]'): {
         const el = media(target as HTMLImageElement, opts.media!);
         if (!el) return;
+        void el.classList.add('media');
         const scope = target.matches('a > .media') && !el.matches('img')
           ? target.closest('a')!
           : target;
