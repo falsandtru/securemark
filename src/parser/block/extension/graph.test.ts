@@ -11,7 +11,7 @@ describe('Unit: parser/block/extension/graph', () => {
       assert.deepStrictEqual(inspect(parser('~~~graph/sequence\na\n~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~~graph/sequence\na\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser(' ~~~graph/sequence\na\n~~~')), undefined);
-      assert(!parser('~~~graph/sequence\n' + '\n'.repeat(100) + '~~~'));
+      assert(!parser('~~~graph/sequence\n' + '\n'.repeat(101) + '~~~'));
     });
 
     it('valid', () => {
@@ -20,7 +20,7 @@ describe('Unit: parser/block/extension/graph', () => {
       assert.deepStrictEqual(inspect(parser('~~~graph/flowchart\n~~~')), [['<pre class="flowchart graph notranslate"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~graph/graphviz\n~~~')), [['<pre class="graphviz graph notranslate" data-engine=""></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~graph/graphviz dot\n~~~')), [['<pre class="graphviz graph notranslate" data-engine="dot"></pre>'], '']);
-      assert(parser('~~~graph/sequence\n' + '\n'.repeat(99) + '~~~'));
+      assert(parser('~~~graph/sequence\n' + '\n'.repeat(100) + '~~~'));
     });
 
   });

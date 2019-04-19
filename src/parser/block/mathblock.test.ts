@@ -17,7 +17,7 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$\n$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser(' $$\na\n$$')), undefined);
-      assert(!parser('$$\n' + '\n'.repeat(100) + '$$'));
+      assert(!parser('$$\n' + '\n'.repeat(101) + '$$'));
     });
 
     it('basic', () => {
@@ -33,7 +33,7 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math notranslate">$$\n$$$\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$\n$$$\n\n$$')), [['<div class="math notranslate">$$\n$$$\n\n$$</div>'], '']);
       assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<div class="math notranslate invalid" data-invalid-syntax="math" data-invalid-type="parameter">$$\n$$</div>'], '']);
-      assert(parser('$$\n' + '\n'.repeat(99) + '$$'));
+      assert(parser('$$\n' + '\n'.repeat(100) + '$$'));
     });
 
   });

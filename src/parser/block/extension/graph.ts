@@ -7,10 +7,10 @@ export const segment: ExtensionParser.GraphParser.SegmentParser = lazy(() => blo
 
 export const segment_: ExtensionParser.GraphParser.SegmentParser = block(union([
   focus(
-    /^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/,
+    /^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100}\1[^\S\n]*(?:\n|$)/,
     _ => [[], '']),
   focus(
-    /^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/,
+    /^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100}\1[^\S\n]*(?:\n|$)/,
     _ => [[], '']),
 ]), false);
 

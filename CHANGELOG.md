@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.111.1
+
+- Increase the maximum number of contained lines of some syntax from 99 to 100.
+
 ## 0.111.0
 
 - Refine olist syntax.
