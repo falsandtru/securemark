@@ -1917,7 +1917,7 @@ require = function () {
             const util_2 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100}\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
@@ -2089,11 +2089,11 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.union([
-                combinator_1.focus(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
+                combinator_1.focus(/^(~{3,})graph\/(sequence|flowchart)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100}\1[^\S\n]*(?:\n|$)/, _ => [
                     [],
                     ''
                 ]),
-                combinator_1.focus(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99}\1[^\S\n]*(?:\n|$)/, _ => [
+                combinator_1.focus(/^(~{3,})graph\/(graphviz)[^\S\n]*([a-z]+[^\S\n]*|)\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100}\1[^\S\n]*(?:\n|$)/, _ => [
                     [],
                     ''
                 ])
@@ -2221,7 +2221,7 @@ require = function () {
             _dereq_('../source/unescapable');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,99})\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100})\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
