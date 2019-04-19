@@ -26,6 +26,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         const el = media(target as HTMLImageElement, opts.media!);
         if (!el) return;
         void el.classList.add('media');
+        void el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, window.location.href).href);
         const scope = target.matches('a > .media') && !el.matches('img')
           ? target.closest('a')!
           : target;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.111.2
+
+- Leave media source URLs.
+
 ## 0.111.1
 
 - Increase the maximum number of contained lines of some syntax from 99 to 100.
