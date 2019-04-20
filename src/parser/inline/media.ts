@@ -34,11 +34,10 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
       void define(el, { alt: text });
     }
     void define(el, attrs(attributes, params, new Set(el.classList), 'media'));
-    return el.matches('img')
-      ? fmap(
-          link,
-          ([link]) =>
-            [define(link, [el])])
-          (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`) as [[HTMLAnchorElement], string]
-      : [[el], rest];
+    if (!el.matches('img')) return [[el], rest];
+    return fmap(
+      link,
+      ([link]) =>
+        [define(link, [el])])
+      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`) as [[HTMLAnchorElement], string];
   }));
