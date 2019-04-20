@@ -63,6 +63,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[*a\\]{\nb*]{ab}')), undefined);
       assert.deepStrictEqual(inspect(parser('[。\n！]{ab}')), undefined);
       assert.deepStrictEqual(inspect(parser('[[]{a}]{a}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[![]{a}]{b}]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{ttp://host}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{/}')), undefined);
     });

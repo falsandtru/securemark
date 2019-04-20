@@ -8,6 +8,8 @@ import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
 import { html, text, frag, define } from 'typed-dom';
 
+const log = new WeakSet<HTMLAnchorElement>();
+
 export const attributes: DeepImmutable<Record<string, Array<string | undefined>>> = {
   nofollow: [undefined],
 };
@@ -23,6 +25,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     if (hasMedia(text)) {
       if (text.firstChild && text.firstChild.firstChild &&
           text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
+        if (log.has(text.firstChild as HTMLAnchorElement)) return false;
         void text.replaceChild(text.firstChild.firstChild, text.firstChild);
       }
       if (text.childNodes.length !== 1) return false;
@@ -54,6 +57,9 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
     if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
       void el.setAttribute('target', '_blank');
+    }
+    if (hasMedia(el)) {
+      void log.add(el);
     }
     return [[define(el, attrs(attributes, params, new Set(el.classList), 'link'))], rest];
   })));

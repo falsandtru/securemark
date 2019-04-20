@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.111.3
+
+- Fix link syntax to disallow nested link syntax.
+
 ## 0.111.2
 
 - Leave media source URLs.
