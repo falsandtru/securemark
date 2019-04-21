@@ -3252,6 +3252,7 @@ require = function () {
             const uri_1 = _dereq_('../string/uri');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
+            const log = new WeakSet();
             exports.attributes = { nofollow: [undefined] };
             exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.tails([
                 util_1.wrap(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/))), ']', false)),
@@ -3262,6 +3263,8 @@ require = function () {
             ])), ns => concat_1.concat([...Array(2 - ns.length)].map(() => typed_dom_1.frag()), ns)), ([text]) => {
                 if (util_1.hasMedia(text)) {
                     if (text.firstChild && text.firstChild.firstChild && text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
+                        if (log.has(text.firstChild))
+                            return false;
                         void text.replaceChild(text.firstChild.firstChild, text.firstChild);
                     }
                     if (text.childNodes.length !== 1)
@@ -3290,6 +3293,9 @@ require = function () {
                     return;
                 if ((el.origin !== window.location.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
                     void el.setAttribute('target', '_blank');
+                }
+                if (util_1.hasMedia(el)) {
+                    void log.add(el);
                 }
                 return [
                     [typed_dom_1.define(el, attrs(exports.attributes, params, new Set(el.classList), 'link'))],
@@ -3427,10 +3433,12 @@ require = function () {
                     void typed_dom_1.define(el, { alt: text });
                 }
                 void typed_dom_1.define(el, link_1.attrs(link_1.attributes, params, new Set(el.classList), 'media'));
-                return el.matches('img') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`) : [
-                    [el],
-                    rest
-                ];
+                if (!el.matches('img'))
+                    return [
+                        [el],
+                        rest
+                    ];
+                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`);
             }));
         },
         {
