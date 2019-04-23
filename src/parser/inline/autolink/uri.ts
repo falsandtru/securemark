@@ -1,4 +1,4 @@
-﻿import { AutolinkParser } from '../../inline';
+import { AutolinkParser } from '../../inline';
 import { union, some, subline, rewrite, surround, convert } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { link, bracket } from '../link';

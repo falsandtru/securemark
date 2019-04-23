@@ -1,4 +1,4 @@
-﻿import { cache } from '../../../parser/inline/media';
+import { cache } from '../../../parser/inline/media';
 import { html } from 'typed-dom';
 
 const extensions = new Set([

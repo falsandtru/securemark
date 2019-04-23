@@ -1,4 +1,4 @@
-﻿import { inline } from './inline';
+import { inline } from './inline';
 import { some } from '../combinator';
 import { inspect } from '../debug.test';
 

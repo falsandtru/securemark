@@ -1,4 +1,4 @@
-﻿import { html } from 'typed-dom';
+import { html } from 'typed-dom';
 
 export function sanitize(uri: string): string {
   uri = uri.replace(/\s/g, encodeURI);

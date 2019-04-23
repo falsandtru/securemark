@@ -1,4 +1,4 @@
-﻿import { breaklines } from './source';
+import { breaklines } from './source';
 
 describe('Unit: parser/api/source', () => {
   describe('breaklines', () => {

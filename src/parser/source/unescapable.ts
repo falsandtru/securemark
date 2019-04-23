@@ -1,4 +1,4 @@
-﻿import { UnescapableSourceParser } from '../source';
+import { UnescapableSourceParser } from '../source';
 import { separator } from './text';
 import { text } from 'typed-dom';
 

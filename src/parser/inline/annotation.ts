@@ -1,4 +1,4 @@
-﻿import { AnnotationParser } from '../inline';
+import { AnnotationParser } from '../inline';
 import { union, some, verify, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { defrag, trimNodeEnd, hasTightText, hasMedia, hasAnnotationOrAuthority } from '../util';

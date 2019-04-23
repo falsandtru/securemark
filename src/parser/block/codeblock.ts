@@ -1,4 +1,4 @@
-﻿import { CodeBlockParser } from '../block';
+import { CodeBlockParser } from '../block';
 import { some, block, rewrite, focus, match, trim, lazy, eval } from '../../combinator';
 import { escsource } from '../source/escapable';
 import '../source/unescapable';

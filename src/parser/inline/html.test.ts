@@ -1,4 +1,4 @@
-﻿import { html } from './html';
+import { html } from './html';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

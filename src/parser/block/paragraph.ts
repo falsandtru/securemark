@@ -1,4 +1,4 @@
-﻿import { ParagraphParser } from '../block';
+import { ParagraphParser } from '../block';
 import { subsequence, some, block, trim, fmap } from '../../combinator';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';

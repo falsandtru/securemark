@@ -1,4 +1,4 @@
-﻿import { BracketParser, inline } from '../inline';
+import { BracketParser, inline } from '../inline';
 import { union, some, surround, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { text } from 'typed-dom';

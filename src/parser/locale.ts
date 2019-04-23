@@ -1,4 +1,4 @@
-﻿import { BlockParser } from './block';
+import { BlockParser } from './block';
 import { fmap } from '../combinator';
 import { japanese } from './locale/ja';
 import { html } from 'typed-dom';

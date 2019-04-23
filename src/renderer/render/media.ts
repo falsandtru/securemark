@@ -1,4 +1,4 @@
-﻿import { RenderingOptions } from '../../../';
+import { RenderingOptions } from '../../../';
 import { twitter } from './media/twitter';
 import { youtube } from './media/youtube';
 import { gist } from './media/gist';

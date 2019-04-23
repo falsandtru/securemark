@@ -1,4 +1,4 @@
-﻿import { sanitize, decode } from './uri';
+import { sanitize, decode } from './uri';
 
 describe('Unit: parser/text/uri', () => {
   describe('sanitiza', () => {

@@ -1,4 +1,4 @@
-﻿import { Parser, Data, eval, exec, verify as veri } from '../../data/parser';
+import { Parser, Data, eval, exec, verify as veri } from '../../data/parser';
 
 export function contract<P extends Parser<any, any>>(pattern: RegExp | string, parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
 export function contract<T, S extends Parser<any, any>[]>(pattern: RegExp | string, parser: Parser<T, S>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, S> {

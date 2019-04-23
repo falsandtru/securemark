@@ -1,4 +1,4 @@
-﻿import { MarkdownParser } from '../../markdown';
+import { MarkdownParser } from '../../markdown';
 import { normalize } from './api/normalization';
 import { union, some, exec } from '../combinator';
 import { segment as codeblock } from './block/codeblock';

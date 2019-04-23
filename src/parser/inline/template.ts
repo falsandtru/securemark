@@ -1,4 +1,4 @@
-﻿import { TemplateParser } from '../inline';
+import { TemplateParser } from '../inline';
 import { union, tails, some, subline, focus, rewrite, surround, lazy } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';

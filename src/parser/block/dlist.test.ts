@@ -1,4 +1,4 @@
-﻿import { dlist } from './dlist';
+import { dlist } from './dlist';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

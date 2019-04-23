@@ -1,4 +1,4 @@
-﻿import { newline } from './newline';
+import { newline } from './newline';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/newline', () => {

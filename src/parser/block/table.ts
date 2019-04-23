@@ -1,4 +1,4 @@
-﻿import { TableParser } from '../block';
+import { TableParser } from '../block';
 import { union, sequence, some, block, line, focus, verify, surround, trimEnd, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { hasMedia, squash } from '../util';

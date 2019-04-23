@@ -1,4 +1,4 @@
-﻿import { MarkdownParser } from '../../markdown.d';
+import { MarkdownParser } from '../../markdown.d';
 import { union } from '../combinator';
 import { newline } from './block/newline';
 import { horizontalrule } from './block/horizontalrule';

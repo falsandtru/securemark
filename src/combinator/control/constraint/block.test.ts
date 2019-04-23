@@ -1,4 +1,4 @@
-﻿import { block } from './block';
+import { block } from './block';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/block', () => {

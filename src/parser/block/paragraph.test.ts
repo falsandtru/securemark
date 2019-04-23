@@ -1,4 +1,4 @@
-﻿import { paragraph } from './paragraph';
+import { paragraph } from './paragraph';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

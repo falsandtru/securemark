@@ -1,4 +1,4 @@
-﻿import { bind } from './bind';
+import { bind } from './bind';
 import { html } from 'typed-dom';
 
 describe('Unit: parser/api/bind', () => {

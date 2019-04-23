@@ -1,4 +1,4 @@
-﻿import { cache } from '../../parser/inline/math';
+import { cache } from '../../parser/inline/math';
 import { define } from 'typed-dom';
 
 void MathJax.Hub.Config({

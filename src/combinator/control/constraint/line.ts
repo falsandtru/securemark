@@ -1,4 +1,4 @@
-﻿import { Parser, eval, exec, verify } from '../../data/parser';
+import { Parser, eval, exec, verify } from '../../data/parser';
 
 export function line<P extends Parser<any, any>>(parser: P, allowTrailingWhitespace?: boolean): P;
 export function line<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, allowTrailingWhitespace = true): Parser<T, S> {

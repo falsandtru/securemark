@@ -1,4 +1,4 @@
-﻿import { parse } from '../../../parser';
+import { parse } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { html } from 'typed-dom';
 

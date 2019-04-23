@@ -1,4 +1,4 @@
-﻿import { ExtensionParser } from '../../block';
+import { ExtensionParser } from '../../block';
 import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, fmap } from '../../../combinator';
 import { emptyline, blankline, contentline } from '../../source/line';
 import { table } from '../table';

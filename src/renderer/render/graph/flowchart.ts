@@ -1,4 +1,4 @@
-﻿import { define } from 'typed-dom';
+import { define } from 'typed-dom';
 
 declare global {
   interface Window {

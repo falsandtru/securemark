@@ -1,4 +1,4 @@
-﻿import { index } from '../parser/inline/extension/label';
+import { index } from '../parser/inline/extension/label';
 import { isGroup } from '../parser/inline';
 import { parse } from '../parser/api';
 import { define } from 'typed-dom';

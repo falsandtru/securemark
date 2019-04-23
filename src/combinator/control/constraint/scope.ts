@@ -1,4 +1,4 @@
-﻿import { Parser, eval, exec, verify } from '../../data/parser';
+import { Parser, eval, exec, verify } from '../../data/parser';
 
 export function focus<P extends Parser<any, any>>(scope: RegExp, parser: P): P;
 export function focus<T, S extends Parser<any, any>[]>(scope: RegExp, parser: Parser<T, S>): Parser<T, S> {

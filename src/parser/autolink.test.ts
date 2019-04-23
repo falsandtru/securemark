@@ -1,4 +1,4 @@
-﻿import { autolink } from './autolink';
+import { autolink } from './autolink';
 import { some } from '../combinator';
 import { inspect } from '../debug.test';
 

@@ -1,4 +1,4 @@
-﻿import { segment } from './segment';
+import { segment } from './segment';
 
 describe('Unit: parser/segment', () => {
   describe('segment', () => {

@@ -1,4 +1,4 @@
-﻿import { Result, eval, exec } from './combinator';
+import { Result, eval, exec } from './combinator';
 
 export function inspect(r: Result<HTMLElement | Text | string, any>): [string[], string] | undefined {
   return r

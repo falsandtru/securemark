@@ -1,4 +1,4 @@
-﻿import { HorizontalRuleParser } from '../block';
+import { HorizontalRuleParser } from '../block';
 import { block, line, focus } from '../../combinator';
 import { html } from 'typed-dom';
 

@@ -1,4 +1,4 @@
-﻿import { annotation } from './annotation';
+import { annotation } from './annotation';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

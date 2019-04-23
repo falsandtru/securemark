@@ -1,4 +1,4 @@
-﻿import { LinkParser, inline } from '../inline';
+import { LinkParser, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { attribute, attrs as attrs_ } from './html';

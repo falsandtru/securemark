@@ -1,4 +1,4 @@
-﻿import { RenderingOptions } from '../../';
+import { RenderingOptions } from '../../';
 import { code } from './render/code';
 import { math } from './render/math';
 import { media } from './render/media';

@@ -1,4 +1,4 @@
-﻿import { CommentParser } from '../inline';
+import { CommentParser } from '../inline';
 import { match } from '../../combinator';
 import { html } from 'typed-dom';
 

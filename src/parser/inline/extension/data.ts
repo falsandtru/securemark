@@ -1,4 +1,4 @@
-﻿import { ExtensionParser, inline } from '../../inline';
+import { ExtensionParser, inline } from '../../inline';
 import { inits, some, focus, surround, fmap, lazy } from '../../../combinator';
 import { unescsource } from '../../source/unescapable';
 import { defrag } from '../../util';

@@ -1,4 +1,4 @@
-﻿import { RubyParser } from '../inline';
+import { RubyParser } from '../inline';
 import { union, sequence, some, subline, validate, verify, surround, fmap } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text } from '../source/text';

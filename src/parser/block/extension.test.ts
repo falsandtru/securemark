@@ -1,4 +1,4 @@
-﻿import { extension } from './extension';
+import { extension } from './extension';
 import { some } from '../../combinator';
 
 describe('Unit: parser/block/extension', () => {

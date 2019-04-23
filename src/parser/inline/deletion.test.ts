@@ -1,4 +1,4 @@
-﻿import { deletion } from './deletion';
+import { deletion } from './deletion';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

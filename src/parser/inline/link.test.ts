@@ -1,4 +1,4 @@
-﻿import { link } from './link';
+import { link } from './link';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

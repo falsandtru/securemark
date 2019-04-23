@@ -1,4 +1,4 @@
-﻿import { toc } from './toc';
+import { toc } from './toc';
 import { parse } from '../parser';
 import { html } from 'typed-dom';
 

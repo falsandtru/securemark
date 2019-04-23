@@ -1,4 +1,4 @@
-﻿import { ilist } from './ilist';
+import { ilist } from './ilist';
 import { some } from '../../combinator';
 
 describe('Unit: parser/block/ilist', () => {

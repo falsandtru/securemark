@@ -1,4 +1,4 @@
-﻿import { horizontalrule } from './horizontalrule';
+import { horizontalrule } from './horizontalrule';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

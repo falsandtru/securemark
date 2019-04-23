@@ -1,4 +1,4 @@
-﻿import { unescsource } from './unescapable';
+import { unescsource } from './unescapable';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

@@ -1,4 +1,4 @@
-﻿import { parse } from './parse';
+import { parse } from './parse';
 
 describe('Unit: parser/api/parse', () => {
   describe('parse', () => {

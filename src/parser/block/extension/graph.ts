@@ -1,4 +1,4 @@
-﻿import { ExtensionParser } from '../../block';
+import { ExtensionParser } from '../../block';
 import { union, block, rewrite, focus, match, trim, lazy } from '../../../combinator';
 import '../../source/unescapable';
 import { html } from 'typed-dom';

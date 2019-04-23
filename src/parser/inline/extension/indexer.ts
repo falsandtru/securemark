@@ -1,4 +1,4 @@
-﻿import { ExtensionParser } from '../../inline';
+import { ExtensionParser } from '../../inline';
 import { Parser, union, line, surround, trim, lazy, fmap } from '../../../combinator';
 import { index as idx } from './index';
 import { html, define } from 'typed-dom';

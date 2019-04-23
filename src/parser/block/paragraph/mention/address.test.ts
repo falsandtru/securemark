@@ -1,4 +1,4 @@
-﻿import { address } from './address';
+import { address } from './address';
 import { some } from '../../../../combinator';
 import { inspect } from '../../../../debug.test';
 

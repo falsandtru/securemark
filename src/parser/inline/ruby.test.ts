@@ -1,4 +1,4 @@
-﻿import { ruby } from './ruby';
+import { ruby } from './ruby';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

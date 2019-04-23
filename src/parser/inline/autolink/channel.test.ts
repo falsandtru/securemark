@@ -1,4 +1,4 @@
-﻿import { channel } from './channel';
+import { channel } from './channel';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 

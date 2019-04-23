@@ -1,4 +1,4 @@
-﻿import { InsertionParser, inline } from '../inline';
+import { InsertionParser, inline } from '../inline';
 import { union, some, validate, verify, surround, lazy, fmap } from '../../combinator';
 import { defrag, hasInsOrDel } from '../util';
 import { html } from 'typed-dom';

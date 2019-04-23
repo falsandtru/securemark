@@ -1,4 +1,4 @@
-﻿import { blockquote } from './blockquote';
+import { blockquote } from './blockquote';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

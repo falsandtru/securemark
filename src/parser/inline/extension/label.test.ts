@@ -1,4 +1,4 @@
-﻿import { label } from './label';
+import { label } from './label';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 

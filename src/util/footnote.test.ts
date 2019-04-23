@@ -1,4 +1,4 @@
-﻿import { annotation, authority } from './footnote';
+import { annotation, authority } from './footnote';
 import { parse } from '../parser';
 import { html, text } from 'typed-dom';
 

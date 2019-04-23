@@ -1,4 +1,4 @@
-﻿import { render as render_ } from './render';
+import { render as render_ } from './render';
 import { RenderingOptions } from '../../';
 import { parse } from '../parser/api/parse';
 

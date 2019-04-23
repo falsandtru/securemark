@@ -1,4 +1,4 @@
-﻿import { emphasis } from './emphasis';
+import { emphasis } from './emphasis';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

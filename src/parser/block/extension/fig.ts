@@ -1,4 +1,4 @@
-﻿import { ExtensionParser } from '../../block';
+import { ExtensionParser } from '../../block';
 import { union, sequence, some, block, line, rewrite } from '../../../combinator';
 import { contentline } from '../../source/line';
 import { figure } from './figure';

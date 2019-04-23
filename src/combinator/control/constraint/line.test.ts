@@ -1,4 +1,4 @@
-﻿import { line, subline } from './line';
+import { line, subline } from './line';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/line', () => {

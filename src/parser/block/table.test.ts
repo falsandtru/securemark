@@ -1,4 +1,4 @@
-﻿import { table } from './table';
+import { table } from './table';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

@@ -1,4 +1,4 @@
-﻿import { comment } from './comment';
+import { comment } from './comment';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

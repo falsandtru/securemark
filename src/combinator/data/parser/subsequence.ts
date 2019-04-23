@@ -1,4 +1,4 @@
-﻿import { Parser, Data, SubData, SubParsers, SubParser } from '../parser';
+import { Parser, Data, SubData, SubParsers, SubParser } from '../parser';
 import { union } from './union';
 import { inits } from './inits';
 

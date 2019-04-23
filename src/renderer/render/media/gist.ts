@@ -1,4 +1,4 @@
-﻿import { parse } from '../../../parser';
+import { parse } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
 import { HTML, html, define } from 'typed-dom';

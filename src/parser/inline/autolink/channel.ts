@@ -1,4 +1,4 @@
-﻿import { AutolinkParser } from '../../inline';
+import { AutolinkParser } from '../../inline';
 import { sequence, some, subline, verify, fmap } from '../../../combinator';
 import '../../source/unescapable';
 import { account } from './account';

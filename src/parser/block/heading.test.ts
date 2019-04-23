@@ -1,4 +1,4 @@
-﻿import { heading } from './heading';
+import { heading } from './heading';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

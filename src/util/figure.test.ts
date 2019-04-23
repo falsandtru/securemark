@@ -1,4 +1,4 @@
-﻿import { figure } from './figure';
+import { figure } from './figure';
 import { parse } from '../parser';
 
 describe('Unit: util/figure', () => {

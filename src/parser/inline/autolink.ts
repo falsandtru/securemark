@@ -1,4 +1,4 @@
-﻿import { AutolinkParser } from '../inline';
+import { AutolinkParser } from '../inline';
 import { union } from '../../combinator';
 import { uri } from './autolink/uri';
 import { email } from './autolink/email';

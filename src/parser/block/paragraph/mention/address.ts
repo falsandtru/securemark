@@ -1,4 +1,4 @@
-﻿import { ParagraphParser } from '../../../block';
+import { ParagraphParser } from '../../../block';
 import { union, line, match, convert, fmap } from '../../../../combinator';
 import { link } from '../../../inline';
 import { html, define } from 'typed-dom';

@@ -1,4 +1,4 @@
-﻿import { codeblock } from './codeblock';
+import { codeblock } from './codeblock';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

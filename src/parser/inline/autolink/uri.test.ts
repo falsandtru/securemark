@@ -1,4 +1,4 @@
-﻿import { uri } from './uri';
+import { uri } from './uri';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 

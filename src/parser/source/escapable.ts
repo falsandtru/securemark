@@ -1,4 +1,4 @@
-﻿import { EscapableSourceParser } from '../source';
+import { EscapableSourceParser } from '../source';
 import { text } from 'typed-dom';
 
 const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]/;

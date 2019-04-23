@@ -1,4 +1,4 @@
-﻿import { Parser, Result } from '../parser';
+import { Parser, Result } from '../parser';
 import { subsequence } from './subsequence';
 import { inspect } from '../../../debug.test';
 

@@ -1,4 +1,4 @@
-﻿import { email } from './email';
+import { email } from './email';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 

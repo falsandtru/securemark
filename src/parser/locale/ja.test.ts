@@ -1,4 +1,4 @@
-﻿import { japanese } from './ja';
+import { japanese } from './ja';
 
 describe('Unit: parser/locale/ja', () => {
   describe('japanese', () => {

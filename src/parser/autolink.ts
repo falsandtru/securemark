@@ -1,4 +1,4 @@
-﻿import { MarkdownParser } from '../../markdown';
+import { MarkdownParser } from '../../markdown';
 import { union } from '../combinator';
 import { autolink as al } from './inline/autolink';
 import { unescsource } from './source/unescapable';

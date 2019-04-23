@@ -1,4 +1,4 @@
-﻿import { ExtensionParser, inline } from '../../inline';
+import { ExtensionParser, inline } from '../../inline';
 import { union, some, subline, rewrite, verify, surround, convert, lazy, fmap } from '../../../combinator';
 import { link } from '../link';
 import { index as idx } from './indexer';

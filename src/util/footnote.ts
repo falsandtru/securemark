@@ -1,4 +1,4 @@
-﻿import { text } from '../parser/inline/extension/indexer';
+import { text } from '../parser/inline/extension/indexer';
 import { html, define } from 'typed-dom';
 
 export function footnote(source: DocumentFragment | HTMLElement, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void {

@@ -1,4 +1,4 @@
-﻿import { mathblock } from './mathblock';
+import { mathblock } from './mathblock';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

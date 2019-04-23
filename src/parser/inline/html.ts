@@ -1,4 +1,4 @@
-﻿import { HTMLParser, inline } from '../inline';
+import { HTMLParser, inline } from '../inline';
 import { SubParsers } from '../../combinator/data/parser';
 import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, lazy, fmap } from '../../combinator';
 import { unescsource } from '../source/unescapable';

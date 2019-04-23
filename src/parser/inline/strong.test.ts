@@ -1,4 +1,4 @@
-﻿import { strong } from './strong';
+import { strong } from './strong';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

@@ -1,4 +1,4 @@
-﻿import { hashtag } from './hashtag';
+import { hashtag } from './hashtag';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/hashtag', () => {

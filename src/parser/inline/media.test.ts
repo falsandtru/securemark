@@ -1,4 +1,4 @@
-﻿import { media } from './media';
+import { media } from './media';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

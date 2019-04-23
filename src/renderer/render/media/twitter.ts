@@ -1,4 +1,4 @@
-﻿import { parse } from '../../../parser';
+import { parse } from '../../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
 import { HTML, html as h, define } from 'typed-dom';

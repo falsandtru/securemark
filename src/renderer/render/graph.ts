@@ -1,4 +1,4 @@
-﻿import { RenderingOptions } from '../../..';
+import { RenderingOptions } from '../../..';
 import { sequence } from './graph/sequence';
 import { flowchart } from './graph/flowchart';
 import { graphviz } from './graph/graphviz';

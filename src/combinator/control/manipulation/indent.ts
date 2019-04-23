@@ -1,4 +1,4 @@
-﻿import { Parser, eval, exec } from '../../data/parser';
+import { Parser, eval, exec } from '../../data/parser';
 import { some } from '../../data/parser/some';
 import { bind } from '../monad/bind';
 import { match } from './match';

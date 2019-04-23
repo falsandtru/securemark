@@ -1,4 +1,4 @@
-﻿import { MarkdownParser } from '../../markdown.d';
+import { MarkdownParser } from '../../markdown.d';
 import { union } from '../combinator';
 import { annotation } from './inline/annotation';
 import { authority } from './inline/authority';

@@ -1,4 +1,4 @@
-﻿import { media } from './media';
+import { media } from './media';
 import { html } from 'typed-dom';
 
 describe('Unit: renderer/render/media', () => {

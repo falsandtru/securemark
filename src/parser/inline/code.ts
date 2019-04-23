@@ -1,4 +1,4 @@
-﻿import { CodeParser } from '../inline';
+import { CodeParser } from '../inline';
 import { union, some, subline, focus, match } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { html } from 'typed-dom';

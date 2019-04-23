@@ -1,4 +1,4 @@
-﻿import { olist } from './olist';
+import { olist } from './olist';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

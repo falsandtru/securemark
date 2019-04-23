@@ -1,4 +1,4 @@
-﻿import { concat } from 'spica/concat';
+import { concat } from 'spica/concat';
 import { html, frag } from 'typed-dom';
 
 export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement {

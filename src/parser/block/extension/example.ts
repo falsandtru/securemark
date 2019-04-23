@@ -1,4 +1,4 @@
-﻿import { ExtensionParser } from '../../block';
+import { ExtensionParser } from '../../block';
 import { union, block, rewrite, focus, match, trim, lazy, eval } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';

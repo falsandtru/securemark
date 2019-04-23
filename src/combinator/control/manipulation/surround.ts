@@ -1,4 +1,4 @@
-﻿import { Parser } from '../../data/parser';
+import { Parser } from '../../data/parser';
 
 export function surround<P extends Parser<any, any>>(start: string | RegExp, parser: P, end: string | RegExp, strict?: boolean): P;
 export function surround<T, S extends Parser<any, any>[]>(start: string | RegExp, parser: Parser<T, S>, end: string | RegExp, strict = true): Parser<T, S> {

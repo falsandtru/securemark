@@ -1,4 +1,4 @@
-﻿import { insertion } from './insertion';
+import { insertion } from './insertion';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

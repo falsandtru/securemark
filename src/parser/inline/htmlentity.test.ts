@@ -1,4 +1,4 @@
-﻿import { htmlentity } from './htmlentity';
+import { htmlentity } from './htmlentity';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

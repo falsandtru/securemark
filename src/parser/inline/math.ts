@@ -1,4 +1,4 @@
-﻿import { MathParser } from '../inline';
+import { MathParser } from '../inline';
 import { union, some, subline, rewrite, verify, surround, convert } from '../../combinator';
 import { escsource } from '../source/escapable';
 import { hasText } from '../util';

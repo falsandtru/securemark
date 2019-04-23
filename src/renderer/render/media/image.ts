@@ -1,4 +1,4 @@
-﻿import { cache } from '../../../parser/inline/media';
+import { cache } from '../../../parser/inline/media';
 import { html } from 'typed-dom';
 
 export function image(url: URL, alt: string): HTMLImageElement {

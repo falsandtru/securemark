@@ -1,4 +1,4 @@
-﻿import { OListParser } from '../block';
+import { OListParser } from '../block';
 import { union, inits, some, block, line, focus, match, surround, convert, indent, trim, fmap } from '../../combinator';
 import { ulist_, fillFirstLine, verifyListItem } from './ulist';
 import { ilist_ } from './ilist';

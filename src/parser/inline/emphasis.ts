@@ -1,4 +1,4 @@
-﻿import { EmphasisParser, inline } from '../inline';
+import { EmphasisParser, inline } from '../inline';
 import { union, some, validate, verify, surround, lazy, fmap } from '../../combinator';
 import { strong } from './strong';
 import { defrag, trimNodeEnd, hasTightText } from '../util';

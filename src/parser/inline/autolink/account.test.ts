@@ -1,4 +1,4 @@
-﻿import { account } from './account';
+import { account } from './account';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 

@@ -1,4 +1,4 @@
-﻿import { graph } from './graph';
+import { graph } from './graph';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 

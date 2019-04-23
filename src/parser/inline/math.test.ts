@@ -1,4 +1,4 @@
-﻿import { math } from './math';
+import { math } from './math';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

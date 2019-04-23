@@ -1,4 +1,4 @@
-﻿import { Parser, fmap } from '../combinator';
+import { Parser, fmap } from '../combinator';
 import { isFixed } from './inline';
 import { memoize as memoize_ } from 'spica/memoization';
 import { frag } from 'typed-dom';

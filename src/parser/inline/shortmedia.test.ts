@@ -1,4 +1,4 @@
-﻿import { shortmedia } from './shortmedia';
+import { shortmedia } from './shortmedia';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

@@ -1,4 +1,4 @@
-﻿import { HeadingParser } from '../block';
+import { HeadingParser } from '../block';
 import { union, some, block, line, verify, match, trim, fmap } from '../../combinator';
 import { inline, indexer, index } from '../inline';
 import { defrag, hasText, hasMedia, memoize } from '../util';

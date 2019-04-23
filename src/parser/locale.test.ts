@@ -1,4 +1,4 @@
-﻿import { block } from './block';
+import { block } from './block';
 import { some } from '../combinator';
 import { inspect } from '../debug.test';
 

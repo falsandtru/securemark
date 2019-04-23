@@ -1,4 +1,4 @@
-﻿import { normalize } from './normalization';
+import { normalize } from './normalization';
 
 describe('Unit: parser/api/normalization', () => {
   describe('normalize', () => {

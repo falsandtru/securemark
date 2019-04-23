@@ -1,4 +1,4 @@
-﻿import { escsource } from './escapable';
+import { escsource } from './escapable';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 

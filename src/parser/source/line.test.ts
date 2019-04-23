@@ -1,4 +1,4 @@
-﻿import { blankline, contentline } from './line';
+import { blankline, contentline } from './line';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/line', () => {

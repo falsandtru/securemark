@@ -1,4 +1,4 @@
-﻿import { CharParser } from '../source';
+import { CharParser } from '../source';
 import { Parser } from '../../combinator';
 import { text } from 'typed-dom';
 
