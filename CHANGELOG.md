@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.112.0
+
+- Fix bracket syntax to exclude angle bracket.
+
 ## 0.111.3
 
 - Fix link syntax to disallow nested link syntax.

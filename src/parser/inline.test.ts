@@ -21,6 +21,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('*<a>`b`&c; &amp;*')), [['<em><span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;a&gt;</span><code data-src="`b`">b</code>&amp;c; &amp;</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*<small>`a`</small>*')), [['<em><small><code data-src="`a`">a</code></small></em>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>*<bdi>a</bdi>*</small>')), [['<small><em><bdi>a</bdi></em></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('*[*]')), [['*', '[*]'], '']);
+      assert.deepStrictEqual(inspect(parser('*<*>')), [['<em>&lt;</em>', '&gt;'], '']);
       assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation">b</sup></em>'], '']);
       assert.deepStrictEqual(inspect(parser('``a`')), [['`', '`', 'a', '`'], '']);
       assert.deepStrictEqual(inspect(parser('[::1]')), [['[::1]'], '']);

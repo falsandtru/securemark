@@ -14,9 +14,6 @@ export const bracket: BracketParser = lazy(() => defrag(union([
     surround('{', some(inline, '}'), '}', false),
     ns => [text('{'), ...ns, text('}')]),
   fmap(
-    surround('<', some(inline, '>'), '>', false),
-    ns => [text('<'), ...ns, text('>')]),
-  fmap(
     surround('"', some(inline, '"'), '"', false),
     ns => [text('"'), ...ns, text('"')]),
 ])));
