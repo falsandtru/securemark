@@ -2848,11 +2848,6 @@ require = function () {
                     ...ns,
                     typed_dom_1.text('}')
                 ]),
-                combinator_1.fmap(combinator_1.surround('<', combinator_1.some(inline_1.inline, '>'), '>', false), ns => [
-                    typed_dom_1.text('<'),
-                    ...ns,
-                    typed_dom_1.text('>')
-                ]),
                 combinator_1.fmap(combinator_1.surround('"', combinator_1.some(inline_1.inline, '"'), '"', false), ns => [
                     typed_dom_1.text('"'),
                     ...ns,
