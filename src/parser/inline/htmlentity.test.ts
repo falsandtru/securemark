@@ -25,8 +25,8 @@ describe('Unit: parser/inline/htmlentity', () => {
     });
 
     it('entity', () => {
-      assert.deepStrictEqual(inspect(parser('&nbsp;')), [[' '], '']);
-      assert.deepStrictEqual(inspect(parser('&amp;')), [['&'], '']);
+      assert.deepStrictEqual(inspect(parser('&nbsp;')), [['&nbsp;'], '']);
+      assert.deepStrictEqual(inspect(parser('&amp;')), [['&amp;'], '']);
       assert.deepStrictEqual(inspect(parser('&copy;')), [['©'], '']);
       assert.deepStrictEqual(inspect(parser('&AElig;')), [['Æ'], '']);
       assert.deepStrictEqual(inspect(parser('&Dcaron;')), [['Ď'], '']);
