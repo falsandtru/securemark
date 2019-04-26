@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.112.1
+
+- Enhance codeblock parser to infer languages from file extensions.
+
 ## 0.112.0
 
 - Fix bracket syntax to exclude angle bracket.
