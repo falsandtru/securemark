@@ -1812,18 +1812,20 @@ require = function () {
                 ''
             ]), false);
             exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => rest => {
+                const path = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param.trim())));
+                const file = path.split('/').pop() || '';
+                const ext = file && file.includes('.') && !file.startsWith('.') ? file.split('.').pop() : '';
+                lang = (lang || ext).match(/^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/) ? lang || ext : lang && 'invalid';
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
-                    lang = lang.match(/^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/) ? lang : 'invalid';
                     void el.classList.add('code');
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
                     void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent)));
                 }
-                const filepath = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param.trim())));
-                if (filepath) {
-                    void el.setAttribute('data-file', filepath);
+                if (path) {
+                    void el.setAttribute('data-file', path);
                 }
                 return [
                     [el],
