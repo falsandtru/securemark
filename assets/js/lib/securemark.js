@@ -393,6 +393,7 @@ require = function () {
             var listener_1 = _dereq_('./src/util/listener');
             exports.listen = listener_1.listen;
             exports.once = listener_1.once;
+            exports.wait = listener_1.wait;
             exports.delegate = listener_1.delegate;
             exports.bind = listener_1.bind;
             exports.currentTargets = listener_1.currentTargets;
@@ -441,7 +442,7 @@ require = function () {
                     function elem(factory, attrs, children) {
                         const el = factory(baseFactory, tag, attrs, children);
                         if (tag !== el.tagName.toLowerCase())
-                            throw new Error(`TypedDOM: Tag name must be "${ tag }", but got "${ el.tagName.toLowerCase() }".`);
+                            throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
                         if (factory !== defaultFactory) {
                             for (const [k, v] of Object.entries(attrs)) {
                                 if (typeof v !== 'function')
@@ -507,7 +508,22 @@ require = function () {
                     this.children_ = children_;
                     this.container = container;
                     this.id_ = this.element.id.trim();
-                    this.type = this.children_ === undefined ? ElChildrenType.Void : typeof this.children_ === 'string' ? ElChildrenType.Text : Array.isArray(this.children_) ? ElChildrenType.Collection : ElChildrenType.Record;
+                    switch (true) {
+                    case children_ === undefined:
+                        this.type = ElChildrenType.Void;
+                        break;
+                    case typeof children_ === 'string':
+                        this.type = ElChildrenType.Text;
+                        break;
+                    case Array.isArray(children_):
+                        this.type = ElChildrenType.Collection;
+                        break;
+                    case children_ && typeof children_ === 'object':
+                        this.type = ElChildrenType.Record;
+                        break;
+                    default:
+                        throw new Error(`TypedDOM: Invalid type children.`);
+                    }
                     void throwErrorIfNotUsable(this);
                     void memory.set(this.element, this);
                     switch (this.type) {
@@ -533,7 +549,7 @@ require = function () {
                         this.children = children_;
                         return;
                     default:
-                        throw new Error(`TypedDOM: Undefined type children.`);
+                        throw new Error(`TypedDOM: Unreachable code.`);
                     }
                     function observe(node, children) {
                         return Object.defineProperties(children, Object.entries(children).reduce((descs, [name, child]) => {
@@ -589,9 +605,9 @@ require = function () {
                     switch (query[0]) {
                     case '.': {
                             const id = query.slice(1);
-                            if (!(style.getAttribute('class') || '').split(' ').includes(id))
+                            if (!style.classList.contains(id))
                                 break;
-                            void style.setAttribute('class', `${ style.getAttribute('class') } ${ id }`.trim());
+                            void style.classList.add(id);
                             break;
                         }
                     }
@@ -635,8 +651,12 @@ require = function () {
                             const sourceChildren = children;
                             const targetChildren = [];
                             this.children_ = targetChildren;
+                            const mem = new WeakSet();
                             for (let i = 0; i < sourceChildren.length; ++i) {
                                 const newChild = sourceChildren[i];
+                                if (mem.has(newChild))
+                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
+                                void mem.add(newChild);
                                 if (newChild.element.parentNode !== this.container) {
                                     void throwErrorIfNotUsable(newChild);
                                 }
@@ -662,18 +682,18 @@ require = function () {
                     case ElChildrenType.Record: {
                             const sourceChildren = children;
                             const targetChildren = this.children_;
-                            const log = new WeakSet();
+                            const mem = new WeakSet();
                             for (const name in targetChildren) {
                                 const oldChild = targetChildren[name];
                                 const newChild = sourceChildren[name];
                                 if (!newChild)
                                     continue;
+                                if (mem.has(newChild))
+                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
+                                void mem.add(newChild);
                                 if (newChild.element.parentNode !== this.container) {
                                     void throwErrorIfNotUsable(newChild);
                                 }
-                                if (log.has(newChild))
-                                    throw new Error(`TypedDOM: Cannot use an element again used in the same record.`);
-                                void log.add(newChild);
                                 if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
                                     void this.scope(newChild);
                                     void addedChildren.add(newChild);
@@ -708,7 +728,7 @@ require = function () {
             function throwErrorIfNotUsable({element}) {
                 if (!element.parentElement || !memory.has(element.parentElement))
                     return;
-                throw new Error(`TypedDOM: Cannot add an element used in another typed dom.`);
+                throw new Error(`TypedDOM: Typed DOM children can't be used to another typed DOM.`);
             }
         },
         {
@@ -831,6 +851,10 @@ require = function () {
                 return typeof b === 'string' ? delegate(target, a, b, c, Object.assign({}, typeof d === 'boolean' ? { capture: d } : d, { once: true })) : bind(target, a, b, Object.assign({}, typeof c === 'boolean' ? { capture: c } : c, { once: true }));
             }
             exports.once = once;
+            function wait(target, a, b = false, c = {}) {
+                return new Promise(resolve => typeof b === 'string' ? void once(target, a, b, resolve, c) : void once(target, a, resolve, b));
+            }
+            exports.wait = wait;
             function delegate(target, selector, type, listener, option = {}) {
                 return bind(target instanceof Document ? target.documentElement : target, type, ev => {
                     const cx = (ev.target.shadowRoot && ev.composedPath()[0] || ev.target).closest(selector);
