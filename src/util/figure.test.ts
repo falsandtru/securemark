@@ -13,9 +13,9 @@ describe('Unit: util/figure', () => {
 
     it('one', () => {
       const source = parse([
-        '~~~figure [$fig-a]\n> \n\n~~~',
-        '[$fig-a]',
-        '[$fig-a]',
+        '$fig-a\n> ',
+        '$fig-a',
+        '$fig-a',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         figure(source);
@@ -31,9 +31,9 @@ describe('Unit: util/figure', () => {
 
     it('some', () => {
       const source = parse([
-        '~~~figure [$fig-a]\n> \n\n~~~',
-        '~~~figure [$table-a]\n> \n\n~~~',
-        '~~~figure [$fig-b]\n> \n\n~~~',
+        '$fig-a\n> ',
+        '$table-a\n> ',
+        '$fig-b\n> ',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         figure(source);
@@ -49,11 +49,11 @@ describe('Unit: util/figure', () => {
 
     it('group', () => {
       const source = parse([
-        '~~~figure [$fig-a-0.0]\n> \n\n~~~',
-        '~~~figure [$fig-b-0.0.0.0]\n> \n\n~~~',
-        '~~~figure [$fig-c-0.0.0]\n> \n\n~~~',
-        '~~~figure [$fig-d]\n> \n\n~~~',
-        '[$fig-b]',
+        '$fig-a-0.0\n> ',
+        '$fig-b-0.0.0.0\n> ',
+        '$fig-c-0.0.0\n> ',
+        '$fig-d\n> ',
+        '$fig-b',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         figure(source);
@@ -71,11 +71,11 @@ describe('Unit: util/figure', () => {
 
     it('fixed', () => {
       const source = parse([
-        '~~~figure [$fig-1]\n> \n\n~~~',
-        '~~~figure [$fig-a-0.0]\n> \n\n~~~',
-        '~~~figure [$-3.1]\n$$\n$$\n~~~',
-        '[$fig-2.0]',
-        '[$-3.1]',
+        '$fig-1\n> ',
+        '$fig-a-0.0\n> ',
+        '$-3.1\n$$\n$$',
+        '$fig-2.0',
+        '$-3.1',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         figure(source);
@@ -93,25 +93,25 @@ describe('Unit: util/figure', () => {
 
     it('base', () => {
       const source = parse([
-        '[$-0.0]\n$$\n$$',
+        '$-0.0\n$$\n$$',
         '## 0',
-        '[$fig-1]\n> ',
-        '[$fig-a-0.0]\n> ',
+        '$fig-1\n> ',
+        '$fig-a-0.0\n> ',
         '## 0',
         '!> ## 0',
-        '[$fig-b]\n> ',
+        '$fig-b\n> ',
         '## 0',
-        '[$-0.0.0]\n$$\n$$',
-        '[$quote-a-0.0]\n> ',
-        '[$fig-c]\n> ',
+        '$-0.0.0\n$$\n$$',
+        '$quote-a-0.0\n> ',
+        '$fig-c\n> ',
         '## 0',
-        '[$-0.1.0]\n$$\n$$',
-        '[$fig-d]\n> ',
+        '$-0.1.0\n$$\n$$',
+        '$fig-d\n> ',
         '## 0',
         '## 0',
-        '[$fig-e]\n> ',
-        '[$-5.0]\n$$\n$$',
-        '[$fig-d]\n> ',
+        '$fig-e\n> ',
+        '$-5.0\n$$\n$$',
+        '$fig-d\n> ',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         figure(source);
@@ -143,8 +143,8 @@ describe('Unit: util/figure', () => {
 
     it('number', () => {
       const source = parse([
-        '~~~figure [$-a]\n$$\n$$\n~~~',
-        '[$-a]',
+        '$-a\n$$\n$$',
+        '$-a',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
         figure(source);
@@ -171,6 +171,24 @@ describe('Unit: util/figure', () => {
             '<blockquote><blockquote><figure data-label="fig-1" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></blockquote><figure data-label="fig-0" data-group="fig" data-index="0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 0.</span><figcaption></figcaption></figure></blockquote>',
             '<aside class="example" data-type="markdown"><pre>~~~figure [$fig-a]\n&gt; \n\n~~~</pre><div><figure data-label="fig-a" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></div><ol></ol><ol></ol></aside>',
             '<figure data-label="fig-a" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+          ]);
+      }
+    });
+
+    it('verbose', () => {
+      const source = parse([
+        '~~~figure [$fig-a]\n> \n\n~~~',
+        '[$fig-a]',
+        '[$fig-a]',
+      ].join('\n\n'));
+      for (let i = 0; i < 3; ++i) {
+        figure(source);
+        assert.deepStrictEqual(
+          [...source.children].map(el => el.outerHTML),
+          [
+            '<figure data-label="fig-a" data-group="fig" data-index="1" id="label:fig-1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+            '<p><a rel="noopener" class="label" data-label="fig-a" href="#label:fig-1">Fig. 1</a></p>',
+            '<p><a rel="noopener" class="label" data-label="fig-a" href="#label:fig-1">Fig. 1</a></p>',
           ]);
       }
     });

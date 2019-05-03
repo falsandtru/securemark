@@ -5,15 +5,17 @@ import { link } from '../link';
 import { hasTightText } from '../../util';
 import { define } from 'typed-dom';
 
+const parser = focus(
+  /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
+  convert(
+    query => `[\\${query}]{#}`,
+    link));
+
 export const label: ExtensionParser.LabelParser = subline(verify(fmap(
-  surround(
-    '[',
-    focus(
-      /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
-      convert(
-        query => `[${query}]{#}`,
-        union([link]))),
-    ']'),
+  union([
+    surround('[', parser, ']'),
+    parser,
+  ]),
   ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.slice(el.textContent![1] === '-' ? 0 : 1), href: null })]),
   ([el]) => hasTightText(el)));
 

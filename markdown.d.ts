@@ -486,9 +486,11 @@ export namespace MarkdownParser {
         ]> {
       }
       export interface LabelParser extends
+        // $group-name
         // [$group-name]
         Inline<'extension/label'>,
         Parser<HTMLAnchorElement, [
+          LinkParser,
           LinkParser,
         ]> {
       }

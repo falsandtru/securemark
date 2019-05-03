@@ -5,7 +5,7 @@ import { label } from './extension/label';
 import { data } from './extension/data';
 import { placeholder } from './extension/placeholder';
 
-export const extension: ExtensionParser = validate('[', union([
+export const extension: ExtensionParser = validate(/^[[$]/, union([
   index,
   label,
   data,
