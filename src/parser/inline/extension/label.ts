@@ -7,14 +7,14 @@ import { define } from 'typed-dom';
 
 export const label: ExtensionParser.LabelParser = subline(verify(fmap(
   surround(
-    '[:',
+    '[',
     focus(
-      /^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
+      /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
       convert(
         query => `[${query}]{#}`,
         union([link]))),
     ']'),
-  ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.split(':').pop()!, href: null })]),
+  ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.slice(el.textContent![1] === '-' ? 0 : 1), href: null })]),
   ([el]) => hasTightText(el)));
 
 export function index(label: string, index: string): string {

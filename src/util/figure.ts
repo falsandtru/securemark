@@ -11,7 +11,7 @@ export function figure(source: DocumentFragment | HTMLElement): void {
     if (fig.matches('h2')) {
       assert(fig.parentNode === source);
       if (base === '0') continue;
-      fig = parse(`[:$-${+base.split('.', 1)[0] + 1}.0]\n$$\n$$`).querySelector('figure')!;
+      fig = parse(`[$-${+base.split('.', 1)[0] + 1}.0]\n$$\n$$`).querySelector('figure')!;
     }
     if (fig.matches('.example figure')) continue;
     if (fig.parentElement !== source && fig.parentElement instanceof HTMLQuoteElement) {
@@ -39,7 +39,7 @@ export function figure(source: DocumentFragment | HTMLElement): void {
     if (idx.endsWith('.0')) continue;
     void fig.setAttribute('id', `label:${label.split('-', 1)[0]}-${idx}`);
     const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-    for (const ref of source.querySelectorAll(`a.label[data-label="${query.replace(/[:$.]/g, '\\$&')}"]`)) {
+    for (const ref of source.querySelectorAll(`a.label[data-label="${query.replace(/[$.]/g, '\\$&')}"]`)) {
       void define(ref, { href: `#${fig.id}` }, figindex.textContent!.replace(/[.]$/, ''));
     }
   }

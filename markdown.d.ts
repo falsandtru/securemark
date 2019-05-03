@@ -272,13 +272,13 @@ export namespace MarkdownParser {
         ]> {
       }
       export interface FigureParser extends
-        // ~~~figure [:group-name]
+        // ~~~figure [$group-name]
         // !https://host/image.png
         //
         // caption
         // ~~~
         //
-        // [:group-name]
+        // [$group-name]
         // !https://host/image.png
         Block<'extension/figure'>,
         Parser<HTMLElement, [
@@ -486,7 +486,7 @@ export namespace MarkdownParser {
         ]> {
       }
       export interface LabelParser extends
-        // [:group-name]
+        // [$group-name]
         Inline<'extension/label'>,
         Parser<HTMLAnchorElement, [
           LinkParser,

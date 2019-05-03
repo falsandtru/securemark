@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.113.0
+
+- Refine label syntax.
+
 ## 0.112.1
 
 - Enhance codeblock parser to infer languages from file extensions.
