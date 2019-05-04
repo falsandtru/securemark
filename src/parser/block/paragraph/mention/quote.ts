@@ -8,12 +8,12 @@ import { html } from 'typed-dom';
 export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => block(fmap(
   union([
     validate(
-      /^(?=>+(?:[^\S\n]|\n\s*\S))/,
+      /^(?=>+([^\S\n]|\n\s*\S))/,
       rewrite(
-        some(validate(/^(?=>+(?:\s|$))/, contentline)),
+        some(validate(/^(?=>+(\s|$))/, contentline)),
         convert(source => source.replace(/\n$/, ''), defrag(some(autolink))))),
     validate(
-      /^(?=>+(?:[^>\n]|\n\s*\S))/,
+      /^(?=>+([^>\n]|\n\s*\S))/,
       rewrite(
         some(validate(/^(?=>+)/, contentline)),
         convert(source => source.replace(/\n$/, ''), defrag(some(autolink))))),

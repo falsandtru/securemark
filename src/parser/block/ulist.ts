@@ -10,7 +10,7 @@ import { html, define } from 'typed-dom';
 const opener = /^-(?:\s|$)/;
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
-  /^-(?:[^\S\n]|\n[^\S\n]*\S)/,
+  /^-([^\S\n]|\n[^\S\n]*\S)/,
   some(union([
     fmap(
       inits([
