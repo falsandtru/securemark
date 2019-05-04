@@ -21,7 +21,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
     const ext = file && file.includes('.') && !file.startsWith('.')
         ? file.split('.').pop()!
         : '';
-    lang = (lang || ext).match(/^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/)
+    lang = /^[a-z][a-z0-9]*(-[a-z][a-z0-9]*)*$/.test(lang || ext)
       ? lang || ext
       : lang && 'invalid';
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));
