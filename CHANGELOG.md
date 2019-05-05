@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.114.0
+
+- Change backslash syntax to work only with non-alphanumeric ASCII characters and whitespace.
+
 ## 0.113.0
 
 - Refine label syntax.

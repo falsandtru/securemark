@@ -2,6 +2,7 @@ import { TextParser } from '../source';
 import { html, text as txt } from 'typed-dom';
 
 export const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|\S#/;
+export const escapable = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
 const next = /[\S\n]|$/;
 
 export const text: TextParser = source => {
@@ -17,7 +18,9 @@ export const text: TextParser = source => {
             case '\n':
               return [[html('br')], source.slice(2)];
             default:
-              return [[txt(source.slice(1, 2))], source.slice(2)];
+              return source.length === 1 || source[1].match(escapable)
+                ? [[txt(source.slice(1, 2))], source.slice(2)]
+                : [[txt(source.slice(0, 1))], source.slice(1)];
           }
         case '\n':
           return [[html('span', { class: 'linebreak' }, ' ')], source.slice(1)];
