@@ -10,7 +10,9 @@ export function validate<T, S extends Parser<any, any>[]>(pattern: RegExp | stri
   assert(parser);
   return source => {
     if (source === '') return;
-    if (typeof pattern === 'string' ? !source.startsWith(pattern) : !pattern.test(source)) return;
+    const res = match(source, pattern);
+    if (!res) return;
+    assert(source.startsWith(res[0]));
     const result = parser(source);
     assert(veri(source, result));
     if (!result) return;
@@ -33,4 +35,10 @@ export function verify<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, co
       ? result
       : undefined;
   };
+}
+
+function match(source: string, pattern: string | RegExp): string[] | null {
+  return typeof pattern === 'string'
+    ? source.startsWith(pattern) ? [pattern] : null
+    : source.match(pattern);
 }
