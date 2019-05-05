@@ -981,8 +981,7 @@ require = function () {
                 return source => {
                     if (source === '')
                         return;
-                    const res = match(source, pattern);
-                    if (!res)
+                    if (typeof pattern === 'string' ? !source.startsWith(pattern) : !pattern.test(source))
                         return;
                     const result = parser(source);
                     if (!result)
@@ -1004,9 +1003,6 @@ require = function () {
                 };
             }
             exports.verify = verify;
-            function match(source, pattern) {
-                return typeof pattern === 'string' ? source.startsWith(pattern) ? [pattern] : null : source.match(pattern);
-            }
         },
         { '../../data/parser': 33 }
     ],
@@ -1787,8 +1783,8 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.union([
-                combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline)),
-                combinator_1.validate(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline))
+                combinator_1.validate(/^(?=>+([^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline)),
+                combinator_1.validate(/^!(?=>+([^\S\n]|\n\s*\S))/, combinator_1.some(line_1.contentline))
             ]));
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.surround(/^(?=>)/, text, ''),
@@ -1839,7 +1835,7 @@ require = function () {
                 const path = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param.trim())));
                 const file = path.split('/').pop() || '';
                 const ext = file && file.includes('.') && !file.startsWith('.') ? file.split('.').pop() : '';
-                lang = (lang || ext).match(/^[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*$/) ? lang || ext : lang && 'invalid';
+                lang = /^[a-z][a-z0-9]*(-[a-z][a-z0-9]*)*$/.test(lang || ext) ? lang || ext : lang && 'invalid';
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
                     void el.classList.add('code');
@@ -1908,7 +1904,7 @@ require = function () {
             const graph_1 = _dereq_('./extension/graph');
             const example_1 = _dereq_('./extension/example');
             const placeholder_1 = _dereq_('./extension/placeholder');
-            exports.segment = combinator_1.validate(/^~{3,}[a-z]|^\[:[^\]\s]+\][^\S\n]*\n/, combinator_1.union([
+            exports.segment = combinator_1.validate(/^~{3,}[a-z]|^\[?\$[\w-]\S*[^\S\n]*\n/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
                 graph_1.segment,
@@ -2015,10 +2011,10 @@ require = function () {
                     combinator_1.some(line_1.contentline)
                 ])
             ]));
-            exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, source => {
-                const bracket = (source.match(/^[^\n]*\n!?>+\s/) && source.match(/^~{3,}(?=\s*)$/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
-                return figure_1.figure(`${ bracket }figure ${ source }\n\n${ bracket }`);
-            }));
+            exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.convert(source => {
+                const bracket = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*)$/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
+                return `${ bracket }figure ${ source }\n\n${ bracket }`;
+            }, figure_1.figure)));
         },
         {
             '../../../combinator': 20,
@@ -2048,7 +2044,7 @@ require = function () {
             const inline_2 = _dereq_('../../inline');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[:\S+?\][^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/, util_1.memoize(([, bracket]) => bracket, (bracket, closer = new RegExp(`^${ bracket }[^\\S\\n]*(?:\\n|$)`)) => combinator_1.surround('', combinator_1.sequence([
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/, util_1.memoize(([, bracket]) => bracket, (bracket, closer = new RegExp(`^${ bracket }[^\\S\\n]*(?:\\n|$)`)) => combinator_1.surround('', combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
                     combinator_1.union([
@@ -2066,7 +2062,7 @@ require = function () {
                     ])
                 ])
             ]), closer))));
-            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.fmap(combinator_1.verify(combinator_1.convert(source => source.slice(source.indexOf('['), source.lastIndexOf('\n')), combinator_1.sequence([
+            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.fmap(combinator_1.verify(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')), combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
@@ -2085,7 +2081,7 @@ require = function () {
             ])), ([label, content, ...caption]) => label.getAttribute('data-label').split('-', 1)[0] === '$' ? content.matches('.math') && caption.length === 0 : true), ([label, content, ...caption]) => [typed_dom_1.html('figure', {
                     'data-label': label.getAttribute('data-label'),
                     'data-group': label.getAttribute('data-label').split('-', 1)[0],
-                    style: label.getAttribute('data-label').match(/^[^-]+-(?:\d+\.)+0$/) ? 'display: none;' : undefined
+                    style: /^[^-]+-(\d+\.)+0$/.test(label.getAttribute('data-label')) ? 'display: none;' : undefined
                 }, [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
@@ -2216,7 +2212,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^[-+*](?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^[-+*]([^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(/^[-+*](?:\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist_,
@@ -2432,8 +2428,8 @@ require = function () {
             const util_1 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.quote = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.union([
-                combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+(?:\s|$))/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink))))),
-                combinator_1.validate(/^(?=>+(?:[^>\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+)/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink)))))
+                combinator_1.validate(/^(?=>+([^\S\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+(\s|$))/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink))))),
+                combinator_1.validate(/^(?=>+([^>\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+)/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink)))))
             ]), ns => [typed_dom_1.html('span', { class: 'quote' }, ns)]), false));
         },
         {
@@ -2530,7 +2526,7 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^-(?:\s|$)/;
-            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-([^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.surround(opener, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))), '', false)),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist_,
@@ -2976,7 +2972,7 @@ require = function () {
             const label_1 = _dereq_('./extension/label');
             const data_1 = _dereq_('./extension/data');
             const placeholder_1 = _dereq_('./extension/placeholder');
-            exports.extension = combinator_1.validate('[', combinator_1.union([
+            exports.extension = combinator_1.validate(/^[[$]/, combinator_1.union([
                 index_1.index,
                 label_1.label,
                 data_1.data,
@@ -3091,9 +3087,13 @@ require = function () {
             const link_1 = _dereq_('../link');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.surround('[:', combinator_1.focus(/^(?:\$|[a-z]+)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']'), ([el]) => [typed_dom_1.define(el, {
+            const parser = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[\\${ query }]{#}`, link_1.link));
+            exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.union([
+                combinator_1.surround('[', parser, ']'),
+                parser
+            ]), ([el]) => [typed_dom_1.define(el, {
                     class: 'label',
-                    'data-label': el.textContent.split(':').pop(),
+                    'data-label': el.textContent.slice(el.textContent[1] === '-' ? 0 : 1),
                     href: null
                 })]), ([el]) => util_1.hasTightText(el)));
             function index(label, index) {
@@ -3134,7 +3134,7 @@ require = function () {
             const inline_1 = _dereq_('../../inline');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.placeholder = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.surround('[', combinator_1.validate(/^[\^](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']'), () => [typed_dom_1.html('span', {
+            exports.placeholder = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.surround('[', combinator_1.validate(/^[:^](?!\])/, combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/)), ']'), () => [typed_dom_1.html('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'extension',
                     'data-invalid-type': 'syntax'
@@ -3275,7 +3275,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const log = new WeakSet();
             exports.attributes = { nofollow: [undefined] };
-            exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.tails([
+            exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(\[.*?\])?{.+?}/, combinator_1.tails([
                 util_1.wrap(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^[\n\]]/))), ']', false)),
                 util_1.wrap(combinator_1.surround('{', combinator_1.inits([
                     exports.uri,
@@ -4668,7 +4668,7 @@ require = function () {
                     if (fig.matches('h2')) {
                         if (base === '0')
                             continue;
-                        fig = api_1.parse(`[:$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).querySelector('figure');
+                        fig = api_1.parse(`[$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).querySelector('figure');
                     }
                     if (fig.matches('.example figure'))
                         continue;
@@ -4693,7 +4693,7 @@ require = function () {
                         continue;
                     void fig.setAttribute('id', `label:${ label.split('-', 1)[0] }-${ idx }`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
-                    for (const ref of source.querySelectorAll(`a.label[data-label="${ query.replace(/[:$.]/g, '\\$&') }"]`)) {
+                    for (const ref of source.querySelectorAll(`a.label[data-label="${ query.replace(/[$.]/g, '\\$&') }"]`)) {
                         void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, ''));
                     }
                 }
