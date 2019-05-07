@@ -1673,7 +1673,7 @@ require = function () {
                             return concat_1.concat(acc, [el]);
                         }
                     }, []);
-                    return sources.get(el).split('\n').map((line, i) => breaks[i] && breaks[i].matches('.linebreak') && !breaks[i].closest('.annotation') ? `${ line }\\` : line).join('\n');
+                    return sources.get(el).split('\n').map((line, i) => breaks[i] && breaks[i].matches('.linebreak') && !breaks[i].closest('.media, .annotation') ? `${ line }\\` : line).join('\n');
                 }).join('\n');
             }
             exports.breaklines = breaklines;
@@ -3720,7 +3720,6 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const text_1 = _dereq_('./text');
             const typed_dom_1 = _dereq_('typed-dom');
             const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]/;
             exports.escsource = source => {
@@ -3743,12 +3742,9 @@ require = function () {
                                 source.slice(1)
                             ];
                         default:
-                            return source.length === 1 || source[1].match(text_1.escapable) ? [
+                            return [
                                 [typed_dom_1.text(source.slice(0, 2))],
                                 source.slice(2)
-                            ] : [
-                                [typed_dom_1.text(source.slice(0, 1))],
-                                source.slice(1)
                             ];
                         }
                     default:
@@ -3765,10 +3761,7 @@ require = function () {
                 }
             };
         },
-        {
-            './text': 106,
-            'typed-dom': 13
-        }
+        { 'typed-dom': 13 }
     ],
     105: [
         function (_dereq_, module, exports) {
@@ -3801,7 +3794,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = _dereq_('typed-dom');
             exports.separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|\S#/;
-            exports.escapable = /(?=[\x00-\x7F])[^a-zA-Z0-9]|\s/;
             const next = /[\S\n]|$/;
             exports.text = source => {
                 if (source === '')
@@ -3823,12 +3815,9 @@ require = function () {
                                 source.slice(2)
                             ];
                         default:
-                            return source.length === 1 || source[1].match(exports.escapable) ? [
+                            return [
                                 [typed_dom_1.text(source.slice(1, 2))],
                                 source.slice(2)
-                            ] : [
-                                [typed_dom_1.text(source.slice(0, 1))],
-                                source.slice(1)
                             ];
                         }
                     case '\n':
