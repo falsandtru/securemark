@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.115.0
+
+- Revert the previous changes.
+
 ## 0.114.0
 
 - Change backslash syntax to work only with non-alphanumeric ASCII characters and whitespace.
