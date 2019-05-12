@@ -1826,16 +1826,22 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const autolink_1 = _dereq_('../autolink');
+            const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300})\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
             exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => rest => {
-                const path = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param.trim())));
+                if (!lang.match(language)) {
+                    param = lang + param;
+                    lang = '';
+                }
+                param = param.trim();
+                const path = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param)));
                 const file = path.split('/').pop() || '';
                 const ext = file && file.includes('.') && !file.startsWith('.') ? file.split('.').pop() : '';
-                lang = /^[a-z][a-z0-9]*(-[a-z][a-z0-9]*)*$/.test(lang || ext) ? lang || ext : lang && 'invalid';
+                lang = (lang || ext).match(language) ? lang || ext : lang && 'invalid';
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
                     void el.classList.add('code');
@@ -1846,6 +1852,13 @@ require = function () {
                 }
                 if (path) {
                     void el.setAttribute('data-file', path);
+                }
+                if (param !== path) {
+                    void el.classList.add('invalid');
+                    void typed_dom_1.define(el, {
+                        'data-invalid-syntax': 'codeblock',
+                        'data-invalid-type': 'parameter'
+                    });
                 }
                 return [
                     [el],
