@@ -1833,10 +1833,13 @@ require = function () {
                 ''
             ]), false);
             exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => rest => {
-                if (!lang.match(language)) {
-                    param = lang + param;
-                    lang = '';
-                }
+                [lang, param] = lang.match(language) ? [
+                    lang,
+                    param
+                ] : [
+                    '',
+                    lang + param
+                ];
                 param = param.trim();
                 const path = util_1.stringify(combinator_1.eval(combinator_1.some(escapable_1.escsource, /^\s/)(param)));
                 const file = path.split('/').pop() || '';
