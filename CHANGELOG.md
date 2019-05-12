@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.116.0
+
+- Enhance codeblock parser to allow to put a filename instead of a language.
+
 ## 0.115.0
 
 - Revert the previous changes.
