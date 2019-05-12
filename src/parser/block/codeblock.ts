@@ -18,16 +18,15 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/,
   ([, , lang, param, body]) => rest => {
     assert(rest === '');
-    if (!lang.match(language)) {
-      param = lang + param;
-      lang = '';
-    }
+    [lang, param] = lang.match(language)
+      ? [lang, param]
+      : ['', lang + param];
     param = param.trim();
     const path = stringify(eval(some(escsource, /^\s/)(param)));
     const file = path.split('/').pop() || '';
     const ext = file && file.includes('.') && !file.startsWith('.')
-        ? file.split('.').pop()!
-        : '';
+      ? file.split('.').pop()!
+      : '';
     lang = (lang || ext).match(language)
       ? lang || ext
       : lang && 'invalid';
