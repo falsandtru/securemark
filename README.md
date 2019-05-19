@@ -71,12 +71,6 @@ https://falsandtru.github.io/securemark/
 - Audio (.oga, .ogg)
 - Images
 
-## Graph
-
-- [Sequence](https://github.com/bramp/js-sequence-diagrams)
-- [Flowchart](https://github.com/adrai/flowchart.js)
-- [Graphviz](https://github.com/mdaines/viz.js)
-
 ## Dependencies
 
 - PrismJS

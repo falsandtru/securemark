@@ -255,7 +255,6 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         ExtensionParser.FigureParser,
         ExtensionParser.FigureParser,
-        ExtensionParser.GraphParser,
         ExtensionParser.ExampleParser,
         ExtensionParser.PlaceholderParser,
       ]> {
@@ -266,7 +265,6 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           FigParser.SegmentParser,
           FigureParser.SegmentParser,
-          GraphParser.SegmentParser,
           ExampleParser.SegmentParser,
           PlaceholderParser.SegmentParser,
         ]> {
@@ -288,7 +286,6 @@ export namespace MarkdownParser {
               TableParser,
               CodeBlockParser,
               MathBlockParser,
-              ExtensionParser.GraphParser,
               ExtensionParser.ExampleParser,
               BlockquoteParser,
               InlineParser.MediaParser,
@@ -308,7 +305,6 @@ export namespace MarkdownParser {
               Parser<never, [
                 CodeBlockParser.SegmentParser,
                 MathBlockParser.SegmentParser,
-                ExtensionParser.GraphParser.SegmentParser,
                 ExtensionParser.ExampleParser.SegmentParser,
                 BlockquoteParser.SegmentParser,
                 SourceParser.ContentLineParser,
@@ -330,24 +326,11 @@ export namespace MarkdownParser {
             Parser<never, [
               CodeBlockParser.SegmentParser,
               MathBlockParser.SegmentParser,
-              ExtensionParser.GraphParser.SegmentParser,
               ExtensionParser.ExampleParser.SegmentParser,
               BlockquoteParser.SegmentParser,
               SourceParser.ContentLineParser,
             ]>,
           ]> {
-        }
-      }
-      export interface GraphParser extends
-        // ~~~graph
-        // ~~~
-        Block<'extension/graph'>,
-        Parser<HTMLPreElement, Parser<HTMLPreElement, [SourceParser.UnescapableSourceParser]>[]> {
-      }
-      export namespace GraphParser {
-        export interface SegmentParser extends
-          Block<'extension/graph/segment'>,
-          Parser<never, SourceParser.ContentLineParser[]> {
         }
       }
       export interface ExampleParser extends

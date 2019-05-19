@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.117.0
+
+- Remove graph syntax.
+
 ## 0.116.0
 
 - Enhance codeblock parser to allow to put a filename instead of a language.
