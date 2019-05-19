@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.117.1
+
+- Fix typings.
+
 ## 0.117.0
 
 - Remove graph syntax.
