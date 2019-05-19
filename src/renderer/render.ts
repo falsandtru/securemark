@@ -4,7 +4,7 @@ import { math } from './render/math';
 import { media } from './render/media';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
-  opts = { code, math, media: {}, graph: {}, ...opts };
+  opts = { code, math, media: {}, ...opts };
   try {
     switch (true) {
       case target.style.display === 'none':
