@@ -4051,8 +4051,7 @@ require = function () {
                 opts = Object.assign({
                     code: code_1.code,
                     math: math_1.math,
-                    media: {},
-                    graph: {}
+                    media: {}
                 }, opts);
                 try {
                     switch (true) {
