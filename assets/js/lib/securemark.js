@@ -2741,7 +2741,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.email = combinator_1.subline(combinator_1.union([
-                combinator_1.verify(combinator_1.focus(/^[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/, source => [
+                combinator_1.verify(combinator_1.focus(/^[a-zA-Z0-9](?:[.+_-][a-zA-Z0-9]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/, source => [
                     [typed_dom_1.html('a', {
                             class: 'email',
                             href: `mailto:${ source }`,
@@ -2749,7 +2749,7 @@ require = function () {
                         }, source)],
                     ''
                 ]), (_, rest) => !rest.startsWith('@')),
-                combinator_1.focus(/^[a-zA-Z0-9][a-zA-Z0-9.+_-]*(?:@[a-zA-Z0-9.+_-]*)+/, util_1.defrag(combinator_1.some(unescapable_1.unescsource)))
+                combinator_1.focus(/^[a-zA-Z0-9](?:[.+_-][a-zA-Z0-9]+)*(?:@[a-zA-Z0-9.+_-]*)+/, util_1.defrag(combinator_1.some(unescapable_1.unescsource)))
             ]));
         },
         {
