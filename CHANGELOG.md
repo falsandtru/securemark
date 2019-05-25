@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.118.0
+
+- Change email parser to be stricter.
+
 ## 0.117.1
 
 - Fix typings.
