@@ -18,6 +18,7 @@ describe('Unit: parser/inline/autolink/email', () => {
       assert.deepStrictEqual(inspect(parser('a@b@c')), [['a@b@c'], '']);
       assert.deepStrictEqual(inspect(parser('a@@')), [['a@@'], '']);
       assert.deepStrictEqual(inspect(parser('a@@b')), [['a@@b'], '']);
+      assert.deepStrictEqual(inspect(parser('a+@b')), undefined);
       assert.deepStrictEqual(inspect(parser('a..b@c')), undefined);
       assert.deepStrictEqual(inspect(parser('a++b@c')), undefined);
       assert.deepStrictEqual(inspect(parser(' a@b')), undefined);
@@ -36,6 +37,7 @@ describe('Unit: parser/inline/autolink/email', () => {
       assert.deepStrictEqual(inspect(parser('a@ttp://host')), [['<a class="email" href="mailto:a@ttp" rel="noopener">a@ttp</a>'], '://host']);
       assert.deepStrictEqual(inspect(parser('a@a#')), [['<a class="email" href="mailto:a@a" rel="noopener">a@a</a>'], '#']);
       assert.deepStrictEqual(inspect(parser('a@a#1')), [['<a class="email" href="mailto:a@a" rel="noopener">a@a</a>'], '#1']);
+      assert.deepStrictEqual(inspect(parser('ab+cd@0')), [['<a class="email" href="mailto:ab+cd@0" rel="noopener">ab+cd@0</a>'], '']);
     });
 
   });
