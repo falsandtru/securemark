@@ -3,7 +3,7 @@ import { segment } from '../segment';
 import { block } from '../block';
 import { normalize } from './normalization';
 
-export function bind(target: DocumentFragment | HTMLElement): (source: string) => Iterable<HTMLElement> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot): (source: string) => Iterable<HTMLElement> {
   type Pair = [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   let revision: symbol;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.119.0
+
+- Extend some APIs to accept ShadowRoot.
+
 ## 0.118.1
 
 - Fix email parser.

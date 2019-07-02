@@ -1,7 +1,7 @@
 import { text } from '../parser/inline/extension/indexer';
 import { html, define } from 'typed-dom';
 
-export function footnote(source: DocumentFragment | HTMLElement, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void {
+export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void {
   void annotation(source, targets.annotation);
   void authority(source, targets.authority);
 }
@@ -9,10 +9,10 @@ export function footnote(source: DocumentFragment | HTMLElement, targets: { anno
 export const annotation = build('annotation', n => `*${n}`);
 export const authority = build('authority', n => `[${n}]`);
 
-function build(category: string, marker: (index: number) => string): (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => void {
+function build(category: string, marker: (index: number) => string): (source: DocumentFragment | HTMLElement | ShadowRoot, target: HTMLOListElement) => void {
   assert(category.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
-  return (source: DocumentFragment | HTMLElement, target: HTMLOListElement) => {
+  return (source: DocumentFragment | HTMLElement | ShadowRoot, target: HTMLOListElement) => {
     const exclusions = new Set(source.querySelectorAll('.example'));
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {

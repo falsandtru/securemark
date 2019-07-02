@@ -1,7 +1,7 @@
 import { concat } from 'spica/concat';
 import { html, frag } from 'typed-dom';
 
-export function toc(source: DocumentFragment | HTMLElement): HTMLUListElement {
+export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   const hs = [...source.children]
     .filter((el): el is HTMLHeadingElement =>
       el instanceof HTMLHeadingElement);

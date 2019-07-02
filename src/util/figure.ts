@@ -3,7 +3,7 @@ import { isGroup } from '../parser/inline';
 import { parse } from '../parser/api';
 import { define } from 'typed-dom';
 
-export function figure(source: DocumentFragment | HTMLElement): void {
+export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void {
   let base = '0';
   const indexes = new Map<string, string>();
   const exclusions = new Set<Element>();
