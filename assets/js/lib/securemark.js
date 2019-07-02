@@ -4541,7 +4541,7 @@ require = function () {
                         continue;
                     if (idx.endsWith('.0'))
                         continue;
-                    void fig.setAttribute('id', `label:${ label.split('-', 1)[0] }-${ idx }`);
+                    void fig.setAttribute('id', `label:${ label.split(/-0(?![0-9])/, 1)[0] }`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
                     for (const ref of source.querySelectorAll(`a.label[data-label="${ query.replace(/[$.]/g, '\\$&') }"]`)) {
                         void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, ''));
