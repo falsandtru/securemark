@@ -3,6 +3,7 @@
 ## 0.119.0
 
 - Extend some APIs to accept ShadowRoot.
+- Change figure function to make by-name links.
 
 ## 0.118.1
 
