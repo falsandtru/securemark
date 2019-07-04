@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.119.1
+
+- Fix media parser always to make a link which open a new tab.
+
 ## 0.119.0
 
 - Extend some APIs to accept ShadowRoot.

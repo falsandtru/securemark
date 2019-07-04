@@ -38,6 +38,6 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
     return fmap(
       link,
       ([link]) =>
-        [define(link, [el])])
+        [define(link, { target: '_blank' }, [el])])
       (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`) as [[HTMLAnchorElement], string];
   }));
