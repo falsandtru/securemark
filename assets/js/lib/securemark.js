@@ -3277,10 +3277,15 @@ require = function () {
                 }, util_1.hasContent(text) ? text.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
                 if (el.textContent.trim().match(/^[#@]/))
                     return;
-                if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
-                    return;
-                if ((el.origin !== window.location.origin || util_1.hasMedia(el)) && el.protocol !== 'tel:') {
-                    void el.setAttribute('target', '_blank');
+                switch (el.protocol) {
+                case 'tel:':
+                    if (el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
+                        return;
+                    break;
+                default:
+                    if (el.origin !== window.location.origin || util_1.hasMedia(el) && el.getAttribute('href') === el.querySelector('.media').getAttribute('data-src')) {
+                        void el.setAttribute('target', '_blank');
+                    }
                 }
                 if (util_1.hasMedia(el)) {
                     void log.add(el);
@@ -3426,7 +3431,7 @@ require = function () {
                         [el],
                         rest
                     ];
-                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`);
+                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`);
             }));
         },
         {
