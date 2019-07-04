@@ -54,9 +54,14 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
             .replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
     assert(hasContent(el));
     if (el.textContent!.trim().match(/^[#@]/)) return;
-    if (el.protocol === 'tel:' && el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
-    if ((el.origin !== window.location.origin || hasMedia(el)) && el.protocol !== 'tel:') {
-      void el.setAttribute('target', '_blank');
+    switch (el.protocol) {
+      case 'tel:':
+        if (el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
+        break;
+      default:
+        if (el.origin !== window.location.origin || hasMedia(el) && el.getAttribute('href') === el.querySelector('.media')!.getAttribute('data-src')) {
+          void el.setAttribute('target', '_blank');
+        }
     }
     if (hasMedia(el)) {
       void log.add(el);
