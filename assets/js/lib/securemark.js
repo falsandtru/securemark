@@ -2272,8 +2272,8 @@ require = function () {
                         ilist_1.ilist_
                     ]))
                 ]), ([{textContent: index}, ...ns]) => [typed_dom_1.html('li', { value: type(index) === '1' ? format(index) : undefined }, ulist_1.fillFirstLine(ns))].map(ulist_1.verifyListItem))])), es => [typed_dom_1.html('ol', {
-                    start: type(index) === '1' ? format(index) : undefined,
-                    type: type(index)
+                    type: type(index),
+                    start: type(index) === '1' ? format(index) : undefined
                 }, es)]))));
             exports.olist_ = combinator_1.convert(source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `), exports.olist);
             function type(index) {
