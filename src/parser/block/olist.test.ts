@@ -68,10 +68,10 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('index', () => {
-      assert.deepStrictEqual(inspect(parser('1. ')), [['<ol start="1" type="1"><li value="1"></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('99. 1')), [['<ol start="99" type="1"><li value="99">1</li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('01. ')), [['<ol start="1" type="1"><li value="1"></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1.\n0.\n9')), [['<ol start="1" type="1"><li value="1"></li><li></li><li value="9"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. ')), [['<ol type="1" start="1"><li value="1"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('99. 1')), [['<ol type="1" start="99"><li value="99">1</li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('01. ')), [['<ol type="1" start="1"><li value="1"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1.\n0.\n9')), [['<ol type="1" start="1"><li value="1"></li><li></li><li value="9"></li></ol>'], '']);
     });
 
     it('alphabet', () => {

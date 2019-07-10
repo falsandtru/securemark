@@ -28,7 +28,7 @@ export const olist: OListParser = block(match(
           ]),
           ([{ textContent: index }, ...ns]) => [html('li', { value: type(index!) === '1' ? format(index!) : undefined }, fillFirstLine(ns))].map(verifyListItem)),
       ])),
-      es => [html('ol', { start: type(index) === '1' ? format(index) : undefined, type: type(index) }, es)]))));
+      es => [html('ol', { type: type(index), start: type(index) === '1' ? format(index) : undefined }, es)]))));
 
 export const olist_: OListParser = convert(
   source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
