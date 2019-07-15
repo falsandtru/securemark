@@ -42,7 +42,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small>\na\n</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small> \na \n</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>\\\na\\\n</small>')), [['<small>a</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>a\nb</small>')), [['<small>a<span class="linebreak"> </span>b</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a\nb</small>')), [['<small>a<br>b</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
     });
 

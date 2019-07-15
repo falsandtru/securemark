@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.120.0
+
+- Change linebreak control.
+
 ## 0.119.1
 
 - Fix media parser always to make a link which open a new tab.

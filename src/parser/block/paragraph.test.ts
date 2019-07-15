@@ -16,9 +16,9 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a ')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a \n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n')), [['<p>a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\nb')), [['<p>a<span class="linebreak"> </span>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\nb')), [['<p>a<br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['<p>a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\\\nb')), [['<p>a<br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\\\nb')), [['<p>a<span class="linebreak"> </span>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('*a\\\n*')), [['<p><em>a</em></p>'], '']);
       assert.deepStrictEqual(inspect(parser(' a')), [['<p>a</p>'], '']);
     });
@@ -35,7 +35,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('>a b\n>c')), [['<p><span class="quote">&gt;a b\n&gt;c</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<span class="linebreak"> </span>&gt;b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<br>&gt;b</p>'], '']);
       assert.deepStrictEqual(inspect(parser(' >a')), [['<p>&gt;a</p>'], '']);
     });
 

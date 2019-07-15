@@ -68,10 +68,10 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('!> \\\n')), [['<blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> a')), [['<blockquote><p>a</p></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> a\n')), [['<blockquote><p>a</p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> a\\\nb')), [['<blockquote><p>a<br>b</p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> *a\nb*')), [['<blockquote><p><em>a<span class="linebreak"> </span>b</em></p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> *a\n> b*')), [['<blockquote><p><em>a<span class="linebreak"> </span>b</em></p></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!>  a \n b  c ')), [['<blockquote><p>a<span class="linebreak"> </span> b  c</p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> a\\\nb')), [['<blockquote><p>a<span class="linebreak"> </span>b</p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> *a\nb*')), [['<blockquote><p><em>a<br>b</em></p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> *a\n> b*')), [['<blockquote><p><em>a<br>b</em></p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!>  a \n b  c ')), [['<blockquote><p>a<br> b  c</p></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>> a')), [['<blockquote><blockquote><p>a</p></blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>> a\n> b')), [['<blockquote><blockquote><p>a</p></blockquote><p>b</p></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> - a')), [['<blockquote><ul><li>a</li></ul></blockquote>'], '']);

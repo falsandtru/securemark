@@ -34,8 +34,8 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a-b]')), [['<span class="data-a-b" data-name="a-b" data-value=""></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a|]')), [['<span class="data-a" data-name="a" data-value=""></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a|b]')), [['<span class="data-a" data-name="a" data-value="">b</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[~a|b\nc]')), [['<span class="data-a" data-name="a" data-value="">b<span class="linebreak"> </span>c</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[~a|b\\\nc]')), [['<span class="data-a" data-name="a" data-value="">b<br>c</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|b\nc]')), [['<span class="data-a" data-name="a" data-value="">b<br>c</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|b\\\nc]')), [['<span class="data-a" data-name="a" data-value="">b<span class="linebreak"> </span>c</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=0]')), [['<span class="data-a" data-name="a" data-value="0"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=0|]')), [['<span class="data-a" data-name="a" data-value="0"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=b]')), [['<span class="data-a" data-name="a" data-value="b"></span>'], '']);

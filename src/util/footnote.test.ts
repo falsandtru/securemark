@@ -25,7 +25,7 @@ describe('Unit: util/footnote', () => {
           [...source.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "annotation", id: "annotation:ref:1", title: "a  b" }, [
+              html('sup', { class: "annotation", id: "annotation:ref:1", title: "a b" }, [
                 html('a', { href: "#annotation:def:1", rel: "noopener" }, '*1')
               ]),
             ]).outerHTML,
@@ -35,7 +35,7 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'annotation:def:1' }, [
               text('a'),
-              html('span', { class: 'linebreak' }, ' '),
+              html('br'),
               text(' b'),
               html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
             ]),

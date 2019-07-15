@@ -25,12 +25,12 @@ describe('Unit: parser/inline/insertion', () => {
       assert.deepStrictEqual(inspect(parser('++ ++')), [['<ins> </ins>'], '']);
       assert.deepStrictEqual(inspect(parser('+++a++')), [['<ins>+a</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('+++a+++')), [['<ins>+a</ins>'], '+']);
-      assert.deepStrictEqual(inspect(parser('++\n++')), [['<ins><span class="linebreak"> </span></ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++\\\n++')), [['<ins><br></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++\n++')), [['<ins><br></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++\\\n++')), [['<ins><span class="linebreak"> </span></ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++<wbr>++')), [['<ins><wbr></ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++ab++')), [['<ins>ab</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\nb++')), [['<ins>a<span class="linebreak"> </span>b</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++a\\\nb++')), [['<ins>a<br>b</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++a\nb++')), [['<ins>a<br>b</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++a\\\nb++')), [['<ins>a<span class="linebreak"> </span>b</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++\\+++')), [['<ins>+</ins>'], '']);
     });
 

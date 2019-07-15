@@ -27,10 +27,10 @@ describe('Unit: parser/api/parse', () => {
         []);
       assert.deepStrictEqual(
         [...parse('a\\ \nb').children].map(el => el.outerHTML),
-        ['<p>a <span class="linebreak"> </span>b</p>']);
+        ['<p>a <br>b</p>']);
       assert.deepStrictEqual(
         [...parse('a\\\nb').children].map(el => el.outerHTML),
-        ['<p>a<br>b</p>']);
+        ['<p>a<span class="linebreak"> </span>b</p>']);
       assert.deepStrictEqual(
         [...parse('a\n\\ \nb').children].map(el => el.outerHTML),
         ['<p>a</p>', '<p>b</p>']);
@@ -48,7 +48,7 @@ describe('Unit: parser/api/parse', () => {
     it('normalize', () => {
       assert.deepStrictEqual(
         [...parse('a\\\r\nb').children].map(el => el.outerHTML),
-        ['<p>a<br>b</p>']);
+        ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
   });
