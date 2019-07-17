@@ -2,6 +2,7 @@
 
 ## 0.121.0
 
+- Add hashref syntax.
 - Fix channel syntax to disallow trailing hash.
 
 ## 0.120.0

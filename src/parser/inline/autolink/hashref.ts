@@ -4,16 +4,16 @@ import { unescsource } from '../../source/unescapable';
 import { defrag } from '../../util';
 import { html } from 'typed-dom';
 
-export const hashtag: AutolinkParser.HashtagParser = lazy(() => verify(
-  hashtag_,
+export const hashref: AutolinkParser.HashrefParser = lazy(() => verify(
+  hashref_,
   (_, rest) => !rest.startsWith('#')));
 
-export const hashtag_: AutolinkParser.HashtagParser = subline(union([
+export const hashref_: AutolinkParser.HashrefParser = subline(union([
   focus(
-    /^#(?![0-9])(?:[a-zA-Z0-9]|[^\x00-\x7F\s])+/,
+    /^#[0-9]+/,
     tag =>
-      [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], '']),
+      [[html('a', { class: 'hashref', rel: 'noopener' }, tag)], '']),
   focus(
-    /^(?:[a-zA-Z0-9]|[^\x00-\x7F\s])*#+(?![0-9])/,
+    /^(?:[a-zA-Z0-9]|[^\x00-\x7F\s])*#+/,
     defrag(some(unescsource))),
 ]));

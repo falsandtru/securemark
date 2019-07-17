@@ -689,6 +689,7 @@ export namespace MarkdownParser {
         AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser,
         AutolinkParser.HashtagParser,
+        AutolinkParser.HashrefParser,
       ]> {
     }
     export namespace AutolinkParser {
@@ -730,6 +731,16 @@ export namespace MarkdownParser {
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
+        Parser<HTMLAnchorElement | Text, [
+          Parser<HTMLAnchorElement, [
+            SourceParser.UnescapableSourceParser,
+          ]>,
+          SourceParser.UnescapableSourceParser,
+        ]> {
+      }
+      export interface HashrefParser extends
+        // #1
+        Inline<'hashref'>,
         Parser<HTMLAnchorElement | Text, [
           Parser<HTMLAnchorElement, [
             SourceParser.UnescapableSourceParser,

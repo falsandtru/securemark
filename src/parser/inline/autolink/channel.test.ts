@@ -10,14 +10,16 @@ describe('Unit: parser/inline/autolink/channel', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('@a')), undefined);
       assert.deepStrictEqual(inspect(parser('@a#')), undefined);
-      assert.deepStrictEqual(inspect(parser('@a#1#')), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#1')), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#b#')), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#b#1')), undefined);
       assert.deepStrictEqual(inspect(parser('a@b')), undefined);
-      assert.deepStrictEqual(inspect(parser(' @a#1')), undefined);
+      assert.deepStrictEqual(inspect(parser(' @a#b')), undefined);
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('@a#1')), [['<a class="channel" rel="noopener">@a#1</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a#1#2')), [['<a class="channel" rel="noopener">@a#1#2</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" rel="noopener">@a#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b#c')), [['<a class="channel" rel="noopener">@a#b#c</a>'], '']);
     });
 
   });
