@@ -1,32 +1,36 @@
-import { hashtag } from './hashtag';
+import { autolink } from '../autolink';
+import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/hashtag', () => {
   describe('hashtag', () => {
-    const parser = hashtag;
+    const parser = some(autolink);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('#')), [['#'], '']);
       assert.deepStrictEqual(inspect(parser('# ')), [['#'], ' ']);
-      assert.deepStrictEqual(inspect(parser('#1')), undefined);
-      assert.deepStrictEqual(inspect(parser('#a#')), undefined);
+      assert.deepStrictEqual(inspect(parser('#a#')), [['#a#'], '']);
+      assert.deepStrictEqual(inspect(parser('#a#b')), [['#a#b'], '']);
+      assert.deepStrictEqual(inspect(parser('#a#b#c')), [['#a#b#c'], '']);
+      assert.deepStrictEqual(inspect(parser('#a@b')), [['#a@b'], '']);
       assert.deepStrictEqual(inspect(parser('#\\')), [['#'], '\\']);
       assert.deepStrictEqual(inspect(parser('#\\ ')), [['#'], '\\ ']);
       assert.deepStrictEqual(inspect(parser('#\\\n')), [['#'], '\\\n']);
       assert.deepStrictEqual(inspect(parser('##')), [['##'], '']);
-      assert.deepStrictEqual(inspect(parser('##a')), [['##'], 'a']);
+      assert.deepStrictEqual(inspect(parser('##a')), [['##a'], '']);
+      assert.deepStrictEqual(inspect(parser('###a')), [['###a'], '']);
       assert.deepStrictEqual(inspect(parser('#{}')), [['#'], '{}']);
       assert.deepStrictEqual(inspect(parser('#{{}')), [['#'], '{{}']);
       assert.deepStrictEqual(inspect(parser('#{}}')), [['#'], '{}}']);
       assert.deepStrictEqual(inspect(parser('#{#}')), [['#'], '{#}']);
       assert.deepStrictEqual(inspect(parser('#{a}')), [['#'], '{a}']);
       assert.deepStrictEqual(inspect(parser('#　')), [['#'], '　']);
-      assert.deepStrictEqual(inspect(parser('a#1')), undefined);
-      assert.deepStrictEqual(inspect(parser('a#b')), [['a#'], 'b']);
-      assert.deepStrictEqual(inspect(parser('a##1')), undefined);
-      assert.deepStrictEqual(inspect(parser('a##b')), [['a##'], 'b']);
-      assert.deepStrictEqual(inspect(parser('あ#b')), [['あ#'], 'b']);
+      assert.deepStrictEqual(inspect(parser('a#1')), [['a#1'], '']);
+      assert.deepStrictEqual(inspect(parser('a#b')), [['a#b'], '']);
+      assert.deepStrictEqual(inspect(parser('a##1')), [['a##1'], '']);
+      assert.deepStrictEqual(inspect(parser('a##b')), [['a##b'], '']);
+      assert.deepStrictEqual(inspect(parser('あ#b')), [['あ#b'], '']);
       assert.deepStrictEqual(inspect(parser(' #a')), undefined);
     });
 

@@ -1,19 +1,20 @@
-import { channel } from './channel';
+import { autolink } from '../autolink';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/channel', () => {
   describe('channel', () => {
-    const parser = some(channel);
+    const parser = some(autolink);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('@a')), undefined);
-      assert.deepStrictEqual(inspect(parser('@a#')), undefined);
-      assert.deepStrictEqual(inspect(parser('@a#1')), undefined);
-      assert.deepStrictEqual(inspect(parser('@a#b#')), undefined);
-      assert.deepStrictEqual(inspect(parser('@a#b#1')), undefined);
-      assert.deepStrictEqual(inspect(parser('a@b')), undefined);
+      assert.deepStrictEqual(inspect(parser('@a#')), [['@a#'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#1')), [['@a#1'], '']);
+      assert.deepStrictEqual(inspect(parser('@a@1')), [['@a@1'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b#')), [['@a#b#'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b#1')), [['@a#b#1'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b@')), [['@a#b@'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b@1')), [['@a#b@1'], '']);
       assert.deepStrictEqual(inspect(parser(' @a#b')), undefined);
     });
 

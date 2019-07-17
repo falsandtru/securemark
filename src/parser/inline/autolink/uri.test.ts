@@ -1,10 +1,10 @@
-import { uri } from './uri';
+import { autolink } from '../autolink';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/uri', () => {
   describe('uri', () => {
-    const parser = some(uri);
+    const parser = some(autolink);
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

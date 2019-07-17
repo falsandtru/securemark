@@ -684,12 +684,15 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLAnchorElement | HTMLImageElement | Text, [
+        SourceParser.UnescapableSourceParser,
         AutolinkParser.UriParser,
         AutolinkParser.EmailParser,
+        SourceParser.UnescapableSourceParser,
         AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser,
         AutolinkParser.HashtagParser,
         AutolinkParser.HashrefParser,
+        SourceParser.UnescapableSourceParser,
       ]> {
     }
     export namespace AutolinkParser {
@@ -703,7 +706,7 @@ export namespace MarkdownParser {
       export interface EmailParser extends
         // account@host
         Inline<'email'>,
-        Parser<HTMLAnchorElement | Text, [
+        Parser<HTMLAnchorElement, [
           Parser<HTMLAnchorElement, [
             SourceParser.UnescapableSourceParser,
           ]>,
@@ -721,30 +724,21 @@ export namespace MarkdownParser {
       export interface AccountParser extends
         // @account
         Inline<'account'>,
-        Parser<HTMLAnchorElement | Text, [
-          Parser<HTMLAnchorElement, [
-            SourceParser.UnescapableSourceParser,
-          ]>,
+        Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
         ]> {
       }
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
-        Parser<HTMLAnchorElement | Text, [
-          Parser<HTMLAnchorElement, [
-            SourceParser.UnescapableSourceParser,
-          ]>,
+        Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
         ]> {
       }
       export interface HashrefParser extends
         // #1
         Inline<'hashref'>,
-        Parser<HTMLAnchorElement | Text, [
-          Parser<HTMLAnchorElement, [
-            SourceParser.UnescapableSourceParser,
-          ]>,
+        Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
         ]> {
       }

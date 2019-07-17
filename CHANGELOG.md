@@ -3,7 +3,7 @@
 ## 0.121.0
 
 - Add hashref syntax.
-- Fix channel syntax to disallow trailing hash.
+- Fix autolink parser.
 
 ## 0.120.0
 

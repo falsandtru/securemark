@@ -1,19 +1,7 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, subline, focus, verify, lazy } from '../../../combinator';
-import { unescsource } from '../../source/unescapable';
-import { defrag } from '../../util';
+import { subline, focus } from '../../../combinator';
 import { html } from 'typed-dom';
 
-export const hashtag: AutolinkParser.HashtagParser = lazy(() => verify(
-  hashtag_,
-  (_, rest) => !rest.startsWith('#')));
-
-export const hashtag_: AutolinkParser.HashtagParser = subline(union([
-  focus(
-    /^#(?![0-9])(?:[a-zA-Z0-9]|[^\x00-\x7F\s])+/,
-    tag =>
-      [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], '']),
-  focus(
-    /^(?:[a-zA-Z0-9]|[^\x00-\x7F\s])*#+(?![0-9])/,
-    defrag(some(unescsource))),
-]));
+export const hashtag: AutolinkParser.HashtagParser = subline(focus(
+  /^#(?![0-9])(?:[a-zA-Z0-9]|[^\x00-\x7F\s])+/,
+  tag => [[html('a', { class: 'hashtag', rel: 'noopener' }, tag)], '']));
