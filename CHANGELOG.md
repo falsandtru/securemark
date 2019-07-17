@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.121.0
+
+- Fix channel syntax to disallow trailing hash.
+
 ## 0.120.0
 
 - Change linebreak control.
