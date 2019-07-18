@@ -4263,8 +4263,7 @@ require = function () {
                     typed_dom_1.html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.html('object', {
                             type: 'application/pdf',
                             data: url.href,
-                            style: 'width: 100%; height: 100%; min-height: 400px;',
-                            typemustmatch: ''
+                            style: 'width: 100%; height: 100%; min-height: 400px;'
                         })]),
                     typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**{ ${ url.href } }**`).firstElementChild.childNodes)
                 ]));
