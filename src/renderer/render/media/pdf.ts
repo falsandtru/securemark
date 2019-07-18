@@ -17,7 +17,6 @@ export function pdf(url: URL): HTMLElement | undefined {
           type: 'application/pdf',
           data: url.href,
           style: 'width: 100%; height: 100%; min-height: 400px;',
-          typemustmatch: '',
         }),
       ]),
       html('div', { style: 'word-wrap: break-word;' },

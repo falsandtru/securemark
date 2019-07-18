@@ -55,7 +55,6 @@ describe('Unit: renderer/render/media', () => {
         pdf: () => void done(false) || html('div')
       });
       assert(media(image('http://example.com/example.pdf'), {})!.querySelector('object')!.getAttribute('type') === 'application/pdf');
-      assert(media(image('http://example.com/example.pdf'), {})!.querySelector('object')!.typeMustMatch === true);
       done();
     });
 
