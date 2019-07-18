@@ -2614,10 +2614,10 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.autolink = combinator_1.fmap(combinator_1.some(combinator_1.union([
-                combinator_1.focus(/^[@#]+(?![0-9a-zA-Z]|[^\x00-\x7F\s])/, combinator_1.some(unescapable_1.unescsource)),
                 uri_1.uri,
                 email_1.email,
                 combinator_1.focus(/^[a-zA-Z0-9]+(?:[.+_-][a-zA-Z0-9]+)*(?:@(?:[a-zA-Z0-9]+(?:[.-][a-zA-Z0-9]+)*)?)+/, combinator_1.some(unescapable_1.unescsource)),
+                combinator_1.focus(/^[@#]+(?![0-9a-zA-Z]|[^\x00-\x7F\s])/, combinator_1.some(unescapable_1.unescsource)),
                 channel_1.channel,
                 account_1.account,
                 hashtag_1.hashtag,
