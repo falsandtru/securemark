@@ -12,10 +12,10 @@ import { text } from 'typed-dom';
 
 export const autolink: AutolinkParser = fmap(
   some(union([
-    focus(/^[@#]+(?![0-9a-zA-Z]|[^\x00-\x7F\s])/, some(unescsource)),
     uri,
     email,
     focus(/^[a-zA-Z0-9]+(?:[.+_-][a-zA-Z0-9]+)*(?:@(?:[a-zA-Z0-9]+(?:[.-][a-zA-Z0-9]+)*)?)+/, some(unescsource)),
+    focus(/^[@#]+(?![0-9a-zA-Z]|[^\x00-\x7F\s])/, some(unescsource)),
     channel,
     account,
     hashtag,

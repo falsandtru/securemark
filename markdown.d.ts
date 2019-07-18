@@ -684,9 +684,9 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLAnchorElement | HTMLImageElement | Text, [
-        SourceParser.UnescapableSourceParser,
         AutolinkParser.UriParser,
         AutolinkParser.EmailParser,
+        SourceParser.UnescapableSourceParser,
         SourceParser.UnescapableSourceParser,
         AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser,
