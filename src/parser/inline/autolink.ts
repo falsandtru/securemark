@@ -22,7 +22,4 @@ export const autolink: AutolinkParser = fmap(
     hashref,
     focus(/^(?:[a-zA-Z0-9]|[^\x00-\x7F\s])(?=#)/, some(unescsource)),
   ])),
-  ns =>
-    ns.length === 1
-      ? ns
-      : [text(stringify(ns))]);
+  ns => ns.length === 1 ? ns : [text(stringify(ns))]);
