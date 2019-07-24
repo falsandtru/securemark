@@ -6,13 +6,15 @@ export function inspect(r: Result<HTMLElement | Text, any>): [string[], string] 
 export function inspect(r: Result<HTMLElement | Text | string, any>): [string[], string] | undefined {
   return r
     ? [
-        eval(r).map(n =>
-          typeof n === 'string'
-            ? n
-            : n instanceof Element
-              ? n.outerHTML
-              : html('b', n.textContent!).innerHTML),
-          exec(r)
+        eval(r).map(n => {
+          if (typeof n === 'string') return n;
+          if (n instanceof Text) return html('b', n.textContent!).innerHTML;
+          const m = html('div');
+          m.innerHTML = n.outerHTML;
+          assert(n.outerHTML === m.innerHTML);
+          return n.outerHTML;
+        }),
+        exec(r)
       ]
     : r;
 }
