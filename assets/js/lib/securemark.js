@@ -848,7 +848,7 @@ require = function () {
             }
             exports.listen = listen;
             function once(target, a, b, c = false, d = {}) {
-                return typeof b === 'string' ? delegate(target, a, b, c, Object.assign({}, typeof d === 'boolean' ? { capture: d } : d, { once: true })) : bind(target, a, b, Object.assign({}, typeof c === 'boolean' ? { capture: c } : c, { once: true }));
+                return typeof b === 'string' ? delegate(target, a, b, c, Object.assign(Object.assign({}, typeof d === 'boolean' ? { capture: d } : d), { once: true })) : bind(target, a, b, Object.assign(Object.assign({}, typeof c === 'boolean' ? { capture: c } : c), { once: true }));
             }
             exports.once = once;
             function wait(target, a, b = false, c = {}) {
@@ -862,7 +862,7 @@ require = function () {
                         void once(cx, type, listener, option);
                     }
                     return ev.returnValue;
-                }, Object.assign({}, option, { capture: true }));
+                }, Object.assign(Object.assign({}, option), { capture: true }));
             }
             exports.delegate = delegate;
             function bind(target, type, listener, option = false) {
@@ -1654,15 +1654,18 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../combinator');
             const autolink_1 = _dereq_('./inline/autolink');
+            const text_1 = _dereq_('./source/text');
             const unescapable_1 = _dereq_('./source/unescapable');
             exports.autolink = combinator_1.union([
                 autolink_1.autolink,
+                combinator_1.focus(/^\n/, text_1.text),
                 unescapable_1.unescsource
             ]);
         },
         {
             '../combinator': 20,
             './inline/autolink': 71,
+            './source/text': 105,
             './source/unescapable': 106
         }
     ],
@@ -2280,16 +2283,21 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const mention_1 = _dereq_('./paragraph/mention');
             const inline_1 = _dereq_('../inline');
+            const line_1 = _dereq_('../source/line');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.subsequence([
+            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.subsequence([
                 combinator_1.some(mention_1.mention),
-                util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))
-            ]), ns => [typed_dom_1.html('p', ns)].filter(util_1.hasContent)));
+                combinator_1.rewrite(combinator_1.some(line_1.contentline, /^>/), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))))
+            ])), ns => [typed_dom_1.html('p', ns.reduceRight((acc, node) => {
+                    node.nodeType === 1 && node.matches('.address, .quote') ? void acc.unshift(node, typed_dom_1.html('br')) : void acc.unshift(node);
+                    return acc;
+                }, ns.length === 0 ? [] : [ns.pop()]))].filter(util_1.hasContent)));
         },
         {
             '../../combinator': 20,
             '../inline': 68,
+            '../source/line': 104,
             '../util': 108,
             './paragraph/mention': 63,
             'typed-dom': 13
@@ -2342,8 +2350,8 @@ require = function () {
             const util_1 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.quote = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.union([
-                combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+(?:\s|$))/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink))))),
-                combinator_1.validate(/^(?=>+(?:[^>\n]|\n\s*\S))/, combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+)/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink)))))
+                combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^(?=>+(?:\s|$))/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink)))),
+                combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>/, line_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), util_1.defrag(combinator_1.some(autolink_1.autolink))))
             ]), ns => [typed_dom_1.html('span', { class: 'quote' }, ns)]), false));
         },
         {
