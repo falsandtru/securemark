@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.122.0
+
+- Change paragraph parser to parse mention syntax after texts.
+
 ## 0.121.0
 
 - Add hashref syntax.
