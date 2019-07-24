@@ -753,6 +753,7 @@ export namespace MarkdownParser {
     Markdown<'autolink'>,
     Parser<HTMLElement | Text, [
       InlineParser.AutolinkParser,
+      SourceParser.TextParser,
       SourceParser.UnescapableSourceParser,
     ]> {
   }

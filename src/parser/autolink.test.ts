@@ -11,6 +11,7 @@ describe('Unit: parser/autolink', () => {
       assert.deepStrictEqual(inspect(parser('!http://host')), [['!', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#a')), [['<a class="hashtag" rel="noopener">#a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" rel="noopener">@a#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\\n')), [['\\', '<br>'], '']);
     });
 
   });

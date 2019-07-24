@@ -3,6 +3,7 @@
 ## 0.122.0
 
 - Change paragraph parser to parse mention syntax after texts.
+- Fix autolink parser to convert newline into `br` HTML tag.
 
 ## 0.121.0
 
