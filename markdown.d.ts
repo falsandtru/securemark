@@ -377,7 +377,7 @@ export namespace MarkdownParser {
         export interface AddressParser extends
           // >0a
           Block<'paragraph/mention/address'>,
-          Parser<HTMLSpanElement, [
+          Parser<HTMLAnchorElement, [
             InlineParser.LinkParser,
           ]> {
         }

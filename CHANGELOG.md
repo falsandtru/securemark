@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.123.0
+
+- Change address parser not to make a wrapper element.
+
 ## 0.122.0
 
 - Change paragraph parser to parse mention syntax after texts.
