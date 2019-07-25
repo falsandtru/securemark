@@ -2,6 +2,7 @@
 
 ## 0.123.0
 
+- Extend address syntax to accept nofollow link syntax.
 - Change address parser not to make a wrapper element.
 
 ## 0.122.0

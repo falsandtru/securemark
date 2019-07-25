@@ -37,6 +37,10 @@ describe('Unit: parser/block/paragraph/mention/address', () => {
       assert.deepStrictEqual(inspect(parser('>https://host?<')), [['<a rel="noopener" target="_blank" class="address" data-level="1">&gt;https://host?&lt;</a>'], '']);
     });
 
+    it('nofollow', () => {
+      assert.deepStrictEqual(inspect(parser('>ttps://host')), [['<a rel="noopener nofollow noreferrer" target="_blank" class="address" data-level="1">&gt;https://host</a>'], '']);
+    });
+
   });
 
 });
