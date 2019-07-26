@@ -19,6 +19,11 @@ describe('Unit: parser/inline/html', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser('<0>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<aT>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<a,b>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<a, b>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<T>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>')), [['<span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;small&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<small></small>')), [['<span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;small&gt;</span>'], '</small>']);
       assert.deepStrictEqual(inspect(parser('<small> </small>')), [['<span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;small&gt;</span>'], ' </small>']);
