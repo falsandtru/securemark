@@ -2329,7 +2329,7 @@ require = function () {
             const inline_1 = _dereq_('../../../inline');
             const util_1 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.line(combinator_1.fmap(combinator_1.match(/^>+(?=\S+\s*$)/, util_1.memoize(([prefix]) => prefix, prefix => combinator_1.trim(combinator_1.union([
+            exports.address = combinator_1.line(combinator_1.fmap(combinator_1.match(/^>+(?!>)(?=\S+\s*$)/, util_1.memoize(([prefix]) => prefix, prefix => combinator_1.trimEnd(combinator_1.union([
                 combinator_1.focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*$/, combinator_1.convert(source => `[${ prefix }]{ ${ source } }`, inline_1.link)),
                 combinator_1.focus(/^h?ttps?:\/\/[^/\s]\S*$/, combinator_1.convert(source => `[${ prefix }]{ ${ inline_1.address(source) }${ inline_1.attribute(source) } }`, inline_1.link))
             ])))), ([el]) => [typed_dom_1.define(el, {
@@ -2985,7 +2985,7 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const index_1 = _dereq_('./index');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.indexer = combinator_1.lazy(() => combinator_1.line(combinator_1.fmap(combinator_1.surround(/^\s+(?=\[#)/, combinator_1.trim(combinator_1.union([index_1.index])), /^(?=\s*$)/), ([el]) => [typed_dom_1.html('span', {
+            exports.indexer = combinator_1.lazy(() => combinator_1.line(combinator_1.fmap(combinator_1.surround(/^\s+(?=\[#)/, combinator_1.union([index_1.index]), /^(?=\s*$)/), ([el]) => [typed_dom_1.html('span', {
                     class: 'indexer',
                     'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                 })])));
@@ -3107,7 +3107,7 @@ require = function () {
                     util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
                 ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)))),
                 combinator_1.match(/^(?=<(wbr)(?: [^\n]*?)?>)/, util_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), [])]), ([el]) => !el.matches('.invalid')))),
-                combinator_1.rewrite(combinator_1.sequence([util_1.dup(combinator_1.surround(/<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false))]), source => [
+                combinator_1.rewrite(combinator_1.surround(/^<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false), source => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
                             'data-invalid-syntax': 'html',
@@ -3498,7 +3498,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.tails([
                 combinator_1.focus(/^!/, unescapable_1.unescsource),
-                combinator_1.rewrite(combinator_1.surround('{{', util_1.defrag(combinator_1.some(combinator_1.union([escapable_1.escsource]), /^\n|^}}/)), '}}', false), source => [
+                combinator_1.rewrite(combinator_1.surround('{{', util_1.defrag(combinator_1.some(escapable_1.escsource, /^\n|^}}/)), '}}', false), source => [
                     [typed_dom_1.html('span', { class: 'template' }, source)],
                     ''
                 ])
