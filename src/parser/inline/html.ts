@@ -1,5 +1,4 @@
 import { HTMLParser, inline } from '../inline';
-import { SubParsers } from '../../combinator/data/parser';
 import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, lazy, fmap } from '../../combinator';
 import { unescsource } from '../source/unescapable';
 import { escsource } from '../source/escapable';
@@ -20,7 +19,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
     memoize(([, tag]) => tag,
     tag =>
       verify(fmap(
-        sequence<SubParsers<HTMLParser>[0]>([
+        sequence([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
           dup(surround(``, trimNode(defrag(some(union([inline]), `</${tag}>`))), `</${tag}>`)),
         ]),
@@ -32,16 +31,14 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
     memoize(([, tag]) => tag,
     tag =>
       verify(fmap(
-        sequence<SubParsers<HTMLParser>[1]>([
+        sequence([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
         ]),
         ([attrs_]) =>
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), new Set(), 'html'), [])]),
         ([el]) => !el.matches('.invalid')))),
   rewrite(
-    sequence<SubParsers<HTMLParser>[2]>([
-      dup(surround(/<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false)),
-    ]),
+    surround(/^<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false),
     source =>
       [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '']),
 ])));

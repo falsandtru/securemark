@@ -708,9 +708,6 @@ export namespace MarkdownParser {
         // account@host
         Inline<'email'>,
         Parser<HTMLAnchorElement, [
-          Parser<HTMLAnchorElement, [
-            SourceParser.UnescapableSourceParser,
-          ]>,
           SourceParser.UnescapableSourceParser,
         ]> {
       }

@@ -8,7 +8,7 @@ import { html, text as txt } from 'typed-dom';
 
 export const ruby: RubyParser = subline(fmap(fmap(verify(fmap(validate(
   /^\[.+?\]\(.+?\)/,
-  sequence<RubyParser>([
+  sequence([
     fmap(verify(trimNodeEnd(
       surround('[', defrag(some(union([htmlentity, text]), /^[\n\]]/)), ']')),
       ([text]) => hasTightText(text)),

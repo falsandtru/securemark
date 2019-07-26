@@ -16,7 +16,7 @@ export const attributes: DeepImmutable<Record<string, Array<string | undefined>>
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
-  tails<LinkParser>([
+  tails([
     wrap(surround('[', trimNodeEnd(defrag(some(union([inline]), /^[\n\]]/))), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])),
@@ -75,7 +75,7 @@ export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
   flag =>
     some(union([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)))));
 
-export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() => subline(union<LinkParser.ParamParser.UriParser.BracketParser>([
+export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() => subline(union([
   fmap(
     surround('(', some(union([bracket, unescsource]), /^[\s\)]/), ')', false),
     ts => [text('('), ...ts, text(')')]),
