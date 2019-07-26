@@ -2376,11 +2376,11 @@ require = function () {
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.sequence([
+            exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^|/, combinator_1.sequence([
                 row(cell(data), false),
                 row(cell(align), true),
                 combinator_1.some(row(cell(data), false))
-            ]), ([head, as, ...rows]) => {
+            ])), ([head, as, ...rows]) => {
                 void align();
                 return [typed_dom_1.html('table', [
                         typed_dom_1.html('thead', [head]),
