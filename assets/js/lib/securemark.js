@@ -2327,16 +2327,21 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../../combinator');
             const inline_1 = _dereq_('../../../inline');
+            const util_1 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.line(combinator_1.match(/^(?=((>+)(?:[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*|https?:\/\/[^/]\S*)\s*$))/, ([, addr, {length: level}]) => combinator_1.convert(source => `{ ${ addr.slice(level).trim() } }${ source.slice(addr.length) }`, combinator_1.fmap(combinator_1.union([inline_1.link]), ([el]) => [typed_dom_1.html('span', {
+            exports.address = combinator_1.line(combinator_1.fmap(combinator_1.match(/^>+(?=\S+\s*$)/, util_1.memoize(([prefix]) => prefix, prefix => combinator_1.trim(combinator_1.union([
+                combinator_1.focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*$/, combinator_1.convert(source => `[${ prefix }]{ ${ source } }`, inline_1.link)),
+                combinator_1.focus(/^h?ttps?:\/\/[^/\s]\S*$/, combinator_1.convert(source => `[${ prefix }]{ ${ inline_1.address(source) }${ inline_1.attribute(source) } }`, inline_1.link))
+            ])))), ([el]) => [typed_dom_1.define(el, {
                     class: 'address',
-                    href: null,
-                    'data-level': `${ level }`
-                }, [typed_dom_1.define(el, { href: null }, addr.trim())])]))));
+                    'data-level': `${ el.textContent.length }`,
+                    href: null
+                }, `${ el.textContent }${ el.getAttribute('href') }`)]));
         },
         {
             '../../../../combinator': 20,
             '../../../inline': 68,
+            '../../../util': 108,
             'typed-dom': 13
         }
     ],
@@ -2543,6 +2548,8 @@ require = function () {
             exports.media = media_2.media;
             var uri_1 = _dereq_('./inline/autolink/uri');
             exports.uri = uri_1.uri;
+            exports.address = uri_1.address;
+            exports.attribute = uri_1.attribute;
             var shortmedia_2 = _dereq_('./inline/shortmedia');
             exports.shortmedia = shortmedia_2.shortmedia;
         },
