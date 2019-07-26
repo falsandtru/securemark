@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, verify, surround, trimEnd, lazy, fmap, bind } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, verify, surround, trimEnd, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { hasMedia, squash } from '../util';
 import { concat } from 'spica/concat';
@@ -8,12 +8,13 @@ import { html, text } from 'typed-dom';
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
 
-export const table: TableParser = lazy(() => block(fmap(
+export const table: TableParser = lazy(() => block(fmap(validate(
+  /^|/,
   sequence([
     row(cell(data), false),
     row(cell(align), true),
     some(row(cell(data), false)),
-  ]),
+  ])),
   ([head, as, ...rows]) => {
     assert(as.children.length > 0);
     void align();
