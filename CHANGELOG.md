@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.123.1
+
+- Micro refactoring.
+
 ## 0.123.0
 
 - Extend address syntax to accept nofollow link syntax.
