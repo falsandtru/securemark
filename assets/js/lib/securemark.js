@@ -3492,23 +3492,24 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
-            const unescapable_1 = _dereq_('../source/unescapable');
+            const char_1 = _dereq_('../source/char');
             const escapable_1 = _dereq_('../source/escapable');
-            const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.tails([
-                combinator_1.focus(/^!/, unescapable_1.unescsource),
-                combinator_1.rewrite(combinator_1.surround('{{', util_1.defrag(combinator_1.some(escapable_1.escsource, /^\n|^}}/)), '}}', false), source => [
-                    [typed_dom_1.html('span', { class: 'template' }, source)],
+            exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.tails([
+                char_1.char('!'),
+                combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(escapable_1.escsource, /^\n|^}}/), '}}', false), source => [
+                    [typed_dom_1.text(source)],
                     ''
                 ])
-            ])));
+            ]), ns => [
+                typed_dom_1.html('span', { class: 'template' }, [ns.pop()]),
+                ...ns
+            ].reverse())));
         },
         {
             '../../combinator': 20,
+            '../source/char': 102,
             '../source/escapable': 103,
-            '../source/unescapable': 106,
-            '../util': 108,
             'typed-dom': 13
         }
     ],
