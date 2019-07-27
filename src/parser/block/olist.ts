@@ -3,7 +3,7 @@ import { union, inits, some, block, line, focus, match, surround, convert, inden
 import { ulist_, fillFirstLine, verifyListItem } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { unescsource } from '../source/unescapable';
+import { unescsource } from '../source';
 import { defrag, memoize } from '../util';
 import { memoize as memorize } from 'spica/memoization';
 import { html } from 'typed-dom';

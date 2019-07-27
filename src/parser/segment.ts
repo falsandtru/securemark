@@ -4,7 +4,7 @@ import { union, some, exec } from '../combinator';
 import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
-import { contentline, blankline } from './source/line';
+import { contentline, blankline } from './source';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 

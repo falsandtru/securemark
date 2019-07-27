@@ -1,6 +1,6 @@
 import { CodeBlockParser } from '../block';
 import { some, block, rewrite, focus, match, trim, lazy, eval } from '../../combinator';
-import { escsource } from '../source/escapable';
+import { escsource } from '../source';
 import { defrag, stringify } from '../util';
 import { html, define } from 'typed-dom';
 import { autolink } from '../autolink';

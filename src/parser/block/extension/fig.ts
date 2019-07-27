@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { union, sequence, some, block, line, rewrite, convert } from '../../../combinator';
-import { contentline } from '../../source/line';
+import { contentline } from '../../source';
 import { figure } from './figure';
 import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';

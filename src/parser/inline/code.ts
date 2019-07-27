@@ -1,6 +1,6 @@
 import { CodeParser } from '../inline';
 import { union, some, subline, focus, match } from '../../combinator';
-import { unescsource } from '../source/unescapable';
+import { unescsource } from '../source';
 import { html } from 'typed-dom';
 
 export const code: CodeParser = subline(union([

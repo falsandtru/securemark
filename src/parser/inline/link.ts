@@ -1,6 +1,6 @@
 import { LinkParser, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, fmap, bind } from '../../combinator';
-import { unescsource } from '../source/unescapable';
+import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasMedia, hasLink, memoize } from '../util';
 import { sanitize, decode } from '../string/uri';

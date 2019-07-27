@@ -19,7 +19,7 @@ import { htmlentity } from './inline/htmlentity';
 import { shortmedia } from './inline/shortmedia';
 import { autolink } from './inline/autolink';
 import { bracket } from './inline/bracket';
-import { text } from './source/text';
+import { text } from './source';
 
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;

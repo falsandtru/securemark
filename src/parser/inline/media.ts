@@ -1,6 +1,6 @@
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, fmap, bind } from '../../combinator';
-import { text } from '../source/text';
+import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
 import { sanitize } from '../string/uri';

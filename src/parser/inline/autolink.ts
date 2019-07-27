@@ -6,7 +6,7 @@ import { channel } from './autolink/channel';
 import { account } from './autolink/account';
 import { hashtag } from './autolink/hashtag';
 import { hashref } from './autolink/hashref';
-import { unescsource } from '../source/unescapable';
+import { unescsource } from '../source';
 import { stringify } from '../util';
 import { text } from 'typed-dom';
 

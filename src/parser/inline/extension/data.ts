@@ -1,6 +1,6 @@
 import { ExtensionParser, inline } from '../../inline';
 import { inits, some, focus, surround, fmap, lazy } from '../../../combinator';
-import { unescsource } from '../../source/unescapable';
+import { unescsource } from '../../source';
 import { defrag } from '../../util';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';

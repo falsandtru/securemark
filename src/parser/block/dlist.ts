@@ -1,6 +1,6 @@
 import { DListParser } from '../block';
 import { union, inits, some, block, line, rewrite, verify, surround, trim, lazy, fmap } from '../../combinator';
-import { anyline } from '../source/line';
+import { anyline } from '../source';
 import { inline, indexer, index } from '../inline';
 import { defrag, hasMedia } from '../util';
 import { concat } from 'spica/concat';

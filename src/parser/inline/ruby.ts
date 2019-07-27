@@ -1,7 +1,7 @@
 import { RubyParser } from '../inline';
 import { union, sequence, some, subline, validate, verify, surround, fmap } from '../../combinator';
 import { htmlentity } from './htmlentity';
-import { text } from '../source/text';
+import { text } from '../source';
 import { defrag, trimNodeEnd, stringify, hasText, hasTightText } from '../util';
 import { concat } from 'spica/concat';
 import { html, text as txt } from 'typed-dom';

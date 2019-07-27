@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, fmap } from '../../../combinator';
-import { emptyline, blankline, contentline } from '../../source/line';
+import { contentline, blankline, emptyline } from '../../source';
 import { table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';

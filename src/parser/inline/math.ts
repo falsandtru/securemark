@@ -1,6 +1,6 @@
 import { MathParser } from '../inline';
 import { union, some, subline, rewrite, verify, surround, convert } from '../../combinator';
-import { escsource } from '../source/escapable';
+import { escsource } from '../source';
 import { hasText } from '../util';
 import { Cache } from 'spica/cache';
 import { html, text } from 'typed-dom';

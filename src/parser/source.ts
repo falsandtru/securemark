@@ -9,3 +9,9 @@ export import EmptyLineParser = SourceParser.EmptyLineParser;
 export import BlankLineParser = SourceParser.BlankLineParser;
 export import ContentLineParser = SourceParser.ContentLineParser;
 export import CharParser = SourceParser.CharParser;
+
+export { text } from './source/text';
+export { escsource } from './source/escapable';
+export { unescsource } from './source/unescapable';
+export { char } from './source/char';
+export { contentline, blankline, emptyline, anyline } from './source/line';

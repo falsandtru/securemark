@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
 import { union, some, subline, rewrite, surround, convert } from '../../../combinator';
-import { unescsource } from '../../source/unescapable';
+import { unescsource } from '../../source';
 import { link, bracket } from '../link';
 
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
