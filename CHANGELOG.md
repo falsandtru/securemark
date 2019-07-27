@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.123.2
+
+- Micro refactoring.
+
 ## 0.123.1
 
 - Micro refactoring.
