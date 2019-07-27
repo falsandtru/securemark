@@ -1,7 +1,7 @@
 import { TemplateParser } from '../inline';
 import { tails, some, subline, rewrite, surround, lazy, fmap } from '../../combinator';
-import { char } from '../source/char';
 import { escsource } from '../source/escapable';
+import { char } from '../source/char';
 import { html, text } from 'typed-dom';
 
 export const template: TemplateParser = lazy(() => subline(fmap(
