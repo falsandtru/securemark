@@ -1,6 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { union, focus } from '../combinator';
-import { autolink as al } from './inline/autolink';
+import { autolink as al } from './inline';
 import { text, unescsource } from './source';
 
 export import AutolinkParser = MarkdownParser.AutolinkParser;
