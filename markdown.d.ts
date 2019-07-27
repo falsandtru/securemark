@@ -438,10 +438,8 @@ export namespace MarkdownParser {
       // {{ abc }}
       Inline<'template'>,
       Parser<HTMLSpanElement | Text, [
-        SourceParser.UnescapableSourceParser,
-        Parser<HTMLSpanElement, [
-          SourceParser.EscapableSourceParser,
-        ]>,
+        SourceParser.CharParser.ExclamationParser,
+        SourceParser.EscapableSourceParser,
       ]> {
     }
     export interface ExtensionParser extends
@@ -789,6 +787,11 @@ export namespace MarkdownParser {
       Parser<never, []> {
     }
     export namespace CharParser {
+      export interface ExclamationParser extends
+        // !
+        Source<'char/exclamation'>,
+        Parser<Text, []> {
+      }
       export interface EqualParser extends
         // =
         Source<'char/equal'>,

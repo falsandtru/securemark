@@ -1,13 +1,14 @@
 import { TemplateParser } from '../inline';
-import { tails, some, subline, focus, rewrite, surround, lazy } from '../../combinator';
-import { unescsource } from '../source/unescapable';
+import { tails, some, subline, rewrite, surround, lazy, fmap } from '../../combinator';
+import { char } from '../source/char';
 import { escsource } from '../source/escapable';
-import { defrag } from '../util';
-import { html } from 'typed-dom';
+import { html, text } from 'typed-dom';
 
-export const template: TemplateParser = lazy(() => subline(tails([
-  focus(/^!/, unescsource),
-  rewrite(
-    surround('{{', defrag(some(escsource, /^\n|^}}/)), '}}', false),
-    source => [[html('span', { class: 'template' }, source)], '']),
-])));
+export const template: TemplateParser = lazy(() => subline(fmap(
+  tails([
+    char('!'),
+    rewrite(
+      surround('{{', some(escsource, /^\n|^}}/), '}}', false),
+      source => [[text(source)], '']),
+  ]),
+  ns => [html('span', { class: 'template' }, [ns.pop()!]), ...ns].reverse())));
