@@ -1,6 +1,5 @@
 import { MathBlockParser } from '../block';
 import { block, rewrite, focus, match, trim, lazy } from '../../combinator';
-import '../source/unescapable';
 import { html, define } from 'typed-dom';
 
 export const segment: MathBlockParser.SegmentParser = lazy(() => block(segment_));

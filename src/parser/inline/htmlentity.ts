@@ -1,6 +1,5 @@
 import { HTMLEntityParser } from '../inline';
 import { subline, focus } from '../../combinator';
-import '../source/unescapable';
 import { html, text } from 'typed-dom';
 
 export const htmlentity: HTMLEntityParser = subline(focus(

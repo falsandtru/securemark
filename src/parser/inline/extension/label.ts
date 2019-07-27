@@ -1,6 +1,5 @@
 import { ExtensionParser } from '../../inline';
 import { union, subline, focus, verify, surround, convert, fmap } from '../../../combinator';
-import '../../source/unescapable';
 import { link } from '../link';
 import { hasTightText } from '../../util';
 import { define } from 'typed-dom';
