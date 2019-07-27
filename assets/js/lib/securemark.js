@@ -3492,8 +3492,8 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
-            const char_1 = _dereq_('../source/char');
             const escapable_1 = _dereq_('../source/escapable');
+            const char_1 = _dereq_('../source/char');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.tails([
                 char_1.char('!'),
