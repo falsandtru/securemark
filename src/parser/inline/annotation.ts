@@ -5,6 +5,6 @@ import { defrag, trimNodeEnd, hasTightText, hasMedia, hasAnnotationOrAuthority }
 import { html } from 'typed-dom';
 
 export const annotation: AnnotationParser = lazy(() => verify(fmap(trimNodeEnd(
-  surround(/^\n?\(\((?:[^\S\n]*\n)?/, defrag(some(union([inline]), /^\n?\)\)/)), /^\n?\)\)/)),
+  surround('((', defrag(some(union([inline]), '))')), '))')),
   ns => [html('sup', { class: 'annotation' }, ns)]),
   ([el]) => hasTightText(el) && !hasMedia(el) && !hasAnnotationOrAuthority(el)));

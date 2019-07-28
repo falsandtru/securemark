@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.123.4
+
+- Fix linebreak control with annotation syntax.
+
 ## 0.123.3
 
 - Micro refactoring.
