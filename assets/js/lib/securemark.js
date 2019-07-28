@@ -1334,8 +1334,6 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             function sequence(parsers) {
                 return source => {
-                    if (parsers.length === 0)
-                        return;
                     let rest = source;
                     const data = [];
                     for (const parser of parsers) {
@@ -1347,10 +1345,10 @@ require = function () {
                         void concat_1.concat(data, parser_1.eval(result));
                         rest = parser_1.exec(result);
                     }
-                    return [
+                    return rest.length < source.length ? [
                         data,
                         rest
-                    ];
+                    ] : undefined;
                 };
             }
             exports.sequence = sequence;
