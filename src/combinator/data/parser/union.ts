@@ -1,4 +1,4 @@
-import { Parser, Data, SubData, SubParsers, SubParser } from '../parser';
+import { Parser, Data, SubData, SubParsers, SubParser, verify } from '../parser';
 
 export function union<P extends Parser<unknown, any>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
 export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
@@ -8,9 +8,13 @@ export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
       return () => undefined;
     case 1:
       return parsers[0];
-    case 2:
-      return source => parsers[0](source) || parsers[1](source);
     default:
-      return union([parsers[0], union(parsers.slice(1))] as S);
+      return source => {
+        for (const parser of parsers) {
+          const result = parser(source);
+          assert(verify(source, result));
+          if (result) return result;
+        }
+      };
   }
 }
