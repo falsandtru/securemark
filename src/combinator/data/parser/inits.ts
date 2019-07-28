@@ -12,7 +12,6 @@ export function inits<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
       const result = parser(rest);
       assert(verify(rest, result));
       if (!result) break;
-      if (exec(result).length >= rest.length) return;
       void concat(data, eval(result));
       rest = exec(result);
     }
