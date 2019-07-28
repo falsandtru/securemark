@@ -1,4 +1,4 @@
-import { Parser, exec } from '../../data/parser';
+import { Parser, exec, verify } from '../../data/parser';
 
 export function match<P extends Parser<unknown, any>>(pattern: RegExp, f: (matched: string[]) => P): P;
 export function match<T, S extends Parser<unknown, any>[]>(pattern: RegExp, f: (matched: string[]) => Parser<T, S>): Parser<T, S> {
@@ -9,8 +9,8 @@ export function match<T, S extends Parser<unknown, any>[]>(pattern: RegExp, f: (
     assert(source.startsWith(param[0]));
     const rest = source.slice(param[0].length);
     const result = f(param)(rest);
+    assert(verify(source, result, false));
     if (!result) return;
-    assert(rest.endsWith(exec(result)));
     return exec(result).length < source.length && exec(result).length <= rest.length
       ? result
       : undefined;

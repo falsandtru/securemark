@@ -11,8 +11,8 @@ export function bind<T, U, S extends Parser<unknown, any>[]>(parser: Parser<T, S
     if (!res1) return;
     const res2 = f(eval(res1), exec(res1));
     assert(verify(source, res2));
+    assert(verify(exec(res1), res2, false));
     if (!res2) return;
-    assert(exec(res1).endsWith(exec(res2)));
     return exec(res2).length <= exec(res1).length
       ? res2
       : undefined;

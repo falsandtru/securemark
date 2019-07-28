@@ -21,7 +21,7 @@ export function exec(result: Result<unknown, any>, default_: string = ''): strin
     : default_;
 }
 
-export function verify(source: string, result: Result<unknown, any>): true {
-  assert(source.slice(1).endsWith(exec(result)));
+export function verify(source: string, result: Result<unknown, any>, mustConsume = true): true {
+  assert(source.slice(mustConsume ? 1 : 0).endsWith(exec(result)));
   return true;
 }
