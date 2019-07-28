@@ -1,20 +1,23 @@
-import { Parser, Data, SubData, SubParsers, SubParser } from '../parser';
-import { union } from './union';
-import { sequence } from './sequence';
-import { bind } from '../../control/monad/bind';
+import { Parser, Data, SubData, SubParsers, SubParser, eval, exec, verify } from '../parser';
+import { concat } from 'spica/concat';
 
 export function inits<P extends Parser<unknown, any>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
 export function inits<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
   assert(parsers.every(f => !!f));
-  let ps: S;
-  return parsers.length < 2
-    ? union(parsers)
-    : bind<T, any, S>(parsers[0], (rs, rest) =>
-        union([
-          sequence([
-            () => [rs, rest],
-            inits(ps = ps || parsers.slice(1) as S),
-          ]),
-          () => [rs, rest]
-        ])(` ${rest}`));
+  return source => {
+    let rest = source;
+    const data: T[] = [];
+    for (const parser of parsers) {
+      if (rest === '') break;
+      const result = parser(rest);
+      assert(verify(rest, result));
+      if (!result) break;
+      if (exec(result).length >= rest.length) return;
+      void concat(data, eval(result));
+      rest = exec(result);
+    }
+    return rest.length < source.length
+      ? [data, rest]
+      : undefined;
+  };
 }
