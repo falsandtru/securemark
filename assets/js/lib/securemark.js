@@ -1436,24 +1436,26 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const parser_1 = _dereq_('../parser');
             function union(parsers) {
                 switch (parsers.length) {
                 case 0:
                     return () => undefined;
                 case 1:
                     return parsers[0];
-                case 2:
-                    return source => parsers[0](source) || parsers[1](source);
                 default:
-                    return union([
-                        parsers[0],
-                        union(parsers.slice(1))
-                    ]);
+                    return source => {
+                        for (const parser of parsers) {
+                            const result = parser(source);
+                            if (result)
+                                return result;
+                        }
+                    };
                 }
             }
             exports.union = union;
         },
-        {}
+        { '../parser': 33 }
     ],
     40: [
         function (_dereq_, module, exports) {
