@@ -1287,10 +1287,10 @@ require = function () {
                 return result ? result[1] : default_;
             }
             exports.exec = exec;
-            function verify(source, result) {
+            function check(source, result, mustConsume = true) {
                 return true;
             }
-            exports.verify = verify;
+            exports.check = check;
         },
         {}
     ],
@@ -1298,52 +1298,65 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const union_1 = _dereq_('./union');
-            const sequence_1 = _dereq_('./sequence');
-            const bind_1 = _dereq_('../../control/monad/bind');
+            const parser_1 = _dereq_('../parser');
+            const concat_1 = _dereq_('spica/concat');
             function inits(parsers) {
-                let ps;
-                return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs, rest) => union_1.union([
-                    sequence_1.sequence([
-                        () => [
-                            rs,
-                            rest
-                        ],
-                        inits(ps = ps || parsers.slice(1))
-                    ]),
-                    () => [
-                        rs,
+                return source => {
+                    let rest = source;
+                    const data = [];
+                    for (const parser of parsers) {
+                        if (rest === '')
+                            break;
+                        const result = parser(rest);
+                        if (!result)
+                            break;
+                        void concat_1.concat(data, parser_1.eval(result));
+                        rest = parser_1.exec(result);
+                    }
+                    return rest.length < source.length ? [
+                        data,
                         rest
-                    ]
-                ])(` ${ rest }`));
+                    ] : undefined;
+                };
             }
             exports.inits = inits;
         },
         {
-            '../../control/monad/bind': 31,
-            './sequence': 35,
-            './union': 39
+            '../parser': 33,
+            'spica/concat': 7
         }
     ],
     35: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const union_1 = _dereq_('./union');
-            const bind_1 = _dereq_('../../control/monad/bind');
+            const parser_1 = _dereq_('../parser');
             const concat_1 = _dereq_('spica/concat');
             function sequence(parsers) {
-                let ps;
-                return parsers.length < 2 ? union_1.union(parsers) : bind_1.bind(parsers[0], (rs1, rest) => bind_1.bind(sequence(ps = ps || parsers.slice(1)), (rs2, rest) => [
-                    concat_1.concat(rs1, rs2),
-                    rest
-                ])(rest));
+                return source => {
+                    if (parsers.length === 0)
+                        return;
+                    let rest = source;
+                    const data = [];
+                    for (const parser of parsers) {
+                        if (rest === '')
+                            return;
+                        const result = parser(rest);
+                        if (!result)
+                            return;
+                        void concat_1.concat(data, parser_1.eval(result));
+                        rest = parser_1.exec(result);
+                    }
+                    return [
+                        data,
+                        rest
+                    ];
+                };
             }
             exports.sequence = sequence;
         },
         {
-            '../../control/monad/bind': 31,
-            './union': 39,
+            '../parser': 33,
             'spica/concat': 7
         }
     ],
@@ -1365,8 +1378,6 @@ require = function () {
                         const result = parser(rest);
                         if (!result)
                             break;
-                        if (parser_1.exec(result).length >= rest.length)
-                            return;
                         void concat_1.concat(data, parser_1.eval(result));
                         rest = parser_1.exec(result);
                     }
