@@ -749,7 +749,7 @@ export namespace MarkdownParser {
     Markdown<'autolink'>,
     Parser<HTMLElement | Text, [
       InlineParser.AutolinkParser,
-      SourceParser.TextParser,
+      SourceParser.NewlineParser,
       SourceParser.UnescapableSourceParser,
     ]> {
   }
@@ -759,6 +759,11 @@ export namespace MarkdownParser {
       // abc
       Source<'text'>,
       Parser<HTMLBRElement | HTMLSpanElement | Text, []> {
+    }
+    export interface NewlineParser extends
+      // abc
+      Source<'newline'>,
+      Parser<HTMLBRElement, [TextParser]> {
     }
     export interface EscapableSourceParser extends
       // abc

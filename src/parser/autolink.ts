@@ -1,12 +1,12 @@
 import { MarkdownParser } from '../../markdown';
-import { union, focus } from '../combinator';
+import { union } from '../combinator';
 import { autolink as al } from './inline';
-import { text, unescsource } from './source';
+import { newline, unescsource } from './source';
 
 export import AutolinkParser = MarkdownParser.AutolinkParser;
 
 export const autolink: AutolinkParser = union([
   al,
-  focus(/^\n/, text),
+  newline,
   unescsource
 ]);

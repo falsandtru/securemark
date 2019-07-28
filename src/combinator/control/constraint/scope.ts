@@ -1,11 +1,13 @@
 import { Parser, eval, exec, verify } from '../../data/parser';
 
-export function focus<P extends Parser<any, any>>(scope: RegExp, parser: P): P;
-export function focus<T, S extends Parser<any, any>[]>(scope: RegExp, parser: Parser<T, S>): Parser<T, S> {
+export function focus<P extends Parser<any, any>>(scope: string | RegExp, parser: P): P;
+export function focus<T, S extends Parser<any, any>[]>(scope: string | RegExp, parser: Parser<T, S>): Parser<T, S> {
   assert(parser);
   return source => {
     if (source === '') return;
-    const [src = ''] = source.match(scope) || [];
+    const [src = ''] = typeof scope === 'string'
+      ? source.startsWith(scope) ? [scope] : []
+      : source.match(scope) || [];
     assert(source.startsWith(src));
     if (src === '') return;
     const result = parser(src);
