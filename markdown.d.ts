@@ -760,31 +760,15 @@ export namespace MarkdownParser {
       Source<'text'>,
       Parser<HTMLBRElement | HTMLSpanElement | Text, []> {
     }
-    export interface UnescapableSourceParser extends
-      // abc
-      Source<'unescsource'>,
-      Parser<Text, []> {
-    }
     export interface EscapableSourceParser extends
       // abc
       Source<'escsource'>,
       Parser<Text, []> {
     }
-    export interface AnyLineParser extends
-      Source<'anyline'>,
-      Parser<never, []> {
-    }
-    export interface EmptyLineParser extends
-      Source<'emptyline'>,
-      Parser<never, []> {
-    }
-    export interface BlankLineParser extends
-      Source<'blankline'>,
-      Parser<never, []> {
-    }
-    export interface ContentLineParser extends
-      Source<'contentline'>,
-      Parser<never, []> {
+    export interface UnescapableSourceParser extends
+      // abc
+      Source<'unescsource'>,
+      Parser<Text, []> {
     }
     export namespace CharParser {
       export interface ExclamationParser extends
@@ -797,6 +781,22 @@ export namespace MarkdownParser {
         Source<'char/equal'>,
         Parser<Text, []> {
       }
+    }
+    export interface ContentLineParser extends
+      Source<'contentline'>,
+      Parser<never, []> {
+    }
+    export interface BlankLineParser extends
+      Source<'blankline'>,
+      Parser<never, []> {
+    }
+    export interface EmptyLineParser extends
+      Source<'emptyline'>,
+      Parser<never, []> {
+    }
+    export interface AnyLineParser extends
+      Source<'anyline'>,
+      Parser<never, []> {
     }
   }
 }
