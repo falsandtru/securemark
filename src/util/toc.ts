@@ -5,7 +5,7 @@ export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUL
   const hs = [...source.children]
     .filter((el): el is HTMLHeadingElement =>
       el instanceof HTMLHeadingElement);
-  assert(hs.every(h => !!h.id));
+  assert(hs.every(h => h.id));
   return parse(cons(hs));
 }
 
