@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../inline';
-import { union, some, focus, fmap } from '../../combinator';
+import { union, some, focus, validate, fmap } from '../../combinator';
 import { uri } from './autolink/uri';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
@@ -10,7 +10,8 @@ import { unescsource } from '../source';
 import { stringify } from '../util';
 import { text } from 'typed-dom';
 
-export const autolink: AutolinkParser = fmap(
+export const autolink: AutolinkParser = fmap(validate(
+  /^[@#a-zA-Z0-9]|^[^\x00-\x7F\s]#/,
   some(union([
     uri,
     email,
@@ -21,5 +22,5 @@ export const autolink: AutolinkParser = fmap(
     hashtag,
     hashref,
     focus(/^(?:[a-zA-Z0-9]|[^\x00-\x7F\s])(?=#)/, some(unescsource)),
-  ])),
+  ]))),
   ns => ns.length === 1 ? ns : [text(stringify(ns))]);
