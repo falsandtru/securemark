@@ -2630,7 +2630,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.autolink = combinator_1.fmap(combinator_1.some(combinator_1.union([
+            exports.autolink = combinator_1.fmap(combinator_1.validate(/^[@#a-zA-Z0-9]|^[^\x00-\x7F\s]#/, combinator_1.some(combinator_1.union([
                 uri_1.uri,
                 email_1.email,
                 combinator_1.focus(/^[a-zA-Z0-9]+(?:[.+_-][a-zA-Z0-9]+)*(?:@(?:[a-zA-Z0-9]+(?:[.-][a-zA-Z0-9]+)*)?)+/, combinator_1.some(source_1.unescsource)),
@@ -2640,7 +2640,7 @@ require = function () {
                 hashtag_1.hashtag,
                 hashref_1.hashref,
                 combinator_1.focus(/^(?:[a-zA-Z0-9]|[^\x00-\x7F\s])(?=#)/, combinator_1.some(source_1.unescsource))
-            ])), ns => ns.length === 1 ? ns : [typed_dom_1.text(util_1.stringify(ns))]);
+            ]))), ns => ns.length === 1 ? ns : [typed_dom_1.text(util_1.stringify(ns))]);
         },
         {
             '../../combinator': 20,
@@ -3769,7 +3769,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|\S#/;
+            exports.separator = /\s|(?=[^a-zA-Z0-9\s])[\x00-\x7F]|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|\S#/;
             const next = /[\S\n]|$/;
             exports.text = source => {
                 if (source === '')
