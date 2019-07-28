@@ -23,15 +23,15 @@ export function subline<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): 
     const result = parser(source);
     assert(verify(source, result));
     if (!result) return result;
-    return source.length - exec(result).length <= source.split('\n', 1)[0].length
+    return source.length - exec(result).length <= firstline(source, false).length
       ? result
       : undefined;
   };
 }
 
-export function firstline(source: string): string {
+export function firstline(source: string, keepLinebreak = true): string {
   const i = source.indexOf('\n');
   return i === -1
     ? source
-    : source.slice(0, i + 1);
+    : source.slice(0, keepLinebreak ? i + 1 : i);
 }

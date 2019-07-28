@@ -14,7 +14,7 @@ export function indent<T, S extends Parser<any, any>[]>(parser: Parser<T, S>): P
     ([, indent]) =>
       some(line(rewrite(
         s => [[], s.slice(firstline(s).length)],
-        surround(indent, s => [[s.split('\n', 1)[0]], ''], ''))))),
+        surround(indent, s => [[firstline(s, false)], ''], ''))))),
     (rs, rest) => {
       const result = parser(rs.join('\n'));
       return result && exec(result) === ''
