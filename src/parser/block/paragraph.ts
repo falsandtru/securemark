@@ -13,13 +13,4 @@ export const paragraph: ParagraphParser = block(fmap(
       some(contentline, /^>/),
       defrag(trim(some(inline)))),
   ])),
-  ns => [
-    html('p', ns.reduceRight(
-      (acc, node) => {
-        node.nodeType === 1 && (node as Element).matches('.address, .quote')
-          ? void acc.unshift(node, html('br'))
-          : void acc.unshift(node);
-        return acc;
-      },
-      ns.length === 0 ? [] : [ns.pop()!]))
-  ].filter(hasContent)));
+  ns => [html('p', ns)].filter(hasContent)));
