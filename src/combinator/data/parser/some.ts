@@ -1,8 +1,8 @@
 import { Parser, eval, exec, verify } from '../parser';
 import { concat } from 'spica/concat';
 
-export function some<P extends Parser<any, any>>(parser: P, until?: string | RegExp): P;
-export function some<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, until?: string | RegExp): Parser<T, S> {
+export function some<P extends Parser<unknown, any>>(parser: P, until?: string | RegExp): P;
+export function some<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, until?: string | RegExp): Parser<T, S> {
   assert(parser);
   return source => {
     let rest = source;

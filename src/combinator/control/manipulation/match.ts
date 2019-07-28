@@ -1,7 +1,7 @@
 import { Parser, exec } from '../../data/parser';
 
-export function match<P extends Parser<any, any>>(pattern: RegExp, f: (matched: string[]) => P): P;
-export function match<T, S extends Parser<any, any>[]>(pattern: RegExp, f: (matched: string[]) => Parser<T, S>): Parser<T, S> {
+export function match<P extends Parser<unknown, any>>(pattern: RegExp, f: (matched: string[]) => P): P;
+export function match<T, S extends Parser<unknown, any>[]>(pattern: RegExp, f: (matched: string[]) => Parser<T, S>): Parser<T, S> {
   return source => {
     if (source === '') return;
     const param = source.match(pattern);

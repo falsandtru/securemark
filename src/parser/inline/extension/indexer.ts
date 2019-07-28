@@ -12,7 +12,7 @@ export const indexer: ExtensionParser.IndexerParser = lazy(() => line(fmap(
     [html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
 
 export function index<P extends Parser<HTMLElement, any>>(parser: P): P;
-export function index<T extends HTMLElement, S extends Parser<any, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+export function index<T extends HTMLElement, S extends Parser<unknown, any>[]>(parser: Parser<T, S>): Parser<T, S> {
   return fmap(parser, ([el]) => [define(el, { id: identifier(text(el)) || null })]);
 }
 

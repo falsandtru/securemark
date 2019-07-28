@@ -1,7 +1,7 @@
 import { Parser, eval, exec, verify } from '../../data/parser';
 
-export function focus<P extends Parser<any, any>>(scope: string | RegExp, parser: P): P;
-export function focus<T, S extends Parser<any, any>[]>(scope: string | RegExp, parser: Parser<T, S>): Parser<T, S> {
+export function focus<P extends Parser<unknown, any>>(scope: string | RegExp, parser: P): P;
+export function focus<T, S extends Parser<unknown, any>[]>(scope: string | RegExp, parser: Parser<T, S>): Parser<T, S> {
   assert(parser);
   return source => {
     if (source === '') return;
@@ -20,8 +20,8 @@ export function focus<T, S extends Parser<any, any>[]>(scope: string | RegExp, p
   };
 }
 
-export function rewrite<P extends Parser<any, any>>(scope: Parser<any, any>, parser: P): P;
-export function rewrite<T, S extends Parser<any, any>[]>(scope: Parser<never, any>, parser: Parser<T, S>): Parser<T, S> {
+export function rewrite<P extends Parser<unknown, any>>(scope: Parser<unknown, any>, parser: P): P;
+export function rewrite<T, S extends Parser<unknown, any>[]>(scope: Parser<never, any>, parser: Parser<T, S>): Parser<T, S> {
   assert(scope);
   assert(parser);
   return source => {

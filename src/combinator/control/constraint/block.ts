@@ -1,8 +1,8 @@
 import { Parser, exec } from '../../data/parser';
 import { firstline } from './line';
 
-export function block<P extends Parser<any, any>>(parser: P, separation?: boolean): P;
-export function block<T, S extends Parser<any, any>[]>(parser: Parser<T, S>, separation = true): Parser<T, S> {
+export function block<P extends Parser<unknown, any>>(parser: P, separation?: boolean): P;
+export function block<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, separation = true): Parser<T, S> {
   assert(parser);
   return source => {
     if (source === '') return;
