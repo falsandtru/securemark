@@ -1,4 +1,4 @@
-import { Parser, Data, SubData, SubParsers, SubParser, verify } from '../parser';
+import { Parser, Data, SubData, SubParsers, SubParser, check } from '../parser';
 
 export function union<P extends Parser<unknown, any>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
 export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
@@ -12,7 +12,7 @@ export function union<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
       return source => {
         for (const parser of parsers) {
           const result = parser(source);
-          assert(verify(source, result));
+          assert(check(source, result));
           if (result) return result;
         }
       };

@@ -1,4 +1,4 @@
-import { Parser, eval, exec, verify } from '../../data/parser';
+import { Parser, eval, exec, check } from '../../data/parser';
 
 export function line<P extends Parser<unknown, any>>(parser: P, allowTrailingWhitespace?: boolean): P;
 export function line<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, allowTrailingWhitespace = true): Parser<T, S> {
@@ -7,7 +7,7 @@ export function line<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, 
     if (source === '') return;
     const fst = firstline(source);
     const result = parser(fst);
-    assert(verify(fst, result));
+    assert(check(fst, result));
     if (!result) return;
     return (allowTrailingWhitespace ? exec(result).trim() === '' : exec(result) === '')
       ? [eval(result), source.slice(fst.length)]
@@ -21,7 +21,7 @@ export function subline<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S
   return source => {
     if (source === '') return;
     const result = parser(source);
-    assert(verify(source, result));
+    assert(check(source, result));
     if (!result) return result;
     return source.length - exec(result).length <= firstline(source, false).length
       ? result
