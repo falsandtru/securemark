@@ -6,7 +6,7 @@
 */
 
 export function parse(source: string): DocumentFragment;
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot): (source: string) => Iterable<HTMLElement>;
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot): (source: string) => Generator<HTMLElement, undefined, undefined>;
 export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void;
 export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;

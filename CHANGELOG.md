@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.123.5
+
+- Update bind function interface.
+
 ## 0.123.4
 
 - Fix linebreak control with annotation syntax.

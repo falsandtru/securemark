@@ -3,11 +3,11 @@ import { segment } from '../segment';
 import { block } from '../block';
 import { normalize } from './normalization';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot): (source: string) => Iterable<HTMLElement> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   let revision: symbol;
-  return function* (source: string): Iterable<HTMLElement> {
+  return function* (source: string): Generator<HTMLElement, undefined, undefined> {
     source = normalize(source);
     const rev = revision = Symbol();
     const targetSegments = pairs.map(([seg]) => seg);
