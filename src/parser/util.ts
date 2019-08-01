@@ -1,7 +1,7 @@
 import { Parser, fmap } from '../combinator';
 import { isFixed } from './inline';
 import { memoize as memoize_ } from 'spica/memoization';
-import { frag } from 'typed-dom';
+import { frag, apply } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
@@ -127,7 +127,8 @@ export function stringify(nodes: Node[]): string {
 }
 
 export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
-  for (const child of [...el.children].filter(child => !child.matches('blockquote, .example'))) {
+  for (const child of el.children) {
+    if (child.matches('blockquote, .example')) continue;
     if (child.matches('[id]')) {
       void child.removeAttribute('id');
     }
@@ -139,12 +140,8 @@ export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
       void suppress(child.lastElementChild as HTMLElement);
       continue;
     }
-    for (const el of child.querySelectorAll('[id]')) {
-      void el.removeAttribute('id');
-    }
-    for (const el of child.querySelectorAll('a[href^="#"]')) {
-      void el.setAttribute('onclick', 'return false;');
-    }
+    void apply(child, '[id]', { id: null });
+    void apply(child, 'a[href^="#"]', { onclick: 'return false;' });
   }
   return el;
 }
