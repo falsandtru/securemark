@@ -275,8 +275,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function concat(target, source) {
-                target.push(...source);
-                return target;
+                return void target.push(...source), target;
             }
             exports.concat = concat;
         },
