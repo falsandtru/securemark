@@ -7,7 +7,7 @@ export const template: TemplateParser = lazy(() => subline(fmap(
   tails([
     char('!'),
     rewrite(
-      surround('{{', some(escsource, /^\n|^}}/), '}}', false),
+      surround('{{', some(escsource, /^\\?\n|^}}/), '}}', false),
       source => [[text(source)], '']),
   ]),
   ns => [html('span', { class: 'template' }, [ns.pop()!]), ...ns].reverse())));

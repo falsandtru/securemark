@@ -5,6 +5,6 @@ import { defrag, trimNodeEnd, hasTightText, hasMedia, hasAnnotationOrAuthority }
 import { html } from 'typed-dom';
 
 export const authority: AuthorityParser = lazy(() => subline(verify(fmap(trimNodeEnd(
-  surround('[[', defrag(some(union([inline]), /^\n|^]]/)), ']]')),
+  surround('[[', defrag(some(union([inline]), /^\\?\n|^]]/)), ']]')),
   ns => [html('sup', { class: 'authority' }, ns)]),
   ([el]) => hasTightText(el) && !hasMedia(el) && !hasAnnotationOrAuthority(el))));

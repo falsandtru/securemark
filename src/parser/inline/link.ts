@@ -17,7 +17,7 @@ export const attributes: DeepImmutable<Record<string, Array<string | undefined>>
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
   tails([
-    wrap(surround('[', trimNodeEnd(defrag(some(union([inline]), /^[\n\]]/))), ']', false)),
+    wrap(surround('[', trimNodeEnd(defrag(some(union([inline]), /^\\?\n|^]/))), ']', false)),
     wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])),
   ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),

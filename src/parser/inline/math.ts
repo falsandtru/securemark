@@ -9,7 +9,7 @@ export const cache = new Cache<string, HTMLElement>(20); // for rerendering in e
 
 export const math: MathParser = subline(verify(
   rewrite(
-    surround('${', some(union<MathParser>([escsource]), /^}\$|^\n/), '}$'),
+    surround('${', some(union<MathParser>([escsource]), /^\\?\n|^}\$/), '}$'),
     convert(
       source => `\${${source.slice(2, -2).trim()}}$`,
       source => [

@@ -9,7 +9,7 @@ export const index: ExtensionParser.IndexParser = lazy(() => subline(fmap(idx(ve
   surround(
     '[#',
     rewrite(
-      some(inline, /^[\n\]]/),
+      verify(some(inline, /^\\?\n|^]/), (_, rest) => rest.startsWith(']')),
       convert(
         query => `[${query}]{#}`,
         union([link]))),
