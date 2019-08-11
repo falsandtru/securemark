@@ -17,6 +17,8 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('<#a#>')), undefined);
       assert.deepStrictEqual(inspect(parser('<#a b#>')), undefined);
       assert.deepStrictEqual(inspect(parser('<#\\ a #>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<# a#>')), undefined);
+      assert.deepStrictEqual(inspect(parser('<# a##>')), undefined);
       assert.deepStrictEqual(inspect(parser('<# a ##>')), undefined);
       assert.deepStrictEqual(inspect(parser('<## a #>')), undefined);
     });

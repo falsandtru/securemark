@@ -14,11 +14,7 @@ export const data: DataParser = lazy(() => fmap(
       focus(
         /^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?/,
         defrag(some(unescsource))),
-      surround(
-        '|',
-        defrag(some(inline, ']')),
-        '',
-        false),
+      surround('|', defrag(some(inline, ']')), '', false),
     ]),
     ']'),
   ([data, ...ns]) =>

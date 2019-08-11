@@ -13,7 +13,7 @@ const attributes: DeepImmutable<Record<string, Record<string, Array<string | und
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
-    /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n]*?)?>)/,
+    /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/,
     memoize(([, tag]) => tag,
     tag =>
       verify(fmap(
@@ -25,7 +25,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), new Set(), 'html'), contents)]),
         ([el]) => !el.matches('.invalid') && hasTightText(el)))),
   match(
-    /^(?=<(wbr)(?: [^\n]*?)?>)/,
+    /^(?=<(wbr)(?: [^\n>]*)?>)/,
     memoize(([, tag]) => tag,
     tag =>
       verify(fmap(
