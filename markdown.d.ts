@@ -439,7 +439,7 @@ export namespace MarkdownParser {
       Inline<'template'>,
       Parser<HTMLSpanElement | Text, [
         SourceParser.CharParser.ExclamationParser,
-        SourceParser.EscapableSourceParser,
+        InlineParser,
       ]> {
     }
     export interface ExtensionParser extends

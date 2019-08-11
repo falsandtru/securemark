@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.124.0
+
+- Improve template parser.
+
 ## 0.123.5
 
 - Update bind function interface.
