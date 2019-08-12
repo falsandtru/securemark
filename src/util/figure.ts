@@ -10,19 +10,21 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
   for (let fig of source.querySelectorAll<HTMLElement>('figure[data-label][data-group], h2[id]')) {
     if (fig.matches('h2')) {
       assert(fig.parentNode === source);
+      if (fig.parentNode !== source) continue;
       if (base === '0') continue;
       fig = parse(`[$-${+base.split('.', 1)[0] + 1}.0]\n$$\n$$`).querySelector('figure')!;
     }
-    if (fig.matches('.example figure')) continue;
-    if (fig.parentElement !== source && fig.parentElement instanceof HTMLQuoteElement) {
-      exclusions.has(fig.parentElement)
-        ? undefined
-        : void exclusions.add(fig.parentElement) ||
-          void figure(fig.parentElement);
+    assert(fig.matches('figure'));
+    if (fig.parentElement && exclusions.has(fig.parentElement)) continue;
+    if (fig.closest('.example')) continue;
+    if (fig.parentElement && fig.parentElement !== source && fig.parentElement.matches('blockquote')) {
+      void exclusions.add(fig.parentElement);
+      void figure(fig.parentElement);
       continue;
     }
     const label = fig.getAttribute('data-label')!;
     const group = fig.getAttribute('data-group')!;
+    assert(label && group);
     let idx = index(label, indexes.get(group) || base);
     if (idx.endsWith('.0')) {
       base = idx = idx.startsWith('0.')
@@ -35,7 +37,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const figindex = fig.lastElementChild!.previousElementSibling!;
     assert(figindex.matches('.figindex'));
     void define(figindex, group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}.`);
-    if (fig.matches('blockquote *')) continue;
+    if (fig.closest('blockquote')) continue;
     if (idx.endsWith('.0')) continue;
     void fig.setAttribute('id', `label:${label.split(/-0(?![0-9])/, 1)[0]}`);
     const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
