@@ -1,5 +1,5 @@
 import { index } from '../parser/inline/extension/label';
-import { isGroup } from '../parser/inline';
+import { isGroup, isFixed } from '../parser/inline';
 import { parse } from '../parser/api';
 import { define } from 'typed-dom';
 
@@ -27,6 +27,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(label && group);
     let idx = index(label, indexes.get(group) || base);
     if (idx.endsWith('.0')) {
+      assert(isFixed(label));
       base = idx = idx.startsWith('0.')
         ? `${(indexes.get(group) || base).split('.', 1)[0]}.${idx.slice(2)}`
         : idx;
