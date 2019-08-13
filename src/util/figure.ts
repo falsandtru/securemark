@@ -28,10 +28,11 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     let idx = index(label, indexes.get(group) || base);
     if (idx.endsWith('.0')) {
       assert(isFixed(label));
+      assert(fig.style.display === 'none');
       base = idx = idx.startsWith('0.')
         ? base.split('.')
             .reduce((idx, _, i, base) => {
-              i < idx.length - 1
+              i < idx.length
                 ? idx[i] = +idx[i] > +base[i]
                   ? idx[i]
                   : +idx[i] === 0
@@ -43,6 +44,8 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
             .join('.')
         : idx;
       void indexes.clear();
+      void fig.setAttribute('data-index', idx);
+      continue;
     }
     void indexes.set(group, idx);
     void fig.setAttribute('data-index', idx);
@@ -50,7 +53,6 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(figindex.matches('.figindex'));
     void define(figindex, group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}.`);
     if (fig.closest('blockquote')) continue;
-    if (idx.endsWith('.0')) continue;
     void fig.setAttribute('id', `label:${label.split(/-0(?![0-9])/, 1)[0]}`);
     const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
     for (const ref of source.querySelectorAll(`a.label[data-label="${query.replace(/[$.]/g, '\\$&')}"]`)) {
