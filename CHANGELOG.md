@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.124.1
+
+- Micro refactoring.
+
 ## 0.124.0
 
 - Improve template parser.
