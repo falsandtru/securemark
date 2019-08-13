@@ -4553,14 +4553,19 @@ require = function () {
                 const exclusions = new Set();
                 for (let fig of source.querySelectorAll('figure[data-label][data-group], h2[id]')) {
                     if (fig.matches('h2')) {
+                        if (fig.parentNode !== source)
+                            continue;
                         if (base === '0')
                             continue;
                         fig = api_1.parse(`[$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).querySelector('figure');
                     }
-                    if (fig.matches('.example figure'))
+                    if (fig.parentElement && exclusions.has(fig.parentElement))
                         continue;
-                    if (fig.parentElement !== source && fig.parentElement instanceof HTMLQuoteElement) {
-                        exclusions.has(fig.parentElement) ? undefined : void exclusions.add(fig.parentElement) || void figure(fig.parentElement);
+                    if (fig.closest('.example'))
+                        continue;
+                    if (fig.parentElement && fig.parentElement !== source && fig.parentElement.matches('blockquote')) {
+                        void exclusions.add(fig.parentElement);
+                        void figure(fig.parentElement);
                         continue;
                     }
                     const label = fig.getAttribute('data-label');
@@ -4574,7 +4579,7 @@ require = function () {
                     void fig.setAttribute('data-index', idx);
                     const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
-                    if (fig.matches('blockquote *'))
+                    if (fig.closest('blockquote'))
                         continue;
                     if (idx.endsWith('.0'))
                         continue;
