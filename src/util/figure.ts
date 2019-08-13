@@ -29,7 +29,18 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     if (idx.endsWith('.0')) {
       assert(isFixed(label));
       base = idx = idx.startsWith('0.')
-        ? `${(indexes.get(group) || base).split('.', 1)[0]}.${idx.slice(2)}`
+        ? base.split('.')
+            .reduce((idx, _, i, base) => {
+              i < idx.length - 1
+                ? idx[i] = +idx[i] > +base[i]
+                  ? idx[i]
+                  : +idx[i] === 0
+                    ? base[i]
+                    : `${+base[i] + 1}`
+                : base.length = i;
+              return idx;
+            }, idx.split('.'))
+            .join('.')
         : idx;
       void indexes.clear();
     }

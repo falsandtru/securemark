@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.125.0
+
+- Enhance figure function.
+
 ## 0.124.1
 
 - Micro refactoring.
