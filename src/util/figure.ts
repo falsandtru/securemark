@@ -32,13 +32,13 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       base = idx = idx.startsWith('0.')
         ? base.split('.')
             .reduce((idx, _, i, base) => {
-              i < idx.length
-                ? idx[i] = +idx[i] > +base[i]
+              i === idx.length
+                ? base.length = i
+                : idx[i] = +idx[i] > +base[i]
                   ? idx[i]
                   : +idx[i] === 0
                     ? base[i]
-                    : `${+base[i] + 1}`
-                : base.length = i;
+                    : `${+base[i] + 1}`;
               return idx;
             }, idx.split('.'))
             .join('.')
