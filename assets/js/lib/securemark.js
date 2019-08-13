@@ -4572,16 +4572,19 @@ require = function () {
                     const group = fig.getAttribute('data-group');
                     let idx = label_1.index(label, indexes.get(group) || base);
                     if (idx.endsWith('.0')) {
-                        base = idx = idx.startsWith('0.') ? `${ (indexes.get(group) || base).split('.', 1)[0] }.${ idx.slice(2) }` : idx;
+                        base = idx = idx.startsWith('0.') ? base.split('.').reduce((idx, _, i, base) => {
+                            i === idx.length ? base.length = i : idx[i] = +idx[i] > +base[i] ? idx[i] : +idx[i] === 0 ? base[i] : `${ +base[i] + 1 }`;
+                            return idx;
+                        }, idx.split('.')).join('.') : idx;
                         void indexes.clear();
+                        void fig.setAttribute('data-index', idx);
+                        continue;
                     }
                     void indexes.set(group, idx);
                     void fig.setAttribute('data-index', idx);
                     const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
                     if (fig.closest('blockquote'))
-                        continue;
-                    if (idx.endsWith('.0'))
                         continue;
                     void fig.setAttribute('id', `label:${ label.split(/-0(?![0-9])/, 1)[0] }`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
