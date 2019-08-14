@@ -1,6 +1,6 @@
 import { Parser, fmap } from '../combinator';
 import { memoize as memoize_ } from 'spica/memoization';
-import { frag, define, apply } from 'typed-dom';
+import { frag, define } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
@@ -126,8 +126,8 @@ export function stringify(nodes: Node[]): string {
 }
 
 export function suppress<T extends HTMLElement | DocumentFragment>(target: T): T {
-  for (const el of target.querySelectorAll('[id], a.label[href], .annotation > a[href], .authority > a[href], li[id] > sup:last-child > a[href]')) {
-    if (el.parentElement && el.parentElement.closest('blockquote, aside, figure')) continue;
+  for (const el of target.querySelectorAll('[id], a.index, a.label, .annotation > a, .authority > a, li[id] > sup:last-child > a')) {
+    if (el.parentElement && el.parentElement.closest('blockquote, aside, figure') && !el.parentElement.closest('figcaption')) continue;
     void define(el, { id: null, href: null });
   }
   return target;

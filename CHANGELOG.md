@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.125.2
+
+- Fix context separation.
+
 ## 0.125.1
 
 - Fix figure function.
