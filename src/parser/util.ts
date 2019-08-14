@@ -1,6 +1,6 @@
 import { Parser, fmap } from '../combinator';
 import { memoize as memoize_ } from 'spica/memoization';
-import { frag, apply } from 'typed-dom';
+import { frag, define, apply } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
@@ -128,16 +128,15 @@ export function stringify(nodes: Node[]): string {
 export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
   for (const child of el.children) {
     if (child.matches('blockquote, aside')) continue;
-    if (child.matches('[id]')) {
-      void child.removeAttribute('id');
-    }
     if (child.matches('figure')) {
       //void suppress(child.querySelector(':scope > figcaption') as HTMLElement);
+      void define(child, { id: null });
       void suppress(child.lastElementChild as HTMLElement);
       continue;
     }
+    void apply(child, 'a.label[href], .annotation > a[href], .authority > a[href], li[id] > sup:last-child > a[href]', { href: null });
     void apply(child, '[id]', { id: null });
-    void apply(child, 'a[href^="#"]', { href: null });
+    void define(child, { id: null });
   }
   return el;
 }
