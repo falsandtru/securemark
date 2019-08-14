@@ -128,6 +128,7 @@ export function stringify(nodes: Node[]): string {
 export function suppress<T extends HTMLElement | DocumentFragment>(target: T): T {
   for (const el of target.querySelectorAll('[id], a.index, a.label, .annotation > a, .authority > a, li[id] > sup:last-child > a')) {
     if (el.tagName === 'A' && !el.id && !el.hasAttribute('href')) continue;
+    if (el.parentElement && el.parentElement.closest('figure, .media') && !el.parentElement.closest('figcaption')) continue;
     assert(el.matches('[id], a[href]'));
     void define(el, { id: null, href: null });
   }
