@@ -125,20 +125,12 @@ export function stringify(nodes: Node[]): string {
   return nodes.reduce((acc, node) => acc + node.textContent!, '');
 }
 
-export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
-  for (const child of el.children) {
-    if (child.matches('blockquote, aside')) continue;
-    if (child.matches('figure')) {
-      //void suppress(child.querySelector(':scope > figcaption') as HTMLElement);
-      void define(child, { id: null });
-      void suppress(child.lastElementChild as HTMLElement);
-      continue;
-    }
-    void apply(child, 'a.label[href], .annotation > a[href], .authority > a[href], li[id] > sup:last-child > a[href]', { href: null });
-    void apply(child, '[id]', { id: null });
-    void define(child, { id: null });
+export function suppress<T extends HTMLElement | DocumentFragment>(target: T): T {
+  for (const el of target.querySelectorAll('[id], a.label[href], .annotation > a[href], .authority > a[href], li[id] > sup:last-child > a[href]')) {
+    if (el.parentElement && el.parentElement.closest('blockquote, aside, figure')) continue;
+    void define(el, { id: null, href: null });
   }
-  return el;
+  return target;
 }
 
 export function memoize<a, b, c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
