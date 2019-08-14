@@ -122,7 +122,7 @@ export function squash(nodes: Node[]): Node[] {
 }
 
 export function stringify(nodes: Node[]): string {
-  return nodes.reduce((acc, node) => acc + node.textContent!, '');
+  return nodes.reduce((acc, node) => acc + node.textContent, '');
 }
 
 export function suppress<T extends HTMLElement | DocumentFragment>(target: T): T {
