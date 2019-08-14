@@ -5,12 +5,12 @@ import { html, text } from 'typed-dom';
 describe('Unit: util/footnote', () => {
   describe('annotation', () => {
     it('empty', () => {
-      const source = parse('0');
+      const source = parse('');
       const target = html('ol');
+      annotation(source, target);
       assert.deepStrictEqual(
         [...source.children].map(el => el.outerHTML),
-        [html('p', '0').outerHTML]);
-      annotation(source, target);
+        []);
       assert.deepStrictEqual(
         target.outerHTML,
         html('ol').outerHTML);
@@ -156,6 +156,28 @@ describe('Unit: util/footnote', () => {
               html('sup', [html('a', { href: '#authority:ref:1', rel: 'noopener' }, '~1')])
             ]),
           ]).outerHTML);
+      }
+    });
+
+    it('separation', () => {
+      const source = parse([
+        '!>> ((a))\n> ((a))\n~~~',
+        '~~~~example/markdown\n((a))\n~~~~',
+        '((a))',
+      ].join('\n\n'));
+      const target = html('ol');
+      for (let i = 0; i < 3; ++i) {
+        annotation(source, target);
+        assert.deepStrictEqual(
+          [...source.children].map(el => el.outerHTML),
+          [
+            '<blockquote><blockquote><p><sup class="annotation" title="a"><a href="#annotation:def:1" rel="noopener" onclick="return false;">*1</a></sup></p></blockquote><p><sup class="annotation" title="a"><a href="#annotation:def:1" rel="noopener" onclick="return false;">*1</a></sup><br>~~~</p></blockquote>',
+            '<aside class="example" data-type="markdown"><pre>((a))</pre><div><p><sup class="annotation" title="a"><a href="#annotation:def:1" rel="noopener" onclick="return false;">*1</a></sup></p></div><ol><li>a<sup><a href="#annotation:ref:1" rel="noopener" onclick="return false;">~1</a></sup></li></ol><ol></ol></aside>',
+            '<p><sup class="annotation" id="annotation:ref:1" title="a"><a href="#annotation:def:1" rel="noopener">*1</a></sup></p>',
+          ]);
+        assert.deepStrictEqual(
+          target.outerHTML,
+          '<ol><li id="annotation:def:1">a<sup><a href="#annotation:ref:1" rel="noopener">~1</a></sup></li></ol>');
       }
     });
 

@@ -3,6 +3,7 @@
 ## 0.125.1
 
 - Fix figure function.
+- Fix footnote function.
 
 ## 0.125.0
 

@@ -13,10 +13,9 @@ function build(category: string, marker: (index: number) => string): (source: Do
   assert(category.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement | ShadowRoot, target: HTMLOListElement) => {
-    const exclusions = new Set(source.querySelectorAll('aside'));
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
+      .filter(ref => !ref.closest('blockquote, aside'))
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
-        if (exclusions.has(ref.closest('aside')!)) return acc;
         if (!contents.has(ref) && ref.querySelector('a')) return acc;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         const refIndex = i + 1;
