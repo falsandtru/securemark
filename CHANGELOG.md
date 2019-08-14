@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.125.1
+
+- Fix figure function.
+
 ## 0.125.0
 
 - Enhance figure function.

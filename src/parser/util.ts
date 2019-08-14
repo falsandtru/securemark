@@ -1,5 +1,4 @@
 import { Parser, fmap } from '../combinator';
-import { isFixed } from './inline';
 import { memoize as memoize_ } from 'spica/memoization';
 import { frag, apply } from 'typed-dom';
 
@@ -131,9 +130,6 @@ export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
     if (child.matches('blockquote, aside')) continue;
     if (child.matches('[id]')) {
       void child.removeAttribute('id');
-    }
-    if (child.matches('figure[data-label]:not([data-index])') && !isFixed(child.getAttribute('data-label')!)) {
-      void child.setAttribute('data-label', child.getAttribute('data-label')!.split('-', 1)[0] + '-0');
     }
     if (child.matches('figure')) {
       //void suppress(child.querySelector(':scope > figcaption') as HTMLElement);

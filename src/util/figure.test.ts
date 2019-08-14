@@ -167,8 +167,9 @@ describe('Unit: util/figure', () => {
 
     it('separation', () => {
       const source = parse([
-        '!>> ~~~figure $fig-1\n>> > \n>>\n~~~\n> ~~~figure $fig-a\n> > \n>\n~~~',
-        '~~~~example/markdown\n~~~figure $fig-a\n> \n\n~~~\n~~~~',
+        '!>> ~~~figure $fig-a\n>> > \n>>\n~~~\n> ~~~figure $fig-a\n> > \n>\n~~~',
+        '~~~~example/markdown\n~~~figure $fig-a\n> \n\n~~~\n\n$fig-a\n~~~~',
+        '~~~figure $fig-b\n> \n\n~~~',
         '~~~figure $fig-a\n> \n\n~~~',
       ].join('\n\n'));
       for (let i = 0; i < 3; ++i) {
@@ -176,9 +177,10 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<blockquote><blockquote><figure data-label="fig-1" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></blockquote><figure data-label="fig-0" data-group="fig" data-index="0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 0.</span><figcaption></figcaption></figure></blockquote>',
-            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~</pre><div><figure data-label="fig-a" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></div><ol></ol><ol></ol></aside>',
-            '<figure data-label="fig-a" data-group="fig" data-index="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+            '<blockquote><blockquote><figure data-label="fig-a" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></blockquote><figure data-label="fig-a" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></blockquote>',
+            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><div><figure data-label="fig-a" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure><p><a rel="noopener" class="label" data-label="fig-a" href="#label:fig-a" onclick="return false;">Fig. 1</a></p></div><ol></ol><ol></ol></aside>',
+            '<figure data-label="fig-b" data-group="fig" data-index="1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-a" data-group="fig" data-index="2" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2.</span><figcaption></figcaption></figure>',
           ]);
       }
     });

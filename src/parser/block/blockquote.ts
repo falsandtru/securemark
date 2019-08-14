@@ -4,6 +4,7 @@ import { contentline } from '../source';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { defrag, suppress } from '../util';
+import { figure } from '../../util/figure';
 import { html } from 'typed-dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(union([
@@ -44,6 +45,10 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
       convert(unindent, source)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, source => [[suppress(parse(source))], ''])),
+      convert(unindent, source => [[suppress(figure_(parse(source)))], ''])),
   ])),
   ns => [html('blockquote', ns)]));
+
+function figure_(source: DocumentFragment): DocumentFragment {
+  return void figure(source), source;
+}

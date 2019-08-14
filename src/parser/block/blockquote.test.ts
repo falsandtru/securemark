@@ -92,6 +92,7 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('!>\n a')), [['<blockquote><p>a</p></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>\n>')), [['<blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>\n> a')), [['<blockquote><p>a</p></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!>> ~~~figure $fig-a\n>> > \n>>\n~~~\n> ~~~figure $fig-a\n> > \n>\n~~~')), [['<blockquote><blockquote><figure data-label="fig-a" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></blockquote><figure data-label="fig-a" data-group="fig" data-index="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.</span><figcaption></figcaption></figure></blockquote>'], '']);
     });
 
   });
