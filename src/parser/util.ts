@@ -137,7 +137,7 @@ export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
       continue;
     }
     void apply(child, '[id]', { id: null });
-    void apply(child, 'a[href^="#"]', { onclick: 'return false;' });
+    void apply(child, 'a[href^="#"]', { href: null });
   }
   return el;
 }
