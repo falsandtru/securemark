@@ -3009,6 +3009,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexer_1.index(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.verify(combinator_1.some(inline_1.inline, /^\\?\n|^]/), (_, rest) => rest.startsWith(']')), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
+                    class: 'index',
                     href: `#${ el.id }`
                 })])));
         },
@@ -4047,21 +4048,16 @@ require = function () {
                 return nodes.reduce((acc, node) => acc + node.textContent, '');
             }
             exports.stringify = stringify;
-            function suppress(el) {
-                for (const child of el.children) {
-                    if (child.matches('blockquote, aside'))
+            function suppress(target) {
+                for (const el of target.querySelectorAll('[id], a.index, a.label, .annotation > a, .authority > a, li[id] > sup:last-child > a')) {
+                    if (el.parentElement && el.parentElement.closest('blockquote, aside, figure') && !el.parentElement.closest('figcaption'))
                         continue;
-                    if (child.matches('[id]')) {
-                        void child.removeAttribute('id');
-                    }
-                    if (child.matches('figure')) {
-                        void suppress(child.lastElementChild);
-                        continue;
-                    }
-                    void typed_dom_1.apply(child, '[id]', { id: null });
-                    void typed_dom_1.apply(child, 'a[href^="#"]', { href: null });
+                    void typed_dom_1.define(el, {
+                        id: null,
+                        href: null
+                    });
                 }
-                return el;
+                return target;
             }
             exports.suppress = suppress;
             function memoize(f, g) {
