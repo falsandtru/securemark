@@ -16,7 +16,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     }
     assert(fig.matches('figure'));
     if (fig.parentElement && exclusions.has(fig.parentElement)) continue;
-    if (fig.closest('.example')) continue;
+    if (fig.closest('aside')) continue;
     if (fig.parentElement && fig.parentElement !== source && fig.parentElement.matches('blockquote')) {
       void exclusions.add(fig.parentElement);
       void figure(fig.parentElement);

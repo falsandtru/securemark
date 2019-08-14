@@ -128,7 +128,7 @@ export function stringify(nodes: Node[]): string {
 
 export function suppress<T extends HTMLElement | DocumentFragment>(el: T): T {
   for (const child of el.children) {
-    if (child.matches('blockquote, .example')) continue;
+    if (child.matches('blockquote, aside')) continue;
     if (child.matches('[id]')) {
       void child.removeAttribute('id');
     }
