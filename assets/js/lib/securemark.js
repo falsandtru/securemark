@@ -1758,6 +1758,8 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const parse_1 = _dereq_('../api/parse');
             const util_1 = _dereq_('../util');
+            const figure_1 = _dereq_('../../util/figure');
+            const footnote_1 = _dereq_('../../util/footnote');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.union([
                 combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(source_1.contentline)),
@@ -1779,13 +1781,23 @@ require = function () {
             const source = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, source)),
                 combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, source => [
-                    [util_1.suppress(parse_1.parse(source))],
+                    [util_1.suppress(render(parse_1.parse(source)))],
                     ''
                 ]))
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
+            function render(source) {
+                void figure_1.figure(source);
+                void footnote_1.footnote(source, {
+                    annotation: typed_dom_1.html('ol'),
+                    authority: typed_dom_1.html('ol')
+                });
+                return source;
+            }
         },
         {
             '../../combinator': 21,
+            '../../util/figure': 126,
+            '../../util/footnote': 127,
             '../api/parse': 46,
             '../autolink': 47,
             '../source': 103,
@@ -3921,7 +3933,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../combinator');
-            const inline_1 = _dereq_('./inline');
             const memoization_1 = _dereq_('spica/memoization');
             const typed_dom_1 = _dereq_('typed-dom');
             function hasContent(node) {
@@ -4038,13 +4049,10 @@ require = function () {
             exports.stringify = stringify;
             function suppress(el) {
                 for (const child of el.children) {
-                    if (child.matches('blockquote, .example'))
+                    if (child.matches('blockquote, aside'))
                         continue;
                     if (child.matches('[id]')) {
                         void child.removeAttribute('id');
-                    }
-                    if (child.matches('figure[data-label]:not([data-index])') && !inline_1.isFixed(child.getAttribute('data-label'))) {
-                        void child.setAttribute('data-label', child.getAttribute('data-label').split('-', 1)[0] + '-0');
                     }
                     if (child.matches('figure')) {
                         void suppress(child.lastElementChild);
@@ -4064,7 +4072,6 @@ require = function () {
         },
         {
             '../combinator': 21,
-            './inline': 69,
             'spica/memoization': 9,
             'typed-dom': 13
         }
@@ -4550,8 +4557,9 @@ require = function () {
             function figure(source) {
                 let base = '0';
                 const indexes = new Map();
-                const exclusions = new Set();
-                for (let fig of source.querySelectorAll('figure[data-label][data-group], h2[id]')) {
+                for (let fig of source.children) {
+                    if (!fig.matches('figure[data-label][data-group], h2[id]'))
+                        continue;
                     if (fig.matches('h2')) {
                         if (fig.parentNode !== source)
                             continue;
@@ -4559,15 +4567,8 @@ require = function () {
                             continue;
                         fig = api_1.parse(`[$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).querySelector('figure');
                     }
-                    if (fig.parentElement && exclusions.has(fig.parentElement))
+                    if (fig.closest('blockquote, aside'))
                         continue;
-                    if (fig.closest('.example'))
-                        continue;
-                    if (fig.parentElement && fig.parentElement !== source && fig.parentElement.matches('blockquote')) {
-                        void exclusions.add(fig.parentElement);
-                        void figure(fig.parentElement);
-                        continue;
-                    }
                     const label = fig.getAttribute('data-label');
                     const group = fig.getAttribute('data-group');
                     let idx = label_1.index(label, indexes.get(group) || base);
@@ -4584,11 +4585,11 @@ require = function () {
                     void fig.setAttribute('data-index', idx);
                     const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
-                    if (fig.closest('blockquote'))
-                        continue;
                     void fig.setAttribute('id', `label:${ label.split(/-0(?![0-9])/, 1)[0] }`);
                     const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
                     for (const ref of source.querySelectorAll(`a.label[data-label="${ query.replace(/[$.]/g, '\\$&') }"]`)) {
+                        if (ref.closest('blockquote, aside'))
+                            continue;
                         void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, ''));
                     }
                 }
@@ -4621,10 +4622,7 @@ require = function () {
             function build(category, marker) {
                 const contents = new WeakMap();
                 return (source, target) => {
-                    const exclusions = new Set(source.querySelectorAll('.example'));
-                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].reduce((acc, ref, i) => {
-                        if (exclusions.has(ref.closest('.example')))
-                            return acc;
+                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(ref => !ref.closest('blockquote, aside')).reduce((acc, ref, i) => {
                         if (!contents.has(ref) && ref.querySelector('a'))
                             return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
