@@ -4059,7 +4059,7 @@ require = function () {
                         continue;
                     }
                     void typed_dom_1.apply(child, '[id]', { id: null });
-                    void typed_dom_1.apply(child, 'a[href^="#"]', { onclick: 'return false;' });
+                    void typed_dom_1.apply(child, 'a[href^="#"]', { href: null });
                 }
                 return el;
             }
