@@ -4050,7 +4050,7 @@ require = function () {
             exports.stringify = stringify;
             function suppress(target) {
                 for (const el of target.querySelectorAll('[id], a.index, a.label, .annotation > a, .authority > a, li[id] > sup:last-child > a')) {
-                    if (el.parentElement && el.parentElement.closest('blockquote, aside, figure') && !el.parentElement.closest('figcaption'))
+                    if (el.tagName === 'A' ? !el.id && !el.hasAttribute('href') : !el.id)
                         continue;
                     void typed_dom_1.define(el, {
                         id: null,
