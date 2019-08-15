@@ -47,7 +47,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(figindex.matches('.figindex'));
     void define(figindex, group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}.`);
     void fig.setAttribute('id', `label:${label.split(/-0(?![0-9])/, 1)[0]}`);
-    const query = isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
+    const query = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     for (const ref of source.querySelectorAll(`a.label[data-label="${query.replace(/[$.]/g, '\\$&')}"]`)) {
       if (ref.closest('blockquote, aside')) continue;
       void define(ref, { href: `#${fig.id}` }, figindex.textContent!.replace(/[.]$/, ''));
