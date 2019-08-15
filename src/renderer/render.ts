@@ -32,7 +32,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         return void scope.parentElement!.replaceChild(el, scope);
       }
       default:
-        for (const el of target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .graph, .math')) {
+        for (const el of target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .math')) {
           void render(el, opts);
         }
         return;
