@@ -4052,7 +4052,7 @@ require = function () {
                 for (const el of target.querySelectorAll('[id], a.index, a.label, .annotation > a, .authority > a, li[id] > sup:last-child > a')) {
                     if (el.tagName === 'A' && !el.id && !el.hasAttribute('href'))
                         continue;
-                    if (el.closest('.media'))
+                    if (el.closest('.media, .code, .math'))
                         continue;
                     void typed_dom_1.define(el, {
                         id: null,
@@ -4117,7 +4117,7 @@ require = function () {
                             return void scope.parentElement.replaceChild(el, scope);
                         }
                     default:
-                        for (const el of target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre.code, .graph, .math')) {
+                        for (const el of target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre.code, .math')) {
                             void render(el, opts);
                         }
                         return;
