@@ -4584,7 +4584,7 @@ require = function () {
                     const figindex = fig.lastElementChild.previousElementSibling;
                     void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
                     void fig.setAttribute('id', `label:${ label.split(/-0(?![0-9])/, 1)[0] }`);
-                    const query = inline_1.isGroup(label) ? label.split('-').slice(0, -1).join('-') : label;
+                    const query = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     for (const ref of source.querySelectorAll(`a.label[data-label="${ query.replace(/[$.]/g, '\\$&') }"]`)) {
                         if (ref.closest('blockquote, aside'))
                             continue;
