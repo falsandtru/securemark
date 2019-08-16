@@ -4554,6 +4554,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             function figure(source) {
                 let base = '0';
+                const bound = 'blockquote, aside';
+                const boundary = source instanceof Element && source.closest(bound) || null;
                 const indexes = new Map();
                 for (let fig of source.children) {
                     if (!fig.matches('figure[data-label][data-group], h2[id]'))
@@ -4565,7 +4567,7 @@ require = function () {
                             continue;
                         fig = api_1.parse(`[$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).querySelector('figure');
                     }
-                    if (fig.closest('blockquote, aside'))
+                    if (fig.closest(bound) !== boundary)
                         continue;
                     const label = fig.getAttribute('data-label');
                     const group = fig.getAttribute('data-group');
@@ -4586,7 +4588,7 @@ require = function () {
                     void fig.setAttribute('id', `label:${ label.split(/-0(?![0-9])/, 1)[0] }`);
                     const query = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     for (const ref of source.querySelectorAll(`a.label[data-label="${ query.replace(/[$.]/g, '\\$&') }"]`)) {
-                        if (ref.closest('blockquote, aside'))
+                        if (ref.closest(bound) !== boundary)
                             continue;
                         void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, ''));
                     }
@@ -4620,7 +4622,9 @@ require = function () {
             function build(category, marker) {
                 const contents = new WeakMap();
                 return (source, target) => {
-                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(ref => !ref.closest('blockquote, aside')).reduce((acc, ref, i) => {
+                    const bound = 'blockquote, aside';
+                    const boundary = source instanceof Element && source.closest(bound) || null;
+                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(ref => ref.closest(bound) === boundary).reduce((acc, ref, i) => {
                         if (!contents.has(ref) && ref.querySelector('a'))
                             return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
