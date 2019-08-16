@@ -5,6 +5,8 @@ import { define } from 'typed-dom';
 
 export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void {
   let base = '0';
+  const bound = 'blockquote, aside';
+  const boundary = source instanceof Element && source.closest(bound) || null;
   const indexes = new Map<string, string>();
   for (let fig of source.children) {
     if (!fig.matches('figure[data-label][data-group], h2[id]')) continue;
@@ -15,7 +17,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       fig = parse(`[$-${+base.split('.', 1)[0] + 1}.0]\n$$\n$$`).querySelector('figure')!;
     }
     assert(fig.matches('figure'));
-    if (fig.closest('blockquote, aside')) continue;
+    if (fig.closest(bound) !== boundary) continue;
     const label = fig.getAttribute('data-label')!;
     const group = fig.getAttribute('data-group')!;
     assert(label && group);
@@ -49,7 +51,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     void fig.setAttribute('id', `label:${label.split(/-0(?![0-9])/, 1)[0]}`);
     const query = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     for (const ref of source.querySelectorAll(`a.label[data-label="${query.replace(/[$.]/g, '\\$&')}"]`)) {
-      if (ref.closest('blockquote, aside')) continue;
+      if (ref.closest(bound) !== boundary) continue;
       void define(ref, { href: `#${fig.id}` }, figindex.textContent!.replace(/[.]$/, ''));
     }
   }

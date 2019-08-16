@@ -132,11 +132,11 @@ describe('Unit: util/footnote', () => {
     });
 
     it('separation', () => {
-      const source = parse([
+      const source = html('blockquote', parse([
         '!>> ((a))\n> ((a))\n~~~',
         '~~~~example/markdown\n((a))\n~~~~',
         '((a))',
-      ].join('\n\n'));
+      ].join('\n\n')).children);
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
         annotation(source, target);

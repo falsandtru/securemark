@@ -1,5 +1,6 @@
 import { figure } from './figure';
 import { parse } from '../parser';
+import { html } from 'typed-dom';
 
 describe('Unit: util/figure', () => {
   describe('figure', () => {
@@ -166,12 +167,12 @@ describe('Unit: util/figure', () => {
     });
 
     it('separation', () => {
-      const source = parse([
+      const source = html('blockquote', parse([
         '!>> ~~~figure $fig-a\n>> > \n>>\n~~~\n> ~~~figure $fig-a\n> > \n>\n~~~',
         '~~~~example/markdown\n~~~figure $fig-a\n> \n\n~~~\n\n$fig-a\n~~~~',
         '~~~figure $fig-b\n> \n\n~~~',
         '~~~figure $fig-a\n> \n\n~~~',
-      ].join('\n\n'));
+      ].join('\n\n')).children);
       for (let i = 0; i < 3; ++i) {
         figure(source);
         assert.deepStrictEqual(

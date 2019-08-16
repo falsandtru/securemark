@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.125.4
+
+- Fix context separation.
+
 ## 0.125.3
 
 - Micro refactoring.

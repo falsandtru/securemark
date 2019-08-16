@@ -131,6 +131,7 @@ export function suppress<T extends HTMLElement | DocumentFragment>(target: T): T
     if (el.closest('.media, .code, .math')) continue;
     assert(el.matches('[id], a[href]'));
     assert(el.matches(':not(a), a:not([target])'));
+    assert(!el.closest('blockquote, aside'));
     void define(el, { id: null, href: null });
   }
   return target;
