@@ -48,9 +48,9 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const figindex = fig.lastElementChild!.previousElementSibling!;
     assert(figindex.matches('.figindex'));
     void define(figindex, group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}.`);
-    const query = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
-    void fig.setAttribute('id', `label:${query}`);
-    for (const ref of source.querySelectorAll(`a.label[data-label="${query.replace(/[$.]/g, '\\$&')}"]`)) {
+    const id = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
+    void fig.setAttribute('id', `label:${id}`);
+    for (const ref of source.querySelectorAll(`a.label[data-label="${id.replace(/[$.]/g, '\\$&')}"]`)) {
       if (ref.closest(bound) !== boundary) continue;
       void define(ref, { href: `#${fig.id}` }, figindex.textContent!.replace(/[.]$/, ''));
     }
