@@ -4612,48 +4612,48 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             function figure(source) {
                 const bound = 'blockquote, aside';
-                const boundary = source instanceof Element && source.closest(bound) || null;
-                const memory = new WeakMap();
-                const indexes = new Map();
+                const context = source instanceof Element && source.closest(bound) || null;
+                const contextual = new WeakMap();
+                const memory = new Map();
                 const refs = new multimap_1.MultiMap([...source.querySelectorAll('a.label')].filter(validate).map(el => [
                     el.getAttribute('data-label'),
                     el
                 ]));
                 let base = '0';
-                for (let fig of source.children) {
-                    if (fig.matches('h2')) {
+                for (let def of source.children) {
+                    if (def.matches('h2')) {
                         if (base === '0')
                             continue;
-                        fig = api_1.parse(`[$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).firstChild;
+                        def = api_1.parse(`[$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).firstChild;
                     }
-                    if (!fig.matches('figure'))
+                    if (!def.matches('figure'))
                         continue;
-                    const label = fig.getAttribute('data-label');
-                    const group = fig.getAttribute('data-group');
-                    let idx = label_1.index(label, indexes.get(group) || base);
-                    if (idx.endsWith('.0')) {
-                        base = idx = idx.startsWith('0.') ? base.split('.').reduce((idx, _, i, base) => {
+                    const label = def.getAttribute('data-label');
+                    const group = def.getAttribute('data-group');
+                    let number = label_1.index(label, memory.get(group) || base);
+                    if (number.endsWith('.0')) {
+                        base = number = number.startsWith('0.') ? base.split('.').reduce((idx, _, i, base) => {
                             i === idx.length ? base.length = i : idx[i] = +idx[i] > +base[i] ? idx[i] : +idx[i] === 0 ? base[i] : `${ +base[i] + 1 }`;
                             return idx;
-                        }, idx.split('.')).join('.') : idx;
-                        void indexes.clear();
-                        void fig.setAttribute('data-index', idx);
+                        }, number.split('.')).join('.') : number;
+                        void memory.clear();
+                        void def.setAttribute('data-index', number);
                         continue;
                     }
-                    void indexes.set(group, idx);
-                    void fig.setAttribute('data-index', idx);
-                    const figindex = fig.lastElementChild.previousElementSibling;
-                    void typed_dom_1.define(figindex, group === '$' ? `(${ idx })` : `${ capitalize(group) }. ${ idx }.`);
-                    const id = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
-                    void fig.setAttribute('id', `label:${ id }`);
-                    for (const ref of refs.ref(id)) {
-                        void typed_dom_1.define(ref, { href: `#${ fig.id }` }, figindex.textContent.replace(/[.]$/, ''));
+                    void memory.set(group, number);
+                    void def.setAttribute('data-index', number);
+                    const figid = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
+                    void def.setAttribute('id', `label:${ figid }`);
+                    const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
+                    void typed_dom_1.define([...def.children].find(el => el.matches('.figindex')), group === '$' ? figindex : `${ figindex }.`);
+                    for (const ref of refs.ref(figid)) {
+                        void typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
                 }
                 return;
                 function validate(el) {
                     const node = el.parentNode && el.parentNode.parentNode || el.parentNode;
-                    return !node ? true : memory.has(node) ? memory.get(node) : memory.set(node, el.closest(bound) === boundary).get(node);
+                    return !node ? true : contextual.has(node) ? contextual.get(node) : contextual.set(node, el.closest(bound) === context).get(node);
                 }
             }
             exports.figure = figure;
@@ -4686,8 +4686,8 @@ require = function () {
                 const contents = new WeakMap();
                 return (source, target) => {
                     const bound = 'blockquote, aside';
-                    const boundary = source instanceof Element && source.closest(bound) || null;
-                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(ref => ref.closest(bound) === boundary).reduce((acc, ref, i) => {
+                    const context = source instanceof Element && source.closest(bound) || null;
+                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(ref => ref.closest(bound) === context).reduce((acc, ref, i) => {
                         if (!contents.has(ref) && ref.querySelector('a'))
                             return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
@@ -4695,7 +4695,7 @@ require = function () {
                         const refId = ref.id || `${ category }:ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
                         const def = acc.get(title);
-                        const defIndex = def ? +def.id.match(/[0-9]+/)[0] : acc.size + 1;
+                        const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : acc.size + 1;
                         const defId = def ? def.id : `${ category }:def:${ defIndex }`;
                         void typed_dom_1.define(ref, {
                             id: refId,
