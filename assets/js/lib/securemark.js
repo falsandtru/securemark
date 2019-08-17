@@ -4098,29 +4098,19 @@ require = function () {
             exports.stringify = stringify;
             function suppress(target) {
                 if (target instanceof HTMLOListElement) {
-                    for (const child of target.querySelectorAll('ol > li > sup:last-child > a')) {
-                        if (child.closest('ol') !== target)
-                            continue;
-                        void typed_dom_1.define(child, { href: null });
-                    }
+                    void typed_dom_1.apply(target, '.footnote > sup:last-child > a', { href: null });
                 }
                 for (const child of target.children) {
                     switch (child.tagName) {
                     case 'DL':
-                        for (const el of child.children) {
-                            el.id && void typed_dom_1.define(el, { id: null });
-                        }
+                        void typed_dom_1.apply(child, 'dt', { id: null });
                         continue;
                     default:
                         child.id && void typed_dom_1.define(child, { id: null });
                         continue;
                     }
                 }
-                for (const el of target.querySelectorAll('a.index, a.label, .annotation, .annotation > a, .authority, .authority > a')) {
-                    if (!el.id && el.tagName !== 'A')
-                        continue;
-                    if (el.tagName === 'A' && !el.id && !el.hasAttribute('href'))
-                        continue;
+                for (const el of target.querySelectorAll('a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .authority[id], .authority[id] > a[href]')) {
                     void typed_dom_1.define(el, {
                         id: null,
                         href: null
@@ -4720,7 +4710,10 @@ require = function () {
                                 rel: 'noopener'
                             }, `~${ refIndex }`));
                         } else {
-                            void acc.set(title, typed_dom_1.html('li', { id: defId }, [
+                            void acc.set(title, typed_dom_1.html('li', {
+                                id: defId,
+                                class: 'footnote'
+                            }, [
                                 ...contents.get(ref),
                                 typed_dom_1.html('sup', [typed_dom_1.html('a', {
                                         href: `#${ refId }`,
