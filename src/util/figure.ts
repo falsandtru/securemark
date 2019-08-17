@@ -45,13 +45,12 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     }
     void indexes.set(group, idx);
     void def.setAttribute('data-index', idx);
-    const figindex = def.lastElementChild!.previousElementSibling!;
-    assert(figindex.matches('.figindex'));
-    void define(figindex, group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}.`);
-    const id = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
-    void def.setAttribute('id', `label:${id}`);
-    for (const ref of refs.ref(id)) {
-      void define(ref, { href: `#${def.id}` }, figindex.textContent!.replace(/[.]$/, ''));
+    const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
+    void def.setAttribute('id', `label:${figid}`);
+    const figindex = group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}`;
+    void define([...def.children].find(el => el.matches('.figindex'))!, group === '$' ? figindex : `${figindex}.`);
+    for (const ref of refs.ref(figid)) {
+      void define(ref, { href: `#${def.id}` }, figindex);
     }
   }
   return;

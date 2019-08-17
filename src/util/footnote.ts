@@ -25,7 +25,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
         const title = ref.title || text(ref);
         const def = acc.get(title);
         const defIndex = def
-          ? +def.id.match(/[0-9]+/)![0]
+          ? +def.id.slice(def.id.lastIndexOf(':') + 1)
           : acc.size + 1;
         const defId = def
           ? def.id
