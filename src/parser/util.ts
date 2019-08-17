@@ -129,9 +129,9 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
   assert(!target.parentElement);
   assert(target instanceof DocumentFragment || target instanceof HTMLOListElement);
   if (target instanceof HTMLOListElement) {
-    assert(target.querySelectorAll('li').length === target.querySelectorAll(':scope > li').length);
-    assert(target.querySelectorAll('li > sup:last-child > a').length === target.querySelectorAll(':scope > li[id] > sup:last-child > a[href]').length);
-    void apply(target, 'li > sup:last-child > a', { href: null });
+    assert(target.querySelectorAll('.footnote').length === target.querySelectorAll(':scope > li').length);
+    assert(target.querySelectorAll('.footnote > sup:last-child > a').length === target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]').length);
+    void apply(target, '.footnote > sup:last-child > a', { href: null });
   }
   for (const child of target.children) {
     switch (child.tagName) {

@@ -35,7 +35,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
           void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
         }
         else {
-          void acc.set(title, html('li', { id: defId }, [
+          void acc.set(title, html('li', { id: defId, class: 'footnote' }, [
             ...contents.get(ref)!,
             html('sup', [
               html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`),
