@@ -56,12 +56,13 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
   return;
 
   function validate(el: Element): boolean {
-    const node = el.parentNode && el.parentNode.parentNode || el.parentNode;
-    return !node
-      ? true
-      : contextual.has(node)
-        ? contextual.get(node)!
-        : contextual.set(node, el.closest(bound) === context).get(node)!;
+    assert(el.parentNode && el.parentNode.parentNode);
+    const node = contextual.has(el.parentNode!)
+      ? el.parentNode!
+      : el.parentNode!.parentNode!;
+    return contextual.has(node)
+      ? contextual.get(node)!
+      : contextual.set(node, el.closest(bound) === context).get(node)!;
   }
 }
 
