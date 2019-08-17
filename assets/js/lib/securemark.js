@@ -4645,7 +4645,7 @@ require = function () {
                     const figid = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     void def.setAttribute('id', `label:${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
-                    void typed_dom_1.define([...def.children].find(el => el.matches('.figindex')), group === '$' ? figindex : `${ figindex }.`);
+                    void typed_dom_1.define([...def.children].find(el => el.matches('.figindex')), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.ref(figid)) {
                         void typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
@@ -4743,7 +4743,7 @@ require = function () {
             }
             exports.toc = toc;
             function parse(node, index = []) {
-                return typed_dom_1.html('ul', node.map(([el, node], i) => {
+                return typed_dom_1.html('ul', node.map(([el, children], i) => {
                     const idx = [
                         ...index,
                         i + 1
@@ -4754,7 +4754,7 @@ require = function () {
                             rel: 'noopener',
                             'data-index': idx.join('.')
                         }, el.textContent),
-                        node.length > 0 ? parse(node, idx) : typed_dom_1.frag()
+                        children.length > 0 ? parse(children, idx) : typed_dom_1.frag()
                     ]);
                 }));
             }
