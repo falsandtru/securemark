@@ -48,7 +48,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
-    void define([...def.children].find(el => el.matches('.figindex'))!, group === '$' ? figindex : `${figindex}.`);
+    void define([...def.children].find(el => el.matches('.figindex'))!, group === '$' ? figindex : `${figindex}. `);
     for (const ref of refs.ref(figid)) {
       void define(ref, { href: `#${def.id}` }, figindex);
     }
