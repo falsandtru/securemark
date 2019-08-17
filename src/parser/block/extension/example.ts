@@ -16,14 +16,14 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, tri
   match(
     /^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/,
     ([, , body]) => rest => {
-      const view = html('div', [parse(body.slice(1, -1))]);
+      const view = parse(body.slice(1, -1));
       const annotation = html('ol');
       const authority = html('ol');
       void figure(view);
       void footnote(view, { annotation, authority });
       return [[html('aside', { class: 'example', 'data-type': 'markdown' }, [
         html('pre', body.slice(1, -1)),
-        suppress(view),
+        html('div', [suppress(view)]),
         suppress(annotation),
         suppress(authority),
       ])], rest];

@@ -125,13 +125,38 @@ export function stringify(nodes: Node[]): string {
   return nodes.reduce((acc, node) => acc + node.textContent, '');
 }
 
-export function suppress<T extends HTMLElement | DocumentFragment>(target: T): T {
-  for (const el of target.querySelectorAll('[id], a.index, a.label, .annotation > a, .authority > a, li[id] > sup:last-child > a')) {
-    if (el.tagName === 'A' && !el.id && !el.hasAttribute('href')) continue;
-    if (el.closest('.media, .code, .math')) continue;
-    assert(el.matches('[id], a[href]'));
-    assert(el.matches(':not(a), a:not([target])'));
+export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T {
+  assert(target instanceof DocumentFragment || target instanceof HTMLOListElement);
+  if (target instanceof HTMLOListElement) {
+    assert(target.querySelectorAll(':scope > li[id] > sup:last-child > a[href]').length === target.querySelectorAll(':scope > li > sup:last-child > a').length);
+    // @ts-ignore #32950
+    //void apply(target, ':scope > li > sup:last-child > a', { href: null });
+    for (const child of target.querySelectorAll('ol > li > sup:last-child > a')) {
+      if (child.closest('ol') !== target) continue;
+      void define(child, { href: null });
+    }
+  }
+  for (const child of target.children) {
+    switch (child.tagName) {
+      case 'DL':
+        assert(child.querySelectorAll(':scope > dt[id]').length === child.querySelectorAll(':scope > dt').length);
+        //void apply(child, ':scope > dt', { id: null });
+        for (const el of child.children) {
+          el.id && void define(el, { id: null });
+        }
+        continue;
+      default:
+        child.id && void define(child, { id: null });
+        continue;
+    }
+  }
+  for (const el of target.querySelectorAll('a.index, a.label, .annotation, .annotation > a, .authority, .authority > a')) {
+    assert(!el.closest('.media, .code, .math'));
     assert(!el.closest('blockquote, aside'));
+    if (!el.id && el.tagName !== 'A') continue;
+    if (el.tagName === 'A' && !el.id && !el.hasAttribute('href')) continue;
+    assert(el.matches('[id], a[href]'));
+    assert(el.matches(':not(a)[id], a:not([target])'));
     void define(el, { id: null, href: null });
   }
   return target;
