@@ -4,8 +4,7 @@ import { contentline } from '../source';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { defrag, suppress } from '../util';
-import { figure } from '../../util/figure';
-import { footnote } from '../../util/footnote';
+import { figure, footnote } from '../../util';
 import { html } from 'typed-dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(union([
