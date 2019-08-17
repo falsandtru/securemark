@@ -100,12 +100,17 @@ describe('Unit: util/toc', () => {
         ]).outerHTML);
     });
 
-    it('21', () => {
+    it('212', () => {
       assert.strictEqual(
-        toc(parse('## 1\n\n# 2')).outerHTML,
+        toc(parse('## 1\n\n# 2\n\n## 3')).outerHTML,
         html('ul', [
           html('li', [html('a', { href: '#index:1', rel: 'noopener', 'data-index': '1' }, '1')]),
-          html('li', [html('a', { href: '#index:2', rel: 'noopener', 'data-index': '2' }, '2')]),
+          html('li', [
+            html('a', { href: '#index:2', rel: 'noopener', 'data-index': '2' }, '2'),
+            html('ul', [
+              html('li', [html('a', { href: '#index:3', rel: 'noopener', 'data-index': '2.1' }, '3')]),
+            ]),
+          ]),
         ]).outerHTML);
     });
 
