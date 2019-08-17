@@ -6,9 +6,9 @@ import { define } from 'typed-dom';
 
 export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void {
   const bound = 'blockquote, aside';
-  const boundary = source instanceof Element && source.closest(bound) || null;
-  const memory = new WeakMap<Node, boolean>();
-  const indexes = new Map<string, string>();
+  const context = source instanceof Element && source.closest(bound) || null;
+  const contextual = new WeakMap<Node, boolean>();
+  const memory = new Map<string, string>();
   const refs = new MultiMap<string, Element>([...source.querySelectorAll('a.label')].filter(validate).map(el => [el.getAttribute('data-label')!, el]));
   let base = '0';
   for (let def of source.children) {
@@ -21,11 +21,11 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const label = def.getAttribute('data-label')!;
     const group = def.getAttribute('data-group')!;
     assert(label && group);
-    let idx = index(label, indexes.get(group) || base);
-    if (idx.endsWith('.0')) {
+    let number = index(label, memory.get(group) || base);
+    if (number.endsWith('.0')) {
       assert(isFixed(label));
       assert(def.matches('[style]'));
-      base = idx = idx.startsWith('0.')
+      base = number = number.startsWith('0.')
         ? base.split('.')
             .reduce((idx, _, i, base) => {
               i === idx.length
@@ -36,18 +36,18 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
                     ? base[i]
                     : `${+base[i] + 1}`;
               return idx;
-            }, idx.split('.'))
+            }, number.split('.'))
             .join('.')
-        : idx;
-      void indexes.clear();
-      void def.setAttribute('data-index', idx);
+        : number;
+      void memory.clear();
+      void def.setAttribute('data-index', number);
       continue;
     }
-    void indexes.set(group, idx);
-    void def.setAttribute('data-index', idx);
+    void memory.set(group, number);
+    void def.setAttribute('data-index', number);
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
-    const figindex = group === '$' ? `(${idx})` : `${capitalize(group)}. ${idx}`;
+    const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
     void define([...def.children].find(el => el.matches('.figindex'))!, group === '$' ? figindex : `${figindex}.`);
     for (const ref of refs.ref(figid)) {
       void define(ref, { href: `#${def.id}` }, figindex);
@@ -59,9 +59,9 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const node = el.parentNode && el.parentNode.parentNode || el.parentNode;
     return !node
       ? true
-      : memory.has(node)
-        ? memory.get(node)!
-        : memory.set(node, el.closest(bound) === boundary).get(node)!;
+      : contextual.has(node)
+        ? contextual.get(node)!
+        : contextual.set(node, el.closest(bound) === context).get(node)!;
   }
 }
 

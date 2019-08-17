@@ -14,9 +14,9 @@ function build(category: string, marker: (index: number) => string): (source: Do
   const contents = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement | ShadowRoot, target: HTMLOListElement) => {
     const bound = 'blockquote, aside';
-    const boundary = source instanceof Element && source.closest(bound) || null;
+    const context = source instanceof Element && source.closest(bound) || null;
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
-      .filter(ref => ref.closest(bound) === boundary)
+      .filter(ref => ref.closest(bound) === context)
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
         if (!contents.has(ref) && ref.querySelector('a')) return acc;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
