@@ -129,15 +129,15 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
   assert(!target.parentElement);
   assert(target instanceof DocumentFragment || target instanceof HTMLOListElement);
   if (target instanceof HTMLOListElement) {
-    assert(target.querySelectorAll('.footnote').length === target.querySelectorAll(':scope > li').length);
-    assert(target.querySelectorAll('.footnote > sup:last-child > a').length === target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]').length);
+    assert.deepStrictEqual([...target.querySelectorAll('.footnote')], [...target.querySelectorAll(':scope > li')]);
+    assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
     void apply(target, '.footnote > sup:last-child > a', { href: null });
   }
   for (const child of target.children) {
     switch (child.tagName) {
       case 'DL':
-        assert(child.querySelectorAll('dt').length === child.querySelectorAll(':scope > dt').length);
-        assert(child.querySelectorAll(':scope > dt').length === child.querySelectorAll(':scope > dt[id]').length);
+        assert.deepStrictEqual([...child.querySelectorAll('dt')], [...child.querySelectorAll(':scope > dt')]);
+        assert.deepStrictEqual([...child.querySelectorAll(':scope > dt')], [...child.querySelectorAll(':scope > dt[id]')]);
         void apply(child, 'dt', { id: null });
         continue;
       default:
@@ -148,7 +148,7 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
   for (const el of target.querySelectorAll('a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .authority[id], .authority[id] > a[href]')) {
     assert(!el.closest('.media, .code, .math'));
     assert(!el.closest('blockquote, aside'));
-    assert(el.matches('.annotation[id], .authority[id], a[href]:not([target])'));
+    assert(el.matches('.annotation[id], .authority[id], a[href^="#"]'));
     void define(el, { id: null, href: null });
   }
   return target;
