@@ -1,6 +1,6 @@
 import { Parser, fmap } from '../combinator';
 import { memoize as memoize_ } from 'spica/memoization';
-import { frag, define } from 'typed-dom';
+import { frag, define, apply } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
@@ -126,37 +126,29 @@ export function stringify(nodes: Node[]): string {
 }
 
 export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T {
+  assert(!target.parentElement);
   assert(target instanceof DocumentFragment || target instanceof HTMLOListElement);
   if (target instanceof HTMLOListElement) {
-    assert(target.querySelectorAll(':scope > li[id] > sup:last-child > a[href]').length === target.querySelectorAll(':scope > li > sup:last-child > a').length);
-    // @ts-ignore #32950
-    //void apply(target, ':scope > li > sup:last-child > a', { href: null });
-    for (const child of target.querySelectorAll('ol > li > sup:last-child > a')) {
-      if (child.closest('ol') !== target) continue;
-      void define(child, { href: null });
-    }
+    assert(target.querySelectorAll('li').length === target.querySelectorAll(':scope > li').length);
+    assert(target.querySelectorAll('li > sup:last-child > a').length === target.querySelectorAll(':scope > li[id] > sup:last-child > a[href]').length);
+    void apply(target, 'li > sup:last-child > a', { href: null });
   }
   for (const child of target.children) {
     switch (child.tagName) {
       case 'DL':
-        assert(child.querySelectorAll(':scope > dt[id]').length === child.querySelectorAll(':scope > dt').length);
-        //void apply(child, ':scope > dt', { id: null });
-        for (const el of child.children) {
-          el.id && void define(el, { id: null });
-        }
+        assert(child.querySelectorAll('dt').length === child.querySelectorAll(':scope > dt').length);
+        assert(child.querySelectorAll(':scope > dt').length === child.querySelectorAll(':scope > dt[id]').length);
+        void apply(child, 'dt', { id: null });
         continue;
       default:
         child.id && void define(child, { id: null });
         continue;
     }
   }
-  for (const el of target.querySelectorAll('a.index, a.label, .annotation, .annotation > a, .authority, .authority > a')) {
+  for (const el of target.querySelectorAll('a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .authority[id], .authority[id] > a[href]')) {
     assert(!el.closest('.media, .code, .math'));
     assert(!el.closest('blockquote, aside'));
-    if (!el.id && el.tagName !== 'A') continue;
-    if (el.tagName === 'A' && !el.id && !el.hasAttribute('href')) continue;
-    assert(el.matches('[id], a[href]'));
-    assert(el.matches(':not(a)[id], a:not([target])'));
+    assert(el.matches('.annotation[id], .authority[id], a[href]:not([target])'));
     void define(el, { id: null, href: null });
   }
   return target;
