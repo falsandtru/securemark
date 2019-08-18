@@ -1,3 +1,4 @@
+import { context } from './context';
 import { text } from '../parser/inline/extension/indexer';
 import { html, define } from 'typed-dom';
 
@@ -13,11 +14,8 @@ function build(category: string, marker: (index: number) => string): (source: Do
   assert(category.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement | ShadowRoot, target: HTMLOListElement) => {
-    const bound = 'blockquote, aside';
-    const context = source instanceof Element && source.closest(bound) || null;
-    const contextual = new WeakMap<Node, boolean>();
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
-      .filter(validate)
+      .filter(context(source, 'blockquote, aside'))
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
         if (!contents.has(ref) && ref.querySelector('a')) return acc;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
@@ -46,15 +44,5 @@ function build(category: string, marker: (index: number) => string): (source: Do
         return acc;
       }, new Map())
       .values());
-
-    function validate(el: Element): boolean {
-      assert(el.parentNode && el.parentNode.parentNode);
-      const node = contextual.has(el.parentNode!)
-        ? el.parentNode!
-        : el.parentNode!.parentNode!;
-      return contextual.has(node)
-        ? contextual.get(node)!
-        : contextual.set(node, el.closest(bound) === context).get(node)!;
-    }
   };
 }

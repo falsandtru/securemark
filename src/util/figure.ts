@@ -1,15 +1,16 @@
-import { index } from '../parser/inline/extension/label';
-import { isGroup, isFixed } from '../parser/inline';
+import { context } from './context';
 import { parse } from '../parser/api';
+import { isGroup, isFixed } from '../parser/inline';
+import { index } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 
 export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void {
-  const bound = 'blockquote, aside';
-  const context = source instanceof Element && source.closest(bound) || null;
-  const contextual = new WeakMap<Node, boolean>();
+  const refs = new MultiMap<string, Element>(
+    [...source.querySelectorAll('a.label')]
+      .filter(context(source, 'blockquote, aside'))
+      .map(el => [el.getAttribute('data-label')!, el]));
   const memory = new Map<string, string>();
-  const refs = new MultiMap<string, Element>([...source.querySelectorAll('a.label')].filter(validate).map(el => [el.getAttribute('data-label')!, el]));
   let base = '0';
   for (let def of source.children) {
     if (def.matches('h2')) {
@@ -52,17 +53,6 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     for (const ref of refs.ref(figid)) {
       void define(ref, { href: `#${def.id}` }, figindex);
     }
-  }
-  return;
-
-  function validate(el: Element): boolean {
-    assert(el.parentNode && el.parentNode.parentNode);
-    const node = contextual.has(el.parentNode!)
-      ? el.parentNode!
-      : el.parentNode!.parentNode!;
-    return contextual.has(node)
-      ? contextual.get(node)!
-      : contextual.set(node, el.closest(bound) === context).get(node)!;
   }
 }
 
