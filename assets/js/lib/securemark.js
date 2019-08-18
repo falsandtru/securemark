@@ -1806,8 +1806,7 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const parse_1 = _dereq_('../api/parse');
             const util_1 = _dereq_('../util');
-            const figure_1 = _dereq_('../../util/figure');
-            const footnote_1 = _dereq_('../../util/footnote');
+            const util_2 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.union([
                 combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(source_1.contentline)),
@@ -1834,8 +1833,8 @@ require = function () {
                 ]))
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
             function render(source) {
-                void figure_1.figure(source);
-                void footnote_1.footnote(source, {
+                void util_2.figure(source);
+                void util_2.footnote(source, {
                     annotation: typed_dom_1.html('ol'),
                     authority: typed_dom_1.html('ol')
                 });
@@ -1844,8 +1843,7 @@ require = function () {
         },
         {
             '../../combinator': 23,
-            '../../util/figure': 128,
-            '../../util/footnote': 129,
+            '../../util': 127,
             '../api/parse': 48,
             '../autolink': 49,
             '../source': 105,
@@ -4652,8 +4650,8 @@ require = function () {
                 }
                 return;
                 function validate(el) {
-                    const node = el.parentNode && el.parentNode.parentNode || el.parentNode;
-                    return !node ? true : contextual.has(node) ? contextual.get(node) : contextual.set(node, el.closest(bound) === context).get(node);
+                    const node = contextual.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
+                    return contextual.has(node) ? contextual.get(node) : contextual.set(node, el.closest(bound) === context).get(node);
                 }
             }
             exports.figure = figure;
@@ -4687,7 +4685,8 @@ require = function () {
                 return (source, target) => {
                     const bound = 'blockquote, aside';
                     const context = source instanceof Element && source.closest(bound) || null;
-                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(ref => ref.closest(bound) === context).reduce((acc, ref, i) => {
+                    const contextual = new WeakMap();
+                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(validate).reduce((acc, ref, i) => {
                         if (!contents.has(ref) && ref.querySelector('a'))
                             return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
@@ -4723,6 +4722,10 @@ require = function () {
                         }
                         return acc;
                     }, new Map()).values());
+                    function validate(el) {
+                        const node = contextual.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
+                        return contextual.has(node) ? contextual.get(node) : contextual.set(node, el.closest(bound) === context).get(node);
+                    }
                 };
             }
         },
@@ -4738,7 +4741,7 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
             function toc(source) {
-                const hs = [...source.children].filter(el => el instanceof HTMLHeadingElement);
+                const hs = [...source.children].filter(el => el.id !== '' && el instanceof HTMLHeadingElement);
                 return parse(cons(hs));
             }
             exports.toc = toc;
