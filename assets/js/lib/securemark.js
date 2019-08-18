@@ -4594,29 +4594,43 @@ require = function () {
             exports.toc = toc_1.toc;
         },
         {
-            './util/figure': 128,
-            './util/footnote': 129,
-            './util/toc': 130
+            './util/figure': 129,
+            './util/footnote': 130,
+            './util/toc': 131
         }
     ],
     128: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const label_1 = _dereq_('../parser/inline/extension/label');
-            const inline_1 = _dereq_('../parser/inline');
+            function context(base, bound) {
+                const memory = new WeakMap();
+                const context = base instanceof Element && base.closest(bound) || null;
+                return el => {
+                    const node = memory.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
+                    return memory.has(node) ? memory.get(node) : memory.set(node, el.closest(bound) === context).get(node);
+                };
+            }
+            exports.context = context;
+        },
+        {}
+    ],
+    129: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const context_1 = _dereq_('./context');
             const api_1 = _dereq_('../parser/api');
+            const inline_1 = _dereq_('../parser/inline');
+            const label_1 = _dereq_('../parser/inline/extension/label');
             const multimap_1 = _dereq_('spica/multimap');
             const typed_dom_1 = _dereq_('typed-dom');
             function figure(source) {
-                const bound = 'blockquote, aside';
-                const context = source instanceof Element && source.closest(bound) || null;
-                const contextual = new WeakMap();
-                const memory = new Map();
-                const refs = new multimap_1.MultiMap([...source.querySelectorAll('a.label')].filter(validate).map(el => [
+                const refs = new multimap_1.MultiMap([...source.querySelectorAll('a.label')].filter(context_1.context(source, 'blockquote, aside')).map(el => [
                     el.getAttribute('data-label'),
                     el
                 ]));
+                const memory = new Map();
                 let base = '0';
                 for (let def of source.children) {
                     if (def.matches('h2')) {
@@ -4648,11 +4662,6 @@ require = function () {
                         void typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
                 }
-                return;
-                function validate(el) {
-                    const node = contextual.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
-                    return contextual.has(node) ? contextual.get(node) : contextual.set(node, el.closest(bound) === context).get(node);
-                }
             }
             exports.figure = figure;
             function capitalize(label) {
@@ -4663,14 +4672,16 @@ require = function () {
             '../parser/api': 44,
             '../parser/inline': 71,
             '../parser/inline/extension/label': 90,
+            './context': 128,
             'spica/multimap': 11,
             'typed-dom': 15
         }
     ],
-    129: [
+    130: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const context_1 = _dereq_('./context');
             const indexer_1 = _dereq_('../parser/inline/extension/indexer');
             const typed_dom_1 = _dereq_('typed-dom');
             function footnote(source, targets) {
@@ -4683,10 +4694,7 @@ require = function () {
             function build(category, marker) {
                 const contents = new WeakMap();
                 return (source, target) => {
-                    const bound = 'blockquote, aside';
-                    const context = source instanceof Element && source.closest(bound) || null;
-                    const contextual = new WeakMap();
-                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(validate).reduce((acc, ref, i) => {
+                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(context_1.context(source, 'blockquote, aside')).reduce((acc, ref, i) => {
                         if (!contents.has(ref) && ref.querySelector('a'))
                             return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
@@ -4722,19 +4730,16 @@ require = function () {
                         }
                         return acc;
                     }, new Map()).values());
-                    function validate(el) {
-                        const node = contextual.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
-                        return contextual.has(node) ? contextual.get(node) : contextual.set(node, el.closest(bound) === context).get(node);
-                    }
                 };
             }
         },
         {
             '../parser/inline/extension/indexer': 89,
+            './context': 128,
             'typed-dom': 15
         }
     ],
-    130: [
+    131: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4792,8 +4797,8 @@ require = function () {
             }
             Object.defineProperty(exports, '__esModule', { value: true });
             __export(_dereq_('./src/parser'));
-            __export(_dereq_('./src/renderer'));
             __export(_dereq_('./src/util'));
+            __export(_dereq_('./src/renderer'));
         },
         {
             './src/parser': 43,
