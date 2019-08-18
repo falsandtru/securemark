@@ -146,7 +146,7 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
     }
   }
   for (const el of target.querySelectorAll('a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .authority[id], .authority[id] > a[href]')) {
-    assert(!el.closest('.media, .code, .math'));
+    assert(!el.closest('.media, pre.notranslate, .math'));
     assert(!el.closest('blockquote, aside'));
     assert(el.matches('.annotation[id], .authority[id], a[href^="#"]'));
     void define(el, { id: null, href: null });
