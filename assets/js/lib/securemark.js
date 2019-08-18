@@ -3080,11 +3080,11 @@ require = function () {
                     'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                 })])));
             function index(parser) {
-                return combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, { id: identifier(text(el)) || null })]);
+                return combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, { id: identity(text(el)) || null })]);
             }
             exports.index = index;
             function text(source) {
-                const indexer = source.querySelector('.indexer');
+                const indexer = [...source.children].find(el => el.matches('.indexer'));
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
@@ -3094,7 +3094,7 @@ require = function () {
                 return target.textContent.trim();
             }
             exports.text = text;
-            function identifier(index) {
+            function identity(index) {
                 return index ? `index:${ index.trim().replace(/\s+/g, '-') }` : '';
             }
         },
