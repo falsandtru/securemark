@@ -1,6 +1,6 @@
 {
   "name": "securemark",
-  "version": "0.125.6",
+  "version": "0.126.0",
   "description": "Secure markdown renderer working on browsers for user input data.",
   "private": true,
   "homepage": "https://github.com/falsandtru/securemark",
