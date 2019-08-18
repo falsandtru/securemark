@@ -5,11 +5,13 @@ import { html } from 'typed-dom';
 describe('Unit: util/figure', () => {
   describe('figure', () => {
     it('empty', () => {
-      const source = parse('');
-      figure(source);
-      assert.deepStrictEqual(
-        [...source.children].map(el => el.outerHTML),
-        []);
+      const source = parse('', { figure: false });
+      for (let i = 0; i < 2; ++i) {
+        figure(source);
+        assert.deepStrictEqual(
+          [...source.children].map(el => el.outerHTML),
+          []);
+      }
     });
 
     it('one', () => {
@@ -17,8 +19,8 @@ describe('Unit: util/figure', () => {
         '$fig-a\n> ',
         '$fig-a',
         '$fig-a',
-      ].join('\n\n'));
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false });
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
@@ -35,8 +37,8 @@ describe('Unit: util/figure', () => {
         '$fig-a\n> ',
         '$table-a\n> ',
         '$fig-b\n> ',
-      ].join('\n\n'));
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false });
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
@@ -55,8 +57,8 @@ describe('Unit: util/figure', () => {
         '$fig-c-0.0.0\n> ',
         '$fig-d\n> ',
         '$fig-b',
-      ].join('\n\n'));
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false });
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
@@ -77,8 +79,8 @@ describe('Unit: util/figure', () => {
         '$-3.1\n$$\n$$',
         '$fig-2.0',
         '$-3.1',
-      ].join('\n\n'));
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false });
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
@@ -117,8 +119,8 @@ describe('Unit: util/figure', () => {
         '$fig-e\n> ',
         '$-5.0\n$$\n$$',
         '$fig-d\n> ',
-      ].join('\n\n'));
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false });
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
@@ -154,8 +156,8 @@ describe('Unit: util/figure', () => {
       const source = parse([
         '$-a\n$$\n$$',
         '$-a',
-      ].join('\n\n'));
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false });
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
@@ -172,8 +174,8 @@ describe('Unit: util/figure', () => {
         '~~~~example/markdown\n~~~figure $fig-a\n> \n\n~~~\n\n$fig-a\n~~~~',
         '~~~figure $fig-b\n> \n\n~~~',
         '~~~figure $fig-a\n> \n\n~~~',
-      ].join('\n\n')).children);
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false }).children);
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
@@ -191,8 +193,8 @@ describe('Unit: util/figure', () => {
         '~~~figure [$fig-a]\n> \n\n~~~',
         '[$fig-a]',
         '[$fig-a]',
-      ].join('\n\n'));
-      for (let i = 0; i < 3; ++i) {
+      ].join('\n\n'), { figure: false });
+      for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
