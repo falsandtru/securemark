@@ -5,7 +5,7 @@ import { table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example, segment_ as seg_example } from './example';
-import { blockquote, segment as seg_quote } from '../blockquote';
+import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { inline } from '../../inline';
 import { label, media, shortmedia } from '../../inline';
 import { defrag, memoize } from '../../util';
@@ -27,7 +27,7 @@ export const segment: FigureParser.SegmentParser = block(match(
             seg_code,
             seg_math,
             seg_example,
-            seg_quote,
+            seg_blockquote,
             some(contentline, closer),
           ]),
           emptyline,

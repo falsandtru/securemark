@@ -5,7 +5,7 @@ import { figure } from './figure';
 import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
 import { segment as seg_example } from '../extension/example';
-import { segment as seg_quote } from '../blockquote';
+import { segment as seg_blockquote } from '../blockquote';
 import { label } from '../../inline';
 
 import FigParser = ExtensionParser.FigParser;
@@ -18,7 +18,7 @@ export const segment: FigParser.SegmentParser = block(
       seg_code,
       seg_math,
       seg_example,
-      seg_quote,
+      seg_blockquote,
       some(contentline),
     ]),
   ]));
