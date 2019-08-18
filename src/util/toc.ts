@@ -4,8 +4,8 @@ import { html, frag } from 'typed-dom';
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   const hs = [...source.children]
     .filter((el): el is HTMLHeadingElement =>
+      el.id !== '' &&
       el instanceof HTMLHeadingElement);
-  assert(hs.every(h => h.id));
   return parse(cons(hs));
 }
 
