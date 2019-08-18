@@ -1809,8 +1809,8 @@ require = function () {
             const util_2 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.union([
-                combinator_1.validate(/^(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(source_1.contentline)),
-                combinator_1.validate(/^!(?=>+(?:[^\S\n]|\n\s*\S))/, combinator_1.some(source_1.contentline))
+                combinator_1.validate(/^>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline)),
+                combinator_1.validate(/^!>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline))
             ]));
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.surround(/^(?=>)/, text, ''),
@@ -1862,7 +1862,7 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300})\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
@@ -1984,7 +1984,7 @@ require = function () {
             const util_2 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100}\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
@@ -2085,7 +2085,7 @@ require = function () {
             const inline_2 = _dereq_('../../inline');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$))/, util_1.memoize(([, bracket]) => bracket, (bracket, closer = new RegExp(`^${ bracket }[^\\S\\n]*(?:\\n|$)`)) => combinator_1.surround('', combinator_1.sequence([
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:\n|$))/, util_1.memoize(([, bracket]) => bracket, (bracket, closer = new RegExp(`^${ bracket }[^\\S\\n]*(?:\\n|$)`)) => combinator_1.surround('', combinator_1.sequence([
                 combinator_1.line(inline_2.label),
                 combinator_1.inits([
                     combinator_1.union([
@@ -2147,7 +2147,7 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const inline_1 = _dereq_('../../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,300}\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*\n(?:[^\n]*\n){0,300}?\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]));
@@ -2242,7 +2242,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:(?!\1[^\S\n]*(?:\n|$))[^\n]*\n){0,100})\1[^\S\n]*(?:\n|$)/, _ => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:\n|$)/, _ => [
                 [],
                 ''
             ]), false);
