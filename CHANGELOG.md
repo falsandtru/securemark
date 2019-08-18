@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.126.0
+
+- Change parse and bind functions to number figures by default.
+
 ## 0.125.6
 
 - Fix figure syntax to remove the maximum number limitation of contained lines.

@@ -4,7 +4,6 @@ import { contentline } from '../source';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { defrag, suppress } from '../util';
-import { figure, footnote } from '../../util';
 import { html } from 'typed-dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(union([
@@ -45,12 +44,6 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
       convert(unindent, source)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, source => [[suppress(render(parse(source)))], ''])),
+      convert(unindent, source => [[suppress(parse(source, { footnote: { annotation: html('ol'), authority: html('ol') } }))], ''])),
   ])),
   ns => [html('blockquote', ns)]));
-
-function render(source: DocumentFragment): DocumentFragment {
-  void figure(source);
-  void footnote(source, { annotation: html('ol'), authority: html('ol') });
-  return source;
-}

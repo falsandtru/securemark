@@ -3,7 +3,6 @@ import { union, block, rewrite, focus, match, trim, lazy, eval } from '../../../
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { suppress } from '../../util';
-import { figure, footnote } from '../../../util';
 import { html } from 'typed-dom';
 
 export const segment: ExtensionParser.ExampleParser.SegmentParser = lazy(() => block(segment_));
@@ -16,11 +15,14 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, tri
   match(
     /^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/,
     ([, , body]) => rest => {
-      const view = parse(body.slice(1, -1));
       const annotation = html('ol');
       const authority = html('ol');
-      void figure(view);
-      void footnote(view, { annotation, authority });
+      const view = parse(body.slice(1, -1), {
+        footnote: {
+          annotation,
+          authority,
+        },
+      });
       return [[html('aside', { class: 'example', 'data-type': 'markdown' }, [
         html('pre', body.slice(1, -1)),
         html('div', [suppress(view)]),

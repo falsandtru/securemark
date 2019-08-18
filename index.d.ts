@@ -5,12 +5,20 @@
 * @author falsandtru https://github.com/falsandtru/securemark
 */
 
-export function parse(source: string): DocumentFragment;
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot): (source: string) => Generator<HTMLElement, undefined, undefined>;
+export function parse(source: string, opts?: ParserOptions): DocumentFragment;
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, opts?: ParserOptions): (source: string) => Generator<HTMLElement, undefined, undefined>;
 export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void;
 export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function render(target: HTMLElement, opts?: RenderingOptions): void;
+
+export interface ParserOptions {
+  figure?: boolean;
+  footnote?: {
+    annotation: HTMLOListElement;
+    authority: HTMLOListElement;
+  };
+}
 
 export interface RenderingOptions {
   code?: (target: HTMLElement) => void;
