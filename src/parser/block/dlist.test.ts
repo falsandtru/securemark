@@ -68,7 +68,11 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a [#b]')), [['<dl><dt id="index:b">a<span class="indexer" data-index="b"></span></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a [#b]\\')), [['<dl><dt id="index:a-b">a <a href="#index:b" rel="noopener" class="index">b</a></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ A')), [['<dl><dt id="index:A">A</dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a [#B]')), [['<dl><dt id="index:B">a<span class="indexer" data-index="B"></span></dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ *A*')), [['<dl><dt id="index:A"><em>A</em></dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ `A`')), [['<dl><dt id="index:`A`"><code data-src="`A`">A</code></dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ ${A}$')), [['<dl><dt id="index:${A}$"><span class="math notranslate" data-src="${A}$">${A}$</span></dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ A [#B]')), [['<dl><dt id="index:B">A<span class="indexer" data-index="B"></span></dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ A [#`B`]')), [['<dl><dt id="index:`B`">A<span class="indexer" data-index="`B`"></span></dt><dd></dd></dl>'], '']);
     });
 
   });

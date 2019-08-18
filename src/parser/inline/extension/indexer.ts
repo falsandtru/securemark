@@ -13,12 +13,14 @@ export const indexer: ExtensionParser.IndexerParser = lazy(() => line(fmap(
 
 export function index<P extends Parser<HTMLElement, any>>(parser: P): P;
 export function index<T extends HTMLElement, S extends Parser<unknown, any>[]>(parser: Parser<T, S>): Parser<T, S> {
-  return fmap(parser, ([el]) => [define(el, { id: identifier(text(el)) || null })]);
+  return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || null })]);
 }
 
 export function text(source: Element): string {
   assert(!source.matches('.indexer'));
-  const indexer = source.querySelector('.indexer');
+  assert(source.querySelectorAll('.indexer').length < 2);
+  assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
+  const indexer = [...source.children].find(el => el.matches('.indexer'));
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   for (const el of target.querySelectorAll('code[data-src], .math[data-src]')) {
@@ -27,7 +29,7 @@ export function text(source: Element): string {
   return target.textContent!.trim();
 }
 
-function identifier(index: string): string {
+function identity(index: string): string {
   assert(!index.includes('\n'));
   return index
     ? `index:${index.trim().replace(/\s+/g, '-')}`
