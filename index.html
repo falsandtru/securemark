@@ -309,8 +309,13 @@
     ''
   ].join('\n');
   const viewer = document.getElementById('viewer');
-  const { bind, figure, footnote, render } = require('securemark');
-  const parse = bind(viewer);
+  const { bind, render } = require('securemark');
+  const parse = bind(viewer, {
+    footnote: {
+      annotation: viewer.querySelector('#annotation'),
+      authority: viewer.querySelector('#authority'),
+    },
+  });
   const observer = new IntersectionObserver(function (changes) {
     changes
       .forEach(function (change) {
@@ -348,11 +353,6 @@
         : void await new Promise(requestAnimationFrame) || 300;
       time = Date.now();
     }
-    figure(viewer);
-    footnote(viewer, {
-      annotation: viewer.querySelector('#annotation'),
-      authority: viewer.querySelector('#authority'),
-    });
     return elapsed;
   }
   function log(time) {

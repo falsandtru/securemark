@@ -1570,7 +1570,8 @@ require = function () {
             const segment_1 = _dereq_('../segment');
             const block_1 = _dereq_('../block');
             const normalization_1 = _dereq_('./normalization');
-            function bind(target) {
+            const util_1 = _dereq_('../../util');
+            function bind(target, opts = {}) {
                 const pairs = [];
                 let revision;
                 return function* (source) {
@@ -1626,6 +1627,8 @@ require = function () {
                             void el.remove();
                         }
                     }
+                    opts.figure !== false && void util_1.figure(target);
+                    opts.footnote && void util_1.footnote(target, opts.footnote);
                 };
                 function bottom(start, position) {
                     if (pairs.length === 0)
@@ -1659,6 +1662,7 @@ require = function () {
         },
         {
             '../../combinator': 23,
+            '../../util': 127,
             '../block': 50,
             '../segment': 104,
             './normalization': 47
@@ -1709,15 +1713,20 @@ require = function () {
             const block_1 = _dereq_('../block');
             const segment_1 = _dereq_('../segment');
             const normalization_1 = _dereq_('./normalization');
+            const util_1 = _dereq_('../../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            function parse(source) {
-                return typed_dom_1.frag(segment_1.segment(normalization_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg))), []));
+            function parse(source, opts = {}) {
+                const node = typed_dom_1.frag(segment_1.segment(normalization_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg))), []));
+                opts.figure !== false && void util_1.figure(node);
+                opts.footnote && void util_1.footnote(node, opts.footnote);
+                return node;
             }
             exports.parse = parse;
         },
         {
             '../../combinator': 23,
+            '../../util': 127,
             '../block': 50,
             '../segment': 104,
             './normalization': 47,
@@ -1806,7 +1815,6 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const parse_1 = _dereq_('../api/parse');
             const util_1 = _dereq_('../util');
-            const util_2 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.union([
                 combinator_1.validate(/^>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline)),
@@ -1828,22 +1836,18 @@ require = function () {
             const source = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, source)),
                 combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, source => [
-                    [util_1.suppress(render(parse_1.parse(source)))],
+                    [util_1.suppress(parse_1.parse(source, {
+                            footnote: {
+                                annotation: typed_dom_1.html('ol'),
+                                authority: typed_dom_1.html('ol')
+                            }
+                        }))],
                     ''
                 ]))
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
-            function render(source) {
-                void util_2.figure(source);
-                void util_2.footnote(source, {
-                    annotation: typed_dom_1.html('ol'),
-                    authority: typed_dom_1.html('ol')
-                });
-                return source;
-            }
         },
         {
             '../../combinator': 23,
-            '../../util': 127,
             '../api/parse': 48,
             '../autolink': 49,
             '../source': 105,
@@ -1981,7 +1985,6 @@ require = function () {
             const parse_1 = _dereq_('../../api/parse');
             const mathblock_1 = _dereq_('../mathblock');
             const util_1 = _dereq_('../../util');
-            const util_2 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
             exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:\n|$)/, _ => [
@@ -1990,13 +1993,13 @@ require = function () {
             ]), false);
             exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.union([
                 combinator_1.match(/^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => rest => {
-                    const view = parse_1.parse(body.slice(1, -1));
                     const annotation = typed_dom_1.html('ol');
                     const authority = typed_dom_1.html('ol');
-                    void util_2.figure(view);
-                    void util_2.footnote(view, {
-                        annotation,
-                        authority
+                    const view = parse_1.parse(body.slice(1, -1), {
+                        footnote: {
+                            annotation,
+                            authority
+                        }
                     });
                     return [
                         [typed_dom_1.html('aside', {
@@ -2025,7 +2028,6 @@ require = function () {
         },
         {
             '../../../combinator': 23,
-            '../../../util': 127,
             '../../api/parse': 48,
             '../../util': 113,
             '../mathblock': 62,
