@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.125.6
+
+- Fix figure syntax to remove the maximum number limitation of contained lines.
+
 ## 0.125.5
 
 - Optimization.
