@@ -1956,7 +1956,7 @@ require = function () {
             const figure_1 = _dereq_('./extension/figure');
             const example_1 = _dereq_('./extension/example');
             const placeholder_1 = _dereq_('./extension/placeholder');
-            exports.segment = combinator_1.validate(/^~{3,}[a-z]|^\[?\$[\w-]\S*[^\S\n]*\n/, combinator_1.union([
+            exports.segment = combinator_1.validate(/^~{3,}[a-z]|^\[?\$[a-z-]\S*[^\S\n]*\n/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
                 example_1.segment,
@@ -4322,7 +4322,7 @@ require = function () {
                 function gist(url) {
                     if (!origins.has(url.origin))
                         return;
-                    if (!url.pathname.match(/^\/[\w\-]+?\/\w{32}(?!\w)/))
+                    if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/))
                         return;
                     if (media_1.cache.has(url.href))
                         return media_1.cache.get(url.href).cloneNode(true);
@@ -4564,7 +4564,7 @@ require = function () {
                     return;
                 if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/))
                     return;
-                if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w\-]+$/))
+                if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w-]+$/))
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
