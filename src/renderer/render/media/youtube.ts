@@ -9,7 +9,7 @@ const origins = new Set([
 export function youtube(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
   if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/)) return;
-  if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w\-]+$/)) return;
+  if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w-]+$/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLElement;
   return cache.set(
     url.href,

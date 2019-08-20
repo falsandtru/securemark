@@ -9,7 +9,7 @@ const origins = new Set([
 
 export function gist(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
-  if (!url.pathname.match(/^\/[\w\-]+?\/\w{32}(?!\w)/)) return;
+  if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
   return HTML.div({ style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (f, tag) => {
     const outer = f(tag);
