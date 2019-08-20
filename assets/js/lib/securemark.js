@@ -4622,7 +4622,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const context_1 = _dereq_('./context');
-            const api_1 = _dereq_('../parser/api');
             const inline_1 = _dereq_('../parser/inline');
             const label_1 = _dereq_('../parser/inline/extension/label');
             const multimap_1 = _dereq_('spica/multimap');
@@ -4634,16 +4633,16 @@ require = function () {
                 ]));
                 const numbers = new Map();
                 let base = '0';
-                for (let def of source.children) {
-                    if (def.matches('h2')) {
-                        if (base === '0')
-                            continue;
-                        def = api_1.parse(`[$-${ +base.split('.', 1)[0] + 1 }.0]\n$$\n$$`).firstChild;
-                    }
-                    if (!def.matches('figure'))
+                for (const def of source.children) {
+                    if (![
+                            'FIGURE',
+                            'H2'
+                        ].includes(def.tagName))
                         continue;
-                    const label = def.getAttribute('data-label');
-                    const group = def.getAttribute('data-group');
+                    if (def.tagName === 'H2' && base === '0')
+                        continue;
+                    const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ +base.split('.', 1)[0] + 1 }.0`;
+                    const group = label.split('-', 1)[0];
                     let number = label_1.number(label, numbers.get(group) || base);
                     if (number.endsWith('.0')) {
                         base = number = number.startsWith('0.') ? base.split('.').reduce((idx, _, i, base) => {
@@ -4651,6 +4650,8 @@ require = function () {
                             return idx;
                         }, number.split('.')).join('.') : number;
                         void numbers.clear();
+                        if (def.tagName !== 'FIGURE')
+                            continue;
                         void def.setAttribute('data-index', number);
                         continue;
                     }
@@ -4659,7 +4660,7 @@ require = function () {
                     const figid = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     void def.setAttribute('id', `label:${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
-                    void typed_dom_1.define([...def.children].find(el => el.matches('.figindex')), group === '$' ? figindex : `${ figindex }. `);
+                    void typed_dom_1.define([...def.children].find(el => el.classList.contains('figindex')), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.ref(figid)) {
                         void typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
@@ -4671,7 +4672,6 @@ require = function () {
             }
         },
         {
-            '../parser/api': 44,
             '../parser/inline': 71,
             '../parser/inline/extension/label': 90,
             './context': 128,
