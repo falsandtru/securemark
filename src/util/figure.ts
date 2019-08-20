@@ -45,7 +45,8 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       void def.setAttribute('data-index', number);
       continue;
     }
-    assert(def.matches('figure'));
+    assert(def.matches('figure:not([style])'));
+    assert(number.split('.').pop() !== '0');
     void numbers.set(group, number);
     void def.setAttribute('data-index', number);
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
