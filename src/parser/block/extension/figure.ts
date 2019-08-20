@@ -6,8 +6,7 @@ import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example, segment_ as seg_example } from './example';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
-import { inline } from '../../inline';
-import { label, media, shortmedia } from '../../inline';
+import { inline, label, media, shortmedia } from '../../inline';
 import { defrag, memoize } from '../../util';
 import { html } from 'typed-dom';
 
