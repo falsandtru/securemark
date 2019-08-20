@@ -1,5 +1,4 @@
 import { context } from './context';
-import { parse } from '../parser/api';
 import { isGroup, isFixed } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
@@ -12,20 +11,20 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
   let base = '0';
-  for (let def of source.children) {
-    if (def.matches('h2')) {
-      assert(def.parentNode === source);
-      if (base === '0') continue;
-      def = parse(`[$-${+base.split('.', 1)[0] + 1}.0]\n$$\n$$`).firstChild as HTMLElement;
-    }
-    if (!def.matches('figure')) continue;
-    const label = def.getAttribute('data-label')!;
-    const group = def.getAttribute('data-group')!;
+  for (const def of source.children) {
+    if (!['FIGURE', 'H2'].includes(def.tagName)) continue;
+    if (def.tagName === 'H2' && base === '0') continue;
+    const label = def.tagName === 'FIGURE'
+      ? def.getAttribute('data-label')!
+      : `$-${+base.split('.', 1)[0] + 1}.0`;
+    const group = label.split('-', 1)[0];
     assert(label && group);
+    assert(group === def.getAttribute('data-group') || !def.matches('figure'));
     let number = calculate(label, numbers.get(group) || base);
+    assert(def.matches('figure') || number.endsWith('.0'));
     if (number.endsWith('.0')) {
       assert(isFixed(label));
-      assert(def.matches('[style]'));
+      assert(def.matches('figure[style], h2'));
       base = number = number.startsWith('0.')
         ? base.split('.')
             .reduce((idx, _, i, base) => {
@@ -40,16 +39,19 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
             }, number.split('.'))
             .join('.')
         : number;
+      assert(base.split('.').length > 1);
       void numbers.clear();
+      if (def.tagName !== 'FIGURE') continue;
       void def.setAttribute('data-index', number);
       continue;
     }
+    assert(def.matches('figure'));
     void numbers.set(group, number);
     void def.setAttribute('data-index', number);
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
-    void define([...def.children].find(el => el.matches('.figindex'))!, group === '$' ? figindex : `${figindex}. `);
+    void define([...def.children].find(el => el.classList.contains('figindex'))!, group === '$' ? figindex : `${figindex}. `);
     for (const ref of refs.ref(figid)) {
       void define(ref, { href: `#${def.id}` }, figindex);
     }

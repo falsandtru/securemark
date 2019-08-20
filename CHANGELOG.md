@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.126.2
+
+- Optimization.
+
 ## 0.126.1
 
 - Fix footnote function.
