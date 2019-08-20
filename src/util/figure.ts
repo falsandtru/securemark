@@ -10,7 +10,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     [...source.querySelectorAll('a.label')]
       .filter(context(source, 'blockquote, aside'))
       .map(el => [el.getAttribute('data-label')!, el]));
-  const memory = new Map<string, string>();
+  const numbers = new Map<string, string>();
   let base = '0';
   for (let def of source.children) {
     if (def.matches('h2')) {
@@ -22,7 +22,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const label = def.getAttribute('data-label')!;
     const group = def.getAttribute('data-group')!;
     assert(label && group);
-    let number = index(label, memory.get(group) || base);
+    let number = index(label, numbers.get(group) || base);
     if (number.endsWith('.0')) {
       assert(isFixed(label));
       assert(def.matches('[style]'));
@@ -40,11 +40,11 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
             }, number.split('.'))
             .join('.')
         : number;
-      void memory.clear();
+      void numbers.clear();
       void def.setAttribute('data-index', number);
       continue;
     }
-    void memory.set(group, number);
+    void numbers.set(group, number);
     void def.setAttribute('data-index', number);
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
