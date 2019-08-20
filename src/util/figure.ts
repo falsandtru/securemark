@@ -42,13 +42,13 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       assert(base.split('.').length > 1);
       void numbers.clear();
       if (def.tagName !== 'FIGURE') continue;
-      void def.setAttribute('data-index', number);
+      void def.setAttribute('data-number', number);
       continue;
     }
     assert(def.matches('figure:not([style])'));
     assert(number.split('.').pop() !== '0');
     void numbers.set(group, number);
-    void def.setAttribute('data-index', number);
+    void def.setAttribute('data-number', number);
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
