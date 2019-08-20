@@ -2,6 +2,7 @@
 
 ## 0.127.0
 
+- Add info function.
 - Extend hashtag syntax to allow to use tag names starting with numbers.
 
 ## 0.126.2

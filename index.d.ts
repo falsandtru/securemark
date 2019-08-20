@@ -11,6 +11,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
 export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void;
 export function render(target: HTMLElement, opts?: RenderingOptions): void;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
+export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 
 export interface ParserOptions {
   figure?: boolean;
@@ -33,6 +34,18 @@ export interface RenderingOptions {
     audio?: (url: URL, alt: string) => HTMLAudioElement | undefined;
     image?: (url: URL, alt: string) => HTMLImageElement;
   };
+}
+
+export interface Info {
+  hashtag: HTMLAnchorElement[];
+  hashref: HTMLAnchorElement[];
+  channel: HTMLAnchorElement[];
+  account: HTMLAnchorElement[];
+  mention: HTMLAnchorElement[];
+  url: HTMLAnchorElement[];
+  tel: HTMLAnchorElement[];
+  email: HTMLAnchorElement[];
+  media: HTMLElement[];
 }
 
 import { Cache } from 'spica/cache';
