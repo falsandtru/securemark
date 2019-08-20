@@ -1,7 +1,7 @@
 import { context } from './context';
 import { parse } from '../parser/api';
 import { isGroup, isFixed } from '../parser/inline';
-import { index } from '../parser/inline/extension/label';
+import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 
@@ -22,7 +22,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const label = def.getAttribute('data-label')!;
     const group = def.getAttribute('data-group')!;
     assert(label && group);
-    let number = index(label, numbers.get(group) || base);
+    let number = calculate(label, numbers.get(group) || base);
     if (number.endsWith('.0')) {
       assert(isFixed(label));
       assert(def.matches('[style]'));
