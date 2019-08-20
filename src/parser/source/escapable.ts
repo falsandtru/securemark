@@ -12,12 +12,7 @@ export const escsource: EscapableSourceParser = source => {
     case 0:
       switch (source[0]) {
         case '\\':
-          switch (source[1]) {
-            case '\n':
-              return [[text(source.slice(0, 1))], source.slice(1)];
-            default:
-              return [[text(source.slice(0, 2))], source.slice(2)];
-          }
+          return [[text(source.slice(0, 2))], source.slice(2)];
         default:
           return [[text(source.slice(0, 1))], source.slice(1)];
       }
