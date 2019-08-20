@@ -4697,8 +4697,6 @@ require = function () {
                 const contents = new WeakMap();
                 return (source, target) => {
                     return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(context_1.context(source, 'blockquote, aside')).reduce((acc, ref, i) => {
-                        if (!contents.has(ref) && ref.querySelector('a'))
-                            return acc;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }:ref:${ i + 1 }`;
