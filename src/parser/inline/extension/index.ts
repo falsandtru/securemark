@@ -1,11 +1,11 @@
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, subline, rewrite, verify, surround, convert, lazy, fmap } from '../../../combinator';
 import { link } from '../link';
-import { index as idx } from './indexer';
+import { indexee } from './indexer';
 import { trimNodeEnd, hasTightText, hasMedia } from '../../util';
 import { define } from 'typed-dom';
 
-export const index: ExtensionParser.IndexParser = lazy(() => subline(fmap(idx(verify(trimNodeEnd(
+export const index: ExtensionParser.IndexParser = lazy(() => subline(fmap(indexee(verify(trimNodeEnd(
   surround(
     '[#',
     rewrite(

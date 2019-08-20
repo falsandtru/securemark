@@ -70,5 +70,5 @@ export { media } from './inline/media';
 export { shortmedia } from './inline/shortmedia';
 export { autolink } from './inline/autolink';
 export { uri, address, attribute } from './inline/autolink/uri';
-export { indexer, index } from './inline/extension/indexer';
+export { indexer, indexee } from './inline/extension/indexer';
 export { label, isGroup, isFixed } from './inline/extension/label';

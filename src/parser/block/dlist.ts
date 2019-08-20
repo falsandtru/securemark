@@ -1,7 +1,7 @@
 import { DListParser } from '../block';
 import { union, inits, some, block, line, rewrite, verify, surround, trim, lazy, fmap } from '../../combinator';
 import { anyline } from '../source';
-import { inline, indexer, index } from '../inline';
+import { inline, indexer, indexee } from '../inline';
 import { defrag, hasMedia } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
@@ -13,7 +13,7 @@ export const dlist: DListParser = lazy(() => block(fmap(
   ])),
   es => [html('dl', fillTrailingDescription(es))])));
 
-const term: DListParser.TermParser = line(index(verify(fmap(
+const term: DListParser.TermParser = line(indexee(verify(fmap(
   surround(
     /^~(?=\s|$)/,
     defrag(trim(some(union([indexer, inline])))),
