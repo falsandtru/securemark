@@ -1929,7 +1929,7 @@ require = function () {
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ])), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.line(inline_1.index(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
+            const term = combinator_1.line(inline_1.indexee(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
             ])))), '', false), ns => [typed_dom_1.html('dt', ns)]), ([el]) => !util_1.hasMedia(el))));
@@ -2176,7 +2176,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.heading = combinator_1.block(combinator_1.line(inline_1.index(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, util_1.memoize(([, {length: level}]) => level, level => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
+            exports.heading = combinator_1.block(combinator_1.line(inline_1.indexee(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, util_1.memoize(([, {length: level}]) => level, level => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
             ])))), ns => [typed_dom_1.html(`h${ level }`, ns)]))), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el)))));
@@ -2638,7 +2638,7 @@ require = function () {
             exports.attribute = uri_1.attribute;
             var indexer_1 = _dereq_('./inline/extension/indexer');
             exports.indexer = indexer_1.indexer;
-            exports.index = indexer_1.index;
+            exports.indexee = indexer_1.indexee;
             var label_1 = _dereq_('./inline/extension/label');
             exports.label = label_1.label;
             exports.isGroup = label_1.isGroup;
@@ -3055,7 +3055,7 @@ require = function () {
             const indexer_1 = _dereq_('./indexer');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexer_1.index(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.verify(combinator_1.some(inline_1.inline, /^\\?\n|^]/), (_, rest) => rest.startsWith(']')), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))), ([el]) => [typed_dom_1.define(el, {
+            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexer_1.indexee(combinator_1.verify(util_1.trimNodeEnd(combinator_1.surround('[#', combinator_1.rewrite(combinator_1.verify(combinator_1.some(inline_1.inline, /^\\?\n|^]/), (_, rest) => rest.startsWith(']')), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el) && !util_1.hasMedia(el))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: `#${ el.id }`
@@ -3081,10 +3081,10 @@ require = function () {
                     class: 'indexer',
                     'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                 })])));
-            function index(parser) {
+            function indexee(parser) {
                 return combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, { id: identity(text(el)) || null })]);
             }
-            exports.index = index;
+            exports.indexee = indexee;
             function text(source) {
                 const indexer = [...source.children].find(el => el.matches('.indexer'));
                 if (indexer)
@@ -3123,10 +3123,10 @@ require = function () {
                     'data-label': el.textContent.slice(el.textContent[1] === '-' ? 0 : 1),
                     href: null
                 })]), ([el]) => util_1.hasTightText(el)));
-            function index(label, index) {
-                return isFixed(label) ? label.split('-').pop() : increment(index, isGroup(label) ? label.split('-').pop().split('.').length : index.split('.').length);
+            function number(label, base) {
+                return isFixed(label) ? label.split('-').pop() : increment(base, isGroup(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length);
             }
-            exports.index = index;
+            exports.number = number;
             function isFixed(label) {
                 return label.search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
             }
@@ -3135,15 +3135,15 @@ require = function () {
                 return label.split('-').pop().search(/^0(?:\.0)*$/) === 0 && !isFixed(label);
             }
             exports.isGroup = isGroup;
-            function increment(index, position) {
-                if (index === '0' && position > 1)
+            function increment(number, position) {
+                if (number === '0' && position > 1)
                     return increment('1', position);
-                const ns = index.split('.');
-                const idx = [];
+                const ns = number.split('.');
+                const ms = [];
                 for (let i = 0; i < position; ++i) {
-                    void idx.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : 1);
+                    void ms.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : 1);
                 }
-                return idx.join('.');
+                return ms.join('.');
             }
         },
         {
@@ -4632,7 +4632,7 @@ require = function () {
                     el.getAttribute('data-label'),
                     el
                 ]));
-                const memory = new Map();
+                const numbers = new Map();
                 let base = '0';
                 for (let def of source.children) {
                     if (def.matches('h2')) {
@@ -4644,17 +4644,17 @@ require = function () {
                         continue;
                     const label = def.getAttribute('data-label');
                     const group = def.getAttribute('data-group');
-                    let number = label_1.index(label, memory.get(group) || base);
+                    let number = label_1.number(label, numbers.get(group) || base);
                     if (number.endsWith('.0')) {
                         base = number = number.startsWith('0.') ? base.split('.').reduce((idx, _, i, base) => {
                             i === idx.length ? base.length = i : idx[i] = +idx[i] > +base[i] ? idx[i] : +idx[i] === 0 ? base[i] : `${ +base[i] + 1 }`;
                             return idx;
                         }, number.split('.')).join('.') : number;
-                        void memory.clear();
+                        void numbers.clear();
                         void def.setAttribute('data-index', number);
                         continue;
                     }
-                    void memory.set(group, number);
+                    void numbers.set(group, number);
                     void def.setAttribute('data-index', number);
                     const figid = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     void def.setAttribute('id', `label:${ figid }`);
@@ -4697,13 +4697,13 @@ require = function () {
                 const contents = new WeakMap();
                 return (source, target) => {
                     return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(context_1.context(source, 'blockquote, aside')).reduce((acc, ref, i) => {
-                        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }:ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
                         const def = acc.get(title);
                         const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : acc.size + 1;
                         const defId = def ? def.id : `${ category }:def:${ defIndex }`;
+                        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         void typed_dom_1.define(ref, {
                             id: refId,
                             title: title
