@@ -4652,11 +4652,11 @@ require = function () {
                         void numbers.clear();
                         if (def.tagName !== 'FIGURE')
                             continue;
-                        void def.setAttribute('data-index', number);
+                        void def.setAttribute('data-number', number);
                         continue;
                     }
                     void numbers.set(group, number);
-                    void def.setAttribute('data-index', number);
+                    void def.setAttribute('data-number', number);
                     const figid = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     void def.setAttribute('id', `label:${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
