@@ -17,7 +17,6 @@ function build(category: string, marker: (index: number) => string): (source: Do
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
       .filter(context(source, 'blockquote, aside'))
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
-        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         const refIndex = i + 1;
         const refId = ref.id || `${category}:ref:${i + 1}`;
         const title = ref.title || text(ref);
@@ -28,6 +27,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
         const defId = def
           ? def.id
           : `${category}:def:${defIndex}`;
+        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         void define(ref, { id: refId, title: title }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
         if (def) {
           void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
