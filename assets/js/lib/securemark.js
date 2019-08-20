@@ -3789,18 +3789,10 @@ require = function () {
                 case 0:
                     switch (source[0]) {
                     case '\\':
-                        switch (source[1]) {
-                        case '\n':
-                            return [
-                                [typed_dom_1.text(source.slice(0, 1))],
-                                source.slice(1)
-                            ];
-                        default:
-                            return [
-                                [typed_dom_1.text(source.slice(0, 2))],
-                                source.slice(2)
-                            ];
-                        }
+                        return [
+                            [typed_dom_1.text(source.slice(0, 2))],
+                            source.slice(2)
+                        ];
                     default:
                         return [
                             [typed_dom_1.text(source.slice(0, 1))],
