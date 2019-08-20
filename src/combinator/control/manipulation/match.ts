@@ -2,6 +2,7 @@ import { Parser, exec, check } from '../../data/parser';
 
 export function match<P extends Parser<unknown, any>>(pattern: RegExp, f: (matched: string[]) => P): P;
 export function match<T, S extends Parser<unknown, any>[]>(pattern: RegExp, f: (matched: string[]) => Parser<T, S>): Parser<T, S> {
+  assert(!pattern.global && pattern.source.startsWith('^'));
   return source => {
     if (source === '') return;
     const param = source.match(pattern);

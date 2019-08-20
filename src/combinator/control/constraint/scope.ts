@@ -2,6 +2,7 @@ import { Parser, eval, exec, check } from '../../data/parser';
 
 export function focus<P extends Parser<unknown, any>>(scope: string | RegExp, parser: P): P;
 export function focus<T, S extends Parser<unknown, any>[]>(scope: string | RegExp, parser: Parser<T, S>): Parser<T, S> {
+  assert(scope instanceof RegExp ? !scope.global && scope.source.startsWith('^') : true);
   assert(parser);
   return source => {
     if (source === '') return;

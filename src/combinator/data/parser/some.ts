@@ -4,6 +4,7 @@ import { concat } from 'spica/concat';
 export function some<P extends Parser<unknown, any>>(parser: P, until?: string | RegExp): P;
 export function some<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, until?: string | RegExp): Parser<T, S> {
   assert(parser);
+  assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
   return source => {
     let rest = source;
     const data: T[] = [];
@@ -25,5 +26,5 @@ export function some<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, 
 function match(source: string, pattern: string | RegExp): boolean {
   return typeof pattern === 'string'
     ? source.startsWith(pattern)
-    : source.search(pattern) === 0;
+    : pattern.test(source);
 }

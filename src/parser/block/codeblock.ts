@@ -17,7 +17,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/,
   ([, , lang, param, body]) => rest => {
     assert(rest === '');
-    [lang, param] = lang.match(language)
+    [lang, param] = language.test(lang)
       ? [lang, param]
       : ['', lang + param];
     param = param.trim();
@@ -26,7 +26,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
     const ext = file && file.includes('.') && !file.startsWith('.')
       ? file.split('.').pop()!
       : '';
-    lang = (lang || ext).match(language)
+    lang = language.test(lang || ext)
       ? lang || ext
       : lang && 'invalid';
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1));

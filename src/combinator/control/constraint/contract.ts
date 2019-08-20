@@ -7,10 +7,11 @@ export function contract<T, S extends Parser<unknown, any>[]>(pattern: RegExp | 
 
 export function validate<P extends Parser<unknown, any>>(pattern: RegExp | string, parser: P): P;
 export function validate<T, S extends Parser<unknown, any>[]>(pattern: RegExp | string, parser: Parser<T, S>): Parser<T, S> {
+  assert(pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true);
   assert(parser);
   return source => {
     if (source === '') return;
-    if (typeof pattern === 'string' ? !source.startsWith(pattern) : !source.match(pattern)) return;
+    if (typeof pattern === 'string' ? !source.startsWith(pattern) : !pattern.test(source)) return;
     const result = parser(source);
     assert(check(source, result));
     if (!result) return;

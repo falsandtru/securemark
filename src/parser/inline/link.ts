@@ -53,7 +53,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
             .replace(/^tel:/, '')
             .replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
     assert(hasContent(el));
-    if (el.textContent!.trim().match(/^[#@]/)) return;
+    if (/^[#@]/.test(el.textContent!.trim())) return;
     switch (el.protocol) {
       case 'tel:':
         if (el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;

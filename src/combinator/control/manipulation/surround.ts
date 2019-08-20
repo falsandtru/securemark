@@ -2,6 +2,8 @@ import { Parser } from '../../data/parser';
 
 export function surround<P extends Parser<unknown, any>>(start: string | RegExp, parser: P, end: string | RegExp, strict?: boolean): P;
 export function surround<T, S extends Parser<unknown, any>[]>(start: string | RegExp, parser: Parser<T, S>, end: string | RegExp, strict = true): Parser<T, S> {
+  assert(start instanceof RegExp ? !start.global && start.source.startsWith('^') : true);
+  assert(end instanceof RegExp ? !end.global && end.source.startsWith('^') : true);
   assert(parser);
   return lmr_ => {
     if (lmr_ === '') return;
