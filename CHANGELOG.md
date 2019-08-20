@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.126.1
+
+- Fix footnote function.
+
 ## 0.126.0
 
 - Change parse and bind functions to number figures by default.

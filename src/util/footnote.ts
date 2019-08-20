@@ -17,7 +17,6 @@ function build(category: string, marker: (index: number) => string): (source: Do
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
       .filter(context(source, 'blockquote, aside'))
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
-        if (!contents.has(ref) && ref.querySelector('a')) return acc;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         const refIndex = i + 1;
         const refId = ref.id || `${category}:ref:${i + 1}`;
