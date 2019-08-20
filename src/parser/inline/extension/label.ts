@@ -20,7 +20,7 @@ export const label: ExtensionParser.LabelParser = subline(verify(fmap(
 
 export function number(label: string, base: string): string {
   return isFixed(label)
-    ? label.split('-').pop()!
+    ? label.slice(label.lastIndexOf('-') + 1)
     : increment(
         base,
         isGroup(label)
@@ -29,11 +29,11 @@ export function number(label: string, base: string): string {
 }
 
 export function isFixed(label: string): boolean {
-  return label.search(/^(?:\$|[a-z]+)-[0-9]+(?:\.[0-9]+)*$/) === 0;
+  return /^[^-]+-[0-9]+(?:\.[0-9]+)*$/.test(label);
 }
 
 export function isGroup(label: string): boolean {
-  return label.split('-').pop()!.search(/^0(?:\.0)*$/) === 0
+  return /-0(?:\.0)*$/.test(label)
       && !isFixed(label);
 }
 
