@@ -7,7 +7,6 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   opts = { code, math, media: {}, ...opts };
   try {
     switch (true) {
-      case target.style.display === 'none':
       case target.matches('.invalid'):
         return;
       case !!opts.code
