@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.127.0
+
+- Extend hashtag syntax to allow to use tag names starting with numbers.
+
 ## 0.126.2
 
 - Optimization.
