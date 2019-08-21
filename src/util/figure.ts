@@ -24,7 +24,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(group === def.getAttribute('data-group') || !def.matches('figure'));
     let number = calculate(
       label,
-      numbers.has(group)
+      numbers.has(group) && !isFixed(label)
         ? numbers.get(group)!.split('.')
             .slice(0, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length).join('.')
         : base);
