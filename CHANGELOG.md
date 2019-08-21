@@ -3,6 +3,7 @@
 ## 0.128.0
 
 - Extend figure syntax to allow to reset the base number to 0 with the current format.
+- Extend figure syntax to remove the constraints on the content and caption only when it is used for formatting.
 - Enhance figure syntax to finely control the base number.
 
 ## 0.127.0

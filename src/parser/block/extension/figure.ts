@@ -38,7 +38,7 @@ export const segment: FigureParser.SegmentParser = block(match(
       ]),
       closer))));
 
-export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
+export const figure: FigureParser = block(rewrite(segment, trim(verify(fmap(
   convert(
     source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')),
     sequence([
@@ -57,10 +57,6 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
         block(defrag(trim(some(inline)))),
       ]),
     ])),
-  ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) =>
-    label.getAttribute('data-label')!.split('-', 1)[0] === '$'
-      ? content.matches('.math') && caption.length === 0
-      : true),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
     html('figure',
       {
@@ -75,4 +71,9 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(verify(
         html('span', { class: 'figindex' }),
         html('figcaption', caption)
       ])
-  ]))));
+  ]),
+  ([el]) =>
+    el.matches('[data-group="$"]:not([style])')
+      ? el.firstElementChild!.firstElementChild!.matches('.math') &&
+        el.lastElementChild!.childNodes.length === 0
+      : true))));
