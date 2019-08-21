@@ -46,13 +46,11 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       base = number;
       void numbers.clear();
       if (def.tagName !== 'FIGURE') continue;
-      assert(!void def.setAttribute('data-number', number));
       continue;
     }
     assert(def.matches('figure:not([style])'));
     assert(number.split('.').pop() !== '0');
     void numbers.set(group, number);
-    assert(!void def.setAttribute('data-number', number));
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
