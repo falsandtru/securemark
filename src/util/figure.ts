@@ -12,11 +12,13 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
   const numbers = new Map<string, string>();
   let base = '0';
   for (const def of source.children) {
-    if (!['FIGURE', 'H2'].includes(def.tagName)) continue;
-    if (def.tagName === 'H2' && base === '0') continue;
+    if (!['FIGURE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(def.tagName)) continue;
+    if (base === '0' && def.tagName[0] === 'H') continue;
+    assert(base === '0' || base.split('.').length > 1);
     const label = def.tagName === 'FIGURE'
       ? def.getAttribute('data-label')!
-      : `$-${+base.split('.', 1)[0] + 1}.0`;
+      : `$-${l2n(+def.tagName[1] - 1 || 1, base)}`;
+    if (label === '$-') continue;
     const group = label.split('-', 1)[0];
     assert(label && group);
     assert(group === def.getAttribute('data-group') || !def.matches('figure'));
@@ -24,11 +26,10 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number === '0' || number.endsWith('.0')) {
       if (number === '0') {
-        number = '0'.repeat(base.split('.').length).split('').join('.');
+        number = [...'0'.repeat(base.split('.').length)].join('.');
       }
       else if (number.endsWith('.0')) {
         assert(isFixed(label));
-        assert(def.matches('figure[style], h2'));
         number = number.startsWith('0.')
           ? base.split('.')
               .reduce((idx, _, i, base) => {
@@ -62,6 +63,14 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       void define(ref, { href: `#${def.id}` }, figindex);
     }
   }
+}
+
+function l2n(cursor: number, base: string): string {
+  assert(cursor > 0);
+  const bases = base.split('.');
+  return cursor < bases.length || bases.length === 1
+    ? [...bases.slice(0, cursor - 1), +bases[cursor - 1] + 1, '0'].join('.')
+    : '';
 }
 
 function capitalize(label: string): string {

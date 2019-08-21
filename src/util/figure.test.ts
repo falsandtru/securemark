@@ -121,6 +121,13 @@ describe('Unit: util/figure', () => {
         '$fig-f\n> ',
         '$-0\n$$\n$$',
         '$fig-g\n> ',
+        '### 0',
+        '$fig-h\n> ',
+        '$-0.0.0\n$$\n$$',
+        '### 0',
+        '$fig-i\n> ',
+        '# 0',
+        '$fig-j\n> ',
       ].join('\n\n'), { figure: false });
       for (let i = 0; i < 2; ++i) {
         figure(source);
@@ -152,6 +159,13 @@ describe('Unit: util/figure', () => {
             '<figure data-label="fig-f" data-group="fig" data-number="5.1" id="label:fig-f"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 5.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="$-0" data-group="$" style="display: none;" data-number="0.0"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex"></span><figcaption></figcaption></figure>',
             '<figure data-label="fig-g" data-group="fig" data-number="0.1" id="label:fig-g"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 0.1. </span><figcaption></figcaption></figure>',
+            '<h3 id="index:0">0</h3>',
+            '<figure data-label="fig-h" data-group="fig" data-number="0.2" id="label:fig-h"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 0.2. </span><figcaption></figcaption></figure>',
+            '<figure data-label="$-0.0.0" data-group="$" style="display: none;" data-number="0.0.0"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex"></span><figcaption></figcaption></figure>',
+            '<h3 id="index:0">0</h3>',
+            '<figure data-label="fig-i" data-group="fig" data-number="0.1.1" id="label:fig-i"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 0.1.1. </span><figcaption></figcaption></figure>',
+            '<h1 id="index:0">0</h1>',
+            '<figure data-label="fig-j" data-group="fig" data-number="1.1" id="label:fig-j"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1. </span><figcaption></figcaption></figure>',
           ]);
       }
     });
