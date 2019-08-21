@@ -2103,7 +2103,7 @@ require = function () {
                     ])
                 ])
             ]), closer))));
-            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.fmap(combinator_1.verify(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')), combinator_1.sequence([
+            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.verify(combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')), combinator_1.sequence([
                 combinator_1.line(inline_1.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
@@ -2118,7 +2118,7 @@ require = function () {
                     source_1.emptyline,
                     combinator_1.block(util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))))
                 ])
-            ])), ([label, content, ...caption]) => label.getAttribute('data-label').split('-', 1)[0] === '$' ? content.matches('.math') && caption.length === 0 : true), ([label, content, ...caption]) => [typed_dom_1.html('figure', {
+            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', {
                     'data-label': label.getAttribute('data-label'),
                     'data-group': label.getAttribute('data-label').split('-', 1)[0],
                     style: /^[^-]+-(?:[0-9]+\.)*0$/.test(label.getAttribute('data-label')) ? 'display: none;' : undefined
@@ -2126,7 +2126,7 @@ require = function () {
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
                     typed_dom_1.html('figcaption', caption)
-                ])]))));
+                ])]), ([el]) => el.matches('[data-group="$"]:not([style])') ? el.firstElementChild.firstElementChild.matches('.math') && el.lastElementChild.childNodes.length === 0 : true))));
         },
         {
             '../../../combinator': 23,
