@@ -12,15 +12,15 @@ export function hasMedia(node: HTMLElement | DocumentFragment): boolean {
 }
 
 export function hasLink(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('a, .annotation, .authority');
+  return !!node.querySelector('a, .annotation, .reference');
 }
 
 export function hasInsOrDel(node: HTMLElement | DocumentFragment): boolean {
   return !!node.querySelector('ins, del');
 }
 
-export function hasAnnotationOrAuthority(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('.annotation, .authority');
+export function hasAnnotationOrReference(node: HTMLElement | DocumentFragment): boolean {
+  return !!node.querySelector('.annotation, .reference');
 }
 
 export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {
@@ -145,10 +145,10 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
         continue;
     }
   }
-  for (const el of target.querySelectorAll('a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .authority[id], .authority[id] > a[href]')) {
+  for (const el of target.querySelectorAll('a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]')) {
     assert(!el.closest('.media, pre.notranslate, .math'));
     assert(!el.closest('blockquote, aside'));
-    assert(el.matches('.annotation[id], .authority[id], a[href^="#"]'));
+    assert(el.matches('.annotation[id], .reference[id], a[href^="#"]'));
     void define(el, { id: null, href: null });
   }
   return target;

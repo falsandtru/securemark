@@ -1,4 +1,4 @@
-import { annotation, authority } from './footnote';
+import { annotation, reference } from './footnote';
 import { parse } from '../parser';
 import { html, text } from 'typed-dom';
 
@@ -155,27 +155,27 @@ describe('Unit: util/footnote', () => {
 
   });
 
-  describe('authority', () => {
+  describe('reference', () => {
     it('1', () => {
       const source = parse('[[a b]]');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        authority(source, target);
+        reference(source, target);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "authority", id: "authority:ref:1", title: "a b" }, [
-                html('a', { href: "#authority:def:1", rel: "noopener" }, '[1]')
+              html('sup', { class: "reference", id: "reference:ref:1", title: "a b" }, [
+                html('a', { href: "#reference:def:1", rel: "noopener" }, '[1]')
               ]),
             ]).outerHTML,
           ]);
         assert.deepStrictEqual(
           target.outerHTML,
           html('ol', [
-            html('li', { id: 'authority:def:1', class: 'footnote' }, [
+            html('li', { id: 'reference:def:1', class: 'footnote' }, [
               text('a b'),
-              html('sup', [html('a', { href: '#authority:ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#reference:ref:1', rel: 'noopener' }, '~1')])
             ]),
           ]).outerHTML);
       }

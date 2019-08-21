@@ -1,7 +1,7 @@
 import { MarkdownParser } from '../../markdown.d';
 import { union } from '../combinator';
 import { annotation } from './inline/annotation';
-import { authority } from './inline/authority';
+import { reference } from './inline/reference';
 import { template } from './inline/template';
 import { extension } from './inline/extension';
 import { link } from './inline/link';
@@ -23,7 +23,7 @@ import { text } from './source';
 
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
-export import AuthorityParser = InlineParser.AuthorityParser;
+export import ReferenceParser = InlineParser.ReferenceParser;
 export import TemplateParser = InlineParser.TemplateParser;
 export import ExtensionParser = InlineParser.ExtensionParser;
 export import LinkParser = InlineParser.LinkParser;
@@ -44,7 +44,7 @@ export import BracketParser = InlineParser.BracketParser;
 
 export const inline: InlineParser = union([
   annotation,
-  authority,
+  reference,
   template,
   extension,
   link,

@@ -86,7 +86,7 @@
     grid-column-end: 3;
   }
   .annotation:not([id]),
-  .authority:not([id]) {
+  .reference:not([id]) {
     display: none;
   }
   .comment:before {
@@ -168,7 +168,7 @@
 <div id="primary" class="col-12">
 <article id="content" class="row">
   <div class="col-6"><textarea id="editor" class="w-100 h-100"></textarea></div>
-  <div id="viewer" class="col-6"><ol id="annotation"></ol><ol id="authority"></ol></div>
+  <div id="viewer" class="col-6"><ol id="annotation"></ol><ol id="reference"></ol></div>
 </article>
 <aside></aside>
 </div>
@@ -309,7 +309,7 @@
   const parse = bind(viewer, {
     footnote: {
       annotation: viewer.querySelector('#annotation'),
-      authority: viewer.querySelector('#authority'),
+      reference: viewer.querySelector('#reference'),
     },
   });
   const observer = new IntersectionObserver(function (changes) {

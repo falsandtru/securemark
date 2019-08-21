@@ -2,13 +2,13 @@ import { context } from './context';
 import { text } from '../parser/inline/extension/indexer';
 import { html, define } from 'typed-dom';
 
-export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, targets: { annotation: HTMLOListElement; authority: HTMLOListElement; }): void {
+export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, targets: { annotation: HTMLOListElement; reference: HTMLOListElement; }): void {
   void annotation(source, targets.annotation);
-  void authority(source, targets.authority);
+  void reference(source, targets.reference);
 }
 
 export const annotation = build('annotation', n => `*${n}`);
-export const authority = build('authority', n => `[${n}]`);
+export const reference = build('reference', n => `[${n}]`);
 
 function build(category: string, marker: (index: number) => string): (source: DocumentFragment | HTMLElement | ShadowRoot, target: HTMLOListElement) => void {
   assert(category.match(/^[a-z]+$/));

@@ -397,7 +397,7 @@ export namespace MarkdownParser {
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
       InlineParser.AnnotationParser,
-      InlineParser.AuthorityParser,
+      InlineParser.ReferenceParser,
       InlineParser.TemplateParser,
       InlineParser.ExtensionParser,
       InlineParser.LinkParser,
@@ -427,9 +427,9 @@ export namespace MarkdownParser {
         InlineParser,
       ]> {
     }
-    export interface AuthorityParser extends
+    export interface ReferenceParser extends
       // [[abc]]
-      Inline<'authority'>,
+      Inline<'reference'>,
       Parser<HTMLElement, [
         InlineParser,
       ]> {
