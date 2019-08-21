@@ -64,10 +64,10 @@ describe('Unit: util/figure', () => {
           [...source.children].map(el => el.outerHTML),
           [
             '<figure data-label="fig-a-0.0" data-group="fig" data-number="1.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-b-0.0.0.0" data-group="fig" data-number="1.1.1.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1.1.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-c-0.0.0" data-group="fig" data-number="1.1.2" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1.2. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-b-0.0.0.0" data-group="fig" data-number="1.1.0.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1.0.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-c-0.0.0" data-group="fig" data-number="1.1.1" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-d" data-group="fig" data-number="2" id="label:fig-d"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2. </span><figcaption></figcaption></figure>',
-            '<p><a rel="noopener" class="label" data-label="fig-b" href="#label:fig-b">Fig. 1.1.1.1</a></p>',
+            '<p><a rel="noopener" class="label" data-label="fig-b" href="#label:fig-b">Fig. 1.1.0.1</a></p>',
           ]);
       }
     });

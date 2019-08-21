@@ -3,6 +3,7 @@
 ## 0.129.0
 
 - Change numbering of figures not to inherit the label formats specified by themselves.
+- Fix numbering of figures to have consistent increment patterns.
 
 ## 0.128.0
 

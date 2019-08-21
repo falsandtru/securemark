@@ -48,7 +48,9 @@ function increment(number: string, position: number): string {
         ? i + 1 < position
           ? +ns[i]
           : +ns[i] + 1
-        : 1);
+        : i + 1 < position
+          ? 0
+          : 1);
   }
   return ms.join('.');
 }
