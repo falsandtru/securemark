@@ -1,5 +1,5 @@
 import { context } from './context';
-import { isGroup, isFixed } from '../parser/inline';
+import { isFixed, isFormatted } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
@@ -26,7 +26,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       label,
       numbers.has(group)
         ? numbers.get(group)!.split('.')
-            .slice(0, isGroup(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length).join('.')
+            .slice(0, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length).join('.')
         : base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.split('.').pop() === '0') {
@@ -58,7 +58,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(number.split('.').pop() !== '0');
     void numbers.set(group, number);
     assert(!void def.setAttribute('data-number', number));
-    const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
+    const figid = isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
     void define([...def.children].find(el => el.classList.contains('figindex'))!, group === '$' ? figindex : `${figindex}. `);

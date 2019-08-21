@@ -50,7 +50,7 @@ describe('Unit: util/figure', () => {
       }
     });
 
-    it('group', () => {
+    it('format', () => {
       const source = parse([
         '$fig-a-0.0\n> ',
         '$fig-b-0.0.0.0\n> ',
@@ -74,9 +74,10 @@ describe('Unit: util/figure', () => {
 
     it('fixed', () => {
       const source = parse([
-        '$fig-2\n> ',
-        '$fig-a-0.0\n> ',
+        '$fig-2.1\n> ',
+        '$fig-a-0.0.0\n> ',
         '$-4.1\n$$\n$$',
+        '$-a\n$$\n$$',
         '$fig-b\n> ',
         '$fig-1.0',
         '$-4.1',
@@ -86,9 +87,10 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure data-label="fig-2" data-group="fig" data-number="2" id="label:fig-2"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-a-0.0" data-group="fig" data-number="2.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-2.1" data-group="fig" data-number="2.1" id="label:fig-2.1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-a-0.0.0" data-group="fig" data-number="2.1.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2.1.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="$-4.1" data-group="$" data-number="4.1" id="label:$-4.1"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(4.1)</span><figcaption></figcaption></figure>',
+            '<figure data-label="$-a" data-group="$" data-number="5" id="label:$-a"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(5)</span><figcaption></figcaption></figure>',
             '<figure data-label="fig-b" data-group="fig" data-number="3" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 3. </span><figcaption></figcaption></figure>',
             '<p><a rel="noopener" class="label" data-label="fig-1.0">$fig-1.0</a></p>',
             '<p><a rel="noopener" class="label" data-label="$-4.1" href="#label:$-4.1">(4.1)</a></p>',

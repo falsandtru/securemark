@@ -23,7 +23,7 @@ export function number(label: string, base: string): string {
     ? label.slice(label.lastIndexOf('-') + 1)
     : increment(
         base,
-        isGroup(label)
+        isFormatted(label)
           ? label.slice(label.lastIndexOf('-') + 1).split('.').length
           : base.split('.').length);
 }
@@ -32,9 +32,8 @@ export function isFixed(label: string): boolean {
   return /^[^-]+-[0-9]+(?:\.[0-9]+)*$/.test(label);
 }
 
-export function isGroup(label: string): boolean {
-  return /-0(?:\.0)*$/.test(label)
-      && !isFixed(label);
+export function isFormatted(label: string): boolean {
+  return /^[^-]+.+?-0(?:\.0)*$/.test(label);
 }
 
 function increment(number: string, position: number): string {
