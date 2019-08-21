@@ -119,6 +119,8 @@ describe('Unit: util/figure', () => {
         '$fig-e\n> ',
         '$-5.0\n$$\n$$',
         '$fig-f\n> ',
+        '$-0\n$$\n$$',
+        '$fig-g\n> ',
       ].join('\n\n'), { figure: false });
       for (let i = 0; i < 2; ++i) {
         figure(source);
@@ -148,6 +150,8 @@ describe('Unit: util/figure', () => {
             '<figure data-label="fig-e" data-group="fig" data-number="6.1" id="label:fig-e"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 6.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="$-5.0" data-group="$" style="display: none;" data-number="5.0"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex"></span><figcaption></figcaption></figure>',
             '<figure data-label="fig-f" data-group="fig" data-number="5.1" id="label:fig-f"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 5.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="$-0" data-group="$" style="display: none;" data-number="0.0"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex"></span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-g" data-group="fig" data-number="0.1" id="label:fig-g"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 0.1. </span><figcaption></figcaption></figure>',
           ]);
       }
     });

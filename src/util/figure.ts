@@ -22,24 +22,29 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(group === def.getAttribute('data-group') || !def.matches('figure'));
     let number = calculate(label, numbers.get(group) || base);
     assert(def.matches('figure') || number.endsWith('.0'));
-    if (number.endsWith('.0')) {
-      assert(isFixed(label));
-      assert(def.matches('figure[style], h2'));
-      base = number = number.startsWith('0.')
-        ? base.split('.')
-            .reduce((idx, _, i, base) => {
-              i === idx.length
-                ? base.length = i
-                : idx[i] = +idx[i] > +base[i]
-                  ? idx[i]
-                  : +idx[i] === 0
-                    ? base[i]
-                    : `${+base[i] + 1}`;
-              return idx;
-            }, number.split('.'))
-            .join('.')
-        : number;
-      assert(base.split('.').length > 1);
+    if (number === '0' || number.endsWith('.0')) {
+      if (number === '0') {
+        number = '0'.repeat(base.split('.').length).split('').join('.');
+      }
+      else if (number.endsWith('.0')) {
+        assert(isFixed(label));
+        assert(def.matches('figure[style], h2'));
+        number = number.startsWith('0.')
+          ? base.split('.')
+              .reduce((idx, _, i, base) => {
+                i === idx.length
+                  ? base.length = i
+                  : idx[i] = +idx[i] > +base[i]
+                    ? idx[i]
+                    : +idx[i] === 0
+                      ? base[i]
+                      : `${+base[i] + 1}`;
+                return idx;
+              }, number.split('.'))
+              .join('.')
+          : number;
+      }
+      base = number;
       void numbers.clear();
       if (def.tagName !== 'FIGURE') continue;
       void def.setAttribute('data-number', number);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.128.0
+
+- Extend figure syntax to allow to reset the base number to 0 with the current format.
+
 ## 0.127.0
 
 - Add info function.
