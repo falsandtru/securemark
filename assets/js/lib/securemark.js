@@ -2121,7 +2121,7 @@ require = function () {
             ])), ([label, content, ...caption]) => label.getAttribute('data-label').split('-', 1)[0] === '$' ? content.matches('.math') && caption.length === 0 : true), ([label, content, ...caption]) => [typed_dom_1.html('figure', {
                     'data-label': label.getAttribute('data-label'),
                     'data-group': label.getAttribute('data-label').split('-', 1)[0],
-                    style: /^[^-]+-(?:[0-9]+\.)+0$/.test(label.getAttribute('data-label')) ? 'display: none;' : undefined
+                    style: /^[^-]+-(?:[0-9]+\.)*0$/.test(label.getAttribute('data-label')) ? 'display: none;' : undefined
                 }, [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
@@ -4629,27 +4629,37 @@ require = function () {
                 for (const def of source.children) {
                     if (![
                             'FIGURE',
-                            'H2'
+                            'H1',
+                            'H2',
+                            'H3',
+                            'H4',
+                            'H5',
+                            'H6'
                         ].includes(def.tagName))
                         continue;
-                    if (def.tagName === 'H2' && base === '0')
+                    if (base === '0' && def.tagName[0] === 'H')
                         continue;
-                    const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ +base.split('.', 1)[0] + 1 }.0`;
+                    const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(base, def) }`;
+                    if (label === '$-')
+                        continue;
                     const group = label.split('-', 1)[0];
                     let number = label_1.number(label, numbers.get(group) || base);
-                    if (number.endsWith('.0')) {
-                        base = number = number.startsWith('0.') ? base.split('.').reduce((idx, _, i, base) => {
-                            i === idx.length ? base.length = i : idx[i] = +idx[i] > +base[i] ? idx[i] : +idx[i] === 0 ? base[i] : `${ +base[i] + 1 }`;
-                            return idx;
-                        }, number.split('.')).join('.') : number;
+                    if (number === '0' || number.endsWith('.0')) {
+                        if (number === '0') {
+                            number = [...'0'.repeat(base.split('.').length)].join('.');
+                        } else if (number.startsWith('0.') && number.endsWith('.0')) {
+                            number = base.split('.').reduce((idx, _, i, base) => {
+                                i === idx.length ? base.length = i : idx[i] = +idx[i] > +base[i] ? idx[i] : +idx[i] === 0 ? base[i] : `${ +base[i] + 1 }`;
+                                return idx;
+                            }, number.split('.')).join('.');
+                        }
+                        base = number;
                         void numbers.clear();
                         if (def.tagName !== 'FIGURE')
                             continue;
-                        void def.setAttribute('data-number', number);
                         continue;
                     }
                     void numbers.set(group, number);
-                    void def.setAttribute('data-number', number);
                     const figid = inline_1.isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     void def.setAttribute('id', `label:${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
@@ -4660,6 +4670,15 @@ require = function () {
                 }
             }
             exports.figure = figure;
+            function increment(base, el) {
+                const bases = base.split('.');
+                const cursor = +el.tagName[1] - 1 || 1;
+                return cursor < bases.length || bases.length === 1 ? [
+                    ...bases.slice(0, cursor - 1),
+                    +bases[cursor - 1] + 1,
+                    '0'
+                ].join('.') : '';
+            }
             function capitalize(label) {
                 return label[0].toUpperCase() + label.slice(1);
             }
