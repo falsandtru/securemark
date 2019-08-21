@@ -8,7 +8,7 @@ import { contentline, blankline } from './source';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 
-const parser: SegmentParser = union<SegmentParser>([
+const parser: SegmentParser = union([
   codeblock,
   mathblock,
   extension,
