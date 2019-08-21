@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.129.0
+
+- Change numbering of figures not to inherit the label formats specified by themselves.
+
 ## 0.128.0
 
 - Extend figure syntax to allow to reset the base number to 0 with the current format.

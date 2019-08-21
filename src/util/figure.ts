@@ -22,7 +22,12 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     const group = label.split('-', 1)[0];
     assert(label && group);
     assert(group === def.getAttribute('data-group') || !def.matches('figure'));
-    let number = calculate(label, numbers.get(group) || base);
+    let number = calculate(
+      label,
+      numbers.has(group)
+        ? numbers.get(group)!.split('.')
+            .slice(0, isGroup(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length).join('.')
+        : base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.split('.').pop() === '0') {
       assert(isFixed(label));
