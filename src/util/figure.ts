@@ -17,7 +17,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     assert(base === '0' || base.split('.').length > 1);
     const label = def.tagName === 'FIGURE'
       ? def.getAttribute('data-label')!
-      : `$-${l2n(+def.tagName[1] - 1 || 1, base)}`;
+      : `$-${increment(base, def as HTMLHeadingElement)}`;
     if (label === '$-') continue;
     const group = label.split('-', 1)[0];
     assert(label && group);
@@ -25,36 +25,34 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     let number = calculate(label, numbers.get(group) || base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number === '0' || number.endsWith('.0')) {
+      assert(isFixed(label));
       if (number === '0') {
         number = [...'0'.repeat(base.split('.').length)].join('.');
       }
-      else if (number.endsWith('.0')) {
-        assert(isFixed(label));
-        number = number.startsWith('0.')
-          ? base.split('.')
-              .reduce((idx, _, i, base) => {
-                i === idx.length
-                  ? base.length = i
-                  : idx[i] = +idx[i] > +base[i]
-                    ? idx[i]
-                    : +idx[i] === 0
-                      ? base[i]
-                      : `${+base[i] + 1}`;
-                return idx;
-              }, number.split('.'))
-              .join('.')
-          : number;
+      else if (number.startsWith('0.') && number.endsWith('.0')) {
+        number = base.split('.')
+          .reduce((idx, _, i, base) => {
+            i === idx.length
+              ? base.length = i
+              : idx[i] = +idx[i] > +base[i]
+                ? idx[i]
+                : +idx[i] === 0
+                  ? base[i]
+                  : `${+base[i] + 1}`;
+            return idx;
+          }, number.split('.'))
+          .join('.');
       }
       base = number;
       void numbers.clear();
       if (def.tagName !== 'FIGURE') continue;
-      void def.setAttribute('data-number', number);
+      assert(!void def.setAttribute('data-number', number));
       continue;
     }
     assert(def.matches('figure:not([style])'));
     assert(number.split('.').pop() !== '0');
     void numbers.set(group, number);
-    void def.setAttribute('data-number', number);
+    assert(!void def.setAttribute('data-number', number));
     const figid = isGroup(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
@@ -65,9 +63,10 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
   }
 }
 
-function l2n(cursor: number, base: string): string {
-  assert(cursor > 0);
+function increment(base: string, el: HTMLHeadingElement): string {
   const bases = base.split('.');
+  const cursor = +el.tagName[1] - 1 || 1;
+  assert(cursor > 0);
   return cursor < bases.length || bases.length === 1
     ? [...bases.slice(0, cursor - 1), +bases[cursor - 1] + 1, '0'].join('.')
     : '';
