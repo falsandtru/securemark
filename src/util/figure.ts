@@ -32,7 +32,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     if (number.split('.').pop() === '0') {
       assert(isFixed(label));
       if (number === '0') {
-        number = [...'0'.repeat(base.split('.').length)].join('.');
+        number = `0${'.0'.repeat(base.split('.').length - 1)}`;
       }
       else if (number.startsWith('0.') && number.endsWith('.0')) {
         number = base.split('.')
