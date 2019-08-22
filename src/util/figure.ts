@@ -13,7 +13,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
   let base = '0';
   let bases: readonly string[] = base.split('.');
   for (const def of source.children) {
-    if (!['FIGURE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(def.tagName)) continue;
+    if (!['FIGURE', 'H1', 'H2', 'H3'].includes(def.tagName)) continue;
     if (base === '0' && def.tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);
     const label = def.tagName === 'FIGURE'

@@ -54,10 +54,9 @@ describe('Unit: util/figure', () => {
 
     it('format', () => {
       const source = parse([
-        '$fig-a-0.0\n> ',
-        '$fig-b-0.0.0.0\n> ',
-        '$fig-c-0.0.0\n> ',
-        '$fig-d\n> ',
+        '$fig-a-0.0.0\n> ',
+        '$fig-b-0.0\n> ',
+        '$fig-c\n> ',
         '$fig-b',
       ].join('\n\n'), { figure: false });
       for (let i = 0; i < 2; ++i) {
@@ -65,11 +64,10 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
-            '<figure data-label="fig-a-0.0" data-group="fig" data-number="1.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-b-0.0.0.0" data-group="fig" data-number="1.1.0.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1.0.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-c-0.0.0" data-group="fig" data-number="1.1.1" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-d" data-group="fig" data-number="2" id="label:fig-d"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2. </span><figcaption></figcaption></figure>',
-            '<p><a rel="noopener" class="label" data-label="fig-b" href="#label:fig-b">Fig. 1.1.0.1</a></p>',
+            '<figure data-label="fig-a-0.0.0" data-group="fig" data-number="1.0.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.0.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-b-0.0" data-group="fig" data-number="1.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-c" data-group="fig" data-number="2" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2. </span><figcaption></figcaption></figure>',
+            '<p><a rel="noopener" class="label" data-label="fig-b" href="#label:fig-b">Fig. 1.1</a></p>',
           ]);
       }
     });
@@ -117,8 +115,9 @@ describe('Unit: util/figure', () => {
         '$-0.1.0\n> ',
         '$fig-d\n> ',
         '$-0.0\n> ',
-        '$-0.0.2.0\n> ',
-        '$-0.0.1.4.0\n> ',
+        '$-0.1.0\n> ',
+        '$-0.4.0\n> ',
+        '$-0.1.0\n> ',
         '## 0',
         '## 0',
         '$-0.0\n> ',
@@ -155,8 +154,9 @@ describe('Unit: util/figure', () => {
             '<figure data-label="$-0.1.0" data-group="$" style="display: none;" data-number="4.1.0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',
             '<figure data-label="fig-d" data-group="fig" data-number="4.1.1" id="label:fig-d"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 4.1.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="4.1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',
-            '<figure data-label="$-0.0.2.0" data-group="$" style="display: none;" data-number="4.1.2.0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',
-            '<figure data-label="$-0.0.1.4.0" data-group="$" style="display: none;" data-number="4.1.3.4.0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',
+            '<figure data-label="$-0.1.0" data-group="$" style="display: none;" data-number="4.2.0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',
+            '<figure data-label="$-0.4.0" data-group="$" style="display: none;" data-number="4.4.0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',
+            '<figure data-label="$-0.1.0" data-group="$" style="display: none;" data-number="4.5.0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="6.0"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>',

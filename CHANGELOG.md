@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.130.0
+
+- Change label syntax to limit the max figure number level to 3.
+
 ## 0.129.0
 
 - Change the syntax name from authority to reference.

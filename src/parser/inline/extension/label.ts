@@ -5,7 +5,7 @@ import { hasTightText } from '../../util';
 import { define } from 'typed-dom';
 
 const parser = focus(
-  /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/,
+  /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/,
   convert(
     query => `[\\${query}]{#}`,
     link));
