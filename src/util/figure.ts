@@ -11,13 +11,14 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
   let base = '0';
+  let bases: readonly string[] = base.split('.');
   for (const def of source.children) {
     if (!['FIGURE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(def.tagName)) continue;
     if (base === '0' && def.tagName[0] === 'H') continue;
-    assert(base === '0' || base.split('.').length > 1);
+    assert(base === '0' || bases.length > 1);
     const label = def.tagName === 'FIGURE'
       ? def.getAttribute('data-label')!
-      : `$-${increment(base, def as HTMLHeadingElement)}`;
+      : `$-${increment(bases, def as HTMLHeadingElement)}`;
     if (label === '$-') continue;
     const group = label.split('-', 1)[0];
     assert(label && group);
@@ -26,29 +27,30 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
       label,
       numbers.has(group) && !isFixed(label)
         ? numbers.get(group)!.split('.')
-            .slice(0, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length).join('.')
+            .slice(0, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length).join('.')
         : base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.split('.').pop() === '0') {
       assert(isFixed(label));
       if (number === '0') {
-        number = `0${'.0'.repeat(base.split('.').length - 1)}`;
+        number = `0${'.0'.repeat(bases.length - 1)}`;
       }
       else if (number.startsWith('0.') && number.endsWith('.0')) {
-        number = base.split('.')
-          .reduce((idx, _, i, base) => {
+        number = bases.slice()
+          .reduce((idx, _, i, bases) => {
             i === idx.length
-              ? base.length = i
-              : idx[i] = +idx[i] > +base[i]
+              ? bases.length = i
+              : idx[i] = +idx[i] > +bases[i]
                 ? idx[i]
                 : +idx[i] === 0
-                  ? base[i]
-                  : `${+base[i] + 1}`;
+                  ? bases[i]
+                  : `${+bases[i] + 1}`;
             return idx;
           }, number.split('.'))
           .join('.');
       }
       base = number;
+      bases = base.split('.');
       void numbers.clear();
       if (def.tagName !== 'FIGURE') continue;
       assert(!void def.setAttribute('data-number', number));
@@ -68,8 +70,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
   }
 }
 
-function increment(base: string, el: HTMLHeadingElement): string {
-  const bases = base.split('.');
+function increment(bases: readonly string[], el: HTMLHeadingElement): string {
   const cursor = +el.tagName[1] - 1 || 1;
   assert(cursor > 0);
   return cursor < bases.length || bases.length === 1
