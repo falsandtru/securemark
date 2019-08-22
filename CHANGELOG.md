@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.131.0
+
+- Change heading syntax to allow to be written continuously without separating them by blank lines.
+
 ## 0.130.0
 
 - Change link syntax to allow texts starting with `#` or `@`.
