@@ -2,6 +2,7 @@
 
 ## 0.130.0
 
+- Change link syntax to allow texts starting with `#` or `@`.
 - Change label syntax to limit the max figure number level to 3.
 
 ## 0.129.0
