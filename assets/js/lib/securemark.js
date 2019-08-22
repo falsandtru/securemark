@@ -4666,7 +4666,7 @@ require = function () {
                     void def.setAttribute('id', `label:${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
                     void typed_dom_1.define([...def.children].find(el => el.classList.contains('figindex')), group === '$' ? figindex : `${ figindex }. `);
-                    for (const ref of refs.ref(figid)) {
+                    for (const ref of refs.take(figid, Infinity)) {
                         void typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
                 }
