@@ -64,7 +64,7 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
     void define([...def.children].find(el => el.classList.contains('figindex'))!, group === '$' ? figindex : `${figindex}. `);
-    for (const ref of refs.ref(figid)) {
+    for (const ref of refs.take(figid, Infinity)) {
       void define(ref, { href: `#${def.id}` }, figindex);
     }
   }
