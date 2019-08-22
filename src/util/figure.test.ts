@@ -35,6 +35,7 @@ describe('Unit: util/figure', () => {
     it('some', () => {
       const source = parse([
         '$fig-a\n> ',
+        '## 0',
         '$table-a\n> ',
         '$fig-b\n> ',
       ].join('\n\n'), { figure: false });
@@ -44,6 +45,7 @@ describe('Unit: util/figure', () => {
           [...source.children].map(el => el.outerHTML),
           [
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure>',
+            '<h2 id="index:0">0</h2>',
             '<figure data-label="table-a" data-group="table" data-number="1" id="label:table-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Table. 1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-b" data-group="fig" data-number="2" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2. </span><figcaption></figcaption></figure>',
           ]);
