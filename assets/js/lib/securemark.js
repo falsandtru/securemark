@@ -3096,7 +3096,7 @@ require = function () {
             const link_1 = _dereq_('../link');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            const parser = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0)*)?|-[0-9]+(?:\.[0-9]+)*)/, combinator_1.convert(query => `[\\${ query }]{#}`, link_1.link));
+            const parser = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/, combinator_1.convert(query => `[\\${ query }]{#}`, link_1.link));
             exports.label = combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.union([
                 combinator_1.surround('[', parser, ']'),
                 parser
@@ -3310,8 +3310,6 @@ require = function () {
                     href: path,
                     rel: `noopener${ params.includes('nofollow') ? ' nofollow noreferrer' : '' }`
                 }, util_1.hasContent(text) ? text.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
-                if (/^[#@]/.test(el.textContent.trim()))
-                    return;
                 switch (el.protocol) {
                 case 'tel:':
                     if (el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
@@ -4632,10 +4630,7 @@ require = function () {
                             'FIGURE',
                             'H1',
                             'H2',
-                            'H3',
-                            'H4',
-                            'H5',
-                            'H6'
+                            'H3'
                         ].includes(def.tagName))
                         continue;
                     if (base === '0' && def.tagName[0] === 'H')
