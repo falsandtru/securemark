@@ -4626,6 +4626,7 @@ require = function () {
                 ]));
                 const numbers = new Map();
                 let base = '0';
+                let bases = base.split('.');
                 for (const def of source.children) {
                     if (![
                             'FIGURE',
@@ -4639,21 +4640,22 @@ require = function () {
                         continue;
                     if (base === '0' && def.tagName[0] === 'H')
                         continue;
-                    const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(base, def) }`;
+                    const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(bases, def) }`;
                     if (label === '$-')
                         continue;
                     const group = label.split('-', 1)[0];
-                    let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? numbers.get(group).split('.').slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length).join('.') : base);
+                    let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? numbers.get(group).split('.').slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length).join('.') : base);
                     if (number.split('.').pop() === '0') {
                         if (number === '0') {
-                            number = `0${ '.0'.repeat(base.split('.').length - 1) }`;
+                            number = `0${ '.0'.repeat(bases.length - 1) }`;
                         } else if (number.startsWith('0.') && number.endsWith('.0')) {
-                            number = base.split('.').reduce((idx, _, i, base) => {
-                                i === idx.length ? base.length = i : idx[i] = +idx[i] > +base[i] ? idx[i] : +idx[i] === 0 ? base[i] : `${ +base[i] + 1 }`;
+                            number = bases.slice().reduce((idx, _, i, bases) => {
+                                i === idx.length ? bases.length = i : idx[i] = +idx[i] > +bases[i] ? idx[i] : +idx[i] === 0 ? bases[i] : `${ +bases[i] + 1 }`;
                                 return idx;
                             }, number.split('.')).join('.');
                         }
                         base = number;
+                        bases = base.split('.');
                         void numbers.clear();
                         if (def.tagName !== 'FIGURE')
                             continue;
@@ -4670,8 +4672,7 @@ require = function () {
                 }
             }
             exports.figure = figure;
-            function increment(base, el) {
-                const bases = base.split('.');
+            function increment(bases, el) {
                 const cursor = +el.tagName[1] - 1 || 1;
                 return cursor < bases.length || bases.length === 1 ? [
                     ...bases.slice(0, cursor - 1),
