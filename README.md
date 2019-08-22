@@ -19,8 +19,8 @@ Secure markdown renderer working on browsers for user input data.
 - Figure, Annotation, and Reference syntax.
 - Index generation for headings, terms, and figures.
 - Shortlink syntax for local references of indexes and figures.
-- Auto numbering of figures and footnotes.
-- Cross reference generation for figures, annotations, and references.
+- Auto numbering of figures, annotations, and references.
+- Cross reference generation for annotations and references.
 - Table of contents.
 
 ## Demos
