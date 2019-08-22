@@ -2175,10 +2175,10 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.heading = combinator_1.block(combinator_1.line(inline_1.indexee(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, util_1.memoize(([, {length: level}]) => level, level => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
+            exports.heading = combinator_1.block(combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.verify(combinator_1.match(/^(#{1,6})\s+(?=\S)/, util_1.memoize(([, {length: level}]) => level, level => combinator_1.fmap(util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ])))), ns => [typed_dom_1.html(`h${ level }`, ns)]))), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el)))));
+            ])))), ns => [typed_dom_1.html(`h${ level }`, ns)]))), ([el]) => util_1.hasText(el) && !util_1.hasMedia(el))))));
         },
         {
             '../../combinator': 23,
