@@ -2103,7 +2103,7 @@ require = function () {
                     ])
                 ])
             ]), closer))));
-            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.verify(combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')), combinator_1.sequence([
+            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')), combinator_1.sequence([
                 combinator_1.line(inline_1.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
@@ -2118,15 +2118,24 @@ require = function () {
                     source_1.emptyline,
                     combinator_1.block(util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))))
                 ])
-            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', {
-                    'data-label': label.getAttribute('data-label'),
-                    'data-group': label.getAttribute('data-label').split('-', 1)[0],
-                    style: /^[^-]+-(?:[0-9]+\.)*0$/.test(label.getAttribute('data-label')) ? 'display: none;' : undefined
-                }, [
+            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attrs(label.getAttribute('data-label'), content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
                     typed_dom_1.html('figcaption', caption)
-                ])]), ([el]) => el.matches('[data-group="$"]:not([style])') ? el.firstElementChild.firstElementChild.matches('.math') && el.lastElementChild.childNodes.length === 0 : true))));
+                ])]))));
+            function attrs(label, content, caption) {
+                const group = label.split('-', 1)[0];
+                const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
+                const invalid = group !== '$' || rebase ? undefined : !content.matches('.math') || caption.length > 0 || undefined;
+                return {
+                    'data-label': label,
+                    'data-group': group,
+                    style: rebase && 'display: none;',
+                    class: invalid && 'invalid',
+                    'data-invalid-syntax': invalid && 'figure',
+                    'data-invalid-type': invalid && 'content'
+                };
+            }
         },
         {
             '../../../combinator': 23,
@@ -4760,11 +4769,11 @@ require = function () {
                     channel: find('a.channel[href]'),
                     account: find('a.account[href]'),
                     mention: find('a.address[href]'),
-                    url: find('a:not([class])[href]').filter(el => [
+                    url: find('a[href]').filter(el => [
                         'http:',
                         'https:'
-                    ].includes(el.protocol)),
-                    tel: find('a:not([class])[href]').filter(el => el.protocol === 'tel:'),
+                    ].includes(el.protocol)).filter(el => !el.matches('.hashtag, .hashref, .channel, .account, .address')),
+                    tel: find('a[href]').filter(el => el.protocol === 'tel:'),
                     email: find('a.email[href]'),
                     media: find('.media[data-src]')
                 };
