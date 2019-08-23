@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, verify, surround, match, convert, trim, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, surround, match, convert, trim, fmap } from '../../../combinator';
 import { contentline, blankline, emptyline } from '../../source';
 import { table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
@@ -38,7 +38,7 @@ export const segment: FigureParser.SegmentParser = block(match(
       ]),
       closer))));
 
-export const figure: FigureParser = block(rewrite(segment, trim(verify(fmap(
+export const figure: FigureParser = block(rewrite(segment, trim(fmap(
   convert(
     source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')),
     sequence([
@@ -59,21 +59,26 @@ export const figure: FigureParser = block(rewrite(segment, trim(verify(fmap(
     ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
     html('figure',
-      {
-        'data-label': label.getAttribute('data-label')!,
-        'data-group': label.getAttribute('data-label')!.split('-', 1)[0],
-        style: /^[^-]+-(?:[0-9]+\.)*0$/.test(label.getAttribute('data-label')!)
-          ? 'display: none;'
-          : undefined,
-      },
+      attrs(label.getAttribute('data-label')!, content, caption),
       [
         html('div', { class: 'figcontent' }, [content]),
         html('span', { class: 'figindex' }),
         html('figcaption', caption)
       ])
-  ]),
-  ([el]) =>
-    el.matches('[data-group="$"]:not([style])')
-      ? el.firstElementChild!.firstElementChild!.matches('.math') &&
-        el.lastElementChild!.childNodes.length === 0
-      : true))));
+  ]))));
+
+function attrs(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
+  const group = label.split('-', 1)[0];
+  const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
+  const invalid = group !== '$' || rebase
+    ? undefined
+    : !content.matches('.math') || caption.length > 0 || undefined;
+  return {
+    'data-label': label,
+    'data-group': group,
+    style: rebase && 'display: none;',
+    class: invalid && 'invalid',
+    'data-invalid-syntax': invalid && 'figure',
+    'data-invalid-type': invalid && 'content',
+  };
+}

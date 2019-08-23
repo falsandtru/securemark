@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.131.1
+
+- Fix figure parser to mark results invalid instead of failing to parse.
+
 ## 0.131.0
 
 - Change heading syntax to allow to be written continuously without separating them by blank lines.
