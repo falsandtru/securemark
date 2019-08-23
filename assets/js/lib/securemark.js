@@ -4650,19 +4650,20 @@ require = function () {
                     const group = label.split('-', 1)[0];
                     let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? numbers.get(group).split('.').slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length).join('.') : base);
                     if (number.split('.').pop() === '0') {
-                        if (number === '0') {
+                        switch (true) {
+                        case number === '0':
                             number = `0${ '.0'.repeat(bases.length - 1) }`;
-                        } else if (number.startsWith('0.') && number.endsWith('.0')) {
+                            break;
+                        case number.startsWith('0.'):
                             number = bases.slice().reduce((idx, _, i, bases) => {
                                 i === idx.length ? bases.length = i : idx[i] = +idx[i] > +bases[i] ? idx[i] : +idx[i] === 0 ? bases[i] : `${ +bases[i] + 1 }`;
                                 return idx;
                             }, number.split('.')).join('.');
+                            break;
                         }
                         base = number;
                         bases = base.split('.');
                         void numbers.clear();
-                        if (def.tagName !== 'FIGURE')
-                            continue;
                         continue;
                     }
                     void numbers.set(group, number);
