@@ -4655,9 +4655,9 @@ require = function () {
                             number = `0${ '.0'.repeat(bases.length - 1) }`;
                             break;
                         case number.startsWith('0.'):
-                            number = bases.slice().reduce((idx, _, i, bases) => {
-                                i === idx.length ? bases.length = i : idx[i] = +idx[i] > +bases[i] ? idx[i] : +idx[i] === 0 ? bases[i] : `${ +bases[i] + 1 }`;
-                                return idx;
+                            number = bases.slice().reduce((ns, _, i, bs) => {
+                                i === ns.length ? bs.length = i : ns[i] = +ns[i] > +bs[i] ? ns[i] : +ns[i] === 0 ? bs[i] : `${ +bs[i] + 1 }`;
+                                return ns;
                             }, number.split('.')).join('.');
                             break;
                         }
