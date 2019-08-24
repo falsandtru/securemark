@@ -359,7 +359,7 @@
         : void await new Promise(requestAnimationFrame) || 300;
       time = Date.now();
     }
-    return elapsed;
+    return elapsed += Date.now() - time;
   }
   function log(time) {
     document.getElementById('time').textContent = time;
