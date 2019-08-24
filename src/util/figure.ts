@@ -39,15 +39,15 @@ export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): voi
         case number.startsWith('0.'):
           assert(number.endsWith('.0'));
           number = bases.slice()
-            .reduce((idx, _, i, bases) => {
-              i === idx.length
-                ? bases.length = i
-                : idx[i] = +idx[i] > +bases[i]
-                  ? idx[i]
-                  : +idx[i] === 0
-                    ? bases[i]
-                    : `${+bases[i] + 1}`;
-              return idx;
+            .reduce((ns, _, i, bs) => {
+              i === ns.length
+                ? bs.length = i
+                : ns[i] = +ns[i] > +bs[i]
+                  ? ns[i]
+                  : +ns[i] === 0
+                    ? bs[i]
+                    : `${+bs[i] + 1}`;
+              return ns;
             }, number.split('.'))
             .join('.');
           break;
