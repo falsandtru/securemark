@@ -1,3 +1,4 @@
+import { ParserConfigs } from '../../..';
 import { bind } from './bind';
 import { html } from 'typed-dom';
 
@@ -6,10 +7,11 @@ describe('Unit: parser/api/bind', () => {
     function inspect(iter: Iterable<HTMLElement>) {
       return [...iter].map(e => e.outerHTML);
     }
+    const cfgs: ParserConfigs = { footnote: { annotation: html('ol'), reference: html('ol') } };
 
     it('empty', () => {
       const el = html('div');
-      const update = bind(el);
+      const update = bind(el, cfgs);
 
       // init with empty
       assert.deepStrictEqual(inspect(update('')), []);
@@ -21,7 +23,7 @@ describe('Unit: parser/api/bind', () => {
 
     it('update', () => {
       const el = html('div', [html('ol')]);
-      const update = bind(el);
+      const update = bind(el, cfgs);
 
       // init with nonempty
       assert.deepStrictEqual(inspect(update('0')), ['<p>0</p>']);
@@ -78,7 +80,7 @@ describe('Unit: parser/api/bind', () => {
 
     it('reentrant', () => {
       const el = html('div');
-      const update = bind(el);
+      const update = bind(el, cfgs);
 
       try {
         for (const _ of update('0\n\n1')) {
@@ -93,7 +95,7 @@ describe('Unit: parser/api/bind', () => {
     });
 
     it('normalize', () => {
-      assert.deepStrictEqual(inspect(bind(html('div'))('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
+      assert.deepStrictEqual(inspect(bind(html('div'), cfgs)('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
   });

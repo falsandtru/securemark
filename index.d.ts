@@ -6,16 +6,19 @@
 */
 
 export function parse(source: string, opts?: ParserOptions): DocumentFragment;
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, opts?: ParserOptions): (source: string) => Generator<HTMLElement, undefined, undefined>;
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined>;
 export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void;
 export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, targets: { annotation: HTMLOListElement; reference: HTMLOListElement; }): void;
 export function render(target: HTMLElement, opts?: RenderingOptions): void;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 
-export interface ParserOptions {
+export interface ParserOptions extends Partial<ParserConfigs> {
   figure?: boolean;
-  footnote?: {
+}
+
+export interface ParserConfigs {
+  footnote: {
     annotation: HTMLOListElement;
     reference: HTMLOListElement;
   };

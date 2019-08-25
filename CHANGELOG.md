@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.132.0
+
+- Change bind function's parameters to be required.
+
 ## 0.131.1
 
 - Fix figure parser to mark results invalid instead of failing to parse.

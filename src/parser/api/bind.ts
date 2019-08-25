@@ -1,11 +1,11 @@
-import { ParserOptions } from '../../..';
+import { ParserConfigs } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
 import { block } from '../block';
 import { normalize } from './normalization';
 import { figure, footnote } from '../../util';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, opts: ParserOptions = {}): (source: string) => Generator<HTMLElement, undefined, undefined> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   let revision: symbol;
@@ -66,8 +66,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, opts: 
     }
     assert(revision === rev);
     assert(pairs.length === sourceSegments.length);
-    opts.figure !== false && void figure(target);
-    opts.footnote && void footnote(target, opts.footnote);
+    void figure(target);
+    void footnote(target, cfgs.footnote);
   };
 
   function bottom(start: number, position: number): Node | null {
