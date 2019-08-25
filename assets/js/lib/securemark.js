@@ -1179,11 +1179,11 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             const some_1 = _dereq_('../../data/parser/some');
+            const line_1 = _dereq_('../constraint/line');
+            const scope_1 = _dereq_('../constraint/scope');
             const bind_1 = _dereq_('../monad/bind');
             const match_1 = _dereq_('./match');
             const surround_1 = _dereq_('./surround');
-            const line_1 = _dereq_('../constraint/line');
-            const scope_1 = _dereq_('../constraint/scope');
             function indent(parser) {
                 return bind_1.bind(match_1.match(/^(?=([^\S\n]+))/, ([, indent]) => some_1.some(line_1.line(scope_1.rewrite(s => [
                     [],
@@ -2398,7 +2398,6 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const address_1 = _dereq_('./mention/address');
             const quote_1 = _dereq_('./mention/quote');
-            const combinator_2 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.mention = combinator_1.block(combinator_1.bind(combinator_1.subsequence([
                 combinator_1.some(address_1.address),
@@ -2407,7 +2406,7 @@ require = function () {
                 ns.reduceRight((acc, node) => {
                     void acc.unshift(node, typed_dom_1.html('br'));
                     return acc;
-                }, combinator_2.firstline(rest).trim() === '' ? [ns.pop()] : []),
+                }, combinator_1.firstline(rest).trim() === '' ? [ns.pop()] : []),
                 rest
             ]), false);
         },
