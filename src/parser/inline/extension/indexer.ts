@@ -1,12 +1,12 @@
 import { ExtensionParser } from '../../inline';
 import { Parser, union, line, surround, lazy, fmap } from '../../../combinator';
-import { index as idx } from './index';
+import { index } from './index';
 import { html, define } from 'typed-dom';
 
 export const indexer: ExtensionParser.IndexerParser = lazy(() => line(fmap(
   surround(
     /^\s+(?=\[#)/,
-    union([idx]),
+    union([index]),
     /^(?=\s*$)/),
   ([el]) =>
     [html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
