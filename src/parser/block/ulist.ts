@@ -32,11 +32,9 @@ export function fillFirstLine(ns: Node[]): Node[] {
 }
 
 export function verifyListItem(el: HTMLLIElement): HTMLLIElement {
-  if (hasMedia(el)) {
-    void define(
-      el,
-      { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' },
-      eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to use media syntax in lists.')));
-  }
-  return el;
+  return hasMedia(el)
+    ? define(el,
+        { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' },
+        eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to use media syntax in lists.')))
+    : el;
 }
