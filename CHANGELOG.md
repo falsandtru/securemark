@@ -2,6 +2,7 @@
 
 ## 0.132.0
 
+- Add context function.
 - Change bind function's parameters to be required.
 
 ## 0.131.1

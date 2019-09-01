@@ -12,6 +12,7 @@ export function footnote(source: DocumentFragment | HTMLElement | ShadowRoot, ta
 export function render(target: HTMLElement, opts?: RenderingOptions): void;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
+export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
 
 export interface ParserOptions extends Partial<ParserConfigs> {
   figure?: boolean;
