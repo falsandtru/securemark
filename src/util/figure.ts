@@ -4,15 +4,15 @@ import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 
-export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void {
+export function figure(target: DocumentFragment | HTMLElement | ShadowRoot): void {
   const refs = new MultiMap<string, Element>(
-    [...source.querySelectorAll('a.label')]
-      .filter(context(source))
+    [...target.querySelectorAll('a.label')]
+      .filter(context(target))
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
   let base = '0';
   let bases: readonly string[] = base.split('.');
-  for (const def of source.children) {
+  for (const def of target.children) {
     if (!['FIGURE', 'H1', 'H2', 'H3'].includes(def.tagName)) continue;
     if (base === '0' && def.tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);
