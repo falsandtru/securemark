@@ -7,7 +7,7 @@ import { define } from 'typed-dom';
 export function figure(source: DocumentFragment | HTMLElement | ShadowRoot): void {
   const refs = new MultiMap<string, Element>(
     [...source.querySelectorAll('a.label')]
-      .filter(context(source, 'blockquote, aside'))
+      .filter(context(source))
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
   let base = '0';

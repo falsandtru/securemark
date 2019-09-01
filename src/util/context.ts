@@ -1,4 +1,4 @@
-export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound: string): (el: Element) => boolean {
+export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound: string = 'blockquote, aside'): (el: Element) => boolean {
   const memory = new WeakMap<Node, boolean>();
   const context = base instanceof Element && base.closest(bound) || null;
   return el => {

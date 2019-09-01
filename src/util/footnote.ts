@@ -15,7 +15,7 @@ function build(category: string, marker: (index: number) => string): (source: Do
   const contents = new WeakMap<HTMLElement, Node[]>();
   return (source: DocumentFragment | HTMLElement | ShadowRoot, target: HTMLOListElement) => {
     return void define(target, [...source.querySelectorAll<HTMLElement>(`.${category}`)]
-      .filter(context(source, 'blockquote, aside'))
+      .filter(context(source))
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
         const refIndex = i + 1;
         const refId = ref.id || `${category}:ref:${i + 1}`;
