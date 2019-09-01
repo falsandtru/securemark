@@ -1571,7 +1571,7 @@ require = function () {
             const block_1 = _dereq_('../block');
             const normalization_1 = _dereq_('./normalization');
             const util_1 = _dereq_('../../util');
-            function bind(target, opts = {}) {
+            function bind(target, cfgs) {
                 const pairs = [];
                 let revision;
                 return function* (source) {
@@ -1627,8 +1627,8 @@ require = function () {
                             void el.remove();
                         }
                     }
-                    opts.figure !== false && void util_1.figure(target);
-                    opts.footnote && void util_1.footnote(target, opts.footnote);
+                    void util_1.figure(target);
+                    void util_1.footnote(target, cfgs.footnote);
                 };
                 function bottom(start, position) {
                     if (pairs.length === 0)
@@ -2563,14 +2563,11 @@ require = function () {
             }
             exports.fillFirstLine = fillFirstLine;
             function verifyListItem(el) {
-                if (util_1.hasMedia(el)) {
-                    void typed_dom_1.define(el, {
-                        class: 'invalid',
-                        'data-invalid-syntax': 'listitem',
-                        'data-invalid-type': 'content'
-                    }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to use media syntax in lists.')));
-                }
-                return el;
+                return util_1.hasMedia(el) ? typed_dom_1.define(el, {
+                    class: 'invalid',
+                    'data-invalid-syntax': 'listitem',
+                    'data-invalid-type': 'content'
+                }, combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: ListItem: Unable to use media syntax in lists.'))) : el;
             }
             exports.verifyListItem = verifyListItem;
         },
@@ -4164,7 +4161,6 @@ require = function () {
                             const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
-                            void el.classList.add('media');
                             void el.setAttribute('data-src', new URL(target.getAttribute('data-src'), window.location.href).href);
                             const scope = target.matches('a > .media') && !el.matches('img') ? target.closest('a') : target;
                             return void scope.parentElement.replaceChild(el, scope);
@@ -4294,6 +4290,7 @@ require = function () {
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
                 return media_1.cache.set(url.href, typed_dom_1.html('audio', {
+                    class: 'media',
                     src: url.href,
                     alt,
                     controls: '',
@@ -4324,7 +4321,10 @@ require = function () {
                         return;
                     if (media_1.cache.has(url.href))
                         return media_1.cache.get(url.href).cloneNode(true);
-                    return typed_dom_1.HTML.div({ style: 'position: relative;' }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
+                    return typed_dom_1.HTML.div({
+                        class: 'media',
+                        style: 'position: relative;'
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
                         const outer = f(tag);
                         void $.ajax(`${ url.href }.json`, {
                             dataType: 'jsonp',
@@ -4371,6 +4371,7 @@ require = function () {
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
                 return media_1.cache.set(url.href, typed_dom_1.html('img', {
+                    class: 'media',
                     src: url.href,
                     alt,
                     style: 'max-width: 100%;'
@@ -4396,7 +4397,10 @@ require = function () {
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.html('div', { style: 'position: relative;' }, [
+                return media_1.cache.set(url.href, typed_dom_1.html('div', {
+                    class: 'media',
+                    style: 'position: relative;'
+                }, [
                     typed_dom_1.html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.html('object', {
                             type: 'application/pdf',
                             data: url.href,
@@ -4430,7 +4434,10 @@ require = function () {
                         return;
                     if (media_1.cache.has(url.href))
                         return media_1.cache.get(url.href).cloneNode(true);
-                    return typed_dom_1.HTML.div({ style: 'position: relative;' }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
+                    return typed_dom_1.HTML.div({
+                        class: 'media',
+                        style: 'position: relative;'
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
                         const outer = f(tag);
                         void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
                             dataType: 'jsonp',
@@ -4482,7 +4489,10 @@ require = function () {
                         window.twttr && void window.twttr.widgets.load(el);
                         return el;
                     }
-                    return typed_dom_1.HTML.div({ style: 'position: relative;' }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
+                    return typed_dom_1.HTML.div({
+                        class: 'media',
+                        style: 'position: relative;'
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
                         const outer = f(tag);
                         void $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                             dataType: 'jsonp',
@@ -4533,6 +4543,7 @@ require = function () {
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
                 return media_1.cache.set(url.href, typed_dom_1.html('video', {
+                    class: 'media',
                     src: url.href,
                     alt,
                     muted: '',
@@ -4566,7 +4577,10 @@ require = function () {
                     return;
                 if (media_1.cache.has(url.href))
                     return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.html('div', { style: 'position: relative;' }, [typed_dom_1.html('div', { style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.html('iframe', {
+                return media_1.cache.set(url.href, typed_dom_1.html('div', {
+                    class: 'media',
+                    style: 'position: relative;'
+                }, [typed_dom_1.html('div', { style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.html('iframe', {
                             src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
                             allowfullscreen: '',
                             frameborder: '0',
@@ -4592,8 +4606,11 @@ require = function () {
             exports.toc = toc_1.toc;
             var info_1 = _dereq_('./util/info');
             exports.info = info_1.info;
+            var context_1 = _dereq_('./util/context');
+            exports.context = context_1.context;
         },
         {
+            './util/context': 128,
             './util/figure': 129,
             './util/footnote': 130,
             './util/info': 131,
@@ -4604,7 +4621,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function context(base, bound) {
+            function context(base, bound = 'blockquote, aside') {
                 const memory = new WeakMap();
                 const context = base instanceof Element && base.closest(bound) || null;
                 return el => {
@@ -4625,15 +4642,15 @@ require = function () {
             const label_1 = _dereq_('../parser/inline/extension/label');
             const multimap_1 = _dereq_('spica/multimap');
             const typed_dom_1 = _dereq_('typed-dom');
-            function figure(source) {
-                const refs = new multimap_1.MultiMap([...source.querySelectorAll('a.label')].filter(context_1.context(source, 'blockquote, aside')).map(el => [
+            function figure(target) {
+                const refs = new multimap_1.MultiMap([...target.querySelectorAll('a.label')].filter(context_1.context(target)).map(el => [
                     el.getAttribute('data-label'),
                     el
                 ]));
                 const numbers = new Map();
                 let base = '0';
                 let bases = base.split('.');
-                for (const def of source.children) {
+                for (const def of target.children) {
                     if (![
                             'FIGURE',
                             'H1',
@@ -4703,17 +4720,17 @@ require = function () {
             const context_1 = _dereq_('./context');
             const indexer_1 = _dereq_('../parser/inline/extension/indexer');
             const typed_dom_1 = _dereq_('typed-dom');
-            function footnote(source, targets) {
-                void exports.annotation(source, targets.annotation);
-                void exports.reference(source, targets.reference);
+            function footnote(target, footnotes) {
+                void exports.annotation(target, footnotes.annotation);
+                void exports.reference(target, footnotes.reference);
             }
             exports.footnote = footnote;
             exports.annotation = build('annotation', n => `*${ n }`);
             exports.reference = build('reference', n => `[${ n }]`);
             function build(category, marker) {
                 const contents = new WeakMap();
-                return (source, target) => {
-                    return void typed_dom_1.define(target, [...source.querySelectorAll(`.${ category }`)].filter(context_1.context(source, 'blockquote, aside')).reduce((acc, ref, i) => {
+                return (target, footnote) => {
+                    return void typed_dom_1.define(footnote, [...target.querySelectorAll(`.${ category }`)].filter(context_1.context(target)).reduce((acc, ref, i) => {
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }:ref:${ i + 1 }`;
                         const title = ref.title || indexer_1.text(ref);
