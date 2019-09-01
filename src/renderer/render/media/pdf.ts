@@ -11,7 +11,7 @@ export function pdf(url: URL): HTMLElement | undefined {
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLAudioElement;
   return cache.set(
     url.href,
-    html('div', { style: 'position: relative;' }, [
+    html('div', { class: 'media', style: 'position: relative;' }, [
       html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [
         html('object', {
           type: 'application/pdf',

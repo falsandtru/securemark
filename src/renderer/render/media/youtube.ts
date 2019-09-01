@@ -13,7 +13,7 @@ export function youtube(url: URL): HTMLElement | undefined {
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLElement;
   return cache.set(
     url.href,
-    html('div', { style: 'position: relative;' }, [
+    html('div', { class: 'media', style: 'position: relative;' }, [
       html('div', { style: 'position: relative; padding-top: 56.25%;' }, [
         html('iframe', {
           src: `https://www.youtube.com/embed/${

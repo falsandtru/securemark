@@ -12,6 +12,7 @@ export function audio(url: URL, alt: string): HTMLAudioElement | undefined {
   return cache.set(
     url.href,
     html('audio', {
+      class: 'media',
       src: url.href,
       alt,
       controls: '',

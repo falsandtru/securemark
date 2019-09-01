@@ -4,6 +4,7 @@
 
 - Add context function.
 - Change bind function's parameters to be required.
+- Fix render function.
 
 ## 0.131.1
 

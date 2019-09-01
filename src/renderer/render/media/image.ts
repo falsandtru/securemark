@@ -6,6 +6,7 @@ export function image(url: URL, alt: string): HTMLImageElement {
   return cache.set(
     url.href,
     html('img', {
+      class: 'media',
       src: url.href,
       alt,
       style: 'max-width: 100%;',

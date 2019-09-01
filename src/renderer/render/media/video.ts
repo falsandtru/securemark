@@ -12,6 +12,7 @@ export function video(url: URL, alt: string): HTMLVideoElement | undefined {
   return cache.set(
     url.href,
     html('video', {
+      class: 'media',
       src: url.href,
       alt,
       muted: '',
