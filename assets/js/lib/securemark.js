@@ -3686,12 +3686,12 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const normalization_1 = _dereq_('./api/normalization');
             const combinator_1 = _dereq_('../combinator');
             const codeblock_1 = _dereq_('./block/codeblock');
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
+            const normalization_1 = _dereq_('./api/normalization');
             const parser = combinator_1.union([
                 codeblock_1.segment,
                 mathblock_1.segment,
