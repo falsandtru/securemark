@@ -541,7 +541,7 @@ require = function () {
             (function (ElChildrenType) {
                 ElChildrenType.Void = 'void';
                 ElChildrenType.Text = 'text';
-                ElChildrenType.Collection = 'collection';
+                ElChildrenType.Array = 'array';
                 ElChildrenType.Record = 'record';
             }(ElChildrenType || (ElChildrenType = {})));
             const memory = new WeakMap();
@@ -566,7 +566,7 @@ require = function () {
                         this.type = ElChildrenType.Text;
                         break;
                     case Array.isArray(children_):
-                        this.type = ElChildrenType.Collection;
+                        this.type = ElChildrenType.Array;
                         break;
                     case children_ && typeof children_ === 'object':
                         this.type = ElChildrenType.Record;
@@ -586,7 +586,7 @@ require = function () {
                         this.children_ = this.container.appendChild(dom_1.text(''));
                         this.children = children_;
                         return;
-                    case ElChildrenType.Collection:
+                    case ElChildrenType.Array:
                         this.initialChildren = new WeakSet(children_);
                         void dom_1.define(this.container, []);
                         this.children_ = [];
@@ -697,7 +697,7 @@ require = function () {
                             }));
                             return;
                         }
-                    case ElChildrenType.Collection: {
+                    case ElChildrenType.Array: {
                             const sourceChildren = children;
                             const targetChildren = [];
                             this.children_ = targetChildren;
