@@ -1631,12 +1631,11 @@ require = function () {
                     void util_1.footnote(target, cfgs.footnote);
                 };
                 function bottom(start, position) {
+                    var _a, _b;
                     if (pairs.length === 0)
                         return null;
-                    if (start === pairs.length) {
-                        const el = bottom(pairs.length - 1, position);
-                        return el && el.nextSibling;
-                    }
+                    if (start === pairs.length)
+                        return _b = (_a = bottom(pairs.length - 1, position)) === null || _a === void 0 ? void 0 : _a.nextSibling, _b !== null && _b !== void 0 ? _b : null;
                     for (let i = start; i >= 0 && i < pairs.length; --i) {
                         const [, es] = pairs[i];
                         for (let i = es.length - 1; i >= 0; --i) {
@@ -3289,8 +3288,9 @@ require = function () {
                     combinator_1.some(util_1.defrag(html_1.attribute))
                 ]), /^ ?}/))
             ])), ns => concat_1.concat([...Array(2 - ns.length)].map(() => typed_dom_1.frag()), ns)), ([text]) => {
+                var _a;
                 if (util_1.hasMedia(text)) {
-                    if (text.firstChild && text.firstChild.firstChild && text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
+                    if (((_a = text.firstChild) === null || _a === void 0 ? void 0 : _a.firstChild) && text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
                         if (log.has(text.firstChild))
                             return false;
                         void text.replaceChild(text.firstChild.firstChild, text.firstChild);
@@ -4073,10 +4073,11 @@ require = function () {
             function squash(nodes) {
                 const acc = [];
                 void nodes.reduce((prev, curr) => {
+                    var _a;
                     if (curr.nodeType === 3) {
                         if (curr.textContent === '')
                             return prev;
-                        if (prev && prev.nodeType === 3)
+                        if (((_a = prev) === null || _a === void 0 ? void 0 : _a.nodeType) === 3)
                             return prev.textContent += curr.textContent, prev;
                     }
                     curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
@@ -4247,6 +4248,7 @@ require = function () {
             const audio_1 = _dereq_('./media/audio');
             const image_1 = _dereq_('./media/image');
             function media(target, opts) {
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
                 opts = Object.assign({
                     twitter: twitter_1.twitter,
                     youtube: youtube_1.youtube,
@@ -4259,7 +4261,8 @@ require = function () {
                 }, opts);
                 const url = new URL(target.getAttribute('data-src'), window.location.href);
                 const alt = target.getAttribute('alt') || '';
-                return opts.twitter && opts.twitter(url) || opts.youtube && opts.youtube(url) || opts.gist && opts.gist(url) || opts.slideshare && opts.slideshare(url) || opts.pdf && opts.pdf(url) || opts.video && opts.video(url, alt) || opts.audio && opts.audio(url, alt) || opts.image && opts.image(url, alt);
+                (_b = (_a = opts).video) === null || _b === void 0 ? void 0 : _b.call(_a, url, alt);
+                return ((_d = (_c = opts).twitter) === null || _d === void 0 ? void 0 : _d.call(_c, url)) || ((_f = (_e = opts).youtube) === null || _f === void 0 ? void 0 : _f.call(_e, url)) || ((_h = (_g = opts).gist) === null || _h === void 0 ? void 0 : _h.call(_g, url)) || ((_k = (_j = opts).slideshare) === null || _k === void 0 ? void 0 : _k.call(_j, url)) || ((_m = (_l = opts).pdf) === null || _m === void 0 ? void 0 : _m.call(_l, url)) || ((_p = (_o = opts).video) === null || _p === void 0 ? void 0 : _p.call(_o, url, alt)) || ((_r = (_q = opts).audio) === null || _r === void 0 ? void 0 : _r.call(_q, url, alt)) || ((_t = (_s = opts).image) === null || _t === void 0 ? void 0 : _t.call(_s, url, alt));
             }
             exports.media = media;
         },
@@ -4480,13 +4483,14 @@ require = function () {
                 const origins = new Set(['https://twitter.com']);
                 const cache = new cache_1.Cache(10);
                 function twitter(url) {
+                    var _a;
                     if (!origins.has(url.origin))
                         return;
                     if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                         return;
                     if (cache.has(url.href)) {
                         const el = cache.get(url.href).cloneNode(true);
-                        window.twttr && void window.twttr.widgets.load(el);
+                        (_a = window.twttr) === null || _a === void 0 ? void 0 : _a.widgets.load(el);
                         return el;
                     }
                     return typed_dom_1.HTML.div({
@@ -4625,6 +4629,7 @@ require = function () {
                 const memory = new WeakMap();
                 const context = base instanceof Element && base.closest(bound) || null;
                 return el => {
+                    var _a;
                     const node = memory.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
                     return memory.has(node) ? memory.get(node) : memory.set(node, el.closest(bound) === context).get(node);
                 };
