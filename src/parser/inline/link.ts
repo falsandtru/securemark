@@ -23,7 +23,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),
   ([text]) => {
     if (hasMedia(text)) {
-      if (text.firstChild && text.firstChild.firstChild &&
+      if (text.firstChild?.firstChild &&
           text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
         if (log.has(text.firstChild as HTMLAnchorElement)) return false;
         void text.replaceChild(text.firstChild.firstChild, text.firstChild);

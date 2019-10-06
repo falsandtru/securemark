@@ -73,10 +73,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
   function bottom(start: number, position: number): Node | null {
     assert(start <= pairs.length);
     if (pairs.length === 0) return null;
-    if (start === pairs.length) {
-      const el = bottom(pairs.length - 1, position);
-      return el && el.nextSibling;
-    }
+    if (start === pairs.length) return bottom(pairs.length - 1, position)?.nextSibling ?? null;
     for (let i = start; i >= 0 && i < pairs.length; --i) {
       const [, es] = pairs[i];
       for (let i = es.length - 1; i >= 0; --i) {

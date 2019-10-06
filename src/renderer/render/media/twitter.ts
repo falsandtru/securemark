@@ -24,7 +24,7 @@ export function twitter(url: URL): HTMLElement | undefined {
   if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
   if (cache.has(url.href)) {
     const el = cache.get(url.href)!.cloneNode(true);
-    window.twttr && void window.twttr.widgets.load(el);
+    window.twttr?.widgets.load(el);
     return el;
   }
   return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (f, tag) => {

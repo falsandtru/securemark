@@ -112,7 +112,7 @@ export function squash(nodes: Node[]): Node[] {
     .reduce<Node | undefined>((prev, curr) => {
       if (curr.nodeType === 3) {
         if (curr.textContent === '') return prev;
-        if (prev && prev.nodeType === 3) return prev.textContent += curr.textContent!, prev;
+        if (prev?.nodeType === 3) return prev.textContent += curr.textContent!, prev;
       }
       curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
       void acc.push(curr);

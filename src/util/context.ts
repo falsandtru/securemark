@@ -2,7 +2,7 @@ export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound
   const memory = new WeakMap<Node, boolean>();
   const context = base instanceof Element && base.closest(bound) || null;
   return el => {
-    assert(el.parentNode && el.parentNode.parentNode);
+    assert(el.parentNode?.parentNode);
     const node = memory.has(el.parentNode!)
       ? el.parentNode!
       : el.parentNode!.parentNode!;

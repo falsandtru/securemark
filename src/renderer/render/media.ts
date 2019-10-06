@@ -13,12 +13,13 @@ export function media(target: HTMLImageElement, opts: NonNullable<RenderingOptio
   opts = { twitter, youtube, gist, slideshare, pdf, video, audio, image, ...opts };
   const url = new URL(target.getAttribute('data-src')!, window.location.href);
   const alt = target.getAttribute('alt') || '';
-  return opts.twitter && opts.twitter(url)
-      || opts.youtube && opts.youtube(url)
-      || opts.gist && opts.gist(url)
-      || opts.slideshare && opts.slideshare(url)
-      || opts.pdf && opts.pdf(url)
-      || opts.video && opts.video(url, alt)
-      || opts.audio && opts.audio(url, alt)
-      || opts.image && opts.image(url, alt);
+  opts.video?.(url, alt)
+  return opts.twitter?.(url)
+      || opts.youtube?.(url)
+      || opts.gist?.(url)
+      || opts.slideshare?.(url)
+      || opts.pdf?.(url)
+      || opts.video?.(url, alt)
+      || opts.audio?.(url, alt)
+      || opts.image?.(url, alt);
 }
