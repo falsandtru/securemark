@@ -4836,15 +4836,15 @@ require = function () {
             }
             function cons(hs) {
                 return hs.reduce((hss, h) => {
-                    const hs = hss.pop();
+                    const hs = hss.pop() || [];
                     return hs.length === 0 || level(h) > level(hs[0]) ? concat_1.concat(hss, [concat_1.concat(hs, [h])]) : concat_1.concat(hss, [
                         hs,
                         [h]
                     ]);
-                }, [[]]).reduce((node, hs) => hs.length === 0 ? node : concat_1.concat(node, [[
-                        hs.shift(),
-                        cons(hs)
-                    ]]), []);
+                }, []).map(hs => [
+                    hs.shift(),
+                    cons(hs)
+                ]);
             }
             function level(h) {
                 return +h.tagName[1];
