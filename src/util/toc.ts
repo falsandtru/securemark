@@ -9,7 +9,7 @@ export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUL
   return parse(cons(hs));
 }
 
-type Tree = [HTMLHeadingElement, Tree][];
+type Tree = readonly [HTMLHeadingElement, Tree][];
 
 function parse(node: Tree, index: number[] = []): HTMLUListElement {
   return html('ul', node.map(([el, children], i) => {
