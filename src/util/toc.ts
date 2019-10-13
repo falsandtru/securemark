@@ -24,16 +24,13 @@ function parse(node: Tree, index: number[] = []): HTMLUListElement {
 function cons(hs: HTMLHeadingElement[]): Tree {
   return hs
     .reduce<HTMLHeadingElement[][]>((hss, h) => {
-      const hs = hss.pop()!;
+      const hs = hss.pop() || [];
       return hs.length === 0 || level(h) > level(hs[0])
         ? concat(hss, [concat(hs, [h])])
         : concat(hss, [hs, [h]]);
-    }, [[]])
-    .reduce<Tree>((node, hs) =>
-      hs.length === 0
-        ? node
-        : concat<Tree[number]>(node, [[hs.shift()!, cons(hs)]])
-    , []);
+    }, [])
+    .map(hs =>
+      [hs.shift()!, cons(hs)]);
 }
 
 function level(h: HTMLHeadingElement): number {
