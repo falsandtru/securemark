@@ -12,11 +12,11 @@ export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUL
 type Tree = readonly [HTMLHeadingElement, Tree][];
 
 function parse(node: Tree, index: number[] = []): HTMLUListElement {
-  return html('ul', node.map(([el, children], i) => {
+  return html('ul', node.map(([el, cs], i) => {
     const idx = [...index, i + 1];
     return html('li', [
       html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx.join('.') }, el.textContent!),
-      children.length > 0 ? parse(children, idx) : frag()
+      cs.length > 0 ? parse(cs, idx) : frag()
     ]);
   }));
 }
