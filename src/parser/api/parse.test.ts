@@ -10,11 +10,17 @@ describe('Unit: parser/api/parse', () => {
       assert.deepStrictEqual(
         [...parse('').children].map(el => el.outerHTML),
         []);
+    });
+
+    it('invisible', () => {
       assert.deepStrictEqual(
         [...parse(' ').children].map(el => el.outerHTML),
         []);
       assert.deepStrictEqual(
         [...parse('\n').children].map(el => el.outerHTML),
+        []);
+      assert.deepStrictEqual(
+        [...parse('\\').children].map(el => el.outerHTML),
         []);
     });
 

@@ -8,6 +8,9 @@ describe('Unit: parser/block/paragraph', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
+      assert.deepStrictEqual(inspect(parser(' ')), undefined);
+      assert.deepStrictEqual(inspect(parser('\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('\\')), [[], '']);
     });
 
     it('basic', () => {
