@@ -4819,7 +4819,7 @@ require = function () {
             }
             exports.toc = toc;
             function parse(node, index = []) {
-                return typed_dom_1.html('ul', node.map(([el, children], i) => {
+                return typed_dom_1.html('ul', node.map(([el, cs], i) => {
                     const idx = [
                         ...index,
                         i + 1
@@ -4830,7 +4830,7 @@ require = function () {
                             rel: 'noopener',
                             'data-index': idx.join('.')
                         }, el.textContent),
-                        children.length > 0 ? parse(children, idx) : typed_dom_1.frag()
+                        cs.length > 0 ? parse(cs, idx) : typed_dom_1.frag()
                     ]);
                 }));
             }
