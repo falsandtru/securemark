@@ -88,7 +88,7 @@ function trimNode_<T extends HTMLElement | Text, S extends Parser<unknown, any>[
       case 1:
         switch (true) {
           case (node as HTMLElement).tagName === 'BR':
-          case (node as HTMLElement).className === 'linebreak':
+          case (node as HTMLElement).classList.contains('linebreak'):
             switch (mode) {
               case 'start':
                 void ns.shift();
