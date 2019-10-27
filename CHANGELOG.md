@@ -699,12 +699,12 @@
 
 ## 0.63.1
 
-- Disallow link text starting with `@`.
+- Disallow link texts starting with `@`.
 
 ## 0.63.0
 
 - Parse as extension before parsing as link.
-- Disallow link text starting with `#`.
+- Disallow link texts starting with `#`.
 
 ## 0.62.0
 
@@ -722,7 +722,7 @@
 
 ## 0.59.0
 
-- Disallow figure name starting with numbers.
+- Disallow figure names starting with numbers.
 - Revert removing linebreaks after `wbr` HTML tag.
 
 ## 0.58.0
