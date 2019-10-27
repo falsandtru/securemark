@@ -17,3 +17,4 @@ export * from './combinator/control/manipulation/trim';
 export * from './combinator/control/manipulation/lazy';
 export * from './combinator/control/monad/fmap';
 export * from './combinator/control/monad/bind';
+export * from './combinator/control/monad/proc';

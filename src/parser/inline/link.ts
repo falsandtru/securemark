@@ -38,7 +38,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
     return true;
   }),
-  ([text, param], rest) => {
+  ([text, param]) => {
     const [INSECURE_URL, ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
     const path = sanitize(INSECURE_URL);
     if (path === '' && INSECURE_URL !== '') return;
@@ -65,7 +65,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     if (hasMedia(el)) {
       void log.add(el);
     }
-    return [[define(el, attrs(attributes, params, new Set(el.classList), 'link'))], rest];
+    return [define(el, attrs(attributes, params, new Set(el.classList), 'link'))];
   })));
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(

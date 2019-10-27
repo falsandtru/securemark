@@ -1,5 +1,5 @@
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, subline, verify, surround, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, verify, surround, fmap, proc } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
@@ -11,7 +11,7 @@ import { html, text as txt, define } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
+export const media: MediaParser = subline(proc(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
   tails([
     dup(surround('[', trimNodeEnd(defrag(some(union([text]), /^\\?\n|^]/))), ']', false)),
