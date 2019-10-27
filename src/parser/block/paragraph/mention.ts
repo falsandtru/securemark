@@ -1,19 +1,11 @@
 import { ParagraphParser } from '../../block';
-import { subsequence, some, block, firstline, proc } from '../../../combinator';
+import { subsequence, some, block } from '../../../combinator';
 import { address } from './mention/address';
 import { quotation } from './mention/quotation';
-import { html } from 'typed-dom';
 
-export const mention: ParagraphParser.MentionParser = block(proc(
+export const mention: ParagraphParser.MentionParser = block(
   subsequence([
     some(address),
     quotation,
-  ]),
-  (ns, rest) => [
-    ns.reduceRight((acc, node) => {
-      void acc.unshift(node, html('br'));
-      return acc;
-    }, firstline(rest).trim() === '' ? [ns.pop()!] : []),
-    rest
   ]),
   false);

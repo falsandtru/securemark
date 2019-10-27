@@ -3,6 +3,7 @@
 ## 0.132.1
 
 - Change a syntax name from quote to quotation.
+- Fix paragraph parser to break lines around mention syntax.
 
 ## 0.132.0
 
