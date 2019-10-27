@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../block';
-import { subsequence, some, block, rewrite, trim, fmap } from '../../combinator';
+import { subsequence, some, block, rewrite, trim, lazy, fmap } from '../../combinator';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { contentline } from '../source';
@@ -7,18 +7,21 @@ import { defrag, hasContent } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-export const paragraph: ParagraphParser = block(fmap(
+export const paragraph: ParagraphParser = lazy(() => block(fmap(
   some(subsequence([
     fmap(
       some(mention),
       es => es.reduce((acc, el) => concat(acc, [el, html('br')]), [])),
     fmap(
-      rewrite(
-        some(contentline, /^>/),
-        defrag(trim(some(inline)))),
+      content,
       ns => concat(ns, [html('br')])),
   ])),
-  ns => [html('p', format(ns))].filter(hasContent)));
+  ns => [html('p', format(ns))].filter(hasContent))));
+
+const content = block(rewrite(
+  some(contentline, /^>/),
+  defrag(trim(some(inline)))),
+  false);
 
 function format<T extends Node[]>(ns: T): T {
   ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();
