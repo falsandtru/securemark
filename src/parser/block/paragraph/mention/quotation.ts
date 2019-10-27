@@ -5,7 +5,7 @@ import { autolink } from '../../../autolink';
 import { defrag } from '../../../util';
 import { html } from 'typed-dom';
 
-export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => block(fmap(
+export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() => block(fmap(
   union([
     rewrite(
       some(validate(/^(?=>+(?:\s|$))/, contentline)),
@@ -14,5 +14,5 @@ export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => block
       some(validate(/^>/, contentline)),
       convert(source => source.replace(/\n$/, ''), defrag(some(autolink)))),
   ]),
-  ns => [html('span', { class: 'quote' }, ns)]),
+  ns => [html('span', { class: 'quotation' }, ns)]),
   false));

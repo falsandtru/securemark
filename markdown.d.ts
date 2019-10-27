@@ -370,7 +370,7 @@ export namespace MarkdownParser {
         Block<'paragraph/mention'>,
         Parser<HTMLSpanElement, [
           ParagraphParser.MentionParser.AddressParser,
-          ParagraphParser.MentionParser.QuoteParser,
+          ParagraphParser.MentionParser.QuotationParser,
         ]> {
       }
       export namespace MentionParser {
@@ -382,9 +382,9 @@ export namespace MarkdownParser {
             InlineParser.LinkParser,
           ]> {
         }
-        export interface QuoteParser extends
+        export interface QuotationParser extends
           // > text
-          Block<'paragraph/mention/quote'>,
+          Block<'paragraph/mention/quotation'>,
           Parser<HTMLSpanElement, [
             AutolinkParser,
             AutolinkParser,

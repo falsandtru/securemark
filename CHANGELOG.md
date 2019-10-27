@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.132.1
+
+- Change a syntax name from quote to quotation.
+
 ## 0.132.0
 
 - Add context function.
@@ -21,7 +25,7 @@
 
 ## 0.129.0
 
-- Change the syntax name from authority to reference.
+- Change a syntax name from authority to reference.
 - Change numbering of figures not to inherit the label formats specified by themselves.
 - Fix numbering of figures to have consistent increment patterns.
 
