@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.132.2
+
+- Optimization.
+
 ## 0.132.1
 
 - Change a syntax name from quote to quotation.
