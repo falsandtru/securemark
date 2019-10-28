@@ -15,10 +15,10 @@ export function indent<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>
       some(line(rewrite(
         s => [[], s.slice(firstline(s).length)],
         surround(indent, s => [[firstline(s, false)], ''], ''))))),
-    rs => {
+    (rs, rest) => {
       const result = parser(rs.join('\n'));
       return result && exec(result) === ''
-        ? eval(result)
+        ? [eval(result), rest]
         : undefined;
     });
 }
