@@ -1,8 +1,6 @@
 import { Parser, eval, exec, check } from '../parser';
 import { concat } from 'spica/concat';
 
-const memsize = 1000;
-
 export function some<P extends Parser<unknown, any>>(parser: P, until?: string | RegExp): P;
 export function some<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, until?: string | RegExp): Parser<T, S> {
   assert(parser);
@@ -21,7 +19,7 @@ export function some<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, 
       void concat(data, eval(result));
       rest = exec(result);
     }
-    memory = source.length < memsize && rest || memory;
+    memory = rest || memory;
     assert(rest.length <= source.length);
     return rest.length < source.length
       ? [data, rest]
