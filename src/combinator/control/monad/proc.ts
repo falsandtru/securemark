@@ -13,6 +13,7 @@ export function proc<T, U, S extends Parser<unknown, any>[]>(parser: Parser<T, S
     assert(check(source, res2));
     assert(check(exec(res1), res2, false));
     if (!res2) return;
+    assert(exec(res2).length <= exec(res1).length);
     return exec(res2).length <= exec(res1).length
       ? res2
       : undefined;

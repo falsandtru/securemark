@@ -15,6 +15,7 @@ export function sequence<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S
       void concat(data, eval(result));
       rest = exec(result);
     }
+    assert(rest.length <= source.length);
     return rest.length < source.length
       ? [data, rest]
       : undefined;

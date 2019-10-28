@@ -17,6 +17,7 @@ export function some<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, 
       void concat(data, eval(result));
       rest = exec(result);
     }
+    assert(rest.length <= source.length);
     return rest.length < source.length
       ? [data, rest]
       : undefined;
