@@ -3296,13 +3296,13 @@ require = function () {
             ])), ns => concat_1.concat([...Array(2 - ns.length)].map(() => typed_dom_1.frag()), ns)), ([text]) => {
                 var _a;
                 if (util_1.hasMedia(text)) {
-                    if (((_a = text.firstChild) === null || _a === void 0 ? void 0 : _a.firstChild) && text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
-                        if (log.has(text.firstChild))
-                            return false;
-                        void text.replaceChild(text.firstChild.firstChild, text.firstChild);
-                    }
-                    if (text.childNodes.length !== 1)
+                    if (text.childNodes.length > 1)
                         return false;
+                    if (text.firstElementChild instanceof HTMLAnchorElement && ((_a = text.firstElementChild.firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.media'))) {
+                        if (log.has(text.firstElementChild))
+                            return false;
+                        void text.replaceChild(text.firstElementChild.firstElementChild, text.firstElementChild);
+                    }
                     if (!text.firstElementChild.matches('.media:last-child'))
                         return false;
                 } else {
@@ -3470,11 +3470,6 @@ require = function () {
                     void typed_dom_1.define(el, { alt: text });
                 }
                 void typed_dom_1.define(el, link_1.attrs(link_1.attributes, params, new Set(el.classList), 'media'));
-                if (!el.matches('img'))
-                    return [
-                        [el],
-                        rest
-                    ];
                 return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`);
             }));
         },
@@ -4162,14 +4157,14 @@ require = function () {
                         return void opts.code(target);
                     case !!opts.math && target.matches('.math') && target.children.length === 0:
                         return void opts.math(target);
-                    case target.matches('a > .media:not(img)'):
+                    case target.matches('.media:not(img)'):
                         return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
                     case !!opts.media && target.matches('img.media:not([src])[data-src]'): {
                             const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
                             void el.setAttribute('data-src', new URL(target.getAttribute('data-src'), window.location.href).href);
-                            const scope = target.matches('a > .media') && !el.matches('img') ? target.closest('a') : target;
+                            const scope = el.matches('img') ? target : target.parentElement;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
                     default:
