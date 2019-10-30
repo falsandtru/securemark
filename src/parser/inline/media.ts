@@ -34,7 +34,6 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
       void define(el, { alt: text });
     }
     void define(el, attrs(attributes, params, new Set(el.classList), 'media'));
-    if (!el.matches('img')) return [[el], rest];
     return fmap(
       link,
       ([link]) =>

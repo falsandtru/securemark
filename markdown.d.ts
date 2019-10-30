@@ -540,7 +540,7 @@ export namespace MarkdownParser {
       // !{uri}
       // ![abc]{uri}
       Inline<'media'>,
-      Parser<HTMLElement, [
+      Parser<HTMLAnchorElement, [
         MediaParser.TextParser,
         MediaParser.ParamParser,
       ]> {
