@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.133.0
+
+- Change license.
+
 ## 0.132.2
 
 - Optimization.
