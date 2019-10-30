@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/template', () => {
   describe('template', () => {
-    const parser = some(template);
+    const parser = (source: string) => some(template)(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

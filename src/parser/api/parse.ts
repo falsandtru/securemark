@@ -10,7 +10,7 @@ import { frag } from 'typed-dom';
 export function parse(source: string, opts: ParserOptions = {}): DocumentFragment {
   const node = frag(segment(normalize(source))
     .reduce((acc, seg) =>
-      concat(acc, eval(block(seg)))
+      concat(acc, eval(block(seg, {})))
     , []));
   opts.figure !== false && void figure(node);
   opts.footnote && void footnote(node, opts.footnote);

@@ -1,12 +1,12 @@
 import { Parser, exec } from '../../data/parser';
 import { firstline } from './line';
 
-export function block<P extends Parser<unknown, any>>(parser: P, separation?: boolean): P;
-export function block<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, separation = true): Parser<T, S> {
+export function block<P extends Parser<unknown, any, object>>(parser: P, separation?: boolean): P;
+export function block<T, S extends Parser<unknown, any, object>[]>(parser: Parser<T, S, object>, separation = true): Parser<T, S, object> {
   assert(parser);
-  return source => {
+  return (source, config) => {
     if (source === '') return;
-    const result = parser(source);
+    const result = parser(source, config);
     if (!result) return;
     const rest = exec(result);
     if (separation && firstline(rest).trim() !== '') return;

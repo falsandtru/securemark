@@ -1,4 +1,4 @@
-import { MediaParser } from '../inline';
+import { MediaParser, Config } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, fmap, bind } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
@@ -21,7 +21,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([[text = txt('')]]) => text.textContent === '' || hasTightText(text)),
   ([[text = txt('')], param]: (HTMLElement | Text)[][]) => [text.textContent!, ...param.map(t => t.textContent!)]),
-  ([text, INSECURE_URL, ...params]: string[], rest) => {
+  ([text, INSECURE_URL, ...params]: string[], rest, config) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;
     const uri = new URL(path, window.location.href);
@@ -38,5 +38,5 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
       link,
       ([link]) =>
         [define(link, { target: '_blank' }, [el])])
-      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`) as [[HTMLAnchorElement], string];
+      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, config) as [[HTMLAnchorElement], string, Config];
   }));

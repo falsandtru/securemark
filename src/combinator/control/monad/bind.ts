@@ -1,15 +1,15 @@
-import { Parser, Result, Data, SubData, SubParsers, SubParser, eval, exec, check } from '../../data/parser';
+import { Parser, Result, Data, SubParsers, Config, SubData, SubParser, eval, exec, check } from '../../data/parser';
 
-export function bind<P extends Parser<unknown, any>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string) => Result<Data<P>, SubParsers<P>>): P;
-export function bind<T, U, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S>;
-export function bind<T, U, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, f: (rs: T[], rest: string) => Result<U, S>): Parser<U, S> {
+export function bind<P extends Parser<unknown, any, object>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string, config: Config<P>) => Result<Data<P>, SubParsers<P>, Config<P>>): P;
+export function bind<T, U, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>, f: (rs: T[], rest: string, config: C) => Result<U, S, C>): Parser<U, S, C>;
+export function bind<T, U, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>, f: (rs: T[], rest: string, config: C) => Result<U, S, C>): Parser<U, S, C> {
   assert(parser);
-  return source => {
+  return (source, config) => {
     if (source === '') return;
-    const res1 = parser(source);
+    const res1 = parser(source, config);
     assert(check(source, res1));
     if (!res1) return;
-    const res2 = f(eval(res1), exec(res1));
+    const res2 = f(eval(res1), exec(res1), config);
     assert(check(source, res2));
     assert(check(exec(res1), res2, false));
     if (!res2) return;

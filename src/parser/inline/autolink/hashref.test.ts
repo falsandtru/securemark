@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/hashref', () => {
   describe('hashref', () => {
-    const parser = some(autolink);
+    const parser = (source: string) => some(autolink)(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

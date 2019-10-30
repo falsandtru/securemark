@@ -4,7 +4,7 @@ import { inspect } from '../../../../debug.test';
 
 describe('Unit: parser/block/paragraph/mention/quotation', () => {
   describe('quotation', () => {
-    const parser = some(quotation);
+    const parser = (source: string) => some(quotation)(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

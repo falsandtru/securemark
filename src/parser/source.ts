@@ -1,5 +1,6 @@
 import { MarkdownParser } from '../../markdown.d';
 
+export import Config = MarkdownParser.Config;
 import SourceParser = MarkdownParser.SourceParser;
 export import TextParser = SourceParser.TextParser;
 export import NewlineParser = SourceParser.NewlineParser;

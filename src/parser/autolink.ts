@@ -3,6 +3,7 @@ import { union } from '../combinator';
 import { autolink as al } from './inline';
 import { newline, unescsource } from './source';
 
+export import Config = MarkdownParser.Config;
 export import AutolinkParser = MarkdownParser.AutolinkParser;
 
 export const autolink: AutolinkParser = union([

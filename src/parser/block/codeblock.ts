@@ -11,17 +11,17 @@ export const segment: CodeBlockParser.SegmentParser = lazy(() => block(segment_)
 
 export const segment_: CodeBlockParser.SegmentParser = block(focus(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/,
-  _ => [[], '']), false);
+  (_, config) => [[], '', config]), false);
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/,
-  ([, , lang, param, body]) => rest => {
+  ([, , lang, param, body]) => (rest, config) => {
     assert(rest === '');
     [lang, param] = language.test(lang)
       ? [lang, param]
       : ['', lang + param];
     param = param.trim();
-    const path = stringify(eval(some(escsource, /^\s/)(param)));
+    const path = stringify(eval(some(escsource, /^\s/)(param, config)));
     const file = path.split('/').pop() || '';
     const ext = file && file.includes('.') && !file.startsWith('.')
       ? file.split('.').pop()!
@@ -36,7 +36,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
       void el.setAttribute('data-lang', lang);
     }
     else {
-      void define(el, eval(defrag(some(autolink))(el.textContent!)));
+      void define(el, eval(defrag(some(autolink))(el.textContent!, config)));
     }
     if (path) {
       void el.setAttribute('data-file', path);
@@ -48,5 +48,5 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
         'data-invalid-type': 'parameter',
       });
     }
-    return [[el], rest];
+    return [[el], rest, config];
   }))));

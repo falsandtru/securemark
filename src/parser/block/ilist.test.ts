@@ -3,7 +3,7 @@ import { some } from '../../combinator';
 
 describe('Unit: parser/block/ilist', () => {
   describe('ilist', () => {
-    const parser = some(ilist);
+    const parser = (source: string) => some(ilist)(source, {});
 
     it('single', () => {
       assert(!parser('-'));

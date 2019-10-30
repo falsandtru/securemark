@@ -35,6 +35,6 @@ export function verifyListItem(el: HTMLLIElement): HTMLLIElement {
   return hasMedia(el)
     ? define(el,
         { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' },
-        eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to use media syntax in lists.')))
+        eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to use media syntax in lists.', {})))
     : el;
 }

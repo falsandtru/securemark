@@ -73,18 +73,18 @@ const data: CellParser.DataParser = bind(
     union([some(inline, /^\s*(?:\||$)/)]),
     /^\s*/,
     false),
-  (ns, rest) =>
+  (ns, rest, config) =>
     ns.length === 0 && rest === ''
       ? undefined
-      : [squash(ns), rest]);
+      : [squash(ns), rest, config]);
 
 const align: CellParser.AlignParser =
   surround(
     '|',
     union([
-      focus(/^:-+:/, _ => [[text('center')], '']),
-      focus(/^:-+/, _ => [[text('left')], '']),
-      focus(/^-+:/, _ => [[text('right')], '']),
-      focus(/^-+/, _ => [[text('')], '']),
+      focus(/^:-+:/, (_, config) => [[text('center')], '', config]),
+      focus(/^:-+/, (_, config) => [[text('left')], '', config]),
+      focus(/^-+:/, (_, config) => [[text('right')], '', config]),
+      focus(/^-+/, (_, config) => [[text('')], '', config]),
     ]),
     '');

@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/link', () => {
   describe('link', () => {
-    const parser = some(link);
+    const parser = (source: string) => some(link)(source, {});
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('[]{javascript:alert}')), undefined);

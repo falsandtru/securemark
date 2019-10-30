@@ -3,7 +3,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/newline', () => {
   describe('newline', () => {
-    const parser = newline;
+    const parser = (source: string) => newline(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

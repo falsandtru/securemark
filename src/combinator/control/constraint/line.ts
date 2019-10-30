@@ -1,26 +1,26 @@
 import { Parser, eval, exec, check } from '../../data/parser';
 
-export function line<P extends Parser<unknown, any>>(parser: P, allowTrailingWhitespace?: boolean): P;
-export function line<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>, allowTrailingWhitespace = true): Parser<T, S> {
+export function line<P extends Parser<unknown, any, object>>(parser: P, allowTrailingWhitespace?: boolean): P;
+export function line<T, S extends Parser<unknown, any, object>[]>(parser: Parser<T, S, object>, allowTrailingWhitespace = true): Parser<T, S, object> {
   assert(parser);
-  return source => {
+  return (source, config) => {
     if (source === '') return;
     const fst = firstline(source);
-    const result = parser(fst);
+    const result = parser(fst, config);
     assert(check(fst, result));
     if (!result) return;
     return (allowTrailingWhitespace ? exec(result).trim() === '' : exec(result) === '')
-      ? [eval(result), source.slice(fst.length)]
+      ? [eval(result), source.slice(fst.length), config]
       : undefined;
   };
 }
 
-export function subline<P extends Parser<unknown, any>>(parser: P): P;
-export function subline<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+export function subline<P extends Parser<unknown, any, object>>(parser: P): P;
+export function subline<T, S extends Parser<unknown, any, object>[]>(parser: Parser<T, S, object>): Parser<T, S, object> {
   assert(parser);
-  return source => {
+  return (source, config) => {
     if (source === '') return;
-    const result = parser(source);
+    const result = parser(source, config);
     assert(check(source, result));
     if (!result) return result;
     return source.length - exec(result).length <= firstline(source, false).length

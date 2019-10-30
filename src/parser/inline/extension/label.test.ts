@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/extension/label', () => {
   describe('label', () => {
-    const parser = some(label);
+    const parser = (source: string) => some(label)(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('[]')), undefined);

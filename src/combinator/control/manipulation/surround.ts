@@ -1,17 +1,17 @@
 import { Parser } from '../../data/parser';
 
-export function surround<P extends Parser<unknown, any>>(start: string | RegExp, parser: P, end: string | RegExp, strict?: boolean): P;
-export function surround<T, S extends Parser<unknown, any>[]>(start: string | RegExp, parser: Parser<T, S>, end: string | RegExp, strict = true): Parser<T, S> {
+export function surround<P extends Parser<unknown, any, object>>(start: string | RegExp, parser: P, end: string | RegExp, strict?: boolean): P;
+export function surround<T, S extends Parser<unknown, any, object>[]>(start: string | RegExp, parser: Parser<T, S, object>, end: string | RegExp, strict = true): Parser<T, S, object> {
   assert(start instanceof RegExp ? !start.global && start.source.startsWith('^') : true);
   assert(end instanceof RegExp ? !end.global && end.source.startsWith('^') : true);
   assert(parser);
-  return lmr_ => {
+  return (lmr_, config) => {
     if (lmr_ === '') return;
     const l = match(lmr_, start);
     if (l === undefined) return;
     assert(lmr_.startsWith(l));
     const mr_ = l ? lmr_.slice(l.length) : lmr_;
-    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_) || [];
+    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, config) || [];
     if (strict && r_.length === mr_.length) return;
     if (r_.length > mr_.length) return;
     assert(mr_.endsWith(r_));
@@ -19,7 +19,7 @@ export function surround<T, S extends Parser<unknown, any>[]>(start: string | Re
     if (r === undefined) return;
     assert(r_.startsWith(r));
     return l + r !== '' || r_.length - r.length < lmr_.length
-      ? [rs, r ? r_.slice(r.length) : r_]
+      ? [rs, r ? r_.slice(r.length) : r_, config]
       : undefined;
   };
 }

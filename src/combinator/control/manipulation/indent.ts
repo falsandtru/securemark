@@ -6,19 +6,19 @@ import { bind } from '../monad/bind';
 import { match } from './match';
 import { surround } from './surround';
 
-export function indent<P extends Parser<unknown, any>>(parser: P): P;
-export function indent<T, S extends Parser<unknown, any>[]>(parser: Parser<T, S>): Parser<T, S> {
+export function indent<P extends Parser<unknown, any, object>>(parser: P): P;
+export function indent<T, S extends Parser<unknown, any, object>[]>(parser: Parser<T, S, object>): Parser<T, S, object> {
   assert(parser);
-  return bind<string, T, S>(match(
+  return bind<string, T, S, object>(match(
     /^(?=([^\S\n]+))/,
     ([, indent]) =>
       some(line(rewrite(
-        s => [[], s.slice(firstline(s).length)],
-        surround(indent, s => [[firstline(s, false)], ''], ''))))),
-    (rs, rest) => {
-      const result = parser(rs.join('\n'));
+        (s, c) => [[], s.slice(firstline(s).length), c],
+        surround(indent, (s, c) => [[firstline(s, false)], '', c], ''))))),
+    (rs, rest, config) => {
+      const result = parser(rs.join('\n'), config);
       return result && exec(result) === ''
-        ? [eval(result), rest]
+        ? [eval(result), rest, config]
         : undefined;
     });
 }

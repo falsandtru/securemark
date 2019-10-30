@@ -4,7 +4,7 @@ import { inspect } from '../debug.test';
 
 describe('Unit: parser/locale', () => {
   describe('locale', () => {
-    const parser = some(block);
+    const parser = (source: string) => some(block)(source, {});
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('。\\\n0')), [['<p>。<span class="linebreak"><wbr></span>0</p>'], '']);

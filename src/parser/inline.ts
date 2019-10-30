@@ -21,6 +21,7 @@ import { autolink } from './inline/autolink';
 import { bracket } from './inline/bracket';
 import { text } from './source';
 
+export import Config = MarkdownParser.Config;
 export import InlineParser = MarkdownParser.InlineParser;
 export import AnnotationParser = InlineParser.AnnotationParser;
 export import ReferenceParser = InlineParser.ReferenceParser;

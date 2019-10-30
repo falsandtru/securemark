@@ -1,15 +1,15 @@
 import { Parser, Data, SubData, SubParsers, SubParser, eval, exec, check } from '../parser';
 import { concat } from 'spica/concat';
 
-export function sequence<P extends Parser<unknown, any>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
-export function sequence<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S> {
+export function sequence<P extends Parser<unknown, any, object>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
+export function sequence<T, S extends Parser<T, any, object>[]>(parsers: S): Parser<T, S, object> {
   assert(parsers.every(f => f));
-  return source => {
+  return (source, config) => {
     let rest = source;
     const data: T[] = [];
     for (const parser of parsers) {
       if (rest === '') return;
-      const result = parser(rest);
+      const result = parser(rest, config);
       assert(check(rest, result));
       if (!result) return;
       void concat(data, eval(result));
@@ -17,7 +17,7 @@ export function sequence<T, S extends Parser<T, any>[]>(parsers: S): Parser<T, S
     }
     assert(rest.length <= source.length);
     return rest.length < source.length
-      ? [data, rest]
+      ? [data, rest, config]
       : undefined;
   };
 }

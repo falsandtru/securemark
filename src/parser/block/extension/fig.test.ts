@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/fig', () => {
   describe('fig', () => {
-    const parser = some(fig);
+    const parser = (source: string) => some(fig)(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('\n!https://host\n')), undefined);
