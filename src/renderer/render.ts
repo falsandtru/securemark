@@ -25,8 +25,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         if (!el) return;
         assert(el.matches('.media'));
         void el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, window.location.href).href);
-        const scope = target.matches('a > .media') && !el.matches('img')
-          ? target.closest('a')!
+        const scope = !el.matches('img') && target.parentElement instanceof HTMLAnchorElement
           : target;
         return void scope.parentElement!.replaceChild(el, scope);
       }
