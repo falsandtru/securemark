@@ -23,12 +23,12 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),
   ([text]) => {
     if (hasMedia(text)) {
-      if (text.firstChild?.firstChild &&
-          text.firstChild.firstChild === text.querySelector('a > .media:last-child')) {
-        if (log.has(text.firstChild as HTMLAnchorElement)) return false;
-        void text.replaceChild(text.firstChild.firstChild, text.firstChild);
+      if (text.childNodes.length > 1) return false;
+      if (text.firstElementChild instanceof HTMLAnchorElement &&
+          text.firstElementChild.firstElementChild?.matches('.media')) {
+        if (log.has(text.firstElementChild)) return false;
+        void text.replaceChild(text.firstElementChild.firstElementChild, text.firstElementChild);
       }
-      if (text.childNodes.length !== 1) return false;
       if (!text.firstElementChild!.matches('.media:last-child')) return false;
     }
     else {
