@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, surround, trimEnd, lazy, override, fmap, bind } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, surround, trimEnd, configure, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { defrag } from '../util';
 import { concat } from 'spica/concat';
@@ -10,7 +10,7 @@ import CellParser = RowParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
   /^|/,
-  override({ syntax: { inline: { media: false } } },
+  configure({ syntax: { inline: { media: false } } },
   sequence([
     row(cell(data), false),
     row(cell(align), true),

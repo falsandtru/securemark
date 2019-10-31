@@ -1,4 +1,4 @@
-import { Parser, Data, Config, eval, exec, check } from '../../data/parser';
+import { Parser, Data, eval, exec, check } from '../../data/parser';
 
 export function contract<P extends Parser<unknown, any, object>>(pattern: RegExp | string, parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
 export function contract<T, S extends Parser<unknown, any, object>[]>(pattern: RegExp | string, parser: Parser<T, S, object>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, S, object> {
@@ -6,16 +6,12 @@ export function contract<T, S extends Parser<unknown, any, object>[]>(pattern: R
 }
 
 export function validate<P extends Parser<unknown, any, object>>(pattern: RegExp | string, parser: P): P;
-export function validate<P extends Parser<unknown, any, object>>(check: (config: Config<P>) => boolean, parser: P): P;
-export function validate<T, S extends Parser<unknown, any, object>[]>(pattern: RegExp | string | ((config: object) => boolean), parser: Parser<T, S, object>): Parser<T, S, object> {
+export function validate<T, S extends Parser<unknown, any, object>[]>(pattern: RegExp | string, parser: Parser<T, S, object>): Parser<T, S, object> {
   assert(pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true);
   assert(parser);
   return (source, config) => {
     if (source === '') return;
     switch (typeof pattern) {
-      case 'function':
-        if (pattern(config)) break;
-        return;
       case 'string':
         if (source.startsWith(pattern)) break;
         return;

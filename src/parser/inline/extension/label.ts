@@ -1,12 +1,12 @@
 import { ExtensionParser } from '../../inline';
-import { union, subline, focus, verify, surround, convert, override, fmap } from '../../../combinator';
+import { union, subline, focus, verify, surround, convert, configure, fmap } from '../../../combinator';
 import { link } from '../link';
 import { hasTightText } from '../../util';
 import { define } from 'typed-dom';
 
 const parser = focus(
   /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/,
-  override({ syntax: { inline: { link: undefined } } },
+  configure({ syntax: { inline: { link: undefined } } },
   convert(
     query => `[\\${query}]{#}`,
     link)));

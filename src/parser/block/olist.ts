@@ -1,5 +1,5 @@
 import { OListParser } from '../block';
-import { union, inits, some, block, line, focus, match, memoize, surround, convert, indent, trim, override, fmap } from '../../combinator';
+import { union, inits, some, block, line, focus, match, memoize, surround, convert, indent, trim, configure, fmap } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
@@ -15,7 +15,7 @@ export const olist: OListParser = block(match(
   memoize(([, index]) => index,
   index =>
     fmap(
-      override({ syntax: { inline: { media: false } } },
+      configure({ syntax: { inline: { media: false } } },
       some(union([
         fmap(
           inits([

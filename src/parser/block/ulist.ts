@@ -1,5 +1,5 @@
 import { UListParser } from '../block';
-import { union, inits, some, block, line, validate, surround, convert, indent, trim, lazy, override, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, surround, convert, indent, trim, configure, lazy, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
@@ -11,7 +11,7 @@ const opener = /^-(?:\s|$)/;
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
   /^-(?:[^\S\n]|\n[^\S\n]*\S)/,
-  override({ syntax: { inline: { media: false } } },
+  configure({ syntax: { inline: { media: false } } },
   some(union([
     fmap(
       inits([

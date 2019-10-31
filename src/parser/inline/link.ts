@@ -1,5 +1,5 @@
 import { LinkParser, media, shortmedia, inline } from '../inline';
-import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, lazy, override, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, check, configure, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
 import { defrag, wrap, trimNodeEnd, hasTightText, hasContent } from '../util';
@@ -14,13 +14,13 @@ export const attributes: DeepImmutable<Record<string, Array<string | undefined>>
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
-  validate(config => config?.syntax?.inline?.link ?? true,
-  override({ syntax: { inline: { link: false } } },
+  check(config => config?.syntax?.inline?.link ?? true,
+  configure({ syntax: { inline: { link: false } } },
   tails([
     wrap(trimNodeEnd(defrag(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
-      surround('[', override({ syntax: { inline: { media: false } } }, some(inline, /^\\?\n|^]/)), ']', false),
+      surround('[', configure({ syntax: { inline: { media: false } } }, some(inline, /^\\?\n|^]/)), ']', false),
     ])))),
     wrap(surround('{', inits<LinkParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/)),
   ])))),

@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../../../block';
-import { union, line, focus, match, memoize, convert, trimEnd, override, fmap } from '../../../../combinator';
+import { union, line, focus, match, memoize, convert, trimEnd, configure, fmap } from '../../../../combinator';
 import { link, address as addr, attribute as attr } from '../../../inline';
 import { define } from 'typed-dom';
 
@@ -7,7 +7,7 @@ export const address: ParagraphParser.MentionParser.AddressParser = line(fmap(ma
   /^>+(?!>)(?=\S+\s*$)/,
   memoize(([prefix]) => prefix,
   prefix =>
-    override({ syntax: { inline: { link: undefined } } },
+    configure({ syntax: { inline: { link: undefined } } },
     trimEnd(union([
       focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*$/, convert(source => `[${prefix}]{ ${source} }`, link)),
       focus(/^h?ttps?:\/\/[^/\s]\S*$/, convert(source => `[${prefix}]{ ${addr(source)}${attr(source)} }`, link)),
