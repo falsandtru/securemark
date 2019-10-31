@@ -1,7 +1,7 @@
 import { Parser, eval, exec, check } from '../../data/parser';
 
-export function focus<P extends Parser<unknown, any, object, object>>(scope: string | RegExp, parser: P): P;
-export function focus<T, D extends Parser<unknown, any, object, object>[]>(scope: string | RegExp, parser: Parser<T, D, object, object>): Parser<T, D, object, object> {
+export function focus<P extends Parser<unknown, any>>(scope: string | RegExp, parser: P): P;
+export function focus<T, D extends Parser<unknown, any>[]>(scope: string | RegExp, parser: Parser<T, D>): Parser<T, D> {
   assert(scope instanceof RegExp ? !scope.global && scope.source.startsWith('^') : true);
   assert(parser);
   return (source, config) => {
@@ -21,8 +21,8 @@ export function focus<T, D extends Parser<unknown, any, object, object>[]>(scope
   };
 }
 
-export function rewrite<P extends Parser<unknown, any, object, object>>(scope: Parser<unknown, any, object, object>, parser: P): P;
-export function rewrite<T, D extends Parser<unknown, any, object, object>[]>(scope: Parser<never, any, object, object>, parser: Parser<T, D, object, object>): Parser<T, D, object, object> {
+export function rewrite<P extends Parser<unknown, any>>(scope: Parser<unknown, any>, parser: P): P;
+export function rewrite<T, D extends Parser<unknown, any>[]>(scope: Parser<never, any>, parser: Parser<T, D>): Parser<T, D> {
   assert(scope);
   assert(parser);
   return (source, config) => {

@@ -1,7 +1,7 @@
 import { Parser, eval, exec, check } from '../../data/parser';
 
-export function line<P extends Parser<unknown, any, object, object>>(parser: P, allowTrailingWhitespace?: boolean): P;
-export function line<T, D extends Parser<unknown, any, object, object>[]>(parser: Parser<T, D, object, object>, allowTrailingWhitespace = true): Parser<T, D, object, object> {
+export function line<P extends Parser<unknown, any>>(parser: P, allowTrailingWhitespace?: boolean): P;
+export function line<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, allowTrailingWhitespace = true): Parser<T, D> {
   assert(parser);
   return (source, config) => {
     if (source === '') return;
@@ -15,8 +15,8 @@ export function line<T, D extends Parser<unknown, any, object, object>[]>(parser
   };
 }
 
-export function subline<P extends Parser<unknown, any, object, object>>(parser: P): P;
-export function subline<T, D extends Parser<unknown, any, object, object>[]>(parser: Parser<T, D, object, object>): Parser<T, D, object, object> {
+export function subline<P extends Parser<unknown, any>>(parser: P): P;
+export function subline<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
   assert(parser);
   return (source, config) => {
     if (source === '') return;

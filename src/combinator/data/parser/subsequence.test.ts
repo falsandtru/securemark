@@ -4,22 +4,22 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/subsequence', () => {
   describe('subsequence', () => {
-    const a: Parser<string, never, object, object> = (source, config): Result<string, never, object, object> => {
+    const a: Parser<string, never> = (source, config): Result<string, never> => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1), config]
         : undefined;
     }
-    const b: Parser<string, never, object, object> = (source, config): Result<string, never, object, object> => {
+    const b: Parser<string, never> = (source, config): Result<string, never> => {
       return source && source[0] === 'b'
         ? [['B'], source.slice(1), config]
         : undefined;
     }
-    const c: Parser<string, never, object, object> = (source, config): Result<string, never, object, object> => {
+    const c: Parser<string, never> = (source, config): Result<string, never> => {
       return source && source[0] === 'c'
         ? [['C'], source.slice(1), config]
         : undefined;
     }
-    const abc = subsequence<Parser<string, [typeof a, typeof b, typeof c], object, object>>([a, b, c]);
+    const abc = subsequence<Parser<string, [typeof a, typeof b, typeof c]>>([a, b, c]);
 
     it('basic', () => {
       const parser = abc;

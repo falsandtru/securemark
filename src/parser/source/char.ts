@@ -4,7 +4,7 @@ import { text } from 'typed-dom';
 
 export function char(char: '!'): CharParser.ExclamationParser;
 export function char(char: '='): CharParser.EqualParser;
-export function char(char: string): Parser<Text, [], object, object> {
+export function char(char: string): Parser<Text, []> {
   return (source, config) => {
     if (source === '') return;
     switch (source[0]) {
