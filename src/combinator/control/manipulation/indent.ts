@@ -7,9 +7,9 @@ import { match, memoize } from './match';
 import { surround } from './surround';
 
 export function indent<P extends Parser<unknown, any, object>>(parser: P): P;
-export function indent<T, S extends Parser<unknown, any, object>[]>(parser: Parser<T, S, object>): Parser<T, S, object> {
+export function indent<T, D extends Parser<unknown, any, object>[]>(parser: Parser<T, D, object>): Parser<T, D, object> {
   assert(parser);
-  return bind<string, T, S, object>(match(
+  return bind<string, T, D, object>(match(
     /^(?=([^\S\n]+))/,
     memoize(([, indent]) => indent,
     indent =>

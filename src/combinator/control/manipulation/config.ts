@@ -2,7 +2,7 @@ import { Parser, Config } from '../../data/parser';
 import { extend } from 'spica/assign';
 
 export function check<P extends Parser<object, any, object>>(f: (config: Config<P>) => boolean, parser: P): P;
-export function check<T extends object, S extends Parser<unknown, any, C>[], C extends object>(f: (config: C) => boolean, parser: Parser<T, S, C>): Parser<T, S, C> {
+export function check<T extends object, D extends Parser<unknown, any, C>[], C extends object>(f: (config: C) => boolean, parser: Parser<T, D, C>): Parser<T, D, C> {
   return (source, config) =>
     f(config)
       ? parser(source, config)
@@ -12,7 +12,7 @@ export function check<T extends object, S extends Parser<unknown, any, C>[], C e
 const singleton = {};
 
 export function configure<P extends Parser<object, any, object>>(config: Config<P>, parser: P): P;
-export function configure<T extends object, S extends Parser<unknown, any, C>[], C extends object>(config: C, parser: Parser<T, S, C>): Parser<T, S, C> {
+export function configure<T extends object, D extends Parser<unknown, any, C>[], C extends object>(config: C, parser: Parser<T, D, C>): Parser<T, D, C> {
   const memory = new WeakMap<C, C>();
   return (source, base: C) => {
     base = !memory.has(base) && Object.keys(base).length === 0

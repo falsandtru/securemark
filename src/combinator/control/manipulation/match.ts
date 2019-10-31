@@ -2,7 +2,7 @@ import { Parser, exec, check } from '../../data/parser';
 import { memoize as memoize_ } from 'spica/memoization';
 
 export function match<P extends Parser<unknown, any, object>>(pattern: RegExp, f: (matched: string[]) => P): P;
-export function match<T, S extends Parser<unknown, any, object>[]>(pattern: RegExp, f: (matched: string[]) => Parser<T, S, object>): Parser<T, S, object> {
+export function match<T, D extends Parser<unknown, any, object>[]>(pattern: RegExp, f: (matched: string[]) => Parser<T, D, object>): Parser<T, D, object> {
   assert(!pattern.global && pattern.source.startsWith('^'));
   return (source, config) => {
     if (source === '') return;
