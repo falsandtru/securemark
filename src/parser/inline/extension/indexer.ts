@@ -11,8 +11,8 @@ export const indexer: ExtensionParser.IndexerParser = lazy(() => line(fmap(
   ([el]) =>
     [html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })])));
 
-export function indexee<P extends Parser<HTMLElement, any, object>>(parser: P): P;
-export function indexee<T extends HTMLElement, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>): Parser<T, D, C> {
+export function indexee<P extends Parser<HTMLElement, any, object, object>>(parser: P): P;
+export function indexee<T extends HTMLElement, D extends Parser<unknown, any, C, S>[], C extends object, S extends object>(parser: Parser<T, D, C, S>): Parser<T, D, C, S> {
   return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || null })]);
 }
 

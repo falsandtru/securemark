@@ -1,8 +1,8 @@
 import { Parser, eval, exec, check } from '../parser';
 import { concat } from 'spica/concat';
 
-export function some<P extends Parser<unknown, any, object>>(parser: P, until?: string | RegExp): P;
-export function some<T, D extends Parser<unknown, any, object>[]>(parser: Parser<T, D, object>, until?: string | RegExp): Parser<T, D, object> {
+export function some<P extends Parser<unknown, any, object, object>>(parser: P, until?: string | RegExp): P;
+export function some<T, D extends Parser<unknown, any, object, object>[]>(parser: Parser<T, D, object, object>, until?: string | RegExp): Parser<T, D, object, object> {
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
   let memory = '';

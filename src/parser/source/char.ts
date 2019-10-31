@@ -1,10 +1,10 @@
-import { CharParser, Config } from '../source';
+import { CharParser } from '../source';
 import { Parser } from '../../combinator';
 import { text } from 'typed-dom';
 
 export function char(char: '!'): CharParser.ExclamationParser;
 export function char(char: '='): CharParser.EqualParser;
-export function char(char: string): Parser<Text, [], Config> {
+export function char(char: string): Parser<Text, [], object, object> {
   return (source, config) => {
     if (source === '') return;
     switch (source[0]) {

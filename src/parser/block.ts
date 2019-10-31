@@ -15,7 +15,6 @@ import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 import { localize } from './locale';
 
-export import Config = MarkdownParser.Config;
 export import BlockParser = MarkdownParser.BlockParser;
 export import NewlineParser = BlockParser.NewlineParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
