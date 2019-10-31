@@ -3,7 +3,7 @@ import { some } from '../../data/parser/some';
 import { line, firstline } from '../constraint/line';
 import { rewrite } from '../constraint/scope';
 import { bind } from '../monad/bind';
-import { match } from './match';
+import { match, memoize } from './match';
 import { surround } from './surround';
 
 export function indent<P extends Parser<unknown, any, object>>(parser: P): P;
@@ -11,10 +11,11 @@ export function indent<T, S extends Parser<unknown, any, object>[]>(parser: Pars
   assert(parser);
   return bind<string, T, S, object>(match(
     /^(?=([^\S\n]+))/,
-    ([, indent]) =>
+    memoize(([, indent]) => indent,
+    indent =>
       some(line(rewrite(
-        (s, c) => [[], s.slice(firstline(s).length), c],
-        surround(indent, (s, c) => [[firstline(s, false)], '', c], ''))))),
+        (source, config) => [[], source.slice(firstline(source).length), config],
+        surround(indent, (source, config) => [[firstline(source, false)], '', config], '')))))),
     (rs, rest, config) => {
       const result = parser(rs.join('\n'), config);
       return result && exec(result) === ''

@@ -1,5 +1,4 @@
 import { Parser, fmap } from '../combinator';
-import { memoize as memoize_ } from 'spica/memoization';
 import { frag, define, apply } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
@@ -119,9 +118,4 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
   }
   void apply(target, 'a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]', { id: null, href: null });
   return target;
-}
-
-export function memoize<a, b, c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
-  g = memoize_(g);
-  return a => g(f(a));
 }

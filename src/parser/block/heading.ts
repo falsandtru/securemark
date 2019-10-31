@@ -1,7 +1,7 @@
 import { HeadingParser } from '../block';
-import { union, some, block, line, verify, match, trim, override, fmap } from '../../combinator';
+import { union, some, block, line, verify, match, memoize, trim, override, fmap } from '../../combinator';
 import { inline, indexer, indexee } from '../inline';
-import { defrag, hasText, memoize } from '../util';
+import { defrag, hasText } from '../util';
 import { html } from 'typed-dom';
 
 export const heading: HeadingParser = block(some(line(indexee(verify(match(

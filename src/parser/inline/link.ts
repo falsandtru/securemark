@@ -1,8 +1,8 @@
 import { LinkParser, media, shortmedia, inline } from '../inline';
-import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, override, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, lazy, override, fmap, bind } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
-import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, memoize } from '../util';
+import { defrag, wrap, trimNodeEnd, hasTightText, hasContent } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';

@@ -1,4 +1,5 @@
 import { Parser, exec, check } from '../../data/parser';
+import { memoize as memoize_ } from 'spica/memoization';
 
 export function match<P extends Parser<unknown, any, object>>(pattern: RegExp, f: (matched: string[]) => P): P;
 export function match<T, S extends Parser<unknown, any, object>[]>(pattern: RegExp, f: (matched: string[]) => Parser<T, S, object>): Parser<T, S, object> {
@@ -16,4 +17,9 @@ export function match<T, S extends Parser<unknown, any, object>[]>(pattern: RegE
       ? result
       : undefined;
   };
+}
+
+export function memoize<a, b, c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
+  g = memoize_(g);
+  return a => g(f(a));
 }

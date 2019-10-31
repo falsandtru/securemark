@@ -1,7 +1,6 @@
 import { ParagraphParser } from '../../../block';
-import { union, line, focus, match, convert, trimEnd, override, fmap } from '../../../../combinator';
+import { union, line, focus, match, memoize, convert, trimEnd, override, fmap } from '../../../../combinator';
 import { link, address as addr, attribute as attr } from '../../../inline';
-import { memoize } from '../../../util';
 import { define } from 'typed-dom';
 
 export const address: ParagraphParser.MentionParser.AddressParser = line(fmap(match(
