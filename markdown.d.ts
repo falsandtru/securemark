@@ -11,6 +11,18 @@ export interface MarkdownParser extends
 }
 export namespace MarkdownParser {
   export interface Config {
+    readonly syntax?: {
+      readonly inline?: {
+        readonly emphasis?: boolean;
+        readonly strong?: boolean;
+        readonly link?: boolean;
+        readonly media?: boolean;
+        readonly insertion?: boolean;
+        readonly deletion?: boolean;
+        readonly annotation?: boolean;
+        readonly reference?: boolean;
+      };
+    };
   }
   export interface SegmentParser extends
     Markdown<'segment'>,
@@ -509,6 +521,8 @@ export namespace MarkdownParser {
       export interface ContentParser extends
         Inline<'link/content'>,
         Parser<DocumentFragment, [
+          MediaParser,
+          ShortmediaParser,
           InlineParser,
         ], Config> {
       }

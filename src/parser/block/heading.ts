@@ -1,7 +1,7 @@
 import { HeadingParser } from '../block';
-import { union, some, block, line, verify, match, trim, fmap } from '../../combinator';
+import { union, some, block, line, verify, match, trim, override, fmap } from '../../combinator';
 import { inline, indexer, indexee } from '../inline';
-import { defrag, hasText, hasMedia, memoize } from '../util';
+import { defrag, hasText, memoize } from '../util';
 import { html } from 'typed-dom';
 
 export const heading: HeadingParser = block(some(line(indexee(verify(match(
@@ -9,6 +9,7 @@ export const heading: HeadingParser = block(some(line(indexee(verify(match(
   memoize(([, { length: level }]) => level,
   level =>
     fmap(
-      defrag(trim(some(union([indexer, inline])))),
+      override({ syntax: { inline: { media: false } } },
+      defrag(trim(some(union([indexer, inline]))))),
       ns => [html(`h${level}` as 'h1', ns)]))),
-  ([el]) => hasText(el) && !hasMedia(el))))));
+  ([el]) => hasText(el))))));

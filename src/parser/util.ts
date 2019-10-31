@@ -4,23 +4,11 @@ import { frag, define, apply } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
-      || hasMedia(node);
-}
-
-export function hasMedia(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('.media');
+      || !!node.querySelector('.media');
 }
 
 export function hasLink(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('a, .annotation, .reference');
-}
-
-export function hasInsOrDel(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('ins, del');
-}
-
-export function hasAnnotationOrReference(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('.annotation, .reference');
+  return !!node.querySelector('a');
 }
 
 export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {

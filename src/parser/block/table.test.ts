@@ -23,8 +23,6 @@ describe('Unit: parser/block/table', () => {
       assert.deepStrictEqual(inspect(parser('|h\n|-\n |b')), undefined);
       assert.deepStrictEqual(inspect(parser('|h\n |-\n|b')), undefined);
       assert.deepStrictEqual(inspect(parser(' |h\n|-\n|b')), undefined);
-      assert.deepStrictEqual(inspect(parser('|!http://host\n|-\n|')), undefined);
-      assert.deepStrictEqual(inspect(parser('|\n|-\n|!http://host')), undefined);
     });
 
     it('valid', () => {
@@ -40,6 +38,8 @@ describe('Unit: parser/block/table', () => {
       assert.deepStrictEqual(inspect(parser('||\n|-\n||\\\n')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td><td></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|| \n|- \n|| ')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|| \n|-| \n|| ')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|!http://host\n|-\n|')), [['<table><thead><tr><td>!<a href="http://host" rel="noopener" target="_blank">http://host</a></td></tr></thead><tbody><tr></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|\n|-\n|!http://host')), [['<table><thead><tr></tr></thead><tbody><tr><td>!<a href="http://host" rel="noopener" target="_blank">http://host</a></td></tr></tbody></table>'], '']);
     });
 
     it('align', () => {

@@ -1,10 +1,11 @@
 import { DeletionParser, inline } from '../inline';
-import { union, some, validate, verify, surround, lazy, fmap } from '../../combinator';
-import { defrag, hasInsOrDel } from '../util';
+import { union, some, validate, surround, lazy, override, fmap } from '../../combinator';
+import { defrag } from '../util';
 import { html } from 'typed-dom';
 
-export const deletion: DeletionParser = lazy(() => verify(fmap(validate(
+export const deletion: DeletionParser = lazy(() => fmap(validate(
   /^~~[\s\S]+?~~/,
-  surround('~~', defrag(some(some(union([inline]), '~~'))), '~~')),
-  ns => [html('del', ns)]),
-  ([el]) => !hasInsOrDel(el)));
+  validate(config => config?.syntax?.inline?.deletion ?? true,
+  override({ syntax: { inline: { insertion: false, deletion: false } } },
+  surround('~~', defrag(some(union([inline]), '~~')), '~~')))),
+  ns => [html('del', ns)]));

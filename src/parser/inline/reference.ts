@@ -1,10 +1,12 @@
 import { ReferenceParser } from '../inline';
-import { union, some, subline, verify, surround, lazy, fmap } from '../../combinator';
+import { union, some, subline, validate, verify, surround, lazy, override, fmap } from '../../combinator';
 import { inline } from '../inline';
-import { defrag, trimNodeEnd, hasTightText, hasMedia, hasAnnotationOrReference } from '../util';
+import { defrag, trimNodeEnd, hasTightText } from '../util';
 import { html } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => subline(verify(fmap(trimNodeEnd(
-  surround('[[', defrag(some(union([inline]), /^\\?\n|^]]/)), ']]')),
+  validate(config => config?.syntax?.inline?.reference ?? true,
+  override({ syntax: { inline: { annotation: false, reference: false, media: false } } },
+  surround('[[', defrag(some(union([inline]), /^\\?\n|^]]/)), ']]')))),
   ns => [html('sup', { class: 'reference' }, ns)]),
-  ([el]) => hasTightText(el) && !hasMedia(el) && !hasAnnotationOrReference(el))));
+  ([el]) => hasTightText(el))));

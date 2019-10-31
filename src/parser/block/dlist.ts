@@ -1,8 +1,8 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, rewrite, verify, surround, trim, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, rewrite, surround, trim, lazy, override, fmap } from '../../combinator';
 import { anyline } from '../source';
 import { inline, indexer, indexee } from '../inline';
-import { defrag, hasMedia } from '../util';
+import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
@@ -13,23 +13,24 @@ export const dlist: DListParser = lazy(() => block(fmap(
   ])),
   es => [html('dl', fillTrailingDescription(es))])));
 
-const term: DListParser.TermParser = line(indexee(verify(fmap(
+const term: DListParser.TermParser = line(indexee(fmap(
+  override({ syntax: { inline: { media: false } } },
   surround(
     /^~(?=\s|$)/,
     defrag(trim(some(union([indexer, inline])))),
     '',
-    false),
-  ns => [html('dt', ns)]),
-  ([el]) => !hasMedia(el))));
+    false)),
+  ns => [html('dt', ns)])));
 
 const desc: DListParser.DescriptionParser = block(fmap(
+  override({ syntax: { inline: { media: false } } },
   surround(
     /^:(?=\s|$)|/,
     rewrite(
       some(anyline, /^[~:](?=\s|$)/),
       defrag(trim(some(union([inline]))))),
     '',
-    false),
+    false)),
   ns => [html('dd', ns)]),
   false);
 

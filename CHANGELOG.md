@@ -2,6 +2,7 @@
 
 ## 0.133.0
 
+- Refine syntax control.
 - Change license.
 
 ## 0.132.2

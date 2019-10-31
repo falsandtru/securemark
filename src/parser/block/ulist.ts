@@ -1,24 +1,25 @@
 import { UListParser } from '../block';
-import { union, inits, some, block, line, validate, surround, convert, indent, trim, lazy, fmap, eval } from '../../combinator';
+import { union, inits, some, block, line, validate, surround, convert, indent, trim, lazy, override, fmap } from '../../combinator';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { defrag, hasMedia } from '../util';
+import { defrag } from '../util';
 import { concat } from 'spica/concat';
-import { html, define } from 'typed-dom';
+import { html } from 'typed-dom';
 
 const opener = /^-(?:\s|$)/;
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
   /^-(?:[^\S\n]|\n[^\S\n]*\S)/,
+  override({ syntax: { inline: { media: false } } },
   some(union([
     fmap(
       inits([
         line(surround(opener, defrag(trim(some(inline))), '', false)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
-      ns => [html('li', fillFirstLine(ns))].map(verifyListItem)),
-  ]))),
+      ns => [html('li', fillFirstLine(ns))]),
+  ])))),
   es => [html('ul', es)])));
 
 export const ulist_: UListParser = convert(
@@ -29,12 +30,4 @@ export function fillFirstLine(ns: Node[]): Node[] {
   return ns[0] instanceof HTMLUListElement || ns[0] instanceof HTMLOListElement
     ? concat([html('br')], ns)
     : ns;
-}
-
-export function verifyListItem(el: HTMLLIElement): HTMLLIElement {
-  return hasMedia(el)
-    ? define(el,
-        { class: 'invalid', 'data-invalid-syntax': 'listitem', 'data-invalid-type': 'content' },
-        eval(defrag(some(inline))('Invalid syntax: ListItem: Unable to use media syntax in lists.', {})))
-    : el;
 }

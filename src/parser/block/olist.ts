@@ -1,6 +1,6 @@
 import { OListParser } from '../block';
-import { union, inits, some, block, line, focus, match, surround, convert, indent, trim, fmap } from '../../combinator';
-import { ulist_, fillFirstLine, verifyListItem } from './ulist';
+import { union, inits, some, block, line, focus, match, surround, convert, indent, trim, override, fmap } from '../../combinator';
+import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
 import { unescsource } from '../source';
@@ -15,6 +15,7 @@ export const olist: OListParser = block(match(
   memoize(([, index]) => index,
   index =>
     fmap(
+      override({ syntax: { inline: { media: false } } },
       some(union([
         fmap(
           inits([
@@ -26,8 +27,8 @@ export const olist: OListParser = block(match(
             ])),
             indent(union([ulist_, olist_, ilist_]))
           ]),
-          ([{ textContent: index }, ...ns]) => [html('li', { value: type(index!) === '1' ? format(index!) : undefined }, fillFirstLine(ns))].map(verifyListItem)),
-      ])),
+          ([{ textContent: index }, ...ns]) => [html('li', { value: type(index!) === '1' ? format(index!) : undefined }, fillFirstLine(ns))]),
+      ]))),
       es => [html('ol', { type: type(index), start: type(index) === '1' ? format(index) : undefined }, es)]))));
 
 export const olist_: OListParser = convert(

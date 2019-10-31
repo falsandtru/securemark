@@ -1,5 +1,5 @@
 import { MediaParser, Config } from '../inline';
-import { union, inits, tails, some, subline, verify, surround, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, override, fmap, bind } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
@@ -11,12 +11,13 @@ import { html, text as txt, define } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
+export const media: MediaParser = subline(override({ syntax: { inline: { link: undefined } } }, bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
+  validate(config => config?.syntax?.inline?.media ?? true,
   tails([
     dup(surround('[', trimNodeEnd(defrag(some(union([text]), /^\\?\n|^]/))), ']', false)),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
-  ]),
+  ])),
   ''),
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([[text = txt('')]]) => text.textContent === '' || hasTightText(text)),
@@ -39,4 +40,4 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
       ([link]) =>
         [define(link, { target: '_blank' }, [el])])
       (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, config) as [[HTMLAnchorElement], string, Config];
-  }));
+  })));

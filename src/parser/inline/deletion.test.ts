@@ -13,6 +13,8 @@ describe('Unit: parser/inline/deletion', () => {
       assert.deepStrictEqual(inspect(parser('~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~~a~~b~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~~a~~b~~c~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('a~~a~~')), undefined);
     });
 
@@ -36,9 +38,8 @@ describe('Unit: parser/inline/deletion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('~~a~~b~~~~')), [['<del>a</del>'], 'b~~~~']);
-      assert.deepStrictEqual(inspect(parser('~~~~a~~b~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~~a~~b~~c~~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~*~~a~~*~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~*~~a~~*~~')), [['<del><em>~~a~~</em></del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~*++a++*~~')), [['<del><em>++a++</em></del>'], '']);
     });
 
   });

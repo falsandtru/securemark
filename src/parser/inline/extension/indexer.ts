@@ -26,6 +26,9 @@ export function text(source: Element): string {
   for (const el of target.querySelectorAll('code[data-src], .math[data-src]')) {
     void define(el, el.getAttribute('data-src')!);
   }
+  for (const el of target.querySelectorAll('.annotation, .reference')) {
+    void el.remove();
+  }
   return target.textContent!.trim();
 }
 

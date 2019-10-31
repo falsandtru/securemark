@@ -1,10 +1,11 @@
 import { InsertionParser, inline } from '../inline';
-import { union, some, validate, verify, surround, lazy, fmap } from '../../combinator';
-import { defrag, hasInsOrDel } from '../util';
+import { union, some, validate, surround, lazy, override, fmap } from '../../combinator';
+import { defrag } from '../util';
 import { html } from 'typed-dom';
 
-export const insertion: InsertionParser = lazy(() => verify(fmap(validate(
+export const insertion: InsertionParser = lazy(() => fmap(validate(
   /^\+\+[\s\S]+?\+\+/,
-  surround('++', defrag(some(some(union([inline]), '++'))), '++')),
-  ns => [html('ins', ns)]),
-  ([el]) => !hasInsOrDel(el)));
+  validate(config => config?.syntax?.inline?.insertion ?? true,
+  override({ syntax: { inline: { insertion: false, deletion: false } } },
+  surround('++', defrag(some(union([inline]), '++')), '++')))),
+  ns => [html('ins', ns)]));

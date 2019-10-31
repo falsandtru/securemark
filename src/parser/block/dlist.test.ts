@@ -16,7 +16,6 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~a:b')), undefined);
       assert.deepStrictEqual(inspect(parser('~a\n:b')), undefined);
       assert.deepStrictEqual(inspect(parser('~a\n: b')), undefined);
-      assert.deepStrictEqual(inspect(parser('~ !http://host')), undefined);
       assert.deepStrictEqual(inspect(parser(' ')), undefined);
       assert.deepStrictEqual(inspect(parser(' ~')), undefined);
     });

@@ -13,6 +13,8 @@ describe('Unit: parser/inline/insertion', () => {
       assert.deepStrictEqual(inspect(parser('+++')), undefined);
       assert.deepStrictEqual(inspect(parser('++++')), undefined);
       assert.deepStrictEqual(inspect(parser('+++++')), undefined);
+      assert.deepStrictEqual(inspect(parser('++++a++b++')), undefined);
+      assert.deepStrictEqual(inspect(parser('++++a++b++c++++')), undefined);
       assert.deepStrictEqual(inspect(parser('a++a++')), undefined);
     });
 
@@ -36,9 +38,8 @@ describe('Unit: parser/inline/insertion', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('++a++b++++')), [['<ins>a</ins>'], 'b++++']);
-      assert.deepStrictEqual(inspect(parser('++++a++b++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++++a++b++c++++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++*++a++*++')), undefined);
+      assert.deepStrictEqual(inspect(parser('++*++a++*++')), [['<ins><em>++a++</em></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++*~~a~~*++')), [['<ins><em>~~a~~</em></ins>'], '']);
     });
 
   });

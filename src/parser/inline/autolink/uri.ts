@@ -1,11 +1,12 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, subline, rewrite, surround, convert } from '../../../combinator';
+import { union, some, subline, rewrite, surround, convert, override } from '../../../combinator';
 import { unescsource } from '../../source';
 import { link, bracket } from '../link';
 
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
 
 export const uri: AutolinkParser.UriParser = subline(union([
+  override({ syntax: { inline: { link: undefined } } },
   surround(
     /^(?=h?ttps?:\/\/[^/?#\s])/,
     rewrite(
@@ -13,7 +14,7 @@ export const uri: AutolinkParser.UriParser = subline(union([
       convert(
         source => `{${address(source)}${attribute(source)}}`,
         link)),
-    ''),
+    '')),
 ]));
 
 export function address(source: string): string {

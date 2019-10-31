@@ -1,7 +1,7 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, verify, surround, trimEnd, lazy, fmap, bind } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, surround, trimEnd, lazy, override, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
-import { hasMedia, squash } from '../util';
+import { squash } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
@@ -10,11 +10,12 @@ import CellParser = RowParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
   /^|/,
+  override({ syntax: { inline: { media: false } } },
   sequence([
     row(cell(data), false),
     row(cell(align), true),
     some(row(cell(data), false)),
-  ])),
+  ]))),
   ([head, as, ...rows]) => {
     assert(as.children.length > 0);
     void align();
@@ -58,10 +59,9 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     }
   })));
 
-const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => verify(fmap(
+const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
   line(trimEnd(surround(/^(?=\|)/, some(union([parser])), /^\|?$/, strict))),
-  es => [html('tr', es)]),
-  ([el]) => !hasMedia(el));
+  es => [html('tr', es)]);
 
 const cell = <P extends CellParser.IncellParser>(parser: P): CellParser<P> => fmap(
   union([parser]),
