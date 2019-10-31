@@ -7,19 +7,13 @@ export function hasContent(node: HTMLElement | DocumentFragment): boolean {
       || !!node.querySelector('.media');
 }
 
-export function hasLink(node: HTMLElement | DocumentFragment): boolean {
-  return !!node.querySelector('a');
-}
-
 export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {
   return node.textContent!.trim() !== '';
 }
 
 export function hasTightText(node: HTMLElement | DocumentFragment | Text): boolean {
   return hasText(node)
-      && node.textContent === node.textContent!.trim()
-      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR')
-      && (!node.firstChild || node.firstChild.nodeType !== 1 || (node as HTMLElement).tagName !== 'BR');
+      && node.textContent === node.textContent!.trim();
 }
 
 export function dup<T, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>): Parser<T[], S, C> {
@@ -32,17 +26,24 @@ export function wrap<S extends Parser<unknown, any, C>[], C extends object>(pars
 
 export function defrag<P extends Parser<Node, any, object>>(parser: P): P;
 export function defrag<T extends Node, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>): Parser<T, S, C> {
-  return fmap(parser, squash);
+  return fmap(parser, nodes => {
+    const acc: T[] = [];
+    void nodes.reduce<T | undefined>((prev, curr) => {
+      if (curr.nodeType === 3) {
+        if (curr.textContent === '') return prev;
+        if (prev?.nodeType === 3) return prev.textContent += curr.textContent! , prev;
+      }
+      curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
+      void acc.push(curr);
+      return curr;
+    }, undefined);
+    return acc;
+  });
 }
 
 export function trimNode<P extends Parser<HTMLElement | Text, any, object>>(parser: P): P;
 export function trimNode<T extends HTMLElement | Text, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>): Parser<T, S, C> {
-  return trimNode_(parser, 'both');
-}
-
-export function trimNodeStart<P extends Parser<HTMLElement | Text, any, object>>(parser: P): P;
-export function trimNodeStart<T extends HTMLElement | Text, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>): Parser<T, S, C> {
-  return trimNode_(parser, 'start');
+  return trimNode_(trimNode_(parser, 'start'), 'end');
 }
 
 export function trimNodeEnd<P extends Parser<HTMLElement | Text, any, object>>(parser: P): P;
@@ -50,9 +51,8 @@ export function trimNodeEnd<T extends HTMLElement | Text, S extends Parser<unkno
   return trimNode_(parser, 'end');
 }
 
-function trimNode_<P extends Parser<HTMLElement | Text, any, object>>(parser: P, mode: 'start' | 'end' | 'both'): P;
-function trimNode_<T extends HTMLElement | Text, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>, mode: 'start' | 'end' | 'both'): Parser<T, S, C> {
-  if (mode === 'both') return trimNode_(trimNode_(parser, 'start'), 'end');
+function trimNode_<P extends Parser<HTMLElement | Text, any, object>>(parser: P, mode: 'start' | 'end'): P;
+function trimNode_<T extends HTMLElement | Text, S extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, S, C>, mode: 'start' | 'end'): Parser<T, S, C> {
   return fmap(parser, ns => {
     if (ns.length === 0) return ns;
     const node = ns[mode === 'start' ? 0 : ns.length - 1];
@@ -93,22 +93,6 @@ function trimNode_<T extends HTMLElement | Text, S extends Parser<unknown, any, 
   });
 }
 
-export function squash<T extends Node>(nodes: T[]): T[];
-export function squash(nodes: Node[]): Node[] {
-  const acc: Node[] = [];
-  void nodes
-    .reduce<Node | undefined>((prev, curr) => {
-      if (curr.nodeType === 3) {
-        if (curr.textContent === '') return prev;
-        if (prev?.nodeType === 3) return prev.textContent += curr.textContent!, prev;
-      }
-      curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
-      void acc.push(curr);
-      return curr;
-    }, undefined);
-  return acc;
-}
-
 export function stringify(nodes: Node[]): string {
   return nodes.reduce((acc, node) => acc + node.textContent, '');
 }
@@ -133,12 +117,7 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
         continue;
     }
   }
-  for (const el of target.querySelectorAll('a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]')) {
-    assert(!el.closest('.media, pre.notranslate, .math'));
-    assert(!el.closest('blockquote, aside'));
-    assert(el.matches('.annotation[id], .reference[id], a[href^="#"]'));
-    void define(el, { id: null, href: null });
-  }
+  void apply(target, 'a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]', { id: null, href: null });
   return target;
 }
 

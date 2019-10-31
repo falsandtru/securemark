@@ -2,7 +2,7 @@ import { LinkParser, media, shortmedia, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, lazy, override, fmap, bind } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
-import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, hasLink, memoize } from '../util';
+import { defrag, wrap, trimNodeEnd, hasTightText, hasContent, memoize } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
@@ -32,9 +32,9 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     }
     else {
       if (text.childNodes.length > 0 && !hasTightText(text)) return false;
-      if (hasLink(text)) return false;
+      if (text.querySelector('a')) return false;
     }
-    assert(!hasLink(text) || text.firstElementChild!.matches('.media'));
+    assert(!text.querySelector('a') || text.firstElementChild!.matches('.media'));
     return true;
   }),
   ([text, param], rest, config) => {
@@ -46,7 +46,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         href: path,
         rel: `noopener${params.includes('nofollow') ? ' nofollow noreferrer' : ''}`,
       },
-      hasContent(text)
+      text.childNodes.length > 0
         ? text.childNodes
         : sanitize(decode(INSECURE_URL || '.'))
             .replace(/^tel:/, '')

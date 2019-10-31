@@ -1,7 +1,7 @@
 import { TableParser } from '../block';
 import { union, sequence, some, block, line, focus, validate, surround, trimEnd, lazy, override, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
-import { squash } from '../util';
+import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
@@ -67,7 +67,7 @@ const cell = <P extends CellParser.IncellParser>(parser: P): CellParser<P> => fm
   union([parser]),
   ns => [html('td', ns)]);
 
-const data: CellParser.DataParser = bind(
+const data: CellParser.DataParser = defrag(bind(
   surround(
     /^\|\s*/,
     union([some(inline, /^\s*(?:\||$)/)]),
@@ -76,7 +76,7 @@ const data: CellParser.DataParser = bind(
   (ns, rest, config) =>
     ns.length === 0 && rest === ''
       ? undefined
-      : [squash(ns), rest, config]);
+      : [ns, rest, config]));
 
 const align: CellParser.AlignParser =
   surround(
