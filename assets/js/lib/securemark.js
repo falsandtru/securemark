@@ -1005,10 +1005,10 @@ require = function () {
             const parser_1 = _dereq_('../../data/parser');
             const line_1 = _dereq_('./line');
             function block(parser, separation = true) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
-                    const result = parser(source, config, state);
+                    const result = parser(source, state, config);
                     if (!result)
                         return;
                     const rest = parser_1.exec(result);
@@ -1034,7 +1034,7 @@ require = function () {
             }
             exports.contract = contract;
             function validate(pattern, parser) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
                     switch (typeof pattern) {
@@ -1047,7 +1047,7 @@ require = function () {
                             break;
                         return;
                     }
-                    const result = parser(source, config, state);
+                    const result = parser(source, state, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length ? result : undefined;
@@ -1055,10 +1055,10 @@ require = function () {
             }
             exports.validate = validate;
             function verify(parser, cond) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
-                    const result = parser(source, config, state);
+                    const result = parser(source, state, config);
                     if (!result)
                         return;
                     if (!cond(parser_1.eval(result), parser_1.exec(result)))
@@ -1076,26 +1076,26 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function line(parser, allowTrailingWhitespace = true) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
                     const fst = firstline(source);
-                    const result = parser(fst, config, state);
+                    const result = parser(fst, state, config);
                     if (!result)
                         return;
                     return (allowTrailingWhitespace ? parser_1.exec(result).trim() === '' : parser_1.exec(result) === '') ? [
                         parser_1.eval(result),
                         source.slice(fst.length),
-                        config
+                        state
                     ] : undefined;
                 };
             }
             exports.line = line;
             function subline(parser) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
-                    const result = parser(source, config, state);
+                    const result = parser(source, state, config);
                     if (!result)
                         return result;
                     return source.length - parser_1.exec(result).length <= firstline(source, false).length ? result : undefined;
@@ -1116,38 +1116,38 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function focus(scope, parser) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
                     const [src = ''] = typeof scope === 'string' ? source.startsWith(scope) ? [scope] : [] : source.match(scope) || [];
                     if (src === '')
                         return;
-                    const result = parser(src, config, state);
+                    const result = parser(src, state, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < src.length ? [
                         parser_1.eval(result),
                         parser_1.exec(result) + source.slice(src.length),
-                        config
+                        state
                     ] : undefined;
                 };
             }
             exports.focus = focus;
             function rewrite(scope, parser) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
-                    const res1 = scope(source, config, state);
+                    const res1 = scope(source, state, config);
                     if (!res1 || parser_1.exec(res1).length >= source.length)
                         return;
                     const src = source.slice(0, source.length - parser_1.exec(res1).length);
-                    const res2 = parser(src, config, state);
+                    const res2 = parser(src, state, config);
                     if (!res2)
                         return;
                     return parser_1.exec(res2).length < src.length ? [
                         parser_1.eval(res2),
                         parser_1.exec(res2) + parser_1.exec(res1),
-                        config
+                        state
                     ] : undefined;
                 };
             }
@@ -1161,15 +1161,15 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const assign_1 = _dereq_('spica/assign');
             function check(f, parser) {
-                return (source, config, state) => f(config) ? parser(source, config, state) : undefined;
+                return (source, state, config) => f(config) ? parser(source, state, config) : undefined;
             }
             exports.check = check;
             const singleton = {};
             function configure(config, parser) {
                 const memory = new WeakMap();
-                return (source, base, state) => {
+                return (source, state, base) => {
                     base = !memory.has(base) && Object.keys(base).length === 0 ? singleton : base;
-                    return parser(source, memory.get(base) || memory.set(base, assign_1.extend(assign_1.extend({}, base), config)).get(base), state);
+                    return parser(source, state, memory.get(base) || memory.set(base, assign_1.extend(assign_1.extend({}, base), config)).get(base));
                 };
             }
             exports.configure = configure;
@@ -1181,15 +1181,15 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function convert(conv, parser) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
                     source = conv(source);
                     return source === '' ? [
                         [],
                         '',
-                        config
-                    ] : parser(source, config, state);
+                        state
+                    ] : parser(source, state, config);
                 };
             }
             exports.convert = convert;
@@ -1208,20 +1208,20 @@ require = function () {
             const match_1 = _dereq_('./match');
             const surround_1 = _dereq_('./surround');
             function indent(parser) {
-                return bind_1.bind(match_1.match(/^(?=([^\S\n]+))/, match_1.memoize(([, indent]) => indent, indent => some_1.some(line_1.line(scope_1.rewrite((source, config) => [
+                return bind_1.bind(match_1.match(/^(?=([^\S\n]+))/, match_1.memoize(([, indent]) => indent, indent => some_1.some(line_1.line(scope_1.rewrite((source, state) => [
                     [],
                     source.slice(line_1.firstline(source).length),
-                    config
-                ], surround_1.surround(indent, (source, config) => [
+                    state
+                ], surround_1.surround(indent, (source, state) => [
                     [line_1.firstline(source, false)],
                     '',
-                    config
-                ], '')))))), (rs, rest, config, state) => {
-                    const result = parser(rs.join('\n'), config, state);
+                    state
+                ], '')))))), (rs, rest, state, config) => {
+                    const result = parser(rs.join('\n'), state, config);
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
                         rest,
-                        config
+                        state
                     ] : undefined;
                 });
             }
@@ -1243,7 +1243,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             function lazy(builder) {
                 let parser;
-                return (source, config, state) => (parser = parser || builder())(source, config, state);
+                return (source, state, config) => (parser = parser || builder())(source, state, config);
             }
             exports.lazy = lazy;
         },
@@ -1256,14 +1256,14 @@ require = function () {
             const parser_1 = _dereq_('../../data/parser');
             const memoization_1 = _dereq_('spica/memoization');
             function match(pattern, f) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
                     const param = source.match(pattern);
                     if (!param)
                         return;
                     const rest = source.slice(param[0].length);
-                    const result = f(param)(rest, config, state);
+                    const result = f(param)(rest, state, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length && parser_1.exec(result).length <= rest.length ? result : undefined;
@@ -1286,14 +1286,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function surround(start, parser, end, strict = true) {
-                return (lmr_, config, state) => {
+                return (lmr_, state, config) => {
                     if (lmr_ === '')
                         return;
                     const l = match(lmr_, start);
                     if (l === undefined)
                         return;
                     const mr_ = l ? lmr_.slice(l.length) : lmr_;
-                    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, config, state) || [];
+                    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, state, config) || [];
                     if (strict && r_.length === mr_.length)
                         return;
                     if (r_.length > mr_.length)
@@ -1304,7 +1304,7 @@ require = function () {
                     return l + r !== '' || r_.length - r.length < lmr_.length ? [
                         rs,
                         r ? r_.slice(r.length) : r_,
-                        config
+                        state
                     ] : undefined;
                 };
             }
@@ -1346,13 +1346,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function bind(parser, f) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === '')
                         return;
-                    const res1 = parser(source, config, state);
+                    const res1 = parser(source, state, config);
                     if (!res1)
                         return;
-                    const res2 = f(parser_1.eval(res1), parser_1.exec(res1), config, state);
+                    const res2 = f(parser_1.eval(res1), parser_1.exec(res1), state, config);
                     if (!res2)
                         return;
                     return parser_1.exec(res2).length <= parser_1.exec(res1).length ? res2 : undefined;
@@ -1390,10 +1390,10 @@ require = function () {
                 return result ? result[1] : default_;
             }
             exports.exec = exec;
-            function config(result) {
+            function state(result) {
                 return result[2];
             }
-            exports.config = config;
+            exports.state = state;
             function check(source, result, mustConsume = true) {
                 return true;
             }
@@ -1408,13 +1408,13 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const concat_1 = _dereq_('spica/concat');
             function inits(parsers) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     let rest = source;
                     const data = [];
                     for (const parser of parsers) {
                         if (rest === '')
                             break;
-                        const result = parser(rest, config, state);
+                        const result = parser(rest, state, config);
                         if (!result)
                             break;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -1423,7 +1423,7 @@ require = function () {
                     return rest.length < source.length ? [
                         data,
                         rest,
-                        config
+                        state
                     ] : undefined;
                 };
             }
@@ -1441,13 +1441,13 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const concat_1 = _dereq_('spica/concat');
             function sequence(parsers) {
-                return (source, config, state) => {
+                return (source, state, config) => {
                     let rest = source;
                     const data = [];
                     for (const parser of parsers) {
                         if (rest === '')
                             return;
-                        const result = parser(rest, config, state);
+                        const result = parser(rest, state, config);
                         if (!result)
                             return;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -1456,7 +1456,7 @@ require = function () {
                     return rest.length < source.length ? [
                         data,
                         rest,
-                        config
+                        state
                     ] : undefined;
                 };
             }
@@ -1475,7 +1475,7 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             function some(parser, until) {
                 let memory = '';
-                return (source, config, state) => {
+                return (source, state, config) => {
                     if (source === memory)
                         return;
                     let rest = source;
@@ -1485,7 +1485,7 @@ require = function () {
                             break;
                         if (until && match(rest, until))
                             break;
-                        const result = parser(rest, config, state);
+                        const result = parser(rest, state, config);
                         if (!result)
                             break;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -1495,7 +1495,7 @@ require = function () {
                     return rest.length < source.length ? [
                         data,
                         rest,
-                        config
+                        state
                     ] : undefined;
                 };
             }
@@ -1567,9 +1567,9 @@ require = function () {
                 case 1:
                     return parsers[0];
                 default:
-                    return (source, config, state) => {
+                    return (source, state, config) => {
                         for (const parser of parsers) {
-                            const result = parser(source, config, state);
+                            const result = parser(source, state, config);
                             if (result)
                                 return result;
                         }
@@ -1882,7 +1882,7 @@ require = function () {
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
             const source = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, source)),
-                combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, config) => [
+                combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, state) => [
                     [util_1.suppress(parse_1.parse(source, {
                             footnote: {
                                 annotation: typed_dom_1.html('ol'),
@@ -1890,7 +1890,7 @@ require = function () {
                             }
                         }))],
                     '',
-                    config
+                    state
                 ]))
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
         },
@@ -1914,12 +1914,12 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/, (_, config) => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/, (_, state) => [
                 [],
                 '',
-                config
+                state
             ]), false);
-            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => (rest, config, state) => {
+            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => (rest, state, config) => {
                 [lang, param] = language.test(lang) ? [
                     lang,
                     param
@@ -1928,7 +1928,7 @@ require = function () {
                     lang + param
                 ];
                 param = param.trim();
-                const path = util_1.stringify(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, config, state)));
+                const path = util_1.stringify(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, state, config)));
                 const file = path.split('/').pop() || '';
                 const ext = file && file.includes('.') && !file.startsWith('.') ? file.split('.').pop() : '';
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
@@ -1938,7 +1938,7 @@ require = function () {
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
-                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, config, state)));
+                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, state, config)));
                 }
                 if (path) {
                     void el.setAttribute('data-file', path);
@@ -1953,7 +1953,7 @@ require = function () {
                 return [
                     [el],
                     rest,
-                    config
+                    state
                 ];
             }))));
         },
@@ -2037,13 +2037,13 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:\n|$)/, (_, config) => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:\n|$)/, (_, state) => [
                 [],
                 '',
-                config
+                state
             ]), false);
             exports.example = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.union([
-                combinator_1.match(/^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => (rest, config) => {
+                combinator_1.match(/^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => (rest, state) => {
                     const annotation = typed_dom_1.html('ol');
                     const reference = typed_dom_1.html('ol');
                     const view = parse_1.parse(body.slice(1, -1), {
@@ -2063,10 +2063,10 @@ require = function () {
                                 util_1.suppress(reference)
                             ])],
                         rest,
-                        config
+                        state
                     ];
                 }),
-                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => (rest, config) => [
+                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => (rest, state) => [
                     [typed_dom_1.html('aside', {
                             class: 'example',
                             'data-type': 'math'
@@ -2075,7 +2075,7 @@ require = function () {
                             ...combinator_1.eval(mathblock_1.mathblock(`$$${ body }$$`, {}, {}))
                         ])],
                     rest,
-                    config
+                    state
                 ])
             ]))));
         },
@@ -2210,19 +2210,19 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const inline_1 = _dereq_('../../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*\n(?:[^\n]*\n){0,300}?\1[^\S\n]*(?:\n|$)/, (_, config) => [
+            exports.segment = combinator_1.block(combinator_1.focus(/^(~{3,})[a-z][^\n]*\n(?:[^\n]*\n){0,300}?\1[^\S\n]*(?:\n|$)/, (_, state) => [
                 [],
                 '',
-                config
+                state
             ]));
-            exports.placeholder = combinator_1.block(combinator_1.rewrite(exports.segment, (_, config) => [
+            exports.placeholder = combinator_1.block(combinator_1.rewrite(exports.segment, (_, state) => [
                 [typed_dom_1.html('p', {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-type': 'syntax'
                     }, combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: Extension: Invalid extension name, attribute, or content.', {}, {})))],
                 '',
-                config
+                state
             ]));
         },
         {
@@ -2257,10 +2257,10 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.horizontalrule = combinator_1.block(combinator_1.line(combinator_1.focus(/^-{3,}[^\S\n]*(?:\n|$)/, (_, config) => [
+            exports.horizontalrule = combinator_1.block(combinator_1.line(combinator_1.focus(/^-{3,}[^\S\n]*(?:\n|$)/, (_, state) => [
                 [typed_dom_1.html('hr')],
                 '',
-                config
+                state
             ])));
         },
         {
@@ -2308,12 +2308,12 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:\n|$)/, (_, config) => [
+            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:\n|$)/, (_, state) => [
                 [],
                 '',
-                config
+                state
             ]), false);
-            exports.mathblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(\$\$)(?!\$)([^\n]*)(\n[\s\S]*)\1$/, ([, , param, body]) => (rest, config) => {
+            exports.mathblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(\$\$)(?!\$)([^\n]*)(\n[\s\S]*)\1$/, ([, , param, body]) => (rest, state) => {
                 const el = typed_dom_1.html('div', { class: `math notranslate` }, `$$${ body }$$`);
                 if (param.trim() !== '') {
                     void el.classList.add('invalid');
@@ -2325,7 +2325,7 @@ require = function () {
                 return [
                     [el],
                     rest,
-                    config
+                    state
                 ];
             }))));
         },
@@ -2564,31 +2564,31 @@ require = function () {
             })));
             const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.trimEnd(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict))), es => [typed_dom_1.html('tr', es)]);
             const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
-            const data = util_1.defrag(combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest, config) => ns.length === 0 && rest === '' ? undefined : [
+            const data = util_1.defrag(combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest, state) => ns.length === 0 && rest === '' ? undefined : [
                 ns,
                 rest,
-                config
+                state
             ]));
             const align = combinator_1.surround('|', combinator_1.union([
-                combinator_1.focus(/^:-+:/, (_, config) => [
+                combinator_1.focus(/^:-+:/, (_, state) => [
                     [typed_dom_1.text('center')],
                     '',
-                    config
+                    state
                 ]),
-                combinator_1.focus(/^:-+/, (_, config) => [
+                combinator_1.focus(/^:-+/, (_, state) => [
                     [typed_dom_1.text('left')],
                     '',
-                    config
+                    state
                 ]),
-                combinator_1.focus(/^-+:/, (_, config) => [
+                combinator_1.focus(/^-+:/, (_, state) => [
                     [typed_dom_1.text('right')],
                     '',
-                    config
+                    state
                 ]),
-                combinator_1.focus(/^-+/, (_, config) => [
+                combinator_1.focus(/^-+/, (_, state) => [
                     [typed_dom_1.text('')],
                     '',
-                    config
+                    state
                 ])
             ]), '');
         },
@@ -2803,13 +2803,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.subline(combinator_1.focus(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*/, (source, config) => [
+            exports.account = combinator_1.subline(combinator_1.focus(/^@[a-zA-Z0-9]+(?:-[0-9a-zA-Z]+)*/, (source, state) => [
                 [typed_dom_1.html('a', {
                         class: 'account',
                         rel: 'noopener'
                     }, source)],
                 '',
-                config
+                state
             ]));
         },
         {
@@ -2848,14 +2848,14 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.email = combinator_1.subline(combinator_1.focus(/^[a-zA-Z0-9]+(?:[.+_-][a-zA-Z0-9]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/, (source, config) => [
+            exports.email = combinator_1.subline(combinator_1.focus(/^[a-zA-Z0-9]+(?:[.+_-][a-zA-Z0-9]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/, (source, state) => [
                 [typed_dom_1.html('a', {
                         class: 'email',
                         href: `mailto:${ source }`,
                         rel: 'noopener'
                     }, source)],
                 '',
-                config
+                state
             ]));
         },
         {
@@ -2869,13 +2869,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.subline(combinator_1.focus(/^#[0-9]+(?![a-zA-Z]|[^\x00-\x7F\s])/, (tag, config) => [
+            exports.hashref = combinator_1.subline(combinator_1.focus(/^#[0-9]+(?![a-zA-Z]|[^\x00-\x7F\s])/, (tag, state) => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
                         rel: 'noopener'
                     }, tag)],
                 '',
-                config
+                state
             ]));
         },
         {
@@ -2889,13 +2889,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.subline(combinator_1.focus(/^#(?![0-9]+(?![a-zA-Z]|[^\x00-\x7F\s]))(?:[a-zA-Z0-9]|[^\x00-\x7F\s])+/, (tag, config) => [
+            exports.hashtag = combinator_1.subline(combinator_1.focus(/^#(?![0-9]+(?![a-zA-Z]|[^\x00-\x7F\s]))(?:[a-zA-Z0-9]|[^\x00-\x7F\s])+/, (tag, state) => [
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
                         rel: 'noopener'
                     }, tag)],
                 '',
-                config
+                state
             ]));
         },
         {
@@ -2976,10 +2976,10 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.code = combinator_1.subline(combinator_1.union([
-                combinator_1.match(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body]) => (rest, config) => [
+                combinator_1.match(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body]) => (rest, state) => [
                     [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
                     rest,
-                    config
+                    state
                 ]),
                 combinator_1.focus(/^`+/, combinator_1.some(source_1.unescsource))
             ]));
@@ -2996,13 +2996,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)\s+\1>/, ([, , title]) => (rest, config) => [
+            exports.comment = combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)\s+\1>/, ([, , title]) => (rest, state) => [
                 [typed_dom_1.html('sup', {
                         class: 'comment',
                         title
                     })],
                 rest,
-                config
+                state
             ]);
         },
         {
@@ -3278,14 +3278,14 @@ require = function () {
                     util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
                 ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)))),
                 combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), [])]), ([el]) => !el.matches('.invalid')))),
-                combinator_1.rewrite(combinator_1.surround(/^<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false), (source, config) => [
+                combinator_1.rewrite(combinator_1.surround(/^<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false), (source, state) => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
                             'data-invalid-syntax': 'html',
                             'data-invalid-type': 'syntax'
                         }, source)],
                     '',
-                    config
+                    state
                 ])
             ])));
             exports.attribute = combinator_1.subline(combinator_1.verify(combinator_1.surround(' ', combinator_1.inits([
@@ -3333,10 +3333,10 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.htmlentity = combinator_1.subline(combinator_1.focus(/^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i, (entity, config) => [
+            exports.htmlentity = combinator_1.subline(combinator_1.focus(/^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i, (entity, state) => [
                 [typed_dom_1.text(parse(entity))],
                 '',
-                config
+                state
             ]));
             const parser = typed_dom_1.html('span');
             function parse(str) {
@@ -3413,7 +3413,7 @@ require = function () {
                         return false;
                 }
                 return true;
-            }), ([text, param], rest, config) => {
+            }), ([text, param], rest, state) => {
                 const [INSECURE_URL, ...params] = [...param.childNodes].map(t => t.textContent);
                 const path = uri_1.sanitize(INSECURE_URL);
                 if (path === '' && INSECURE_URL !== '')
@@ -3435,7 +3435,7 @@ require = function () {
                 return [
                     [typed_dom_1.define(el, attrs(exports.attributes, params, new Set(el.classList), 'link'))],
                     rest,
-                    config
+                    state
                 ];
             })));
             exports.uri = combinator_1.subline(util_1.defrag(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([flag]) => flag, flag => combinator_1.some(combinator_1.union([
@@ -3514,13 +3514,13 @@ require = function () {
             const cache_1 = _dereq_('spica/cache');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.rewrite(combinator_1.surround('${', combinator_1.some(combinator_1.union([source_1.escsource]), /^\\?\n|^}\$/), '}$'), combinator_1.convert(source => `\${${ source.slice(2, -2).trim() }}$`, (source, config) => [
+            exports.math = combinator_1.subline(combinator_1.verify(combinator_1.rewrite(combinator_1.surround('${', combinator_1.some(combinator_1.union([source_1.escsource]), /^\\?\n|^}\$/), '}$'), combinator_1.convert(source => `\${${ source.slice(2, -2).trim() }}$`, (source, state) => [
                 exports.cache.has(source) ? [exports.cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
                         class: 'math notranslate',
                         'data-src': source
                     }, source)],
                 '',
-                config
+                state
             ])), ([el]) => util_1.hasText(typed_dom_1.text(el.textContent.slice(2, -2)))));
         },
         {
@@ -3557,7 +3557,7 @@ require = function () {
             ])), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([[text = typed_dom_1.text('')]]) => text.textContent === '' || util_1.hasTightText(text)), ([[text = typed_dom_1.text('')], param]) => [
                 text.textContent,
                 ...param.map(t => t.textContent)
-            ]), ([text, INSECURE_URL, ...params], rest, config, state) => {
+            ]), ([text, INSECURE_URL, ...params], rest, state, config) => {
                 const path = uri_1.sanitize(INSECURE_URL.trim());
                 if (path === '' && INSECURE_URL !== '')
                     return;
@@ -3573,7 +3573,7 @@ require = function () {
                     void typed_dom_1.define(el, { alt: text });
                 }
                 void typed_dom_1.define(el, link_1.attrs(link_1.attributes, params, new Set(el.classList), 'media'));
-                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, config, state);
+                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, state, config);
             })));
         },
         {
@@ -3701,10 +3701,10 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.template = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.tails([
                 source_1.char('!'),
-                combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, /^\\?\n|^}}/), '}}', false), (source, config) => [
+                combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, /^\\?\n|^}}/), '}}', false), (source, state) => [
                     [typed_dom_1.text(source)],
                     '',
-                    config
+                    state
                 ])
             ]), ns => [
                 typed_dom_1.html('span', { class: 'template' }, [ns.pop()]),
@@ -3873,7 +3873,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = _dereq_('typed-dom');
             function char(char) {
-                return (source, config) => {
+                return (source, state) => {
                     if (source === '')
                         return;
                     switch (source[0]) {
@@ -3881,7 +3881,7 @@ require = function () {
                         return [
                             [typed_dom_1.text(source.slice(0, 1))],
                             source.slice(1),
-                            config
+                            state
                         ];
                     default:
                         return;
@@ -3899,7 +3899,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = _dereq_('typed-dom');
             const separator = /\s|(?=[\x00-\x7F])[^a-zA-Z0-9\s]/;
-            exports.escsource = (source, config) => {
+            exports.escsource = (source, state) => {
                 if (source === '')
                     return;
                 const i = source.search(separator);
@@ -3908,7 +3908,7 @@ require = function () {
                     return [
                         [typed_dom_1.text(source)],
                         '',
-                        config
+                        state
                     ];
                 case 0:
                     switch (source[0]) {
@@ -3916,20 +3916,20 @@ require = function () {
                         return [
                             [typed_dom_1.text(source.slice(0, 2))],
                             source.slice(2),
-                            config
+                            state
                         ];
                     default:
                         return [
                             [typed_dom_1.text(source.slice(0, 1))],
                             source.slice(1),
-                            config
+                            state
                         ];
                     }
                 default:
                     return [
                         [typed_dom_1.text(source.slice(0, i))],
                         source.slice(i),
-                        config
+                        state
                     ];
                 }
             };
@@ -3985,7 +3985,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.separator = /\s|(?=[^a-zA-Z0-9\s])[\x00-\x7F]|[a-zA-Z0-9][a-zA-Z0-9.+_-]*@[a-zA-Z0-9]|\S#/;
             const next = /[\S\n]|$/;
-            exports.text = (source, config) => {
+            exports.text = (source, state) => {
                 if (source === '')
                     return;
                 const i = source.search(exports.separator);
@@ -3994,7 +3994,7 @@ require = function () {
                     return [
                         [typed_dom_1.text(source)],
                         '',
-                        config
+                        state
                     ];
                 case 0:
                     switch (source[0]) {
@@ -4004,38 +4004,38 @@ require = function () {
                             return [
                                 [typed_dom_1.html('span', { class: 'linebreak' }, ' ')],
                                 source.slice(2),
-                                config
+                                state
                             ];
                         default:
                             return [
                                 [typed_dom_1.text(source.slice(1, 2))],
                                 source.slice(2),
-                                config
+                                state
                             ];
                         }
                     case '\n':
                         return [
                             [typed_dom_1.html('br')],
                             source.slice(1),
-                            config
+                            state
                         ];
                     default:
                         const i = source.slice(0, 2).trim() === '' ? source.search(next) : 0;
                         return i === source.length || source[i] === '\n' ? [
                             [],
                             source.slice(i),
-                            config
+                            state
                         ] : [
                             [typed_dom_1.text(source.slice(0, i || 1))],
                             source.slice(i || 1),
-                            config
+                            state
                         ];
                     }
                 default:
                     return [
                         [typed_dom_1.text(source.slice(0, i))],
                         source.slice(i),
-                        config
+                        state
                     ];
                 }
             };
@@ -4048,7 +4048,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const text_1 = _dereq_('./text');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.unescsource = (source, config) => {
+            exports.unescsource = (source, state) => {
                 if (source === '')
                     return;
                 const i = source.search(text_1.separator);
@@ -4057,19 +4057,19 @@ require = function () {
                     return [
                         [typed_dom_1.text(source)],
                         '',
-                        config
+                        state
                     ];
                 case 0:
                     return [
                         [typed_dom_1.text(source.slice(0, 1))],
                         source.slice(1),
-                        config
+                        state
                     ];
                 default:
                     return [
                         [typed_dom_1.text(source.slice(0, i))],
                         source.slice(i),
-                        config
+                        state
                     ];
                 }
             };
