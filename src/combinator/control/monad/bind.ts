@@ -1,8 +1,8 @@
-import { Parser, Result, Data, SubParsers, Config, State, SubData, SubParser, eval, exec, check } from '../../data/parser';
+import { Parser, Result, Data, SubParsers, State, Config, SubData, SubParser, eval, exec, check } from '../../data/parser';
 
 export function bind<P extends Parser<unknown>>(parser: SubParser<P>, f: (rs: SubData<P>[], rest: string, state: State<P>, config: Config<P>) => Result<Data<P>, SubParsers<P>, Config<P>, State<P>>): P;
-export function bind<T, U, D extends Parser<unknown, any, C, S>[], C extends object = object, S extends object = object>(parser: Parser<T, D, C, S>, f: (rs: T[], rest: string, state: S, config: C) => Result<U, D, C, S>): Parser<U, D, C, S>;
-export function bind<T, U, D extends Parser<unknown, any, C, S>[], C extends object = object, S extends object = object>(parser: Parser<T, D, C, S>, f: (rs: T[], rest: string, state: S, config: C) => Result<U, D, C, S>): Parser<U, D, C, S> {
+export function bind<T, U, D extends Parser<unknown, any, S, C>[], S extends object = object, C extends object = object>(parser: Parser<T, D, S, C>, f: (rs: T[], rest: string, state: S, config: C) => Result<U, D, S, C>): Parser<U, D, S, C>;
+export function bind<T, U, D extends Parser<unknown, any, S, C>[], S extends object = object, C extends object = object>(parser: Parser<T, D, S, C>, f: (rs: T[], rest: string, state: S, config: C) => Result<U, D, S, C>): Parser<U, D, S, C> {
   assert(parser);
   return (source, state, config) => {
     if (source === '') return;

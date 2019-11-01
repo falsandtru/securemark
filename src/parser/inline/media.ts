@@ -1,5 +1,4 @@
 import { MediaParser } from '../inline';
-import { MarkdownParser } from '../../../markdown';
 import { Result, union, inits, tails, some, subline, verify, surround, check, configure, fmap, bind } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
@@ -40,5 +39,5 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
       link,
       ([link]) =>
         [define(link, { target: '_blank' }, [el])])
-      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config) as Result<HTMLAnchorElement, any, MarkdownParser.Config, MarkdownParser.State>;
+      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config) as Result<HTMLAnchorElement, any>;
   })));
