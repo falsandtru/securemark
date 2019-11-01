@@ -54,13 +54,19 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const type_1 = _dereq_('./type');
+            const concat_1 = _dereq_('./concat');
             exports.assign = template((key, target, source) => target[key] = source[key]);
             exports.clone = template((key, target, source) => {
                 switch (type_1.type(source[key])) {
                 case 'Array':
                     return target[key] = exports.clone([], source[key]);
                 case 'Object':
-                    return target[key] = type_1.type(source[key]) === 'Object' ? exports.clone(source[key] instanceof Object ? {} : Object.create(null), source[key]) : source[key];
+                    switch (type_1.type(target[key])) {
+                    case 'Object':
+                        return target[key] = exports.clone(source[key] instanceof Object ? {} : Object.create(null), source[key]);
+                    default:
+                        return target[key] = source[key];
+                    }
                 default:
                     return target[key] = source[key];
                 }
@@ -72,9 +78,29 @@ require = function () {
                 case 'Object':
                     switch (type_1.type(target[key])) {
                     case 'Object':
-                        return target[key] = type_1.type(source[key]) === 'Object' ? exports.extend(target[key], source[key]) : source[key];
+                        return target[key] = exports.extend(target[key], source[key]);
                     default:
-                        return target[key] = type_1.type(source[key]) === 'Object' ? exports.extend(source[key] instanceof Object ? {} : Object.create(null), source[key]) : source[key];
+                        return target[key] = exports.extend(source[key] instanceof Object ? {} : Object.create(null), source[key]);
+                    }
+                default:
+                    return target[key] = source[key];
+                }
+            });
+            exports.merge = template((key, target, source) => {
+                switch (type_1.type(source[key])) {
+                case 'Array':
+                    switch (type_1.type(target[key])) {
+                    case 'Array':
+                        return target[key] = concat_1.concat(target[key], source[key]);
+                    default:
+                        return target[key] = exports.merge([], source[key]);
+                    }
+                case 'Object':
+                    switch (type_1.type(target[key])) {
+                    case 'Object':
+                        return target[key] = exports.merge(target[key], source[key]);
+                    default:
+                        return target[key] = exports.merge(source[key] instanceof Object ? {} : Object.create(null), source[key]);
                     }
                 default:
                     return target[key] = source[key];
@@ -94,8 +120,12 @@ require = function () {
                     return target;
                 }
             }
+            exports.template = template;
         },
-        { './type': 13 }
+        {
+            './concat': 8,
+            './type': 13
+        }
     ],
     6: [
         function (_dereq_, module, exports) {
@@ -1169,7 +1199,7 @@ require = function () {
                 const memory = new WeakMap();
                 return (source, state, base) => {
                     base = !memory.has(base) && Object.keys(base).length === 0 ? singleton : base;
-                    return parser(source, state, memory.get(base) || memory.set(base, assign_1.extend(assign_1.extend({}, base), config)).get(base));
+                    return parser(source, state, memory.get(base) || memory.set(base, assign_1.extend({}, base, config)).get(base));
                 };
             }
             exports.configure = configure;
@@ -1368,10 +1398,10 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const bind_1 = _dereq_('./bind');
             function fmap(parser, f) {
-                return bind_1.bind(parser, (rs, r, c) => [
+                return bind_1.bind(parser, (rs, r, state) => [
                     f(rs),
                     r,
-                    c
+                    state
                 ]);
             }
             exports.fmap = fmap;
@@ -3941,26 +3971,26 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
-            exports.anyline = combinator_1.line((_, c) => [
+            exports.anyline = combinator_1.line((_, state) => [
                 [],
                 '',
-                c
+                state
             ], false);
-            exports.emptyline = combinator_1.line((s, c) => s.trim() === '' ? [
+            exports.emptyline = combinator_1.line((s, state) => s.trim() === '' ? [
                 [],
                 '',
-                c
+                state
             ] : undefined, false);
             const invisible = /^(?:\\?\s)*$/;
-            exports.blankline = combinator_1.line((s, c) => invisible.test(s) ? [
+            exports.blankline = combinator_1.line((s, state) => invisible.test(s) ? [
                 [],
                 '',
-                c
+                state
             ] : undefined, false);
-            exports.contentline = combinator_1.line((s, c) => !invisible.test(s) ? [
+            exports.contentline = combinator_1.line((s, state) => !invisible.test(s) ? [
                 [],
                 '',
-                c
+                state
             ] : undefined, false);
         },
         { '../../combinator': 23 }
