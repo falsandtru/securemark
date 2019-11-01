@@ -3306,8 +3306,8 @@ require = function () {
                 combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
                     util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
                     util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
-                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)))),
-                combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), new Set(), 'html'), [])]), ([el]) => !el.matches('.invalid')))),
+                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)))),
+                combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), [])]), ([el]) => !el.matches('.invalid')))),
                 combinator_1.rewrite(combinator_1.surround(/^<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false), (source, state) => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
@@ -3325,23 +3325,21 @@ require = function () {
             ]), ''), ts => ts.length !== 2));
             function attrs(spec, params, classes, syntax) {
                 const result = {};
+                let invalid = classes.includes('invalid');
                 const attrs = new Map(params.map(arg => [
                     arg.split('=', 1)[0],
                     arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined
                 ]));
-                if (!spec && params.length > 0 || attrs.size !== params.length) {
-                    void classes.add('invalid');
-                }
                 if (spec) {
-                    if (!Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k))) {
-                        void classes.add('invalid');
-                    }
                     for (const [key, value] of attrs) {
-                        spec.hasOwnProperty(key) && spec[key].includes(value) ? result[key] = value || '' : void classes.add('invalid');
+                        spec.hasOwnProperty(key) && spec[key].includes(value) ? result[key] = value || '' : invalid = true;
                     }
                 }
-                if (classes.has('invalid')) {
-                    result.class = [...classes].join(' ');
+                invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
+                invalid = invalid || !!spec && !Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k));
+                if (invalid) {
+                    void classes.push('invalid');
+                    result.class = classes.join(' ').trim();
                     result['data-invalid-syntax'] = syntax;
                     result['data-invalid-type'] = 'parameter';
                 }
@@ -3436,8 +3434,8 @@ require = function () {
                 var _a, _b;
                 if ((_b = (_a = text.firstElementChild) === null || _a === void 0 ? void 0 : _a.firstElementChild) === null || _b === void 0 ? void 0 : _b.matches('a > .media')) {
                     void text.replaceChild(text.firstElementChild.firstElementChild, text.firstElementChild);
-                } else {
-                    if (text.childNodes.length > 0 && !util_1.hasTightText(text))
+                } else if (text.childNodes.length > 0) {
+                    if (!util_1.hasTightText(text))
                         return false;
                     if (text.querySelector('a'))
                         return false;
@@ -3463,7 +3461,7 @@ require = function () {
                     void el.setAttribute('target', '_blank');
                 }
                 return [
-                    [typed_dom_1.define(el, attrs(exports.attributes, params, new Set(el.classList), 'link'))],
+                    [typed_dom_1.define(el, attrs(exports.attributes, params, el.className.trim().split(/\s+/), 'link'))],
                     rest,
                     state
                 ];
@@ -3602,7 +3600,7 @@ require = function () {
                 if (exports.cache.has(uri.href) && el.hasAttribute('alt')) {
                     void typed_dom_1.define(el, { alt: text });
                 }
-                void typed_dom_1.define(el, link_1.attrs(link_1.attributes, params, new Set(el.classList), 'media'));
+                void typed_dom_1.define(el, link_1.attrs(link_1.attributes, params, el.className.trim().split(/\s+/), 'media'));
                 return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, state, config);
             })));
         },
@@ -4116,7 +4114,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             function sanitize(uri) {
                 uri = uri.replace(/\s/g, encodeURI);
-                return isAcceptedProtocol(uri) ? uri : '';
+                return isAllowedProtocol(uri) ? uri : '';
             }
             exports.sanitize = sanitize;
             function decode(uri) {
@@ -4128,7 +4126,7 @@ require = function () {
             }
             exports.decode = decode;
             const parser = typed_dom_1.html('a');
-            function isAcceptedProtocol(uri) {
+            function isAllowedProtocol(uri) {
                 parser.setAttribute('href', uri);
                 return [
                     'http:',
