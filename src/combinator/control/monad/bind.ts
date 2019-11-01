@@ -1,7 +1,7 @@
 import { Parser, Result, Data, SubParsers, State, Config, SubData, IntermediateParser, eval, exec, check } from '../../data/parser';
 
 export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (rs: SubData<P>[], rest: string, state: State<P>, config: Config<P>) => Result<Data<P>, SubParsers<P>, State<P>, Config<P>>): P;
-export function bind<T, U, D extends Parser<unknown, any, S, C>[], S extends object = object, C extends object = object>(parser: Parser<T, D, S, C>, f: (rs: T[], rest: string, state: S, config: C) => Result<U, D, S, C>): Parser<U, D, S, C>;
+export function bind<U, P extends Parser<unknown>>(parser: P, f: (rs: Data<P>[], rest: string, state: State<P>, config: Config<P>) => Result<U, SubParsers<P>, State<P>, Config<P>>): Parser<U, SubParsers<P>, State<P>, Config<P>>;
 export function bind<T, U, D extends Parser<unknown, any, S, C>[], S extends object = object, C extends object = object>(parser: Parser<T, D, S, C>, f: (rs: T[], rest: string, state: S, config: C) => Result<U, D, S, C>): Parser<U, D, S, C> {
   assert(parser);
   return (source, state, config) => {
