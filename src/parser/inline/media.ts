@@ -39,5 +39,5 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
       link,
       ([link]) =>
         [define(link, { target: '_blank' }, [el])])
-      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config) as Result<HTMLAnchorElement, any>;
+      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config) as Result<HTMLAnchorElement>;
   })));
