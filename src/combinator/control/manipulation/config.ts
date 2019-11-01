@@ -18,6 +18,6 @@ export function configure<T extends object, D extends Parser<unknown, any, S, C>
     base = !memory.has(base) && Object.keys(base).length === 0
       ? singleton as C
       : base;
-    return parser(source, state, memory.get(base) || memory.set(base, extend<C>(extend({}, base), config)).get(base)!);
+    return parser(source, state, memory.get(base) || memory.set(base, extend<C>({}, base, config)).get(base)!);
   };
 }
