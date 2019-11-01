@@ -37,7 +37,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     assert(!text.querySelector('a') || text.firstElementChild!.matches('.media'));
     return true;
   }),
-  ([text, param], rest, config) => {
+  ([text, param], rest, state) => {
     const [INSECURE_URL, ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
     const path = sanitize(INSECURE_URL);
     if (path === '' && INSECURE_URL !== '') return;
@@ -60,7 +60,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         if (el.origin === window.location.origin) break;
         void el.setAttribute('target', '_blank');
     }
-    return [[define(el, attrs(attributes, params, new Set(el.classList), 'link'))], rest, config];
+    return [[define(el, attrs(attributes, params, new Set(el.classList), 'link'))], rest, state];
   })));
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(

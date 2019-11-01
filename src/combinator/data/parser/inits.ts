@@ -4,12 +4,12 @@ import { concat } from 'spica/concat';
 export function inits<P extends Parser<unknown>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
 export function inits<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
-  return (source, config, state) => {
+  return (source, state, config) => {
     let rest = source;
     const data: T[] = [];
     for (const parser of parsers) {
       if (rest === '') break;
-      const result = parser(rest, config, state);
+      const result = parser(rest, state, config);
       assert(check(rest, result));
       if (!result) break;
       void concat(data, eval(result));
@@ -17,7 +17,7 @@ export function inits<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
     }
     assert(rest.length <= source.length);
     return rest.length < source.length
-      ? [data, rest, config]
+      ? [data, rest, state]
       : undefined;
   };
 }

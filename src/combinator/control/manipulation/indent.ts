@@ -14,12 +14,12 @@ export function indent<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): Pa
     memoize(([, indent]) => indent,
     indent =>
       some(line(rewrite(
-        (source, config) => [[], source.slice(firstline(source).length), config],
-        surround(indent, (source, config) => [[firstline(source, false)], '', config], '')))))),
-    (rs, rest, config, state) => {
-      const result = parser(rs.join('\n'), config, state);
+        (source, state) => [[], source.slice(firstline(source).length), state],
+        surround(indent, (source, state) => [[firstline(source, false)], '', state], '')))))),
+    (rs, rest, state, config) => {
+      const result = parser(rs.join('\n'), state, config);
       return result && exec(result) === ''
-        ? [eval(result), rest, config]
+        ? [eval(result), rest, state]
         : undefined;
     });
 }

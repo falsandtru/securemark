@@ -37,8 +37,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ([el]) => !el.matches('.invalid')))),
   rewrite(
     surround(/^<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false),
-    (source, config) =>
-      [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '', config]),
+    (source, state) =>
+      [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '', state]),
 ])));
 
 export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(

@@ -1,5 +1,5 @@
-export type Parser<R, D extends Parser<unknown, any, C, S>[] = any, C extends object = object, S extends object = object> = (source: string, config: C, state: S) => Result<R, D, C, S>;
-export type Result<R, D extends Parser<unknown, any, C, S>[] = any, C extends object = object, S extends object = object> = readonly [R[], string, C] | readonly [R[], string, C, S, D] | undefined;
+export type Parser<R, D extends Parser<unknown, any, C, S>[] = any, C extends object = object, S extends object = object> = (source: string, state: S, config: C) => Result<R, D, C, S>;
+export type Result<R, D extends Parser<unknown, any, C, S>[] = any, C extends object = object, S extends object = object> = readonly [R[], string, S] | readonly [R[], string, S, C, D] | undefined;
 export type Data<P extends Parser<unknown>> = P extends Parser<infer R> ? R : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, infer D> ? D : never;
 export type Config<P extends Parser<unknown>> = P extends Parser<any, any, infer C, object> ? C : never;
@@ -23,7 +23,7 @@ export function exec(result: Result<unknown>, default_: string = ''): string {
     : default_;
 }
 
-export function config<C extends object>(result: NonNullable<Result<unknown, any, C, object>>): C {
+export function state<S extends object>(result: NonNullable<Result<unknown, any, object, S>>): S {
   return result[2];
 }
 

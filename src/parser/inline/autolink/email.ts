@@ -6,4 +6,4 @@ import { html } from 'typed-dom';
 
 export const email: AutolinkParser.EmailParser = subline(focus(
   /^[a-zA-Z0-9]+(?:[.+_-][a-zA-Z0-9]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*/,
-  (source, config) => [[html('a', { class: 'email', href: `mailto:${source}`, rel: 'noopener' }, source)], '', config]));
+  (source, state) => [[html('a', { class: 'email', href: `mailto:${source}`, rel: 'noopener' }, source)], '', state]));

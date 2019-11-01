@@ -5,14 +5,14 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/some', () => {
   describe('some', () => {
-    const a: Parser<string, never> = (source, config): Result<string, never> => {
+    const a: Parser<string, never> = (source, state): Result<string, never> => {
       return source && source[0] === 'a'
-        ? [['A'], source.slice(1), config]
+        ? [['A'], source.slice(1), state]
         : undefined;
     }
-    const b: Parser<string, never> = (source, config): Result<string, never> => {
+    const b: Parser<string, never> = (source, state): Result<string, never> => {
       return source && source[0] === 'b'
-        ? [['B'], source.slice(1), config]
+        ? [['B'], source.slice(1), state]
         : undefined;
     }
     const ab = union<Parser<string, [typeof a, typeof b]>>([a, b]);
