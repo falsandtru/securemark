@@ -40,16 +40,18 @@ export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S
   });
 }
 
-export function trimNode<T extends HTMLElement | Text, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
+export function trimNode<P extends Parser<Node>>(parser: P): P;
+export function trimNode<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
   return trimNode_(trimNode_(parser, 'start'), 'end');
 }
 
-export function trimNodeEnd<T extends HTMLElement | Text, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
+export function trimNodeEnd<P extends Parser<Node>>(parser: P): P;
+export function trimNodeEnd<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
   return trimNode_(parser, 'end');
 }
 
-function trimNode_<P extends Parser<HTMLElement | Text>>(parser: P, mode: 'start' | 'end'): P;
-function trimNode_<T extends HTMLElement | Text, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>, mode: 'start' | 'end'): Parser<T, D, S, C> {
+function trimNode_<P extends Parser<Node>>(parser: P, mode: 'start' | 'end'): P;
+function trimNode_<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>, mode: 'start' | 'end'): Parser<T, D, S, C> {
   return fmap(parser, ns => {
     if (ns.length === 0) return ns;
     const node = ns[mode === 'start' ? 0 : ns.length - 1];
@@ -72,8 +74,8 @@ function trimNode_<T extends HTMLElement | Text, D extends Parser<unknown, any, 
         break;
       case 1:
         switch (true) {
-          case (node as HTMLElement).tagName === 'BR':
-          case (node as HTMLElement).classList.contains('linebreak'):
+          case (node as Node as HTMLElement).tagName === 'BR':
+          case (node as Node as HTMLElement).classList.contains('linebreak'):
             switch (mode) {
               case 'start':
                 void ns.shift();
