@@ -60,7 +60,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         if (el.origin === window.location.origin) break;
         void el.setAttribute('target', '_blank');
     }
-    return [[define(el, attrs(attributes, params, new Set(el.classList), 'link'))], rest, state];
+    return [[define(el, attrs(attributes, params, el.className.trim().split(/\s+/), 'link'))], rest, state];
   })));
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
@@ -90,7 +90,7 @@ export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() =
 export function attrs(
   spec: DeepImmutable<Record<string, Array<string | undefined>>> | undefined,
   params: string[],
-  classes: Set<string>,
+  classes: string[],
   syntax: string,
 ): Record<string, string | undefined> {
   const attrs = attrs_(spec, params, classes, syntax);

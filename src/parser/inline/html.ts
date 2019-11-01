@@ -22,7 +22,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           dup(surround(``, trimNode(defrag(some(union([inline]), `</${tag}>`))), `</${tag}>`)),
         ]),
         ([attrs_, contents]: [Text[], (HTMLElement | Text)[]]) =>
-          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), new Set(), 'html'), contents)]),
+          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'), contents)]),
         ([el]) => !el.matches('.invalid') && hasTightText(el)))),
   match(
     /^(?=<(wbr)(?: [^\n>]*)?>)/,
@@ -33,7 +33,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
         ]),
         ([attrs_]) =>
-          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), new Set(), 'html'), [])]),
+          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'), [])]),
         ([el]) => !el.matches('.invalid')))),
   rewrite(
     surround(/^<[a-z]+/, some(defrag(union([attribute]))), /^ ?\/?>/, false),
@@ -57,28 +57,25 @@ export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
 export function attrs(
   spec: DeepImmutable<Record<string, Array<string | undefined>>> | undefined,
   params: string[],
-  classes: Set<string>,
+  classes: string[],
   syntax: string,
 ): Record<string, string | undefined> {
-  const result: Record<string, string> = {
-  };
+  const result: Record<string, string> = {};
+  let invalid = classes.includes('invalid');
   const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
     arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined]));
-  if (!spec && params.length > 0 || attrs.size !== params.length) {
-    void classes.add('invalid');
-  }
   if (spec) {
-    if (!Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k))) {
-      void classes.add('invalid');
-    }
     for (const [key, value] of attrs) {
       spec.hasOwnProperty(key) && spec[key].includes(value)
         ? result[key] = value || ''
-        : void classes.add('invalid');
+        : invalid = true;
     }
   }
-  if (classes.has('invalid')) {
-    result.class = [...classes].join(' ');
+  invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
+  invalid = invalid || !!spec && !Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k));
+  if (invalid) {
+    void classes.push('invalid');
+    result.class = classes.join(' ').trim();
     result['data-invalid-syntax'] = syntax;
     result['data-invalid-type'] = 'parameter';
   }

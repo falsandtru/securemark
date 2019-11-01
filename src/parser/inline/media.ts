@@ -34,7 +34,7 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(el.tagName));
       void define(el, { alt: text });
     }
-    void define(el, attrs(attributes, params, new Set(el.classList), 'media'));
+    void define(el, attrs(attributes, params, el.className.trim().split(/\s+/), 'media'));
     return fmap(
       link,
       ([link]) =>
