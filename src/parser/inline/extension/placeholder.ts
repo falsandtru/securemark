@@ -9,4 +9,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => subline
     validate(/^[:^](?!])/, some(union([inline]), /^\\?\n|^]/)),
     ']'),
   () =>
-    [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`, {})))])));
+    [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`, {}, {})))])));

@@ -9,7 +9,7 @@ export function validate<P extends Parser<unknown, any>>(pattern: RegExp | strin
 export function validate<T, D extends Parser<unknown, any>[]>(pattern: RegExp | string, parser: Parser<T, D>): Parser<T, D> {
   assert(pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true);
   assert(parser);
-  return (source, config) => {
+  return (source, config, state) => {
     if (source === '') return;
     switch (typeof pattern) {
       case 'string':
@@ -19,7 +19,7 @@ export function validate<T, D extends Parser<unknown, any>[]>(pattern: RegExp | 
         if (pattern.test(source)) break;
         return;
     }
-    const result = parser(source, config);
+    const result = parser(source, config, state);
     assert(check(source, result));
     if (!result) return;
     return exec(result).length < source.length
@@ -31,9 +31,9 @@ export function validate<T, D extends Parser<unknown, any>[]>(pattern: RegExp | 
 export function verify<P extends Parser<unknown, any>>(parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
 export function verify<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, D> {
   assert(parser);
-  return (source, config) => {
+  return (source, config, state) => {
     if (source === '') return;
-    const result = parser(source, config);
+    const result = parser(source, config, state);
     assert(check(source, result));
     if (!result) return;
     if (!cond(eval(result), exec(result))) return;

@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/shortmedia', () => {
   describe('shortmedia', () => {
-    const parser = (source: string) => some(shortmedia)(source, {});
+    const parser = (source: string) => some(shortmedia)(source, {}, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

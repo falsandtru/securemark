@@ -4,7 +4,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/inline/html', () => {
   describe('html', () => {
-    const parser = (source: string) => some(html)(source, {});
+    const parser = (source: string) => some(html)(source, {}, {});
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('<script>')), [['<span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;script&gt;</span>'], '']);

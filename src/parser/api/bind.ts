@@ -33,7 +33,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       const skip = position < pairs.length && segment === pairs[position][0];
       const elements = skip
         ? pairs[position][1]
-        : eval(block(segment, {}));
+        : eval(block(segment, {}, {}));
       for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
           if (!el.parentNode) continue;

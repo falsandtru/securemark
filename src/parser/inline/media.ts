@@ -23,7 +23,7 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([[text = txt('')]]) => text.textContent === '' || hasTightText(text)),
   ([[text = txt('')], param]: (HTMLElement | Text)[][]) => [text.textContent!, ...param.map(t => t.textContent!)]),
-  ([text, INSECURE_URL, ...params]: string[], rest, config) => {
+  ([text, INSECURE_URL, ...params]: string[], rest, config, state) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;
     const uri = new URL(path, window.location.href);
@@ -40,5 +40,5 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
       link,
       ([link]) =>
         [define(link, { target: '_blank' }, [el])])
-      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, config) as Result<HTMLAnchorElement, any, MarkdownParser.Config, MarkdownParser.State>;
+      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, config, state) as Result<HTMLAnchorElement, any, MarkdownParser.Config, MarkdownParser.State>;
   })));

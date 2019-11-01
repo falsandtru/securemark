@@ -3,10 +3,10 @@ import { Parser, eval, exec, check } from '../../data/parser';
 export function line<P extends Parser<unknown, any>>(parser: P, allowTrailingWhitespace?: boolean): P;
 export function line<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, allowTrailingWhitespace = true): Parser<T, D> {
   assert(parser);
-  return (source, config) => {
+  return (source, config, state) => {
     if (source === '') return;
     const fst = firstline(source);
-    const result = parser(fst, config);
+    const result = parser(fst, config, state);
     assert(check(fst, result));
     if (!result) return;
     return (allowTrailingWhitespace ? exec(result).trim() === '' : exec(result) === '')
@@ -18,9 +18,9 @@ export function line<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, 
 export function subline<P extends Parser<unknown, any>>(parser: P): P;
 export function subline<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
   assert(parser);
-  return (source, config) => {
+  return (source, config, state) => {
     if (source === '') return;
-    const result = parser(source, config);
+    const result = parser(source, config, state);
     assert(check(source, result));
     if (!result) return result;
     return source.length - exec(result).length <= firstline(source, false).length

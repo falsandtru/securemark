@@ -6,14 +6,14 @@ export function some<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, 
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
   let memory = '';
-  return (source, config) => {
+  return (source, config, state) => {
     if (source === memory) return;
     let rest = source;
     const data: T[] = [];
     while (true) {
       if (rest === '') break;
       if (until && match(rest, until)) break;
-      const result = parser(rest, config);
+      const result = parser(rest, config, state);
       assert(check(rest, result));
       if (!result) break;
       void concat(data, eval(result));

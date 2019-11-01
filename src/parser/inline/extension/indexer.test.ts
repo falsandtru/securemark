@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/extension/indexer', () => {
   describe('indexer', () => {
-    const parser = (source: string) => some(indexer)(source, {});
+    const parser = (source: string) => some(indexer)(source, {}, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

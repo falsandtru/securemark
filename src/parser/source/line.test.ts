@@ -3,7 +3,7 @@ import { inspect } from '../../debug.test';
 
 describe('Unit: parser/source/line', () => {
   describe('blankline', () => {
-    const parser = (source: string) => blankline(source, {});
+    const parser = (source: string) => blankline(source, {}, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
@@ -27,7 +27,7 @@ describe('Unit: parser/source/line', () => {
   });
 
   describe('contentline', () => {
-    const parser = (source: string) => contentline(source, {});
+    const parser = (source: string) => contentline(source, {}, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

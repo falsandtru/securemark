@@ -4,9 +4,9 @@ import { firstline } from './line';
 export function block<P extends Parser<unknown, any>>(parser: P, separation?: boolean): P;
 export function block<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, separation = true): Parser<T, D> {
   assert(parser);
-  return (source, config) => {
+  return (source, config, state) => {
     if (source === '') return;
-    const result = parser(source, config);
+    const result = parser(source, config, state);
     if (!result) return;
     const rest = exec(result);
     if (separation && firstline(rest).trim() !== '') return;

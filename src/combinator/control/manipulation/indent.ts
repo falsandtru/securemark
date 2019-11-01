@@ -16,8 +16,8 @@ export function indent<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>
       some(line(rewrite(
         (source, config) => [[], source.slice(firstline(source).length), config],
         surround(indent, (source, config) => [[firstline(source, false)], '', config], '')))))),
-    (rs, rest, config) => {
-      const result = parser(rs.join('\n'), config);
+    (rs, rest, config, state) => {
+      const result = parser(rs.join('\n'), config, state);
       return result && exec(result) === ''
         ? [eval(result), rest, config]
         : undefined;

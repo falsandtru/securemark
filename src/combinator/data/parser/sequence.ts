@@ -4,12 +4,12 @@ import { concat } from 'spica/concat';
 export function sequence<P extends Parser<unknown, any>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
 export function sequence<T, D extends Parser<T, any>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
-  return (source, config) => {
+  return (source, config, state) => {
     let rest = source;
     const data: T[] = [];
     for (const parser of parsers) {
       if (rest === '') return;
-      const result = parser(rest, config);
+      const result = parser(rest, config, state);
       assert(check(rest, result));
       if (!result) return;
       void concat(data, eval(result));

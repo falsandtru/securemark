@@ -35,6 +35,6 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, tri
     ([, , body]) => (rest, config) =>
       [[html('aside', { class: 'example', 'data-type': 'math' }, [
         html('pre', body.slice(1, -1)),
-        ...eval(mathblock(`$$${body}$$`, {}))
+        ...eval(mathblock(`$$${body}$$`, {}, {}))
       ])], rest, config]),
 ]))));

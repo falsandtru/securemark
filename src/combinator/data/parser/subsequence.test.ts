@@ -23,17 +23,17 @@ describe('Unit: combinator/subsequence', () => {
 
     it('basic', () => {
       const parser = abc;
-      assert.deepStrictEqual(inspect(parser('', {})), undefined);
-      assert.deepStrictEqual(inspect(parser('a', {})), [['A'], '']);
-      assert.deepStrictEqual(inspect(parser('b', {})), [['B'], '']);
-      assert.deepStrictEqual(inspect(parser('c', {})), [['C'], '']);
-      assert.deepStrictEqual(inspect(parser('ab', {})), [['A', 'B'], '']);
-      assert.deepStrictEqual(inspect(parser('ba', {})), [['B'], 'a']);
-      assert.deepStrictEqual(inspect(parser('aab', {})), [['A'], 'ab']);
-      assert.deepStrictEqual(inspect(parser('abb', {})), [['A', 'B'], 'b']);
-      assert.deepStrictEqual(inspect(parser('bba', {})), [['B'], 'ba']);
-      assert.deepStrictEqual(inspect(parser('ac', {})), [['A', 'C'], '']);
-      assert.deepStrictEqual(inspect(parser('bc', {})), [['B', 'C'], '']);
+      assert.deepStrictEqual(inspect(parser('', {}, {})), undefined);
+      assert.deepStrictEqual(inspect(parser('a', {}, {})), [['A'], '']);
+      assert.deepStrictEqual(inspect(parser('b', {}, {})), [['B'], '']);
+      assert.deepStrictEqual(inspect(parser('c', {}, {})), [['C'], '']);
+      assert.deepStrictEqual(inspect(parser('ab', {}, {})), [['A', 'B'], '']);
+      assert.deepStrictEqual(inspect(parser('ba', {}, {})), [['B'], 'a']);
+      assert.deepStrictEqual(inspect(parser('aab', {}, {})), [['A'], 'ab']);
+      assert.deepStrictEqual(inspect(parser('abb', {}, {})), [['A', 'B'], 'b']);
+      assert.deepStrictEqual(inspect(parser('bba', {}, {})), [['B'], 'ba']);
+      assert.deepStrictEqual(inspect(parser('ac', {}, {})), [['A', 'C'], '']);
+      assert.deepStrictEqual(inspect(parser('bc', {}, {})), [['B', 'C'], '']);
     });
 
   });
