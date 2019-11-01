@@ -30,8 +30,8 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       assert(text.childNodes.length === 1);
       void text.replaceChild(text.firstElementChild.firstElementChild, text.firstElementChild);
     }
-    else {
-      if (text.childNodes.length > 0 && !hasTightText(text)) return false;
+    else if (text.childNodes.length > 0) {
+      if (!hasTightText(text)) return false;
       if (text.querySelector('a')) return false;
     }
     assert(!text.querySelector('a') || text.firstElementChild!.matches('.media'));
