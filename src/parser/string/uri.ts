@@ -2,7 +2,7 @@ import { html } from 'typed-dom';
 
 export function sanitize(uri: string): string {
   uri = uri.replace(/\s/g, encodeURI);
-  return isAcceptedProtocol(uri)
+  return isAllowedProtocol(uri)
     ? uri
     : '';
 }
@@ -18,7 +18,7 @@ export function decode(uri: string): string {
 }
 
 const parser = html('a');
-function isAcceptedProtocol(uri: string): boolean {
+function isAllowedProtocol(uri: string): boolean {
   parser.setAttribute('href', uri);
   return [
     'http:',
