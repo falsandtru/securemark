@@ -40,12 +40,10 @@ export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S
   });
 }
 
-export function trimNode<P extends Parser<HTMLElement | Text>>(parser: P): P;
 export function trimNode<T extends HTMLElement | Text, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
   return trimNode_(trimNode_(parser, 'start'), 'end');
 }
 
-export function trimNodeEnd<P extends Parser<HTMLElement | Text>>(parser: P): P;
 export function trimNodeEnd<T extends HTMLElement | Text, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
   return trimNode_(parser, 'end');
 }

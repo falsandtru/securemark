@@ -694,7 +694,7 @@ export namespace MarkdownParser {
     export interface ShortmediaParser extends
       // !https://host
       Inline<'shortmedia'>,
-      Parser<HTMLElement, [
+      Parser<HTMLAnchorElement, [
         MediaParser,
       ], State, Config> {
     }

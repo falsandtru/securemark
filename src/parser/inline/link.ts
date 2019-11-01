@@ -22,7 +22,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       surround('[', shortmedia, ']'),
       surround('[', configure({ syntax: { inline: { media: false } } }, some(inline, /^\\?\n|^]/)), ']', false),
     ])))),
-    wrap(surround('{', inits<LinkParser.ParamParser>([uri, some(defrag(attribute))]), /^ ?}/)),
+    wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])))),
   ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),
   ([text]) => {
