@@ -6,8 +6,8 @@ import { bind } from '../monad/bind';
 import { match, memoize } from './match';
 import { surround } from './surround';
 
-export function indent<P extends Parser<unknown, any>>(parser: P): P;
-export function indent<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
+export function indent<P extends Parser<unknown>>(parser: P): P;
+export function indent<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): Parser<T, D> {
   assert(parser);
   return bind<string, T, D>(match(
     /^(?=([^\S\n]+))/,

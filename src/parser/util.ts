@@ -23,7 +23,7 @@ export function wrap<D extends Parser<unknown, any, C, S>[], C extends object, S
   return fmap(parser, ns => [frag(ns)]);
 }
 
-export function defrag<P extends Parser<Node, any>>(parser: P): P;
+export function defrag<P extends Parser<Node>>(parser: P): P;
 export function defrag<T extends Node, D extends Parser<unknown, any, C, S>[], C extends object, S extends object>(parser: Parser<T, D, C, S>): Parser<T, D, C, S> {
   return fmap(parser, nodes => {
     const acc: T[] = [];
@@ -40,17 +40,17 @@ export function defrag<T extends Node, D extends Parser<unknown, any, C, S>[], C
   });
 }
 
-export function trimNode<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trimNode<P extends Parser<HTMLElement | Text>>(parser: P): P;
 export function trimNode<T extends HTMLElement | Text, D extends Parser<unknown, any, C, S>[], C extends object, S extends object>(parser: Parser<T, D, C, S>): Parser<T, D, C, S> {
   return trimNode_(trimNode_(parser, 'start'), 'end');
 }
 
-export function trimNodeEnd<P extends Parser<HTMLElement | Text, any>>(parser: P): P;
+export function trimNodeEnd<P extends Parser<HTMLElement | Text>>(parser: P): P;
 export function trimNodeEnd<T extends HTMLElement | Text, D extends Parser<unknown, any, C, S>[], C extends object, S extends object>(parser: Parser<T, D, C, S>): Parser<T, D, C, S> {
   return trimNode_(parser, 'end');
 }
 
-function trimNode_<P extends Parser<HTMLElement | Text, any>>(parser: P, mode: 'start' | 'end'): P;
+function trimNode_<P extends Parser<HTMLElement | Text>>(parser: P, mode: 'start' | 'end'): P;
 function trimNode_<T extends HTMLElement | Text, D extends Parser<unknown, any, C, S>[], C extends object, S extends object>(parser: Parser<T, D, C, S>, mode: 'start' | 'end'): Parser<T, D, C, S> {
   return fmap(parser, ns => {
     if (ns.length === 0) return ns;

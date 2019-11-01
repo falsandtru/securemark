@@ -1,7 +1,7 @@
 import { Parser, Data, SubData, SubParsers, SubParser, check } from '../parser';
 
-export function union<P extends Parser<unknown, any>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
-export function union<T, D extends Parser<T, any>[]>(parsers: D): Parser<T, D> {
+export function union<P extends Parser<unknown>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : SubParser<P>;
+export function union<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
   switch (parsers.length) {
     case 0:

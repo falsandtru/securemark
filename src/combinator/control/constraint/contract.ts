@@ -1,12 +1,12 @@
 import { Parser, Data, eval, exec, check } from '../../data/parser';
 
-export function contract<P extends Parser<unknown, any>>(pattern: RegExp | string, parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
-export function contract<T, D extends Parser<unknown, any>[]>(pattern: RegExp | string, parser: Parser<T, D>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, D> {
+export function contract<P extends Parser<unknown>>(pattern: RegExp | string, parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
+export function contract<T, D extends Parser<unknown>[]>(pattern: RegExp | string, parser: Parser<T, D>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, D> {
   return verify(validate(pattern, parser), cond);
 }
 
-export function validate<P extends Parser<unknown, any>>(pattern: RegExp | string, parser: P): P;
-export function validate<T, D extends Parser<unknown, any>[]>(pattern: RegExp | string, parser: Parser<T, D>): Parser<T, D> {
+export function validate<P extends Parser<unknown>>(pattern: RegExp | string, parser: P): P;
+export function validate<T, D extends Parser<unknown>[]>(pattern: RegExp | string, parser: Parser<T, D>): Parser<T, D> {
   assert(pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true);
   assert(parser);
   return (source, config, state) => {
@@ -28,8 +28,8 @@ export function validate<T, D extends Parser<unknown, any>[]>(pattern: RegExp | 
   };
 }
 
-export function verify<P extends Parser<unknown, any>>(parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
-export function verify<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, D> {
+export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
+export function verify<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, D> {
   assert(parser);
   return (source, config, state) => {
     if (source === '') return;
