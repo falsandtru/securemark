@@ -1194,7 +1194,7 @@ require = function () {
                 return (source, state, config) => f(config) ? parser(source, state, config) : undefined;
             }
             exports.check = check;
-            const singleton = {};
+            const singleton = Object.freeze({});
             function configure(config, parser) {
                 const memory = new WeakMap();
                 return (source, state, base) => {
@@ -2209,7 +2209,7 @@ require = function () {
             function attrs(label, content, caption) {
                 const group = label.split('-', 1)[0];
                 const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
-                const invalid = group !== '$' || rebase ? undefined : !content.matches('.math') || caption.length > 0 || undefined;
+                const invalid = group !== '$' || rebase ? undefined : !content.classList.contains('math') || caption.length > 0 || undefined;
                 return {
                     'data-label': label,
                     'data-group': group,
@@ -3196,7 +3196,7 @@ require = function () {
             }
             exports.indexee = indexee;
             function text(source) {
-                const indexer = [...source.children].find(el => el.matches('.indexer'));
+                const indexer = [...source.children].find(el => el.classList.contains('indexer'));
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
@@ -3306,8 +3306,8 @@ require = function () {
                 combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
                     util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
                     util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
-                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.matches('.invalid') && util_1.hasTightText(el)))),
-                combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), [])]), ([el]) => !el.matches('.invalid')))),
+                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.classList.contains('invalid') && util_1.hasTightText(el)))),
+                combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), [])]), ([el]) => !el.classList.contains('invalid')))),
                 combinator_1.rewrite(combinator_1.surround(/^<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false), (source, state) => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
@@ -3421,35 +3421,38 @@ require = function () {
                 var _a, _b, _c, _d;
                 return _d = (_c = (_b = (_a = config) === null || _a === void 0 ? void 0 : _a.syntax) === null || _b === void 0 ? void 0 : _b.inline) === null || _c === void 0 ? void 0 : _c.link, _d !== null && _d !== void 0 ? _d : true;
             }, combinator_1.configure({ syntax: { inline: { link: false } } }, combinator_1.tails([
-                util_1.wrap(util_1.trimNodeEnd(util_1.defrag(combinator_1.union([
+                util_1.dup(util_1.trimNodeEnd(util_1.defrag(combinator_1.union([
                     combinator_1.surround('[', inline_1.media, ']'),
                     combinator_1.surround('[', inline_1.shortmedia, ']'),
                     combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(inline_1.inline, /^\\?\n|^]/)), ']', false)
                 ])))),
-                util_1.wrap(combinator_1.surround('{', combinator_1.inits([
+                util_1.dup(combinator_1.surround('{', combinator_1.inits([
                     exports.uri,
                     combinator_1.some(util_1.defrag(html_1.attribute))
                 ]), /^ ?}/))
-            ])))), ns => concat_1.concat([...Array(2 - ns.length)].map(() => typed_dom_1.frag()), ns)), ([text]) => {
-                var _a, _b;
-                if ((_b = (_a = text.firstElementChild) === null || _a === void 0 ? void 0 : _a.firstElementChild) === null || _b === void 0 ? void 0 : _b.matches('a > .media')) {
-                    void text.replaceChild(text.firstElementChild.firstElementChild, text.firstElementChild);
-                } else if (text.childNodes.length > 0) {
-                    if (!util_1.hasTightText(text))
+            ])))), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text]) => {
+                var _a;
+                if (text.length === 0)
+                    return true;
+                if (text.length === 1 && text[0] instanceof HTMLAnchorElement && ((_a = text[0].firstElementChild) === null || _a === void 0 ? void 0 : _a.classList.contains('media'))) {
+                    text[0] = text[0].firstElementChild;
+                } else {
+                    const proxy = typed_dom_1.html('div', text);
+                    if (!util_1.hasTightText(proxy))
                         return false;
-                    if (text.querySelector('a'))
+                    if (proxy.getElementsByTagName('a').length > 0)
                         return false;
                 }
                 return true;
             }), ([text, param], rest, state) => {
-                const [INSECURE_URL, ...params] = [...param.childNodes].map(t => t.textContent);
+                const [INSECURE_URL, ...params] = param.map(t => t.textContent);
                 const path = uri_1.sanitize(INSECURE_URL);
                 if (path === '' && INSECURE_URL !== '')
                     return;
                 const el = typed_dom_1.html('a', {
                     href: path,
                     rel: `noopener${ params.includes('nofollow') ? ' nofollow noreferrer' : '' }`
-                }, text.childNodes.length > 0 ? text.childNodes : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
+                }, text.length > 0 ? text : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
                 switch (el.protocol) {
                 case 'tel:':
                     if (el.getAttribute('href') === `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
@@ -3582,10 +3585,13 @@ require = function () {
                     link_1.uri,
                     combinator_1.some(util_1.defrag(html_1.attribute))
                 ]), /^ ?}/))
-            ])), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([[text = typed_dom_1.text('')]]) => text.textContent === '' || util_1.hasTightText(text)), ([[text = typed_dom_1.text('')], param]) => [
-                text.textContent,
-                ...param.map(t => t.textContent)
-            ]), ([text, INSECURE_URL, ...params], rest, state, config) => {
+            ])), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text]) => text.length === 0 || util_1.hasTightText(text[0])), ([text, param]) => {
+                var _a;
+                return [
+                    ((_a = text[0]) === null || _a === void 0 ? void 0 : _a.textContent) || '',
+                    ...param.map(t => t.textContent)
+                ];
+            }), ([text, INSECURE_URL, ...params], rest, state, config) => {
                 const path = uri_1.sanitize(INSECURE_URL.trim());
                 if (path === '' && INSECURE_URL !== '')
                     return;
@@ -4144,7 +4150,7 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             function hasContent(node) {
-                return hasText(node) || !!node.querySelector('.media');
+                return hasText(node) || node.getElementsByClassName('media').length > 0;
             }
             exports.hasContent = hasContent;
             function hasText(node) {
@@ -4159,10 +4165,6 @@ require = function () {
                 return combinator_1.fmap(parser, ns => [ns]);
             }
             exports.dup = dup;
-            function wrap(parser) {
-                return combinator_1.fmap(parser, ns => [typed_dom_1.frag(ns)]);
-            }
-            exports.wrap = wrap;
             function defrag(parser) {
                 return combinator_1.fmap(parser, nodes => {
                     const acc = [];
