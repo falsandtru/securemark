@@ -2,7 +2,7 @@ import { LinkParser, media, shortmedia, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, check, configure, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
-import { defrag, wrap, trimNodeEnd, hasTightText, hasContent } from '../util';
+import { defrag, dup, trimNodeEnd, hasTightText, hasContent } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
@@ -17,28 +17,29 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   check(config => config?.syntax?.inline?.link ?? true,
   configure({ syntax: { inline: { link: false } } },
   tails([
-    wrap(trimNodeEnd(defrag(union([
+    dup(trimNodeEnd(defrag(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
       surround('[', configure({ syntax: { inline: { media: false } } }, some(inline, /^\\?\n|^]/)), ']', false),
     ])))),
-    wrap(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
+    dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])))),
-  ns => concat([...Array(2 - ns.length)].map(() => frag()), ns)),
+  ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([text]) => {
-    if (text.firstElementChild?.firstElementChild?.matches('a > .media')) {
-      assert(text.childNodes.length === 1);
-      void text.replaceChild(text.firstElementChild.firstElementChild, text.firstElementChild);
+    if (text.length === 0) return true;
+    if (text.length === 1 && text[0] instanceof HTMLAnchorElement && text[0].firstElementChild?.classList.contains('media')) {
+      text[0] = text[0].firstElementChild as HTMLElement;
     }
-    else if (text.childNodes.length > 0) {
-      if (!hasTightText(text)) return false;
-      if (text.querySelector('a')) return false;
+    else {
+      const proxy = frag(text);
+      if (!hasTightText(proxy)) return false;
+      if (proxy.querySelector('a')) return false;
     }
-    assert(!text.querySelector('a') || text.firstElementChild!.matches('.media'));
+    assert(!frag(text).querySelector('a') || frag(text).firstElementChild!.matches('.media'));
     return true;
   }),
-  ([text, param], rest, state) => {
-    const [INSECURE_URL, ...params]: string[] = [...param.childNodes].map(t => t.textContent!);
+  ([text, param]: [(HTMLElement | Text)[], Text[]], rest, state) => {
+    const [INSECURE_URL, ...params]: string[] = param.map(t => t.textContent!);
     const path = sanitize(INSECURE_URL);
     if (path === '' && INSECURE_URL !== '') return;
     const el = html('a',
@@ -46,8 +47,8 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         href: path,
         rel: `noopener${params.includes('nofollow') ? ' nofollow noreferrer' : ''}`,
       },
-      text.childNodes.length > 0
-        ? text.childNodes
+      text.length > 0
+        ? text
         : sanitize(decode(INSECURE_URL || '.'))
             .replace(/^tel:/, '')
             .replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));

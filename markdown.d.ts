@@ -522,7 +522,7 @@ export namespace MarkdownParser {
     export namespace LinkParser {
       export interface ContentParser extends
         Inline<'link/content'>,
-        Parser<DocumentFragment, [
+        Parser<(HTMLElement | Text)[], [
           MediaParser,
           ShortmediaParser,
           InlineParser,
@@ -530,7 +530,7 @@ export namespace MarkdownParser {
       }
       export interface ParamParser extends
         Inline<'link/param'>,
-        Parser<DocumentFragment, [
+        Parser<Text[], [
           LinkParser.ParamParser.UriParser,
           HTMLParser.ParamParser.AttributeParser,
         ], State, Config> {

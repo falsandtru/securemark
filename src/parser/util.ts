@@ -1,5 +1,5 @@
 import { Parser, fmap } from '../combinator';
-import { frag, define, apply } from 'typed-dom';
+import { define, apply } from 'typed-dom';
 
 export function hasContent(node: HTMLElement | DocumentFragment): boolean {
   return hasText(node)
@@ -17,10 +17,6 @@ export function hasTightText(node: HTMLElement | DocumentFragment | Text): boole
 
 export function dup<T, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T[], D, S, C> {
   return fmap(parser, ns => [ns]);
-}
-
-export function wrap<D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<Node, D, S, C>): Parser<DocumentFragment, D, S, C> {
-  return fmap(parser, ns => [frag(ns)]);
 }
 
 export function defrag<P extends Parser<Node>>(parser: P): P;
