@@ -9,7 +9,7 @@ export function check<T extends object, D extends Parser<unknown, any, S, C>[], 
       : undefined;
 }
 
-const singleton = {};
+const singleton = Object.freeze({});
 
 export function configure<P extends Parser<object>>(config: Config<P>, parser: P): P;
 export function configure<T extends object, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(config: C, parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
