@@ -6,7 +6,7 @@ import { defrag, dup, trimNodeEnd, hasTightText, hasContent } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
-import { html, text, frag, define } from 'typed-dom';
+import { html, text, define } from 'typed-dom';
 
 export const attributes: DeepImmutable<Record<string, Array<string | undefined>>> = {
   nofollow: [undefined],
@@ -31,11 +31,11 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       text[0] = text[0].firstElementChild as HTMLElement;
     }
     else {
-      const proxy = frag(text);
+      const proxy = html('div', text);
       if (!hasTightText(proxy)) return false;
-      if (proxy.querySelector('a')) return false;
+      if (proxy.getElementsByTagName('a').length > 0) return false;
     }
-    assert(!frag(text).querySelector('a') || frag(text).firstElementChild!.matches('.media'));
+    assert(!html('div', text).querySelector('a') || html('div', text).firstElementChild!.matches('.media'));
     return true;
   }),
   ([text, param]: [(HTMLElement | Text)[], Text[]], rest, state) => {

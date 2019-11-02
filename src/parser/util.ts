@@ -1,16 +1,16 @@
 import { Parser, fmap } from '../combinator';
 import { define, apply } from 'typed-dom';
 
-export function hasContent(node: HTMLElement | DocumentFragment): boolean {
+export function hasContent(node: HTMLElement): boolean {
   return hasText(node)
-      || !!node.querySelector('.media');
+      || node.getElementsByClassName('media').length > 0;
 }
 
-export function hasText(node: HTMLElement | DocumentFragment | Text): boolean {
+export function hasText(node: HTMLElement | Text): boolean {
   return node.textContent!.trim() !== '';
 }
 
-export function hasTightText(node: HTMLElement | DocumentFragment | Text): boolean {
+export function hasTightText(node: HTMLElement | Text): boolean {
   return hasText(node)
       && node.textContent === node.textContent!.trim();
 }
