@@ -7,7 +7,7 @@ import { sanitize } from '../string/uri';
 import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
-import { html, text as txt, define } from 'typed-dom';
+import { html, define } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(10);
 
@@ -20,8 +20,8 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
   ])),
   ''),
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
-  ([[text = txt('')]]) => text.textContent === '' || hasTightText(text)),
-  ([[text = txt('')], param]: (HTMLElement | Text)[][]) => [text.textContent!, ...param.map(t => t.textContent!)]),
+  ([text]) => text.length === 0 || hasTightText(text[0])),
+  ([text, param]: (HTMLElement | Text)[][]) => [text[0]?.textContent || '', ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params]: string[], rest, state, config) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === '' && INSECURE_URL !== '') return;
