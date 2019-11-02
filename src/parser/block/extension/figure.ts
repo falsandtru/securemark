@@ -72,7 +72,7 @@ function attrs(label: string, content: HTMLElement, caption: readonly HTMLElemen
   const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
   const invalid = group !== '$' || rebase
     ? undefined
-    : !content.matches('.math') || caption.length > 0 || undefined;
+    : !content.classList.contains('math') || caption.length > 0 || undefined;
   return {
     'data-label': label,
     'data-group': group,
