@@ -88,3 +88,7 @@ Requires es6 and modern DOM API support.
 - Safari
 
 Polyfill: https://cdn.polyfill.io
+
+## License
+
+Currently unlicensed but free to use this product only for private usage under the Mozilla Public License 2.0 and the Apache License 2.0.
