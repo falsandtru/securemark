@@ -106,17 +106,34 @@ require = function () {
                     return target[key] = source[key];
                 }
             });
-            function template(strategy) {
+            function template(strategy, empty = source => {
+                switch (type_1.type(source)) {
+                case 'Array':
+                    return [];
+                case 'Object':
+                    return source instanceof Object ? {} : Object.create(null);
+                default:
+                    return source;
+                }
+            }) {
                 return walk;
                 function walk(target, ...sources) {
-                    if (target === undefined || target === null)
-                        throw new TypeError(`Spica: assign: Cannot walk on ${ target }.`);
-                    for (const source of sources)
-                        if (source) {
+                    let isPrimitiveTarget = type_1.isPrimitive(target);
+                    for (const source of sources) {
+                        const isPrimitiveSource = type_1.isPrimitive(source);
+                        if (isPrimitiveSource) {
+                            target = source;
+                            isPrimitiveTarget = isPrimitiveSource;
+                        } else {
+                            if (isPrimitiveTarget) {
+                                target = empty(source);
+                                isPrimitiveTarget = isPrimitiveSource;
+                            }
                             for (const key of Object.keys(source)) {
                                 void strategy(key, target, source);
                             }
                         }
+                    }
                     return target;
                 }
             }
@@ -407,10 +424,37 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function type(target) {
-                const name = Object.prototype.toString.call(target).split(' ').pop().slice(0, -1);
-                return target === null || typeof target !== 'object' && target instanceof Object === false ? name.toLowerCase() : name;
+                const t = target == null ? target : typeof target;
+                switch (t) {
+                case undefined:
+                case null:
+                    return `${ target }`;
+                case 'boolean':
+                case 'number':
+                case 'bigint':
+                case 'string':
+                case 'symbol':
+                    return t;
+                default:
+                    return Object.prototype.toString.call(target).slice(8, -1);
+                }
             }
             exports.type = type;
+            function isPrimitive(target) {
+                switch (type(target)) {
+                case 'undefined':
+                case 'null':
+                case 'boolean':
+                case 'number':
+                case 'bigint':
+                case 'string':
+                case 'symbol':
+                    return true;
+                default:
+                    return false;
+                }
+            }
+            exports.isPrimitive = isPrimitive;
         },
         {}
     ],
@@ -2005,15 +2049,15 @@ require = function () {
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.inits([
+            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
-            ])), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
+            ]))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
+            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ])))), '', false)), ns => [typed_dom_1.html('dt', ns)])));
-            const desc = combinator_1.block(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.surround(/^:(?=\s|$)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=\s|$)/), util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))))), '', false)), ns => [typed_dom_1.html('dd', ns)]), false);
+            ])))), '', false), ns => [typed_dom_1.html('dt', ns)])));
+            const desc = combinator_1.block(combinator_1.fmap(combinator_1.surround(/^:(?=\s|$)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=\s|$)/), util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))))), '', false), ns => [typed_dom_1.html('dd', ns)]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? concat_1.concat(es, [typed_dom_1.html('dd')]) : es;
             }
