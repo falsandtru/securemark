@@ -7,30 +7,29 @@ import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
 export const dlist: DListParser = lazy(() => block(fmap(
+  configure({ syntax: { inline: { media: false } } },
   some(inits([
     some(term),
     some(desc),
-  ])),
+  ]))),
   es => [html('dl', fillTrailingDescription(es))])));
 
 const term: DListParser.TermParser = line(indexee(fmap(
-  configure({ syntax: { inline: { media: false } } },
   surround(
     /^~(?=\s|$)/,
     defrag(trim(some(union([indexer, inline])))),
     '',
-    false)),
+    false),
   ns => [html('dt', ns)])));
 
 const desc: DListParser.DescriptionParser = block(fmap(
-  configure({ syntax: { inline: { media: false } } },
   surround(
     /^:(?=\s|$)|/,
     rewrite(
       some(anyline, /^[~:](?=\s|$)/),
       defrag(trim(some(union([inline]))))),
     '',
-    false)),
+    false),
   ns => [html('dd', ns)]),
   false);
 
