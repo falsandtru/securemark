@@ -64,7 +64,7 @@
     "npm-check-updates": "3.1.13",
     "power-assert": "^1.6.1",
     "semver": "^6.3.0",
-    "spica": "0.0.283",
+    "spica": "0.0.284",
     "tsify": "^4.0.1",
     "typed-dom": "0.0.145",
     "typescript": "3.8.0-dev.20191102",
