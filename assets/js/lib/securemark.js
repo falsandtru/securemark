@@ -106,16 +106,7 @@ require = function () {
                     return target[key] = source[key];
                 }
             });
-            function template(strategy, empty = source => {
-                switch (type_1.type(source)) {
-                case 'Array':
-                    return [];
-                case 'Object':
-                    return source instanceof Object ? {} : Object.create(null);
-                default:
-                    return source;
-                }
-            }) {
+            function template(strategy, empty = empty_) {
                 return walk;
                 function walk(target, ...sources) {
                     let isPrimitiveTarget = type_1.isPrimitive(target);
@@ -138,6 +129,16 @@ require = function () {
                 }
             }
             exports.template = template;
+            function empty_(source) {
+                switch (type_1.type(source)) {
+                case 'Array':
+                    return [];
+                case 'Object':
+                    return source instanceof Object ? {} : Object.create(null);
+                default:
+                    return source;
+                }
+            }
         },
         {
             './concat': 8,
