@@ -1,7 +1,7 @@
 import { HTMLParser, inline } from '../inline';
 import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, memoize, lazy, fmap } from '../../combinator';
 import { escsource, unescsource, char } from '../source';
-import { defrag, dup, trimNode, hasText } from '../util';
+import { defrag, dup, hasText } from '../util';
 import { DeepImmutable } from 'spica/type';
 import { html as htm } from 'typed-dom';
 
@@ -19,7 +19,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
       verify(fmap(
         sequence([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
-          dup(surround(``, trimNode(defrag(some(union([inline]), `</${tag}>`))), `</${tag}>`)),
+          dup(surround(``, defrag(some(union([inline]), `</${tag}>`)), `</${tag}>`)),
         ]),
         ([attrs_, contents]: [Text[], (HTMLElement | Text)[]]) =>
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'), contents)]),

@@ -41,13 +41,13 @@ describe('Unit: parser/inline/html', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('<small>a</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>a')), [['<small>a</small>'], 'a']);
-      assert.deepStrictEqual(inspect(parser('<small>a </small>')), [['<small>a</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small> a</small>')), [['<small>a</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small> a </small>')), [['<small>a</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>  a  </small>')), [['<small> a </small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>\na\n</small>')), [['<small>a</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small> \na \n</small>')), [['<small>a</small>'], '']);
-      assert.deepStrictEqual(inspect(parser('<small>\\\na\\\n</small>')), [['<small>a</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>a </small>')), [['<small>a </small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small> a</small>')), [['<small> a</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small> a </small>')), [['<small> a </small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>  a  </small>')), [['<small>  a  </small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>\na\n</small>')), [['<small><br>a<br></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small> \na \n</small>')), [['<small><br>a<br></small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small>\\\na\\\n</small>')), [['<small><span class="linebreak"> </span>a<span class="linebreak"> </span></small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a\nb</small>')), [['<small>a<br>b</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<wbr>a')), [['<wbr>'], 'a']);
     });
