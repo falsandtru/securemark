@@ -608,6 +608,7 @@ export namespace MarkdownParser {
         ], State, Config>,
         Parser<HTMLElement, [
           HTMLParser.ParamParser,
+          HTMLParser.ContentParser,
         ], State, Config>,
       ], State, Config> {
     }

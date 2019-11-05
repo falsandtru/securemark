@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.133.2
+
+- Fix HTML parser to parse entire invalid HTML syntax including closing tags.
+
 ## 0.133.1
 
 - Optimization.
@@ -331,8 +335,8 @@
 - Add deletion syntax.
 - Add data syntax.
 - Improve parse failure messages.
-- Remove `ins` html tag.
-- Remove `del` html tag.
+- Remove `ins` HTML tag.
+- Remove `del` HTML tag.
 
 ## 0.96.1
 
