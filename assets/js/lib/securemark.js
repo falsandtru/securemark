@@ -3350,10 +3350,13 @@ require = function () {
             exports.html = combinator_1.lazy(() => combinator_1.validate(/^<[a-z]+[ >]/, combinator_1.union([
                 combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
                     util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
-                    util_1.dup(combinator_1.surround(``, util_1.trimNode(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), `</${ tag }>`))
-                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.classList.contains('invalid') && util_1.hasTightText(el)))),
+                    util_1.dup(combinator_1.surround(``, util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`))
+                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.classList.contains('invalid') && util_1.hasText(el)))),
                 combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), [])]), ([el]) => !el.classList.contains('invalid')))),
-                combinator_1.rewrite(combinator_1.surround(/^<[a-z]+/, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?\/?>/, false), (source, state) => [
+                combinator_1.rewrite(combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.inits([
+                    combinator_1.surround(`<${ tag }`, combinator_1.some(combinator_1.union([exports.attribute])), /^ ?\/?>/, false),
+                    combinator_1.surround(``, combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`), `</${ tag }>`, false)
+                ]))), (source, state) => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
                             'data-invalid-syntax': 'html',
@@ -4229,10 +4232,6 @@ require = function () {
                 });
             }
             exports.defrag = defrag;
-            function trimNode(parser) {
-                return trimNode_(trimNode_(parser, 'start'), 'end');
-            }
-            exports.trimNode = trimNode;
             function trimNodeEnd(parser) {
                 return trimNode_(parser, 'end');
             }
@@ -4916,16 +4915,16 @@ require = function () {
                 const contents = new WeakMap();
                 return (target, footnote) => {
                     return void typed_dom_1.define(footnote, [...target.querySelectorAll(`.${ category }`)].filter(context_1.context(target)).reduce((acc, ref, i) => {
+                        const identity = ref.innerHTML;
                         const refIndex = i + 1;
                         const refId = ref.id || `${ category }:ref:${ i + 1 }`;
-                        const title = ref.title || indexer_1.text(ref);
-                        const def = acc.get(title);
+                        const def = acc.get(identity);
                         const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : acc.size + 1;
                         const defId = def ? def.id : `${ category }:def:${ defIndex }`;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         void typed_dom_1.define(ref, {
                             id: refId,
-                            title: title
+                            title: ref.title || indexer_1.text(ref)
                         }, [typed_dom_1.html('a', {
                                 href: `#${ defId }`,
                                 rel: 'noopener'
@@ -4936,7 +4935,7 @@ require = function () {
                                 rel: 'noopener'
                             }, `~${ refIndex }`));
                         } else {
-                            void acc.set(title, typed_dom_1.html('li', {
+                            void acc.set(identity, typed_dom_1.html('li', {
                                 id: defId,
                                 class: 'footnote'
                             }, [
