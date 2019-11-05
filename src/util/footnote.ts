@@ -17,10 +17,10 @@ function build(category: string, marker: (index: number) => string): (target: Do
     return void define(footnote, [...target.querySelectorAll<HTMLElement>(`.${category}`)]
       .filter(context(target))
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
+        const identity = ref.innerHTML;
         const refIndex = i + 1;
         const refId = ref.id || `${category}:ref:${i + 1}`;
-        const title = ref.title || text(ref);
-        const def = acc.get(title);
+        const def = acc.get(identity);
         const defIndex = def
           ? +def.id.slice(def.id.lastIndexOf(':') + 1)
           : acc.size + 1;
@@ -28,12 +28,12 @@ function build(category: string, marker: (index: number) => string): (target: Do
           ? def.id
           : `${category}:def:${defIndex}`;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
-        void define(ref, { id: refId, title: title }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
+        void define(ref, { id: refId, title: ref.title || text(ref) }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
         if (def) {
           void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
         }
         else {
-          void acc.set(title, html('li', { id: defId, class: 'footnote' }, [
+          void acc.set(identity, html('li', { id: defId, class: 'footnote' }, [
             ...contents.get(ref)!,
             html('sup', [
               html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`),
