@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.133.2
+## 0.134.0
 
+- Change HTML parser to allow any size of leading and trailing whitespace.
 - Fix HTML parser to parse entire invalid HTML syntax including closing tags.
 
 ## 0.133.1
