@@ -73,8 +73,11 @@ export namespace MarkdownParser {
       // # Title
       Block<'header'>,
       Parser<HTMLHeadingElement, [
-        InlineParser.ExtensionParser.IndexerParser,
-        InlineParser,
+        SourceParser.CharParser.SharpParser,
+        Parser<HTMLElement | Text, [
+          InlineParser.ExtensionParser.IndexerParser,
+          InlineParser,
+        ], State, Config>,
       ], State, Config> {
     }
     export interface UListParser extends
@@ -795,6 +798,11 @@ export namespace MarkdownParser {
       Parser<Text, [], State, Config> {
     }
     export namespace CharParser {
+      export interface SharpParser extends
+        // #
+        Source<'char/sharp'>,
+        Parser<Text, [], State, Config> {
+      }
       export interface ExclamationParser extends
         // !
         Source<'char/exclamation'>,
