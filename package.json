@@ -31,7 +31,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/dompurify": "0.0.33",
+    "@types/dompurify": "2.0.0",
     "@types/jquery": "^3.3.31",
     "@types/mathjax": "0.0.36",
     "@types/mocha": "^5.2.7",
@@ -67,7 +67,7 @@
     "spica": "0.0.284",
     "tsify": "^4.0.1",
     "typed-dom": "0.0.145",
-    "typescript": "3.8.0-dev.20191102",
+    "typescript": "3.8.0-dev.20191105",
     "uglify-es": "^3.3.9",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
