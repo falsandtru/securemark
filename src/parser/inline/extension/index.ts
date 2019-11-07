@@ -2,7 +2,7 @@ import { ExtensionParser, inline } from '../../inline';
 import { union, some, subline, rewrite, verify, surround, convert, lazy, fmap } from '../../../combinator';
 import { link } from '../link';
 import { configure } from '../../../combinator';
-import { indexee } from './indexer';
+import { indexee } from './indexee';
 import { trimNodeEnd, hasTightText } from '../../util';
 import { define } from 'typed-dom';
 

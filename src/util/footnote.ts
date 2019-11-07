@@ -1,5 +1,5 @@
 import { context } from './context';
-import { text } from '../parser/inline/extension/indexer';
+import { text } from '../parser/inline/extension/indexee';
 import { html, define } from 'typed-dom';
 
 export function footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): void {
