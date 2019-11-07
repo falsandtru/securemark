@@ -1,23 +1,26 @@
 import { ParagraphParser } from '../../../block';
-import { union, line, focus, match, memoize, convert, trimEnd, configure, fmap } from '../../../../combinator';
+import { union, sequence, some, line, validate, focus, convert, trimEnd, configure, fmap } from '../../../../combinator';
 import { link, address as addr, attribute as attr } from '../../../inline';
+import { char } from '../../../source/char';
+import { defrag } from '../../../util';
 import { define } from 'typed-dom';
 
-export const address: ParagraphParser.MentionParser.AddressParser = line(fmap(match(
-  /^>+(?!>)(?=\S+\s*$)/,
-  memoize(([prefix]) => prefix,
-  prefix =>
-    configure({ syntax: { inline: { link: undefined } } },
+export const address: ParagraphParser.MentionParser.AddressParser = line(fmap(validate(
+  /^>+(?!>)\S+\s*$/,
+  configure({ syntax: { inline: { link: undefined } } },
+  sequence([
+    defrag(some(char('>'))),
     trimEnd(union([
-      focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*$/, convert(source => `[${prefix}]{ ${source} }`, link)),
-      focus(/^h?ttps?:\/\/[^/\s]\S*$/, convert(source => `[${prefix}]{ ${addr(source)}${attr(source)} }`, link)),
-    ]))))),
-  ([el]) => [
-    define(el,
+      focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*$/, convert(source => `[]{ ${source} }`, link)),
+      focus(/^h?ttps?:\/\/[^/\s]\S*$/, convert(source => `[]{ ${addr(source)}${attr(source)} }`, link)),
+    ])),
+  ]))),
+  ([flag, link]: [Text, HTMLAnchorElement]) => [
+    define(link,
       {
         class: 'address',
-        'data-level': `${el.textContent!.length}`,
+        'data-level': `${flag.textContent!.length}`,
         href: null
       },
-      `${el.textContent}${el.getAttribute('href')}`)
+      `${flag.textContent}${link.textContent}`)
   ]));

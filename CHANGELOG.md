@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.134.1
+
+- Fix address parser.
+
 ## 0.134.0
 
 - Change HTML parser to allow any size of leading and trailing whitespace.

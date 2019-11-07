@@ -397,8 +397,11 @@ export namespace MarkdownParser {
           // >0a
           Block<'paragraph/mention/address'>,
           Parser<HTMLAnchorElement, [
-            InlineParser.LinkParser,
-            InlineParser.LinkParser,
+            SourceParser.CharParser.GreaterThanParser,
+            Parser<HTMLAnchorElement, [
+              InlineParser.LinkParser,
+              InlineParser.LinkParser,
+            ], State, Config>,
           ], State, Config> {
         }
         export interface QuotationParser extends
@@ -801,6 +804,11 @@ export namespace MarkdownParser {
       export interface SharpParser extends
         // #
         Source<'char/sharp'>,
+        Parser<Text, [], State, Config> {
+      }
+      export interface GreaterThanParser extends
+        // >
+        Source<'char/greater-than'>,
         Parser<Text, [], State, Config> {
       }
       export interface ExclamationParser extends
