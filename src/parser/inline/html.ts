@@ -36,14 +36,14 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'), [])]),
         ([el]) => !el.classList.contains('invalid')))),
   rewrite(
+    // Don't use large size keys for memoization to prevent memory leaks.
     match(
       /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
-      memoize(([, tag]) => tag,
-      tag =>
+      ([, tag]) =>
       inits([
         surround(`<${tag}`, some(union([attribute])), /^ ?\/?>/, false),
         surround(``, some(union([inline]), `</${tag}>`), `</${tag}>`, false),
-      ]))),
+      ])),
     (source, state) =>
       [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '', state]),
 ])));
