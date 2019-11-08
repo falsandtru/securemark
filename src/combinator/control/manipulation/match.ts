@@ -19,7 +19,12 @@ export function match<T, D extends Parser<unknown>[]>(pattern: RegExp, f: (match
   };
 }
 
-export function memoize<a, b, c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
-  g = memoize_(g);
-  return a => g(f(a));
+export function memoize<a, b extends string, c>(f: (a: a) => b, g: (b: b) => c): (a: a) => c {
+  const h = memoize_(g);
+  return a => {
+    const b = f(a);
+    return b.length <= 20
+      ? h(b)
+      : g(b);
+  };
 }
