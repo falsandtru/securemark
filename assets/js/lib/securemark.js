@@ -3929,6 +3929,8 @@ require = function () {
                 const segments = [];
                 while (source !== '') {
                     const rest = combinator_1.exec(parser(source, {}, {}));
+                    if (source.length - rest.length > 100000)
+                        throw new Error('Too large block.');
                     void segments.push(source.slice(0, source.length - rest.length));
                     source = rest;
                 }
