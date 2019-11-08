@@ -50,7 +50,7 @@ function type(index: string | null): IndexType {
   switch (true) {
     case +index === 0:
       return undefined;
-    case Number.isInteger(+index):
+    case +index > 0:
       return '1';
     case index === index.toLowerCase():
       return 'a';
