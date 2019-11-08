@@ -348,18 +348,20 @@
   document.getElementById('editor').addEventListener('input', run);
   document.getElementById('editor').addEventListener('change', run);
   async function display() {
-    let time = Date.now();
+    let start = Date.now();
+    let delta = 0;
+    let time = 0;
     let resource = 100;
-    let elapsed = 0;
     for (const el of parse(document.getElementById('editor').value)) {
       observer.observe(el);
-      elapsed += Date.now() - time;
-      resource = resource > 0
-        ? resource - (Date.now() - time)
+      delta = Date.now() - start;
+      time += delta;
+      resource = resource - delta > 0
+        ? resource - delta
         : void await new Promise(requestAnimationFrame) || 300;
-      time = Date.now();
+      start = Date.now();
     }
-    return elapsed += Date.now() - time;
+    return time += Date.now() - start;
   }
   function log(time) {
     document.getElementById('time').textContent = time;
