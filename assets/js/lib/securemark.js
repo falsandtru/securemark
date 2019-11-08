@@ -2188,7 +2188,7 @@ require = function () {
                 ])
             ]));
             exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.convert(source => {
-                const bracket = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*)$/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
+                const bracket = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
                 return `${ bracket }figure ${ source }\n\n${ bracket }`;
             }, figure_1.figure)));
         },
