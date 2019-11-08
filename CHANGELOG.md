@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.134.1
+## 0.135.0
 
+- Limit the max size of a block to 100,000.
 - Fix address parser.
 
 ## 0.134.0
