@@ -40,8 +40,8 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   }),
   ([text, param]: [(HTMLElement | Text)[], Text[]], rest, state) => {
     const [INSECURE_URL, ...params]: string[] = param.map(t => t.textContent!);
-    const path = sanitize(INSECURE_URL);
-    if (path === '' && INSECURE_URL !== '') return;
+    const path = sanitize(INSECURE_URL, ['tel:']);
+    if (path === undefined) return;
     const el = html('a',
       {
         href: path,
@@ -49,7 +49,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       },
       text.length > 0
         ? text
-        : sanitize(decode(INSECURE_URL || '.'))
+        : (sanitize(decode(INSECURE_URL || '.'), ['tel:']) || '')
             .replace(/^tel:/, '')
             .replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
     assert(hasContent(el));

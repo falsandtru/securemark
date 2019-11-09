@@ -1,10 +1,13 @@
 import { html } from 'typed-dom';
 
-export function sanitize(uri: string): string {
-  uri = uri.replace(/\s/g, encodeURI);
-  return isAllowedProtocol(uri)
+const parser = html('a');
+
+export function sanitize(uri: string, protocols: ('tel:')[] = []): string | undefined {
+  uri = uri.replace(/\s+/g, encodeURI);
+  void parser.setAttribute('href', uri);
+  return ['http:', 'https:'].includes(parser.protocol) || protocols.includes(parser.protocol as any)
     ? uri
-    : '';
+    : undefined;
 }
 
 export function decode(uri: string): string {
@@ -13,17 +16,6 @@ export function decode(uri: string): string {
   }
   finally {
     return uri
-      .replace(/\s/g, encodeURIComponent);
+      .replace(/\s+/g, encodeURIComponent);
   }
-}
-
-const parser = html('a');
-function isAllowedProtocol(uri: string): boolean {
-  parser.setAttribute('href', uri);
-  return [
-    'http:',
-    'https:',
-    'tel:',
-  ]
-    .includes(parser.protocol);
 }

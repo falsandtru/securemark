@@ -24,9 +24,8 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
   ([text, param]: (HTMLElement | Text)[][]) => [text[0]?.textContent || '', ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params]: string[], rest, state, config) => {
     const path = sanitize(INSECURE_URL.trim());
-    if (path === '' && INSECURE_URL !== '') return;
+    if (path === undefined) return;
     const uri = new URL(path, window.location.href);
-    if (uri.protocol === 'tel:') return;
     const el = cache.has(uri.href)
       ? cache.get(uri.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: text });

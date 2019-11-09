@@ -13,12 +13,14 @@ describe('Unit: parser/text/uri', () => {
     it('protocol', () => {
       assert(sanitize('http:') === 'http:');
       assert(sanitize('https://example') === 'https://example');
-      assert(sanitize('tel:') === 'tel:');
-      assert(sanitize('javascript:') === '');
-      assert(sanitize('javascript:alert)') === '');
-      assert(sanitize('vbscript:alert)') === '');
-      assert(sanitize('data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K)') === '');
-      assert(sanitize('any:alert)') === '');
+      assert(sanitize('tel:') === undefined);
+      assert(sanitize('javascript:') === undefined);
+      assert(sanitize('javascript:alert)') === undefined);
+      assert(sanitize('vbscript:alert)') === undefined);
+      assert(sanitize('data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4K)') === undefined);
+      assert(sanitize('any:alert)') === undefined);
+      assert(sanitize('tel:', ['tel:']) === 'tel:');
+      assert(sanitize('http:', ['tel:']) === 'http:');
     });
 
   });
