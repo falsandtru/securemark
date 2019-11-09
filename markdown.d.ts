@@ -765,7 +765,10 @@ export namespace MarkdownParser {
       }
     }
     export interface BracketParser extends
-      // [abc]
+      // ()
+      // []
+      // {}
+      // ""
       Inline<'bracket'>,
       Parser<HTMLElement | Text, InlineParser[], State, Config> {
     }
@@ -786,7 +789,6 @@ export namespace MarkdownParser {
       Parser<HTMLBRElement | HTMLSpanElement | Text, [], State, Config> {
     }
     export interface NewlineParser extends
-      // abc
       Source<'newline'>,
       Parser<HTMLBRElement, [TextParser], State, Config> {
     }
