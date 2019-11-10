@@ -3519,13 +3519,13 @@ require = function () {
                 return true;
             }), ([text, param], rest, state) => {
                 const [INSECURE_URL, ...params] = param.map(t => t.textContent);
-                const path = uri_1.sanitize(INSECURE_URL);
-                if (path === '' && INSECURE_URL !== '')
+                const path = uri_1.sanitize(INSECURE_URL, ['tel:']);
+                if (path === undefined)
                     return;
                 const el = typed_dom_1.html('a', {
                     href: path,
                     rel: `noopener${ params.includes('nofollow') ? ' nofollow noreferrer' : '' }`
-                }, text.length > 0 ? text : uri_1.sanitize(uri_1.decode(INSECURE_URL || '.')).replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
+                }, text.length > 0 ? text : (uri_1.sanitize(uri_1.decode(INSECURE_URL || '.'), ['tel:']) || '').replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
                 switch (el.protocol) {
                 case 'tel:':
                     if (el.getAttribute('href') === `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
@@ -3666,11 +3666,9 @@ require = function () {
                 ];
             }), ([text, INSECURE_URL, ...params], rest, state, config) => {
                 const path = uri_1.sanitize(INSECURE_URL.trim());
-                if (path === '' && INSECURE_URL !== '')
+                if (path === undefined)
                     return;
                 const uri = new URL(path, window.location.href);
-                if (uri.protocol === 'tel:')
-                    return;
                 const el = exports.cache.has(uri.href) ? exports.cache.get(uri.href).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': path,
@@ -4193,28 +4191,24 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const typed_dom_1 = _dereq_('typed-dom');
-            function sanitize(uri) {
-                uri = uri.replace(/\s/g, encodeURI);
-                return isAllowedProtocol(uri) ? uri : '';
+            const parser = typed_dom_1.html('a');
+            function sanitize(uri, protocols = []) {
+                uri = uri.replace(/\s+/g, encodeURI);
+                void parser.setAttribute('href', uri);
+                return [
+                    'http:',
+                    'https:'
+                ].includes(parser.protocol) || protocols.includes(parser.protocol) ? uri : undefined;
             }
             exports.sanitize = sanitize;
             function decode(uri) {
                 try {
                     uri = decodeURI(uri);
                 } finally {
-                    return uri.replace(/\s/g, encodeURIComponent);
+                    return uri.replace(/\s+/g, encodeURIComponent);
                 }
             }
             exports.decode = decode;
-            const parser = typed_dom_1.html('a');
-            function isAllowedProtocol(uri) {
-                parser.setAttribute('href', uri);
-                return [
-                    'http:',
-                    'https:',
-                    'tel:'
-                ].includes(parser.protocol);
-            }
         },
         { 'typed-dom': 15 }
     ],
