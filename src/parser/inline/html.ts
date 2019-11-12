@@ -33,7 +33,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
         ]),
         ([attrs_]) =>
-          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'), [])]),
+          [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'))]),
         ([el]) => !el.classList.contains('invalid')))),
   rewrite(
     // Don't use large size keys for memoization to prevent memory leaks.
