@@ -27,8 +27,8 @@ export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S
       if (curr.nodeType === 3) {
         if (curr.textContent === '') return prev;
         if (prev?.nodeType === 3) return prev.textContent += curr.textContent! , prev;
+        curr = curr.cloneNode();
       }
-      curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
       void acc.push(curr);
       return curr;
     }, undefined);
