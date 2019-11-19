@@ -4245,7 +4245,6 @@ require = function () {
                             if (((_a = prev) === null || _a === void 0 ? void 0 : _a.nodeType) === 3)
                                 return prev.textContent += curr.textContent, prev;
                         }
-                        curr = curr.nodeType === 3 ? curr.cloneNode() : curr;
                         void acc.push(curr);
                         return curr;
                     }, undefined);
