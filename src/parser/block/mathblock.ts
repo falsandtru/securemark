@@ -13,8 +13,8 @@ export const mathblock: MathBlockParser = block(rewrite(segment, trim(match(
   ([, , param, body]) => (rest, state) => {
     const el = html('div', { class: `math notranslate` }, `$$${body}$$`);
     if (param.trim() !== '') {
-      void el.classList.add('invalid');
       void define(el, {
+        class: [...el.classList, 'invalid'].join(' '),
         'data-invalid-syntax': 'math',
         'data-invalid-type': 'parameter',
       });
