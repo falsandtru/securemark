@@ -8,17 +8,17 @@ describe('Unit: combinator/subsequence', () => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1)]
         : undefined;
-    }
+    };
     const b: Parser<string, never> = source => {
       return source && source[0] === 'b'
         ? [['B'], source.slice(1)]
         : undefined;
-    }
+    };
     const c: Parser<string, never> = source => {
       return source && source[0] === 'c'
         ? [['C'], source.slice(1)]
         : undefined;
-    }
+    };
     const abc = subsequence<Parser<string, [typeof a, typeof b, typeof c]>>([a, b, c]);
 
     it('basic', () => {

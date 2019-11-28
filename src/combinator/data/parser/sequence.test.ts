@@ -8,12 +8,12 @@ describe('Unit: combinator/sequence', () => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1)]
         : undefined;
-    }
+    };
     const b: Parser<string, never> = source => {
       return source && source[0] === 'b'
         ? [['B'], source.slice(1)]
         : undefined;
-    }
+    };
     const ab = sequence<Parser<string, [typeof a, typeof b]>>([a, b]);
 
     it('basic', () => {
