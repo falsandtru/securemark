@@ -1,15 +1,15 @@
-import { Parser, Result } from '../parser';
+import { Parser } from '../parser';
 import { union } from './union';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/union', () => {
   describe('union', () => {
-    const a: Parser<string, never> = (source): Result<string, never> => {
+    const a: Parser<string, never> = source => {
       return source && source[0] === 'a'
         ? [['A'], source.slice(1)]
         : undefined;
     }
-    const b: Parser<string, never> = (source): Result<string, never> => {
+    const b: Parser<string, never> = source => {
       return source && source[0] === 'b'
         ? [['B'], source.slice(1)]
         : undefined;
