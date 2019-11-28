@@ -12,11 +12,10 @@ export const math: MathParser = subline(verify(
     surround('${', some(union<MathParser>([escsource]), /^\\?\n|^}\$/), '}$'),
     convert(
       source => `\${${source.slice(2, -2).trim()}}$`,
-      (source, state) => [
+      source => [
         cache.has(source)
           ? [cache.get(source)!.cloneNode(true)]
           : [html('span', { class: 'math notranslate', 'data-src': source }, source)],
-        '',
-        state
+        ''
       ])),
   ([el]) => hasText(text(el.textContent!.slice(2, -2)))));

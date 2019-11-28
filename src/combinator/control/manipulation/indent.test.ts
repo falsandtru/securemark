@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 describe('Unit: combinator/indent', () => {
   describe('indent', () => {
     it('valid', () => {
-      const parser = indent(s => [[s], '', {}]);
+      const parser = indent(s => [[s], '']);
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser(' ')), undefined);
       assert.deepStrictEqual(inspect(parser('  ')), undefined);

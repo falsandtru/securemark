@@ -9,12 +9,12 @@ export const segment: ExtensionParser.ExampleParser.SegmentParser = lazy(() => b
 
 export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(focus(
   /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:\n|$)/,
-  (_, state) => [[], '', state]), false);
+  () => [[], '']), false);
 
 export const example: ExtensionParser.ExampleParser = block(rewrite(segment, trim(union([
   match(
     /^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/,
-    ([, , body]) => (rest, state) => {
+    ([, , body]) => rest => {
       const annotation = html('ol');
       const reference = html('ol');
       const view = parse(body.slice(1, -1), {
@@ -28,13 +28,13 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, tri
         html('div', [suppress(view)]),
         suppress(annotation),
         suppress(reference),
-      ])], rest, state];
+      ])], rest];
     }),
   match(
     /^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/,
-    ([, , body]) => (rest, state) =>
+    ([, , body]) => rest =>
       [[html('aside', { class: 'example', 'data-type': 'math' }, [
         html('pre', body.slice(1, -1)),
         ...eval(mathblock(`$$${body}$$`, {}, {}))
-      ])], rest, state]),
+      ])], rest]),
 ]))));

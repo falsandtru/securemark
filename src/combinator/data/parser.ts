@@ -1,7 +1,7 @@
 export type Parser<R, D extends Parser<unknown, any, S, C>[] = any, S extends object = object, C extends object = object>
   = (source: string, state: S, config: C) => Result<R, D, S, C>;
 export type Result<R, D extends Parser<unknown, any, S, C>[] = any, S extends object = object, C extends object = object>
-  = readonly [R[], string, S] | readonly [R[], string, S, C, D] | undefined;
+  = readonly [R[], string] | readonly [R[], string, S, C, D] | undefined;
 export type Data<P extends Parser<unknown>> = P extends Parser<infer R> ? R : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, infer D> ? D : never;
 export type State<P extends Parser<unknown>> = P extends Parser<unknown, any, infer S, object> ? S : never;
@@ -22,10 +22,6 @@ export function exec(result: Result<unknown>, default_: string = ''): string {
   return result
     ? result[1]
     : default_;
-}
-
-export function state<S extends object>(result: NonNullable<Result<unknown, any, S>>): S {
-  return result[2];
 }
 
 export function check(source: string, result: Result<unknown>, mustConsume = true): true {

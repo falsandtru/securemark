@@ -14,12 +14,12 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
     memoize(([, indent]) => indent,
     indent =>
       some(line(rewrite(
-        (source, state) => [[], source.slice(firstline(source).length), state],
-        surround(indent, (source, state) => [[firstline(source, false)], '', state], '')))))),
+        source => [[], source.slice(firstline(source).length)],
+        surround(indent, source => [[firstline(source, false)], ''], '')))))),
     (rs, rest, state, config) => {
       const result = parser(rs.join('\n'), state, config);
       return result && exec(result) === ''
-        ? [eval(result), rest, state]
+        ? [eval(result), rest]
         : undefined;
     });
 }

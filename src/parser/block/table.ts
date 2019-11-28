@@ -73,18 +73,18 @@ const data: CellParser.DataParser = defrag(bind(
     union([some(inline, /^\s*(?:\||$)/)]),
     /^\s*/,
     false),
-  (ns, rest, state) =>
+  (ns, rest) =>
     ns.length === 0 && rest === ''
       ? undefined
-      : [ns, rest, state]));
+      : [ns, rest]));
 
 const align: CellParser.AlignParser =
   surround(
     '|',
     union([
-      focus(/^:-+:/, (_, state) => [[text('center')], '', state]),
-      focus(/^:-+/, (_, state) => [[text('left')], '', state]),
-      focus(/^-+:/, (_, state) => [[text('right')], '', state]),
-      focus(/^-+/, (_, state) => [[text('')], '', state]),
+      focus(/^:-+:/, () => [[text('center')], '']),
+      focus(/^:-+/, () => [[text('left')], '']),
+      focus(/^-+:/, () => [[text('right')], '']),
+      focus(/^-+/, () => [[text('')], '']),
     ]),
     '');

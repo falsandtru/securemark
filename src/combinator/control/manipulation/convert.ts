@@ -7,7 +7,7 @@ export function convert<T, D extends Parser<unknown>[]>(conv: (source: string) =
     if (source === '') return;
     source = conv(source);
     return source === ''
-      ? [[], '', state]
+      ? [[], '']
       : parser(source, state, config);
   };
 }

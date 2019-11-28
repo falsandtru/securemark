@@ -8,6 +8,6 @@ export const template: TemplateParser = lazy(() => subline(fmap(
     char('!'),
     rewrite(
       surround('{{', some(inline, /^\\?\n|^}}/), '}}', false),
-      (source, state) => [[text(source)], '', state]),
+      source => [[text(source)], '']),
   ]),
   ns => [html('span', { class: 'template' }, [ns.pop()!]), ...ns].reverse())));

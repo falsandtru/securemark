@@ -19,7 +19,7 @@ export function surround<T, D extends Parser<unknown>[]>(start: string | RegExp,
     if (r === undefined) return;
     assert(r_.startsWith(r));
     return l + r !== '' || r_.length - r.length < lmr_.length
-      ? [rs, r ? r_.slice(r.length) : r_, state]
+      ? [rs, r ? r_.slice(r.length) : r_]
       : undefined;
   };
 }

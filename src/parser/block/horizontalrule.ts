@@ -4,4 +4,4 @@ import { html } from 'typed-dom';
 
 export const horizontalrule: HorizontalRuleParser = block(line(focus(
   /^-{3,}[^\S\n]*(?:\n|$)/,
-  (_, state) => [[html('hr')], '', state])));
+  () => [[html('hr')], ''])));

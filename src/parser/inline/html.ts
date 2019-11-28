@@ -44,8 +44,8 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         surround(`<${tag}`, some(union([attribute])), /^ ?\/?>/, false),
         surround(``, some(union([inline]), `</${tag}>`), `</${tag}>`, false),
       ])),
-    (source, state) =>
-      [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '', state]),
+    source =>
+      [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '']),
 ])));
 
 export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(

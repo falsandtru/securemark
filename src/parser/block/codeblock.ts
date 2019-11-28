@@ -11,7 +11,7 @@ export const segment: CodeBlockParser.SegmentParser = lazy(() => block(segment_)
 
 export const segment_: CodeBlockParser.SegmentParser = block(focus(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/,
-  (_, state) => [[], '', state]), false);
+  () => [[], '']), false);
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/,
@@ -48,5 +48,5 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
         'data-invalid-type': 'parameter',
       });
     }
-    return [[el], rest, state];
+    return [[el], rest];
   }))));

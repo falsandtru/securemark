@@ -16,7 +16,7 @@ export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, pa
     if (!result) return;
     assert(exec(result)==='');
     return exec(result).length < src.length
-      ? [eval(result), exec(result) + source.slice(src.length), state]
+      ? [eval(result), exec(result) + source.slice(src.length)]
       : undefined;
   };
 }
@@ -38,7 +38,7 @@ export function rewrite<T, D extends Parser<unknown>[]>(scope: Parser<never>, pa
     if (!res2) return;
     assert(exec(res2) === '');
     return exec(res2).length < src.length
-      ? [eval(res2), exec(res2) + exec(res1), state]
+      ? [eval(res2), exec(res2) + exec(res1)]
       : undefined;
   };
 }

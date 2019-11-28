@@ -4,19 +4,19 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/subsequence', () => {
   describe('subsequence', () => {
-    const a: Parser<string, never> = (source, state): Result<string, never> => {
+    const a: Parser<string, never> = (source): Result<string, never> => {
       return source && source[0] === 'a'
-        ? [['A'], source.slice(1), state]
+        ? [['A'], source.slice(1)]
         : undefined;
     }
-    const b: Parser<string, never> = (source, state): Result<string, never> => {
+    const b: Parser<string, never> = (source): Result<string, never> => {
       return source && source[0] === 'b'
-        ? [['B'], source.slice(1), state]
+        ? [['B'], source.slice(1)]
         : undefined;
     }
-    const c: Parser<string, never> = (source, state): Result<string, never> => {
+    const c: Parser<string, never> = (source): Result<string, never> => {
       return source && source[0] === 'c'
-        ? [['C'], source.slice(1), state]
+        ? [['C'], source.slice(1)]
         : undefined;
     }
     const abc = subsequence<Parser<string, [typeof a, typeof b, typeof c]>>([a, b, c]);

@@ -10,7 +10,7 @@ export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allow
     assert(check(fst, result));
     if (!result) return;
     return (allowTrailingWhitespace ? exec(result).trim() === '' : exec(result) === '')
-      ? [eval(result), source.slice(fst.length), state]
+      ? [eval(result), source.slice(fst.length)]
       : undefined;
   };
 }
