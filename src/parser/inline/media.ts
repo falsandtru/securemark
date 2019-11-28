@@ -1,5 +1,5 @@
 import { MediaParser } from '../inline';
-import { Result, union, inits, tails, some, subline, verify, surround, check, configure, fmap, bind } from '../../combinator';
+import { Result, union, inits, tails, some, subline, verify, surround, guard, configure, fmap, bind } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
@@ -13,7 +13,7 @@ export const cache = new Cache<string, HTMLElement>(10);
 
 export const media: MediaParser = subline(configure({ syntax: { inline: { link: undefined } } }, bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
-  check(config => config?.syntax?.inline?.media ?? true,
+  guard(config => config?.syntax?.inline?.media ?? true,
   tails([
     dup(surround('[', trimNodeEnd(defrag(some(union([text]), /^\\?\n|^]/))), ']', false)),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),

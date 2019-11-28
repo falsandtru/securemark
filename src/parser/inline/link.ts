@@ -1,5 +1,5 @@
 import { LinkParser, media, shortmedia, inline } from '../inline';
-import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, check, configure, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
 import { defrag, dup, trimNodeEnd, hasTightText, hasContent } from '../util';
@@ -14,7 +14,7 @@ export const attributes: DeepImmutable<Record<string, Array<string | undefined>>
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
-  check(config => config?.syntax?.inline?.link ?? true,
+  guard(config => config?.syntax?.inline?.link ?? true,
   configure({ syntax: { inline: { link: false } } },
   tails([
     dup(trimNodeEnd(defrag(union([
