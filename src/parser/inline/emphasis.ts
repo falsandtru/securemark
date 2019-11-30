@@ -4,10 +4,10 @@ import { strong } from './strong';
 import { defrag, trimNodeEnd, hasTightText } from '../util';
 import { html, text } from 'typed-dom';
 
-export const emphasis: EmphasisParser = lazy(() => verify(fmap(trimNodeEnd(validate(
+export const emphasis: EmphasisParser = lazy(() => verify(fmap(validate(
   /^\*\S[\s\S]*?\*/,
   configure({ syntax: { inline: { emphasis: false } } },
-  surround('*', defrag(some(union([strong, some(inline, '*')]))), '*')))),
+  surround('*', trimNodeEnd(defrag(some(union([strong, some(inline, '*')])))), '*'))),
   (ns, _, config) =>
     config?.syntax?.inline?.emphasis ?? true
       ? [html('em', ns)]

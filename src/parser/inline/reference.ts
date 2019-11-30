@@ -4,9 +4,9 @@ import { inline } from '../inline';
 import { defrag, trimNodeEnd, hasTightText } from '../util';
 import { html } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => subline(verify(fmap(trimNodeEnd(
+export const reference: ReferenceParser = lazy(() => subline(verify(fmap(
   guard(config => config?.syntax?.inline?.reference ?? true,
   configure({ syntax: { inline: { annotation: false, reference: false, media: false } } },
-  surround('[[', defrag(some(union([inline]), /^\\?\n|^]]/)), ']]')))),
+  surround('[[', trimNodeEnd(defrag(some(union([inline]), /^\\?\n|^]]/))), ']]'))),
   ns => [html('sup', { class: 'reference' }, ns)]),
   ([el]) => hasTightText(el))));
