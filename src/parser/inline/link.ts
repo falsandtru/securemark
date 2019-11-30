@@ -17,11 +17,11 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   guard(config => config?.syntax?.inline?.link ?? true,
   configure({ syntax: { inline: { link: false } } },
   tails([
-    dup(defrag(union([
+    dup(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
-      surround('[', configure({ syntax: { inline: { media: false } } }, trimNodeEnd(some(inline, /^\\?\n|^]/))), ']', false),
-    ]))),
+      surround('[', configure({ syntax: { inline: { media: false } } }, trimNodeEnd(defrag(some(inline, /^\\?\n|^]/)))), ']', false),
+    ])),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])))),
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
