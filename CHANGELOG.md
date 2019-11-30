@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.136.1
+
+- Refactoring.
+
 ## 0.136.0
 
 - Change the nested syntax handling of insertion, deletion, emphasis, and strong syntax.
