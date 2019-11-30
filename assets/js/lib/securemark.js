@@ -3196,14 +3196,14 @@ require = function () {
             const indexee_1 = _dereq_('./indexee');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexee_1.indexee(combinator_1.verify(util_1.trimNodeEnd(combinator_1.configure({
+            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexee_1.indexee(combinator_1.verify(combinator_1.configure({
                 syntax: {
                     inline: {
                         link: undefined,
                         media: false
                     }
                 }
-            }, combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^\\?\n|^]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']'))), ([el]) => util_1.hasTightText(el))), ([el]) => [typed_dom_1.define(el, {
+            }, combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^\\?\n|^]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: `#${ el.id }`
@@ -3482,11 +3482,11 @@ require = function () {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.configure({ syntax: { inline: { link: false } } }, combinator_1.tails([
-                util_1.dup(util_1.defrag(combinator_1.union([
+                util_1.dup(combinator_1.union([
                     combinator_1.surround('[', inline_1.media, ']'),
                     combinator_1.surround('[', inline_1.shortmedia, ']'),
-                    combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.trimNodeEnd(combinator_1.some(inline_1.inline, /^\\?\n|^]/))), ']', false)
-                ]))),
+                    combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.trimNodeEnd(util_1.defrag(combinator_1.some(inline_1.inline, /^\\?\n|^]/)))), ']', false)
+                ])),
                 util_1.dup(combinator_1.surround('{', combinator_1.inits([
                     exports.uri,
                     combinator_1.some(util_1.defrag(html_1.attribute))
@@ -4231,6 +4231,7 @@ require = function () {
             exports.trimNodeEnd = trimNodeEnd;
             function trimNode_(parser, mode) {
                 return combinator_1.fmap(parser, ns => {
+                    var _a, _b;
                     if (ns.length === 0)
                         return ns;
                     const node = ns[mode === 'start' ? 0 : ns.length - 1];
@@ -4241,7 +4242,7 @@ require = function () {
                         case 'start':
                             if (stringify(ns.slice(0, 2)).length < 2)
                                 break;
-                            if (text[0].trim() === '') {
+                            if (((_a = text[0]) === null || _a === void 0 ? void 0 : _a.trim()) === '') {
                                 if (text.length > 1) {
                                     node.textContent = text.slice(1);
                                 } else {
@@ -4252,7 +4253,7 @@ require = function () {
                         case 'end':
                             if (stringify(ns.slice(-2)).length < 2)
                                 break;
-                            if (text[text.length - 1].trim() === '') {
+                            if (((_b = text[text.length - 1]) === null || _b === void 0 ? void 0 : _b.trim()) === '') {
                                 if (text.length > 1) {
                                     node.textContent = text.slice(0, -1);
                                 } else {
