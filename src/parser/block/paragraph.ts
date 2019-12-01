@@ -13,15 +13,12 @@ export const paragraph: ParagraphParser = lazy(() => block(fmap(
       some(mention),
       es => es.reduce((acc, el) => concat(acc, [el, html('br')]), [])),
     fmap(
-      content,
+      rewrite(
+        some(contentline, '>'),
+        defrag(trim(some(inline)))),
       ns => concat(ns, [html('br')])),
   ])),
   ns => [html('p', format(ns))].filter(hasContent))));
-
-const content = block(rewrite(
-  some(contentline, /^>/),
-  defrag(trim(some(inline)))),
-  false);
 
 function format<T extends Node[]>(ns: T): T {
   ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();
