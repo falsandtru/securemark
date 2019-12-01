@@ -9,7 +9,7 @@ import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
-  /^|/,
+  '|',
   configure({ syntax: { inline: { media: false } } },
   sequence([
     row(cell(data), false),
