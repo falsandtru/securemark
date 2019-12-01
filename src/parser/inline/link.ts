@@ -51,7 +51,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         ? text
         : (sanitize(decode(INSECURE_URL || '.'), ['tel:']) || '')
             .replace(/^tel:/, '')
-            .replace(/^h(?=ttps?:\/\/)/, params.includes('nofollow') ? '' : 'h'));
+            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
     assert(hasContent(el));
     switch (el.protocol) {
       case 'tel:':
