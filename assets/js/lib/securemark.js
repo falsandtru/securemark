@@ -2496,9 +2496,8 @@ require = function () {
                     el,
                     typed_dom_1.html('br')
                 ]), [])),
-                combinator_1.fmap(content, ns => concat_1.concat(ns, [typed_dom_1.html('br')]))
+                combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.contentline, '>'), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => concat_1.concat(ns, [typed_dom_1.html('br')]))
             ])), ns => [typed_dom_1.html('p', format(ns))].filter(util_1.hasContent))));
-            const content = combinator_1.block(combinator_1.rewrite(combinator_1.some(source_1.contentline, /^>/), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))), false);
             function format(ns) {
                 ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();
                 return ns;
