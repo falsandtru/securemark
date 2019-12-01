@@ -3194,16 +3194,15 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
             const indexee_1 = _dereq_('./indexee');
-            const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(indexee_1.indexee(combinator_1.verify(combinator_1.configure({
+            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.configure({
                 syntax: {
                     inline: {
                         link: undefined,
                         media: false
                     }
                 }
-            }, combinator_1.surround('[#', combinator_1.rewrite(combinator_1.some(inline_1.inline, /^\\?\n|^]/), combinator_1.convert(query => `[${ query }]{#}`, combinator_1.union([link_1.link]))), ']')), ([el]) => util_1.hasTightText(el))), ([el]) => [typed_dom_1.define(el, {
+            }, combinator_1.rewrite(combinator_1.surround('[#', combinator_1.some(inline_1.inline, /^\\?\n|^]/), ']'), combinator_1.convert(query => `[${ query.slice(2, -1) }]{#}`, indexee_1.indexee(combinator_1.union([link_1.link]))))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: `#${ el.id }`
@@ -3212,7 +3211,6 @@ require = function () {
         {
             '../../../combinator': 23,
             '../../inline': 72,
-            '../../util': 115,
             '../link': 96,
             './indexee': 89,
             'typed-dom': 15
