@@ -1,5 +1,5 @@
 import { MediaParser } from '../inline';
-import { Result, union, inits, tails, some, subline, verify, surround, guard, configure, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, verify, surround, guard, configure, fmap, bind } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
@@ -34,9 +34,6 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
       void define(media, { alt: text });
     }
     void define(media, attrs(attributes, params, media.className.trim().split(/\s+/), 'media'));
-    return fmap(
-      link,
-      ([link]) =>
-        [define(link, { target: '_blank' }, [media])])
-      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config) as Result<HTMLAnchorElement>;
+    return fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [media])])
+      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config);
   })));
