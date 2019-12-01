@@ -2491,13 +2491,13 @@ require = function () {
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.paragraph = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.subsequence([
+            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.subsequence([
                 combinator_1.fmap(combinator_1.some(mention_1.mention), es => es.reduce((acc, el) => concat_1.concat(acc, [
                     el,
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.contentline, '>'), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => concat_1.concat(ns, [typed_dom_1.html('br')]))
-            ])), ns => [typed_dom_1.html('p', format(ns))].filter(util_1.hasContent))));
+            ])), ns => [typed_dom_1.html('p', format(ns))].filter(util_1.hasContent)));
             function format(ns) {
                 ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();
                 return ns;
