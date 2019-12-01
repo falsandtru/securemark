@@ -1,5 +1,5 @@
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, subline, verify, surround, guard, configure, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, verify, surround, guard, fmap, bind } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
@@ -11,7 +11,7 @@ import { html, define } from 'typed-dom';
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = subline(configure({ syntax: { inline: { link: undefined } } }, bind(fmap(verify(fmap(surround(
+export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
   guard(config => config?.syntax?.inline?.media ?? true,
   tails([
@@ -22,7 +22,7 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([text]) => text.length === 0 || hasTightText(text[0])),
   ([text, param]: (HTMLElement | Text)[][]) => [text[0]?.textContent || '', ...param.map(t => t.textContent!)]),
-  ([text, INSECURE_URL, ...params]: string[], rest, state, config) => {
+  ([text, INSECURE_URL, ...params]: string[], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === undefined) return;
     const uri = new URL(path, window.location.href);
@@ -35,5 +35,5 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
     }
     void define(media, attrs(attributes, params, media.className.trim().split(/\s+/), 'media'));
     return fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [media])])
-      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config);
-  })));
+      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, {}, {});
+  }));
