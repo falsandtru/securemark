@@ -1,7 +1,6 @@
 import { ExtensionParser } from '../../inline';
-import { union, subline, focus, verify, surround, convert, configure, fmap } from '../../../combinator';
+import { union, subline, focus, surround, convert, configure, fmap } from '../../../combinator';
 import { link } from '../link';
-import { hasTightText } from '../../util';
 import { define } from 'typed-dom';
 
 const parser = focus(
@@ -11,13 +10,12 @@ const parser = focus(
     query => `[\\${query}]{#}`,
     link)));
 
-export const label: ExtensionParser.LabelParser = subline(verify(fmap(
+export const label: ExtensionParser.LabelParser = subline(fmap(
   union([
     surround('[', parser, ']'),
     parser,
   ]),
-  ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.slice(el.textContent![1] === '-' ? 0 : 1), href: null })]),
-  ([el]) => hasTightText(el)));
+  ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.slice(el.textContent![1] === '-' ? 0 : 1), href: null })]));
 
 export function number(label: string, base: string): string {
   return isFixed(label)
