@@ -1979,7 +1979,7 @@ require = function () {
                 [],
                 ''
             ]), false);
-            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => (rest, state, config) => {
+            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => rest => {
                 [lang, param] = language.test(lang) ? [
                     lang,
                     param
@@ -1988,7 +1988,7 @@ require = function () {
                     lang + param
                 ];
                 param = param.trim();
-                const path = util_1.stringify(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, state, config)));
+                const path = util_1.stringify(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, {}, {})));
                 const file = path.split('/').pop() || '';
                 const ext = file && file.includes('.') && !file.startsWith('.') ? file.split('.').pop() : '';
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
@@ -1998,7 +1998,7 @@ require = function () {
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
-                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, state, config)));
+                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, {}, {})));
                 }
                 if (path) {
                     void el.setAttribute('data-file', path);
@@ -3630,7 +3630,7 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.cache = new cache_1.Cache(10);
-            exports.media = combinator_1.subline(combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.guard(config => {
+            exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.guard(config => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.tails([
@@ -3645,22 +3645,22 @@ require = function () {
                     ((_a = text[0]) === null || _a === void 0 ? void 0 : _a.textContent) || '',
                     ...param.map(t => t.textContent)
                 ];
-            }), ([text, INSECURE_URL, ...params], rest, state, config) => {
+            }), ([text, INSECURE_URL, ...params], rest) => {
                 const path = uri_1.sanitize(INSECURE_URL.trim());
                 if (path === undefined)
                     return;
                 const uri = new URL(path, window.location.href);
-                const el = exports.cache.has(uri.href) ? exports.cache.get(uri.href).cloneNode(true) : typed_dom_1.html('img', {
+                const media = exports.cache.has(uri.href) ? exports.cache.get(uri.href).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': path,
                     alt: text
                 });
-                if (exports.cache.has(uri.href) && el.hasAttribute('alt')) {
-                    void typed_dom_1.define(el, { alt: text });
+                if (exports.cache.has(uri.href) && media.hasAttribute('alt')) {
+                    void typed_dom_1.define(media, { alt: text });
                 }
-                void typed_dom_1.define(el, link_1.attrs(link_1.attributes, params, el.className.trim().split(/\s+/), 'media'));
-                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, state, config);
-            })));
+                void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, media.className.trim().split(/\s+/), 'media'));
+                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [media])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, {}, {});
+            }));
         },
         {
             '../../combinator': 23,
