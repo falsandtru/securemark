@@ -5,16 +5,16 @@ import { define } from 'typed-dom';
 
 const parser = focus(
   /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/,
-  configure({ syntax: { inline: { link: undefined } } },
   convert(
     query => `[\\${query}]{#}`,
-    link)));
+    link));
 
 export const label: ExtensionParser.LabelParser = subline(fmap(
+  configure({ syntax: { inline: { link: undefined } } },
   union([
     surround('[', parser, ']'),
     parser,
-  ]),
+  ])),
   ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.slice(el.textContent![1] === '-' ? 0 : 1), href: null })]));
 
 export function number(label: string, base: string): string {
