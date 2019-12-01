@@ -1,21 +1,18 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, subline, rewrite, surround, convert, configure } from '../../../combinator';
+import { union, some, subline, validate, rewrite, convert, configure } from '../../../combinator';
 import { unescsource } from '../../source';
 import { link, bracket } from '../link';
 
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
 
-export const uri: AutolinkParser.UriParser = subline(union([
+export const uri: AutolinkParser.UriParser = subline(validate(
+  /^h?ttps?:\/\/[^/?#\s]/,
   configure({ syntax: { inline: { link: undefined } } },
-  surround(
-    /^(?=h?ttps?:\/\/[^/?#\s])/,
-    rewrite(
-      some(union([bracket, some(unescsource, closer)])),
-      convert(
-        source => `{${address(source)}${attribute(source)}}`,
-        link)),
-    '')),
-]));
+  rewrite(
+    some(union([bracket, some(unescsource, closer)])),
+    convert(
+      source => `{${address(source)}${attribute(source)}}`,
+      union([link]))))));
 
 export function address(source: string): string {
   return source.startsWith('ttp')
