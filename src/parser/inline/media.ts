@@ -26,17 +26,17 @@ export const media: MediaParser = subline(configure({ syntax: { inline: { link: 
     const path = sanitize(INSECURE_URL.trim());
     if (path === undefined) return;
     const uri = new URL(path, window.location.href);
-    const el = cache.has(uri.href)
+    const media = cache.has(uri.href)
       ? cache.get(uri.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: text });
-    if (cache.has(uri.href) && el.hasAttribute('alt')) {
-      assert(['IMG', 'AUDIO', 'VIDEO'].includes(el.tagName));
-      void define(el, { alt: text });
+    if (cache.has(uri.href) && media.hasAttribute('alt')) {
+      assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
+      void define(media, { alt: text });
     }
-    void define(el, attrs(attributes, params, el.className.trim().split(/\s+/), 'media'));
+    void define(media, attrs(attributes, params, media.className.trim().split(/\s+/), 'media'));
     return fmap(
       link,
       ([link]) =>
-        [define(link, { target: '_blank' }, [el])])
+        [define(link, { target: '_blank' }, [media])])
       (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, state, config) as Result<HTMLAnchorElement>;
   })));
