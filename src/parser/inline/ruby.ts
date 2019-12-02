@@ -2,7 +2,7 @@ import { RubyParser } from '../inline';
 import { union, sequence, some, subline, validate, verify, surround, fmap } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text } from '../source';
-import { defrag, trimNodeEnd, stringify, hasText, hasTightText } from '../util';
+import { defrag, trimTextEnd, stringify, hasText, hasTightText } from '../util';
 import { concat } from 'spica/concat';
 import { html, text as txt } from 'typed-dom';
 
@@ -10,7 +10,7 @@ export const ruby: RubyParser = subline(fmap(fmap(verify(fmap(validate(
   /^\[.+?\]\(.+?\)/,
   sequence([
     fmap(verify(
-      surround('[', trimNodeEnd(defrag(some(union([htmlentity, text]), /^\\?\n|^]/))), ']'),
+      surround('[', trimTextEnd(defrag(some(union([htmlentity, text]), /^\\?\n|^]/))), ']'),
       ([text]) => hasTightText(text)),
       ([text]) => [text.textContent!.split(/\s/).map(txt)]),
     fmap(verify(

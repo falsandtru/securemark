@@ -4,7 +4,7 @@ import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
 import { sanitize } from '../string/uri';
-import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
+import { defrag, dup, trimTextEnd, hasTightText } from '../util';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
@@ -15,7 +15,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
   guard(config => config?.syntax?.inline?.media ?? true,
   tails([
-    dup(surround('[', trimNodeEnd(defrag(some(union([text]), /^\\?\n|^]/))), ']', false)),
+    dup(surround('[', trimTextEnd(defrag(some(union([text]), /^\\?\n|^]/))), ']', false)),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])),
   ''),

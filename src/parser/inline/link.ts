@@ -2,7 +2,7 @@ import { LinkParser, media, shortmedia, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
-import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
+import { defrag, dup, trimTextEnd, hasTightText } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
@@ -20,7 +20,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     dup(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
-      surround('[', configure({ syntax: { inline: { media: false } } }, trimNodeEnd(defrag(some(inline, /^\\?\n|^]/)))), ']', false),
+      surround('[', configure({ syntax: { inline: { media: false } } }, trimTextEnd(defrag(some(inline, /^\\?\n|^]/)))), ']', false),
     ])),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])))),
