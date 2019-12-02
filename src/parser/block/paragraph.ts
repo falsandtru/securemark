@@ -3,7 +3,7 @@ import { subsequence, some, block, rewrite, trim, fmap } from '../../combinator'
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { contentline } from '../source';
-import { defrag, hasContent } from '../util';
+import { defrag, isVisible } from '../util';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 
@@ -19,7 +19,7 @@ export const paragraph: ParagraphParser = block(fmap(
       ns => concat(ns, [html('br')])),
   ])),
   ns => [html('p', format(ns))].map(el =>
-    hasContent(el)
+    isVisible(el)
       ? el
       : define(el, {
           class: 'invalid',

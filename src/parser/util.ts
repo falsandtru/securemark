@@ -1,7 +1,7 @@
 import { Parser, fmap } from '../combinator';
 import { define, apply } from 'typed-dom';
 
-export function hasContent(node: HTMLElement): boolean {
+export function isVisible(node: HTMLElement): boolean {
   return hasText(node)
       || hasMedia(node);
 }
