@@ -6,7 +6,7 @@ import { html } from 'typed-dom';
 export function localize(block: BlockParser): BlockParser {
   return fmap(block, es => {
     for (const block of es) {
-      for (const el of block.querySelectorAll<HTMLElement>('.linebreak')) {
+      for (const el of block.getElementsByClassName('linebreak')) {
         if (!el.firstChild || el.firstElementChild) continue;
         if (!check(el)) continue;
         assert(el.firstChild.textContent === ' ');
@@ -17,7 +17,7 @@ export function localize(block: BlockParser): BlockParser {
   });
 }
 
-function check(el: HTMLElement): boolean {
+function check(el: Element): boolean {
   const char = endingChar(el.previousSibling);
   if (!char) return false;
   assert([...char].length === 1);
