@@ -10,6 +10,7 @@ export interface MarkdownParser extends
   ], MarkdownParser.State, MarkdownParser.Config> {
 }
 export namespace MarkdownParser {
+  // Immutable
   export interface Config {
     readonly syntax?: {
       readonly inline?: {
@@ -24,6 +25,7 @@ export namespace MarkdownParser {
       };
     };
   }
+  // Mutable
   export interface State {
   }
   export interface SegmentParser extends
