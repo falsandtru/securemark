@@ -2,7 +2,7 @@ import { LinkParser, media, shortmedia, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
-import { defrag, dup, trimNodeEnd, hasTightText, hasContent } from '../util';
+import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
@@ -52,7 +52,6 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         : (sanitize(decode(INSECURE_URL || '.'), ['tel:']) || '')
             .replace(/^tel:/, '')
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
-    assert(hasContent(el));
     switch (el.protocol) {
       case 'tel:':
         if (el.getAttribute('href') === `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) break;
