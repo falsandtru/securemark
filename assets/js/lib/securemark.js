@@ -2497,7 +2497,11 @@ require = function () {
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.contentline, '>'), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => concat_1.concat(ns, [typed_dom_1.html('br')]))
-            ])), ns => [typed_dom_1.html('p', format(ns))].filter(util_1.hasContent)));
+            ])), ns => [typed_dom_1.html('p', format(ns))].map(el => util_1.isVisible(el) ? el : typed_dom_1.define(el, {
+                class: 'invalid',
+                'data-invalid-syntax': 'paragraph',
+                'data-invalid-type': 'visibility'
+            }))));
             function format(ns) {
                 ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();
                 return ns;
@@ -2807,7 +2811,7 @@ require = function () {
                         media: false
                     }
                 }
-            }, combinator_1.surround('((', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '))'))), '))'))), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el)));
+            }, combinator_1.surround('((', util_1.trimTextEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '))'))), '))'))), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el)));
         },
         {
             '../../combinator': 23,
@@ -3106,7 +3110,7 @@ require = function () {
             const strong_1 = _dereq_('./strong');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.emphasis = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\S[\s\S]*?\*/, combinator_1.configure({ syntax: { inline: { emphasis: false } } }, combinator_1.surround('*', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([
+            exports.emphasis = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\S[\s\S]*?\*/, combinator_1.configure({ syntax: { inline: { emphasis: false } } }, combinator_1.surround('*', util_1.trimTextEnd(util_1.defrag(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
             ])))), '*'))), (ns, _, config) => {
@@ -3163,10 +3167,10 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.data = combinator_1.lazy(() => combinator_1.fmap(combinator_1.surround('[~', combinator_1.inits([
+            exports.data = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.surround('[~', combinator_1.inits([
                 combinator_1.focus(/^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?/, util_1.defrag(combinator_1.some(source_1.unescsource))),
-                combinator_1.surround('|', util_1.defrag(combinator_1.some(inline_1.inline, ']')), '', false)
-            ]), ']'), ([data, ...ns]) => [typed_dom_1.html('span', attr(data.textContent), ns)]));
+                combinator_1.surround('|', util_1.trimTextEnd(util_1.defrag(combinator_1.some(inline_1.inline, ']'))), '', false)
+            ]), ']'), ([data, ...ns]) => [typed_dom_1.html('span', attr(data.textContent), ns)]), ([el]) => el.childNodes.length === 0 || util_1.hasTightContent(el)));
             function attr(data) {
                 const name = data.split('=', 1)[0];
                 const value = data.slice(name.length + 1);
@@ -3319,7 +3323,7 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.placeholder = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.surround(/^\[[:^]/, util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\\?\n|^]/)), ']'), () => [typed_dom_1.html('span', {
+            exports.placeholder = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.surround(/^\[[:^]/, combinator_1.verify(util_1.trimTextEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\\?\n|^]/))), ns => util_1.hasTightContent(typed_dom_1.html('div', ns))), ']'), () => [typed_dom_1.html('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'extension',
                     'data-invalid-type': 'syntax'
@@ -3480,7 +3484,7 @@ require = function () {
                 util_1.dup(combinator_1.union([
                     combinator_1.surround('[', inline_1.media, ']'),
                     combinator_1.surround('[', inline_1.shortmedia, ']'),
-                    combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.trimNodeEnd(util_1.defrag(combinator_1.some(inline_1.inline, /^\\?\n|^]/)))), ']', false)
+                    combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.trimTextEnd(util_1.defrag(combinator_1.some(inline_1.inline, /^\\?\n|^]/)))), ']', false)
                 ])),
                 util_1.dup(combinator_1.surround('{', combinator_1.inits([
                     exports.uri,
@@ -3634,7 +3638,7 @@ require = function () {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.tails([
-                util_1.dup(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([source_1.text]), /^\\?\n|^]/))), ']', false)),
+                util_1.dup(combinator_1.surround('[', util_1.trimTextEnd(util_1.defrag(combinator_1.some(combinator_1.union([source_1.text]), /^\\?\n|^]/))), ']', false)),
                 util_1.dup(combinator_1.surround('{', combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(util_1.defrag(html_1.attribute))
@@ -3693,7 +3697,7 @@ require = function () {
                         media: false
                     }
                 }
-            }, combinator_1.surround('[[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\\?\n|^]]/))), ']]'))), ns => [typed_dom_1.html('sup', { class: 'reference' }, ns)]), ([el]) => util_1.hasTightText(el))));
+            }, combinator_1.surround('[[', util_1.trimTextEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\\?\n|^]]/))), ']]'))), ns => [typed_dom_1.html('sup', { class: 'reference' }, ns)]), ([el]) => util_1.hasTightText(el))));
         },
         {
             '../../combinator': 23,
@@ -3713,7 +3717,7 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.ruby = combinator_1.subline(combinator_1.fmap(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\[.+?\]\(.+?\)/, combinator_1.sequence([
-                combinator_1.fmap(combinator_1.verify(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([
+                combinator_1.fmap(combinator_1.verify(combinator_1.surround('[', util_1.trimTextEnd(util_1.defrag(combinator_1.some(combinator_1.union([
                     htmlentity_1.htmlentity,
                     source_1.text
                 ]), /^\\?\n|^]/))), ']'), ([text]) => util_1.hasTightText(text)), ([text]) => [text.textContent.split(/\s/).map(typed_dom_1.text)]),
@@ -3765,7 +3769,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.configure({ syntax: { inline: { strong: false } } }, combinator_1.surround('**', util_1.trimNodeEnd(util_1.defrag(combinator_1.union([combinator_1.some(inline_1.inline, '**')]))), '**'))), (ns, _, config) => {
+            exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.configure({ syntax: { inline: { strong: false } } }, combinator_1.surround('**', util_1.trimTextEnd(util_1.defrag(combinator_1.union([combinator_1.some(inline_1.inline, '**')]))), '**'))), (ns, _, config) => {
                 var _a, _b, _c;
                 return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.strong) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('strong', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
@@ -3821,7 +3825,7 @@ require = function () {
             function localize(block) {
                 return combinator_1.fmap(block, es => {
                     for (const block of es) {
-                        for (const el of block.querySelectorAll('.linebreak')) {
+                        for (const el of block.getElementsByClassName('linebreak')) {
                             if (!el.firstChild || el.firstElementChild)
                                 continue;
                             if (!check(el))
@@ -4039,7 +4043,7 @@ require = function () {
                 [],
                 ''
             ] : undefined, false);
-            const invisible = /^(?:\\?\s)*$/;
+            const invisible = /^(?:\\?\s)*\\?$/;
             exports.blankline = combinator_1.line(s => invisible.test(s) ? [
                 [],
                 ''
@@ -4187,10 +4191,14 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            function hasContent(node) {
-                return hasText(node) || node.getElementsByClassName('media').length > 0;
+            function isVisible(node) {
+                return hasText(node) || hasMedia(node);
             }
-            exports.hasContent = hasContent;
+            exports.isVisible = isVisible;
+            function hasTightContent(node) {
+                return hasTightText(node) || node instanceof Element && hasMedia(node) && node.textContent === node.textContent.trim();
+            }
+            exports.hasTightContent = hasTightContent;
             function hasText(node) {
                 return node.textContent.trim() !== '';
             }
@@ -4199,6 +4207,9 @@ require = function () {
                 return hasText(node) && node.textContent === node.textContent.trim();
             }
             exports.hasTightText = hasTightText;
+            function hasMedia(node) {
+                return node.getElementsByClassName('media').length > 0;
+            }
             function dup(parser) {
                 return combinator_1.fmap(parser, ns => [ns]);
             }
@@ -4220,11 +4231,11 @@ require = function () {
                 });
             }
             exports.defrag = defrag;
-            function trimNodeEnd(parser) {
-                return trimNode_(parser, 'end');
+            function trimTextEnd(parser) {
+                return trimText_(parser, 'end');
             }
-            exports.trimNodeEnd = trimNodeEnd;
-            function trimNode_(parser, mode) {
+            exports.trimTextEnd = trimTextEnd;
+            function trimText_(parser, mode) {
                 return combinator_1.fmap(parser, ns => {
                     var _a, _b;
                     if (ns.length === 0)
@@ -4233,28 +4244,18 @@ require = function () {
                     switch (node.nodeType) {
                     case 3:
                         const text = node.textContent;
+                        if (ns.length === 1 && text.length === 1)
+                            break;
                         switch (mode) {
                         case 'start':
-                            if (stringify(ns.slice(0, 2)).length < 2)
+                            if (((_a = text[0]) === null || _a === void 0 ? void 0 : _a.trim()) !== '')
                                 break;
-                            if (((_a = text[0]) === null || _a === void 0 ? void 0 : _a.trim()) === '') {
-                                if (text.length > 1) {
-                                    node.textContent = text.slice(1);
-                                } else {
-                                    void ns.shift();
-                                }
-                            }
+                            node.textContent = text.slice(1);
                             break;
                         case 'end':
-                            if (stringify(ns.slice(-2)).length < 2)
+                            if (((_b = text[text.length - 1]) === null || _b === void 0 ? void 0 : _b.trim()) !== '')
                                 break;
-                            if (((_b = text[text.length - 1]) === null || _b === void 0 ? void 0 : _b.trim()) === '') {
-                                if (text.length > 1) {
-                                    node.textContent = text.slice(0, -1);
-                                } else {
-                                    void ns.pop();
-                                }
-                            }
+                            node.textContent = text.slice(0, -1);
                             break;
                         }
                         break;
