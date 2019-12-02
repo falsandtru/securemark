@@ -1,24 +1,25 @@
 import { ExtensionParser, inline } from '../../inline';
-import { inits, some, focus, surround, fmap, lazy } from '../../../combinator';
+import { inits, some, verify, focus, surround, fmap, lazy } from '../../../combinator';
 import { unescsource } from '../../source';
-import { defrag } from '../../util';
+import { defrag, trimNodeEnd, hasTightContent } from '../../util';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
 
 import DataParser = ExtensionParser.DataParser;
 
-export const data: DataParser = lazy(() => fmap(
+export const data: DataParser = lazy(() => verify(fmap(
   surround(
     '[~',
     inits([
       focus(
         /^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?/,
         defrag(some(unescsource))),
-      surround('|', defrag(some(inline, ']')), '', false),
+      surround('|', trimNodeEnd(defrag(some(inline, ']'))), '', false),
     ]),
     ']'),
   ([data, ...ns]) =>
-    [html('span', attr(data.textContent!), ns)]));
+    [html('span', attr(data.textContent!), ns)]),
+  ([el]) => el.childNodes.length === 0 || hasTightContent(el)));
 
 function attr(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');

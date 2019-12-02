@@ -6,6 +6,11 @@ export function isVisible(node: HTMLElement): boolean {
       || hasMedia(node);
 }
 
+export function hasTightContent(node: HTMLElement | Text): boolean {
+  return hasTightText(node)
+      || node instanceof Element && hasMedia(node) && node.textContent === node.textContent!.trim();
+}
+
 export function hasText(node: HTMLElement | Text): boolean {
   return node.textContent!.trim() !== '';
 }
@@ -54,7 +59,7 @@ function trimNode_<T extends Node, D extends Parser<unknown, any, S, C>[], S ext
         assert(ns[mode === 'start' ? 1 : ns.length - 2] instanceof Text === false);
         const text = node.textContent!;
         assert(text !== '');
-        if (text.length === 1) break;
+        if (ns.length === 1 && text.length === 1) break;
         switch (mode) {
           case 'start':
             if (text[0]?.trim() !== '') break;

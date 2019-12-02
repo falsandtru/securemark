@@ -18,6 +18,8 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a |b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a\n|b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a|\\]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[~a| !http://host]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[~a|<# b #>]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~-a]')), undefined);
@@ -41,6 +43,9 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a=b]')), [['<span class="data-a" data-name="a" data-value="b"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=b-c]')), [['<span class="data-a" data-name="a" data-value="b-c"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=b|c]')), [['<span class="data-a" data-name="a" data-value="b">c</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|!http://host]')), [['<span class="data-a" data-name="a" data-value=""><a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|!http://host ]')), [['<span class="data-a" data-name="a" data-value=""><a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|!http://host\\ ]')), [['<span class="data-a" data-name="a" data-value=""><a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~color=red|a]')), [['<span class="data-color" data-name="color" data-value="red">a</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~size=large|a]')), [['<span class="data-size" data-name="size" data-value="large">a</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~button=submit|a]')), [['<span class="data-button" data-name="button" data-value="submit">a</span>'], '']);

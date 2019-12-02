@@ -11,11 +11,17 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert(!parser('[ab]'));
       assert(!parser('[^]'));
       assert(!parser('[^]]'));
+      assert(!parser('[^ ]'));
+      assert(!parser('[^ a]'));
+      assert(!parser('[^\\ ]'));
+      assert(!parser('[^\\ a]'));
       assert(!parser('[^a\nb]'));
       assert(!parser('[^a\\\nb]'));
       assert(!parser('[^\n]'));
       assert(!parser('[^\\\n]'));
       assert(!parser('[^\\]'));
+      assert(!parser('[^ !http://host]'));
+      assert(!parser('[^<# a #>]'));
       assert(!parser('[[]'));
       assert(!parser('[]]'));
       assert(!parser('[[]]'));
@@ -24,16 +30,16 @@ describe('Unit: parser/inline/extension/placeholder', () => {
     });
 
     it('valid', () => {
-      assert(parser('[^ ]'));
       assert(parser('[^a]'));
-      assert(parser('[^a b]'));
-      assert(parser('[^ a]'));
       assert(parser('[^a ]'));
-      assert(parser('[^\\ ]'));
-      assert(parser('[^\\ a]'));
+      assert(parser('[^a b]'));
       assert(parser('[^a\\ ]'));
       assert(parser('[^\\]]'));
-      assert(parser('[^`a`]'));
+      assert(parser('[^*]*]'));
+      assert(parser('[^!http://host]'));
+      assert(parser('[^!http://host ]'));
+      assert(parser('[^!http://host\\ ]'));
+      assert(parser('[^a<# b #>]'));
     });
 
   });
