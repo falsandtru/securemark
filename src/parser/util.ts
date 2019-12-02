@@ -3,7 +3,7 @@ import { define, apply } from 'typed-dom';
 
 export function hasContent(node: HTMLElement): boolean {
   return hasText(node)
-      || node.getElementsByClassName('media').length > 0;
+      || hasMedia(node);
 }
 
 export function hasText(node: HTMLElement | Text): boolean {
@@ -13,6 +13,10 @@ export function hasText(node: HTMLElement | Text): boolean {
 export function hasTightText(node: HTMLElement | Text): boolean {
   return hasText(node)
       && node.textContent === node.textContent!.trim();
+}
+
+function hasMedia(node: HTMLElement): boolean {
+  return node.getElementsByClassName('media').length > 0;
 }
 
 export function dup<T, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T[], D, S, C> {
