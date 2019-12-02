@@ -51,28 +51,18 @@ function trimNode_<T extends Node, D extends Parser<unknown, any, S, C>[], S ext
     const node = ns[mode === 'start' ? 0 : ns.length - 1];
     switch (node.nodeType) {
       case 3:
+        assert(ns[mode === 'start' ? 1 : ns.length - 2] instanceof Text === false);
         const text = node.textContent!;
         assert(text !== '');
+        if (text.length === 1) break;
         switch (mode) {
           case 'start':
-            if (stringify(ns.slice(0, 2)).length < 2) break;
             if (text[0]?.trim() !== '') break;
-            if (text.length > 1) {
-              node.textContent = text.slice(1);
-            }
-            else {
-              void ns.shift();
-            }
+            node.textContent = text.slice(1);
             break;
           case 'end':
-            if (stringify(ns.slice(-2)).length < 2) break;
             if (text[text.length - 1]?.trim() !== '') break;
-            if (text.length > 1) {
-              node.textContent = text.slice(0, -1);
-            }
-            else {
-              void ns.pop();
-            }
+            node.textContent = text.slice(0, -1);
             break;
         }
         break;
