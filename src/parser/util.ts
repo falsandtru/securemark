@@ -56,24 +56,22 @@ function trimNode_<T extends Node, D extends Parser<unknown, any, S, C>[], S ext
         switch (mode) {
           case 'start':
             if (stringify(ns.slice(0, 2)).length < 2) break;
-            if (text[0]?.trim() === '') {
-              if (text.length > 1) {
-                node.textContent = text.slice(1);
-              }
-              else {
-                void ns.shift();
-              }
+            if (text[0]?.trim() !== '') break;
+            if (text.length > 1) {
+              node.textContent = text.slice(1);
+            }
+            else {
+              void ns.shift();
             }
             break;
           case 'end':
             if (stringify(ns.slice(-2)).length < 2) break;
-            if (text[text.length - 1]?.trim() === '') {
-              if (text.length > 1) {
-                node.textContent = text.slice(0, -1);
-              }
-              else {
-                void ns.pop();
-              }
+            if (text[text.length - 1]?.trim() !== '') break;
+            if (text.length > 1) {
+              node.textContent = text.slice(0, -1);
+            }
+            else {
+              void ns.pop();
             }
             break;
         }
