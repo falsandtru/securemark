@@ -5,7 +5,7 @@ import { inline } from '../inline';
 import { contentline } from '../source';
 import { defrag, hasContent } from '../util';
 import { concat } from 'spica/concat';
-import { html } from 'typed-dom';
+import { html, define } from 'typed-dom';
 
 export const paragraph: ParagraphParser = block(fmap(
   some(subsequence([
@@ -18,7 +18,14 @@ export const paragraph: ParagraphParser = block(fmap(
         defrag(trim(some(inline)))),
       ns => concat(ns, [html('br')])),
   ])),
-  ns => [html('p', format(ns))].filter(hasContent)));
+  ns => [html('p', format(ns))].map(el =>
+    hasContent(el)
+      ? el
+      : define(el, {
+          class: 'invalid',
+          'data-invalid-syntax': 'paragraph',
+          'data-invalid-type': 'visibility',
+        }))));
 
 function format<T extends Node[]>(ns: T): T {
   ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();

@@ -6,13 +6,6 @@ describe('Unit: parser/block/paragraph', () => {
   describe('paragraph', () => {
     const parser = (source: string) => some(paragraph)(source, {}, {});
 
-    it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser(' ')), undefined);
-      assert.deepStrictEqual(inspect(parser('\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('\\')), [[], '']);
-    });
-
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('a')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('ab')), [['<p>ab</p>'], '']);
@@ -45,7 +38,7 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('<# a #>')), [[], '']);
+      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<p class="invalid" data-invalid-syntax="paragraph" data-invalid-type="visibility"><sup class="comment" title="a"></sup></p>'], '']);
       assert.deepStrictEqual(inspect(parser('<# a #>b')), [['<p><sup class="comment" title="a"></sup>b</p>'], '']);
     });
 

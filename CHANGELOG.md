@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.137.0
+
+- Change paragraph parser not to remove blocks having comments only.
+
 ## 0.136.4
 
 - Refactoring.
