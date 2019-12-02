@@ -44,13 +44,13 @@ export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S
   });
 }
 
-export function trimTextEnd<P extends Parser<Node>>(parser: P): P;
-export function trimTextEnd<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
-  return trimText_(parser, 'end');
+export function trimNodeEnd<P extends Parser<Node>>(parser: P): P;
+export function trimNodeEnd<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
+  return trimNode_(parser, 'end');
 }
 
-function trimText_<P extends Parser<Node>>(parser: P, mode: 'start' | 'end'): P;
-function trimText_<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>, mode: 'start' | 'end'): Parser<T, D, S, C> {
+function trimNode_<P extends Parser<Node>>(parser: P, mode: 'start' | 'end'): P;
+function trimNode_<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>, mode: 'start' | 'end'): Parser<T, D, S, C> {
   return fmap(parser, ns => {
     if (ns.length === 0) return ns;
     const node = ns[mode === 'start' ? 0 : ns.length - 1];

@@ -1,7 +1,7 @@
 import { ExtensionParser, inline } from '../../inline';
 import { inits, some, verify, focus, surround, fmap, lazy } from '../../../combinator';
 import { unescsource } from '../../source';
-import { defrag, trimTextEnd, hasTightContent } from '../../util';
+import { defrag, trimNodeEnd, hasTightContent } from '../../util';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
 
@@ -14,7 +14,7 @@ export const data: DataParser = lazy(() => verify(fmap(
       focus(
         /^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?/,
         defrag(some(unescsource))),
-      surround('|', trimTextEnd(defrag(some(inline, ']'))), '', false),
+      surround('|', trimNodeEnd(defrag(some(inline, ']'))), '', false),
     ]),
     ']'),
   ([data, ...ns]) =>
