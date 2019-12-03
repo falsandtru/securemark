@@ -51,98 +51,103 @@ require = function () {
     ],
     5: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const type_1 = _dereq_('./type');
-            const concat_1 = _dereq_('./concat');
-            exports.assign = template((key, target, source) => target[key] = source[key]);
-            exports.clone = template((key, target, source) => {
-                switch (type_1.type(source[key])) {
-                case 'Array':
-                    return target[key] = exports.clone([], source[key]);
-                case 'Object':
-                    switch (type_1.type(target[key])) {
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                _dereq_('./global');
+                const type_1 = _dereq_('./type');
+                const concat_1 = _dereq_('./concat');
+                const {Object: Obj} = global;
+                exports.assign = template((key, target, source) => target[key] = source[key]);
+                exports.clone = template((key, target, source) => {
+                    switch (type_1.type(source[key])) {
+                    case 'Array':
+                        return target[key] = exports.clone([], source[key]);
                     case 'Object':
-                        return target[key] = exports.clone(source[key] instanceof Object ? {} : Object.create(null), source[key]);
+                        switch (type_1.type(target[key])) {
+                        case 'Object':
+                            return target[key] = exports.clone(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
+                        default:
+                            return target[key] = source[key];
+                        }
                     default:
                         return target[key] = source[key];
                     }
-                default:
-                    return target[key] = source[key];
-                }
-            });
-            exports.extend = template((key, target, source) => {
-                switch (type_1.type(source[key])) {
-                case 'Array':
-                    return target[key] = exports.extend([], source[key]);
-                case 'Object':
-                    switch (type_1.type(target[key])) {
-                    case 'Object':
-                        return target[key] = exports.extend(target[key], source[key]);
-                    default:
-                        return target[key] = exports.extend(source[key] instanceof Object ? {} : Object.create(null), source[key]);
-                    }
-                default:
-                    return target[key] = source[key];
-                }
-            });
-            exports.merge = template((key, target, source) => {
-                switch (type_1.type(source[key])) {
-                case 'Array':
-                    switch (type_1.type(target[key])) {
+                });
+                exports.extend = template((key, target, source) => {
+                    switch (type_1.type(source[key])) {
                     case 'Array':
-                        return target[key] = concat_1.concat(target[key], source[key]);
-                    default:
-                        return target[key] = exports.merge([], source[key]);
-                    }
-                case 'Object':
-                    switch (type_1.type(target[key])) {
+                        return target[key] = exports.extend([], source[key]);
                     case 'Object':
-                        return target[key] = exports.merge(target[key], source[key]);
+                        switch (type_1.type(target[key])) {
+                        case 'Object':
+                            return target[key] = exports.extend(target[key], source[key]);
+                        default:
+                            return target[key] = exports.extend(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
+                        }
                     default:
-                        return target[key] = exports.merge(source[key] instanceof Object ? {} : Object.create(null), source[key]);
+                        return target[key] = source[key];
                     }
-                default:
-                    return target[key] = source[key];
-                }
-            });
-            function template(strategy, empty = empty_) {
-                return walk;
-                function walk(target, ...sources) {
-                    let isPrimitiveTarget = type_1.isPrimitive(target);
-                    for (const source of sources) {
-                        const isPrimitiveSource = type_1.isPrimitive(source);
-                        if (isPrimitiveSource) {
-                            target = source;
-                            isPrimitiveTarget = isPrimitiveSource;
-                        } else {
-                            if (isPrimitiveTarget) {
-                                target = empty(source);
+                });
+                exports.merge = template((key, target, source) => {
+                    switch (type_1.type(source[key])) {
+                    case 'Array':
+                        switch (type_1.type(target[key])) {
+                        case 'Array':
+                            return target[key] = concat_1.concat(target[key], source[key]);
+                        default:
+                            return target[key] = exports.merge([], source[key]);
+                        }
+                    case 'Object':
+                        switch (type_1.type(target[key])) {
+                        case 'Object':
+                            return target[key] = exports.merge(target[key], source[key]);
+                        default:
+                            return target[key] = exports.merge(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
+                        }
+                    default:
+                        return target[key] = source[key];
+                    }
+                });
+                function template(strategy, empty = empty_) {
+                    return walk;
+                    function walk(target, ...sources) {
+                        let isPrimitiveTarget = type_1.isPrimitive(target);
+                        for (const source of sources) {
+                            const isPrimitiveSource = type_1.isPrimitive(source);
+                            if (isPrimitiveSource) {
+                                target = source;
                                 isPrimitiveTarget = isPrimitiveSource;
-                            }
-                            for (const key of Object.keys(source)) {
-                                void strategy(key, target, source);
+                            } else {
+                                if (isPrimitiveTarget) {
+                                    target = empty(source);
+                                    isPrimitiveTarget = isPrimitiveSource;
+                                }
+                                for (const key of Obj.keys(source)) {
+                                    void strategy(key, target, source);
+                                }
                             }
                         }
+                        return target;
                     }
-                    return target;
                 }
-            }
-            exports.template = template;
-            function empty_(source) {
-                switch (type_1.type(source)) {
-                case 'Array':
-                    return [];
-                case 'Object':
-                    return source instanceof Object ? {} : Object.create(null);
-                default:
-                    return source;
+                exports.template = template;
+                function empty_(source) {
+                    switch (type_1.type(source)) {
+                    case 'Array':
+                        return [];
+                    case 'Object':
+                        return source instanceof Obj ? {} : Obj.create(null);
+                    default:
+                        return source;
+                    }
                 }
-            }
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
             './concat': 8,
-            './type': 13
+            './global': 12,
+            './type': 16
         }
     ],
     6: [
@@ -309,7 +314,7 @@ require = function () {
         },
         {
             './assign': 5,
-            './equal': 9
+            './equal': 10
         }
     ],
     7: [
@@ -362,6 +367,20 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            exports.curry = f => apply(f, []);
+            function apply(f, xs) {
+                return xs.length >= f.length ? f(...xs) : (...ys) => apply(f, [
+                    ...xs,
+                    ...ys
+                ]);
+            }
+        },
+        {}
+    ],
+    10: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
             function findIndex(a1, as) {
                 const isNaN = a1 !== a1;
                 for (let i = 0; i < as.length; ++i) {
@@ -375,7 +394,26 @@ require = function () {
         },
         {}
     ],
-    10: [
+    11: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const curry_1 = _dereq_('./curry');
+            function flip(f) {
+                return curry_1.curry((b, a) => f.length > 1 ? f(a, b) : f(a)(b));
+            }
+            exports.flip = flip;
+        },
+        { './curry': 9 }
+    ],
+    12: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            eval('var global = typeof globalThis !== \'undefined\' && globalThis || this;');
+        },
+        {}
+    ],
+    13: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -386,7 +424,7 @@ require = function () {
         },
         {}
     ],
-    11: [
+    14: [
         function (_dereq_, module, exports) {
             'use strict';
             function __export(m) {
@@ -399,7 +437,7 @@ require = function () {
         },
         { './collection/multimap': 7 }
     ],
-    12: [
+    15: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -420,56 +458,168 @@ require = function () {
         },
         {}
     ],
-    13: [
+    16: [
+        function (_dereq_, module, exports) {
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                _dereq_('./global');
+                const {Object: Obj} = global;
+                function type(target) {
+                    const t = target == null ? target : typeof target;
+                    switch (t) {
+                    case undefined:
+                    case null:
+                        return `${ target }`;
+                    case 'boolean':
+                    case 'number':
+                    case 'bigint':
+                    case 'string':
+                    case 'symbol':
+                        return t;
+                    default:
+                        return Obj.prototype.toString.call(target).slice(8, -1);
+                    }
+                }
+                exports.type = type;
+                function isPrimitive(target) {
+                    switch (type(target)) {
+                    case 'undefined':
+                    case 'null':
+                    case 'boolean':
+                    case 'number':
+                    case 'bigint':
+                    case 'string':
+                    case 'symbol':
+                        return true;
+                    default:
+                        return false;
+                    }
+                }
+                exports.isPrimitive = isPrimitive;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+        },
+        { './global': 12 }
+    ],
+    17: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            function type(target) {
-                const t = target == null ? target : typeof target;
-                switch (t) {
-                case undefined:
-                case null:
-                    return `${ target }`;
-                case 'boolean':
-                case 'number':
-                case 'bigint':
-                case 'string':
-                case 'symbol':
-                    return t;
-                default:
-                    return Object.prototype.toString.call(target).slice(8, -1);
-                }
-            }
-            exports.type = type;
-            function isPrimitive(target) {
-                switch (type(target)) {
-                case 'undefined':
-                case 'null':
-                case 'boolean':
-                case 'number':
-                case 'bigint':
-                case 'string':
-                case 'symbol':
-                    return true;
-                default:
-                    return false;
-                }
-            }
-            exports.isPrimitive = isPrimitive;
+            exports.uncurry = f => (...args) => args.reduce((f, arg) => f(arg), f);
         },
         {}
     ],
-    14: [
+    18: [
+        function (_dereq_, module, exports) {
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                _dereq_('./global');
+                const format_1 = _dereq_('./url/domain/format');
+                var format_2 = _dereq_('./url/domain/format');
+                exports.standardize = format_2.standardize;
+                const {location} = global;
+                class URL {
+                    constructor(url, base = location.href) {
+                        this.url = format_1.newURL(url, base);
+                    }
+                    get reference() {
+                        return this.url.href;
+                    }
+                    get resource() {
+                        return `${ this.origin }${ this.pathname }${ this.query === '?' ? '' : this.query }`;
+                    }
+                    get origin() {
+                        return `${ this.protocol }//${ this.host }`;
+                    }
+                    get scheme() {
+                        return this.url.protocol.slice(0, -1);
+                    }
+                    get protocol() {
+                        return this.url.protocol;
+                    }
+                    get host() {
+                        return this.url.host;
+                    }
+                    get hostname() {
+                        return this.url.hostname;
+                    }
+                    get port() {
+                        return this.url.port;
+                    }
+                    get path() {
+                        return `${ this.pathname }${ this.query }`;
+                    }
+                    get pathname() {
+                        return this.url.pathname;
+                    }
+                    get query() {
+                        return this.url.search || !this.url.href.split('#', 1)[0].includes('?') ? this.url.search : '?';
+                    }
+                    get fragment() {
+                        return this.url.hash || !this.url.href.includes('#') ? this.url.hash : '#';
+                    }
+                }
+                exports.URL = URL;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+        },
+        {
+            './global': 12,
+            './url/domain/format': 19
+        }
+    ],
+    19: [
+        function (_dereq_, module, exports) {
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const memoization_1 = _dereq_('../../memoization');
+                const cache_1 = _dereq_('../../cache');
+                const flip_1 = _dereq_('../../flip');
+                const uncurry_1 = _dereq_('../../uncurry');
+                const {
+                    URL: NativeURL,
+                    location
+                } = global;
+                var Identifier;
+                (function (Identifier) {
+                }(Identifier || (Identifier = {})));
+                function standardize(url, base = location.href) {
+                    return encode(normalize(url, base));
+                }
+                exports.standardize = standardize;
+                function encode(url) {
+                    return url.trim().replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|[^=&]/ig, str => str.length < 3 ? encodeURIComponent(str) : str)).replace(/%[0-9A-F]{2}/ig, str => str.toUpperCase()).replace(/#.+/, url.slice(url.indexOf('#')).trim());
+                }
+                exports._encode = encode;
+                function normalize(url, base) {
+                    return exports.newURL(url, base).href;
+                }
+                exports.newURL = flip_1.flip(uncurry_1.uncurry(memoization_1.memoize(base => memoization_1.memoize(url => new NativeURL(formatURLForEdge(url, base), base), new cache_1.Cache(9)), new cache_1.Cache(9))));
+                function formatURLForEdge(url, base = location.href) {
+                    return url.trim() || base;
+                }
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+        },
+        {
+            '../../cache': 6,
+            '../../flip': 11,
+            '../../memoization': 13,
+            '../../uncurry': 17
+        }
+    ],
+    20: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const FORMAT_V4 = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+            const {random} = Math;
             function uuid() {
                 let acc = '';
                 for (let i = 0; i < FORMAT_V4.length; ++i) {
                     const c = FORMAT_V4[i];
                     if (c === 'x' || c === 'y') {
-                        const r = Math.random() * 16 | 0;
+                        const r = random() * 16 | 0;
                         const v = c == 'x' ? r : r & 3 | 8;
                         acc += v.toString(16);
                     } else {
@@ -482,10 +632,11 @@ require = function () {
         },
         {}
     ],
-    15: [
+    21: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            _dereq_('spica/global');
             var builder_1 = _dereq_('./src/dom/builder');
             exports.Shadow = builder_1.Shadow;
             exports.HTML = builder_1.HTML;
@@ -511,73 +662,77 @@ require = function () {
             exports.apply = query_1.apply;
         },
         {
-            './src/dom/builder': 16,
-            './src/dom/proxy': 18,
-            './src/util/dom': 19,
-            './src/util/listener': 20,
-            './src/util/query': 22
+            './src/dom/builder': 22,
+            './src/dom/proxy': 24,
+            './src/util/dom': 25,
+            './src/util/listener': 26,
+            './src/util/query': 28,
+            'spica/global': 12
         }
     ],
-    16: [
+    22: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const proxy_1 = _dereq_('./proxy');
-            const dom_1 = _dereq_('../util/dom');
-            function API(baseFactory, formatter = el => el) {
-                return new Proxy(() => undefined, handle(baseFactory, formatter));
-            }
-            exports.API = API;
-            exports.Shadow = API(dom_1.html, dom_1.shadow);
-            exports.HTML = API(dom_1.html);
-            exports.SVG = API(dom_1.svg);
-            function handle(baseFactory, formatter) {
-                return {
-                    apply(obj, _, [prop, ...args]) {
-                        return this.get(obj, prop, undefined)(...args);
-                    },
-                    get: (obj, prop) => obj[prop] || prop in obj || typeof prop !== 'string' ? obj[prop] : obj[prop] = builder(prop, baseFactory)
-                };
-                function builder(tag, baseFactory) {
-                    return function build(attrs, children, factory) {
-                        if (typeof attrs === 'function')
-                            return build(undefined, undefined, attrs);
-                        if (typeof children === 'function')
-                            return build(attrs, undefined, children);
-                        if (attrs !== undefined && isChildren(attrs))
-                            return build(undefined, attrs, factory);
-                        const node = formatter(elem(factory || defaultFactory, attrs || {}, children));
-                        return node instanceof Element ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const proxy_1 = _dereq_('./proxy');
+                const dom_1 = _dereq_('../util/dom');
+                const {Object: Obj} = global;
+                function API(baseFactory, formatter = el => el) {
+                    return new Proxy(() => undefined, handle(baseFactory, formatter));
+                }
+                exports.API = API;
+                exports.Shadow = API(dom_1.html, dom_1.shadow);
+                exports.HTML = API(dom_1.html);
+                exports.SVG = API(dom_1.svg);
+                function handle(baseFactory, formatter) {
+                    return {
+                        apply(obj, _, [prop, ...args]) {
+                            return this.get(obj, prop, undefined)(...args);
+                        },
+                        get: (obj, prop) => obj[prop] || prop in obj || typeof prop !== 'string' ? obj[prop] : obj[prop] = builder(prop, baseFactory)
                     };
-                    function isChildren(children) {
-                        return typeof children !== 'object' || Object.values(children).slice(-1).every(val => typeof val === 'object');
-                    }
-                    function elem(factory, attrs, children) {
-                        const el = factory(baseFactory, tag, attrs, children);
-                        if (tag !== el.tagName.toLowerCase())
-                            throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
-                        if (factory !== defaultFactory) {
-                            for (const [k, v] of Object.entries(attrs)) {
-                                if (typeof v !== 'function')
-                                    continue;
-                                void el.removeEventListener(k, v);
-                            }
-                            void dom_1.define(el, attrs);
+                    function builder(tag, baseFactory) {
+                        return function build(attrs, children, factory) {
+                            if (typeof attrs === 'function')
+                                return build(undefined, undefined, attrs);
+                            if (typeof children === 'function')
+                                return build(attrs, undefined, children);
+                            if (attrs !== undefined && isChildren(attrs))
+                                return build(undefined, attrs, factory);
+                            const node = formatter(elem(factory || defaultFactory, attrs || {}, children));
+                            return node.nodeType === 1 ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
+                        };
+                        function isChildren(children) {
+                            return typeof children !== 'object' || Obj.values(children).slice(-1).every(val => typeof val === 'object');
                         }
-                        return el;
-                    }
-                    function defaultFactory(factory, tag, attrs) {
-                        return factory(tag, attrs);
+                        function elem(factory, attrs, children) {
+                            const el = factory(baseFactory, tag, attrs, children);
+                            if (tag !== el.tagName.toLowerCase())
+                                throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
+                            if (factory !== defaultFactory) {
+                                for (const [k, v] of Obj.entries(attrs)) {
+                                    if (typeof v !== 'function')
+                                        continue;
+                                    void el.removeEventListener(k, v);
+                                }
+                                void dom_1.define(el, attrs);
+                            }
+                            return el;
+                        }
+                        function defaultFactory(factory, tag, attrs) {
+                            return factory(tag, attrs);
+                        }
                     }
                 }
-            }
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../util/dom': 19,
-            './proxy': 18
+            '../util/dom': 25,
+            './proxy': 24
         }
     ],
-    17: [
+    23: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -590,367 +745,383 @@ require = function () {
             exports.uid = uid;
         },
         {
-            'spica/sqid': 12,
-            'spica/uuid': 14
+            'spica/sqid': 15,
+            'spica/uuid': 20
         }
     ],
-    18: [
+    24: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const identity_1 = _dereq_('./identity');
-            const dom_1 = _dereq_('../util/dom');
-            var ElChildrenType;
-            (function (ElChildrenType) {
-                ElChildrenType.Void = 'void';
-                ElChildrenType.Text = 'text';
-                ElChildrenType.Array = 'array';
-                ElChildrenType.Record = 'record';
-            }(ElChildrenType || (ElChildrenType = {})));
-            const memory = new WeakMap();
-            function proxy(el) {
-                if (!memory.has(el))
-                    throw new Error(`TypedDOM: This element has no proxy.`);
-                return memory.get(el);
-            }
-            exports.proxy = proxy;
-            const tag = Symbol();
-            class Elem {
-                constructor(element, children_, container = element) {
-                    this.element = element;
-                    this.children_ = children_;
-                    this.container = container;
-                    this.id_ = this.element.id.trim();
-                    switch (true) {
-                    case children_ === undefined:
-                        this.type = ElChildrenType.Void;
-                        break;
-                    case typeof children_ === 'string':
-                        this.type = ElChildrenType.Text;
-                        break;
-                    case Array.isArray(children_):
-                        this.type = ElChildrenType.Array;
-                        break;
-                    case children_ && typeof children_ === 'object':
-                        this.type = ElChildrenType.Record;
-                        break;
-                    default:
-                        throw new Error(`TypedDOM: Invalid type children.`);
-                    }
-                    void throwErrorIfNotUsable(this);
-                    void memory.set(this.element, this);
-                    switch (this.type) {
-                    case ElChildrenType.Void:
-                        this.initialChildren = new WeakSet();
-                        return;
-                    case ElChildrenType.Text:
-                        this.initialChildren = new WeakSet();
-                        void dom_1.define(this.container, []);
-                        this.children_ = this.container.appendChild(dom_1.text(''));
-                        this.children = children_;
-                        return;
-                    case ElChildrenType.Array:
-                        this.initialChildren = new WeakSet(children_);
-                        void dom_1.define(this.container, []);
-                        this.children_ = [];
-                        this.children = children_;
-                        return;
-                    case ElChildrenType.Record:
-                        this.initialChildren = new WeakSet(Object.values(children_));
-                        void dom_1.define(this.container, []);
-                        this.children_ = observe(this.container, Object.assign({}, children_));
-                        this.children = children_;
-                        return;
-                    default:
-                        throw new Error(`TypedDOM: Unreachable code.`);
-                    }
-                    function observe(node, children) {
-                        return Object.defineProperties(children, Object.entries(children).reduce((descs, [name, child]) => {
-                            void throwErrorIfNotUsable(child);
-                            void node.appendChild(child.element);
-                            descs[name] = {
-                                configurable: true,
-                                enumerable: true,
-                                get: () => {
-                                    return child;
-                                },
-                                set: newChild => {
-                                    const oldChild = child;
-                                    if (newChild === oldChild)
-                                        return;
-                                    if (newChild.element.parentElement !== node) {
-                                        void throwErrorIfNotUsable(newChild);
-                                    }
-                                    void node.replaceChild(newChild.element, oldChild.element);
-                                    child = newChild;
-                                }
-                            };
-                            return descs;
-                        }, {}));
-                    }
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const identity_1 = _dereq_('./identity');
+                const dom_1 = _dereq_('../util/dom');
+                const {
+                    Array,
+                    Object: Obj,
+                    Set,
+                    WeakMap,
+                    WeakSet,
+                    Event
+                } = global;
+                var ElChildrenType;
+                (function (ElChildrenType) {
+                    ElChildrenType.Void = 'void';
+                    ElChildrenType.Text = 'text';
+                    ElChildrenType.Array = 'array';
+                    ElChildrenType.Record = 'record';
+                }(ElChildrenType || (ElChildrenType = {})));
+                const memory = new WeakMap();
+                function proxy(el) {
+                    if (!memory.has(el))
+                        throw new Error(`TypedDOM: This element has no proxy.`);
+                    return memory.get(el);
                 }
-                get id() {
-                    if (this.id_)
-                        return this.id_;
-                    this.id_ = identity_1.uid();
-                    void this.element.classList.add(this.id_);
-                    return this.id_;
-                }
-                get query() {
-                    switch (true) {
-                    case this.element !== this.container:
-                        return ':host';
-                    case this.id === this.element.id.trim():
-                        return `#${ this.id }`;
-                    default:
-                        return `.${ this.id }`;
-                    }
-                }
-                scope(child) {
-                    if (!(child.element instanceof HTMLStyleElement))
-                        return;
-                    const syntax = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
-                    const style = child.element;
-                    const query = this.query;
-                    if (style.innerHTML.search(syntax) === -1)
-                        return;
-                    style.innerHTML = style.innerHTML.replace(syntax, (_, frag, space) => `${ frag }${ space }${ query }`);
-                    switch (query[0]) {
-                    case '.': {
-                            const id = query.slice(1);
-                            if (!style.classList.contains(id))
-                                break;
-                            void style.classList.add(id);
+                exports.proxy = proxy;
+                const tag = Symbol();
+                class Elem {
+                    constructor(element, children_, container = element) {
+                        this.element = element;
+                        this.children_ = children_;
+                        this.container = container;
+                        this.id_ = this.element.id.trim();
+                        switch (true) {
+                        case children_ === undefined:
+                            this.type = ElChildrenType.Void;
                             break;
+                        case typeof children_ === 'string':
+                            this.type = ElChildrenType.Text;
+                            break;
+                        case Array.isArray(children_):
+                            this.type = ElChildrenType.Array;
+                            break;
+                        case children_ && typeof children_ === 'object':
+                            this.type = ElChildrenType.Record;
+                            break;
+                        default:
+                            throw new Error(`TypedDOM: Invalid type children.`);
+                        }
+                        void throwErrorIfNotUsable(this);
+                        void memory.set(this.element, this);
+                        switch (this.type) {
+                        case ElChildrenType.Void:
+                            this.initialChildren = new WeakSet();
+                            return;
+                        case ElChildrenType.Text:
+                            this.initialChildren = new WeakSet();
+                            void dom_1.define(this.container, []);
+                            this.children_ = this.container.appendChild(dom_1.text(''));
+                            this.children = children_;
+                            return;
+                        case ElChildrenType.Array:
+                            this.initialChildren = new WeakSet(children_);
+                            void dom_1.define(this.container, []);
+                            this.children_ = [];
+                            this.children = children_;
+                            return;
+                        case ElChildrenType.Record:
+                            this.initialChildren = new WeakSet(Obj.values(children_));
+                            void dom_1.define(this.container, []);
+                            this.children_ = observe(this.container, Object.assign({}, children_));
+                            this.children = children_;
+                            return;
+                        default:
+                            throw new Error(`TypedDOM: Unreachable code.`);
+                        }
+                        function observe(node, children) {
+                            return Obj.defineProperties(children, Obj.entries(children).reduce((descs, [name, child]) => {
+                                void throwErrorIfNotUsable(child);
+                                void node.appendChild(child.element);
+                                descs[name] = {
+                                    configurable: true,
+                                    enumerable: true,
+                                    get: () => {
+                                        return child;
+                                    },
+                                    set: newChild => {
+                                        const oldChild = child;
+                                        if (newChild === oldChild)
+                                            return;
+                                        if (newChild.element.parentElement !== node) {
+                                            void throwErrorIfNotUsable(newChild);
+                                        }
+                                        void node.replaceChild(newChild.element, oldChild.element);
+                                        child = newChild;
+                                    }
+                                };
+                                return descs;
+                            }, {}));
                         }
                     }
-                    if (style.children.length === 0)
-                        return;
-                    for (const el of style.querySelectorAll('*')) {
-                        void el.remove();
+                    get id() {
+                        if (this.id_)
+                            return this.id_;
+                        this.id_ = identity_1.uid();
+                        void this.element.classList.add(this.id_);
+                        return this.id_;
                     }
-                }
-                get children() {
-                    switch (this.type) {
-                    case ElChildrenType.Text:
-                        this.children_ = this.children_.parentNode === this.container ? this.children_ : [...this.container.childNodes].find(node => node instanceof Text) || this.children_.cloneNode();
-                        return this.children_.textContent;
-                    default:
-                        return this.children_;
+                    get query() {
+                        switch (true) {
+                        case this.element !== this.container:
+                            return ':host';
+                        case this.id === this.element.id.trim():
+                            return `#${ this.id }`;
+                        default:
+                            return `.${ this.id }`;
+                        }
                     }
-                }
-                set children(children) {
-                    const removedChildren = new Set();
-                    const addedChildren = new Set();
-                    switch (this.type) {
-                    case ElChildrenType.Void:
-                        return;
-                    case ElChildrenType.Text: {
-                            if (children === this.children && !this.initialChildren.has(this.children_))
+                    scope(child) {
+                        if (child.element.nodeName !== 'STYLE')
+                            return;
+                        const syntax = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
+                        const style = child.element;
+                        const query = this.query;
+                        if (style.innerHTML.search(syntax) === -1)
+                            return;
+                        style.innerHTML = style.innerHTML.replace(syntax, (_, frag, space) => `${ frag }${ space }${ query }`);
+                        switch (query[0]) {
+                        case '.': {
+                                const id = query.slice(1);
+                                if (!style.classList.contains(id))
+                                    break;
+                                void style.classList.add(id);
+                                break;
+                            }
+                        }
+                        if (style.children.length === 0)
+                            return;
+                        for (const el of style.querySelectorAll('*')) {
+                            void el.remove();
+                        }
+                    }
+                    get children() {
+                        switch (this.type) {
+                        case ElChildrenType.Text:
+                            this.children_ = this.children_.parentNode === this.container ? this.children_ : [...this.container.childNodes].find(node => node.nodeType === 3) || this.children_.cloneNode();
+                            return this.children_.textContent;
+                        default:
+                            return this.children_;
+                        }
+                    }
+                    set children(children) {
+                        const removedChildren = new Set();
+                        const addedChildren = new Set();
+                        switch (this.type) {
+                        case ElChildrenType.Void:
+                            return;
+                        case ElChildrenType.Text: {
+                                if (children === this.children && !this.initialChildren.has(this.children_))
+                                    return;
+                                const targetChildren = this.children_;
+                                const oldText = targetChildren.textContent;
+                                const newText = children;
+                                targetChildren.textContent = newText;
+                                if (newText === oldText)
+                                    return;
+                                void this.element.dispatchEvent(new Event('change', {
+                                    bubbles: false,
+                                    cancelable: true
+                                }));
                                 return;
-                            const targetChildren = this.children_;
-                            const oldText = targetChildren.textContent;
-                            const newText = children;
-                            targetChildren.textContent = newText;
-                            if (newText === oldText)
-                                return;
-                            void this.element.dispatchEvent(new Event('change', {
+                            }
+                        case ElChildrenType.Array: {
+                                const sourceChildren = children;
+                                const targetChildren = [];
+                                this.children_ = targetChildren;
+                                const mem = new WeakSet();
+                                for (let i = 0; i < sourceChildren.length; ++i) {
+                                    const newChild = sourceChildren[i];
+                                    if (mem.has(newChild))
+                                        throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
+                                    void mem.add(newChild);
+                                    if (newChild.element.parentNode !== this.container) {
+                                        void throwErrorIfNotUsable(newChild);
+                                    }
+                                    if (newChild.element === this.container.children[i]) {
+                                        void targetChildren.push(newChild);
+                                    } else {
+                                        if (newChild.element.parentNode !== this.container) {
+                                            void this.scope(newChild);
+                                            void addedChildren.add(newChild);
+                                        }
+                                        void this.container.insertBefore(newChild.element, this.container.children[i]);
+                                        void targetChildren.push(newChild);
+                                    }
+                                }
+                                void Obj.freeze(targetChildren);
+                                for (let i = this.container.children.length; i >= sourceChildren.length; --i) {
+                                    if (!memory.has(this.container.children[i]))
+                                        continue;
+                                    void removedChildren.add(proxy(this.container.removeChild(this.container.children[i])));
+                                }
+                                break;
+                            }
+                        case ElChildrenType.Record: {
+                                const sourceChildren = children;
+                                const targetChildren = this.children_;
+                                const mem = new WeakSet();
+                                for (const name in targetChildren) {
+                                    const oldChild = targetChildren[name];
+                                    const newChild = sourceChildren[name];
+                                    if (!newChild)
+                                        continue;
+                                    if (mem.has(newChild))
+                                        throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
+                                    void mem.add(newChild);
+                                    if (newChild.element.parentNode !== this.container) {
+                                        void throwErrorIfNotUsable(newChild);
+                                    }
+                                    if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
+                                        void this.scope(newChild);
+                                        void addedChildren.add(newChild);
+                                        void removedChildren.add(oldChild);
+                                    }
+                                    targetChildren[name] = sourceChildren[name];
+                                }
+                                break;
+                            }
+                        }
+                        for (const child of removedChildren) {
+                            if (this.initialChildren.has(child))
+                                continue;
+                            void child.element.dispatchEvent(new Event('disconnect', {
                                 bubbles: false,
                                 cancelable: true
                             }));
-                            return;
                         }
-                    case ElChildrenType.Array: {
-                            const sourceChildren = children;
-                            const targetChildren = [];
-                            this.children_ = targetChildren;
-                            const mem = new WeakSet();
-                            for (let i = 0; i < sourceChildren.length; ++i) {
-                                const newChild = sourceChildren[i];
-                                if (mem.has(newChild))
-                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                void mem.add(newChild);
-                                if (newChild.element.parentNode !== this.container) {
-                                    void throwErrorIfNotUsable(newChild);
-                                }
-                                if (newChild.element === this.container.children[i]) {
-                                    void targetChildren.push(newChild);
-                                } else {
-                                    if (newChild.element.parentNode !== this.container) {
-                                        void this.scope(newChild);
-                                        void addedChildren.add(newChild);
-                                    }
-                                    void this.container.insertBefore(newChild.element, this.container.children[i]);
-                                    void targetChildren.push(newChild);
-                                }
-                            }
-                            void Object.freeze(targetChildren);
-                            for (let i = this.container.children.length; i >= sourceChildren.length; --i) {
-                                if (!memory.has(this.container.children[i]))
-                                    continue;
-                                void removedChildren.add(proxy(this.container.removeChild(this.container.children[i])));
-                            }
-                            break;
+                        for (const child of addedChildren) {
+                            void child.element.dispatchEvent(new Event('connect', {
+                                bubbles: false,
+                                cancelable: true
+                            }));
                         }
-                    case ElChildrenType.Record: {
-                            const sourceChildren = children;
-                            const targetChildren = this.children_;
-                            const mem = new WeakSet();
-                            for (const name in targetChildren) {
-                                const oldChild = targetChildren[name];
-                                const newChild = sourceChildren[name];
-                                if (!newChild)
-                                    continue;
-                                if (mem.has(newChild))
-                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                void mem.add(newChild);
-                                if (newChild.element.parentNode !== this.container) {
-                                    void throwErrorIfNotUsable(newChild);
-                                }
-                                if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
-                                    void this.scope(newChild);
-                                    void addedChildren.add(newChild);
-                                    void removedChildren.add(oldChild);
-                                }
-                                targetChildren[name] = sourceChildren[name];
-                            }
-                            break;
-                        }
-                    }
-                    for (const child of removedChildren) {
-                        if (this.initialChildren.has(child))
-                            continue;
-                        void child.element.dispatchEvent(new Event('disconnect', {
+                        removedChildren.size + addedChildren.size > 0 && void this.element.dispatchEvent(new Event('change', {
                             bubbles: false,
                             cancelable: true
                         }));
                     }
-                    for (const child of addedChildren) {
-                        void child.element.dispatchEvent(new Event('connect', {
-                            bubbles: false,
-                            cancelable: true
-                        }));
-                    }
-                    removedChildren.size + addedChildren.size > 0 && void this.element.dispatchEvent(new Event('change', {
-                        bubbles: false,
-                        cancelable: true
-                    }));
                 }
-            }
-            exports.Elem = Elem;
-            function throwErrorIfNotUsable({element}) {
-                if (!element.parentElement || !memory.has(element.parentElement))
-                    return;
-                throw new Error(`TypedDOM: Typed DOM children can't be used to another typed DOM.`);
-            }
+                exports.Elem = Elem;
+                function throwErrorIfNotUsable({element}) {
+                    if (!element.parentElement || !memory.has(element.parentElement))
+                        return;
+                    throw new Error(`TypedDOM: Typed DOM children can't be used to another typed DOM.`);
+                }
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../util/dom': 19,
-            './identity': 17
+            '../util/dom': 25,
+            './identity': 23
         }
     ],
-    19: [
+    25: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const shadows = new WeakMap();
-            var cache;
-            (function (cache) {
-                cache.elem = new Map();
-                cache.text = document.createTextNode('');
-                cache.frag = document.createDocumentFragment();
-            }(cache || (cache = {})));
-            function frag(children = []) {
-                children = typeof children === 'string' ? [text(children)] : children;
-                const frag = cache.frag.cloneNode();
-                void frag.append(...children);
-                return frag;
-            }
-            exports.frag = frag;
-            function shadow(el, children, opts) {
-                if (children && !isChildren(children))
-                    return shadow(el, undefined, children);
-                if (el.shadowRoot || shadows.has(el)) {
-                    return define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children);
-                } else {
-                    return define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === undefined ? el.childNodes : children);
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const {
+                    Object: Obj,
+                    document
+                } = global;
+                const shadows = new WeakMap();
+                var cache;
+                (function (cache) {
+                    cache.elem = new Map();
+                    cache.text = document.createTextNode('');
+                    cache.frag = document.createDocumentFragment();
+                }(cache || (cache = {})));
+                function frag(children = []) {
+                    children = typeof children === 'string' ? [text(children)] : children;
+                    const frag = cache.frag.cloneNode();
+                    void frag.append(...children);
+                    return frag;
                 }
-            }
-            exports.shadow = shadow;
-            function html(tag, attrs = {}, children = []) {
-                return element(0, tag, attrs, children);
-            }
-            exports.html = html;
-            function svg(tag, attrs = {}, children = []) {
-                return element(1, tag, attrs, children);
-            }
-            exports.svg = svg;
-            function text(source) {
-                const text = cache.text.cloneNode();
-                text.data = source;
-                return text;
-            }
-            exports.text = text;
-            var NS;
-            (function (NS) {
-                NS[NS['HTML'] = 0] = 'HTML';
-                NS[NS['SVG'] = 1] = 'SVG';
-            }(NS || (NS = {})));
-            function element(ns, tag, attrs = {}, children = []) {
-                const key = `${ ns }:${ tag }`;
-                const el = tag.includes('-') ? elem(ns, tag) : cache.elem.has(key) ? cache.elem.get(key).cloneNode(true) : cache.elem.set(key, elem(ns, tag)).get(key).cloneNode(true);
-                void define(el, attrs, children);
-                return el;
-            }
-            function elem(ns, tag) {
-                switch (ns) {
-                case 0:
-                    return document.createElement(tag);
-                case 1:
-                    return document.createElementNS('http://www.w3.org/2000/svg', tag);
-                }
-            }
-            function define(el, attrs = {}, children) {
-                if (isChildren(attrs))
-                    return define(el, undefined, attrs);
-                if (typeof children === 'string')
-                    return define(el, attrs, [text(children)]);
-                void Object.entries(attrs).forEach(([name, value]) => {
-                    switch (typeof value) {
-                    case 'string':
-                        return void el.setAttribute(name, value);
-                    case 'function':
-                        return void el.addEventListener(name.slice(2), value, {
-                            passive: [
-                                'wheel',
-                                'mousewheel',
-                                'touchstart',
-                                'touchmove'
-                            ].includes(name.slice(2))
-                        });
-                    case 'object':
-                        return void el.removeAttribute(name);
-                    default:
-                        return;
+                exports.frag = frag;
+                function shadow(el, children, opts) {
+                    if (children && !isChildren(children))
+                        return shadow(el, undefined, children);
+                    if (el.shadowRoot || shadows.has(el)) {
+                        return define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children);
+                    } else {
+                        return define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === undefined ? el.childNodes : children);
                     }
-                });
-                if (children) {
-                    el.innerHTML = '';
-                    while (el.firstChild) {
-                        void el.removeChild(el.firstChild);
-                    }
-                    void el.append(...children);
                 }
-                return el;
-            }
-            exports.define = define;
-            function isChildren(o) {
-                return !!o[Symbol.iterator];
-            }
+                exports.shadow = shadow;
+                function html(tag, attrs = {}, children = []) {
+                    return element(0, tag, attrs, children);
+                }
+                exports.html = html;
+                function svg(tag, attrs = {}, children = []) {
+                    return element(1, tag, attrs, children);
+                }
+                exports.svg = svg;
+                function text(source) {
+                    const text = cache.text.cloneNode();
+                    text.data = source;
+                    return text;
+                }
+                exports.text = text;
+                var NS;
+                (function (NS) {
+                    NS[NS['HTML'] = 0] = 'HTML';
+                    NS[NS['SVG'] = 1] = 'SVG';
+                }(NS || (NS = {})));
+                function element(ns, tag, attrs = {}, children = []) {
+                    const key = `${ ns }:${ tag }`;
+                    const el = tag.includes('-') ? elem(ns, tag) : cache.elem.has(key) ? cache.elem.get(key).cloneNode(true) : cache.elem.set(key, elem(ns, tag)).get(key).cloneNode(true);
+                    void define(el, attrs, children);
+                    return el;
+                }
+                function elem(ns, tag) {
+                    switch (ns) {
+                    case 0:
+                        return document.createElement(tag);
+                    case 1:
+                        return document.createElementNS('http://www.w3.org/2000/svg', tag);
+                    }
+                }
+                function define(el, attrs = {}, children) {
+                    if (isChildren(attrs))
+                        return define(el, undefined, attrs);
+                    if (typeof children === 'string')
+                        return define(el, attrs, [text(children)]);
+                    void Obj.entries(attrs).forEach(([name, value]) => {
+                        switch (typeof value) {
+                        case 'string':
+                            return void el.setAttribute(name, value);
+                        case 'function':
+                            return void el.addEventListener(name.slice(2), value, {
+                                passive: [
+                                    'wheel',
+                                    'mousewheel',
+                                    'touchstart',
+                                    'touchmove'
+                                ].includes(name.slice(2))
+                            });
+                        case 'object':
+                            return void el.removeAttribute(name);
+                        default:
+                            return;
+                        }
+                    });
+                    if (children) {
+                        el.innerHTML = '';
+                        while (el.firstChild) {
+                            void el.removeChild(el.firstChild);
+                        }
+                        void el.append(...children);
+                    }
+                    return el;
+                }
+                exports.define = define;
+                function isChildren(o) {
+                    return !!o[Symbol.iterator];
+                }
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {}
     ],
-    20: [
+    26: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -969,11 +1140,9 @@ require = function () {
             }
             exports.wait = wait;
             function delegate(target, selector, type, listener, option = {}) {
-                return bind(target instanceof Document ? target.documentElement : target, type, ev => {
+                return bind(target.nodeType === 9 ? target.documentElement : target, type, ev => {
                     const cx = (ev.target.shadowRoot && ev.composedPath()[0] || ev.target).closest(selector);
-                    if (cx instanceof Element) {
-                        void once(cx, type, listener, option);
-                    }
+                    cx && void once(cx, type, listener, option);
                     return ev.returnValue;
                 }, Object.assign(Object.assign({}, option), { capture: true }));
             }
@@ -989,9 +1158,9 @@ require = function () {
             }
             exports.bind = bind;
         },
-        { './noop': 21 }
+        { './noop': 27 }
     ],
-    21: [
+    27: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1002,7 +1171,7 @@ require = function () {
         },
         {}
     ],
-    22: [
+    28: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1016,9 +1185,9 @@ require = function () {
             }
             exports.apply = apply;
         },
-        { './dom': 19 }
+        { './dom': 25 }
     ],
-    23: [
+    29: [
         function (_dereq_, module, exports) {
             'use strict';
             function __export(m) {
@@ -1051,29 +1220,29 @@ require = function () {
             __export(_dereq_('./combinator/control/monad/bind'));
         },
         {
-            './combinator/control/constraint/block': 24,
-            './combinator/control/constraint/contract': 25,
-            './combinator/control/constraint/line': 26,
-            './combinator/control/constraint/scope': 27,
-            './combinator/control/manipulation/config': 28,
-            './combinator/control/manipulation/convert': 29,
-            './combinator/control/manipulation/indent': 30,
-            './combinator/control/manipulation/lazy': 31,
-            './combinator/control/manipulation/match': 32,
-            './combinator/control/manipulation/surround': 33,
-            './combinator/control/manipulation/trim': 34,
-            './combinator/control/monad/bind': 35,
-            './combinator/control/monad/fmap': 36,
-            './combinator/data/parser': 37,
-            './combinator/data/parser/inits': 38,
-            './combinator/data/parser/sequence': 39,
-            './combinator/data/parser/some': 40,
-            './combinator/data/parser/subsequence': 41,
-            './combinator/data/parser/tails': 42,
-            './combinator/data/parser/union': 43
+            './combinator/control/constraint/block': 30,
+            './combinator/control/constraint/contract': 31,
+            './combinator/control/constraint/line': 32,
+            './combinator/control/constraint/scope': 33,
+            './combinator/control/manipulation/config': 34,
+            './combinator/control/manipulation/convert': 35,
+            './combinator/control/manipulation/indent': 36,
+            './combinator/control/manipulation/lazy': 37,
+            './combinator/control/manipulation/match': 38,
+            './combinator/control/manipulation/surround': 39,
+            './combinator/control/manipulation/trim': 40,
+            './combinator/control/monad/bind': 41,
+            './combinator/control/monad/fmap': 42,
+            './combinator/data/parser': 43,
+            './combinator/data/parser/inits': 44,
+            './combinator/data/parser/sequence': 45,
+            './combinator/data/parser/some': 46,
+            './combinator/data/parser/subsequence': 47,
+            './combinator/data/parser/tails': 48,
+            './combinator/data/parser/union': 49
         }
     ],
-    24: [
+    30: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1095,11 +1264,11 @@ require = function () {
             exports.block = block;
         },
         {
-            '../../data/parser': 37,
-            './line': 26
+            '../../data/parser': 43,
+            './line': 32
         }
     ],
-    25: [
+    31: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1143,9 +1312,9 @@ require = function () {
             }
             exports.verify = verify;
         },
-        { '../../data/parser': 37 }
+        { '../../data/parser': 43 }
     ],
-    26: [
+    32: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1182,9 +1351,9 @@ require = function () {
             }
             exports.firstline = firstline;
         },
-        { '../../data/parser': 37 }
+        { '../../data/parser': 43 }
     ],
-    27: [
+    33: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1225,30 +1394,36 @@ require = function () {
             }
             exports.rewrite = rewrite;
         },
-        { '../../data/parser': 37 }
+        { '../../data/parser': 43 }
     ],
-    28: [
+    34: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const assign_1 = _dereq_('spica/assign');
-            function guard(f, parser) {
-                return (source, state, config) => f(config) ? parser(source, state, config) : undefined;
-            }
-            exports.guard = guard;
-            const singleton = Object.freeze({});
-            function configure(config, parser) {
-                const memory = new WeakMap();
-                return (source, state, base) => {
-                    base = !memory.has(base) && Object.keys(base).length === 0 ? singleton : base;
-                    return parser(source, state, memory.get(base) || memory.set(base, assign_1.extend({}, base, config)).get(base));
-                };
-            }
-            exports.configure = configure;
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const assign_1 = _dereq_('spica/assign');
+                const {
+                    Object: Obj,
+                    WeakMap
+                } = global;
+                function guard(f, parser) {
+                    return (source, state, config) => f(config) ? parser(source, state, config) : undefined;
+                }
+                exports.guard = guard;
+                const singleton = Obj.freeze({});
+                function configure(config, parser) {
+                    const memory = new WeakMap();
+                    return (source, state, base) => {
+                        base = !memory.has(base) && Obj.keys(base).length === 0 ? singleton : base;
+                        return parser(source, state, memory.get(base) || memory.set(base, assign_1.extend({}, base, config)).get(base));
+                    };
+                }
+                exports.configure = configure;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         { 'spica/assign': 5 }
     ],
-    29: [
+    35: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1267,7 +1442,7 @@ require = function () {
         },
         {}
     ],
-    30: [
+    36: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1296,16 +1471,16 @@ require = function () {
             exports.indent = indent;
         },
         {
-            '../../data/parser': 37,
-            '../../data/parser/some': 40,
-            '../constraint/line': 26,
-            '../constraint/scope': 27,
-            '../monad/bind': 35,
-            './match': 32,
-            './surround': 33
+            '../../data/parser': 43,
+            '../../data/parser/some': 46,
+            '../constraint/line': 32,
+            '../constraint/scope': 33,
+            '../monad/bind': 41,
+            './match': 38,
+            './surround': 39
         }
     ],
-    31: [
+    37: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1317,7 +1492,7 @@ require = function () {
         },
         {}
     ],
-    32: [
+    38: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1348,11 +1523,11 @@ require = function () {
             exports.memoize = memoize;
         },
         {
-            '../../data/parser': 37,
-            'spica/memoization': 10
+            '../../data/parser': 43,
+            'spica/memoization': 13
         }
     ],
-    33: [
+    39: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1390,7 +1565,7 @@ require = function () {
         },
         {}
     ],
-    34: [
+    40: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1408,9 +1583,9 @@ require = function () {
             }
             exports.trimEnd = trimEnd;
         },
-        { './convert': 29 }
+        { './convert': 35 }
     ],
-    35: [
+    41: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1430,9 +1605,9 @@ require = function () {
             }
             exports.bind = bind;
         },
-        { '../../data/parser': 37 }
+        { '../../data/parser': 43 }
     ],
-    36: [
+    42: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1445,9 +1620,9 @@ require = function () {
             }
             exports.fmap = fmap;
         },
-        { './bind': 35 }
+        { './bind': 41 }
     ],
-    37: [
+    43: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1466,7 +1641,7 @@ require = function () {
         },
         {}
     ],
-    38: [
+    44: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1494,11 +1669,11 @@ require = function () {
             exports.inits = inits;
         },
         {
-            '../parser': 37,
+            '../parser': 43,
             'spica/concat': 8
         }
     ],
-    39: [
+    45: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1526,11 +1701,11 @@ require = function () {
             exports.sequence = sequence;
         },
         {
-            '../parser': 37,
+            '../parser': 43,
             'spica/concat': 8
         }
     ],
-    40: [
+    46: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1567,11 +1742,11 @@ require = function () {
             }
         },
         {
-            '../parser': 37,
+            '../parser': 43,
             'spica/concat': 8
         }
     ],
-    41: [
+    47: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1597,11 +1772,11 @@ require = function () {
             exports.subsequence = subsequence;
         },
         {
-            './inits': 38,
-            './union': 43
+            './inits': 44,
+            './union': 49
         }
     ],
-    42: [
+    48: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1613,11 +1788,11 @@ require = function () {
             exports.tails = tails;
         },
         {
-            './sequence': 39,
-            './union': 43
+            './sequence': 45,
+            './union': 49
         }
     ],
-    43: [
+    49: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1640,9 +1815,9 @@ require = function () {
             }
             exports.union = union;
         },
-        { '../parser': 37 }
+        { '../parser': 43 }
     ],
-    44: [
+    50: [
         function (_dereq_, module, exports) {
             'use strict';
             function __export(m) {
@@ -1653,9 +1828,9 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             __export(_dereq_('./parser/api'));
         },
-        { './parser/api': 45 }
+        { './parser/api': 51 }
     ],
-    45: [
+    51: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1667,12 +1842,12 @@ require = function () {
             exports.caches = cache_1.caches;
         },
         {
-            './api/bind': 46,
-            './api/cache': 47,
-            './api/parse': 49
+            './api/bind': 52,
+            './api/cache': 53,
+            './api/parse': 55
         }
     ],
-    46: [
+    52: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1770,14 +1945,14 @@ require = function () {
             exports.bind = bind;
         },
         {
-            '../../combinator': 23,
-            '../../util': 129,
-            '../block': 51,
-            '../segment': 106,
-            './normalization': 48
+            '../../combinator': 29,
+            '../../util': 135,
+            '../block': 57,
+            '../segment': 112,
+            './normalization': 54
         }
     ],
-    47: [
+    53: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1789,11 +1964,11 @@ require = function () {
             };
         },
         {
-            '../inline/math': 97,
-            '../inline/media': 98
+            '../inline/math': 103,
+            '../inline/media': 104
         }
     ],
-    48: [
+    54: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1814,7 +1989,7 @@ require = function () {
         },
         {}
     ],
-    49: [
+    55: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1834,16 +2009,16 @@ require = function () {
             exports.parse = parse;
         },
         {
-            '../../combinator': 23,
-            '../../util': 129,
-            '../block': 51,
-            '../segment': 106,
-            './normalization': 48,
+            '../../combinator': 29,
+            '../../util': 135,
+            '../block': 57,
+            '../segment': 112,
+            './normalization': 54,
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    50: [
+    56: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1857,12 +2032,12 @@ require = function () {
             ]);
         },
         {
-            '../combinator': 23,
-            './inline': 72,
-            './source': 107
+            '../combinator': 29,
+            './inline': 78,
+            './source': 113
         }
     ],
-    51: [
+    57: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1898,24 +2073,24 @@ require = function () {
             ]));
         },
         {
-            '../combinator': 23,
-            './block/blockquote': 52,
-            './block/codeblock': 53,
-            './block/dlist': 54,
-            './block/extension': 55,
-            './block/heading': 60,
-            './block/horizontalrule': 61,
-            './block/ilist': 62,
-            './block/mathblock': 63,
-            './block/newline': 64,
-            './block/olist': 65,
-            './block/paragraph': 66,
-            './block/table': 70,
-            './block/ulist': 71,
-            './locale': 104
+            '../combinator': 29,
+            './block/blockquote': 58,
+            './block/codeblock': 59,
+            './block/dlist': 60,
+            './block/extension': 61,
+            './block/heading': 66,
+            './block/horizontalrule': 67,
+            './block/ilist': 68,
+            './block/mathblock': 69,
+            './block/newline': 70,
+            './block/olist': 71,
+            './block/paragraph': 72,
+            './block/table': 76,
+            './block/ulist': 77,
+            './locale': 110
         }
     ],
-    52: [
+    58: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1956,15 +2131,15 @@ require = function () {
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
         },
         {
-            '../../combinator': 23,
-            '../api/parse': 49,
-            '../autolink': 50,
-            '../source': 107,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../api/parse': 55,
+            '../autolink': 56,
+            '../source': 113,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    53: [
+    59: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2017,14 +2192,14 @@ require = function () {
             }))));
         },
         {
-            '../../combinator': 23,
-            '../autolink': 50,
-            '../source': 107,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../autolink': 56,
+            '../source': 113,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    54: [
+    60: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2048,15 +2223,15 @@ require = function () {
             }
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../source': 107,
-            '../util': 115,
+            '../../combinator': 29,
+            '../inline': 78,
+            '../source': 113,
+            '../util': 121,
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    55: [
+    61: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2079,14 +2254,14 @@ require = function () {
             ]));
         },
         {
-            '../../combinator': 23,
-            './extension/example': 56,
-            './extension/fig': 57,
-            './extension/figure': 58,
-            './extension/placeholder': 59
+            '../../combinator': 29,
+            './extension/example': 62,
+            './extension/fig': 63,
+            './extension/figure': 64,
+            './extension/placeholder': 65
         }
     ],
-    56: [
+    62: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2136,14 +2311,14 @@ require = function () {
             ]))));
         },
         {
-            '../../../combinator': 23,
-            '../../api/parse': 49,
-            '../../util': 115,
-            '../mathblock': 63,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../../api/parse': 55,
+            '../../util': 121,
+            '../mathblock': 69,
+            'typed-dom': 21
         }
     ],
-    57: [
+    63: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2171,17 +2346,17 @@ require = function () {
             }, figure_1.figure)));
         },
         {
-            '../../../combinator': 23,
-            '../../inline': 72,
-            '../../source': 107,
-            '../blockquote': 52,
-            '../codeblock': 53,
-            '../extension/example': 56,
-            '../mathblock': 63,
-            './figure': 58
+            '../../../combinator': 29,
+            '../../inline': 78,
+            '../../source': 113,
+            '../blockquote': 58,
+            '../codeblock': 59,
+            '../extension/example': 62,
+            '../mathblock': 69,
+            './figure': 64
         }
     ],
-    58: [
+    64: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2247,19 +2422,19 @@ require = function () {
             }
         },
         {
-            '../../../combinator': 23,
-            '../../inline': 72,
-            '../../source': 107,
-            '../../util': 115,
-            '../blockquote': 52,
-            '../codeblock': 53,
-            '../mathblock': 63,
-            '../table': 70,
-            './example': 56,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../../inline': 78,
+            '../../source': 113,
+            '../../util': 121,
+            '../blockquote': 58,
+            '../codeblock': 59,
+            '../mathblock': 69,
+            '../table': 76,
+            './example': 62,
+            'typed-dom': 21
         }
     ],
-    59: [
+    65: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2280,12 +2455,12 @@ require = function () {
             ]));
         },
         {
-            '../../../combinator': 23,
-            '../../inline': 72,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../../inline': 78,
+            'typed-dom': 21
         }
     ],
-    60: [
+    66: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2303,14 +2478,14 @@ require = function () {
             ]))), ([flag, ...ns]) => [typed_dom_1.html(`h${ flag.textContent.length }`, ns)]), ([el]) => util_1.hasText(el))))));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../source/char': 108,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../source/char': 114,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    61: [
+    67: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2322,11 +2497,11 @@ require = function () {
             ])));
         },
         {
-            '../../combinator': 23,
-            'typed-dom': 15
+            '../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    62: [
+    68: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2351,15 +2526,15 @@ require = function () {
             exports.ilist_ = combinator_1.convert(source => source.replace(/^[-+*](?=\n|$)/, `$& `), exports.ilist);
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            './olist': 65,
-            './ulist': 71,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            './olist': 71,
+            './ulist': 77,
+            'typed-dom': 21
         }
     ],
-    63: [
+    69: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2389,11 +2564,11 @@ require = function () {
             }))));
         },
         {
-            '../../combinator': 23,
-            'typed-dom': 15
+            '../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    64: [
+    70: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2402,11 +2577,11 @@ require = function () {
             exports.newline = combinator_1.some(combinator_1.union([source_1.blankline]));
         },
         {
-            '../../combinator': 23,
-            '../source': 107
+            '../../combinator': 29,
+            '../source': 113
         }
     ],
-    65: [
+    71: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2471,16 +2646,16 @@ require = function () {
             }
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../source': 107,
-            '../util': 115,
-            './ilist': 62,
-            './ulist': 71,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../source': 113,
+            '../util': 121,
+            './ilist': 68,
+            './ulist': 77,
+            'typed-dom': 21
         }
     ],
-    66: [
+    72: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2503,21 +2678,22 @@ require = function () {
                 'data-invalid-type': 'visibility'
             }))));
             function format(ns) {
-                ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();
+                var _a;
+                ((_a = ns[ns.length - 1]) === null || _a === void 0 ? void 0 : _a.nodeName) === 'BR' && void ns.pop();
                 return ns;
             }
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../source': 107,
-            '../util': 115,
-            './paragraph/mention': 67,
+            '../../combinator': 29,
+            '../inline': 78,
+            '../source': 113,
+            '../util': 121,
+            './paragraph/mention': 73,
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    67: [
+    73: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2530,12 +2706,12 @@ require = function () {
             ]), false);
         },
         {
-            '../../../combinator': 23,
-            './mention/address': 68,
-            './mention/quotation': 69
+            '../../../combinator': 29,
+            './mention/address': 74,
+            './mention/quotation': 75
         }
     ],
-    68: [
+    74: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2557,14 +2733,14 @@ require = function () {
                 }, `${ flag.textContent }${ link.textContent }`)]));
         },
         {
-            '../../../../combinator': 23,
-            '../../../inline': 72,
-            '../../../source/char': 108,
-            '../../../util': 115,
-            'typed-dom': 15
+            '../../../../combinator': 29,
+            '../../../inline': 78,
+            '../../../source/char': 114,
+            '../../../util': 121,
+            'typed-dom': 21
         }
     ],
-    69: [
+    75: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2579,88 +2755,91 @@ require = function () {
             ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)]), false));
         },
         {
-            '../../../../combinator': 23,
-            '../../../autolink': 50,
-            '../../../source': 107,
-            '../../../util': 115,
-            'typed-dom': 15
+            '../../../../combinator': 29,
+            '../../../autolink': 56,
+            '../../../source': 113,
+            '../../../util': 121,
+            'typed-dom': 21
         }
     ],
-    70: [
+    76: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = _dereq_('../../combinator');
-            const inline_1 = _dereq_('../inline');
-            const util_1 = _dereq_('../util');
-            const concat_1 = _dereq_('spica/concat');
-            const typed_dom_1 = _dereq_('typed-dom');
-            exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate('|', combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.sequence([
-                row(cell(data), false),
-                row(cell(align), true),
-                combinator_1.some(row(cell(data), false))
-            ]))), ([head, as, ...rows]) => {
-                void align();
-                return [typed_dom_1.html('table', [
-                        typed_dom_1.html('thead', [head]),
-                        typed_dom_1.html('tbody', rows)
-                    ])];
-                function align() {
-                    const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || '']), []);
-                    void align(head, extend(aligns.slice(0, 2), head.children.length));
-                    for (const row of rows) {
-                        void align(row, extend(aligns, row.children.length));
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const combinator_1 = _dereq_('../../combinator');
+                const inline_1 = _dereq_('../inline');
+                const util_1 = _dereq_('../util');
+                const concat_1 = _dereq_('spica/concat');
+                const typed_dom_1 = _dereq_('typed-dom');
+                const {Array} = global;
+                exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate('|', combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.sequence([
+                    row(cell(data), false),
+                    row(cell(align), true),
+                    combinator_1.some(row(cell(data), false))
+                ]))), ([head, as, ...rows]) => {
+                    void align();
+                    return [typed_dom_1.html('table', [
+                            typed_dom_1.html('thead', [head]),
+                            typed_dom_1.html('tbody', rows)
+                        ])];
+                    function align() {
+                        const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || '']), []);
+                        void align(head, extend(aligns.slice(0, 2), head.children.length));
+                        for (const row of rows) {
+                            void align(row, extend(aligns, row.children.length));
+                        }
+                        return;
+                        function extend(aligns, size) {
+                            return size > aligns.length ? concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : aligns;
+                        }
+                        function align(row, aligns) {
+                            return void [...row.children].forEach((col, i) => aligns[i] && aligns[i] === sanitize(aligns[i]) && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
+                        }
+                        function sanitize(align) {
+                            return [
+                                'left',
+                                'center',
+                                'right'
+                            ].includes(align) ? align : '';
+                        }
                     }
-                    return;
-                    function extend(aligns, size) {
-                        return size > aligns.length ? concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : aligns;
-                    }
-                    function align(row, aligns) {
-                        return void [...row.children].forEach((col, i) => aligns[i] && aligns[i] === sanitize(aligns[i]) && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
-                    }
-                    function sanitize(align) {
-                        return [
-                            'left',
-                            'center',
-                            'right'
-                        ].includes(align) ? align : '';
-                    }
-                }
-            })));
-            const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.trimEnd(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict))), es => [typed_dom_1.html('tr', es)]);
-            const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
-            const data = util_1.defrag(combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
-                ns,
-                rest
-            ]));
-            const align = combinator_1.surround('|', combinator_1.union([
-                combinator_1.focus(/^:-+:/, () => [
-                    [typed_dom_1.text('center')],
-                    ''
-                ]),
-                combinator_1.focus(/^:-+/, () => [
-                    [typed_dom_1.text('left')],
-                    ''
-                ]),
-                combinator_1.focus(/^-+:/, () => [
-                    [typed_dom_1.text('right')],
-                    ''
-                ]),
-                combinator_1.focus(/^-+/, () => [
-                    [typed_dom_1.text('')],
-                    ''
-                ])
-            ]), '');
+                })));
+                const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.trimEnd(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict))), es => [typed_dom_1.html('tr', es)]);
+                const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
+                const data = util_1.defrag(combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
+                    ns,
+                    rest
+                ]));
+                const align = combinator_1.surround('|', combinator_1.union([
+                    combinator_1.focus(/^:-+:/, () => [
+                        [typed_dom_1.text('center')],
+                        ''
+                    ]),
+                    combinator_1.focus(/^:-+/, () => [
+                        [typed_dom_1.text('left')],
+                        ''
+                    ]),
+                    combinator_1.focus(/^-+:/, () => [
+                        [typed_dom_1.text('right')],
+                        ''
+                    ]),
+                    combinator_1.focus(/^-+/, () => [
+                        [typed_dom_1.text('')],
+                        ''
+                    ])
+                ]), '');
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    71: [
+    77: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2682,21 +2861,25 @@ require = function () {
                 ]), ns => [typed_dom_1.html('li', fillFirstLine(ns))])])))), es => [typed_dom_1.html('ul', es)])));
             exports.ulist_ = combinator_1.convert(source => source.replace(/^-(?=\n|$)/, `$& `), exports.ulist);
             function fillFirstLine(ns) {
-                return ns[0] instanceof HTMLUListElement || ns[0] instanceof HTMLOListElement ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
+                var _a;
+                return [
+                    'UL',
+                    'OL'
+                ].includes((_a = ns[0]) === null || _a === void 0 ? void 0 : _a.nodeName) ? concat_1.concat([typed_dom_1.html('br')], ns) : ns;
             }
             exports.fillFirstLine = fillFirstLine;
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            './ilist': 62,
-            './olist': 65,
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            './ilist': 68,
+            './olist': 71,
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    72: [
+    78: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2765,34 +2948,34 @@ require = function () {
             exports.isFormatted = label_1.isFormatted;
         },
         {
-            '../combinator': 23,
-            './inline/annotation': 73,
-            './inline/autolink': 74,
-            './inline/autolink/uri': 80,
-            './inline/bracket': 81,
-            './inline/code': 82,
-            './inline/comment': 83,
-            './inline/deletion': 84,
-            './inline/emphasis': 85,
-            './inline/extension': 86,
-            './inline/extension/indexee': 89,
-            './inline/extension/indexer': 90,
-            './inline/extension/label': 91,
-            './inline/html': 93,
-            './inline/htmlentity': 94,
-            './inline/insertion': 95,
-            './inline/link': 96,
-            './inline/math': 97,
-            './inline/media': 98,
-            './inline/reference': 99,
-            './inline/ruby': 100,
-            './inline/shortmedia': 101,
-            './inline/strong': 102,
-            './inline/template': 103,
-            './source': 107
+            '../combinator': 29,
+            './inline/annotation': 79,
+            './inline/autolink': 80,
+            './inline/autolink/uri': 86,
+            './inline/bracket': 87,
+            './inline/code': 88,
+            './inline/comment': 89,
+            './inline/deletion': 90,
+            './inline/emphasis': 91,
+            './inline/extension': 92,
+            './inline/extension/indexee': 95,
+            './inline/extension/indexer': 96,
+            './inline/extension/label': 97,
+            './inline/html': 99,
+            './inline/htmlentity': 100,
+            './inline/insertion': 101,
+            './inline/link': 102,
+            './inline/math': 103,
+            './inline/media': 104,
+            './inline/reference': 105,
+            './inline/ruby': 106,
+            './inline/shortmedia': 107,
+            './inline/strong': 108,
+            './inline/template': 109,
+            './source': 113
         }
     ],
-    73: [
+    79: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2814,13 +2997,13 @@ require = function () {
             }, combinator_1.surround('((', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '))'))), '))'))), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el)));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    74: [
+    80: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2847,19 +3030,19 @@ require = function () {
             ]))), ns => ns.length === 1 ? ns : [typed_dom_1.text(util_1.stringify(ns))]);
         },
         {
-            '../../combinator': 23,
-            '../source': 107,
-            '../util': 115,
-            './autolink/account': 75,
-            './autolink/channel': 76,
-            './autolink/email': 77,
-            './autolink/hashref': 78,
-            './autolink/hashtag': 79,
-            './autolink/uri': 80,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../source': 113,
+            '../util': 121,
+            './autolink/account': 81,
+            './autolink/channel': 82,
+            './autolink/email': 83,
+            './autolink/hashref': 84,
+            './autolink/hashtag': 85,
+            './autolink/uri': 86,
+            'typed-dom': 21
         }
     ],
-    75: [
+    81: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2874,11 +3057,11 @@ require = function () {
             ]));
         },
         {
-            '../../../combinator': 23,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    76: [
+    82: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2896,14 +3079,14 @@ require = function () {
                 }, util_1.stringify(ns))]));
         },
         {
-            '../../../combinator': 23,
-            '../../util': 115,
-            './account': 75,
-            './hashtag': 79,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../../util': 121,
+            './account': 81,
+            './hashtag': 85,
+            'typed-dom': 21
         }
     ],
-    77: [
+    83: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2919,11 +3102,11 @@ require = function () {
             ]));
         },
         {
-            '../../../combinator': 23,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    78: [
+    84: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2938,11 +3121,11 @@ require = function () {
             ]));
         },
         {
-            '../../../combinator': 23,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    79: [
+    85: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2957,11 +3140,11 @@ require = function () {
             ]));
         },
         {
-            '../../../combinator': 23,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    80: [
+    86: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2972,7 +3155,7 @@ require = function () {
             exports.uri = combinator_1.subline(combinator_1.validate(/^h?ttps?:\/\/[^/?#\s]/, combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                 link_1.bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ])), combinator_1.convert(source => `{${ address(source) }${ attribute(source) }}`, combinator_1.union([link_1.link]))))));
+            ])), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.union([link_1.link]))))));
             function address(source) {
                 return source.startsWith('ttp') ? `h${ source }` : source;
             }
@@ -2983,12 +3166,12 @@ require = function () {
             exports.attribute = attribute;
         },
         {
-            '../../../combinator': 23,
-            '../../source': 107,
-            '../link': 96
+            '../../../combinator': 29,
+            '../../source': 113,
+            '../link': 102
         }
     ],
-    81: [
+    87: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3020,13 +3203,13 @@ require = function () {
             ])));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    82: [
+    88: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3042,12 +3225,12 @@ require = function () {
             ]));
         },
         {
-            '../../combinator': 23,
-            '../source': 107,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../source': 113,
+            'typed-dom': 21
         }
     ],
-    83: [
+    89: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3062,11 +3245,11 @@ require = function () {
             ]);
         },
         {
-            '../../combinator': 23,
-            'typed-dom': 15
+            '../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    84: [
+    90: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3095,13 +3278,13 @@ require = function () {
             }));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    85: [
+    91: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3127,14 +3310,14 @@ require = function () {
             }), ([el]) => util_1.hasTightText(el)));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            './strong': 102,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            './strong': 108,
+            'typed-dom': 21
         }
     ],
-    86: [
+    92: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3151,14 +3334,14 @@ require = function () {
             ]));
         },
         {
-            '../../combinator': 23,
-            './extension/data': 87,
-            './extension/index': 88,
-            './extension/label': 91,
-            './extension/placeholder': 92
+            '../../combinator': 29,
+            './extension/data': 93,
+            './extension/index': 94,
+            './extension/label': 97,
+            './extension/placeholder': 98
         }
     ],
-    87: [
+    93: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3182,14 +3365,14 @@ require = function () {
             }
         },
         {
-            '../../../combinator': 23,
-            '../../inline': 72,
-            '../../source': 107,
-            '../../util': 115,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../../inline': 78,
+            '../../source': 113,
+            '../../util': 121,
+            'typed-dom': 21
         }
     ],
-    88: [
+    94: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3212,14 +3395,14 @@ require = function () {
                 })])));
         },
         {
-            '../../../combinator': 23,
-            '../../inline': 72,
-            '../link': 96,
-            './indexee': 89,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../../inline': 78,
+            '../link': 102,
+            './indexee': 95,
+            'typed-dom': 21
         }
     ],
-    89: [
+    95: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3248,11 +3431,11 @@ require = function () {
             }
         },
         {
-            '../../../combinator': 23,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    90: [
+    96: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3265,12 +3448,12 @@ require = function () {
                 })])));
         },
         {
-            '../../../combinator': 23,
-            './index': 88,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            './index': 94,
+            'typed-dom': 21
         }
     ],
-    91: [
+    97: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3310,12 +3493,12 @@ require = function () {
             }
         },
         {
-            '../../../combinator': 23,
-            '../link': 96,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../link': 102,
+            'typed-dom': 21
         }
     ],
-    92: [
+    98: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3330,85 +3513,91 @@ require = function () {
                 }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`, {}, {})))])));
         },
         {
-            '../../../combinator': 23,
-            '../../inline': 72,
-            '../../util': 115,
-            'typed-dom': 15
+            '../../../combinator': 29,
+            '../../inline': 78,
+            '../../util': 121,
+            'typed-dom': 21
         }
     ],
-    93: [
+    99: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = _dereq_('../inline');
-            const combinator_1 = _dereq_('../../combinator');
-            const source_1 = _dereq_('../source');
-            const util_1 = _dereq_('../util');
-            const typed_dom_1 = _dereq_('typed-dom');
-            const attributes = {
-                bdo: {
-                    dir: Object.freeze([
-                        'ltr',
-                        'rtl'
-                    ])
-                }
-            };
-            exports.html = combinator_1.lazy(() => combinator_1.validate(/^<[a-z]+[ >]/, combinator_1.union([
-                combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
-                    util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
-                    util_1.dup(combinator_1.surround(``, util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`))
-                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.classList.contains('invalid') && util_1.hasText(el)))),
-                combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'))]), ([el]) => !el.classList.contains('invalid')))),
-                combinator_1.rewrite(combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, ([, tag]) => combinator_1.inits([
-                    combinator_1.surround(`<${ tag }`, combinator_1.some(combinator_1.union([exports.attribute])), /^ ?\/?>/, false),
-                    combinator_1.surround(``, combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`), `</${ tag }>`, false)
-                ])), source => [
-                    [typed_dom_1.html('span', {
-                            class: 'invalid',
-                            'data-invalid-syntax': 'html',
-                            'data-invalid-type': 'syntax'
-                        }, source)],
-                    ''
-                ])
-            ])));
-            exports.attribute = combinator_1.subline(combinator_1.verify(combinator_1.surround(' ', combinator_1.inits([
-                util_1.defrag(combinator_1.focus(/^[a-z]+(?:-[a-z]+)*/, combinator_1.some(source_1.unescsource))),
-                source_1.char('='),
-                util_1.defrag(combinator_1.rewrite(combinator_1.surround('"', combinator_1.some(source_1.escsource, '"'), '"', false), combinator_1.some(source_1.escsource)))
-            ]), ''), ts => ts.length !== 2));
-            function attrs(spec, params, classes, syntax) {
-                const result = {};
-                let invalid = classes.includes('invalid');
-                const attrs = new Map(params.map(arg => [
-                    arg.split('=', 1)[0],
-                    arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined
-                ]));
-                if (spec) {
-                    for (const [key, value] of attrs) {
-                        spec.hasOwnProperty(key) && spec[key].includes(value) ? result[key] = value || '' : invalid = true;
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const inline_1 = _dereq_('../inline');
+                const combinator_1 = _dereq_('../../combinator');
+                const source_1 = _dereq_('../source');
+                const util_1 = _dereq_('../util');
+                const typed_dom_1 = _dereq_('typed-dom');
+                const {
+                    Object: Obj,
+                    Map
+                } = global;
+                const attributes = {
+                    bdo: {
+                        dir: Obj.freeze([
+                            'ltr',
+                            'rtl'
+                        ])
                     }
+                };
+                exports.html = combinator_1.lazy(() => combinator_1.validate(/^<[a-z]+[ >]/, combinator_1.union([
+                    combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
+                        util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
+                        util_1.dup(combinator_1.surround(``, util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`))
+                    ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.classList.contains('invalid') && util_1.hasText(el)))),
+                    combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'))]), ([el]) => !el.classList.contains('invalid')))),
+                    combinator_1.rewrite(combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, ([, tag]) => combinator_1.inits([
+                        combinator_1.surround(`<${ tag }`, combinator_1.some(combinator_1.union([exports.attribute])), /^ ?\/?>/, false),
+                        combinator_1.surround(``, combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`), `</${ tag }>`, false)
+                    ])), source => [
+                        [typed_dom_1.html('span', {
+                                class: 'invalid',
+                                'data-invalid-syntax': 'html',
+                                'data-invalid-type': 'syntax'
+                            }, source)],
+                        ''
+                    ])
+                ])));
+                exports.attribute = combinator_1.subline(combinator_1.verify(combinator_1.surround(' ', combinator_1.inits([
+                    util_1.defrag(combinator_1.focus(/^[a-z]+(?:-[a-z]+)*/, combinator_1.some(source_1.unescsource))),
+                    source_1.char('='),
+                    util_1.defrag(combinator_1.rewrite(combinator_1.surround('"', combinator_1.some(source_1.escsource, '"'), '"', false), combinator_1.some(source_1.escsource)))
+                ]), ''), ts => ts.length !== 2));
+                function attrs(spec, params, classes, syntax) {
+                    const result = {};
+                    let invalid = classes.includes('invalid');
+                    const attrs = new Map(params.map(arg => [
+                        arg.split('=', 1)[0],
+                        arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined
+                    ]));
+                    if (spec) {
+                        for (const [key, value] of attrs) {
+                            spec.hasOwnProperty(key) && spec[key].includes(value) ? result[key] = value || '' : invalid = true;
+                        }
+                    }
+                    invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
+                    invalid = invalid || !!spec && !Obj.entries(spec).filter(([, v]) => Obj.isFrozen(v)).every(([k]) => attrs.has(k));
+                    if (invalid) {
+                        void classes.push('invalid');
+                        result.class = classes.join(' ').trim();
+                        result['data-invalid-syntax'] = syntax;
+                        result['data-invalid-type'] = 'parameter';
+                    }
+                    return result;
                 }
-                invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
-                invalid = invalid || !!spec && !Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k));
-                if (invalid) {
-                    void classes.push('invalid');
-                    result.class = classes.join(' ').trim();
-                    result['data-invalid-syntax'] = syntax;
-                    result['data-invalid-type'] = 'parameter';
-                }
-                return result;
-            }
-            exports.attrs = attrs;
+                exports.attrs = attrs;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../source': 107,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../source': 113,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    94: [
+    100: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3425,11 +3614,11 @@ require = function () {
             }
         },
         {
-            '../../combinator': 23,
-            'typed-dom': 15
+            '../../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    95: [
+    101: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3458,143 +3647,146 @@ require = function () {
             }));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    96: [
+    102: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const inline_1 = _dereq_('../inline');
-            const combinator_1 = _dereq_('../../combinator');
-            const source_1 = _dereq_('../source');
-            const html_1 = _dereq_('./html');
-            const util_1 = _dereq_('../util');
-            const uri_1 = _dereq_('../string/uri');
-            const concat_1 = _dereq_('spica/concat');
-            const typed_dom_1 = _dereq_('typed-dom');
-            exports.attributes = { nofollow: [undefined] };
-            exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.guard(config => {
-                var _a, _b, _c;
-                return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
-            }, combinator_1.configure({ syntax: { inline: { link: false } } }, combinator_1.tails([
-                util_1.dup(combinator_1.union([
-                    combinator_1.surround('[', inline_1.media, ']'),
-                    combinator_1.surround('[', inline_1.shortmedia, ']'),
-                    combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.trimNodeEnd(util_1.defrag(combinator_1.some(inline_1.inline, /^\\?\n|^]/)))), ']', false)
-                ])),
-                util_1.dup(combinator_1.surround('{', combinator_1.inits([
-                    exports.uri,
-                    combinator_1.some(util_1.defrag(html_1.attribute))
-                ]), /^ ?}/))
-            ])))), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text]) => {
-                var _a;
-                if (text.length === 0)
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const inline_1 = _dereq_('../inline');
+                const combinator_1 = _dereq_('../../combinator');
+                const source_1 = _dereq_('../source');
+                const html_1 = _dereq_('./html');
+                const util_1 = _dereq_('../util');
+                const uri_1 = _dereq_('../string/uri');
+                const concat_1 = _dereq_('spica/concat');
+                const typed_dom_1 = _dereq_('typed-dom');
+                const {Array} = global;
+                exports.attributes = { nofollow: [undefined] };
+                exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.guard(config => {
+                    var _a, _b, _c;
+                    return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
+                }, combinator_1.configure({ syntax: { inline: { link: false } } }, combinator_1.tails([
+                    util_1.dup(combinator_1.union([
+                        combinator_1.surround('[', inline_1.media, ']'),
+                        combinator_1.surround('[', inline_1.shortmedia, ']'),
+                        combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.trimNodeEnd(util_1.defrag(combinator_1.some(inline_1.inline, /^\\?\n|^]/)))), ']', false)
+                    ])),
+                    util_1.dup(combinator_1.surround('{', combinator_1.inits([
+                        exports.uri,
+                        combinator_1.some(util_1.defrag(html_1.attribute))
+                    ]), /^ ?}/))
+                ])))), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text]) => {
+                    var _a;
+                    if (text.length === 0)
+                        return true;
+                    if (text.length === 1 && text[0] instanceof HTMLAnchorElement && ((_a = text[0].firstElementChild) === null || _a === void 0 ? void 0 : _a.classList.contains('media'))) {
+                        text[0] = text[0].firstElementChild;
+                    } else {
+                        const proxy = typed_dom_1.html('div', text);
+                        if (!util_1.hasTightText(proxy))
+                            return false;
+                        if (proxy.getElementsByTagName('a').length > 0)
+                            return false;
+                    }
                     return true;
-                if (text.length === 1 && text[0] instanceof HTMLAnchorElement && ((_a = text[0].firstElementChild) === null || _a === void 0 ? void 0 : _a.classList.contains('media'))) {
-                    text[0] = text[0].firstElementChild;
-                } else {
-                    const proxy = typed_dom_1.html('div', text);
-                    if (!util_1.hasTightText(proxy))
-                        return false;
-                    if (proxy.getElementsByTagName('a').length > 0)
-                        return false;
+                }), ([text, param], rest) => {
+                    const [INSECURE_URL, ...params] = param.map(t => t.textContent);
+                    const path = uri_1.sanitize(INSECURE_URL, ['tel:']);
+                    if (path === undefined)
+                        return;
+                    const el = typed_dom_1.html('a', {
+                        href: path,
+                        rel: `noopener${ params.includes('nofollow') ? ' nofollow noreferrer' : '' }`
+                    }, text.length > 0 ? text : (uri_1.sanitize(uri_1.decode(INSECURE_URL || '.'), ['tel:']) || '').replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
+                    switch (el.protocol) {
+                    case 'tel:':
+                        if (el.getAttribute('href') === `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
+                            break;
+                        return;
+                    default:
+                        if (el.origin === window.location.origin)
+                            break;
+                        void el.setAttribute('target', '_blank');
+                    }
+                    return [
+                        [typed_dom_1.define(el, attrs(exports.attributes, params, el.className.trim().split(/\s+/), 'link'))],
+                        rest
+                    ];
+                })));
+                exports.uri = combinator_1.subline(util_1.defrag(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([flag]) => flag, flag => combinator_1.some(combinator_1.union([
+                    exports.bracket,
+                    source_1.unescsource
+                ]), flag === ' ' ? /^\s/ : /^[\s}]/)))));
+                exports.bracket = combinator_1.lazy(() => combinator_1.subline(combinator_1.union([
+                    combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
+                        exports.bracket,
+                        source_1.unescsource
+                    ]), /^[\s\)]/), ')', false), ts => [
+                        typed_dom_1.text('('),
+                        ...ts,
+                        typed_dom_1.text(')')
+                    ]),
+                    combinator_1.fmap(combinator_1.surround('[', combinator_1.some(combinator_1.union([
+                        exports.bracket,
+                        source_1.unescsource
+                    ]), /^[\s\]]/), ']', false), ts => [
+                        typed_dom_1.text('['),
+                        ...ts,
+                        typed_dom_1.text(']')
+                    ]),
+                    combinator_1.fmap(combinator_1.surround('{', combinator_1.some(combinator_1.union([
+                        exports.bracket,
+                        source_1.unescsource
+                    ]), /^[\s\}]/), '}', false), ts => [
+                        typed_dom_1.text('{'),
+                        ...ts,
+                        typed_dom_1.text('}')
+                    ]),
+                    combinator_1.fmap(combinator_1.surround('<', combinator_1.some(combinator_1.union([
+                        exports.bracket,
+                        source_1.unescsource
+                    ]), /^[\s\>]/), '>', false), ts => [
+                        typed_dom_1.text('<'),
+                        ...ts,
+                        typed_dom_1.text('>')
+                    ]),
+                    combinator_1.fmap(combinator_1.surround('"', combinator_1.some(combinator_1.union([
+                        exports.bracket,
+                        source_1.unescsource
+                    ]), /^[\s\"]/), '"', false), ts => [
+                        typed_dom_1.text('"'),
+                        ...ts,
+                        typed_dom_1.text('"')
+                    ])
+                ])));
+                function attrs(spec, params, classes, syntax) {
+                    const attrs = html_1.attrs(spec, params, classes, syntax);
+                    for (const name of ['nofollow']) {
+                        attrs[name] = undefined;
+                    }
+                    return attrs;
                 }
-                return true;
-            }), ([text, param], rest) => {
-                const [INSECURE_URL, ...params] = param.map(t => t.textContent);
-                const path = uri_1.sanitize(INSECURE_URL, ['tel:']);
-                if (path === undefined)
-                    return;
-                const el = typed_dom_1.html('a', {
-                    href: path,
-                    rel: `noopener${ params.includes('nofollow') ? ' nofollow noreferrer' : '' }`
-                }, text.length > 0 ? text : (uri_1.sanitize(uri_1.decode(INSECURE_URL || '.'), ['tel:']) || '').replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
-                switch (el.protocol) {
-                case 'tel:':
-                    if (el.getAttribute('href') === `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
-                        break;
-                    return;
-                default:
-                    if (el.origin === window.location.origin)
-                        break;
-                    void el.setAttribute('target', '_blank');
-                }
-                return [
-                    [typed_dom_1.define(el, attrs(exports.attributes, params, el.className.trim().split(/\s+/), 'link'))],
-                    rest
-                ];
-            })));
-            exports.uri = combinator_1.subline(util_1.defrag(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([flag]) => flag, flag => combinator_1.some(combinator_1.union([
-                exports.bracket,
-                source_1.unescsource
-            ]), flag === ' ' ? /^\s/ : /^[\s}]/)))));
-            exports.bracket = combinator_1.lazy(() => combinator_1.subline(combinator_1.union([
-                combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
-                    exports.bracket,
-                    source_1.unescsource
-                ]), /^[\s\)]/), ')', false), ts => [
-                    typed_dom_1.text('('),
-                    ...ts,
-                    typed_dom_1.text(')')
-                ]),
-                combinator_1.fmap(combinator_1.surround('[', combinator_1.some(combinator_1.union([
-                    exports.bracket,
-                    source_1.unescsource
-                ]), /^[\s\]]/), ']', false), ts => [
-                    typed_dom_1.text('['),
-                    ...ts,
-                    typed_dom_1.text(']')
-                ]),
-                combinator_1.fmap(combinator_1.surround('{', combinator_1.some(combinator_1.union([
-                    exports.bracket,
-                    source_1.unescsource
-                ]), /^[\s\}]/), '}', false), ts => [
-                    typed_dom_1.text('{'),
-                    ...ts,
-                    typed_dom_1.text('}')
-                ]),
-                combinator_1.fmap(combinator_1.surround('<', combinator_1.some(combinator_1.union([
-                    exports.bracket,
-                    source_1.unescsource
-                ]), /^[\s\>]/), '>', false), ts => [
-                    typed_dom_1.text('<'),
-                    ...ts,
-                    typed_dom_1.text('>')
-                ]),
-                combinator_1.fmap(combinator_1.surround('"', combinator_1.some(combinator_1.union([
-                    exports.bracket,
-                    source_1.unescsource
-                ]), /^[\s\"]/), '"', false), ts => [
-                    typed_dom_1.text('"'),
-                    ...ts,
-                    typed_dom_1.text('"')
-                ])
-            ])));
-            function attrs(spec, params, classes, syntax) {
-                const attrs = html_1.attrs(spec, params, classes, syntax);
-                for (const name of ['nofollow']) {
-                    attrs[name] = undefined;
-                }
-                return attrs;
-            }
-            exports.attrs = attrs;
+                exports.attrs = attrs;
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../source': 107,
-            '../string/uri': 114,
-            '../util': 115,
-            './html': 93,
+            '../../combinator': 29,
+            '../inline': 78,
+            '../source': 113,
+            '../string/uri': 120,
+            '../util': 121,
+            './html': 99,
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    97: [
+    103: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3613,72 +3805,77 @@ require = function () {
             ])), ([el]) => util_1.hasText(typed_dom_1.text(el.textContent.slice(2, -2)))));
         },
         {
-            '../../combinator': 23,
-            '../source': 107,
-            '../util': 115,
+            '../../combinator': 29,
+            '../source': 113,
+            '../util': 121,
             'spica/cache': 6,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    98: [
+    104: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            const combinator_1 = _dereq_('../../combinator');
-            const source_1 = _dereq_('../source');
-            const link_1 = _dereq_('./link');
-            const html_1 = _dereq_('./html');
-            const uri_1 = _dereq_('../string/uri');
-            const util_1 = _dereq_('../util');
-            const cache_1 = _dereq_('spica/cache');
-            const concat_1 = _dereq_('spica/concat');
-            const typed_dom_1 = _dereq_('typed-dom');
-            exports.cache = new cache_1.Cache(10);
-            exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.guard(config => {
-                var _a, _b, _c;
-                return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
-            }, combinator_1.tails([
-                util_1.dup(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([source_1.text]), /^\\?\n|^]/))), ']', false)),
-                util_1.dup(combinator_1.surround('{', combinator_1.inits([
-                    link_1.uri,
-                    combinator_1.some(util_1.defrag(html_1.attribute))
-                ]), /^ ?}/))
-            ])), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text]) => text.length === 0 || util_1.hasTightText(text[0])), ([text, param]) => {
-                var _a;
-                return [
-                    ((_a = text[0]) === null || _a === void 0 ? void 0 : _a.textContent) || '',
-                    ...param.map(t => t.textContent)
-                ];
-            }), ([text, INSECURE_URL, ...params], rest) => {
-                const path = uri_1.sanitize(INSECURE_URL.trim());
-                if (path === undefined)
-                    return;
-                const uri = new URL(path, window.location.href);
-                const media = exports.cache.has(uri.href) ? exports.cache.get(uri.href).cloneNode(true) : typed_dom_1.html('img', {
-                    class: 'media',
-                    'data-src': path,
-                    alt: text
-                });
-                if (exports.cache.has(uri.href) && media.hasAttribute('alt')) {
-                    void typed_dom_1.define(media, { alt: text });
-                }
-                void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, media.className.trim().split(/\s+/), 'media'));
-                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [media])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, {}, {});
-            }));
+            (function (global) {
+                'use strict';
+                Object.defineProperty(exports, '__esModule', { value: true });
+                const combinator_1 = _dereq_('../../combinator');
+                const source_1 = _dereq_('../source');
+                const link_1 = _dereq_('./link');
+                const html_1 = _dereq_('./html');
+                const uri_1 = _dereq_('../string/uri');
+                const util_1 = _dereq_('../util');
+                const url_1 = _dereq_('spica/url');
+                const cache_1 = _dereq_('spica/cache');
+                const concat_1 = _dereq_('spica/concat');
+                const typed_dom_1 = _dereq_('typed-dom');
+                const {Array} = global;
+                exports.cache = new cache_1.Cache(10);
+                exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.guard(config => {
+                    var _a, _b, _c;
+                    return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
+                }, combinator_1.tails([
+                    util_1.dup(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([source_1.text]), /^\\?\n|^]/))), ']', false)),
+                    util_1.dup(combinator_1.surround('{', combinator_1.inits([
+                        link_1.uri,
+                        combinator_1.some(util_1.defrag(html_1.attribute))
+                    ]), /^ ?}/))
+                ])), ''), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text]) => text.length === 0 || util_1.hasTightText(text[0])), ([text, param]) => {
+                    var _a;
+                    return [
+                        ((_a = text[0]) === null || _a === void 0 ? void 0 : _a.textContent) || '',
+                        ...param.map(t => t.textContent)
+                    ];
+                }), ([text, INSECURE_URL, ...params], rest) => {
+                    const path = uri_1.sanitize(INSECURE_URL.trim());
+                    if (path === undefined)
+                        return;
+                    const uri = new url_1.URL(path, window.location.href).reference;
+                    const media = exports.cache.has(uri) ? exports.cache.get(uri).cloneNode(true) : typed_dom_1.html('img', {
+                        class: 'media',
+                        'data-src': path,
+                        alt: text
+                    });
+                    if (exports.cache.has(uri) && media.hasAttribute('alt')) {
+                        void typed_dom_1.define(media, { alt: text });
+                    }
+                    void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, media.className.trim().split(/\s+/), 'media'));
+                    return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [media])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, {}, {});
+                }));
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../combinator': 23,
-            '../source': 107,
-            '../string/uri': 114,
-            '../util': 115,
-            './html': 93,
-            './link': 96,
+            '../../combinator': 29,
+            '../source': 113,
+            '../string/uri': 120,
+            '../util': 121,
+            './html': 99,
+            './link': 102,
             'spica/cache': 6,
             'spica/concat': 8,
-            'typed-dom': 15
+            'spica/url': 18,
+            'typed-dom': 21
         }
     ],
-    99: [
+    105: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3700,13 +3897,13 @@ require = function () {
             }, combinator_1.surround('[[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), /^\\?\n|^]]/))), ']]'))), ns => [typed_dom_1.html('sup', { class: 'reference' }, ns)]), ([el]) => util_1.hasTightText(el))));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    100: [
+    106: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3738,15 +3935,15 @@ require = function () {
                 ] : [typed_dom_1.html('rt')]), [])]), ([ns]) => [typed_dom_1.html('ruby', ns)]));
         },
         {
-            '../../combinator': 23,
-            '../source': 107,
-            '../util': 115,
-            './htmlentity': 94,
+            '../../combinator': 29,
+            '../source': 113,
+            '../util': 121,
+            './htmlentity': 100,
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    101: [
+    107: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3756,12 +3953,12 @@ require = function () {
             exports.shortmedia = combinator_1.subline(combinator_1.surround('!', combinator_1.rewrite(uri_1.uri, combinator_1.convert(source => `!{${ uri_1.address(source) }${ uri_1.attribute(source) }}`, combinator_1.union([media_1.media]))), ''));
         },
         {
-            '../../combinator': 23,
-            './autolink/uri': 80,
-            './media': 98
+            '../../combinator': 29,
+            './autolink/uri': 86,
+            './media': 104
         }
     ],
-    102: [
+    108: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3783,13 +3980,13 @@ require = function () {
             }), ([el]) => util_1.hasTightText(el)));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../util': 115,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../util': 121,
+            'typed-dom': 21
         }
     ],
-    103: [
+    109: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3809,13 +4006,13 @@ require = function () {
             ].reverse())));
         },
         {
-            '../../combinator': 23,
-            '../inline': 72,
-            '../source': 107,
-            'typed-dom': 15
+            '../../combinator': 29,
+            '../inline': 78,
+            '../source': 113,
+            'typed-dom': 21
         }
     ],
-    104: [
+    110: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3853,40 +4050,31 @@ require = function () {
                 return '';
             }
             function text(node) {
-                switch (node.nodeType) {
-                case 3:
-                    return node.textContent;
-                case 1:
-                    switch (node.tagName) {
-                    case 'RUBY':
-                        return [...node.childNodes].reduceRight((str, node) => {
-                            if (str)
-                                return str;
-                            if (node.nodeType === 3)
-                                return node.textContent;
-                            switch (node.tagName) {
-                            case 'RT':
-                            case 'RP':
-                                return '';
-                            default:
-                                return node.textContent;
-                            }
-                        }, '');
-                    default:
-                        return node.textContent;
+                switch (node.nodeName) {
+                case 'RUBY':
+                    for (let i = node.childNodes.length - 1; i >= 0; --i) {
+                        const child = node.childNodes[i];
+                        switch (child.nodeName) {
+                        case 'RT':
+                        case 'RP':
+                            break;
+                        default:
+                            return child.textContent;
+                        }
                     }
+                    return '';
                 default:
                     return node.textContent;
                 }
             }
         },
         {
-            '../combinator': 23,
-            './locale/ja': 105,
-            'typed-dom': 15
+            '../combinator': 29,
+            './locale/ja': 111,
+            'typed-dom': 21
         }
     ],
-    105: [
+    111: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3898,7 +4086,7 @@ require = function () {
         },
         {}
     ],
-    106: [
+    112: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3919,9 +4107,7 @@ require = function () {
                 const segments = [];
                 while (source !== '') {
                     const rest = combinator_1.exec(parser(source, {}, {}));
-                    if (source.length - rest.length > 100000)
-                        throw new Error('Too large block.');
-                    void segments.push(source.slice(0, source.length - rest.length));
+                    void segments.push(source.length - rest.length > 100000 ? '# ***Too large block***' : source.slice(0, source.length - rest.length));
                     source = rest;
                 }
                 return segments;
@@ -3929,15 +4115,15 @@ require = function () {
             exports.segment = segment;
         },
         {
-            '../combinator': 23,
-            './api/normalization': 48,
-            './block/codeblock': 53,
-            './block/extension': 55,
-            './block/mathblock': 63,
-            './source': 107
+            '../combinator': 29,
+            './api/normalization': 54,
+            './block/codeblock': 59,
+            './block/extension': 61,
+            './block/mathblock': 69,
+            './source': 113
         }
     ],
-    107: [
+    113: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3958,15 +4144,15 @@ require = function () {
             exports.anyline = line_1.anyline;
         },
         {
-            './source/char': 108,
-            './source/escapable': 109,
-            './source/line': 110,
-            './source/newline': 111,
-            './source/text': 112,
-            './source/unescapable': 113
+            './source/char': 114,
+            './source/escapable': 115,
+            './source/line': 116,
+            './source/newline': 117,
+            './source/text': 118,
+            './source/unescapable': 119
         }
     ],
-    108: [
+    114: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -3989,9 +4175,9 @@ require = function () {
             exports.char = char;
             ;
         },
-        { 'typed-dom': 15 }
+        { 'typed-dom': 21 }
     ],
-    109: [
+    115: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4028,9 +4214,9 @@ require = function () {
                 }
             };
         },
-        { 'typed-dom': 15 }
+        { 'typed-dom': 21 }
     ],
-    110: [
+    116: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4053,9 +4239,9 @@ require = function () {
                 ''
             ] : undefined, false);
         },
-        { '../../combinator': 23 }
+        { '../../combinator': 29 }
     ],
-    111: [
+    117: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4064,11 +4250,11 @@ require = function () {
             exports.newline = combinator_1.fmap(combinator_1.focus('\n', combinator_1.union([text_1.text])), ns => ns);
         },
         {
-            '../../combinator': 23,
-            './text': 112
+            '../../combinator': 29,
+            './text': 118
         }
     ],
-    112: [
+    118: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4123,9 +4309,9 @@ require = function () {
                 }
             };
         },
-        { 'typed-dom': 15 }
+        { 'typed-dom': 21 }
     ],
-    113: [
+    119: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4155,11 +4341,11 @@ require = function () {
             };
         },
         {
-            './text': 112,
-            'typed-dom': 15
+            './text': 118,
+            'typed-dom': 21
         }
     ],
-    114: [
+    120: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4183,9 +4369,9 @@ require = function () {
             }
             exports.decode = decode;
         },
-        { 'typed-dom': 15 }
+        { 'typed-dom': 21 }
     ],
-    115: [
+    121: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4288,7 +4474,7 @@ require = function () {
             }
             exports.stringify = stringify;
             function suppress(target) {
-                if (target instanceof HTMLOListElement) {
+                if (target.nodeName === 'OL') {
                     void typed_dom_1.apply(target, '.footnote > sup:last-child > a', { href: null });
                 }
                 for (const child of target.children) {
@@ -4310,26 +4496,27 @@ require = function () {
             exports.suppress = suppress;
         },
         {
-            '../combinator': 23,
-            'typed-dom': 15
+            '../combinator': 29,
+            'typed-dom': 21
         }
     ],
-    116: [
+    122: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var render_1 = _dereq_('./renderer/render');
             exports.render = render_1.render;
         },
-        { './renderer/render': 117 }
+        { './renderer/render': 123 }
     ],
-    117: [
+    123: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const code_1 = _dereq_('./render/code');
             const math_1 = _dereq_('./render/math');
             const media_1 = _dereq_('./render/media');
+            const url_1 = _dereq_('spica/url');
             function render(target, opts = {}) {
                 opts = Object.assign({
                     code: code_1.code,
@@ -4350,7 +4537,7 @@ require = function () {
                             const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
-                            void el.setAttribute('data-src', new URL(target.getAttribute('data-src'), window.location.href).href);
+                            void el.setAttribute('data-src', new url_1.URL(target.getAttribute('data-src'), window.location.href).reference);
                             const scope = el.matches('img') ? target : target.parentElement;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
@@ -4367,12 +4554,13 @@ require = function () {
             exports.render = render;
         },
         {
-            './render/code': 118,
-            './render/math': 119,
-            './render/media': 120
+            './render/code': 124,
+            './render/math': 125,
+            './render/media': 126,
+            'spica/url': 18
         }
     ],
-    118: [
+    124: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
@@ -4386,7 +4574,7 @@ require = function () {
         },
         {}
     ],
-    119: [
+    125: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4419,11 +4607,11 @@ require = function () {
             }
         },
         {
-            '../../parser/inline/math': 97,
-            'typed-dom': 15
+            '../../parser/inline/math': 103,
+            'typed-dom': 21
         }
     ],
-    120: [
+    126: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4455,17 +4643,17 @@ require = function () {
             exports.media = media;
         },
         {
-            './media/audio': 121,
-            './media/gist': 122,
-            './media/image': 123,
-            './media/pdf': 124,
-            './media/slideshare': 125,
-            './media/twitter': 126,
-            './media/video': 127,
-            './media/youtube': 128
+            './media/audio': 127,
+            './media/gist': 128,
+            './media/image': 129,
+            './media/pdf': 130,
+            './media/slideshare': 131,
+            './media/twitter': 132,
+            './media/video': 133,
+            './media/youtube': 134
         }
     ],
-    121: [
+    127: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4491,11 +4679,11 @@ require = function () {
             exports.audio = audio;
         },
         {
-            '../../../parser/inline/media': 98,
-            'typed-dom': 15
+            '../../../parser/inline/media': 104,
+            'typed-dom': 21
         }
     ],
-    122: [
+    128: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
@@ -4547,12 +4735,12 @@ require = function () {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../../parser': 44,
-            '../../../parser/inline/media': 98,
-            'typed-dom': 15
+            '../../../parser': 50,
+            '../../../parser/inline/media': 104,
+            'typed-dom': 21
         }
     ],
-    123: [
+    129: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4571,11 +4759,11 @@ require = function () {
             exports.image = image;
         },
         {
-            '../../../parser/inline/media': 98,
-            'typed-dom': 15
+            '../../../parser/inline/media': 104,
+            'typed-dom': 21
         }
     ],
-    124: [
+    130: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4603,12 +4791,12 @@ require = function () {
             exports.pdf = pdf;
         },
         {
-            '../../../parser': 44,
-            '../../../parser/inline/media': 98,
-            'typed-dom': 15
+            '../../../parser': 50,
+            '../../../parser/inline/media': 104,
+            'typed-dom': 21
         }
     ],
-    125: [
+    131: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
@@ -4654,12 +4842,12 @@ require = function () {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../../parser': 44,
-            '../../../parser/inline/media': 98,
-            'typed-dom': 15
+            '../../../parser': 50,
+            '../../../parser/inline/media': 104,
+            'typed-dom': 21
         }
     ],
-    126: [
+    132: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
@@ -4714,12 +4902,12 @@ require = function () {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../../parser': 44,
+            '../../../parser': 50,
             'spica/cache': 6,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
-    127: [
+    133: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4746,11 +4934,11 @@ require = function () {
             exports.video = video;
         },
         {
-            '../../../parser/inline/media': 98,
-            'typed-dom': 15
+            '../../../parser/inline/media': 104,
+            'typed-dom': 21
         }
     ],
-    128: [
+    134: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4782,11 +4970,11 @@ require = function () {
             exports.youtube = youtube;
         },
         {
-            '../../../parser/inline/media': 98,
-            'typed-dom': 15
+            '../../../parser/inline/media': 104,
+            'typed-dom': 21
         }
     ],
-    129: [
+    135: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4802,20 +4990,20 @@ require = function () {
             exports.context = context_1.context;
         },
         {
-            './util/context': 130,
-            './util/figure': 131,
-            './util/footnote': 132,
-            './util/info': 133,
-            './util/toc': 134
+            './util/context': 136,
+            './util/figure': 137,
+            './util/footnote': 138,
+            './util/info': 139,
+            './util/toc': 140
         }
     ],
-    130: [
+    136: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function context(base, bound = 'blockquote, aside') {
                 const memory = new WeakMap();
-                const context = base instanceof Element && base.closest(bound) || null;
+                const context = base.nodeType === 1 && base.closest(bound) || null;
                 return el => {
                     var _a;
                     const node = memory.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
@@ -4826,7 +5014,7 @@ require = function () {
         },
         {}
     ],
-    131: [
+    137: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4899,14 +5087,14 @@ require = function () {
             }
         },
         {
-            '../parser/inline': 72,
-            '../parser/inline/extension/label': 91,
-            './context': 130,
-            'spica/multimap': 11,
-            'typed-dom': 15
+            '../parser/inline': 78,
+            '../parser/inline/extension/label': 97,
+            './context': 136,
+            'spica/multimap': 14,
+            'typed-dom': 21
         }
     ],
-    132: [
+    138: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4961,12 +5149,12 @@ require = function () {
             }
         },
         {
-            '../parser/inline/extension/indexee': 89,
-            './context': 130,
-            'typed-dom': 15
+            '../parser/inline/extension/indexee': 95,
+            './context': 136,
+            'typed-dom': 21
         }
     ],
-    133: [
+    139: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4993,9 +5181,9 @@ require = function () {
             }
             exports.info = info;
         },
-        { './context': 130 }
+        { './context': 136 }
     ],
-    134: [
+    140: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -5040,7 +5228,7 @@ require = function () {
         },
         {
             'spica/concat': 8,
-            'typed-dom': 15
+            'typed-dom': 21
         }
     ],
     'securemark': [
@@ -5052,14 +5240,16 @@ require = function () {
                         exports[p] = m[p];
             }
             Object.defineProperty(exports, '__esModule', { value: true });
+            _dereq_('spica/global');
             __export(_dereq_('./src/parser'));
             __export(_dereq_('./src/util'));
             __export(_dereq_('./src/renderer'));
         },
         {
-            './src/parser': 44,
-            './src/renderer': 116,
-            './src/util': 129
+            './src/parser': 50,
+            './src/renderer': 122,
+            './src/util': 135,
+            'spica/global': 12
         }
     ]
 }, {}, [
