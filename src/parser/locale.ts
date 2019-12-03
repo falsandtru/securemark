@@ -40,18 +40,18 @@ function text(node: Node): string {
     case 1:
       switch ((node as HTMLElement).tagName) {
         case 'RUBY':
-          return [...node.childNodes]
-            .reduceRight((str, node: Text | HTMLElement) => {
-              if (str) return str;
-              if (node.nodeType === 3) return node.textContent!;
-              switch ((node as HTMLElement).tagName) {
-                case 'RT':
-                case 'RP':
-                  return '';
-                default:
-                  return node.textContent!;
-              }
-            }, '');
+          for (let i = node.childNodes.length - 1; i >= 0; --i) {
+            const child = node.childNodes[i];
+            if (child.nodeType === 3) return child.textContent!;
+            switch ((child as HTMLElement).tagName) {
+              case 'RT':
+              case 'RP':
+                break;
+              default:
+                return child.textContent!;
+            }
+          }
+          return '';
         default:
           return node.textContent!;
       }
