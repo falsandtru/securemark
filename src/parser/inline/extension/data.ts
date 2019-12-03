@@ -1,7 +1,7 @@
 import { ExtensionParser, inline } from '../../inline';
 import { inits, some, verify, focus, surround, fmap, lazy } from '../../../combinator';
 import { unescsource } from '../../source';
-import { defrag, trimNodeEnd, hasTightContent } from '../../util';
+import { defrag, trimNodeEnd, isTightVisible } from '../../util';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
 
@@ -19,7 +19,7 @@ export const data: DataParser = lazy(() => verify(fmap(
     ']'),
   ([data, ...ns]) =>
     [html('span', attr(data.textContent!), ns)]),
-  ([el]) => el.childNodes.length === 0 || hasTightContent(el)));
+  ([el]) => el.childNodes.length === 0 || isTightVisible(el)));
 
 function attr(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');

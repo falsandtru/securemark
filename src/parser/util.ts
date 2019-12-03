@@ -6,7 +6,7 @@ export function isVisible(node: HTMLElement): boolean {
       || hasMedia(node);
 }
 
-export function hasTightContent(node: HTMLElement | Text): boolean {
+export function isTightVisible(node: HTMLElement | Text): boolean {
   return hasTightText(node)
       || node instanceof Element && hasMedia(node) && node.textContent === node.textContent!.trim();
 }
