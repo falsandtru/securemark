@@ -5,6 +5,7 @@ import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
 import { sanitize } from '../string/uri';
 import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
+import { URL } from 'spica/url';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
@@ -25,11 +26,11 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === undefined) return;
-    const uri = new URL(path, window.location.href);
-    const media = cache.has(uri.href)
-      ? cache.get(uri.href)!.cloneNode(true)
+    const uri = new URL(path, window.location.href).reference;
+    const media = cache.has(uri)
+      ? cache.get(uri)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: text });
-    if (cache.has(uri.href) && media.hasAttribute('alt')) {
+    if (cache.has(uri) && media.hasAttribute('alt')) {
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
       void define(media, { alt: text });
     }

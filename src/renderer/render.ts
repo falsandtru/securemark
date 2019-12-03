@@ -2,6 +2,7 @@ import { RenderingOptions } from '../../';
 import { code } from './render/code';
 import { math } from './render/math';
 import { media } from './render/media';
+import { URL } from 'spica/url';
 
 export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   opts = { code, math, media: {}, ...opts };
@@ -26,7 +27,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         const el = media(target as HTMLImageElement, opts.media!);
         if (!el) return;
         assert(el.matches('.media'));
-        void el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, window.location.href).href);
+        void el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, window.location.href).reference);
         const scope = el.matches('img')
           ? target
           : target.parentElement as HTMLAnchorElement;
