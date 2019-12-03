@@ -5,6 +5,8 @@ import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 
+const { Array } = global;
+
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
 

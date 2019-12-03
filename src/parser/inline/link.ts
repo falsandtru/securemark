@@ -8,6 +8,8 @@ import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
 import { html, text, define } from 'typed-dom';
 
+const { Array } = global;
+
 export const attributes: DeepImmutable<Record<string, Array<string | undefined>>> = {
   nofollow: [undefined],
 };

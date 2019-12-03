@@ -5,9 +5,11 @@ import { defrag, dup, hasText } from '../util';
 import { DeepImmutable } from 'spica/type';
 import { html as htm } from 'typed-dom';
 
+const { Object: Obj, Map } = global;
+
 const attributes: DeepImmutable<Record<string, Record<string, Array<string | undefined>> | undefined>> = {
   bdo: {
-    dir: Object.freeze(['ltr', 'rtl']),
+    dir: Obj.freeze(['ltr', 'rtl']),
   },
 };
 
@@ -79,7 +81,7 @@ export function attrs(
     }
   }
   invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
-  invalid = invalid || !!spec && !Object.entries(spec).filter(([, v]) => Object.isFrozen(v)).every(([k]) => attrs.has(k));
+  invalid = invalid || !!spec && !Obj.entries(spec).filter(([, v]) => Obj.isFrozen(v)).every(([k]) => attrs.has(k));
   if (invalid) {
     void classes.push('invalid');
     result.class = classes.join(' ').trim();

@@ -10,6 +10,8 @@ import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 
+const { Array } = global;
+
 export const cache = new Cache<string, HTMLElement>(10);
 
 export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
