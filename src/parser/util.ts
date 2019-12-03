@@ -77,6 +77,7 @@ function trimNode_<T extends Node, D extends Parser<unknown, any, S, C>[], S ext
         }
         break;
       case 1:
+        if (ns.length === 1) break;
         switch (true) {
           case (node as Node as HTMLElement).tagName === 'BR':
           case (node as Node as HTMLElement).classList.contains('linebreak'):

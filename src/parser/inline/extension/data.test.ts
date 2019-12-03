@@ -18,6 +18,8 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a |b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a\n|b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a|\\]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[~a| ]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[~a|\n]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a|b  ]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a| !http://host]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a|<# b #>]')), undefined);
