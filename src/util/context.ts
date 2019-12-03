@@ -1,6 +1,6 @@
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound: string = 'blockquote, aside'): (el: Element) => boolean {
   const memory = new WeakMap<Node, boolean>();
-  const context = base instanceof Element && base.closest(bound) || null;
+  const context = base.nodeType === 1 && (base as HTMLElement).closest(bound) || null;
   return el => {
     assert(el.parentNode?.parentNode);
     const node = memory.has(el.parentNode!)

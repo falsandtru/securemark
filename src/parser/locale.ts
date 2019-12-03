@@ -34,27 +34,19 @@ function endingChar(node: Node | null): string {
 }
 
 function text(node: Node): string {
-  switch (node.nodeType) {
-    case 3:
-      return node.textContent!;
-    case 1:
-      switch ((node as HTMLElement).tagName) {
-        case 'RUBY':
-          for (let i = node.childNodes.length - 1; i >= 0; --i) {
-            const child = node.childNodes[i];
-            if (child.nodeType === 3) return child.textContent!;
-            switch ((child as HTMLElement).tagName) {
-              case 'RT':
-              case 'RP':
-                break;
-              default:
-                return child.textContent!;
-            }
-          }
-          return '';
-        default:
-          return node.textContent!;
+  switch (node.nodeName) {
+    case 'RUBY':
+      for (let i = node.childNodes.length - 1; i >= 0; --i) {
+        const child = node.childNodes[i];
+        switch (child.nodeName) {
+          case 'RT':
+          case 'RP':
+            break;
+          default:
+            return child.textContent!;
+        }
       }
+      return '';
     default:
       return node.textContent!;
   }

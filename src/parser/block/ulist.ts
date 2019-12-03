@@ -27,7 +27,7 @@ export const ulist_: UListParser = convert(
   ulist);
 
 export function fillFirstLine(ns: Node[]): Node[] {
-  return ns[0] instanceof HTMLUListElement || ns[0] instanceof HTMLOListElement
+  return ['UL', 'OL'].includes(ns[0]?.nodeName)
     ? concat([html('br')], ns)
     : ns;
 }

@@ -28,7 +28,7 @@ export const paragraph: ParagraphParser = block(fmap(
         }))));
 
 function format<T extends Node[]>(ns: T): T {
-  ns[ns.length - 1] instanceof HTMLBRElement && void ns.pop();
+  ns[ns.length - 1]?.nodeName === 'BR' && void ns.pop();
   assert(!(ns[0] instanceof HTMLBRElement));
   assert(!(ns[ns.length - 1] instanceof HTMLBRElement));
   return ns;

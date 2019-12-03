@@ -104,7 +104,7 @@ export function stringify(nodes: Node[]): string {
 export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T {
   assert(!target.parentElement);
   assert(target instanceof DocumentFragment || target instanceof HTMLOListElement);
-  if (target instanceof HTMLOListElement) {
+  if (target.nodeName === 'OL') {
     assert.deepStrictEqual([...target.querySelectorAll('.footnote')], [...target.querySelectorAll(':scope > li')]);
     assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
     void apply(target, '.footnote > sup:last-child > a', { href: null });
