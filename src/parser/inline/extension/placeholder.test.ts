@@ -11,6 +11,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert(!parser('[ab]'));
       assert(!parser('[^]'));
       assert(!parser('[^]]'));
+      assert(!parser('[^\\]'));
       assert(!parser('[^ ]'));
       assert(!parser('[^ a]'));
       assert(!parser('[^\\ ]'));
@@ -19,7 +20,6 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert(!parser('[^a\\\nb]'));
       assert(!parser('[^\n]'));
       assert(!parser('[^\\\n]'));
-      assert(!parser('[^\\]'));
       assert(!parser('[^ !http://host]'));
       assert(!parser('[^<# a #>]'));
       assert(!parser('[[]'));
