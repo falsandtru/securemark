@@ -6,9 +6,10 @@ export function isVisible(node: HTMLElement): boolean {
       || hasMedia(node);
 }
 
-export function isTightVisible(node: HTMLElement | Text): boolean {
-  return hasTightText(node)
-      || node instanceof Element && hasMedia(node) && node.textContent === node.textContent!.trim();
+export function isTightVisible(node: HTMLElement): boolean {
+  return isTight(node)
+    ? hasText(node) || hasMedia(node)
+    : false;
 }
 
 export function hasText(node: HTMLElement | Text): boolean {
@@ -16,12 +17,16 @@ export function hasText(node: HTMLElement | Text): boolean {
 }
 
 export function hasTightText(node: HTMLElement | Text): boolean {
-  return hasText(node)
-      && node.textContent === node.textContent!.trim();
+  return isTight(node)
+      && hasText(node);
 }
 
 function hasMedia(node: HTMLElement): boolean {
   return node.getElementsByClassName('media').length > 0;
+}
+
+function isTight(node: HTMLElement | Text): boolean {
+  return node.textContent === node.textContent!.trim();
 }
 
 export function dup<T, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T[], D, S, C> {
