@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.138.0
+
+- Change the handling of too large blocks to replace blocks with error messages.
+
 ## 0.137.1
 
 - Refactoring.

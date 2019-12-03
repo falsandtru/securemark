@@ -22,8 +22,10 @@ export function segment(source: string): string[] {
   while (source !== '') {
     const rest = exec(parser(source, {}, {}));
     assert(source.slice(1).endsWith(rest));
-    if (source.length - rest.length > 100_000) throw new Error('Too large block.');
-    void segments.push(source.slice(0, source.length - rest.length));
+    void segments.push(
+      source.length - rest.length > 100_000
+        ? '# ***Too large block***'
+        : source.slice(0, source.length - rest.length));
     source = rest;
   }
   assert(segments.join('') === arguments[0]);
