@@ -8,8 +8,7 @@ export function isVisible(node: HTMLElement): boolean {
 
 export function isTightVisible(node: HTMLElement): boolean {
   return isTight(node)
-    ? hasText(node) || hasMedia(node)
-    : false;
+      && isVisible(node);
 }
 
 export function hasText(node: HTMLElement | Text): boolean {
