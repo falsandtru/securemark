@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.138.1
+
+- Fix end of line processing.
+
 ## 0.138.0
 
 - Change the handling of too large blocks to replace blocks with error messages.
