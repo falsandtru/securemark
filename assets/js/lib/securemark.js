@@ -51,98 +51,96 @@ require = function () {
     ],
     5: [
         function (_dereq_, module, exports) {
-            (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                _dereq_('./global');
-                const type_1 = _dereq_('./type');
-                const concat_1 = _dereq_('./concat');
-                const {Object: Obj} = global;
-                exports.assign = template((key, target, source) => target[key] = source[key]);
-                exports.clone = template((key, target, source) => {
-                    switch (type_1.type(source[key])) {
-                    case 'Array':
-                        return target[key] = exports.clone([], source[key]);
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('./global');
+            const type_1 = _dereq_('./type');
+            const concat_1 = _dereq_('./concat');
+            const {Object: Obj} = global_1.global;
+            exports.assign = template((key, target, source) => target[key] = source[key]);
+            exports.clone = template((key, target, source) => {
+                switch (type_1.type(source[key])) {
+                case 'Array':
+                    return target[key] = exports.clone([], source[key]);
+                case 'Object':
+                    switch (type_1.type(target[key])) {
                     case 'Object':
-                        switch (type_1.type(target[key])) {
-                        case 'Object':
-                            return target[key] = exports.clone(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
-                        default:
-                            return target[key] = source[key];
-                        }
+                        return target[key] = exports.clone(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
                     default:
                         return target[key] = source[key];
                     }
-                });
-                exports.extend = template((key, target, source) => {
-                    switch (type_1.type(source[key])) {
-                    case 'Array':
-                        return target[key] = exports.extend([], source[key]);
+                default:
+                    return target[key] = source[key];
+                }
+            });
+            exports.extend = template((key, target, source) => {
+                switch (type_1.type(source[key])) {
+                case 'Array':
+                    return target[key] = exports.extend([], source[key]);
+                case 'Object':
+                    switch (type_1.type(target[key])) {
                     case 'Object':
-                        switch (type_1.type(target[key])) {
-                        case 'Object':
-                            return target[key] = exports.extend(target[key], source[key]);
-                        default:
-                            return target[key] = exports.extend(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
-                        }
+                        return target[key] = exports.extend(target[key], source[key]);
                     default:
-                        return target[key] = source[key];
+                        return target[key] = exports.extend(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
                     }
-                });
-                exports.merge = template((key, target, source) => {
-                    switch (type_1.type(source[key])) {
+                default:
+                    return target[key] = source[key];
+                }
+            });
+            exports.merge = template((key, target, source) => {
+                switch (type_1.type(source[key])) {
+                case 'Array':
+                    switch (type_1.type(target[key])) {
                     case 'Array':
-                        switch (type_1.type(target[key])) {
-                        case 'Array':
-                            return target[key] = concat_1.concat(target[key], source[key]);
-                        default:
-                            return target[key] = exports.merge([], source[key]);
-                        }
-                    case 'Object':
-                        switch (type_1.type(target[key])) {
-                        case 'Object':
-                            return target[key] = exports.merge(target[key], source[key]);
-                        default:
-                            return target[key] = exports.merge(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
-                        }
+                        return target[key] = concat_1.concat(target[key], source[key]);
                     default:
-                        return target[key] = source[key];
+                        return target[key] = exports.merge([], source[key]);
                     }
-                });
-                function template(strategy, empty = empty_) {
-                    return walk;
-                    function walk(target, ...sources) {
-                        let isPrimitiveTarget = type_1.isPrimitive(target);
-                        for (const source of sources) {
-                            const isPrimitiveSource = type_1.isPrimitive(source);
-                            if (isPrimitiveSource) {
-                                target = source;
+                case 'Object':
+                    switch (type_1.type(target[key])) {
+                    case 'Object':
+                        return target[key] = exports.merge(target[key], source[key]);
+                    default:
+                        return target[key] = exports.merge(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
+                    }
+                default:
+                    return target[key] = source[key];
+                }
+            });
+            function template(strategy, empty = empty_) {
+                return walk;
+                function walk(target, ...sources) {
+                    let isPrimitiveTarget = type_1.isPrimitive(target);
+                    for (const source of sources) {
+                        const isPrimitiveSource = type_1.isPrimitive(source);
+                        if (isPrimitiveSource) {
+                            target = source;
+                            isPrimitiveTarget = isPrimitiveSource;
+                        } else {
+                            if (isPrimitiveTarget) {
+                                target = empty(source);
                                 isPrimitiveTarget = isPrimitiveSource;
-                            } else {
-                                if (isPrimitiveTarget) {
-                                    target = empty(source);
-                                    isPrimitiveTarget = isPrimitiveSource;
-                                }
-                                for (const key of Obj.keys(source)) {
-                                    void strategy(key, target, source);
-                                }
+                            }
+                            for (const key of Obj.keys(source)) {
+                                void strategy(key, target, source);
                             }
                         }
-                        return target;
                     }
+                    return target;
                 }
-                exports.template = template;
-                function empty_(source) {
-                    switch (type_1.type(source)) {
-                    case 'Array':
-                        return [];
-                    case 'Object':
-                        return source instanceof Obj ? {} : Obj.create(null);
-                    default:
-                        return source;
-                    }
+            }
+            exports.template = template;
+            function empty_(source) {
+                switch (type_1.type(source)) {
+                case 'Array':
+                    return [];
+                case 'Object':
+                    return source instanceof Obj ? {} : Obj.create(null);
+                default:
+                    return source;
                 }
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+            }
         },
         {
             './concat': 8,
@@ -154,8 +152,10 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('./global');
             const assign_1 = _dereq_('./assign');
             const equal_1 = _dereq_('./equal');
+            const {Map} = global_1.global;
             class Cache {
                 constructor(size, callback = () => undefined, opts = {}) {
                     this.size = size;
@@ -314,7 +314,8 @@ require = function () {
         },
         {
             './assign': 5,
-            './equal': 10
+            './equal': 10,
+            './global': 12
         }
     ],
     7: [
@@ -409,7 +410,10 @@ require = function () {
     12: [
         function (_dereq_, module, exports) {
             'use strict';
-            eval('var global = typeof globalThis !== \'undefined\' && globalThis || this;');
+            Object.defineProperty(exports, '__esModule', { value: true });
+            exports.global = typeof globalThis !== 'undefined' && globalThis || typeof self !== 'undefined' && self || this;
+            exports.default = exports.global;
+            exports.global.global = exports.global;
         },
         {}
     ],
@@ -460,44 +464,42 @@ require = function () {
     ],
     16: [
         function (_dereq_, module, exports) {
-            (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                _dereq_('./global');
-                const {Object: Obj} = global;
-                function type(target) {
-                    const t = target == null ? target : typeof target;
-                    switch (t) {
-                    case undefined:
-                    case null:
-                        return `${ target }`;
-                    case 'boolean':
-                    case 'number':
-                    case 'bigint':
-                    case 'string':
-                    case 'symbol':
-                        return t;
-                    default:
-                        return Obj.prototype.toString.call(target).slice(8, -1);
-                    }
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('./global');
+            const {Object: Obj} = global_1.global;
+            function type(target) {
+                const t = target == null ? target : typeof target;
+                switch (t) {
+                case undefined:
+                case null:
+                    return `${ target }`;
+                case 'boolean':
+                case 'number':
+                case 'bigint':
+                case 'string':
+                case 'symbol':
+                    return t;
+                default:
+                    return Obj.prototype.toString.call(target).slice(8, -1);
                 }
-                exports.type = type;
-                function isPrimitive(target) {
-                    switch (type(target)) {
-                    case 'undefined':
-                    case 'null':
-                    case 'boolean':
-                    case 'number':
-                    case 'bigint':
-                    case 'string':
-                    case 'symbol':
-                        return true;
-                    default:
-                        return false;
-                    }
+            }
+            exports.type = type;
+            function isPrimitive(target) {
+                switch (type(target)) {
+                case 'undefined':
+                case 'null':
+                case 'boolean':
+                case 'number':
+                case 'bigint':
+                case 'string':
+                case 'symbol':
+                    return true;
+                default:
+                    return false;
                 }
-                exports.isPrimitive = isPrimitive;
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+            }
+            exports.isPrimitive = isPrimitive;
         },
         { './global': 12 }
     ],
@@ -511,57 +513,55 @@ require = function () {
     ],
     18: [
         function (_dereq_, module, exports) {
-            (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                _dereq_('./global');
-                const format_1 = _dereq_('./url/domain/format');
-                var format_2 = _dereq_('./url/domain/format');
-                exports.standardize = format_2.standardize;
-                const {location} = global;
-                class URL {
-                    constructor(url, base = location.href) {
-                        this.url = format_1.newURL(url, base);
-                    }
-                    get reference() {
-                        return this.url.href;
-                    }
-                    get resource() {
-                        return `${ this.origin }${ this.pathname }${ this.query === '?' ? '' : this.query }`;
-                    }
-                    get origin() {
-                        return `${ this.protocol }//${ this.host }`;
-                    }
-                    get scheme() {
-                        return this.url.protocol.slice(0, -1);
-                    }
-                    get protocol() {
-                        return this.url.protocol;
-                    }
-                    get host() {
-                        return this.url.host;
-                    }
-                    get hostname() {
-                        return this.url.hostname;
-                    }
-                    get port() {
-                        return this.url.port;
-                    }
-                    get path() {
-                        return `${ this.pathname }${ this.query }`;
-                    }
-                    get pathname() {
-                        return this.url.pathname;
-                    }
-                    get query() {
-                        return this.url.search || !this.url.href.split('#', 1)[0].includes('?') ? this.url.search : '?';
-                    }
-                    get fragment() {
-                        return this.url.hash || !this.url.href.includes('#') ? this.url.hash : '#';
-                    }
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('./global');
+            const format_1 = _dereq_('./url/domain/format');
+            var format_2 = _dereq_('./url/domain/format');
+            exports.standardize = format_2.standardize;
+            const {location} = global_1.global;
+            class URL {
+                constructor(url, base = location.href) {
+                    this.url = format_1.newURL(url, base);
                 }
-                exports.URL = URL;
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+                get reference() {
+                    return this.url.href;
+                }
+                get resource() {
+                    return `${ this.origin }${ this.pathname }${ this.query === '?' ? '' : this.query }`;
+                }
+                get origin() {
+                    return `${ this.protocol }//${ this.host }`;
+                }
+                get scheme() {
+                    return this.url.protocol.slice(0, -1);
+                }
+                get protocol() {
+                    return this.url.protocol;
+                }
+                get host() {
+                    return this.url.host;
+                }
+                get hostname() {
+                    return this.url.hostname;
+                }
+                get port() {
+                    return this.url.port;
+                }
+                get path() {
+                    return `${ this.pathname }${ this.query }`;
+                }
+                get pathname() {
+                    return this.url.pathname;
+                }
+                get query() {
+                    return this.url.search || !this.url.href.split('#', 1)[0].includes('?') ? this.url.search : '?';
+                }
+                get fragment() {
+                    return this.url.hash || !this.url.href.includes('#') ? this.url.hash : '#';
+                }
+            }
+            exports.URL = URL;
         },
         {
             './global': 12,
@@ -4292,8 +4292,8 @@ require = function () {
                             source.slice(1)
                         ];
                     default:
-                        const i = source.slice(0, 2).trim() === '' ? source.search(next) : 0;
-                        return i === source.length || source[i] === '\n' ? [
+                        const i = source[0].trim() === '' ? source.search(next) : 0;
+                        return i === source.length || source[i] === '\n' || source[i] === '\\' && source[i + 1] === '\n' ? [
                             [],
                             source.slice(i)
                         ] : [
@@ -4382,7 +4382,7 @@ require = function () {
             }
             exports.isVisible = isVisible;
             function isTightVisible(node) {
-                return isTight(node) ? hasText(node) || hasMedia(node) : false;
+                return isTight(node) && isVisible(node);
             }
             exports.isTightVisible = isTightVisible;
             function hasText(node) {
