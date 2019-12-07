@@ -217,7 +217,6 @@ export namespace MarkdownParser {
         Block<'blockquote/segment'>,
         Parser<never, [
           SourceParser.ContentLineParser,
-          SourceParser.ContentLineParser,
         ], State, Config> {
       }
       export interface TextParser extends
