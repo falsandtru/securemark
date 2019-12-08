@@ -2379,7 +2379,7 @@ require = function () {
                     ]),
                     source_1.emptyline,
                     combinator_1.union([
-                        source_1.blankline,
+                        source_1.emptyline,
                         combinator_1.some(source_1.contentline, closer)
                     ])
                 ])
@@ -2571,7 +2571,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
-            exports.newline = combinator_1.some(combinator_1.union([source_1.blankline]));
+            exports.newline = combinator_1.some(combinator_1.union([source_1.emptyline]));
         },
         {
             '../../combinator': 29,
@@ -2663,20 +2663,20 @@ require = function () {
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.subsequence([
+            const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
+            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.convert(source => source.replace(blankline, ''), combinator_1.some(combinator_1.subsequence([
                 combinator_1.fmap(combinator_1.some(mention_1.mention), es => es.reduce((acc, el) => concat_1.concat(acc, [
                     el,
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.contentline, '>'), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => concat_1.concat(ns, [typed_dom_1.html('br')]))
-            ])), ns => [typed_dom_1.html('p', format(ns))].map(el => util_1.isVisible(el) ? el : typed_dom_1.define(el, {
+            ]))), ns => ns.length > 0 ? [typed_dom_1.html('p', format(ns))].map(el => util_1.isVisible(el) ? el : typed_dom_1.define(el, {
                 class: 'invalid',
                 'data-invalid-syntax': 'paragraph',
                 'data-invalid-type': 'visibility'
-            }))));
+            })) : []));
             function format(ns) {
-                var _a;
-                ((_a = ns[ns.length - 1]) === null || _a === void 0 ? void 0 : _a.nodeName) === 'BR' && void ns.pop();
+                void ns.pop();
                 return ns;
             }
         },
@@ -4098,7 +4098,7 @@ require = function () {
                 mathblock_1.segment,
                 extension_1.segment,
                 combinator_1.some(source_1.contentline),
-                combinator_1.some(source_1.blankline)
+                combinator_1.some(source_1.emptyline)
             ]);
             function segment(source) {
                 const segments = [];
@@ -4136,7 +4136,6 @@ require = function () {
             exports.char = char_1.char;
             var line_1 = _dereq_('./source/line');
             exports.contentline = line_1.contentline;
-            exports.blankline = line_1.blankline;
             exports.emptyline = line_1.emptyline;
             exports.anyline = line_1.anyline;
         },
@@ -4226,12 +4225,7 @@ require = function () {
                 [],
                 ''
             ] : undefined, false);
-            const invisible = /^(?:\\?\s)*\\?$/;
-            exports.blankline = combinator_1.line(s => invisible.test(s) ? [
-                [],
-                ''
-            ] : undefined, false);
-            exports.contentline = combinator_1.line(s => !invisible.test(s) ? [
+            exports.contentline = combinator_1.line(s => s.trim() !== '' ? [
                 [],
                 ''
             ] : undefined, false);
