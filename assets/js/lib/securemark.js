@@ -2100,10 +2100,7 @@ require = function () {
             const parse_1 = _dereq_('../api/parse');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.union([
-                combinator_1.validate(/^>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline)),
-                combinator_1.validate(/^!>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline))
-            ]));
+            exports.segment = combinator_1.block(combinator_1.union([combinator_1.validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline))]));
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.surround(/^(?=>)/, text, ''),
                 combinator_1.surround(/^!(?=>)/, source, '')
