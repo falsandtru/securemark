@@ -1,5 +1,5 @@
 import { NewlineParser } from '../block';
 import { union, some } from '../../combinator';
-import { blankline } from '../source';
+import { emptyline } from '../source';
 
-export const newline: NewlineParser = some(union([blankline]));
+export const newline: NewlineParser = some(union([emptyline]));

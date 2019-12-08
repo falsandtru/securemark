@@ -35,7 +35,7 @@ export namespace MarkdownParser {
       BlockParser.MathBlockParser.SegmentParser,
       BlockParser.ExtensionParser.SegmentParser,
       SourceParser.ContentLineParser,
-      SourceParser.BlankLineParser,
+      SourceParser.EmptyLineParser,
     ], State, Config> {
   }
   export interface BlockParser extends
@@ -61,7 +61,7 @@ export namespace MarkdownParser {
     export interface NewlineParser extends
       Block<'newline'>,
       Parser<never, [
-        SourceParser.BlankLineParser,
+        SourceParser.EmptyLineParser,
       ], State, Config> {
     }
     export interface HorizontalRuleParser extends
@@ -331,7 +331,7 @@ export namespace MarkdownParser {
               ], State, Config>,
               SourceParser.EmptyLineParser,
               Parser<never, [
-                SourceParser.BlankLineParser,
+                SourceParser.EmptyLineParser,
                 SourceParser.ContentLineParser,
               ], State, Config>,
             ], State, Config>,
@@ -827,10 +827,6 @@ export namespace MarkdownParser {
     }
     export interface ContentLineParser extends
       Source<'contentline'>,
-      Parser<never, [], State, Config> {
-    }
-    export interface BlankLineParser extends
-      Source<'blankline'>,
       Parser<never, [], State, Config> {
     }
     export interface EmptyLineParser extends

@@ -13,6 +13,7 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(segment('a\nb\n\n'), ['a\nb\n', '\n']);
       assert.deepStrictEqual(segment('a\nb\n\n\n'), ['a\nb\n', '\n\n']);
       assert.deepStrictEqual(segment('a\nb\n\nc\n\nd'), ['a\nb\n', '\n', 'c\n', '\n', 'd']);
+      assert.deepStrictEqual(segment('a\n\\\nb'), ['a\n\\\nb']);
       assert.deepStrictEqual(segment('a '), ['a ']);
       assert.deepStrictEqual(segment(' a'), [' a']);
       assert.deepStrictEqual(segment(' a '), [' a ']);
@@ -33,7 +34,6 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(segment('a\n\n\n\n '), ['a\n', '\n\n\n ']);
       assert.deepStrictEqual(segment('a\n\n\n\n\n '), ['a\n', '\n\n\n\n ']);
       assert.deepStrictEqual(segment('a\n\n\n\n\n\n '), ['a\n', '\n\n\n\n\n ']);
-      assert.deepStrictEqual(segment('a\n\\\nb'), ['a\n', '\\\n', 'b']);
     });
 
     it('codeblock', () => {

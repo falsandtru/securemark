@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.139.0
+
+- Change segment separator to empty lines only. 
+
 ## 0.138.1
 
 - Fix end of line processing.

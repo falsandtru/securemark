@@ -1,6 +1,6 @@
 import { ExtensionParser } from '../../block';
 import { union, sequence, inits, some, block, line, rewrite, surround, match, memoize, convert, trim, configure, fmap } from '../../../combinator';
-import { contentline, blankline, emptyline } from '../../source';
+import { contentline, emptyline } from '../../source';
 import { table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
@@ -31,7 +31,7 @@ export const segment: FigureParser.SegmentParser = block(match(
           ]),
           emptyline,
           union([
-            blankline,
+            emptyline,
             some(contentline, closer),
           ]),
         ]),

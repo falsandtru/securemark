@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../block';
-import { subsequence, some, block, rewrite, trim, fmap } from '../../combinator';
+import { subsequence, some, block, rewrite, convert, trim, fmap } from '../../combinator';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { contentline } from '../source';
@@ -7,7 +7,10 @@ import { defrag, isVisible } from '../util';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 
-export const paragraph: ParagraphParser = block(fmap(
+const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
+
+export const paragraph: ParagraphParser = block(fmap(convert(
+  source => source.replace(blankline, ''),
   some(subsequence([
     fmap(
       some(mention),
@@ -17,19 +20,24 @@ export const paragraph: ParagraphParser = block(fmap(
         some(contentline, '>'),
         defrag(trim(some(inline)))),
       ns => concat(ns, [html('br')])),
-  ])),
-  ns => [html('p', format(ns))].map(el =>
-    isVisible(el)
-      ? el
-      : define(el, {
-          class: 'invalid',
-          'data-invalid-syntax': 'paragraph',
-          'data-invalid-type': 'visibility',
-        }))));
+  ]))),
+  ns =>
+    ns.length > 0
+      ? [html('p', format(ns))].map(el =>
+          isVisible(el)
+            ? el
+            : define(el, {
+                class: 'invalid',
+                'data-invalid-syntax': 'paragraph',
+                'data-invalid-type': 'visibility',
+              }))
+      : []));
 
 function format<T extends Node[]>(ns: T): T {
-  ns[ns.length - 1]?.nodeName === 'BR' && void ns.pop();
-  assert(!(ns[0] instanceof HTMLBRElement));
-  assert(!(ns[ns.length - 1] instanceof HTMLBRElement));
+  assert(ns.length > 1);
+  assert(ns[ns.length - 1] instanceof HTMLBRElement);
+  void ns.pop();
+  assert(ns.length > 0);
+  assert(ns[ns.length - 1] instanceof HTMLBRElement === false);
   return ns;
 }
