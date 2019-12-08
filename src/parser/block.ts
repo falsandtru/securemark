@@ -1,6 +1,5 @@
 import { MarkdownParser } from '../../markdown.d';
 import { union } from '../combinator';
-import { newline } from './block/newline';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';
@@ -16,7 +15,6 @@ import { paragraph } from './block/paragraph';
 import { localize } from './locale';
 
 export import BlockParser = MarkdownParser.BlockParser;
-export import NewlineParser = BlockParser.NewlineParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
 export import HeadingParser = BlockParser.HeadingParser;
 export import UListParser = BlockParser.UListParser;
@@ -31,7 +29,6 @@ export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = localize(union([
-  newline,
   horizontalrule,
   heading,
   ulist,

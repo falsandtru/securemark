@@ -41,7 +41,6 @@ export namespace MarkdownParser {
   export interface BlockParser extends
     Markdown<'block'>,
     Parser<HTMLElement, [
-      BlockParser.NewlineParser,
       BlockParser.HorizontalRuleParser,
       BlockParser.HeadingParser,
       BlockParser.UListParser,
@@ -58,12 +57,6 @@ export namespace MarkdownParser {
   }
   export namespace BlockParser {
     interface Block<T> extends Markdown<['block', T]> { }
-    export interface NewlineParser extends
-      Block<'newline'>,
-      Parser<never, [
-        SourceParser.EmptyLineParser,
-      ], State, Config> {
-    }
     export interface HorizontalRuleParser extends
       // ---
       Block<'horizontalrule'>,
