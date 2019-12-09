@@ -6,6 +6,7 @@ import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example, segment_ as seg_example } from './example';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
+import { blankline } from '../paragraph';
 import { inline, label, media, shortmedia } from '../../inline';
 import { defrag } from '../../util';
 import { html } from 'typed-dom';
@@ -39,26 +40,26 @@ export const segment: FigureParser.SegmentParser = block(match(
       closer))));
 
 export const figure: FigureParser = block(rewrite(segment, trim(fmap(
-  convert(
-    source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')),
-    sequence([
-      line(label),
-      inits([
-        block(union([
-          table,
-          codeblock,
-          mathblock,
-          example,
-          blockquote,
-          line(media),
-          line(shortmedia),
-        ])),
-        emptyline,
-        block(
-          configure({ syntax: { inline: { media: false } } },
-          defrag(trim(some(inline))))),
-      ]),
-    ])),
+  convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')),
+  sequence([
+    line(label),
+    inits([
+      block(union([
+        table,
+        codeblock,
+        mathblock,
+        example,
+        blockquote,
+        line(media),
+        line(shortmedia),
+      ])),
+      emptyline,
+      block(
+        configure({ syntax: { inline: { media: false } } },
+        convert(source => source.replace(blankline, ''),
+        defrag(trim(some(inline)))))),
+    ]),
+  ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
     html('figure',
       attrs(label.getAttribute('data-label')!, content, caption),

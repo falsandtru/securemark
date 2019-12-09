@@ -7,10 +7,10 @@ import { defrag, isVisible } from '../util';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 
-const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
+export const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
 
-export const paragraph: ParagraphParser = block(fmap(convert(
-  source => source.replace(blankline, ''),
+export const paragraph: ParagraphParser = block(fmap(
+  convert(source => source.replace(blankline, ''),
   some(subsequence([
     fmap(
       some(mention),
