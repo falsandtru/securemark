@@ -18,45 +18,39 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     row(cell(align), true),
     some(row(cell(data), false)),
   ]))),
-  ([head, as, ...rows]) => {
-    assert(as.children.length > 0);
+  ([head, aligns, ...rows]) => {
+    assert(aligns.children.length > 0);
     void align();
     return [html('table', [html('thead', [head]), html('tbody', rows)])];
 
     function align(): void {
-      const aligns = [...as.children]
+      const as = [...aligns.children]
         .reduce((acc, el) =>
           concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
         , []);
-      void align(head, extend(aligns.slice(0, 2), head.children.length));
+      void apply(head, as.slice(0, 2));
       for (const row of rows) {
-        void align(row, extend(aligns, row.children.length));
+        void apply(row, as);
       }
       return;
 
-      function extend(aligns: string[], size: number): string[] {
-        return size > aligns.length
-          ? concat(
-              aligns,
-              Array(size - aligns.length)
-                .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
-          : aligns;
-      }
-
-      function align(row: HTMLElement, aligns: string[]): void {
+      function apply(row: HTMLElement, aligns: string[]): void {
+        void extend(aligns, row.children.length);
         assert(row.children.length <= aligns.length);
+        assert(aligns.every(align => ['left', 'center', 'right', ''].includes(align)));
         return void [...row.children]
           .forEach((col, i) =>
             aligns[i] &&
-            aligns[i] === sanitize(aligns[i]) &&
-            void col.setAttribute('style', `text-align: ${sanitize(aligns[i])};`));
+            void col.setAttribute('style', `text-align: ${aligns[i]};`));
       }
 
-      function sanitize(align: string): string {
-        assert(['left', 'center', 'right', ''].includes(align));
-        return ['left', 'center', 'right'].includes(align)
-          ? align
-          : '';
+      function extend(aligns: string[], size: number): void {
+        return size > aligns.length
+          ? void concat(
+              aligns,
+              Array(size - aligns.length)
+                .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
+          : undefined;
       }
     }
   })));
