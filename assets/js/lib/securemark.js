@@ -1273,29 +1273,31 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
-            function contract(pattern, parser, cond) {
-                return verify(validate(pattern, parser), cond);
+            function contract(patterns, parser, cond) {
+                return verify(validate(patterns, parser), cond);
             }
             exports.contract = contract;
-            function validate(pattern, parser) {
+            function validate(patterns, parser) {
+                if (!Array.isArray(patterns))
+                    return validate([patterns], parser);
                 return (source, state, config) => {
                     if (source === '')
                         return;
-                    switch (typeof pattern) {
-                    case 'string':
-                        if (source.startsWith(pattern))
-                            break;
+                    if (patterns.every(pattern => !match(source, pattern)))
                         return;
-                    default:
-                        if (pattern.test(source))
-                            break;
-                        return;
-                    }
                     const result = parser(source, state, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length ? result : undefined;
                 };
+                function match(source, pattern) {
+                    switch (typeof pattern) {
+                    case 'string':
+                        return source.startsWith(pattern);
+                    default:
+                        return pattern.test(source);
+                    }
+                }
             }
             exports.validate = validate;
             function verify(parser, cond) {
@@ -2144,10 +2146,10 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/, () => [
+            exports.segment_ = combinator_1.block(combinator_1.validate('```', combinator_1.focus(/^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/, () => [
                 [],
                 ''
-            ]), false);
+            ])), false);
             exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => rest => {
                 [lang, param] = language.test(lang) ? [
                     lang,
@@ -2200,13 +2202,14 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const inline_1 = _dereq_('../inline');
+            const paragraph_1 = _dereq_('./paragraph');
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.inits([
+            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~(?=\s|$)/, combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
-            ]))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
+            ]))))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
             const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.surround(/^~(?=\s|$)/, util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
@@ -2221,6 +2224,7 @@ require = function () {
             '../inline': 77,
             '../source': 112,
             '../util': 120,
+            './paragraph': 71,
             'spica/concat': 8,
             'typed-dom': 21
         }
@@ -2234,12 +2238,16 @@ require = function () {
             const figure_1 = _dereq_('./extension/figure');
             const example_1 = _dereq_('./extension/example');
             const placeholder_1 = _dereq_('./extension/placeholder');
-            exports.segment = combinator_1.validate(/^~{3,}[a-z]|^\[?\$[a-z-]\S*[^\S\n]*\n/, combinator_1.union([
+            exports.segment = combinator_1.validate([
+                '~~~',
+                '[',
+                '$'
+            ], combinator_1.validate(/^~{3,}[a-z]|^\[?\$[a-z-]\S*[^\S\n]*\n/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
                 example_1.segment,
                 placeholder_1.segment
-            ]));
+            ])));
             exports.extension = combinator_1.rewrite(exports.segment, combinator_1.union([
                 fig_1.fig,
                 figure_1.figure,
@@ -2361,6 +2369,7 @@ require = function () {
             const mathblock_1 = _dereq_('../mathblock');
             const example_1 = _dereq_('./example');
             const blockquote_1 = _dereq_('../blockquote');
+            const paragraph_1 = _dereq_('../paragraph');
             const inline_1 = _dereq_('../../inline');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
@@ -2394,7 +2403,7 @@ require = function () {
                         combinator_1.line(inline_1.shortmedia)
                     ])),
                     source_1.emptyline,
-                    combinator_1.block(combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))))
+                    combinator_1.block(combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))))))
                 ])
             ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attrs(label.getAttribute('data-label'), content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
@@ -2423,6 +2432,7 @@ require = function () {
             '../blockquote': 58,
             '../codeblock': 59,
             '../mathblock': 69,
+            '../paragraph': 71,
             '../table': 75,
             './example': 62,
             'typed-dom': 21
@@ -2535,10 +2545,10 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.lazy(() => combinator_1.block(exports.segment_));
-            exports.segment_ = combinator_1.block(combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:\n|$)/, () => [
+            exports.segment_ = combinator_1.block(combinator_1.validate('$$', combinator_1.focus(/^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:\n|$)/, () => [
                 [],
                 ''
-            ]), false);
+            ])), false);
             exports.mathblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(\$\$)(?!\$)([^\n]*)(\n[\s\S]*)\1$/, ([, , param, body]) => rest => {
                 const el = typed_dom_1.html('div', { class: `math notranslate` }, `$$${ body }$$`);
                 if (param.trim() !== '') {
@@ -2647,8 +2657,8 @@ require = function () {
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
-            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.convert(source => source.replace(blankline, ''), combinator_1.some(combinator_1.subsequence([
+            exports.blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
+            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.convert(source => source.replace(exports.blankline, ''), combinator_1.some(combinator_1.subsequence([
                 combinator_1.fmap(combinator_1.some(mention_1.mention), es => es.reduce((acc, el) => concat_1.concat(acc, [
                     el,
                     typed_dom_1.html('br')
