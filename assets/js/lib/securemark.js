@@ -2653,7 +2653,7 @@ require = function () {
                     el,
                     typed_dom_1.html('br')
                 ]), [])),
-                combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.contentline, '>'), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => concat_1.concat(ns, [typed_dom_1.html('br')]))
+                combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, '>'), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => concat_1.concat(ns, [typed_dom_1.html('br')]))
             ]))), ns => ns.length > 0 ? [typed_dom_1.html('p', format(ns))].map(el => util_1.isVisible(el) ? el : typed_dom_1.define(el, {
                 class: 'invalid',
                 'data-invalid-syntax': 'paragraph',
@@ -4205,14 +4205,17 @@ require = function () {
                 [],
                 ''
             ], false);
-            exports.emptyline = combinator_1.line(s => s.trim() === '' ? [
+            exports.emptyline = combinator_1.line(s => isEmpty(s) ? [
                 [],
                 ''
             ] : undefined, false);
-            exports.contentline = combinator_1.line(s => s.trim() !== '' ? [
+            exports.contentline = combinator_1.line(s => !isEmpty(s) ? [
                 [],
                 ''
             ] : undefined, false);
+            function isEmpty(line) {
+                return line === '' || line === '\n' || line.trim() === '';
+            }
         },
         { '../../combinator': 29 }
     ],
