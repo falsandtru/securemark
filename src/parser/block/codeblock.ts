@@ -1,5 +1,5 @@
 import { CodeBlockParser } from '../block';
-import { some, block, rewrite, focus, match, trim, lazy, eval } from '../../combinator';
+import { some, block, validate, rewrite, focus, match, trim, lazy, eval } from '../../combinator';
 import { escsource } from '../source';
 import { defrag, stringify } from '../util';
 import { html, define } from 'typed-dom';
@@ -9,9 +9,9 @@ const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/
 
 export const segment: CodeBlockParser.SegmentParser = lazy(() => block(segment_));
 
-export const segment_: CodeBlockParser.SegmentParser = block(focus(
+export const segment_: CodeBlockParser.SegmentParser = block(validate('```', focus(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n((?:[^\n]*\n){0,300}?)\1[^\S\n]*(?:\n|$)/,
-  () => [[], '']), false);
+  () => [[], ''])), false);
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/,
