@@ -451,7 +451,7 @@ export namespace MarkdownParser {
       ], State, Config> {
     }
     export interface TemplateParser extends
-      // {{ abc }}
+      // {{abc}}
       Inline<'template'>,
       Parser<HTMLSpanElement | Text, [
         SourceParser.CharParser.ExclamationParser,
