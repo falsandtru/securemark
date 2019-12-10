@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.139.1
+
+- Refactoring.
+
 ## 0.139.0
 
 - Change segment separator to empty lines only. 
