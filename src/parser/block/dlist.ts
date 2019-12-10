@@ -9,8 +9,8 @@ import { html } from 'typed-dom';
 
 export const dlist: DListParser = lazy(() => block(fmap(validate(
   /^~(?=\s|$)/,
-  configure({ syntax: { inline: { media: false } } },
   convert(source => source.replace(blankline, ''),
+  configure({ syntax: { inline: { media: false } } },
   some(inits([
     some(term),
     some(desc),

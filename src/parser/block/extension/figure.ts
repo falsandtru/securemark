@@ -55,8 +55,8 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
       ])),
       emptyline,
       block(
-        configure({ syntax: { inline: { media: false } } },
         convert(source => source.replace(blankline, ''),
+        configure({ syntax: { inline: { media: false } } },
         defrag(trim(some(inline)))))),
     ]),
   ])),
