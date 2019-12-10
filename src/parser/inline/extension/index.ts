@@ -9,6 +9,6 @@ export const index: ExtensionParser.IndexParser = lazy(() => subline(fmap(
   rewrite(
     surround('[#', some(inline, /^\\?\n|^]/), ']'),
     convert(
-      query => `[${query.slice(2, -1)}]{#}`,
+      source => `[${source.slice(2, -1)}]{#}`,
       indexee(union([link]))))),
   ([el]) => [define(el, { id: null, class: 'index', href: `#${el.id}` })])));
