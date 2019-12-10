@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, surround, trimStart, trimEnd, configure, lazy, fmap, bind } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, surround, configure, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { defrag } from '../util';
 import { concat } from 'spica/concat';
@@ -57,23 +57,19 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
 }
 
 const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
-  line(trimEnd(surround(/^(?=\|)/, some(union([parser])), /^\|?$/, strict))),
+  line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, strict)),
   es => [html('tr', es)]);
 
 const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => fmap(
   union([parser]),
   ns => [html('td', ns)]);
 
-const data: CellParser.DataParser = defrag(bind(
+const data: CellParser.DataParser = defrag(
   surround(
-    '|',
-    trimStart(some(union([inline]), /^\s*(?:\||$)/)),
-    /^\s*/,
-    false),
-  (ns, rest) =>
-    ns.length === 0 && rest === ''
-      ? undefined
-      : [ns, rest]));
+    /^\|(?:\\?\s)*(?=\S)/,
+    some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
+    /^[^|]*/,
+    false));
 
 const alignment: CellParser.AlignmentParser =
   surround(

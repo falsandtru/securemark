@@ -50,9 +50,9 @@ describe('Unit: parser/text/text', () => {
     });
 
     it('\\', () => {
-      assert.deepStrictEqual(inspect(parser('\\')), [[''], '']);
+      assert.deepStrictEqual(inspect(parser('\\')), [[], '']);
       assert.deepStrictEqual(inspect(parser('\\\\')), [['\\'], '']);
-      assert.deepStrictEqual(inspect(parser('\\\\\\')), [['\\', ''], '']);
+      assert.deepStrictEqual(inspect(parser('\\\\\\')), [['\\'], '']);
       assert.deepStrictEqual(inspect(parser('\\\\\\\\')), [['\\', '\\'], '']);
       assert.deepStrictEqual(inspect(parser('\\ ')), [[' '], '']);
       assert.deepStrictEqual(inspect(parser('\\_')), [['_'], '']);

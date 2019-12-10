@@ -14,6 +14,8 @@ export const text: TextParser = source => {
       switch (source[0]) {
         case '\\':
           switch (source[1]) {
+            case undefined:
+              return [[], ''];
             case '\n':
               return [[html('span', { class: 'linebreak' }, ' ')], source.slice(2)];
             default:

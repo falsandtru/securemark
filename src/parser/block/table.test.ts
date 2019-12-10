@@ -56,8 +56,10 @@ describe('Unit: parser/block/table', () => {
     });
 
     it('trim', () => {
-      assert.deepStrictEqual(inspect(parser('|  h  \n|-\n|  b  ')), [['<table><thead><tr><td>h</td></tr></thead><tbody><tr><td>b</td></tr></tbody></table>'], '']);
-      assert.deepStrictEqual(inspect(parser('|  h  |\n|-\n|  b  |')), [['<table><thead><tr><td>h</td></tr></thead><tbody><tr><td>b</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|  h  \n|- \n|  b  ')), [['<table><thead><tr><td>h</td></tr></thead><tbody><tr><td>b</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|  h  | \n|- \n|  b  | ')), [['<table><thead><tr><td>h</td></tr></thead><tbody><tr><td>b</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|\\  h  \\\n|- \n|\\  b  \\')), [['<table><thead><tr><td>h</td></tr></thead><tbody><tr><td>b</td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('|\\  h  \\ \n|- \n|\\  b  \\ | ')), [['<table><thead><tr><td>h</td></tr></thead><tbody><tr><td>b</td></tr></tbody></table>'], '']);
     });
 
   });
