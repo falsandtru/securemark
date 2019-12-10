@@ -2150,7 +2150,7 @@ require = function () {
                 [],
                 ''
             ])), false);
-            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => rest => {
+            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => (rest, state, config) => {
                 [lang, param] = language.test(lang) ? [
                     lang,
                     param
@@ -2169,7 +2169,7 @@ require = function () {
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
-                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, {}, {})));
+                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, state, config)));
                 }
                 if (path) {
                     void el.setAttribute('data-file', path);
@@ -2206,7 +2206,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~(?=\s|$)/, combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), combinator_1.some(combinator_1.inits([
+            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~(?=\s|$)/, combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ]))))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
@@ -2300,13 +2300,13 @@ require = function () {
                         rest
                     ];
                 }),
-                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => rest => [
+                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => (rest, state, config) => [
                     [typed_dom_1.html('aside', {
                             class: 'example',
                             'data-type': 'math'
                         }, [
                             typed_dom_1.html('pre', body.slice(1, -1)),
-                            ...combinator_1.eval(mathblock_1.mathblock(`$$${ body }$$`, {}, {}))
+                            ...combinator_1.eval(mathblock_1.mathblock(`$$${ body }$$`, state, config))
                         ])],
                     rest
                 ])
@@ -2403,7 +2403,7 @@ require = function () {
                         combinator_1.line(inline_1.shortmedia)
                     ])),
                     source_1.emptyline,
-                    combinator_1.block(combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))))))
+                    combinator_1.block(combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.defrag(combinator_1.trim(combinator_1.some(inline_1.inline))))))
                 ])
             ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attrs(label.getAttribute('data-label'), content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
@@ -2713,10 +2713,10 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.address = combinator_1.line(combinator_1.fmap(combinator_1.validate(/^>+(?!>)\S+\s*$/, combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.sequence([
                 util_1.defrag(combinator_1.some(char_1.char('>'))),
-                combinator_1.trimEnd(combinator_1.union([
-                    combinator_1.focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*$/, combinator_1.convert(source => `[]{ ${ source } }`, inline_1.link)),
-                    combinator_1.focus(/^h?ttps?:\/\/[^/?#\s]\S*$/, combinator_1.convert(source => `[]{ ${ inline_1.address(source) }${ inline_1.attribute(source) } }`, inline_1.link))
-                ]))
+                combinator_1.union([
+                    combinator_1.focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*(?=\s*$)/, combinator_1.convert(source => `[]{ ${ source } }`, inline_1.link)),
+                    combinator_1.focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, combinator_1.convert(source => `[]{ ${ inline_1.address(source) }${ inline_1.attribute(source) } }`, inline_1.link))
+                ])
             ]))), ([flag, link]) => [typed_dom_1.define(link, {
                     class: 'address',
                     'data-level': `${ flag.textContent.length }`,
@@ -2766,43 +2766,39 @@ require = function () {
                 const {Array} = global;
                 exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate('|', combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.sequence([
                     row(cell(data), false),
-                    row(cell(align), true),
+                    row(cell(alignment), true),
                     combinator_1.some(row(cell(data), false))
-                ]))), ([head, as, ...rows]) => {
-                    void align();
+                ]))), ([head, alignment, ...rows]) => {
+                    void align(head, alignment, rows);
                     return [typed_dom_1.html('table', [
                             typed_dom_1.html('thead', [head]),
                             typed_dom_1.html('tbody', rows)
                         ])];
-                    function align() {
-                        const aligns = [...as.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || '']), []);
-                        void align(head, extend(aligns.slice(0, 2), head.children.length));
-                        for (const row of rows) {
-                            void align(row, extend(aligns, row.children.length));
-                        }
-                        return;
-                        function extend(aligns, size) {
-                            return size > aligns.length ? concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : aligns;
-                        }
-                        function align(row, aligns) {
-                            return void [...row.children].forEach((col, i) => aligns[i] && aligns[i] === sanitize(aligns[i]) && void col.setAttribute('style', `text-align: ${ sanitize(aligns[i]) };`));
-                        }
-                        function sanitize(align) {
-                            return [
-                                'left',
-                                'center',
-                                'right'
-                            ].includes(align) ? align : '';
+                })));
+                function align(head, alignment, rows) {
+                    const as = [...alignment.children].reduce((acc, el) => concat_1.concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || '']), []);
+                    void apply(head, as.slice(0, 2));
+                    for (const row of rows) {
+                        void apply(row, as);
+                    }
+                    return;
+                    function apply(row, aligns) {
+                        const cols = row.children;
+                        void extend(aligns, cols.length);
+                        for (let i = 0; i < cols.length; ++i) {
+                            if (!aligns[i])
+                                continue;
+                            void cols[i].setAttribute('style', `text-align: ${ aligns[i] };`);
                         }
                     }
-                })));
-                const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.trimEnd(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?$/, strict))), es => [typed_dom_1.html('tr', es)]);
+                    function extend(aligns, size) {
+                        return size > aligns.length ? void concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : undefined;
+                    }
+                }
+                const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?\s*$/, strict)), es => [typed_dom_1.html('tr', es)]);
                 const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', ns)]);
-                const data = util_1.defrag(combinator_1.bind(combinator_1.surround(/^\|\s*/, combinator_1.union([combinator_1.some(inline_1.inline, /^\s*(?:\||$)/)]), /^\s*/, false), (ns, rest) => ns.length === 0 && rest === '' ? undefined : [
-                    ns,
-                    rest
-                ]));
-                const align = combinator_1.surround('|', combinator_1.union([
+                const data = util_1.defrag(combinator_1.surround(/^\|(?:\\?\s)*(?=\S)/, combinator_1.some(combinator_1.union([inline_1.inline]), /^(?:\\?\s)*(?=\||\\?$)/), /^[^|]*/, false));
+                const alignment = combinator_1.surround('|', combinator_1.union([
                     combinator_1.focus(/^:-+:/, () => [
                         [typed_dom_1.text('center')],
                         ''
@@ -3379,7 +3375,7 @@ require = function () {
                         media: false
                     }
                 }
-            }, combinator_1.rewrite(combinator_1.surround('[#', combinator_1.some(inline_1.inline, /^\\?\n|^]/), ']'), combinator_1.convert(query => `[${ query.slice(2, -1) }]{#}`, indexee_1.indexee(combinator_1.union([link_1.link]))))), ([el]) => [typed_dom_1.define(el, {
+            }, combinator_1.rewrite(combinator_1.surround('[#', combinator_1.some(inline_1.inline, /^\\?\n|^]/), ']'), combinator_1.convert(source => `[${ source.slice(2, -1) }]{#}`, indexee_1.indexee(combinator_1.union([link_1.link]))))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: `#${ el.id }`
@@ -3941,7 +3937,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const uri_1 = _dereq_('./autolink/uri');
             const media_1 = _dereq_('./media');
-            exports.shortmedia = combinator_1.subline(combinator_1.surround('!', combinator_1.rewrite(uri_1.uri, combinator_1.convert(source => `!{${ uri_1.address(source) }${ uri_1.attribute(source) }}`, combinator_1.union([media_1.media]))), ''));
+            exports.shortmedia = combinator_1.subline(combinator_1.rewrite(combinator_1.surround('!', uri_1.uri, ''), combinator_1.convert(source => `!{ ${ uri_1.address(source.slice(1)) }${ uri_1.attribute(source.slice(1)) } }`, combinator_1.union([media_1.media]))));
         },
         {
             '../../combinator': 29,
@@ -4263,6 +4259,11 @@ require = function () {
                     switch (source[0]) {
                     case '\\':
                         switch (source[1]) {
+                        case undefined:
+                            return [
+                                [],
+                                ''
+                            ];
                         case '\n':
                             return [
                                 [typed_dom_1.html('span', { class: 'linebreak' }, ' ')],
