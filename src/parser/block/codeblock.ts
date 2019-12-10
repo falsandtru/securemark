@@ -15,7 +15,7 @@ export const segment_: CodeBlockParser.SegmentParser = block(validate('```', foc
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/,
-  ([, , lang, param, body]) => rest => {
+  ([, , lang, param, body]) => (rest, state, config) => {
     assert(rest === '');
     [lang, param] = language.test(lang)
       ? [lang, param]
@@ -36,7 +36,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
       void el.setAttribute('data-lang', lang);
     }
     else {
-      void define(el, eval(defrag(some(autolink))(el.textContent!, {}, {})));
+      void define(el, eval(defrag(some(autolink))(el.textContent!, state, config)));
     }
     if (path) {
       void el.setAttribute('data-file', path);
