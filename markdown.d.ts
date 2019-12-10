@@ -164,21 +164,21 @@ export namespace MarkdownParser {
       ], State, Config> {
     }
     export namespace TableParser {
-      export interface RowParser<P extends RowParser.CellParser.IncellParser> extends
+      export interface RowParser<P extends RowParser.CellParser.ContentParser> extends
         Block<'table/row'>,
         Parser<HTMLTableRowElement, [
           RowParser.CellParser<P>,
         ], State, Config> {
       }
       export namespace RowParser {
-        export interface CellParser<P extends CellParser.IncellParser> extends
+        export interface CellParser<P extends CellParser.ContentParser> extends
           Block<'table/row/cell'>,
           Parser<HTMLTableDataCellElement, [
             P,
           ], State, Config> {
         }
         export namespace CellParser {
-          export type IncellParser = DataParser | AlignmentParser;
+          export type ContentParser = DataParser | AlignmentParser;
           export interface DataParser extends
             Block<'table/row/cell/data'>,
             Parser<HTMLElement | Text, [

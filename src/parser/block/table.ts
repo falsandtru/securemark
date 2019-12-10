@@ -56,11 +56,11 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
   }
 }
 
-const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
+const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
   line(trimEnd(surround(/^(?=\|)/, some(union([parser])), /^\|?$/, strict))),
   es => [html('tr', es)]);
 
-const cell = <P extends CellParser.IncellParser>(parser: P): CellParser<P> => fmap(
+const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => fmap(
   union([parser]),
   ns => [html('td', ns)]);
 
