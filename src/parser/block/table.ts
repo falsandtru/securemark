@@ -1,5 +1,5 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, surround, trimEnd, configure, lazy, fmap, bind } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, surround, trimStart, trimEnd, configure, lazy, fmap, bind } from '../../combinator';
 import { inline } from '../inline';
 import { defrag } from '../util';
 import { concat } from 'spica/concat';
@@ -65,8 +65,8 @@ const cell = <P extends CellParser.IncellParser>(parser: P): CellParser<P> => fm
 
 const data: CellParser.DataParser = defrag(bind(
   surround(
-    /^\|\s*/,
-    union([some(inline, /^\s*(?:\||$)/)]),
+    '|',
+    trimStart(some(union([inline]), /^\s*(?:\||$)/)),
     /^\s*/,
     false),
   (ns, rest) =>
