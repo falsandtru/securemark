@@ -15,46 +15,46 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   configure({ syntax: { inline: { media: false } } },
   sequence([
     row(cell(data), false),
-    row(cell(align), true),
+    row(cell(alignment), true),
     some(row(cell(data), false)),
   ]))),
-  ([head, aligns, ...rows]) => {
-    assert(aligns.children.length > 0);
-    void align();
+  ([head, alignment, ...rows]) => {
+    assert(alignment.children.length > 0);
+    void align(head, alignment, rows);
     return [html('table', [html('thead', [head]), html('tbody', rows)])];
-
-    function align(): void {
-      const as = [...aligns.children]
-        .reduce((acc, el) =>
-          concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
-        , []);
-      void apply(head, as.slice(0, 2));
-      for (const row of rows) {
-        void apply(row, as);
-      }
-      return;
-
-      function apply(row: HTMLElement, aligns: string[]): void {
-        const cols = row.children;
-        void extend(aligns, cols.length);
-        assert(cols.length <= aligns.length);
-        assert(aligns.every(align => ['left', 'center', 'right', ''].includes(align)));
-        for (let i = 0; i < cols.length; ++i) {
-          if (!aligns[i]) continue;
-          void cols[i].setAttribute('style', `text-align: ${aligns[i]};`);
-        }
-      }
-
-      function extend(aligns: string[], size: number): void {
-        return size > aligns.length
-          ? void concat(
-              aligns,
-              Array(size - aligns.length)
-                .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
-          : undefined;
-      }
-    }
   })));
+
+function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: HTMLTableRowElement[]): void {
+  const as = [...alignment.children]
+    .reduce((acc, el) =>
+      concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
+    , []);
+  void apply(head, as.slice(0, 2));
+  for (const row of rows) {
+    void apply(row, as);
+  }
+  return;
+
+  function apply(row: HTMLElement, aligns: string[]): void {
+    const cols = row.children;
+    void extend(aligns, cols.length);
+    assert(cols.length <= aligns.length);
+    assert(aligns.every(align => ['left', 'center', 'right', ''].includes(align)));
+    for (let i = 0; i < cols.length; ++i) {
+      if (!aligns[i]) continue;
+      void cols[i].setAttribute('style', `text-align: ${aligns[i]};`);
+    }
+  }
+
+  function extend(aligns: string[], size: number): void {
+    return size > aligns.length
+      ? void concat(
+          aligns,
+          Array(size - aligns.length)
+            .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
+      : undefined;
+  }
+}
 
 const row = <P extends CellParser.IncellParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
   line(trimEnd(surround(/^(?=\|)/, some(union([parser])), /^\|?$/, strict))),
@@ -75,7 +75,7 @@ const data: CellParser.DataParser = defrag(bind(
       ? undefined
       : [ns, rest]));
 
-const align: CellParser.AlignParser =
+const alignment: CellParser.AlignmentParser =
   surround(
     '|',
     union([
