@@ -35,13 +35,14 @@ export const table: TableParser = lazy(() => block(fmap(validate(
       return;
 
       function apply(row: HTMLElement, aligns: string[]): void {
-        void extend(aligns, row.children.length);
-        assert(row.children.length <= aligns.length);
+        const cols = row.children;
+        void extend(aligns, cols.length);
+        assert(cols.length <= aligns.length);
         assert(aligns.every(align => ['left', 'center', 'right', ''].includes(align)));
-        return void [...row.children]
-          .forEach((col, i) =>
-            aligns[i] &&
-            void col.setAttribute('style', `text-align: ${aligns[i]};`));
+        for (let i = 0; i < cols.length; ++i) {
+          if (!aligns[i]) continue;
+          void cols[i].setAttribute('style', `text-align: ${aligns[i]};`);
+        }
       }
 
       function extend(aligns: string[], size: number): void {
