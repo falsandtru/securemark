@@ -1,6 +1,6 @@
 import { CodeParser } from '../inline';
-import { union, some, subline, focus, match } from '../../combinator';
-import { unescsource } from '../source';
+import { union, some, subline, match } from '../../combinator';
+import { char } from '../source';
 import { html } from 'typed-dom';
 
 export const code: CodeParser = subline(union([
@@ -8,5 +8,5 @@ export const code: CodeParser = subline(union([
     /^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/,
     ([whole, , body]) => rest =>
       [[html('code', { 'data-src': whole }, body.trim() || body)], rest]),
-  focus(/^`+/, some(unescsource)),
+  some(char('`')),
 ]));

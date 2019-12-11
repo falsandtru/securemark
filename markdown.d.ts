@@ -677,7 +677,7 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           SourceParser.UnescapableSourceParser,
         ], State, Config>,
-        SourceParser.UnescapableSourceParser,
+        SourceParser.CharParser.BackquoteParser,
       ], State, Config> {
     }
     export interface MathParser extends
@@ -815,6 +815,11 @@ export namespace MarkdownParser {
       export interface EqualParser extends
         // =
         Source<'char/equal'>,
+        Parser<Text, [], State, Config> {
+      }
+      export interface BackquoteParser extends
+        // `
+        Source<'char/backquote'>,
         Parser<Text, [], State, Config> {
       }
     }

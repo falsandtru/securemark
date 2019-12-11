@@ -6,6 +6,7 @@ export function char(char: '#'): CharParser.SharpParser;
 export function char(char: '>'): CharParser.GreaterThanParser;
 export function char(char: '!'): CharParser.ExclamationParser;
 export function char(char: '='): CharParser.EqualParser;
+export function char(char: '`'): CharParser.BackquoteParser;
 export function char(char: string): Parser<Text, []> {
   return source => {
     if (source === '') return;
