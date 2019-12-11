@@ -32,9 +32,9 @@ export const example: ExtensionParser.ExampleParser = block(rewrite(segment, tri
     }),
   match(
     /^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/,
-    ([, , body]) => (rest, state, config) =>
+    ([, , body]) => (rest, config) =>
       [[html('aside', { class: 'example', 'data-type': 'math' }, [
         html('pre', body.slice(1, -1)),
-        ...eval(mathblock(`$$${body}$$`, state, config))
+        ...eval(mathblock(`$$${body}$$`, config))
       ])], rest]),
 ]))));

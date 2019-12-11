@@ -10,10 +10,10 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
   if (!Array.isArray(patterns)) return validate([patterns], parser);
   assert(patterns.some(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
   assert(parser);
-  return (source, state, config) => {
+  return (source, config) => {
     if (source === '') return;
     if (patterns.every(pattern => !match(source, pattern))) return;
-    const result = parser(source, state, config);
+    const result = parser(source, config);
     assert(check(source, result));
     if (!result) return;
     return exec(result).length < source.length
@@ -34,9 +34,9 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
 export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
 export function verify<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, D> {
   assert(parser);
-  return (source, state, config) => {
+  return (source, config) => {
     if (source === '') return;
-    const result = parser(source, state, config);
+    const result = parser(source, config);
     assert(check(source, result));
     if (!result) return;
     if (!cond(eval(result), exec(result))) return;

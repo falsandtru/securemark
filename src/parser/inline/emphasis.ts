@@ -8,7 +8,7 @@ export const emphasis: EmphasisParser = lazy(() => verify(fmap(validate(
   /^\*\S[\s\S]*?\*/,
   configure({ syntax: { inline: { emphasis: false } } },
   surround('*', trimNodeEnd(defrag(some(union([strong, some(inline, '*')])))), '*'))),
-  (ns, _, config) =>
+  (ns, config) =>
     config?.syntax?.inline?.emphasis ?? true
       ? [html('em', ns)]
       : [html('span', { class: 'invalid', 'data-invalid-syntax': 'emphasis', 'data-invalid-type': 'nesting' }, [text('*'), ...ns, text('*')])]),

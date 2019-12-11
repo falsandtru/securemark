@@ -5,13 +5,13 @@ export function surround<T, D extends Parser<unknown>[]>(start: string | RegExp,
   assert(start instanceof RegExp ? !start.global && start.source.startsWith('^') : true);
   assert(end instanceof RegExp ? !end.global && end.source.startsWith('^') : true);
   assert(parser);
-  return (lmr_, state, config) => {
+  return (lmr_, config) => {
     if (lmr_ === '') return;
     const l = match(lmr_, start);
     if (l === undefined) return;
     assert(lmr_.startsWith(l));
     const mr_ = l ? lmr_.slice(l.length) : lmr_;
-    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, state, config) || [];
+    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, config) || [];
     if (strict && r_.length === mr_.length) return;
     if (r_.length > mr_.length) return;
     assert(mr_.endsWith(r_));

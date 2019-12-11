@@ -15,13 +15,13 @@ export const segment_: CodeBlockParser.SegmentParser = block(validate('```', foc
 
 export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
   /^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/,
-  ([, , lang, param, body]) => (rest, state, config) => {
+  ([, , lang, param, body]) => (rest, config) => {
     assert(rest === '');
     [lang, param] = language.test(lang)
       ? [lang, param]
       : ['', lang + param];
     param = param.trim();
-    const path = stringify(eval(some(escsource, /^\s/)(param, {}, {})));
+    const path = stringify(eval(some(escsource, /^\s/)(param, {})));
     const file = path.split('/').pop() || '';
     const ext = file && file.includes('.') && !file.startsWith('.')
       ? file.split('.').pop()!
@@ -36,7 +36,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
       void el.setAttribute('data-lang', lang);
     }
     else {
-      void define(el, eval(defrag(some(autolink))(el.textContent!, state, config)));
+      void define(el, eval(defrag(some(autolink))(el.textContent!, config)));
     }
     if (path) {
       void el.setAttribute('data-file', path);

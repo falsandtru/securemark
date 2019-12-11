@@ -20,7 +20,7 @@ export function segment(source: string): string[] {
   assert(source === normalize(source));
   const segments: string[] = [];
   while (source !== '') {
-    const rest = exec(parser(source, {}, {}));
+    const rest = exec(parser(source, {}));
     assert(source.slice(1).endsWith(rest));
     void segments.push(
       source.length - rest.length > 100_000

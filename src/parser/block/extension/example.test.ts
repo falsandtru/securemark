@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/block/extension/example', () => {
   describe('example', () => {
-    const parser = (source: string) => some(example)(source, {}, {});
+    const parser = (source: string) => some(example)(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\n~~~\n~~~')), undefined);

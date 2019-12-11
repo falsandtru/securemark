@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/autolink/uri', () => {
   describe('uri', () => {
-    const parser = (source: string) => some(autolink)(source, {}, {});
+    const parser = (source: string) => some(autolink)(source, {});
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);

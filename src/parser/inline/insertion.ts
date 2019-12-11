@@ -7,7 +7,7 @@ export const insertion: InsertionParser = lazy(() => fmap(validate(
   /^\+\+[\s\S]+?\+\+/,
   configure({ syntax: { inline: { insertion: false, deletion: false } } },
   surround('++', defrag(some(union([inline]), '++')), '++'))),
-  (ns, _, config) =>
+  (ns, config) =>
     config?.syntax?.inline?.insertion ?? true
       ? [html('ins', ns)]
       : [html('span', { class: 'invalid', 'data-invalid-syntax': 'insertion', 'data-invalid-type': 'nesting' }, [text('++'), ...ns, text('++')])]));

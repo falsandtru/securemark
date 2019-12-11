@@ -9,9 +9,9 @@ export function union<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
     case 1:
       return parsers[0];
     default:
-      return (source, state, config) => {
+      return (source, config) => {
         for (const parser of parsers) {
-          const result = parser(source, state, config);
+          const result = parser(source, config);
           assert(check(source, result));
           if (result) return result;
         }

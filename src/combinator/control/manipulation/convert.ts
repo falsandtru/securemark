@@ -3,11 +3,11 @@ import { Parser } from '../../data/parser';
 export function convert<P extends Parser<unknown>>(conv: (source: string) => string, parser: P): P;
 export function convert<T, D extends Parser<unknown>[]>(conv: (source: string) => string, parser: Parser<T, D>): Parser<T, D> {
   assert(parser);
-  return (source, state, config) => {
+  return (source, config) => {
     if (source === '') return;
     source = conv(source);
     return source === ''
       ? [[], '']
-      : parser(source, state, config);
+      : parser(source, config);
   };
 }

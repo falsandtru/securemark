@@ -7,7 +7,7 @@ export const strong: StrongParser = lazy(() => verify(fmap(validate(
   /^\*\*\S[\s\S]*?\*\*/,
   configure({ syntax: { inline: { strong: false } } },
   surround('**', trimNodeEnd(defrag(union([some(inline, '**')]))), '**'))),
-  (ns, _, config) =>
+  (ns, config) =>
     config?.syntax?.inline?.strong ?? true
       ? [html('strong', ns)]
       : [html('span', { class: 'invalid', 'data-invalid-syntax': 'strong', 'data-invalid-type': 'nesting' }, [text('**'), ...ns, text('**')])]),

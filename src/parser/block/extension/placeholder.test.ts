@@ -3,7 +3,7 @@ import { some } from '../../../combinator';
 
 describe('Unit: parser/block/extension/placeholder', () => {
   describe('placeholder', () => {
-    const parser = (source: string) => some(placeholder)(source, {}, {});
+    const parser = (source: string) => some(placeholder)(source, {});
 
     it('invalid', () => {
       assert(!parser('~~~'));
