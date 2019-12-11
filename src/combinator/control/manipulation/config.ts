@@ -16,7 +16,7 @@ const singleton = Obj.freeze({});
 export function configure<P extends Parser<object>>(config: Config<P>, parser: P): P;
 export function configure<T extends object, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(config: C, parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
   const memory = new WeakMap<C, C>();
-  return (source, state: S, base: C) => {
+  return (source, state, base) => {
     base = !memory.has(base) && Obj.keys(base).length === 0
       ? singleton as C
       : base;
