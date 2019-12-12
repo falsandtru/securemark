@@ -57,55 +57,55 @@ require = function () {
             const type_1 = _dereq_('./type');
             const concat_1 = _dereq_('./concat');
             const {Object: Obj} = global_1.global;
-            exports.assign = template((key, target, source) => target[key] = source[key]);
-            exports.clone = template((key, target, source) => {
-                switch (type_1.type(source[key])) {
+            exports.assign = template((prop, target, source) => target[prop] = source[prop]);
+            exports.clone = template((prop, target, source) => {
+                switch (type_1.type(source[prop])) {
                 case 'Array':
-                    return target[key] = exports.clone([], source[key]);
+                    return target[prop] = exports.clone([], source[prop]);
                 case 'Object':
-                    switch (type_1.type(target[key])) {
+                    switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[key] = exports.clone(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
+                        return target[prop] = exports.clone(source[prop] instanceof Obj ? {} : Obj.create(null), source[prop]);
                     default:
-                        return target[key] = source[key];
+                        return target[prop] = source[prop];
                     }
                 default:
-                    return target[key] = source[key];
+                    return target[prop] = source[prop];
                 }
             });
-            exports.extend = template((key, target, source) => {
-                switch (type_1.type(source[key])) {
+            exports.extend = template((prop, target, source) => {
+                switch (type_1.type(source[prop])) {
                 case 'Array':
-                    return target[key] = exports.extend([], source[key]);
+                    return target[prop] = exports.extend([], source[prop]);
                 case 'Object':
-                    switch (type_1.type(target[key])) {
+                    switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[key] = exports.extend(target[key], source[key]);
+                        return target[prop] = exports.extend(target[prop], source[prop]);
                     default:
-                        return target[key] = exports.extend(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
+                        return target[prop] = exports.extend(source[prop] instanceof Obj ? {} : Obj.create(null), source[prop]);
                     }
                 default:
-                    return target[key] = source[key];
+                    return target[prop] = source[prop];
                 }
             });
-            exports.merge = template((key, target, source) => {
-                switch (type_1.type(source[key])) {
+            exports.merge = template((prop, target, source) => {
+                switch (type_1.type(source[prop])) {
                 case 'Array':
-                    switch (type_1.type(target[key])) {
+                    switch (type_1.type(target[prop])) {
                     case 'Array':
-                        return target[key] = concat_1.concat(target[key], source[key]);
+                        return target[prop] = concat_1.concat(target[prop], source[prop]);
                     default:
-                        return target[key] = exports.merge([], source[key]);
+                        return target[prop] = exports.merge([], source[prop]);
                     }
                 case 'Object':
-                    switch (type_1.type(target[key])) {
+                    switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[key] = exports.merge(target[key], source[key]);
+                        return target[prop] = exports.merge(target[prop], source[prop]);
                     default:
-                        return target[key] = exports.merge(source[key] instanceof Obj ? {} : Obj.create(null), source[key]);
+                        return target[prop] = exports.merge(source[prop] instanceof Obj ? {} : Obj.create(null), source[prop]);
                     }
                 default:
-                    return target[key] = source[key];
+                    return target[prop] = source[prop];
                 }
             });
             function template(strategy, empty = empty_) {
@@ -122,8 +122,10 @@ require = function () {
                                 target = empty(source);
                                 isPrimitiveTarget = isPrimitiveSource;
                             }
-                            for (const key of Obj.keys(source)) {
-                                void strategy(key, target, source);
+                            for (const prop in source) {
+                                if (source.hasOwnProperty && !source.hasOwnProperty(prop))
+                                    continue;
+                                void strategy(prop, target, source);
                             }
                         }
                     }
@@ -466,8 +468,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const global_1 = _dereq_('./global');
-            const {Object: Obj} = global_1.global;
+            const toString = Object.prototype.toString;
             function type(value) {
                 const t = value == null ? value : typeof value;
                 switch (t) {
@@ -481,7 +482,7 @@ require = function () {
                 case 'symbol':
                     return t;
                 default:
-                    return Obj.prototype.toString.call(value).slice(8, -1);
+                    return toString.call(value).slice(8, -1);
                 }
             }
             exports.type = type;
@@ -501,7 +502,7 @@ require = function () {
             }
             exports.isPrimitive = isPrimitive;
         },
-        { './global': 12 }
+        {}
     ],
     17: [
         function (_dereq_, module, exports) {
