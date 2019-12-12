@@ -468,12 +468,12 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const global_1 = _dereq_('./global');
             const {Object: Obj} = global_1.global;
-            function type(target) {
-                const t = target == null ? target : typeof target;
+            function type(value) {
+                const t = value == null ? value : typeof value;
                 switch (t) {
                 case undefined:
                 case null:
-                    return `${ target }`;
+                    return `${ value }`;
                 case 'boolean':
                 case 'number':
                 case 'bigint':
@@ -481,12 +481,12 @@ require = function () {
                 case 'symbol':
                     return t;
                 default:
-                    return Obj.prototype.toString.call(target).slice(8, -1);
+                    return Obj.prototype.toString.call(value).slice(8, -1);
                 }
             }
             exports.type = type;
-            function isPrimitive(target) {
-                switch (type(target)) {
+            function isPrimitive(value) {
+                switch (type(value)) {
                 case 'undefined':
                 case 'null':
                 case 'boolean':
@@ -711,7 +711,10 @@ require = function () {
                             if (tag !== el.tagName.toLowerCase())
                                 throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
                             if (factory !== defaultFactory) {
-                                for (const [k, v] of Obj.entries(attrs)) {
+                                for (const k in attrs) {
+                                    if (!attrs.hasOwnProperty(k))
+                                        continue;
+                                    const v = attrs[k];
                                     if (typeof v !== 'function')
                                         continue;
                                     void el.removeEventListener(k, v);
@@ -829,7 +832,11 @@ require = function () {
                             throw new Error(`TypedDOM: Unreachable code.`);
                         }
                         function observe(node, children) {
-                            return Obj.defineProperties(children, Obj.entries(children).reduce((descs, [name, child]) => {
+                            const descs = {};
+                            for (const name in children) {
+                                if (!children.hasOwnProperty(name))
+                                    continue;
+                                let child = children[name];
                                 void throwErrorIfNotUsable(child);
                                 void node.appendChild(child.element);
                                 descs[name] = {
@@ -849,8 +856,8 @@ require = function () {
                                         child = newChild;
                                     }
                                 };
-                                return descs;
-                            }, {}));
+                            }
+                            return Obj.defineProperties(children, descs);
                         }
                     }
                     get id() {
@@ -1019,10 +1026,7 @@ require = function () {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const {
-                    Object: Obj,
-                    document
-                } = global;
+                const {document} = global;
                 const shadows = new WeakMap();
                 var cache;
                 (function (cache) {
@@ -1085,12 +1089,16 @@ require = function () {
                         return define(el, undefined, attrs);
                     if (typeof children === 'string')
                         return define(el, attrs, [text(children)]);
-                    void Obj.entries(attrs).forEach(([name, value]) => {
+                    for (const name in attrs) {
+                        if (!attrs.hasOwnProperty(name))
+                            continue;
+                        const value = attrs[name];
                         switch (typeof value) {
                         case 'string':
-                            return void el.setAttribute(name, value);
+                            void el.setAttribute(name, value);
+                            break;
                         case 'function':
-                            return void el.addEventListener(name.slice(2), value, {
+                            void el.addEventListener(name.slice(2), value, {
                                 passive: [
                                     'wheel',
                                     'mousewheel',
@@ -1098,12 +1106,14 @@ require = function () {
                                     'touchmove'
                                 ].includes(name.slice(2))
                             });
+                            break;
                         case 'object':
-                            return void el.removeAttribute(name);
+                            void el.removeAttribute(name);
+                            break;
                         default:
-                            return;
+                            break;
                         }
-                    });
+                    }
                     if (children) {
                         el.innerHTML = '';
                         while (el.firstChild) {
@@ -1249,10 +1259,10 @@ require = function () {
             const parser_1 = _dereq_('../../data/parser');
             const line_1 = _dereq_('./line');
             function block(parser, separation = true) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
-                    const result = parser(source, state, config);
+                    const result = parser(source, config);
                     if (!result)
                         return;
                     const rest = parser_1.exec(result);
@@ -1280,12 +1290,12 @@ require = function () {
             function validate(patterns, parser) {
                 if (!Array.isArray(patterns))
                     return validate([patterns], parser);
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
                     if (patterns.every(pattern => !match(source, pattern)))
                         return;
-                    const result = parser(source, state, config);
+                    const result = parser(source, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length ? result : undefined;
@@ -1301,10 +1311,10 @@ require = function () {
             }
             exports.validate = validate;
             function verify(parser, cond) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
-                    const result = parser(source, state, config);
+                    const result = parser(source, config);
                     if (!result)
                         return;
                     if (!cond(parser_1.eval(result), parser_1.exec(result)))
@@ -1322,11 +1332,11 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function line(parser, allowTrailingWhitespace = true) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
                     const fst = firstline(source);
-                    const result = parser(fst, state, config);
+                    const result = parser(fst, config);
                     if (!result)
                         return;
                     return (allowTrailingWhitespace ? parser_1.exec(result).trim() === '' : parser_1.exec(result) === '') ? [
@@ -1337,10 +1347,10 @@ require = function () {
             }
             exports.line = line;
             function subline(parser) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
-                    const result = parser(source, state, config);
+                    const result = parser(source, config);
                     if (!result)
                         return result;
                     return source.length - parser_1.exec(result).length <= firstline(source, false).length ? result : undefined;
@@ -1361,13 +1371,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function focus(scope, parser) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
                     const [src = ''] = typeof scope === 'string' ? source.startsWith(scope) ? [scope] : [] : source.match(scope) || [];
                     if (src === '')
                         return;
-                    const result = parser(src, state, config);
+                    const result = parser(src, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < src.length ? [
@@ -1378,14 +1388,14 @@ require = function () {
             }
             exports.focus = focus;
             function rewrite(scope, parser) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
-                    const res1 = scope(source, state, config);
+                    const res1 = scope(source, config);
                     if (!res1 || parser_1.exec(res1).length >= source.length)
                         return;
                     const src = source.slice(0, source.length - parser_1.exec(res1).length);
-                    const res2 = parser(src, state, config);
+                    const res2 = parser(src, config);
                     if (!res2)
                         return;
                     return parser_1.exec(res2).length < src.length ? [
@@ -1409,15 +1419,15 @@ require = function () {
                     WeakMap
                 } = global;
                 function guard(f, parser) {
-                    return (source, state, config) => f(config) ? parser(source, state, config) : undefined;
+                    return (source, config) => f(config) ? parser(source, config) : undefined;
                 }
                 exports.guard = guard;
                 const singleton = Obj.freeze({});
                 function configure(config, parser) {
                     const memory = new WeakMap();
-                    return (source, state, base) => {
+                    return (source, base) => {
                         base = !memory.has(base) && Obj.keys(base).length === 0 ? singleton : base;
-                        return parser(source, state, memory.get(base) || memory.set(base, assign_1.extend({}, base, config)).get(base));
+                        return parser(source, memory.get(base) || memory.set(base, assign_1.extend({}, base, config)).get(base));
                     };
                 }
                 exports.configure = configure;
@@ -1430,14 +1440,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function convert(conv, parser) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
                     source = conv(source);
                     return source === '' ? [
                         [],
                         ''
-                    ] : parser(source, state, config);
+                    ] : parser(source, config);
                 };
             }
             exports.convert = convert;
@@ -1462,8 +1472,8 @@ require = function () {
                 ], surround_1.surround(indent, source => [
                     [line_1.firstline(source, false)],
                     ''
-                ], '')))))), (rs, rest, state, config) => {
-                    const result = parser(rs.join('\n'), state, config);
+                ], '')))))), (rs, rest, config) => {
+                    const result = parser(rs.join('\n'), config);
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
                         rest
@@ -1488,7 +1498,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             function lazy(builder) {
                 let parser;
-                return (source, state, config) => (parser = parser || builder())(source, state, config);
+                return (source, config) => (parser = parser || builder())(source, config);
             }
             exports.lazy = lazy;
         },
@@ -1501,14 +1511,14 @@ require = function () {
             const parser_1 = _dereq_('../../data/parser');
             const memoization_1 = _dereq_('spica/memoization');
             function match(pattern, f) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
                     const param = source.match(pattern);
                     if (!param)
                         return;
                     const rest = source.slice(param[0].length);
-                    const result = f(param)(rest, state, config);
+                    const result = f(param)(rest, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length && parser_1.exec(result).length <= rest.length ? result : undefined;
@@ -1534,14 +1544,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function surround(start, parser, end, strict = true) {
-                return (lmr_, state, config) => {
+                return (lmr_, config) => {
                     if (lmr_ === '')
                         return;
                     const l = match(lmr_, start);
                     if (l === undefined)
                         return;
                     const mr_ = l ? lmr_.slice(l.length) : lmr_;
-                    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, state, config) || [];
+                    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, config) || [];
                     if (strict && r_.length === mr_.length)
                         return;
                     if (r_.length > mr_.length)
@@ -1593,13 +1603,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function bind(parser, f) {
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === '')
                         return;
-                    const res1 = parser(source, state, config);
+                    const res1 = parser(source, config);
                     if (!res1)
                         return;
-                    const res2 = f(parser_1.eval(res1), parser_1.exec(res1), state, config);
+                    const res2 = f(parser_1.eval(res1), parser_1.exec(res1), config);
                     if (!res2)
                         return;
                     return parser_1.exec(res2).length <= parser_1.exec(res1).length ? res2 : undefined;
@@ -1615,8 +1625,8 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const bind_1 = _dereq_('./bind');
             function fmap(parser, f) {
-                return bind_1.bind(parser, (rs, r, state, config) => [
-                    f(rs, state, config),
+                return bind_1.bind(parser, (rs, r, config) => [
+                    f(rs, config),
                     r
                 ]);
             }
@@ -1650,13 +1660,13 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const concat_1 = _dereq_('spica/concat');
             function inits(parsers) {
-                return (source, state, config) => {
+                return (source, config) => {
                     let rest = source;
                     const data = [];
                     for (const parser of parsers) {
                         if (rest === '')
                             break;
-                        const result = parser(rest, state, config);
+                        const result = parser(rest, config);
                         if (!result)
                             break;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -1682,13 +1692,13 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const concat_1 = _dereq_('spica/concat');
             function sequence(parsers) {
-                return (source, state, config) => {
+                return (source, config) => {
                     let rest = source;
                     const data = [];
                     for (const parser of parsers) {
                         if (rest === '')
                             return;
-                        const result = parser(rest, state, config);
+                        const result = parser(rest, config);
                         if (!result)
                             return;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -1715,7 +1725,7 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             function some(parser, until) {
                 let memory = '';
-                return (source, state, config) => {
+                return (source, config) => {
                     if (source === memory)
                         return;
                     let rest = source;
@@ -1725,7 +1735,7 @@ require = function () {
                             break;
                         if (until && match(rest, until))
                             break;
-                        const result = parser(rest, state, config);
+                        const result = parser(rest, config);
                         if (!result)
                             break;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -1806,9 +1816,9 @@ require = function () {
                 case 1:
                     return parsers[0];
                 default:
-                    return (source, state, config) => {
+                    return (source, config) => {
                         for (const parser of parsers) {
-                            const result = parser(source, state, config);
+                            const result = parser(source, config);
                             if (result)
                                 return result;
                         }
@@ -1882,7 +1892,7 @@ require = function () {
                     let position = start;
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
                         const skip = position < pairs.length && segment === pairs[position][0];
-                        const elements = skip ? pairs[position][1] : combinator_1.eval(block_1.block(segment, {}, {}));
+                        const elements = skip ? pairs[position][1] : combinator_1.eval(block_1.block(segment, {}));
                         for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [
                                 segment,
                                 elements
@@ -2003,7 +2013,7 @@ require = function () {
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
             function parse(source, opts = {}) {
-                const node = typed_dom_1.frag(segment_1.segment(normalization_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg, {}, {}))), []));
+                const node = typed_dom_1.frag(segment_1.segment(normalization_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg, {}))), []));
                 opts.figure !== false && void util_1.figure(node);
                 opts.footnote && void util_1.footnote(node, opts.footnote);
                 return node;
@@ -2150,7 +2160,7 @@ require = function () {
                 [],
                 ''
             ])), false);
-            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => (rest, state, config) => {
+            exports.codeblock = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.match(/^(`{3,})(?!`)(\S*)([^\n]*)\n([\s\S]*)\1$/, ([, , lang, param, body]) => (rest, config) => {
                 [lang, param] = language.test(lang) ? [
                     lang,
                     param
@@ -2159,7 +2169,7 @@ require = function () {
                     lang + param
                 ];
                 param = param.trim();
-                const path = util_1.stringify(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, {}, {})));
+                const path = util_1.stringify(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, {})));
                 const file = path.split('/').pop() || '';
                 const ext = file && file.includes('.') && !file.startsWith('.') ? file.split('.').pop() : '';
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
@@ -2169,7 +2179,7 @@ require = function () {
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
-                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, state, config)));
+                    void typed_dom_1.define(el, combinator_1.eval(util_1.defrag(combinator_1.some(autolink_1.autolink))(el.textContent, config)));
                 }
                 if (path) {
                     void el.setAttribute('data-file', path);
@@ -2300,13 +2310,13 @@ require = function () {
                         rest
                     ];
                 }),
-                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => (rest, state, config) => [
+                combinator_1.match(/^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/, ([, , body]) => (rest, config) => [
                     [typed_dom_1.html('aside', {
                             class: 'example',
                             'data-type': 'math'
                         }, [
                             typed_dom_1.html('pre', body.slice(1, -1)),
-                            ...combinator_1.eval(mathblock_1.mathblock(`$$${ body }$$`, state, config))
+                            ...combinator_1.eval(mathblock_1.mathblock(`$$${ body }$$`, config))
                         ])],
                     rest
                 ])
@@ -2454,7 +2464,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-type': 'syntax'
-                    }, combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: Extension: Invalid extension name, attribute, or content.', {}, {})))],
+                    }, combinator_1.eval(combinator_1.some(inline_1.inline)('Invalid syntax: Extension: Invalid extension name, attribute, or content.', {})))],
                 ''
             ]));
         },
@@ -2522,7 +2532,7 @@ require = function () {
                         olist_1.olist_,
                         exports.ilist_
                     ]))
-                ]), () => [typed_dom_1.html('li', combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: UList: Use `-` instead.', {}, {})))])]))), es => [typed_dom_1.html('ul', {
+                ]), () => [typed_dom_1.html('li', combinator_1.eval(util_1.defrag(combinator_1.some(inline_1.inline))('Invalid syntax: UList: Use `-` instead.', {})))])]))), es => [typed_dom_1.html('ul', {
                     class: 'invalid',
                     'data-invalid-syntax': 'list',
                     'data-invalid-type': 'syntax'
@@ -3099,11 +3109,11 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.subline(combinator_1.focus(/^#[0-9]+(?![a-zA-Z]|[^\x00-\x7F\s])/, tag => [
+            exports.hashref = combinator_1.subline(combinator_1.focus(/^#[0-9]+(?![a-zA-Z]|[^\x00-\x7F\s])/, ref => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
                         rel: 'noopener'
-                    }, tag)],
+                    }, ref)],
                 ''
             ]));
         },
@@ -3208,7 +3218,7 @@ require = function () {
                     [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
                     rest
                 ]),
-                combinator_1.focus(/^`+/, combinator_1.some(source_1.unescsource))
+                combinator_1.some(source_1.char('`'))
             ]));
         },
         {
@@ -3251,7 +3261,7 @@ require = function () {
                         deletion: false
                     }
                 }
-            }, combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '~~')), '~~'))), (ns, _, config) => {
+            }, combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '~~')), '~~'))), (ns, config) => {
                 var _a, _b, _c;
                 return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.deletion) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('del', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
@@ -3283,7 +3293,7 @@ require = function () {
             exports.emphasis = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\S[\s\S]*?\*/, combinator_1.configure({ syntax: { inline: { emphasis: false } } }, combinator_1.surround('*', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
-            ])))), '*'))), (ns, _, config) => {
+            ])))), '*'))), (ns, config) => {
                 var _a, _b, _c;
                 return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.emphasis) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('em', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
@@ -3497,7 +3507,7 @@ require = function () {
                     class: 'invalid',
                     'data-invalid-syntax': 'extension',
                     'data-invalid-type': 'syntax'
-                }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`, {}, {})))])));
+                }, combinator_1.eval(combinator_1.some(inline_1.inline)(`Invalid syntax: Extension: Invalid flag.`, {})))])));
         },
         {
             '../../../combinator': 29,
@@ -3620,7 +3630,7 @@ require = function () {
                         deletion: false
                     }
                 }
-            }, combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '++')), '++'))), (ns, _, config) => {
+            }, combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '++')), '++'))), (ns, config) => {
                 var _a, _b, _c;
                 return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.insertion) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('ins', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
@@ -3845,7 +3855,7 @@ require = function () {
                         void typed_dom_1.define(media, { alt: text });
                     }
                     void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, media.className.trim().split(/\s+/), 'media'));
-                    return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [media])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, {}, {});
+                    return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [media])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, {});
                 }));
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
@@ -3953,7 +3963,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.configure({ syntax: { inline: { strong: false } } }, combinator_1.surround('**', util_1.trimNodeEnd(util_1.defrag(combinator_1.union([combinator_1.some(inline_1.inline, '**')]))), '**'))), (ns, _, config) => {
+            exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.configure({ syntax: { inline: { strong: false } } }, combinator_1.surround('**', util_1.trimNodeEnd(util_1.defrag(combinator_1.union([combinator_1.some(inline_1.inline, '**')]))), '**'))), (ns, config) => {
                 var _a, _b, _c;
                 return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.strong) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('strong', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
@@ -4093,7 +4103,7 @@ require = function () {
             function segment(source) {
                 const segments = [];
                 while (source !== '') {
-                    const rest = combinator_1.exec(parser(source, {}, {}));
+                    const rest = combinator_1.exec(parser(source, {}));
                     void segments.push(source.length - rest.length > 100000 ? '# ***Too large block***' : source.slice(0, source.length - rest.length));
                     source = rest;
                 }
