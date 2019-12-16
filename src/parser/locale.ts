@@ -36,7 +36,7 @@ function endingChar(node: Node | null): string {
 function text(node: Node): string {
   switch (node.nodeName) {
     case 'RUBY':
-      for (let i = node.childNodes.length - 1; i >= 0; --i) {
+      for (let i = node.childNodes.length; i--;) {
         const child = node.childNodes[i];
         switch (child.nodeName) {
           case 'RT':
