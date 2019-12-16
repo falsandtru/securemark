@@ -47,7 +47,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       void ++position;
       if (skip) continue;
       base = base === undefined
-        ? bottom(start, position)
+        ? bottom(target, start, position)
         : base;
       assert(elements.length < 2);
       for (const el of elements) {
@@ -70,14 +70,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     void footnote(target, cfgs.footnote);
   };
 
-  function bottom(start: number, position: number): Node | null {
+  function bottom(container: Node, start: number, position: number): Node | null {
     assert(start <= pairs.length);
-    if (pairs.length === 0) return target.firstChild;
+    if (pairs.length === 0) return container.firstChild;
     for (let i = start; i-- && i < pairs.length;) {
       const [, es] = pairs[i];
       for (let i = es.length; i--;) {
         const el = es[i];
-        if (el.parentNode !== target) continue;
+        if (el.parentNode !== container) continue;
         return el.nextSibling;
       }
     }
@@ -85,10 +85,10 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       const [, es] = pairs[i];
       for (let i = 0; i < es.length; ++i) {
         const el = es[i];
-        if (el.parentNode !== target) continue;
+        if (el.parentNode !== container) continue;
         return el;
       }
     }
-    return target.firstChild;
+    return container.firstChild;
   }
 }
