@@ -84,13 +84,15 @@ describe('Unit: parser/api/bind', () => {
 
       try {
         for (const _ of update('0\n\n1')) {
-          assert.deepStrictEqual(inspect(update('2')), ['<p>2</p>']);
-          assert(el.innerHTML === '<p>2</p>');
-          assert.deepStrictEqual(inspect(update('3')), ['<p>3</p>']);
+          assert.deepStrictEqual(inspect(update('0\n\n1\n\n2')), ['<p>1</p>', '<p>2</p>']);
+          assert(el.innerHTML === '<p>0</p><p>1</p><p>2</p>');
+          assert.deepStrictEqual(inspect(update('3\n')), ['<p>3</p>']);
         }
       }
-      catch {
+      catch (err) {
+        assert(err instanceof Error && err.message === `Abort by reentering.`);
         assert(el.innerHTML === '<p>3</p>');
+        assert.deepStrictEqual(inspect(update('3\n\n4')), ['<p>4</p>']);
       }
     });
 

@@ -47,7 +47,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       void ++position;
       if (skip) continue;
       base = base === undefined
-        ? bottom(start, position) || target.firstChild
+        ? bottom(start, position)
         : base;
       assert(elements.length < 2);
       for (const el of elements) {
@@ -72,9 +72,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
 
   function bottom(start: number, position: number): Node | null {
     assert(start <= pairs.length);
-    if (pairs.length === 0) return null;
-    if (start === pairs.length) return bottom(pairs.length - 1, position)?.nextSibling ?? null;
-    for (let i = start; i >= 0 && i < pairs.length; --i) {
+    if (pairs.length === 0) return target.firstChild;
+    for (let i = start - 1; i >= 0 && i < pairs.length; --i) {
       const [, es] = pairs[i];
       for (let i = es.length - 1; i >= 0; --i) {
         const el = es[i];
@@ -90,6 +89,6 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         return el;
       }
     }
-    return null;
+    return target.firstChild;
   }
 }
