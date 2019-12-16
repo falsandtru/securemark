@@ -1910,7 +1910,7 @@ require = function () {
                         void ++position;
                         if (skip)
                             continue;
-                        base = base === undefined ? bottom(start, position) || target.firstChild : base;
+                        base = base === undefined ? bottom(target, start, position) : base;
                         for (const el of elements) {
                             base = target.insertBefore(el, base).nextSibling;
                             yield el;
@@ -1928,17 +1928,14 @@ require = function () {
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
                 };
-                function bottom(start, position) {
-                    var _a, _b;
+                function bottom(container, start, position) {
                     if (pairs.length === 0)
-                        return null;
-                    if (start === pairs.length)
-                        return (_b = (_a = bottom(pairs.length - 1, position)) === null || _a === void 0 ? void 0 : _a.nextSibling) !== null && _b !== void 0 ? _b : null;
-                    for (let i = start; i >= 0 && i < pairs.length; --i) {
+                        return container.firstChild;
+                    for (let i = start; i-- && i < pairs.length;) {
                         const [, es] = pairs[i];
-                        for (let i = es.length - 1; i >= 0; --i) {
+                        for (let i = es.length; i--;) {
                             const el = es[i];
-                            if (el.parentNode !== target)
+                            if (el.parentNode !== container)
                                 continue;
                             return el.nextSibling;
                         }
@@ -1947,12 +1944,12 @@ require = function () {
                         const [, es] = pairs[i];
                         for (let i = 0; i < es.length; ++i) {
                             const el = es[i];
-                            if (el.parentNode !== target)
+                            if (el.parentNode !== container)
                                 continue;
                             return el;
                         }
                     }
-                    return null;
+                    return container.firstChild;
                 }
             }
             exports.bind = bind;
@@ -4050,7 +4047,7 @@ require = function () {
             function text(node) {
                 switch (node.nodeName) {
                 case 'RUBY':
-                    for (let i = node.childNodes.length - 1; i >= 0; --i) {
+                    for (let i = node.childNodes.length; i--;) {
                         const child = node.childNodes[i];
                         switch (child.nodeName) {
                         case 'RT':
