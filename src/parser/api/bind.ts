@@ -6,7 +6,7 @@ import { normalize } from './normalization';
 import { figure, footnote } from '../../util';
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
-  type Pair = [string, readonly HTMLElement[]];
+  type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   let revision: symbol;
   return function* (source: string): Generator<HTMLElement, undefined, undefined> {
@@ -26,15 +26,15 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     }
     assert(end <= targetSegments.length);
     assert(start + end <= targetSegments.length);
-    let position = start;
-    let base: Node | null | undefined = bottom(target, position);
+    let index = start;
+    let base: Node | null | undefined = next(index);
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(revision === rev);
-      const skip = position < pairs.length && segment === pairs[position][0];
+      const skip = index < pairs.length && segment === pairs[index][0];
       const elements = skip
-        ? pairs[position][1]
+        ? pairs[index][1]
         : eval(block(segment, {}));
-      for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [segment, elements])) {
+      for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
           if (!el.parentNode) continue;
           assert(el.parentNode === target);
@@ -44,7 +44,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           void el.remove();
         }
       }
-      void ++position;
+      void ++index;
       if (skip) continue;
       assert(elements.length < 2);
       for (const el of elements) {
@@ -54,7 +54,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         if (revision !== rev) throw new Error(`Abort by reentering.`);
       }
     }
-    for (const [, es] of pairs.splice(position, pairs.length - position - end)) {
+    for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
       for (const el of es) {
         if (!el.parentNode) continue;
         assert(el.parentNode === target);
@@ -67,25 +67,25 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     void footnote(target, cfgs.footnote);
   };
 
-  function bottom(container: Node, position: number): Node | null {
-    assert(position >= 0);
-    assert(position <= pairs.length);
-    for (let i = position; i-- && i < pairs.length;) {
+  function next(index: number): Node | null {
+    assert(index >= 0);
+    assert(index <= pairs.length);
+    for (let i = index; i-- && i < pairs.length;) {
       const [, es] = pairs[i];
       for (let i = es.length; i--;) {
         const el = es[i];
-        if (el.parentNode !== container) continue;
+        if (el.parentNode !== target) continue;
         return el.nextSibling;
       }
     }
-    for (let i = position; i < pairs.length; ++i) {
+    for (let i = index; i < pairs.length; ++i) {
       const [, es] = pairs[i];
       for (let i = 0; i < es.length; ++i) {
         const el = es[i];
-        if (el.parentNode !== container) continue;
+        if (el.parentNode !== target) continue;
         return el;
       }
     }
-    return container.firstChild;
+    return target.firstChild;
   }
 }
