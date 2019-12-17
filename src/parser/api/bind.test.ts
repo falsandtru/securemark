@@ -5,7 +5,7 @@ import { html } from 'typed-dom';
 describe('Unit: parser/api/bind', () => {
   describe('bind', () => {
     function inspect(iter: Iterable<HTMLElement>) {
-      return [...iter].map(e => e.outerHTML);
+      return [...iter].filter(e => e.parentNode).map(e => e.outerHTML);
     }
     const cfgs: ParserConfigs = { footnote: { annotation: html('ol'), reference: html('ol') } };
 

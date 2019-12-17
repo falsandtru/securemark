@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.140.0
+
+- Change bind function to also yield removed elements.
+
 ## 0.139.3
 
 - Refactoring.
@@ -14,7 +18,7 @@
 
 ## 0.139.0
 
-- Change segment separator to empty lines only. 
+- Change segment separator to empty lines only.
 
 ## 0.138.1
 

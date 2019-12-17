@@ -357,7 +357,9 @@
     let time = 0;
     let resource = 100;
     for (const el of parse(document.getElementById('editor').value)) {
-      observer.observe(el);
+      el.parentNode
+         ? observer.observe(el)
+         : observer.unobserve(el);
       delta = Date.now() - start;
       time += delta;
       resource = resource - delta > 0

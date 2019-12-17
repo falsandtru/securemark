@@ -36,14 +36,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         : eval(block(segment, {}));
       for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
-          if (!el.parentNode) continue;
-          assert(el.parentNode === target);
           assert(el === base);
           base = el.parentNode === target
             ? el.nextSibling
             : base;
           if (skip) continue;
-          void el.remove();
+          el.parentNode && void el.remove();
+          assert(!el.parentNode);
+          yield el;
         }
       }
       void ++index;
@@ -52,15 +52,16 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       for (const el of elements) {
         assert(revision === rev);
         base = target.insertBefore(el, base).nextSibling;
+        assert(el.parentNode);
         yield el;
         if (revision !== rev) throw new Error(`Abort by reentering.`);
       }
     }
     for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
       for (const el of es) {
-        if (!el.parentNode) continue;
-        assert(el.parentNode === target);
-        void el.remove();
+        el.parentNode && void el.remove();
+        assert(!el.parentNode);
+        yield el;
       }
     }
     assert(revision === rev);
