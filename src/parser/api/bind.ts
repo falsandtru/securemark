@@ -26,8 +26,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     }
     assert(end <= targetSegments.length);
     assert(start + end <= targetSegments.length);
-    let base: Node | null | undefined;
     let position = start;
+    let base: Node | null | undefined = bottom(target, position);
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(revision === rev);
       const skip = position < pairs.length && segment === pairs[position][0];
@@ -38,7 +38,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         for (const el of es) {
           if (!el.parentNode) continue;
           assert(el.parentNode === target);
-          assert(el === base || base === undefined);
+          assert(el === base);
           base = el.nextSibling;
           if (skip) continue;
           void el.remove();
@@ -46,9 +46,6 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       }
       void ++position;
       if (skip) continue;
-      base = base === undefined
-        ? bottom(target, start, position)
-        : base;
       assert(elements.length < 2);
       for (const el of elements) {
         assert(revision === rev);
@@ -70,10 +67,10 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     void footnote(target, cfgs.footnote);
   };
 
-  function bottom(container: Node, start: number, position: number): Node | null {
-    assert(start <= pairs.length);
-    if (pairs.length === 0) return container.firstChild;
-    for (let i = start; i-- && i < pairs.length;) {
+  function bottom(container: Node, position: number): Node | null {
+    assert(position >= 0);
+    assert(position <= pairs.length);
+    for (let i = position; i-- && i < pairs.length;) {
       const [, es] = pairs[i];
       for (let i = es.length; i--;) {
         const el = es[i];
