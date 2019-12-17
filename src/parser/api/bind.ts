@@ -39,7 +39,9 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           if (!el.parentNode) continue;
           assert(el.parentNode === target);
           assert(el === base);
-          base = el.nextSibling;
+          base = el.parentNode === target
+            ? el.nextSibling
+            : base;
           if (skip) continue;
           void el.remove();
         }
