@@ -1899,12 +1899,11 @@ require = function () {
                                 elements
                             ])) {
                             for (const el of es) {
-                                if (!el.parentNode)
-                                    continue;
-                                base = el.nextSibling;
+                                base = el.parentNode === target ? el.nextSibling : base;
                                 if (skip)
                                     continue;
-                                void el.remove();
+                                el.parentNode && void el.remove();
+                                yield el;
                             }
                         }
                         void ++index;
@@ -1919,9 +1918,8 @@ require = function () {
                     }
                     for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
                         for (const el of es) {
-                            if (!el.parentNode)
-                                continue;
-                            void el.remove();
+                            el.parentNode && void el.remove();
+                            yield el;
                         }
                     }
                     void util_1.figure(target);
