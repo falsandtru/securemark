@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.139.3
+
+- Refactoring.
+
 ## 0.139.2
 
 - Fix bind function.
