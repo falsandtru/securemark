@@ -1889,12 +1889,12 @@ require = function () {
                         if (targetSegments[targetSegments.length - end - 1] !== sourceSegments[sourceSegments.length - end - 1])
                             break;
                     }
-                    let base;
-                    let position = start;
+                    let index = start;
+                    let base = next(index);
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
-                        const skip = position < pairs.length && segment === pairs[position][0];
-                        const elements = skip ? pairs[position][1] : combinator_1.eval(block_1.block(segment, {}));
-                        for (const [, es] of pairs.splice(position, position < pairs.length - end ? 1 : 0, [
+                        const skip = index < pairs.length && segment === pairs[index][0];
+                        const elements = skip ? pairs[index][1] : combinator_1.eval(block_1.block(segment, {}));
+                        for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [
                                 segment,
                                 elements
                             ])) {
@@ -1907,10 +1907,9 @@ require = function () {
                                 void el.remove();
                             }
                         }
-                        void ++position;
+                        void ++index;
                         if (skip)
                             continue;
-                        base = base === undefined ? bottom(target, start, position) : base;
                         for (const el of elements) {
                             base = target.insertBefore(el, base).nextSibling;
                             yield el;
@@ -1918,7 +1917,7 @@ require = function () {
                                 throw new Error(`Abort by reentering.`);
                         }
                     }
-                    for (const [, es] of pairs.splice(position, pairs.length - position - end)) {
+                    for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
                         for (const el of es) {
                             if (!el.parentNode)
                                 continue;
@@ -1928,28 +1927,26 @@ require = function () {
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
                 };
-                function bottom(container, start, position) {
-                    if (pairs.length === 0)
-                        return container.firstChild;
-                    for (let i = start; i-- && i < pairs.length;) {
+                function next(index) {
+                    for (let i = index; i-- && i < pairs.length;) {
                         const [, es] = pairs[i];
                         for (let i = es.length; i--;) {
                             const el = es[i];
-                            if (el.parentNode !== container)
+                            if (el.parentNode !== target)
                                 continue;
                             return el.nextSibling;
                         }
                     }
-                    for (let i = position; i < pairs.length; ++i) {
+                    for (let i = index; i < pairs.length; ++i) {
                         const [, es] = pairs[i];
                         for (let i = 0; i < es.length; ++i) {
                             const el = es[i];
-                            if (el.parentNode !== container)
+                            if (el.parentNode !== target)
                                 continue;
                             return el;
                         }
                     }
-                    return container.firstChild;
+                    return target.firstChild;
                 }
             }
             exports.bind = bind;
