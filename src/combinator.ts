@@ -16,5 +16,6 @@ export * from './combinator/control/manipulation/indent';
 export * from './combinator/control/manipulation/trim';
 export * from './combinator/control/manipulation/config';
 export * from './combinator/control/manipulation/lazy';
+export * from './combinator/control/manipulation/recovery';
 export * from './combinator/control/monad/fmap';
 export * from './combinator/control/monad/bind';

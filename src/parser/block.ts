@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown.d';
-import { union } from '../combinator';
+import { union, recover } from '../combinator';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';
@@ -28,7 +28,7 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = localize(union([
+export const block: BlockParser = recover(localize(union([
   horizontalrule,
   heading,
   ulist,
@@ -41,4 +41,4 @@ export const block: BlockParser = localize(union([
   extension,
   blockquote,
   paragraph
-]));
+])), (_, config, err) => block(err instanceof Error ? `# ${err.name}: ${err.message}\\` : `# Unknown error: ${err}\\`, config));

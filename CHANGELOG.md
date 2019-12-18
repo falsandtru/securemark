@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.0
+
+- Recover from exceptions in parsing.
+
 ## 0.140.0
 
 - Change bind function to also yield removed elements.
