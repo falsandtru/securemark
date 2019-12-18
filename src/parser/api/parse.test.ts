@@ -57,6 +57,12 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
+    it('stress', function () {
+      this.timeout(10 * 1000);
+      assert(parse('('.repeat(100) + ')'.repeat(99)));
+      assert.throws(() => parse('('.repeat(10000) + ')'.repeat(9999)));
+    });
+
   });
 
 });
