@@ -320,7 +320,7 @@
   ].join('\n');
   const viewer = document.getElementById('viewer');
   const { bind, render } = require('securemark');
-  const parse = bind(viewer, {
+  const update = bind(viewer, {
     footnote: {
       annotation: viewer.querySelector('#annotation'),
       reference: viewer.querySelector('#reference'),
@@ -356,7 +356,7 @@
     let delta = 0;
     let time = 0;
     let resource = 100;
-    for (const el of parse(document.getElementById('editor').value)) {
+    for (const el of update(document.getElementById('editor').value)) {
       el.parentNode
          ? observer.observe(el)
          : observer.unobserve(el);
