@@ -77,16 +77,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       const [, es] = pairs[i];
       for (let i = es.length; i--;) {
         const el = es[i];
-        if (el.parentNode !== target) continue;
-        return el.nextSibling;
+        if (el.parentNode === target) return el.nextSibling;
       }
     }
     for (let i = index; i < pairs.length; ++i) {
       const [, es] = pairs[i];
       for (let i = 0; i < es.length; ++i) {
         const el = es[i];
-        if (el.parentNode !== target) continue;
-        return el;
+        if (el.parentNode === target) return el;
       }
     }
     return target.firstChild;
