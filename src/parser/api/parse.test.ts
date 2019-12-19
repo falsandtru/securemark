@@ -59,13 +59,12 @@ describe('Unit: parser/api/parse', () => {
 
     it('stress', function () {
       this.timeout(10 * 1000);
-      assert([...parse('('.repeat(100) + ')'.repeat(99)).children].filter(el => el.innerHTML.startsWith('(')).length === 1);
       assert.deepStrictEqual(
         [...parse('('.repeat(100) + ')'.repeat(99)).children].map(el => el.innerHTML[0]),
         ['(']);
       assert.deepStrictEqual(
-        [...parse('('.repeat(10000) + ')'.repeat(9999)).children].map(el => el.textContent!.includes('Error:')),
-        [true]);
+        [...parse('('.repeat(10000) + ')'.repeat(9999) + '\n\na').children].map(el => el.textContent!.includes('Error:')),
+        [true, false]);
     });
 
   });
