@@ -48,8 +48,8 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a\n: b\n')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\n\\\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a~ b')), [['<dl><dt id="index:a~-b">a~ b</dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a: b')), [['<dl><dt id="index:a:-b">a: b</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a~ b')), [['<dl><dt id="index:a~_b">a~ b</dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a: b')), [['<dl><dt id="index:a:_b">a: b</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b \nc ')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b\n c ')), [['<dl><dt id="index:a">a</dt><dd>b<br> c</dd></dl>'], '']);
     });
@@ -67,7 +67,7 @@ describe('Unit: parser/block/dlist', () => {
 
     it('index', () => {
       assert.deepStrictEqual(inspect(parser('~ a [#b]')), [['<dl><dt id="index:b">a<span class="indexer" data-index="b"></span></dt><dd></dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a [#b]\\')), [['<dl><dt id="index:a-b">a <a href="#index:b" rel="noopener" class="index">b</a></dt><dd></dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a [#b]\\')), [['<dl><dt id="index:a_b">a <a href="#index:b" rel="noopener" class="index">b</a></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ A')), [['<dl><dt id="index:A">A</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ *A*')), [['<dl><dt id="index:A"><em>A</em></dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ `A`')), [['<dl><dt id="index:`A`"><code data-src="`A`">A</code></dt><dd></dd></dl>'], '']);

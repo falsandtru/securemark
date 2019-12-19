@@ -2,6 +2,7 @@
 
 ## 0.141.0
 
+- Change index parser to replace whitespace with `_` instead of `-`.
 - Recover from exceptions in parsing.
 
 ## 0.140.0

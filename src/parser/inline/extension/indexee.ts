@@ -25,6 +25,6 @@ export function text(source: Element): string {
 function identity(index: string): string {
   assert(!index.includes('\n'));
   return index
-    ? `index:${index.trim().replace(/\s+/g, '-')}`
+    ? `index:${index.trim().replace(/\s+/g, '_')}`
     : '';
 }
