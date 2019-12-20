@@ -9,5 +9,5 @@ export function recover<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, fa
     catch (err) {
       return fallback(source, config, err);
     }
-  }
+  };
 }
