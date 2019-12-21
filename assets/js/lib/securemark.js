@@ -690,7 +690,7 @@ require = function () {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
-                const memoization_1 = _dereq_('../../memoization');
+                const memoize_1 = _dereq_('../../memoize');
                 const cache_1 = _dereq_('../../cache');
                 const flip_1 = _dereq_('../../flip');
                 const uncurry_1 = _dereq_('../../uncurry');
@@ -712,7 +712,7 @@ require = function () {
                 function normalize(url, base) {
                     return exports.newURL(url, base).href;
                 }
-                exports.newURL = flip_1.flip(uncurry_1.uncurry(memoization_1.memoize(base => memoization_1.memoize(url => new NativeURL(formatURLForEdge(url, base), base), new cache_1.Cache(9)), new cache_1.Cache(9))));
+                exports.newURL = flip_1.flip(uncurry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => new NativeURL(formatURLForEdge(url, base), base), new cache_1.Cache(9)), new cache_1.Cache(9))));
                 function formatURLForEdge(url, base = location.href) {
                     return url.trim() || base;
                 }
@@ -721,7 +721,7 @@ require = function () {
         {
             '../../cache': 6,
             '../../flip': 11,
-            '../../memoization': 13,
+            '../../memoize': 13,
             '../../uncurry': 18
         }
     ],
@@ -1634,7 +1634,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
-            const memoization_1 = _dereq_('spica/memoization');
+            const memoize_1 = _dereq_('spica/memoize');
             function match(pattern, f) {
                 return (source, config) => {
                     if (source === '')
@@ -1651,7 +1651,7 @@ require = function () {
             }
             exports.match = match;
             function memoize(f, g) {
-                const h = memoization_1.memoize(g);
+                const h = memoize_1.memoize(g);
                 return a => {
                     const b = f(a);
                     return b.length <= 20 ? h(b) : g(b);
@@ -1661,7 +1661,7 @@ require = function () {
         },
         {
             '../../data/parser': 45,
-            'spica/memoization': 13
+            'spica/memoize': 13
         }
     ],
     40: [
