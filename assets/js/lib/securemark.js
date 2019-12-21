@@ -1442,7 +1442,7 @@ require = function () {
                     const result = parser(source, config);
                     if (!result)
                         return;
-                    if (!cond(parser_1.eval(result), parser_1.exec(result)))
+                    if (!cond(parser_1.eval(result), parser_1.exec(result), config))
                         return;
                     return parser_1.exec(result).length < source.length ? result : undefined;
                 };
@@ -2071,18 +2071,16 @@ require = function () {
                         const [, es] = pairs[i];
                         for (let i = es.length; i--;) {
                             const el = es[i];
-                            if (el.parentNode !== target)
-                                continue;
-                            return el.nextSibling;
+                            if (el.parentNode === target)
+                                return el.nextSibling;
                         }
                     }
                     for (let i = index; i < pairs.length; ++i) {
                         const [, es] = pairs[i];
                         for (let i = 0; i < es.length; ++i) {
                             const el = es[i];
-                            if (el.parentNode !== target)
-                                continue;
-                            return el;
+                            if (el.parentNode === target)
+                                return el;
                         }
                     }
                     return target.firstChild;
@@ -2171,11 +2169,11 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const inline_1 = _dereq_('./inline');
             const source_1 = _dereq_('./source');
-            exports.autolink = combinator_1.union([
+            exports.autolink = combinator_1.lazy(() => combinator_1.union([
                 inline_1.autolink,
                 source_1.newline,
                 source_1.unescsource
-            ]);
+            ]));
         },
         {
             '../combinator': 30,
@@ -3283,10 +3281,10 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
-            exports.uri = combinator_1.subline(combinator_1.validate(/^h?ttps?:\/\/[^/?#\s]/, combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.rewrite(combinator_1.some(combinator_1.union([
+            exports.uri = combinator_1.lazy(() => combinator_1.subline(combinator_1.validate(/^h?ttps?:\/\/[^/?#\s]/, combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                 link_1.bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ])), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.union([link_1.link]))))));
+            ])), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.union([link_1.link])))))));
             function address(source) {
                 return source.startsWith('ttp') ? `h${ source }` : source;
             }
@@ -3793,6 +3791,7 @@ require = function () {
                 const combinator_1 = _dereq_('../../combinator');
                 const source_1 = _dereq_('../source');
                 const html_1 = _dereq_('./html');
+                const autolink_1 = _dereq_('../autolink');
                 const util_1 = _dereq_('../util');
                 const uri_1 = _dereq_('../string/uri');
                 const concat_1 = _dereq_('spica/concat');
@@ -3812,7 +3811,7 @@ require = function () {
                         exports.uri,
                         combinator_1.some(util_1.defrag(html_1.attribute))
                     ]), /^ ?}/))
-                ])))), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text]) => {
+                ])))), ns => concat_1.concat([...Array(2 - ns.length)].map(() => []), ns)), ([text], _, config) => {
                     var _a;
                     if (text.length === 0)
                         return true;
@@ -3823,6 +3822,8 @@ require = function () {
                         if (!util_1.hasTightText(proxy))
                             return false;
                         if (proxy.getElementsByTagName('a').length > 0)
+                            return false;
+                        if (!config.insecure && combinator_1.eval(combinator_1.some(autolink_1.autolink)(proxy.textContent, { insecure: true })).some(node => node instanceof HTMLElement))
                             return false;
                     }
                     return true;
@@ -3908,6 +3909,7 @@ require = function () {
         },
         {
             '../../combinator': 30,
+            '../autolink': 58,
             '../inline': 79,
             '../source': 114,
             '../string/uri': 121,
