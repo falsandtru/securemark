@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.1
+
+- Fix link parser not to include linkable texts.
+
 ## 0.141.0
 
 - Change index parser to replace whitespace with `_` instead of `-`.

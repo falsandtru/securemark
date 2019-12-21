@@ -1,7 +1,8 @@
 import { LinkParser, media, shortmedia, inline } from '../inline';
-import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind, eval } from '../../combinator';
 import { unescsource } from '../source';
 import { attribute, attrs as attrs_ } from './html';
+import { autolink } from '../autolink';
 import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
@@ -27,7 +28,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])))),
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
-  ([text]) => {
+  ([text], _, config) => {
     if (text.length === 0) return true;
     if (text.length === 1 && text[0] instanceof HTMLAnchorElement && text[0].firstElementChild?.classList.contains('media')) {
       text[0] = text[0].firstElementChild as HTMLElement;
@@ -36,6 +37,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       const proxy = html('div', text);
       if (!hasTightText(proxy)) return false;
       if (proxy.getElementsByTagName('a').length > 0) return false;
+      if (!config.insecure && eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node instanceof HTMLElement)) return false;
     }
     assert(!html('div', text).querySelector('a') || html('div', text).firstElementChild!.matches('.media'));
     return true;

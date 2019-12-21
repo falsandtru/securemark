@@ -23,6 +23,7 @@ export namespace MarkdownParser {
         readonly reference?: boolean;
       };
     };
+    readonly insecure?: boolean;
   }
   export interface State {
   }
