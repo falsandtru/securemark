@@ -3847,7 +3847,7 @@ require = function () {
                         void el.setAttribute('target', '_blank');
                     }
                     return [
-                        [typed_dom_1.define(el, attrs(exports.attributes, params, el.className.trim().split(/\s+/), 'link'))],
+                        [typed_dom_1.define(el, attrs(exports.attributes, params, [...el.classList], 'link'))],
                         rest
                     ];
                 })));
@@ -3990,7 +3990,7 @@ require = function () {
                     if (exports.cache.has(uri) && media.hasAttribute('alt')) {
                         void typed_dom_1.define(media, { alt: text });
                     }
-                    void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, media.className.trim().split(/\s+/), 'media'));
+                    void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, [...media.classList], 'media'));
                     return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [media])])(`{ ${ INSECURE_URL }${ params.map(p => ' ' + p).join('') } }${ rest }`, {});
                 }));
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
