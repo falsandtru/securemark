@@ -64,7 +64,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         if (el.origin === window.location.origin) break;
         void el.setAttribute('target', '_blank');
     }
-    return [[define(el, attrs(attributes, params, el.className.trim().split(/\s+/), 'link'))], rest];
+    return [[define(el, attrs(attributes, params, [...el.classList], 'link'))], rest];
   })));
 
 export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(

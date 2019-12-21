@@ -36,7 +36,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
       void define(media, { alt: text });
     }
-    void define(media, attrs(attributes, params, media.className.trim().split(/\s+/), 'media'));
+    void define(media, attrs(attributes, params, [...media.classList], 'media'));
     return fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [media])])
       (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, {});
   }));
