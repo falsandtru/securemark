@@ -10,23 +10,23 @@ export function footnote(target: DocumentFragment | HTMLElement | ShadowRoot, fo
 export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', n => `[${n}]`);
 
-function build(category: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => void {
-  assert(category.match(/^[a-z]+$/));
+function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => void {
+  assert(group.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
   return (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => {
-    return void define(footnote, [...target.querySelectorAll<HTMLElement>(`.${category}`)]
+    return void define(footnote, [...target.querySelectorAll<HTMLElement>(`.${group}`)]
       .filter(context(target))
       .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
         const identity = ref.innerHTML;
         const refIndex = i + 1;
-        const refId = ref.id || `${category}:ref:${i + 1}`;
+        const refId = ref.id || `${group}:ref:${i + 1}`;
         const def = acc.get(identity);
         const defIndex = def
           ? +def.id.slice(def.id.lastIndexOf(':') + 1)
           : acc.size + 1;
         const defId = def
           ? def.id
-          : `${category}:def:${defIndex}`;
+          : `${group}:def:${defIndex}`;
         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
         void define(ref, { id: refId, title: ref.title || text(ref) }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
         if (def) {
