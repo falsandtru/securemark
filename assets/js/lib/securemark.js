@@ -3114,7 +3114,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.annotation = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.guard(config => {
                 var _a, _b, _c;
-                return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.annotation) !== null && _c !== void 0 ? _c : true;
+                return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.annotation) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.configure({
                 syntax: {
                     inline: {
@@ -3395,7 +3395,7 @@ require = function () {
                 }
             }, combinator_1.surround('~~', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '~~')), '~~'))), (ns, config) => {
                 var _a, _b, _c;
-                return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.deletion) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('del', ns)] : [typed_dom_1.html('span', {
+                return ((_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.deletion) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('del', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'deletion',
                         'data-invalid-type': 'nesting'
@@ -3427,7 +3427,7 @@ require = function () {
                 combinator_1.some(inline_1.inline, '*')
             ])))), '*'))), (ns, config) => {
                 var _a, _b, _c;
-                return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.emphasis) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('em', ns)] : [typed_dom_1.html('span', {
+                return ((_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.emphasis) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('em', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'emphasis',
                         'data-invalid-type': 'nesting'
@@ -3764,7 +3764,7 @@ require = function () {
                 }
             }, combinator_1.surround('++', util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '++')), '++'))), (ns, config) => {
                 var _a, _b, _c;
-                return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.insertion) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('ins', ns)] : [typed_dom_1.html('span', {
+                return ((_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.insertion) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('ins', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'insertion',
                         'data-invalid-type': 'nesting'
@@ -3800,8 +3800,16 @@ require = function () {
                 exports.attributes = { nofollow: [undefined] };
                 exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.guard(config => {
                     var _a, _b, _c;
-                    return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
-                }, combinator_1.configure({ syntax: { inline: { link: false } } }, combinator_1.tails([
+                    return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
+                }, combinator_1.configure({
+                    syntax: {
+                        inline: {
+                            link: false,
+                            annotation: false,
+                            reference: false
+                        }
+                    }
+                }, combinator_1.tails([
                     util_1.dup(combinator_1.union([
                         combinator_1.surround('[', inline_1.media, ']'),
                         combinator_1.surround('[', inline_1.shortmedia, ']'),
@@ -3964,7 +3972,7 @@ require = function () {
                 exports.cache = new cache_1.Cache(10);
                 exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.guard(config => {
                     var _a, _b, _c;
-                    return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
+                    return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
                 }, combinator_1.tails([
                     util_1.dup(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([source_1.text]), /^\\?\n|^]/))), ']', false)),
                     util_1.dup(combinator_1.surround('{', combinator_1.inits([
@@ -4018,7 +4026,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.reference = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.guard(config => {
                 var _a, _b, _c;
-                return (_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
+                return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.configure({
                 syntax: {
                     inline: {
@@ -4101,7 +4109,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.strong = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^\*\*\S[\s\S]*?\*\*/, combinator_1.configure({ syntax: { inline: { strong: false } } }, combinator_1.surround('**', util_1.trimNodeEnd(util_1.defrag(combinator_1.union([combinator_1.some(inline_1.inline, '**')]))), '**'))), (ns, config) => {
                 var _a, _b, _c;
-                return ((_c = (_b = (_a = config === null || config === void 0 ? void 0 : config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.strong) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('strong', ns)] : [typed_dom_1.html('span', {
+                return ((_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.strong) !== null && _c !== void 0 ? _c : true) ? [typed_dom_1.html('strong', ns)] : [typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'strong',
                         'data-invalid-type': 'nesting'
@@ -5243,16 +5251,16 @@ require = function () {
             exports.footnote = footnote;
             exports.annotation = build('annotation', n => `*${ n }`);
             exports.reference = build('reference', n => `[${ n }]`);
-            function build(category, marker) {
+            function build(group, marker) {
                 const contents = new WeakMap();
                 return (target, footnote) => {
-                    return void typed_dom_1.define(footnote, [...target.querySelectorAll(`.${ category }`)].filter(context_1.context(target)).reduce((acc, ref, i) => {
+                    return void typed_dom_1.define(footnote, [...target.querySelectorAll(`.${ group }`)].filter(context_1.context(target)).reduce((acc, ref, i) => {
                         const identity = ref.innerHTML;
                         const refIndex = i + 1;
-                        const refId = ref.id || `${ category }:ref:${ i + 1 }`;
+                        const refId = ref.id || `${ group }:ref:${ i + 1 }`;
                         const def = acc.get(identity);
                         const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : acc.size + 1;
-                        const defId = def ? def.id : `${ category }:def:${ defIndex }`;
+                        const defId = def ? def.id : `${ group }:def:${ defIndex }`;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         void typed_dom_1.define(ref, {
                             id: refId,
