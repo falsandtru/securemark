@@ -3455,12 +3455,15 @@ require = function () {
             const label_1 = _dereq_('./extension/label');
             const data_1 = _dereq_('./extension/data');
             const placeholder_1 = _dereq_('./extension/placeholder');
-            exports.extension = combinator_1.validate(/^[[$]/, combinator_1.union([
+            exports.extension = combinator_1.guard(config => {
+                var _a, _b, _c;
+                return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.extension) !== null && _c !== void 0 ? _c : true;
+            }, combinator_1.validate(/^[[$]/, combinator_1.union([
                 index_1.index,
                 label_1.label,
                 data_1.data,
                 placeholder_1.placeholder
-            ]));
+            ])));
         },
         {
             '../../combinator': 30,
@@ -3806,7 +3809,8 @@ require = function () {
                         inline: {
                             link: false,
                             annotation: false,
-                            reference: false
+                            reference: false,
+                            extension: false
                         }
                     }
                 }, combinator_1.tails([
@@ -3828,8 +3832,6 @@ require = function () {
                     } else {
                         const proxy = typed_dom_1.html('div', text);
                         if (!util_1.hasTightText(proxy))
-                            return false;
-                        if (proxy.getElementsByTagName('a').length > 0)
                             return false;
                         if (!config.insecure && combinator_1.eval(combinator_1.some(autolink_1.autolink)(proxy.textContent, { insecure: true })).some(node => node instanceof HTMLElement))
                             return false;
