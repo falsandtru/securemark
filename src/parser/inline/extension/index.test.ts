@@ -38,6 +38,8 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#[]{a}]')), [['<a href="#index:[]{a}" rel="noopener" class="index">[]{a}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#![]{a}]')), [['<a href="#index:![]{a}" rel="noopener" class="index">![]{a}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a<# b #>]')), [['<a href="#index:a" rel="noopener" class="index">a<sup class="comment" title="b"></sup></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a((b))]')), [['<a href="#index:a((b))" rel="noopener" class="index">a((b))</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a[[b]]]')), [['<a href="#index:a[[b]]" rel="noopener" class="index">a[[b]]</a>'], '']);
     });
 
   });

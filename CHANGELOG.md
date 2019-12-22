@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.2
+
+- Fix link parser to disable annotation and reference syntax.
+
 ## 0.141.1
 
 - Fix link parser not to include linkable texts.

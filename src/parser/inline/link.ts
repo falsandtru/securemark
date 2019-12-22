@@ -18,7 +18,7 @@ export const attributes: DeepImmutable<Record<string, Array<string | undefined>>
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
   guard(config => config.syntax?.inline?.link ?? true,
-  configure({ syntax: { inline: { link: false } } },
+  configure({ syntax: { inline: { link: false, annotation: false, reference: false } } },
   tails([
     dup(union([
       surround('[', media, ']'),
@@ -38,7 +38,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       if (!hasTightText(proxy)) return false;
       if (proxy.getElementsByTagName('a').length > 0) return false;
       if (!config.insecure && eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node instanceof HTMLElement)) return false;
-      assert(!proxy.querySelector('a'));
+      assert(!proxy.querySelector('a, .annotation, .reference'));
     }
     assert(!html('div', text).querySelector('a') || html('div', text).firstElementChild!.matches('.media'));
     return true;
