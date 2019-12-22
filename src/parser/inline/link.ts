@@ -16,7 +16,7 @@ export const attributes: DeepImmutable<Record<string, Array<string | undefined>>
 };
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
-  /^(?:\[.*?\])?{.+?}/,
+  /^(?:\[.*?\])?{(?![{}]).+?}/,
   guard(config => config.syntax?.inline?.link ?? true,
   configure({ syntax: { inline: { link: false, annotation: false, reference: false, extension: false } } },
   tails([
@@ -25,7 +25,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
       surround('[', shortmedia, ']'),
       surround('[', configure({ syntax: { inline: { media: false } } }, trimNodeEnd(defrag(some(inline, /^\\?\n|^]/)))), ']', false),
     ])),
-    dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
+    dup(surround(/^{(?![{}])/, inits([uri, some(defrag(attribute))]), /^ ?}/)),
   ])))),
   ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
   ([text], _, config) => {

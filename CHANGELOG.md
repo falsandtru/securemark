@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.4
+
+- Fix link and media parser to avoid conflict with template syntax.
+
 ## 0.141.3
 
 - Fix link parser to disable extension syntax.
