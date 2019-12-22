@@ -15,7 +15,7 @@ describe('Unit: parser/source/unescapable', () => {
       assert.deepStrictEqual(inspect(parser('ab')), [['ab'], '']);
     });
 
-    it('newline', () => {
+    it('linebreak', () => {
       assert.deepStrictEqual(inspect(parser('\n\n')), [['\n', '\n'], '']);
     });
 

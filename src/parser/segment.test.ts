@@ -19,7 +19,7 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(segment(' a '), [' a ']);
     });
 
-    it('newline', () => {
+    it('linebreak', () => {
       assert.deepStrictEqual(segment('\n'), ['\n']);
       assert.deepStrictEqual(segment('\n\n'), ['\n\n']);
       assert.deepStrictEqual(segment('\n\n\n'), ['\n\n\n']);

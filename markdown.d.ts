@@ -771,7 +771,7 @@ export namespace MarkdownParser {
     Markdown<'autolink'>,
     Parser<HTMLElement | Text, [
       InlineParser.AutolinkParser,
-      SourceParser.NewlineParser,
+      SourceParser.LinebreakParser,
       SourceParser.UnescapableSourceParser,
     ], State, Config> {
   }
@@ -782,8 +782,8 @@ export namespace MarkdownParser {
       Source<'text'>,
       Parser<HTMLBRElement | HTMLSpanElement | Text, [], State, Config> {
     }
-    export interface NewlineParser extends
-      Source<'newline'>,
+    export interface LinebreakParser extends
+      Source<'linebreak'>,
       Parser<HTMLBRElement, [TextParser], State, Config> {
     }
     export interface EscapableSourceParser extends

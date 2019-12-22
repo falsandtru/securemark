@@ -2,7 +2,7 @@ import { MarkdownParser } from '../../markdown.d';
 
 import SourceParser = MarkdownParser.SourceParser;
 export import TextParser = SourceParser.TextParser;
-export import NewlineParser = SourceParser.NewlineParser;
+export import LinebreakParser = SourceParser.LinebreakParser;
 export import EscapableSourceParser = SourceParser.EscapableSourceParser;
 export import UnescapableSourceParser = SourceParser.UnescapableSourceParser;
 export import CharParser = SourceParser.CharParser;
@@ -11,7 +11,7 @@ export import EmptyLineParser = SourceParser.EmptyLineParser;
 export import AnyLineParser = SourceParser.AnyLineParser;
 
 export { text } from './source/text';
-export { newline } from './source/newline';
+export { linebreak } from './source/linebreak';
 export { escsource } from './source/escapable';
 export { unescsource } from './source/unescapable';
 export { char } from './source/char';
