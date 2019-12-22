@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.3
+
+- Fix link parser to disable extension syntax.
+
 ## 0.141.2
 
 - Fix link parser to disable annotation and reference syntax.

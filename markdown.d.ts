@@ -21,6 +21,7 @@ export namespace MarkdownParser {
         readonly deletion?: boolean;
         readonly annotation?: boolean;
         readonly reference?: boolean;
+        readonly extension?: boolean;
       };
     };
     readonly insecure?: boolean;
