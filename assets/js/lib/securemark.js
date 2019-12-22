@@ -3821,6 +3821,8 @@ require = function () {
                         const proxy = typed_dom_1.html('div', text);
                         if (!util_1.hasTightText(proxy))
                             return false;
+                        if (proxy.getElementsByTagName('a').length > 0)
+                            return false;
                         if (!config.insecure && combinator_1.eval(combinator_1.some(autolink_1.autolink)(proxy.textContent, { insecure: true })).some(node => node instanceof HTMLElement))
                             return false;
                     }
