@@ -3801,7 +3801,7 @@ require = function () {
                 const typed_dom_1 = _dereq_('typed-dom');
                 const {Array} = global;
                 exports.attributes = { nofollow: [undefined] };
-                exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{.+?}/, combinator_1.guard(config => {
+                exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{(?![{}]).+?}/, combinator_1.guard(config => {
                     var _a, _b, _c;
                     return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
                 }, combinator_1.configure({
@@ -3819,7 +3819,7 @@ require = function () {
                         combinator_1.surround('[', inline_1.shortmedia, ']'),
                         combinator_1.surround('[', combinator_1.configure({ syntax: { inline: { media: false } } }, util_1.trimNodeEnd(util_1.defrag(combinator_1.some(inline_1.inline, /^\\?\n|^]/)))), ']', false)
                     ])),
-                    util_1.dup(combinator_1.surround('{', combinator_1.inits([
+                    util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                         exports.uri,
                         combinator_1.some(util_1.defrag(html_1.attribute))
                     ]), /^ ?}/))
@@ -3972,12 +3972,12 @@ require = function () {
                 const typed_dom_1 = _dereq_('typed-dom');
                 const {Array} = global;
                 exports.cache = new cache_1.Cache(10);
-                exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{.+?})/, combinator_1.guard(config => {
+                exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{(?![{}]).+?})/, combinator_1.guard(config => {
                     var _a, _b, _c;
                     return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
                 }, combinator_1.tails([
                     util_1.dup(combinator_1.surround('[', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([source_1.text]), /^\\?\n|^]/))), ']', false)),
-                    util_1.dup(combinator_1.surround('{', combinator_1.inits([
+                    util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                         link_1.uri,
                         combinator_1.some(util_1.defrag(html_1.attribute))
                     ]), /^ ?}/))
