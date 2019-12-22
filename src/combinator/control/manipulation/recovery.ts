@@ -7,6 +7,7 @@ export function recover<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, fa
       return parser(source, config);
     }
     catch (err) {
+      assert(err instanceof Error && err.name === 'AssertionError' && !+console.error(err) && eval(`throw new Error("${err.name}")`) || 1);
       return fallback(source, config, err);
     }
   };
