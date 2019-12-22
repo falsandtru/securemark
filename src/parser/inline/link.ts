@@ -58,8 +58,8 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
     switch (el.protocol) {
       case 'tel:':
-        if (el.getAttribute('href') === `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) break;
-        return;
+        if (el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
+        break;
       default:
         if (el.origin === window.location.origin) break;
         void el.setAttribute('target', '_blank');
