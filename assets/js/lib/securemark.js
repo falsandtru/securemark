@@ -3821,8 +3821,6 @@ require = function () {
                         const proxy = typed_dom_1.html('div', text);
                         if (!util_1.hasTightText(proxy))
                             return false;
-                        if (proxy.getElementsByTagName('a').length > 0)
-                            return false;
                         if (!config.insecure && combinator_1.eval(combinator_1.some(autolink_1.autolink)(proxy.textContent, { insecure: true })).some(node => node instanceof HTMLElement))
                             return false;
                     }
@@ -3838,9 +3836,9 @@ require = function () {
                     }, text.length > 0 ? text : (uri_1.sanitize(uri_1.decode(INSECURE_URL || '.'), ['tel:']) || '').replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
                     switch (el.protocol) {
                     case 'tel:':
-                        if (el.getAttribute('href') === `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
-                            break;
-                        return;
+                        if (el.getAttribute('href') !== `tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }`)
+                            return;
+                        break;
                     default:
                         if (el.origin === window.location.origin)
                             break;
