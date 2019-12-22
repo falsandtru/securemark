@@ -36,8 +36,8 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     else {
       const proxy = html('div', text);
       if (!hasTightText(proxy)) return false;
-      if (proxy.getElementsByTagName('a').length > 0) return false;
       if (!config.insecure && eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node instanceof HTMLElement)) return false;
+      assert(!proxy.querySelector('a'));
     }
     assert(!html('div', text).querySelector('a') || html('div', text).firstElementChild!.matches('.media'));
     return true;
