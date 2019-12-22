@@ -8,6 +8,6 @@ export const insertion: InsertionParser = lazy(() => fmap(validate(
   configure({ syntax: { inline: { insertion: false, deletion: false } } },
   surround('++', defrag(some(union([inline]), '++')), '++'))),
   (ns, config) =>
-    config?.syntax?.inline?.insertion ?? true
+    config.syntax?.inline?.insertion ?? true
       ? [html('ins', ns)]
       : [html('span', { class: 'invalid', 'data-invalid-syntax': 'insertion', 'data-invalid-type': 'nesting' }, [text('++'), ...ns, text('++')])]));

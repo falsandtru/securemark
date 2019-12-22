@@ -8,7 +8,7 @@ export const strong: StrongParser = lazy(() => verify(fmap(validate(
   configure({ syntax: { inline: { strong: false } } },
   surround('**', trimNodeEnd(defrag(union([some(inline, '**')]))), '**'))),
   (ns, config) =>
-    config?.syntax?.inline?.strong ?? true
+    config.syntax?.inline?.strong ?? true
       ? [html('strong', ns)]
       : [html('span', { class: 'invalid', 'data-invalid-syntax': 'strong', 'data-invalid-type': 'nesting' }, [text('**'), ...ns, text('**')])]),
   ([el]) => hasTightText(el)));

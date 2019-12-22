@@ -8,6 +8,6 @@ export const deletion: DeletionParser = lazy(() => fmap(validate(
   configure({ syntax: { inline: { insertion: false, deletion: false } } },
   surround('~~', defrag(some(union([inline]), '~~')), '~~'))),
   (ns, config) =>
-    config?.syntax?.inline?.deletion ?? true
+    config.syntax?.inline?.deletion ?? true
       ? [html('del', ns)]
       : [html('span', { class: 'invalid', 'data-invalid-syntax': 'deletion', 'data-invalid-type': 'nesting' }, [text('~~'), ...ns, text('~~')])]));

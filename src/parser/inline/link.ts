@@ -17,7 +17,7 @@ export const attributes: DeepImmutable<Record<string, Array<string | undefined>>
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{.+?}/,
-  guard(config => config?.syntax?.inline?.link ?? true,
+  guard(config => config.syntax?.inline?.link ?? true,
   configure({ syntax: { inline: { link: false } } },
   tails([
     dup(union([

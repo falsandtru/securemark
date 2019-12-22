@@ -16,7 +16,7 @@ export const cache = new Cache<string, HTMLElement>(10);
 
 export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   /^!(?=(?:\[.*?\])?{.+?})/,
-  guard(config => config?.syntax?.inline?.media ?? true,
+  guard(config => config.syntax?.inline?.media ?? true,
   tails([
     dup(surround('[', trimNodeEnd(defrag(some(union([text]), /^\\?\n|^]/))), ']', false)),
     dup(surround('{', inits([uri, some(defrag(attribute))]), /^ ?}/)),
