@@ -1,7 +1,7 @@
 import { Parser } from './src/combinator';
 
 declare abstract class Markdown<T> {
-  private MARKDOWN?: T;
+  private parser?: T;
 }
 export interface MarkdownParser extends
   Markdown<'markdown'>,
