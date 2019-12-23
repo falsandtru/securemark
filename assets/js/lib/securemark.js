@@ -2047,15 +2047,14 @@ require = function () {
                                 yield el;
                             }
                         }
-                        if (skip && ++index)
-                            continue;
-                        for (const el of elements) {
-                            base = (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
-                            base = target.insertBefore(el, base).nextSibling;
-                            yield el;
-                            if (revision !== rev)
-                                throw new Error(`Abort by reentering.`);
-                        }
+                        if (!skip)
+                            for (const el of elements) {
+                                base = (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
+                                base = target.insertBefore(el, base).nextSibling;
+                                yield el;
+                                if (revision !== rev)
+                                    throw new Error(`Abort by reentering.`);
+                            }
                         void ++index;
                     }
                     for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
