@@ -2171,7 +2171,7 @@ require = function () {
             const source_1 = _dereq_('./source');
             exports.autolink = combinator_1.lazy(() => combinator_1.union([
                 inline_1.autolink,
-                source_1.newline,
+                source_1.linebreak,
                 source_1.unescsource
             ]));
         },
@@ -4272,8 +4272,8 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             var text_1 = _dereq_('./source/text');
             exports.text = text_1.text;
-            var newline_1 = _dereq_('./source/newline');
-            exports.newline = newline_1.newline;
+            var linebreak_1 = _dereq_('./source/linebreak');
+            exports.linebreak = linebreak_1.linebreak;
             var escapable_1 = _dereq_('./source/escapable');
             exports.escsource = escapable_1.escsource;
             var unescapable_1 = _dereq_('./source/unescapable');
@@ -4289,7 +4289,7 @@ require = function () {
             './source/char': 115,
             './source/escapable': 116,
             './source/line': 117,
-            './source/newline': 118,
+            './source/linebreak': 118,
             './source/text': 119,
             './source/unescapable': 120
         }
@@ -4387,7 +4387,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const text_1 = _dereq_('./text');
-            exports.newline = combinator_1.fmap(combinator_1.focus('\n', combinator_1.union([text_1.text])), ns => ns);
+            exports.linebreak = combinator_1.fmap(combinator_1.focus('\n', combinator_1.union([text_1.text])), ns => ns);
         },
         {
             '../../combinator': 30,
