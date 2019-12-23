@@ -2033,7 +2033,6 @@ require = function () {
                     let index = start;
                     let base;
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
-                        base = (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
                         const skip = index < pairs.length && segment === pairs[index][0];
                         const elements = skip ? pairs[index][1] : combinator_1.eval(block_1.block(segment, {}));
                         for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [
@@ -2052,6 +2051,7 @@ require = function () {
                         if (skip)
                             continue;
                         for (const el of elements) {
+                            base = (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
                             base = target.insertBefore(el, base).nextSibling;
                             yield el;
                             if (revision !== rev)
