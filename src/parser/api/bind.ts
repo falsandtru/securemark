@@ -27,9 +27,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     assert(end <= targetSegments.length);
     assert(start + end <= targetSegments.length);
     let index = start;
-    let base: Node | null | undefined = next(index);
+    let base: Node | null | undefined;
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(revision === rev);
+      base = base?.parentNode === target
+        ? base
+        : next(index);
       const skip = index < pairs.length && segment === pairs[index][0];
       const elements = skip
         ? pairs[index][1]
