@@ -3,6 +3,7 @@
 ## 0.141.5
 
 - Fix index parser to allow any text.
+- Fix index parser to ignore rubies.
 
 ## 0.141.4
 
