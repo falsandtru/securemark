@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.5
+
+- Fix index parser to allow any text.
+
 ## 0.141.4
 
 - Fix link and media parser to avoid conflict with template syntax.

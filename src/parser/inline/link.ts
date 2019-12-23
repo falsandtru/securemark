@@ -7,7 +7,7 @@ import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
 import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
-import { html, text, define } from 'typed-dom';
+import { frag, html, text, define } from 'typed-dom';
 
 const { Array } = global;
 
@@ -32,14 +32,27 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     if (text.length === 0) return true;
     if (text.length === 1 && text[0] instanceof HTMLAnchorElement && text[0].firstElementChild?.classList.contains('media')) {
       text[0] = text[0].firstElementChild as HTMLElement;
+      assert(text[0].matches('.media'));
     }
     else {
       const proxy = html('div', text);
+      assert(!proxy.querySelector('.media'));
       if (!hasTightText(proxy)) return false;
-      if (!config.insecure && eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node instanceof HTMLElement)) return false;
+      if (config.insecure) {
+        let isChanged = false;
+        for (const el of proxy.querySelectorAll('a')) {
+          void el.parentNode!.replaceChild(frag(el.childNodes), el);
+          isChanged = true;
+        }
+        if (isChanged) {
+          void text.splice(0, Infinity, ...proxy.childNodes as NodeListOf<typeof text[number]>);
+        }
+      }
+      else {
+        if (eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node instanceof HTMLElement)) return false;
+      }
       assert(!proxy.querySelector('a, .annotation, .reference'));
     }
-    assert(!html('div', text).querySelector('a') || html('div', text).firstElementChild!.matches('.media'));
     return true;
   }),
   ([text, param]: [(HTMLElement | Text)[], Text[]], rest) => {
