@@ -3519,7 +3519,8 @@ require = function () {
                         link: undefined,
                         media: false
                     }
-                }
+                },
+                insecure: true
             }, combinator_1.rewrite(combinator_1.surround('[#', combinator_1.some(inline_1.inline, /^\\?\n|^]/), ']'), combinator_1.convert(source => `[${ source.slice(2, -1) }]{#}`, indexee_1.indexee(combinator_1.union([link_1.link]))))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
@@ -3833,8 +3834,19 @@ require = function () {
                         const proxy = typed_dom_1.html('div', text);
                         if (!util_1.hasTightText(proxy))
                             return false;
-                        if (!config.insecure && combinator_1.eval(combinator_1.some(autolink_1.autolink)(proxy.textContent, { insecure: true })).some(node => node instanceof HTMLElement))
-                            return false;
+                        if (config.insecure) {
+                            let isChanged = false;
+                            for (const el of proxy.querySelectorAll('a')) {
+                                void el.parentNode.replaceChild(typed_dom_1.frag(el.childNodes), el);
+                                isChanged = true;
+                            }
+                            if (isChanged) {
+                                void text.splice(0, Infinity, ...proxy.childNodes);
+                            }
+                        } else {
+                            if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(proxy.textContent, { insecure: true })).some(node => node instanceof HTMLElement))
+                                return false;
+                        }
                     }
                     return true;
                 }), ([text, param], rest) => {
