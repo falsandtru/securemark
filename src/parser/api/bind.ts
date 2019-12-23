@@ -47,8 +47,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           yield el;
         }
       }
-      if (skip && ++index) continue;
-      for (const el of elements) {
+      if (!skip) for (const el of elements) {
         assert(revision === rev);
         base = base?.parentNode === target
           ? base
