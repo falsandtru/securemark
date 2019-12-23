@@ -30,10 +30,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     let base: Node | null | undefined;
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(revision === rev);
+      assert(index >= 0);
       const skip = index < pairs.length && segment === pairs[index][0];
       const elements = skip
         ? pairs[index][1]
         : eval(block(segment, {}));
+      assert(elements.length < 2);
       for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
           base = el.parentNode === target
@@ -45,9 +47,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           yield el;
         }
       }
-      void ++index;
-      if (skip) continue;
-      assert(elements.length < 2);
+      if (skip && ++index) continue;
       for (const el of elements) {
         assert(revision === rev);
         base = base?.parentNode === target
@@ -58,6 +58,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         yield el;
         if (revision !== rev) throw new Error(`Abort by reentering.`);
       }
+      void ++index;
     }
     for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
       for (const el of es) {
