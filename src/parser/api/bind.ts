@@ -5,9 +5,12 @@ import { block } from '../block';
 import { normalize } from './normalization';
 import { figure, footnote } from '../../util';
 
+// Reentrant but you must always complete all iterations until iterations have done or aborted unless you dispose of the binding target of this function.
+// Otherwise you can't remove old results from the binding target.
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
+  const yields: WeakSet<HTMLElement> = new WeakSet();
   let revision: symbol;
   return function* (source: string): Generator<HTMLElement, undefined, undefined> {
     source = normalize(source);
@@ -29,48 +32,61 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     let index = start;
     let base: Node | null | undefined;
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
-      assert(revision === rev);
+      assert(rev === revision);
       assert(index >= 0);
       const skip = index < pairs.length && segment === pairs[index][0];
       const elements = skip
         ? pairs[index][1]
         : eval(block(segment, {}));
       assert(elements.length < 2);
+      assert(rev === revision);
       for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [segment, elements])) {
         for (const el of es) {
+          assert(yields.has(el) || !el.parentNode);
+          if (!yields.has(el)) continue;
           base = el.parentNode === target
             ? el.nextSibling
             : base;
           if (skip) continue;
           el.parentNode && void el.remove();
           assert(!el.parentNode);
-          yield el;
+          yield el; // Don't end iterations here.
         }
       }
+      void requireLatest(rev);
       if (!skip) for (const el of elements) {
-        assert(revision === rev);
+        assert(rev === revision);
+        assert(!yields.has(el));
+        void yields.add(el);
         base = base === null || base?.parentNode === target
           ? base
           : next(index);
         base = target.insertBefore(el, base).nextSibling;
         assert(el.parentNode);
         yield el;
-        if (revision !== rev) throw new Error(`Abort by reentering.`);
+        void requireLatest(rev);
       }
       void ++index;
     }
+    assert(rev === revision);
     for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
       for (const el of es) {
+        assert(yields.has(el) || !el.parentNode);
+        if (!yields.has(el)) continue;
         el.parentNode && void el.remove();
         assert(!el.parentNode);
-        yield el;
+        yield el; // Don't end iterations here.
       }
     }
-    assert(revision === rev);
     assert(pairs.length === sourceSegments.length);
+    void requireLatest(rev);
     void figure(target);
     void footnote(target, cfgs.footnote);
   };
+
+  function requireLatest(rev: symbol): void {
+    if (rev !== revision) throw new Error(`Abort by reentering.`);
+  }
 
   function next(index: number): Node | null {
     assert(index >= 0);
