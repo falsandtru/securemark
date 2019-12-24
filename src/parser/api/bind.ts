@@ -49,7 +49,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       }
       if (!skip) for (const el of elements) {
         assert(revision === rev);
-        base = base?.parentNode === target
+        base = base === null || base?.parentNode === target
           ? base
           : next(index);
         base = target.insertBefore(el, base).nextSibling;
