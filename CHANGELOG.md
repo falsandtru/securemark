@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.6
+
+- Refactoring.
+
 ## 0.141.5
 
 - Fix index parser to allow any text.
