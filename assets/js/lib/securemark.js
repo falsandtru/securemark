@@ -2036,10 +2036,8 @@ require = function () {
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
                         const skip = index < pairs.length && segment === pairs[index][0];
                         const elements = skip ? pairs[index][1] : combinator_1.eval(block_1.block(segment, {}));
-                        for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [
-                                segment,
-                                elements
-                            ])) {
+                        if (index < pairs.length - end) {
+                            const [[, es]] = pairs.splice(index, 1);
                             for (const el of es) {
                                 if (!yields.has(el))
                                     continue;
@@ -2051,7 +2049,11 @@ require = function () {
                             }
                         }
                         void requireLatest(rev);
-                        if (!skip)
+                        void pairs.splice(index, 0, [
+                            segment,
+                            elements
+                        ]);
+                        if (!skip) {
                             for (const el of elements) {
                                 void yields.add(el);
                                 base = base === null || (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
@@ -2059,9 +2061,11 @@ require = function () {
                                 yield el;
                                 void requireLatest(rev);
                             }
+                        }
                         void ++index;
                     }
-                    for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
+                    while (pairs.length > sourceSegments.length) {
+                        const [[, es]] = pairs.splice(index, 1);
                         for (const el of es) {
                             if (!yields.has(el))
                                 continue;
