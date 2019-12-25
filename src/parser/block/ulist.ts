@@ -7,7 +7,7 @@ import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
-const opener = /^-(?:\s|$)/;
+const opener = /^-(?:$|\s)/;
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
   /^-(?:[^\S\n]|\n[^\S\n]*\S)/,
@@ -23,7 +23,7 @@ export const ulist: UListParser = lazy(() => block(fmap(validate(
   es => [html('ul', es)])));
 
 export const ulist_: UListParser = convert(
-  source => source.replace(/^-(?=\n|$)/, `$& `),
+  source => source.replace(/^-(?=$|\n)/, `$& `),
   ulist);
 
 export function fillFirstLine(ns: Node[]): Node[] {

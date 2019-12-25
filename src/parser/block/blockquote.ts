@@ -15,9 +15,9 @@ export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, un
   surround(/^!(?=>)/, source, ''),
 ]))));
 
-const opener = /^(?=>>+(?:\s|$))/;
+const opener = /^(?=>>+(?:$|\s))/;
 
-const indent = block(surround(opener, some(contentline, /^>(?:\s|$)/), ''), false);
+const indent = block(surround(opener, some(contentline, /^>(?:$|\s)/), ''), false);
 
 function unindent(source: string): string {
   return source

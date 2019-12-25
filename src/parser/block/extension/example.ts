@@ -8,7 +8,7 @@ import { html } from 'typed-dom';
 export const segment: ExtensionParser.ExampleParser.SegmentParser = lazy(() => block(segment_));
 
 export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(focus(
-  /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:\n|$)/,
+  /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:$|\n)/,
   () => [[], '']), false);
 
 export const example: ExtensionParser.ExampleParser = block(rewrite(segment, trim(union([

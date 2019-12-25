@@ -5,7 +5,7 @@ import { html, define } from 'typed-dom';
 export const segment: MathBlockParser.SegmentParser = lazy(() => block(segment_));
 
 export const segment_: MathBlockParser.SegmentParser = block(validate('$$', focus(
-  /^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:\n|$)/,
+  /^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:$|\n)/,
   () => [[], ''])), false);
 
 export const mathblock: MathBlockParser = block(rewrite(segment, trim(match(

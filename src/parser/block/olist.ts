@@ -15,7 +15,7 @@ export const olist: OListParser = lazy(() => block(fmap(validate(
       inits([
         line(inits([
           focus(
-            /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:\.\s|\.?(?=\n|$))/,
+            /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:\.\s|\.?(?=$|\n))/,
             defrag(trim(surround('', some(unescsource, /^[.\n]/), /^\.?/)))),
           defrag(trim(some(inline))),
         ])),
@@ -40,7 +40,7 @@ export const olist: OListParser = lazy(() => block(fmap(validate(
   })));
 
 export const olist_: OListParser = convert(
-  source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=\n|$)/, `$1. `),
+  source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=$|\n)/, `$1. `),
   olist);
 
 type IndexType = undefined | '1' | 'a' | 'A';

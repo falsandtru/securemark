@@ -11,7 +11,7 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
   some(union([
     fmap(
       inits([
-        line(surround(/^[-+*](?:\s|$)/, defrag(trim(some(inline))), '', false)),
+        line(surround(/^[-+*](?:$|\s)/, defrag(trim(some(inline))), '', false)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
       () => [html('li', eval(defrag(some(inline))('Invalid syntax: UList: Use `-` instead.', {})))]),
@@ -19,5 +19,5 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
   es => [html('ul', { class: 'invalid', 'data-invalid-syntax': 'list', 'data-invalid-type': 'syntax' }, es)])));
 
 export const ilist_: IListParser = convert(
-  source => source.replace(/^[-+*](?=\n|$)/, `$& `),
+  source => source.replace(/^[-+*](?=$|\n)/, `$& `),
   ilist);

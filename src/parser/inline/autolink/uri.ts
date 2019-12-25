@@ -3,7 +3,7 @@ import { union, some, subline, validate, rewrite, convert, configure, lazy } fro
 import { unescsource } from '../../source';
 import { link, bracket } from '../link';
 
-const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:\s|$))/;
+const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 
 export const uri: AutolinkParser.UriParser = lazy(() => subline(validate(
   /^h?ttps?:\/\/[^/?#\s]/,

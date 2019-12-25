@@ -4,7 +4,7 @@ import { inline } from '../../inline';
 import { html } from 'typed-dom';
 
 export const segment: ExtensionParser.PlaceholderParser.SegmentParser = block(focus(
-  /^(~{3,})[a-z][^\n]*\n(?:[^\n]*\n){0,300}?\1[^\S\n]*(?:\n|$)/,
+  /^(~{3,})[a-z][^\n]*\n(?:[^\n]*\n){0,300}?\1[^\S\n]*(?:$|\n)/,
   () => [[], '']));
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(rewrite(segment,

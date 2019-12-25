@@ -8,7 +8,7 @@ import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 
 export const dlist: DListParser = lazy(() => block(fmap(validate(
-  /^~(?=\s|$)/,
+  /^~(?=$|\s)/,
   convert(source => source.replace(blankline, ''),
   configure({ syntax: { inline: { media: false } } },
   some(inits([
@@ -19,7 +19,7 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
 
 const term: DListParser.TermParser = line(indexee(fmap(
   surround(
-    /^~(?=\s|$)/,
+    /^~(?=$|\s)/,
     defrag(trim(some(union([indexer, inline])))),
     '',
     false),
@@ -27,9 +27,9 @@ const term: DListParser.TermParser = line(indexee(fmap(
 
 const desc: DListParser.DescriptionParser = block(fmap(
   surround(
-    /^:(?=\s|$)|/,
+    /^:(?=$|\s)|/,
     rewrite(
-      some(anyline, /^[~:](?=\s|$)/),
+      some(anyline, /^[~:](?=$|\s)/),
       defrag(trim(some(union([inline]))))),
     '',
     false),
