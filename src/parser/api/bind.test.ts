@@ -78,6 +78,10 @@ describe('Unit: parser/api/bind', () => {
       assert(el.innerHTML === '<p>1</p><p>0</p><p>9</p><ol></ol>');
     });
 
+    it('normalize', () => {
+      assert.deepStrictEqual(inspect(bind(html('div'), cfgs)('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
+    });
+
     it('reentrant', () => {
       const el = html('div');
       const update = bind(el, cfgs);
@@ -94,10 +98,6 @@ describe('Unit: parser/api/bind', () => {
         assert(el.innerHTML === '<p>3</p>');
         assert.deepStrictEqual(inspect(update('3\n\n4')), ['<p>4</p>']);
       }
-    });
-
-    it('normalize', () => {
-      assert.deepStrictEqual(inspect(bind(html('div'), cfgs)('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
   });
