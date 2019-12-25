@@ -5,6 +5,8 @@ import { block } from '../block';
 import { normalize } from './normalization';
 import { figure, footnote } from '../../util';
 
+// Reentrant but you must always complete all iterations until iterations have done or aborted unless you dispose of the binding target of this function.
+// Otherwise you may not process some removed elements.
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
@@ -54,8 +56,9 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           assert(!el.parentNode);
           yield el;
         }
+        void ensureLatest(rev);
       }
-      void requireLatest(rev);
+      assert(rev === revision);
       void pairs.splice(index, 0, [segment, elements]);
       if (!skip) {
         base = base === null || base?.parentNode === target
@@ -71,7 +74,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           void yields.add(el);
           assert(el.parentNode);
           yield el;
-          void requireLatest(rev);
+          void ensureLatest(rev);
         }
       }
       void ++index;
@@ -88,8 +91,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         if (!yields.has(el)) continue;
         assert(!el.parentNode);
         yield el;
-        void requireLatest(rev);
       }
+      void ensureLatest(rev);
     }
     assert(pairs.length === sourceSegments.length);
     assert(rev === revision);
@@ -97,7 +100,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     void footnote(target, cfgs.footnote);
   };
 
-  function requireLatest(rev: symbol): void {
+  function ensureLatest(rev: symbol): void {
     if (rev !== revision) throw new Error(`Abort by reentering.`);
   }
 
