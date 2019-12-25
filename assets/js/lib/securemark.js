@@ -2039,12 +2039,16 @@ require = function () {
                         if (index < pairs.length - end) {
                             const [[, es]] = pairs.splice(index, 1);
                             for (const el of es) {
-                                if (!yields.has(el))
-                                    continue;
                                 base = el.parentNode === target ? el.nextSibling : base;
                                 if (skip)
                                     continue;
                                 el.parentNode && void el.remove();
+                            }
+                            for (const el of es) {
+                                if (skip)
+                                    continue;
+                                if (!yields.has(el))
+                                    continue;
                                 yield el;
                             }
                         }
@@ -2054,10 +2058,12 @@ require = function () {
                             elements
                         ]);
                         if (!skip) {
+                            base = base === null || (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
+                            for (const el of elements) {
+                                void target.insertBefore(el, base);
+                            }
                             for (const el of elements) {
                                 void yields.add(el);
-                                base = base === null || (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
-                                base = target.insertBefore(el, base).nextSibling;
                                 yield el;
                                 void requireLatest(rev);
                             }
@@ -2067,13 +2073,15 @@ require = function () {
                     while (pairs.length > sourceSegments.length) {
                         const [[, es]] = pairs.splice(index, 1);
                         for (const el of es) {
+                            el.parentNode && void el.remove();
+                        }
+                        for (const el of es) {
                             if (!yields.has(el))
                                 continue;
-                            el.parentNode && void el.remove();
                             yield el;
+                            void requireLatest(rev);
                         }
                     }
-                    void requireLatest(rev);
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
                 };
