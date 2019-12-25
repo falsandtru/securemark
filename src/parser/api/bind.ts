@@ -37,7 +37,9 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         ? pairs[index][1]
         : eval(block(segment, {}));
       assert(rev === revision);
-      if (index < pairs.length - end) for (const [, es] of pairs.splice(index, 1)) {
+      if (index < pairs.length - end) {
+        assert(index < pairs.length);
+        const [[, es]] = pairs.splice(index, 1);
         assert(es.length < 2);
         for (const el of es) {
           assert(yields.has(el) || !el.parentNode);
@@ -54,31 +56,33 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       void requireLatest(rev);
       void pairs.splice(index, 0, [segment, elements]);
       assert(elements.length < 2);
-      if (!skip) for (const el of elements) {
-        assert(rev === revision);
-        assert(!yields.has(el));
-        void yields.add(el);
-        base = base === null || base?.parentNode === target
-          ? base
-          : next(index);
-        base = target.insertBefore(el, base).nextSibling;
-        assert(el.parentNode);
-        yield el;
-        void requireLatest(rev);
+      if (!skip) {
+        for (const el of elements) {
+          assert(rev === revision);
+          assert(!yields.has(el));
+          void yields.add(el);
+          base = base === null || base?.parentNode === target
+            ? base
+            : next(index);
+          base = target.insertBefore(el, base).nextSibling;
+          assert(el.parentNode);
+          yield el;
+          void requireLatest(rev);
+        }
       }
       void ++index;
     }
     assert(rev === revision);
     while (pairs.length > sourceSegments.length) {
-      for (const [, es] of pairs.splice(index, 1)) {
-        assert(es.length < 2);
-        for (const el of es) {
-          assert(yields.has(el) || !el.parentNode);
-          if (!yields.has(el)) continue;
-          el.parentNode && void el.remove();
-          assert(!el.parentNode);
-          yield el;
-        }
+      assert(index < pairs.length);
+      const [[, es]] = pairs.splice(index, 1);
+      assert(es.length < 2);
+      for (const el of es) {
+        assert(yields.has(el) || !el.parentNode);
+        if (!yields.has(el)) continue;
+        el.parentNode && void el.remove();
+        assert(!el.parentNode);
+        yield el;
       }
     }
     assert(pairs.length === sourceSegments.length);
