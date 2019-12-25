@@ -1,5 +1,6 @@
 import { MarkdownParser } from '../../markdown.d';
 import { union, recover } from '../combinator';
+import { emptyline } from './source/line';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';
@@ -29,6 +30,7 @@ export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = recover(localize(union([
+  emptyline,
   horizontalrule,
   heading,
   ulist,

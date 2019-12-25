@@ -20,6 +20,9 @@ describe('Unit: parser/api/parse', () => {
         [...parse('\n').children].map(el => el.outerHTML),
         []);
       assert.deepStrictEqual(
+        [...parse('\n\n').children].map(el => el.outerHTML),
+        []);
+      assert.deepStrictEqual(
         [...parse('\\').children].map(el => el.outerHTML),
         []);
     });

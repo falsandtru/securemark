@@ -41,6 +41,7 @@ export namespace MarkdownParser {
   export interface BlockParser extends
     Markdown<'block'>,
     Parser<HTMLElement, [
+      SourceParser.EmptyLineParser,
       BlockParser.HorizontalRuleParser,
       BlockParser.HeadingParser,
       BlockParser.UListParser,
