@@ -5,8 +5,6 @@ import { block } from '../block';
 import { normalize } from './normalization';
 import { figure, footnote } from '../../util';
 
-// Reentrant but you must always complete all iterations until iterations have done or aborted unless you dispose of the binding target of this function.
-// Otherwise you can't remove old results from the binding target.
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
@@ -38,9 +36,9 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       const elements = skip
         ? pairs[index][1]
         : eval(block(segment, {}));
-      assert(elements.length < 2);
       assert(rev === revision);
-      for (const [, es] of pairs.splice(index, index < pairs.length - end ? 1 : 0, [segment, elements])) {
+      if (index < pairs.length - end) for (const [, es] of pairs.splice(index, 1)) {
+        assert(es.length < 2);
         for (const el of es) {
           assert(yields.has(el) || !el.parentNode);
           if (!yields.has(el)) continue;
@@ -50,10 +48,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           if (skip) continue;
           el.parentNode && void el.remove();
           assert(!el.parentNode);
-          yield el; // Don't end iterations here.
+          yield el;
         }
       }
       void requireLatest(rev);
+      void pairs.splice(index, 0, [segment, elements]);
+      assert(elements.length < 2);
       if (!skip) for (const el of elements) {
         assert(rev === revision);
         assert(!yields.has(el));
@@ -69,13 +69,16 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       void ++index;
     }
     assert(rev === revision);
-    for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
-      for (const el of es) {
-        assert(yields.has(el) || !el.parentNode);
-        if (!yields.has(el)) continue;
-        el.parentNode && void el.remove();
-        assert(!el.parentNode);
-        yield el; // Don't end iterations here.
+    while (pairs.length > sourceSegments.length) {
+      for (const [, es] of pairs.splice(index, 1)) {
+        assert(es.length < 2);
+        for (const el of es) {
+          assert(yields.has(el) || !el.parentNode);
+          if (!yields.has(el)) continue;
+          el.parentNode && void el.remove();
+          assert(!el.parentNode);
+          yield el;
+        }
       }
     }
     assert(pairs.length === sourceSegments.length);
