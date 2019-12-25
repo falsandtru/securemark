@@ -10,7 +10,6 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('\n')), undefined);
       assert.deepStrictEqual(inspect(parser('#')), undefined);
-      assert.deepStrictEqual(inspect(parser('# ')), undefined);
       assert.deepStrictEqual(inspect(parser('#\n')), undefined);
       assert.deepStrictEqual(inspect(parser('#a\n')), undefined);
       assert.deepStrictEqual(inspect(parser('#a \n')), undefined);
@@ -22,6 +21,7 @@ describe('Unit: parser/block/heading', () => {
     });
 
     it('basic', () => {
+      assert.deepStrictEqual(inspect(parser('# ')), [['<h1></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a ')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a b  c \n')), [['<h1 id="index:a_b_c">a b  c</h1>'], '']);
@@ -35,7 +35,11 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a((b))')), [['<h1 id="index:a">a<sup class="annotation">b</sup></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a[[b]]')), [['<h1 id="index:a">a<sup class="reference">b</sup></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('###### a')), [['<h6 id="index:a">a</h6>'], '']);
+      assert.deepStrictEqual(inspect(parser('# \n##')), [['<h1></h1>', '<h2></h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a\n##')), [['<h1 id="index:a">a</h1>', '<h2></h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a\n## ')), [['<h1 id="index:a">a</h1>', '<h2></h2>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\n## b')), [['<h1 id="index:a">a</h1>', '<h2 id="index:b">b</h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a\n## \n## b')), [['<h1 id="index:a">a</h1>', '<h2></h2>', '<h2 id="index:b">b</h2>'], '']);
     });
 
     it('index', () => {
