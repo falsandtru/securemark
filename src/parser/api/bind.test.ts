@@ -78,6 +78,10 @@ describe('Unit: parser/api/bind', () => {
       assert(el.innerHTML === '<p>1</p><p>0</p><p>9</p><ol></ol>');
     });
 
+    it('complex', () => {
+      assert.deepStrictEqual(inspect(bind(html('div'), cfgs)('# a\n# b')), ['<h1 id="index:a">a</h1>', '<h1 id="index:b">b</h1>']);
+    });
+
     it('normalize', () => {
       assert.deepStrictEqual(inspect(bind(html('div'), cfgs)('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
     });
