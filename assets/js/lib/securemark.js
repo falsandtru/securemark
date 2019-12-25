@@ -2012,6 +2012,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             function bind(target, cfgs) {
                 const pairs = [];
+                const yields = new WeakSet();
                 let revision;
                 return function* (source) {
                     source = normalization_1.normalize(source);
@@ -2040,6 +2041,8 @@ require = function () {
                                 elements
                             ])) {
                             for (const el of es) {
+                                if (!yields.has(el))
+                                    continue;
                                 base = el.parentNode === target ? el.nextSibling : base;
                                 if (skip)
                                     continue;
@@ -2047,25 +2050,33 @@ require = function () {
                                 yield el;
                             }
                         }
+                        void requireLatest(rev);
                         if (!skip)
                             for (const el of elements) {
-                                base = (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
+                                void yields.add(el);
+                                base = base === null || (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
                                 base = target.insertBefore(el, base).nextSibling;
                                 yield el;
-                                if (revision !== rev)
-                                    throw new Error(`Abort by reentering.`);
+                                void requireLatest(rev);
                             }
                         void ++index;
                     }
                     for (const [, es] of pairs.splice(index, pairs.length - index - end)) {
                         for (const el of es) {
+                            if (!yields.has(el))
+                                continue;
                             el.parentNode && void el.remove();
                             yield el;
                         }
                     }
+                    void requireLatest(rev);
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
                 };
+                function requireLatest(rev) {
+                    if (rev !== revision)
+                        throw new Error(`Abort by reentering.`);
+                }
                 function next(index) {
                     for (let i = index; i-- && i < pairs.length;) {
                         const [, es] = pairs[i];
