@@ -2051,8 +2051,8 @@ require = function () {
                                     continue;
                                 yield el;
                             }
+                            void ensureLatest(rev);
                         }
-                        void requireLatest(rev);
                         void pairs.splice(index, 0, [
                             segment,
                             elements
@@ -2065,7 +2065,7 @@ require = function () {
                             for (const el of elements) {
                                 void yields.add(el);
                                 yield el;
-                                void requireLatest(rev);
+                                void ensureLatest(rev);
                             }
                         }
                         void ++index;
@@ -2079,13 +2079,13 @@ require = function () {
                             if (!yields.has(el))
                                 continue;
                             yield el;
-                            void requireLatest(rev);
                         }
+                        void ensureLatest(rev);
                     }
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
                 };
-                function requireLatest(rev) {
+                function ensureLatest(rev) {
                     if (rev !== revision)
                         throw new Error(`Abort by reentering.`);
                 }
