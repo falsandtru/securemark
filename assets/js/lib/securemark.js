@@ -2034,19 +2034,14 @@ require = function () {
                     let index = start;
                     let base;
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
-                        const skip = index < pairs.length && segment === pairs[index][0];
-                        const elements = skip ? pairs[index][1] : combinator_1.eval(block_1.block(segment, {}));
+                        const elements = combinator_1.eval(block_1.block(segment, {}));
                         if (index < pairs.length - end) {
                             const [[, es]] = pairs.splice(index, 1);
                             for (const el of es) {
                                 base = el.parentNode === target ? el.nextSibling : base;
-                                if (skip)
-                                    continue;
                                 el.parentNode && void el.remove();
                             }
                             for (const el of es) {
-                                if (skip)
-                                    continue;
                                 if (!yields.has(el))
                                     continue;
                                 yield el;
@@ -2057,19 +2052,17 @@ require = function () {
                             segment,
                             elements
                         ]);
-                        if (!skip) {
-                            base = base === null || (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
-                            for (const el of elements) {
-                                void target.insertBefore(el, base);
-                            }
-                            for (const el of elements) {
-                                if (!el.parentNode)
-                                    continue;
-                                void yields.add(el);
-                                yield el;
-                            }
-                            void ensureLatest(rev);
+                        base = base === null || (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
+                        for (const el of elements) {
+                            void target.insertBefore(el, base);
                         }
+                        for (const el of elements) {
+                            if (!el.parentNode)
+                                continue;
+                            void yields.add(el);
+                            yield el;
+                        }
+                        void ensureLatest(rev);
                         void ++index;
                     }
                     while (pairs.length > sourceSegments.length) {
