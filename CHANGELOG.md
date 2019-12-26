@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.141.9
+
+- Refactoring.
+
 ## 0.141.8
 
 - Fix heading parser to allow empty texts.
