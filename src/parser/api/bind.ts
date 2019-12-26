@@ -34,10 +34,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
       assert(rev === revision);
       assert(index >= 0);
-      const skip = index < pairs.length && segment === pairs[index][0];
-      const elements = skip
-        ? pairs[index][1]
-        : eval(block(segment, {}));
+      const elements = eval(block(segment, {}));
       assert(rev === revision);
       if (index < pairs.length - end) {
         assert(index < pairs.length);
@@ -47,11 +44,9 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
           base = el.parentNode === target
             ? el.nextSibling
             : base;
-          if (skip) continue;
           el.parentNode && void el.remove();
         }
         for (const el of es) {
-          if (skip) continue;
           if (!yields.has(el)) continue;
           assert(!el.parentNode);
           yield el;
@@ -60,24 +55,22 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       }
       assert(rev === revision);
       void pairs.splice(index, 0, [segment, elements]);
-      if (!skip) {
-        base = base === null || base?.parentNode === target
-          ? base
-          : next(index);
-        for (const el of elements) {
-          assert(rev === revision);
-          void target.insertBefore(el, base);
-        }
-        for (const el of elements) {
-          assert(rev === revision);
-          if (!el.parentNode) continue;
-          assert(!yields.has(el));
-          void yields.add(el);
-          assert(el.parentNode);
-          yield el;
-        }
-        void ensureLatest(rev);
+      base = base === null || base?.parentNode === target
+        ? base
+        : next(index);
+      for (const el of elements) {
+        assert(rev === revision);
+        void target.insertBefore(el, base);
       }
+      for (const el of elements) {
+        assert(rev === revision);
+        if (!el.parentNode) continue;
+        assert(!yields.has(el));
+        void yields.add(el);
+        assert(el.parentNode);
+        yield el;
+      }
+      void ensureLatest(rev);
       void ++index;
     }
     assert(rev === revision);
