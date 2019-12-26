@@ -2063,10 +2063,12 @@ require = function () {
                                 void target.insertBefore(el, base);
                             }
                             for (const el of elements) {
+                                if (!el.parentNode)
+                                    continue;
                                 void yields.add(el);
                                 yield el;
-                                void ensureLatest(rev);
                             }
+                            void ensureLatest(rev);
                         }
                         void ++index;
                     }
