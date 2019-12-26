@@ -6,7 +6,7 @@ import { normalize } from './normalization';
 import { figure, footnote } from '../../util';
 
 // Reentrant but you must always complete all iterations until iterations have done or aborted unless you dispose of the binding target of this function.
-// Otherwise you may not process some removed elements.
+// Otherwise you may not process some added and removed elements.
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
@@ -70,12 +70,13 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         }
         for (const el of elements) {
           assert(rev === revision);
+          if (!el.parentNode) continue;
           assert(!yields.has(el));
           void yields.add(el);
           assert(el.parentNode);
           yield el;
-          void ensureLatest(rev);
         }
+        void ensureLatest(rev);
       }
       void ++index;
     }
