@@ -5,7 +5,7 @@ import { block } from '../block';
 import { normalize } from './normalization';
 import { figure, footnote } from '../../util';
 
-// Reentrant but you must always complete all iterations until iterations have done or aborted unless you dispose of the binding target of this function.
+// Reentrant but you have to always complete all iterations until iterations have done or aborted unless you dispose of the binding target of this function.
 // Otherwise you may not process some added and removed elements.
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
