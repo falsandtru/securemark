@@ -69,7 +69,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
   };
 
   function ensureLatest(rev: symbol): void {
-    if (rev !== revision) throw new Error(`Abort by reentering.`);
+    if (rev !== revision) throw new Error('Abort the iteration because of detecting reentering.');
   }
 
   function next(index: number): Node | null {

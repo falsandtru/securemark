@@ -98,7 +98,7 @@ describe('Unit: parser/api/bind', () => {
         }
       }
       catch (err) {
-        assert(err instanceof Error && err.message === `Abort by reentering.`);
+        assert(err instanceof Error && err.message === 'Abort the iteration because of detecting reentering.');
         assert(el.innerHTML === '<p>3</p>');
         assert.deepStrictEqual(inspect(update('3\n\n4')), ['<p>4</p>']);
       }
