@@ -8,7 +8,7 @@ import { figure, footnote } from '../../util';
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
-  const adds: (readonly [HTMLElement, Node | null])[] = [];
+  const adds: [HTMLElement, Node | null][] = [];
   const dels: HTMLElement[] = [];
   const bottom = target.firstChild;
   let revision: symbol;
@@ -36,8 +36,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       const elements = eval(block(segment, {}));
       void pairs.splice(index, 0, [segment, elements]);
       // All deletion processes always run after all addition processes have done.
-      // Therefore any `base` node never be unavailable by deletions until all the dependent `el` nodes are added.
-      void adds.push(...elements.map(el => [el, base!] as const));
+      // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
+      void adds.push(...elements.map<typeof adds[number]>(el => [el, base]));
       while (adds.length > 0) {
         assert(rev === revision);
         const [el, base] = adds.shift()!;
