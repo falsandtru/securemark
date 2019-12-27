@@ -104,6 +104,27 @@ describe('Unit: parser/api/bind', () => {
       }
     });
 
+    it('concurrency', () => {
+      function inspect(iter: Iterator<HTMLElement, undefined>, count: number) {
+        return [...Array(count)]
+          .map(() => iter.next())
+          .map(res =>
+            res.done
+              ? true
+              : res.value.outerHTML);
+      }
+
+      const el = html('div');
+      const update = bind(el, cfgs);
+
+      assert.deepStrictEqual(inspect(update('1\n'), 1), ['<p>1</p>']);
+      assert(el.innerHTML === '<p>1</p>');
+      assert.deepStrictEqual(inspect(update('1\n\n3\n\n4'), 1), ['<p>3</p>']);
+      assert(el.innerHTML === '<p>1</p><p>3</p>');
+      assert.deepStrictEqual(inspect(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>', true]);
+      assert(el.innerHTML === '<p>1</p><p>2</p><p>4</p>');
+    });
+
   });
 
 });
