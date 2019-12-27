@@ -2012,7 +2012,9 @@ require = function () {
             const util_1 = _dereq_('../../util');
             function bind(target, cfgs) {
                 const pairs = [];
-                const yields = new WeakSet();
+                const adds = [];
+                const dels = [];
+                const bottom = target.firstChild;
                 let revision;
                 return function* (source) {
                     source = normalization_1.normalize(source);
@@ -2031,51 +2033,35 @@ require = function () {
                         if (targetSegments[targetSegments.length - end - 1] !== sourceSegments[sourceSegments.length - end - 1])
                             break;
                     }
+                    const base = next(start);
                     let index = start;
-                    let base;
                     for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
                         const elements = combinator_1.eval(block_1.block(segment, {}));
-                        if (index < pairs.length - end) {
-                            const [[, es]] = pairs.splice(index, 1);
-                            for (const el of es) {
-                                base = el.parentNode === target ? el.nextSibling : base;
-                                el.parentNode && void el.remove();
-                            }
-                            for (const el of es) {
-                                if (!yields.has(el))
-                                    continue;
-                                yield el;
-                            }
-                            void ensureLatest(rev);
-                        }
                         void pairs.splice(index, 0, [
                             segment,
                             elements
                         ]);
-                        base = base === null || (base === null || base === void 0 ? void 0 : base.parentNode) === target ? base : next(index);
-                        for (const el of elements) {
+                        void adds.push(...elements.map(el => [
+                            el,
+                            base
+                        ]));
+                        while (adds.length > 0) {
+                            const [el, base] = adds.shift();
                             void target.insertBefore(el, base);
-                        }
-                        for (const el of elements) {
-                            if (!el.parentNode)
-                                continue;
-                            void yields.add(el);
                             yield el;
+                            void ensureLatest(rev);
                         }
-                        void ensureLatest(rev);
                         void ++index;
                     }
                     while (pairs.length > sourceSegments.length) {
                         const [[, es]] = pairs.splice(index, 1);
-                        for (const el of es) {
+                        void dels.push(...es);
+                        while (dels.length > 0) {
+                            const el = dels.shift();
                             el.parentNode && void el.remove();
-                        }
-                        for (const el of es) {
-                            if (!yields.has(el))
-                                continue;
                             yield el;
+                            void ensureLatest(rev);
                         }
-                        void ensureLatest(rev);
                     }
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
@@ -2085,23 +2071,12 @@ require = function () {
                         throw new Error(`Abort by reentering.`);
                 }
                 function next(index) {
-                    for (let i = index; i-- && i < pairs.length;) {
-                        const [, es] = pairs[i];
-                        for (let i = es.length; i--;) {
-                            const el = es[i];
-                            if (el.parentNode === target)
-                                return el.nextSibling;
-                        }
-                    }
                     for (let i = index; i < pairs.length; ++i) {
                         const [, es] = pairs[i];
-                        for (let i = 0; i < es.length; ++i) {
-                            const el = es[i];
-                            if (el.parentNode === target)
-                                return el;
-                        }
+                        if (es.length > 0)
+                            return es[0];
                     }
-                    return target.firstChild;
+                    return bottom;
                 }
             }
             exports.bind = bind;
