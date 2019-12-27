@@ -1,6 +1,6 @@
-import { normalize } from './normalization';
+import { normalize } from './normalize';
 
-describe('Unit: parser/api/normalization', () => {
+describe('Unit: parser/api/normalize', () => {
   describe('normalize', () => {
     it('insecure characters', () => {
       assert(normalize('\u0000\u0000') === '\uFFFD\uFFFD');

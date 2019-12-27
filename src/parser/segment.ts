@@ -4,7 +4,7 @@ import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
 import { contentline, emptyline } from './source';
-import { normalize } from './api/normalization';
+import { normalize } from './api/normalize';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 

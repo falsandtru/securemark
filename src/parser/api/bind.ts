@@ -2,7 +2,7 @@ import { ParserConfigs } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
 import { block } from '../block';
-import { normalize } from './normalization';
+import { normalize } from './normalize';
 import { figure, footnote } from '../../util';
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
