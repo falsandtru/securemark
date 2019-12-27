@@ -2008,7 +2008,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const segment_1 = _dereq_('../segment');
             const block_1 = _dereq_('../block');
-            const normalization_1 = _dereq_('./normalization');
+            const normalize_1 = _dereq_('./normalize');
             const util_1 = _dereq_('../../util');
             function bind(target, cfgs) {
                 const pairs = [];
@@ -2017,7 +2017,7 @@ require = function () {
                 const bottom = target.firstChild;
                 let revision;
                 return function* (source) {
-                    source = normalization_1.normalize(source);
+                    source = normalize_1.normalize(source);
                     const rev = revision = Symbol();
                     const targetSegments = pairs.map(([seg]) => seg);
                     if (source === targetSegments.join(''))
@@ -2086,7 +2086,7 @@ require = function () {
             '../../util': 136,
             '../block': 59,
             '../segment': 113,
-            './normalization': 56
+            './normalize': 56
         }
     ],
     55: [
@@ -2133,12 +2133,12 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const block_1 = _dereq_('../block');
             const segment_1 = _dereq_('../segment');
-            const normalization_1 = _dereq_('./normalization');
+            const normalize_1 = _dereq_('./normalize');
             const util_1 = _dereq_('../../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
             function parse(source, opts = {}) {
-                const node = typed_dom_1.frag(segment_1.segment(normalization_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg, {}))), []));
+                const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg, {}))), []));
                 opts.figure !== false && void util_1.figure(node);
                 opts.footnote && void util_1.footnote(node, opts.footnote);
                 return node;
@@ -2150,7 +2150,7 @@ require = function () {
             '../../util': 136,
             '../block': 59,
             '../segment': 113,
-            './normalization': 56,
+            './normalize': 56,
             'spica/concat': 8,
             'typed-dom': 22
         }
@@ -4246,7 +4246,7 @@ require = function () {
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
-            const normalization_1 = _dereq_('./api/normalization');
+            const normalize_1 = _dereq_('./api/normalize');
             const parser = combinator_1.union([
                 codeblock_1.segment,
                 mathblock_1.segment,
@@ -4267,7 +4267,7 @@ require = function () {
         },
         {
             '../combinator': 30,
-            './api/normalization': 56,
+            './api/normalize': 56,
             './block/codeblock': 61,
             './block/extension': 63,
             './block/mathblock': 71,
