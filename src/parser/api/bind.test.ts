@@ -91,7 +91,7 @@ describe('Unit: parser/api/bind', () => {
       const update = bind(el, cfgs);
 
       try {
-        for (const _ of update('0\n\n1')) {
+        for (const _ of update('0\n\n1\n')) {
           assert.deepStrictEqual(inspect(update('0\n\n1\n\n2')), ['<p>1</p>', '<p>2</p>']);
           assert(el.innerHTML === '<p>0</p><p>1</p><p>2</p>');
           assert.deepStrictEqual(inspect(update('3\n')), ['<p>3</p>']);
