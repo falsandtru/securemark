@@ -2049,7 +2049,8 @@ require = function () {
                             const [el, base] = adds.shift();
                             void target.insertBefore(el, base);
                             yield el;
-                            void ensureLatest(rev);
+                            if (rev !== revision)
+                                return yield;
                         }
                         void ++index;
                     }
@@ -2060,16 +2061,13 @@ require = function () {
                             const el = dels.shift();
                             el.parentNode && void el.remove();
                             yield el;
-                            void ensureLatest(rev);
+                            if (rev !== revision)
+                                return yield;
                         }
                     }
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
                 };
-                function ensureLatest(rev) {
-                    if (rev !== revision)
-                        throw new Error(`Abort by reentering.`);
-                }
                 function next(index) {
                     for (let i = index; i < pairs.length; ++i) {
                         const [, es] = pairs[i];
