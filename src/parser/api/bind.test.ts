@@ -4,8 +4,8 @@ import { html } from 'typed-dom';
 
 describe('Unit: parser/api/bind', () => {
   describe('bind', () => {
-    function inspect(iter: Iterable<HTMLElement>) {
-      return [...iter].filter(e => e.parentNode).map(e => e.outerHTML);
+    function inspect(iter: Iterable<HTMLElement | undefined>) {
+      return [...iter].filter(e => e?.parentNode).map(e => e?.outerHTML);
     }
     const cfgs: ParserConfigs = { footnote: { annotation: html('ol'), reference: html('ol') } };
 
@@ -90,28 +90,27 @@ describe('Unit: parser/api/bind', () => {
       const el = html('div');
       const update = bind(el, cfgs);
 
-      try {
-        for (const _ of update('0\n\n1\n')) {
-          assert.deepStrictEqual(inspect(update('0\n\n1\n\n2')), ['<p>1</p>', '<p>2</p>']);
-          assert(el.innerHTML === '<p>0</p><p>1</p><p>2</p>');
-          assert.deepStrictEqual(inspect(update('3\n')), ['<p>3</p>']);
-        }
-      }
-      catch (err) {
-        assert(err instanceof Error && err.message === 'Abort the iteration because of detecting reentering.');
-        assert(el.innerHTML === '<p>3</p>');
-        assert.deepStrictEqual(inspect(update('3\n\n4')), ['<p>4</p>']);
-      }
+      const iter = update('0\n\n1\n');
+      assert(iter.next().value?.outerHTML === '<p>0</p>');
+      assert.deepStrictEqual(inspect(update('0\n\n1\n\n2')), ['<p>1</p>', '<p>2</p>']);
+      assert(el.innerHTML === '<p>0</p><p>1</p><p>2</p>');
+      assert.deepStrictEqual(inspect(update('3\n')), ['<p>3</p>']);
+      assert(el.innerHTML === '<p>3</p>');
+      assert.deepStrictEqual(iter.next(), { value: undefined, done: false });
+      assert.deepStrictEqual(iter.next(), { value: undefined, done: true });
+      assert(el.innerHTML === '<p>3</p>');
+      assert.deepStrictEqual(inspect(update('3\n\n4')), ['<p>4</p>']);
+      assert(el.innerHTML === '<p>3</p><p>4</p>');
     });
 
     it('concurrency', () => {
-      function inspect(iter: Iterator<HTMLElement, undefined>, count: number) {
+      function inspect(iter: Iterator<HTMLElement | undefined, undefined>, count: number) {
         return [...Array(count)]
           .map(() => iter.next())
           .map(res =>
             res.done
               ? true
-              : res.value.outerHTML);
+              : res.value?.outerHTML);
       }
 
       const el = html('div');

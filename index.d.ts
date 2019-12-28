@@ -6,7 +6,7 @@
 */
 
 export function parse(source: string, opts?: ParserOptions): DocumentFragment;
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined>;
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement | undefined, undefined, undefined>;
 export function figure(target: DocumentFragment | HTMLElement | ShadowRoot): void;
 export function footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): void;
 export function render(target: HTMLElement, opts?: RenderingOptions): void;

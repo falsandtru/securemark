@@ -5,14 +5,14 @@ import { block } from '../block';
 import { normalize } from './normalize';
 import { figure, footnote } from '../../util';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement, undefined, undefined> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   const adds: [HTMLElement, Node | null][] = [];
   const dels: HTMLElement[] = [];
   const bottom = target.firstChild;
   let revision: symbol;
-  return function* (source: string): Generator<HTMLElement, undefined, undefined> {
+  return function* (source: string): Generator<HTMLElement | undefined, undefined, undefined> {
     source = normalize(source);
     const rev = revision = Symbol();
     const targetSegments = pairs.map(([seg]) => seg);
@@ -44,7 +44,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         void target.insertBefore(el, base);
         assert(el.parentNode);
         yield el;
-        void ensureLatest(rev);
+        if (rev !== revision) return yield;
       }
       void ++index;
     }
@@ -59,7 +59,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         el.parentNode && void el.remove();
         assert(!el.parentNode);
         yield el;
-        void ensureLatest(rev);
+        if (rev !== revision) return yield;
       }
     }
     assert(pairs.length === sourceSegments.length);
@@ -67,10 +67,6 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     void figure(target);
     void footnote(target, cfgs.footnote);
   };
-
-  function ensureLatest(rev: symbol): void {
-    if (rev !== revision) throw new Error('Abort the iteration because of detecting reentering.');
-  }
 
   function next(index: number): Node | null {
     assert(index >= 0);

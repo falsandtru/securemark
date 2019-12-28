@@ -360,6 +360,7 @@
     let time = 0;
     let resource = 100;
     for (const el of update(document.getElementById('editor').value)) {
+      if (!el) throw new Error('Abort.');
       el.parentNode
          ? observer.observe(el)
          : observer.unobserve(el);

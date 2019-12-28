@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.142.0
+
+- Change bind function to yield `undefined` to express the abort of the iteration.
+
 ## 0.141.10
 
 - Refactoring.
