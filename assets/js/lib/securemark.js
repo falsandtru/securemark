@@ -2017,8 +2017,8 @@ require = function () {
                 const bottom = target.firstChild;
                 let revision;
                 return function* (source) {
-                    source = normalize_1.normalize(source);
                     const rev = revision = Symbol();
+                    source = normalize_1.normalize(source);
                     const targetSegments = pairs.map(([seg]) => seg);
                     const sourceSegments = segment_1.segment(source);
                     let start = 0;
@@ -2046,24 +2046,24 @@ require = function () {
                             el,
                             base
                         ]));
-                        while (adds.length > 0) {
-                            const [el, base] = adds.shift();
-                            void target.insertBefore(el, base);
-                            yield el;
-                            if (rev !== revision)
-                                return yield;
-                        }
                     }
                     while (pairs.length > sourceSegments.length) {
                         const [[, es]] = pairs.splice(index, 1);
                         void dels.push(...es);
-                        while (dels.length > 0) {
-                            const el = dels.shift();
-                            el.parentNode && void el.remove();
-                            yield el;
-                            if (rev !== revision)
-                                return yield;
-                        }
+                    }
+                    while (adds.length > 0) {
+                        const [el, base] = adds.shift();
+                        void target.insertBefore(el, base);
+                        yield el;
+                        if (rev !== revision)
+                            return yield;
+                    }
+                    while (dels.length > 0) {
+                        const el = dels.shift();
+                        el.parentNode && void el.remove();
+                        yield el;
+                        if (rev !== revision)
+                            return yield;
                     }
                     void util_1.figure(target);
                     void util_1.footnote(target, cfgs.footnote);
