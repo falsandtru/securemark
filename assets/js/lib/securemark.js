@@ -2020,8 +2020,8 @@ require = function () {
                     var _a;
                     const rev = revision = Symbol();
                     source = normalize_1.normalize(source);
-                    const targetSegments = pairs.map(([seg]) => seg);
                     const sourceSegments = segment_1.segment(source);
+                    const targetSegments = pairs.map(([seg]) => seg);
                     let start = 0;
                     for (; start < targetSegments.length; ++start) {
                         if (targetSegments[start] !== sourceSegments[start])
@@ -2047,6 +2047,13 @@ require = function () {
                             el,
                             base
                         ]));
+                        while (adds.length > 0) {
+                            const [el, base] = adds.shift();
+                            void target.insertBefore(el, base);
+                            yield el;
+                            if (rev !== revision)
+                                return yield;
+                        }
                     }
                     while (pairs.length > sourceSegments.length) {
                         const [[, es]] = pairs.splice(index, 1);
