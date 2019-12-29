@@ -43,4 +43,4 @@ export const block: BlockParser = recover(localize(union([
   extension,
   blockquote,
   paragraph
-])), (_, config, err) => block(err instanceof Error ? `# ${err.name}: ${err.message}\\` : `# Unknown error: ${err}\\`, config));
+])), (_, config, reason) => block(reason instanceof Error ? `# ${reason.name}: ${reason.message}\\` : `# Unknown error: ${reason}\\`, config));
