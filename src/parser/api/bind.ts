@@ -33,9 +33,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     for (; index < sourceSegments.length - end; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = seg.trim() === ''
-        ? []
-        : eval(block(seg, {}));
+      const es = eval(block(seg, {}));
       void pairs.splice(index, 0, [seg, es]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
