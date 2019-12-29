@@ -368,7 +368,7 @@
       time += delta;
       resource = resource - delta > 0
         ? resource - delta
-        : void await new Promise(requestAnimationFrame) || 300;
+        : void await new Promise(requestAnimationFrame) || 300 - 50;
       start = Date.now();
     }
     return time += Date.now() - start;
