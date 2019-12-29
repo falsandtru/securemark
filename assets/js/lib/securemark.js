@@ -2020,8 +2020,6 @@ require = function () {
                     source = normalize_1.normalize(source);
                     const rev = revision = Symbol();
                     const targetSegments = pairs.map(([seg]) => seg);
-                    if (source === targetSegments.join(''))
-                        return;
                     const sourceSegments = segment_1.segment(source);
                     let start = 0;
                     for (; start < targetSegments.length; ++start) {
@@ -2035,12 +2033,15 @@ require = function () {
                     }
                     const base = next(start);
                     let index = start;
-                    for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
-                        const elements = combinator_1.eval(block_1.block(segment, {}));
+                    for (; index < sourceSegments.length - end; ++index) {
+                        const segment = sourceSegments[index];
+                        const elements = segment.trim() === '' ? [] : combinator_1.eval(block_1.block(segment, {}));
                         void pairs.splice(index, 0, [
                             segment,
                             elements
                         ]);
+                        if (elements.length === 0)
+                            continue;
                         void adds.push(...elements.map(el => [
                             el,
                             base
@@ -2052,7 +2053,6 @@ require = function () {
                             if (rev !== revision)
                                 return yield;
                         }
-                        void ++index;
                     }
                     while (pairs.length > sourceSegments.length) {
                         const [[, es]] = pairs.splice(index, 1);
