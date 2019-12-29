@@ -13,8 +13,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
   const bottom = target.firstChild;
   let revision: symbol;
   return function* (source: string): Generator<HTMLElement | undefined, undefined, undefined> {
-    source = normalize(source);
     const rev = revision = Symbol();
+    source = normalize(source);
     const targetSegments = pairs.map(([seg]) => seg);
     const sourceSegments = segment(source);
     let start = 0;
@@ -41,28 +41,28 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
       void adds.push(...elements.map<typeof adds[number]>(el => [el, base]));
-      while (adds.length > 0) {
-        assert(rev === revision);
-        const [el, base] = adds.shift()!;
-        void target.insertBefore(el, base);
-        assert(el.parentNode);
-        yield el;
-        if (rev !== revision) return yield;
-      }
     }
     while (pairs.length > sourceSegments.length) {
       assert(rev === revision);
       assert(index < pairs.length);
       const [[, es]] = pairs.splice(index, 1);
       void dels.push(...es);
-      while (dels.length > 0) {
-        assert(rev === revision);
-        const el = dels.shift()!;
-        el.parentNode && void el.remove();
-        assert(!el.parentNode);
-        yield el;
-        if (rev !== revision) return yield;
-      }
+    }
+    while (adds.length > 0) {
+      assert(rev === revision);
+      const [el, base] = adds.shift()!;
+      void target.insertBefore(el, base);
+      assert(el.parentNode);
+      yield el;
+      if (rev !== revision) return yield;
+    }
+    while (dels.length > 0) {
+      assert(rev === revision);
+      const el = dels.shift()!;
+      el.parentNode && void el.remove();
+      assert(!el.parentNode);
+      yield el;
+      if (rev !== revision) return yield;
     }
     assert(pairs.length === sourceSegments.length);
     assert(rev === revision);

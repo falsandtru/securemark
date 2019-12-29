@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.142.1
+
+- Fix concurrency bugs of bind function.
+
 ## 0.142.0
 
 - Change bind function to yield `undefined` to express the abort of the iteration.
