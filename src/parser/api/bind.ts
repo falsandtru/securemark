@@ -16,7 +16,6 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     source = normalize(source);
     const rev = revision = Symbol();
     const targetSegments = pairs.map(([seg]) => seg);
-    if (source === targetSegments.join('')) return;
     const sourceSegments = segment(source);
     let start = 0;
     for (; start < targetSegments.length; ++start) {
@@ -31,10 +30,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     assert(start + end <= targetSegments.length);
     const base = next(start);
     let index = start;
-    for (const segment of sourceSegments.slice(start, sourceSegments.length - end)) {
+    for (; index < sourceSegments.length - end; ++index) {
       assert(rev === revision);
-      const elements = eval(block(segment, {}));
+      const segment = sourceSegments[index];
+      const elements = segment.trim() === ''
+        ? []
+        : eval(block(segment, {}));
       void pairs.splice(index, 0, [segment, elements]);
+      if (elements.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
       void adds.push(...elements.map<typeof adds[number]>(el => [el, base]));
@@ -46,7 +49,6 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         yield el;
         if (rev !== revision) return yield;
       }
-      void ++index;
     }
     while (pairs.length > sourceSegments.length) {
       assert(rev === revision);
