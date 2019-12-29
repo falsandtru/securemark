@@ -48,13 +48,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
         if (rev !== revision) return yield;
       }
     }
-    while (pairs.length > sourceSegments.length) {
+    for (const [, es] of pairs.splice(index, pairs.length - sourceSegments.length)) {
       assert(rev === revision);
-      assert(index < pairs.length);
-      const [[, es]] = pairs.splice(index, 1);
       if (es.length === 0) continue;
       void dels.push(...es);
     }
+    assert(pairs.length === sourceSegments.length);
     while (adds.length > 0) {
       assert(rev === revision);
       const [el, base] = adds.shift()!;
@@ -71,7 +70,6 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       yield el;
       if (rev !== revision) return yield;
     }
-    assert(pairs.length === sourceSegments.length);
     assert(rev === revision);
     void figure(target);
     void footnote(target, cfgs.footnote);
