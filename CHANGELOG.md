@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.142.2
+
+- Refactoring.
+
 ## 0.142.1
 
 - Fix concurrency bugs of bind function.
