@@ -2035,21 +2035,23 @@ require = function () {
                     const base = next(start);
                     let index = start;
                     for (; index < sourceSegments.length - end; ++index) {
-                        const segment = sourceSegments[index];
-                        const elements = segment.trim() === '' ? [] : combinator_1.eval(block_1.block(segment, {}));
+                        const seg = sourceSegments[index];
+                        const es = seg.trim() === '' ? [] : combinator_1.eval(block_1.block(seg, {}));
                         void pairs.splice(index, 0, [
-                            segment,
-                            elements
+                            seg,
+                            es
                         ]);
-                        if (elements.length === 0)
+                        if (es.length === 0)
                             continue;
-                        void adds.push(...elements.map(el => [
+                        void adds.push(...es.map(el => [
                             el,
                             base
                         ]));
                     }
                     while (pairs.length > sourceSegments.length) {
                         const [[, es]] = pairs.splice(index, 1);
+                        if (es.length === 0)
+                            continue;
                         void dels.push(...es);
                     }
                     while (adds.length > 0) {
