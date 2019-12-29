@@ -46,6 +46,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       assert(rev === revision);
       assert(index < pairs.length);
       const [[, es]] = pairs.splice(index, 1);
+      if (es.length === 0) continue;
       void dels.push(...es);
     }
     while (adds.length > 0) {
