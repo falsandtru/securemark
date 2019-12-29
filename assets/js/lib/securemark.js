@@ -2055,8 +2055,7 @@ require = function () {
                                 return yield;
                         }
                     }
-                    while (pairs.length > sourceSegments.length) {
-                        const [[, es]] = pairs.splice(index, 1);
+                    for (const [, es] of pairs.splice(index, pairs.length - sourceSegments.length)) {
                         if (es.length === 0)
                             continue;
                         void dels.push(...es);
