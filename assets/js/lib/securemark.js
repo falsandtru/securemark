@@ -2017,6 +2017,7 @@ require = function () {
                 const bottom = target.firstChild;
                 let revision;
                 return function* (source) {
+                    var _a;
                     const rev = revision = Symbol();
                     source = normalize_1.normalize(source);
                     const targetSegments = pairs.map(([seg]) => seg);
@@ -2060,7 +2061,7 @@ require = function () {
                     }
                     while (dels.length > 0) {
                         const el = dels.shift();
-                        el.parentNode && void el.remove();
+                        void ((_a = el.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(el));
                         yield el;
                         if (rev !== revision)
                             return yield;
