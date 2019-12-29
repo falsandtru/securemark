@@ -39,6 +39,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
       void adds.push(...es.map<typeof adds[number]>(el => [el, base]));
+      while (adds.length > 0) {
+        assert(rev === revision);
+        const [el, base] = adds.shift()!;
+        void target.insertBefore(el, base);
+        assert(el.parentNode);
+        yield el;
+        if (rev !== revision) return yield;
+      }
     }
     while (pairs.length > sourceSegments.length) {
       assert(rev === revision);
