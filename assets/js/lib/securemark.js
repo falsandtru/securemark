@@ -2036,7 +2036,7 @@ require = function () {
                     let index = start;
                     for (; index < sourceSegments.length - end; ++index) {
                         const seg = sourceSegments[index];
-                        const es = seg.trim() === '' ? [] : combinator_1.eval(block_1.block(seg, {}));
+                        const es = combinator_1.eval(block_1.block(seg, {}));
                         void pairs.splice(index, 0, [
                             seg,
                             es
