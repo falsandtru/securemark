@@ -59,7 +59,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     while (dels.length > 0) {
       assert(rev === revision);
       const el = dels.shift()!;
-      el.parentNode && void el.remove();
+      void el.parentNode?.removeChild(el);
       assert(!el.parentNode);
       yield el;
       if (rev !== revision) return yield;
