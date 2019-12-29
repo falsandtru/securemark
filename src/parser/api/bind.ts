@@ -15,8 +15,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
   return function* (source: string): Generator<HTMLElement | undefined, undefined, undefined> {
     const rev = revision = Symbol();
     source = normalize(source);
-    const targetSegments = pairs.map(([seg]) => seg);
     const sourceSegments = segment(source);
+    const targetSegments = pairs.map(([seg]) => seg);
     let start = 0;
     for (; start < targetSegments.length; ++start) {
       if (targetSegments[start] !== sourceSegments[start]) break;
