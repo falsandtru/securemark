@@ -264,8 +264,8 @@ require = function () {
                     };
                     if (this.settings.ignore.clear)
                         return;
-                    for (const [key, val] of store) {
-                        void this.callback(key, val);
+                    for (const key of store.keys()) {
+                        void this.callback(key, store.get(key));
                     }
                 }
                 [Symbol.iterator]() {
@@ -454,9 +454,9 @@ require = function () {
                 State[State['resolved'] = 0] = 'resolved';
                 State[State['rejected'] = 1] = 'rejected';
             }(State || (State = {})));
-            const status = Symbol();
-            const queue = Symbol();
-            const resume = Symbol();
+            const status = Symbol.for('status');
+            const queue = Symbol.for('queue');
+            const resume = Symbol.for('resume');
             class AtomicPromise {
                 constructor(executor) {
                     this[Symbol.toStringTag] = 'Promise';
@@ -898,7 +898,7 @@ require = function () {
                     return memory.get(el);
                 }
                 exports.proxy = proxy;
-                const tag = Symbol();
+                const tag = Symbol.for('TagName');
                 class Elem {
                     constructor(element, children_, container = element) {
                         this.element = element;
@@ -947,34 +947,6 @@ require = function () {
                             return;
                         default:
                             throw new Error(`TypedDOM: Unreachable code.`);
-                        }
-                        function observe(node, children) {
-                            const descs = {};
-                            for (const name in children) {
-                                if (!children.hasOwnProperty(name))
-                                    continue;
-                                let child = children[name];
-                                void throwErrorIfNotUsable(child);
-                                void node.appendChild(child.element);
-                                descs[name] = {
-                                    configurable: true,
-                                    enumerable: true,
-                                    get: () => {
-                                        return child;
-                                    },
-                                    set: newChild => {
-                                        const oldChild = child;
-                                        if (newChild === oldChild)
-                                            return;
-                                        if (newChild.element.parentElement !== node) {
-                                            void throwErrorIfNotUsable(newChild);
-                                        }
-                                        void node.replaceChild(newChild.element, oldChild.element);
-                                        child = newChild;
-                                    }
-                                };
-                            }
-                            return Obj.defineProperties(children, descs);
                         }
                     }
                     get id() {
@@ -1126,6 +1098,34 @@ require = function () {
                     }
                 }
                 exports.Elem = Elem;
+                function observe(node, children) {
+                    const descs = {};
+                    for (const name in children) {
+                        if (!children.hasOwnProperty(name))
+                            continue;
+                        let child = children[name];
+                        void throwErrorIfNotUsable(child);
+                        void node.appendChild(child.element);
+                        descs[name] = {
+                            configurable: true,
+                            enumerable: true,
+                            get: () => {
+                                return child;
+                            },
+                            set: newChild => {
+                                const oldChild = child;
+                                if (newChild === oldChild)
+                                    return;
+                                if (newChild.element.parentElement !== node) {
+                                    void throwErrorIfNotUsable(newChild);
+                                }
+                                void node.replaceChild(newChild.element, oldChild.element);
+                                child = newChild;
+                            }
+                        };
+                    }
+                    return Obj.defineProperties(children, descs);
+                }
                 function throwErrorIfNotUsable({element}) {
                     if (!element.parentElement || !memory.has(element.parentElement))
                         return;
@@ -1163,11 +1163,7 @@ require = function () {
                         return shadow(html(el), children, opts);
                     if (children && !isChildren(children))
                         return shadow(el, undefined, children);
-                    if (el.shadowRoot || shadows.has(el)) {
-                        return define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children);
-                    } else {
-                        return define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === undefined ? el.childNodes : children);
-                    }
+                    return el.shadowRoot || shadows.has(el) ? define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children) : define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === undefined ? el.childNodes : children);
                 }
                 exports.shadow = shadow;
                 function html(tag, attrs = {}, children = []) {
@@ -1672,8 +1668,8 @@ require = function () {
                 return (source, config) => {
                     try {
                         return parser(source, config);
-                    } catch (err) {
-                        return fallback(source, config, err);
+                    } catch (reason) {
+                        return fallback(source, config, reason);
                     }
                 };
             }
@@ -2214,7 +2210,7 @@ require = function () {
                 extension_1.extension,
                 blockquote_1.blockquote,
                 paragraph_1.paragraph
-            ])), (_, config, err) => exports.block(err instanceof Error ? `# ${ err.name }: ${ err.message }\\` : `# Unknown error: ${ err }\\`, config));
+            ])), (_, config, reason) => exports.block(reason instanceof Error ? `# ${ reason.name }: ${ reason.message }\\` : `# Unknown error: ${ reason }\\`, config));
         },
         {
             '../combinator': 30,
