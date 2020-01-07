@@ -446,42 +446,60 @@ require = function () {
     15: [
         function (_dereq_, module, exports) {
             'use strict';
-            var _a, _b;
+            var _a;
             Object.defineProperty(exports, '__esModule', { value: true });
             const concat_1 = _dereq_('./concat');
             var State;
             (function (State) {
-                State[State['resolved'] = 0] = 'resolved';
-                State[State['rejected'] = 1] = 'rejected';
+                State[State['pending'] = 0] = 'pending';
+                State[State['resolved'] = 1] = 'resolved';
+                State[State['rejected'] = 2] = 'rejected';
             }(State || (State = {})));
-            const status = Symbol.for('status');
-            const queue = Symbol.for('queue');
-            const resume = Symbol.for('resume');
+            class Internal {
+                constructor() {
+                    this.status = { state: 0 };
+                    this.fulfillReactions = [];
+                    this.rejectReactions = [];
+                    this.isHandled = false;
+                }
+            }
+            const internal = Symbol.for('spica/promise::internal');
             class AtomicPromise {
                 constructor(executor) {
                     this[Symbol.toStringTag] = 'Promise';
-                    this[_a] = [];
-                    this[_b] = [];
+                    this[_a] = new Internal();
                     try {
                         void executor(value => {
-                            this[status][0] = this[status][0] || [
-                                0,
-                                value
-                            ];
-                            void this[resume]();
+                            if (this[internal].status.state === 0) {
+                                this[internal].status = {
+                                    state: 1,
+                                    result: isPromiseLike(value) ? {
+                                        value,
+                                        promise: true
+                                    } : {
+                                        value: value,
+                                        promise: false
+                                    }
+                                };
+                            }
+                            void resume(this[internal]);
                         }, reason => {
-                            this[status][0] = this[status][0] || [
-                                1,
-                                reason
-                            ];
-                            void this[resume]();
+                            if (this[internal].status.state === 0) {
+                                this[internal].status = {
+                                    state: 2,
+                                    result: { value: reason }
+                                };
+                            }
+                            void resume(this[internal]);
                         });
                     } catch (reason) {
-                        this[status][0] = [
-                            1,
-                            reason
-                        ];
-                        void this[resume]();
+                        if (this[internal].status.state === 0) {
+                            this[internal].status = {
+                                state: 2,
+                                result: { value: reason }
+                            };
+                        }
+                        void resume(this[internal]);
                     }
                 }
                 static get [Symbol.species]() {
@@ -503,45 +521,28 @@ require = function () {
                 static reject(reason) {
                     return new AtomicPromise((_, reject) => void reject(reason));
                 }
-                [resume]() {
-                    if (!this[status][0])
-                        return;
-                    const [state, value] = this[status][0];
-                    while (this[queue].length > 0) {
-                        const [resolve, reject] = this[queue].shift();
-                        switch (state) {
-                        case 0:
-                            isPromiseLike(value) ? void value.then(resolve, reject) : void resolve(value);
-                            continue;
-                        case 1:
-                            void reject(value);
-                            continue;
-                        }
-                    }
-                }
                 then(onfulfilled, onrejected) {
                     return new AtomicPromise((resolve, reject) => {
-                        void this[queue].push([
-                            value => {
-                                if (!onfulfilled)
-                                    return void resolve(value);
-                                try {
-                                    void resolve(onfulfilled(value));
-                                } catch (reason) {
-                                    void reject(reason);
-                                }
-                            },
-                            reason => {
-                                if (!onrejected)
-                                    return void reject(reason);
-                                try {
-                                    void resolve(onrejected(reason));
-                                } catch (reason) {
-                                    void reject(reason);
-                                }
+                        const {fulfillReactions, rejectReactions} = this[internal];
+                        void fulfillReactions.push(value => {
+                            if (!onfulfilled)
+                                return void resolve(value);
+                            try {
+                                void resolve(onfulfilled(value));
+                            } catch (reason) {
+                                void reject(reason);
                             }
-                        ]);
-                        void this[resume]();
+                        });
+                        void rejectReactions.push(reason => {
+                            if (!onrejected)
+                                return void reject(reason);
+                            try {
+                                void resolve(onrejected(reason));
+                            } catch (reason) {
+                                void reject(reason);
+                            }
+                        });
+                        void resume(this[internal]);
                     });
                 }
                 catch(onrejected) {
@@ -552,10 +553,28 @@ require = function () {
                 }
             }
             exports.AtomicPromise = AtomicPromise;
-            _a = status, _b = queue;
+            _a = internal;
+            function resume(internal) {
+                const {status, fulfillReactions, rejectReactions} = internal;
+                internal.isHandled = true;
+                switch (status.state) {
+                case 0:
+                    return;
+                case 1:
+                    return status.result.promise ? void status.result.value.then(value => void consume(fulfillReactions, value), reason => void consume(rejectReactions, reason)) : void consume(fulfillReactions, status.result.value);
+                case 2:
+                    return void consume(rejectReactions, status.result.value);
+                }
+            }
+            function consume(fs, a) {
+                while (fs.length > 0) {
+                    void fs.shift()(a);
+                }
+            }
             function isPromiseLike(value) {
                 return !!value && typeof value === 'object' && 'then' in value && typeof value.then === 'function';
             }
+            exports.isPromiseLike = isPromiseLike;
         },
         { './concat': 8 }
     ],
@@ -774,7 +793,7 @@ require = function () {
             exports.wait = listener_1.wait;
             exports.delegate = listener_1.delegate;
             exports.bind = listener_1.bind;
-            exports.currentTargets = listener_1.currentTargets;
+            exports.currentTarget = listener_1.currentTarget;
             var query_1 = _dereq_('./src/util/query');
             exports.apply = query_1.apply;
         },
@@ -804,10 +823,10 @@ require = function () {
                 exports.SVG = API(dom_1.svg);
                 function handle(baseFactory, formatter) {
                     return {
-                        apply(obj, _, [prop, ...args]) {
-                            return this.get(obj, prop, undefined)(...args);
+                        apply(target, _, [prop, ...args]) {
+                            return this.get(target, prop, target)(...args);
                         },
-                        get: (obj, prop) => obj[prop] || prop in obj || typeof prop !== 'string' ? obj[prop] : obj[prop] = builder(prop, baseFactory)
+                        get: (target, prop) => target[prop] || prop in target || typeof prop !== 'string' ? target[prop] : target[prop] = builder(prop, baseFactory)
                     };
                     function builder(tag, baseFactory) {
                         return function build(attrs, children, factory) {
@@ -817,25 +836,26 @@ require = function () {
                                 return build(attrs, undefined, children);
                             if (attrs !== undefined && isChildren(attrs))
                                 return build(undefined, attrs, factory);
-                            const node = formatter(elem(factory || defaultFactory, attrs || {}, children));
+                            const node = formatter(elem(factory || defaultFactory, attrs, children));
                             return node.nodeType === 1 ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
                         };
                         function isChildren(children) {
                             return typeof children !== 'object' || Obj.values(children).slice(-1).every(val => typeof val === 'object');
                         }
                         function elem(factory, attrs, children) {
-                            const el = factory(baseFactory, tag, attrs, children);
+                            const el = factory(baseFactory, tag, attrs || {}, children);
                             if (tag !== el.tagName.toLowerCase())
                                 throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
                             if (factory !== defaultFactory) {
-                                for (const k in attrs) {
-                                    if (!attrs.hasOwnProperty(k))
-                                        continue;
-                                    const v = attrs[k];
-                                    if (typeof v !== 'function')
-                                        continue;
-                                    void el.removeEventListener(k, v);
-                                }
+                                if (attrs)
+                                    for (const k in attrs) {
+                                        if (!attrs.hasOwnProperty(k))
+                                            continue;
+                                        const v = attrs[k];
+                                        if (typeof v !== 'function')
+                                            continue;
+                                        void el.removeEventListener(k, v);
+                                    }
                                 void dom_1.define(el, attrs);
                             }
                             return el;
@@ -879,7 +899,6 @@ require = function () {
                 const {
                     Array,
                     Object: Obj,
-                    Set,
                     WeakMap,
                     WeakSet,
                     Event
@@ -891,14 +910,14 @@ require = function () {
                     ElChildrenType.Array = 'array';
                     ElChildrenType.Record = 'record';
                 }(ElChildrenType || (ElChildrenType = {})));
-                const memory = new WeakMap();
+                const proxies = new WeakMap();
                 function proxy(el) {
-                    if (!memory.has(el))
+                    if (!proxies.has(el))
                         throw new Error(`TypedDOM: This element has no proxy.`);
-                    return memory.get(el);
+                    return proxies.get(el);
                 }
                 exports.proxy = proxy;
-                const tag = Symbol.for('TagName');
+                const tag = Symbol.for('typed-dom/tag');
                 class Elem {
                     constructor(element, children_, container = element) {
                         this.element = element;
@@ -922,7 +941,7 @@ require = function () {
                             throw new Error(`TypedDOM: Invalid type children.`);
                         }
                         void throwErrorIfNotUsable(this);
-                        void memory.set(this.element, this);
+                        void proxies.set(this.element, this);
                         switch (this.type) {
                         case ElChildrenType.Void:
                             this.initialChildren = new WeakSet();
@@ -1000,8 +1019,8 @@ require = function () {
                         }
                     }
                     set children(children) {
-                        const removedChildren = new Set();
-                        const addedChildren = new Set();
+                        const removedChildren = [];
+                        const addedChildren = [];
                         switch (this.type) {
                         case ElChildrenType.Void:
                             return;
@@ -1024,12 +1043,12 @@ require = function () {
                                 const sourceChildren = children;
                                 const targetChildren = [];
                                 this.children_ = targetChildren;
-                                const mem = new WeakSet();
+                                const log = new WeakSet();
                                 for (let i = 0; i < sourceChildren.length; ++i) {
                                     const newChild = sourceChildren[i];
-                                    if (mem.has(newChild))
+                                    if (log.has(newChild))
                                         throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                    void mem.add(newChild);
+                                    void log.add(newChild);
                                     if (newChild.element.parentNode !== this.container) {
                                         void throwErrorIfNotUsable(newChild);
                                     }
@@ -1038,7 +1057,7 @@ require = function () {
                                     } else {
                                         if (newChild.element.parentNode !== this.container) {
                                             void this.scope(newChild);
-                                            void addedChildren.add(newChild);
+                                            void addedChildren.push(newChild);
                                         }
                                         void this.container.insertBefore(newChild.element, this.container.children[i]);
                                         void targetChildren.push(newChild);
@@ -1046,31 +1065,31 @@ require = function () {
                                 }
                                 void Obj.freeze(targetChildren);
                                 for (let i = this.container.children.length; i >= sourceChildren.length; --i) {
-                                    if (!memory.has(this.container.children[i]))
+                                    if (!proxies.has(this.container.children[i]))
                                         continue;
-                                    void removedChildren.add(proxy(this.container.removeChild(this.container.children[i])));
+                                    void removedChildren.push(proxy(this.container.removeChild(this.container.children[i])));
                                 }
                                 break;
                             }
                         case ElChildrenType.Record: {
                                 const sourceChildren = children;
                                 const targetChildren = this.children_;
-                                const mem = new WeakSet();
+                                const log = new WeakSet();
                                 for (const name in targetChildren) {
+                                    if (!sourceChildren.hasOwnProperty(name))
+                                        continue;
                                     const oldChild = targetChildren[name];
                                     const newChild = sourceChildren[name];
-                                    if (!newChild)
-                                        continue;
-                                    if (mem.has(newChild))
+                                    if (log.has(newChild))
                                         throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                    void mem.add(newChild);
+                                    void log.add(newChild);
                                     if (newChild.element.parentNode !== this.container) {
                                         void throwErrorIfNotUsable(newChild);
                                     }
                                     if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
                                         void this.scope(newChild);
-                                        void addedChildren.add(newChild);
-                                        void removedChildren.add(oldChild);
+                                        void addedChildren.push(newChild);
+                                        void removedChildren.push(oldChild);
                                     }
                                     targetChildren[name] = sourceChildren[name];
                                 }
@@ -1091,10 +1110,12 @@ require = function () {
                                 cancelable: true
                             }));
                         }
-                        removedChildren.size + addedChildren.size > 0 && void this.element.dispatchEvent(new Event('change', {
-                            bubbles: false,
-                            cancelable: true
-                        }));
+                        if (removedChildren.length + addedChildren.length > 0) {
+                            void this.element.dispatchEvent(new Event('change', {
+                                bubbles: false,
+                                cancelable: true
+                            }));
+                        }
                     }
                 }
                 exports.Elem = Elem;
@@ -1127,7 +1148,7 @@ require = function () {
                     return Obj.defineProperties(children, descs);
                 }
                 function throwErrorIfNotUsable({element}) {
-                    if (!element.parentElement || !memory.has(element.parentElement))
+                    if (!element.parentElement || !proxies.has(element.parentElement))
                         return;
                     throw new Error(`TypedDOM: Typed DOM children can't be used to another typed DOM.`);
                 }
@@ -1151,10 +1172,10 @@ require = function () {
                     cache.text = document.createTextNode('');
                     cache.frag = document.createDocumentFragment();
                 }(cache || (cache = {})));
-                function frag(children = []) {
+                function frag(children) {
                     children = typeof children === 'string' ? [text(children)] : children;
                     const frag = cache.frag.cloneNode();
-                    void frag.append(...children);
+                    children && void frag.append(...children);
                     return frag;
                 }
                 exports.frag = frag;
@@ -1166,12 +1187,12 @@ require = function () {
                     return el.shadowRoot || shadows.has(el) ? define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children) : define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === undefined ? el.childNodes : children);
                 }
                 exports.shadow = shadow;
-                function html(tag, attrs = {}, children = []) {
-                    return element(0, tag, attrs, children);
+                function html(tag, attrs, children) {
+                    return element(document, 'HTML', tag, attrs, children);
                 }
                 exports.html = html;
-                function svg(tag, attrs = {}, children = []) {
-                    return element(1, tag, attrs, children);
+                function svg(tag, attrs, children) {
+                    return element(document, 'SVG', tag, attrs, children);
                 }
                 exports.svg = svg;
                 function text(source) {
@@ -1182,53 +1203,58 @@ require = function () {
                 exports.text = text;
                 var NS;
                 (function (NS) {
-                    NS[NS['HTML'] = 0] = 'HTML';
-                    NS[NS['SVG'] = 1] = 'SVG';
+                    NS['HTML'] = 'HTML';
+                    NS['SVG'] = 'SVG';
                 }(NS || (NS = {})));
-                function element(ns, tag, attrs = {}, children = []) {
+                function element(context, ns, tag, attrs, children) {
                     const key = `${ ns }:${ tag }`;
-                    const el = tag.includes('-') ? elem(ns, tag) : cache.elem.has(key) ? cache.elem.get(key).cloneNode(true) : cache.elem.set(key, elem(ns, tag)).get(key).cloneNode(true);
+                    const el = tag.includes('-') ? elem(context, ns, tag) : cache.elem.has(key) ? cache.elem.get(key).cloneNode(true) : cache.elem.set(key, elem(context, ns, tag)).get(key).cloneNode(true);
                     void define(el, attrs, children);
                     return el;
                 }
-                function elem(ns, tag) {
+                function elem(context, ns, tag) {
                     switch (ns) {
-                    case 0:
-                        return document.createElement(tag);
-                    case 1:
-                        return document.createElementNS('http://www.w3.org/2000/svg', tag);
+                    case 'HTML':
+                        return context.createElement(tag);
+                    case 'SVG':
+                        return context.createElementNS('http://www.w3.org/2000/svg', tag);
                     }
                 }
-                function define(el, attrs = {}, children) {
+                function define(el, attrs, children) {
                     if (isChildren(attrs))
                         return define(el, undefined, attrs);
                     if (typeof children === 'string')
                         return define(el, attrs, [text(children)]);
-                    for (const name in attrs) {
-                        if (!attrs.hasOwnProperty(name))
-                            continue;
-                        const value = attrs[name];
-                        switch (typeof value) {
-                        case 'string':
-                            void el.setAttribute(name, value);
-                            break;
-                        case 'function':
-                            void el.addEventListener(name.slice(2), value, {
-                                passive: [
-                                    'wheel',
-                                    'mousewheel',
-                                    'touchstart',
-                                    'touchmove'
-                                ].includes(name.slice(2))
-                            });
-                            break;
-                        case 'object':
-                            void el.removeAttribute(name);
-                            break;
-                        default:
-                            break;
+                    if (attrs)
+                        for (const name in attrs) {
+                            if (!attrs.hasOwnProperty(name))
+                                continue;
+                            const value = attrs[name];
+                            switch (typeof value) {
+                            case 'string':
+                                void el.setAttribute(name, value);
+                                continue;
+                            case 'function':
+                                if (name.length < 3)
+                                    throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${ name }".`);
+                                if (!name.startsWith('on'))
+                                    throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${ name }".`);
+                                void el.addEventListener(name.slice(2), value, {
+                                    passive: [
+                                        'wheel',
+                                        'mousewheel',
+                                        'touchstart',
+                                        'touchmove'
+                                    ].includes(name.slice(2))
+                                });
+                                continue;
+                            case 'object':
+                                void el.removeAttribute(name);
+                                continue;
+                            default:
+                                continue;
+                            }
                         }
-                    }
                     if (children) {
                         el.innerHTML = '';
                         while (el.firstChild) {
@@ -1240,7 +1266,7 @@ require = function () {
                 }
                 exports.define = define;
                 function isChildren(o) {
-                    return !!o[Symbol.iterator];
+                    return !!o && !!o[Symbol.iterator];
                 }
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
@@ -1252,7 +1278,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const noop_1 = _dereq_('./noop');
             const promise_1 = _dereq_('spica/promise');
-            exports.currentTargets = new WeakMap();
+            exports.currentTarget = Symbol();
             function listen(target, a, b, c = false, d = {}) {
                 return typeof b === 'string' ? delegate(target, a, b, c, d) : bind(target, a, b, c);
             }
@@ -1278,7 +1304,7 @@ require = function () {
                 let unbind = () => (unbind = noop_1.noop, void target.removeEventListener(type, handler, option));
                 return () => void unbind();
                 function handler(ev) {
-                    void exports.currentTargets.set(ev, ev.currentTarget);
+                    ev[exports.currentTarget] = ev.currentTarget;
                     return listener(ev);
                 }
             }
@@ -2383,7 +2409,7 @@ require = function () {
                 '~~~',
                 '[',
                 '$'
-            ], combinator_1.validate(/^~{3,}[a-z]|^\[?\$[a-z-]\S*[^\S\n]*\n/, combinator_1.union([
+            ], combinator_1.validate(/^~{3,}[a-z]|^\[?\$[a-z-]\S+[^\S\n]*\n/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
                 example_1.segment,
