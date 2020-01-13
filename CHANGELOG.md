@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.143.0
+
+- Add mark syntax.
+
 ## 0.142.2
 
 - Refactoring.

@@ -19,6 +19,7 @@ export namespace MarkdownParser {
         readonly media?: boolean;
         readonly insertion?: boolean;
         readonly deletion?: boolean;
+        readonly mark?: boolean;
         readonly annotation?: boolean;
         readonly reference?: boolean;
         readonly extension?: boolean;
@@ -424,6 +425,7 @@ export namespace MarkdownParser {
       InlineParser.CommentParser,
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
+      InlineParser.MarkParser,
       InlineParser.EmphasisParser,
       InlineParser.StrongParser,
       InlineParser.CodeParser,
@@ -652,6 +654,13 @@ export namespace MarkdownParser {
     export interface DeletionParser extends
       // ~~abc~~
       Inline<'deletion'>,
+      Parser<HTMLElement, [
+        InlineParser,
+      ], State, Config> {
+    }
+    export interface MarkParser extends
+      // ==abc==
+      Inline<'mark'>,
       Parser<HTMLElement, [
         InlineParser,
       ], State, Config> {
