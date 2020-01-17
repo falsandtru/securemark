@@ -1,11 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2016",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es2017"
-    ],
+    "target": "ES2018",
     "module": "commonjs",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
@@ -24,7 +19,6 @@
   "include": [
     "*.ts",
     "src/**/*.ts",
-    "test/**/*.ts",
-    "benchmark/**/*.ts"
+    "test/**/*.ts"
   ]
 }

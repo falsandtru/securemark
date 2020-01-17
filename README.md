@@ -84,7 +84,7 @@ Requires es6 and modern DOM API support.
 
 - Chrome
 - Firefox
-- Edge
+- Edge (Chromium edition only)
 - Safari
 
 Polyfill: https://cdn.polyfill.io
