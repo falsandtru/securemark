@@ -1415,7 +1415,7 @@ require = function () {
                     const rest = parser_1.exec(result);
                     if (separation && line_1.firstline(rest).trim() !== '')
                         return;
-                    return rest === '' || source[source.length - rest.length - 1] === '\n' ? result : undefined;
+                    return rest === '' || source[source.length - rest.length - 1] === '\n' ? result : void 0;
                 };
             }
             exports.block = block;
@@ -1445,7 +1445,7 @@ require = function () {
                     const result = parser(source, config);
                     if (!result)
                         return;
-                    return parser_1.exec(result).length < source.length ? result : undefined;
+                    return parser_1.exec(result).length < source.length ? result : void 0;
                 };
                 function match(source, pattern) {
                     switch (typeof pattern) {
@@ -1466,7 +1466,7 @@ require = function () {
                         return;
                     if (!cond(parser_1.eval(result), parser_1.exec(result), config))
                         return;
-                    return parser_1.exec(result).length < source.length ? result : undefined;
+                    return parser_1.exec(result).length < source.length ? result : void 0;
                 };
             }
             exports.verify = verify;
@@ -1489,7 +1489,7 @@ require = function () {
                     return (allowTrailingWhitespace ? parser_1.exec(result).trim() === '' : parser_1.exec(result) === '') ? [
                         parser_1.eval(result),
                         source.slice(fst.length)
-                    ] : undefined;
+                    ] : void 0;
                 };
             }
             exports.line = line;
@@ -1500,7 +1500,7 @@ require = function () {
                     const result = parser(source, config);
                     if (!result)
                         return result;
-                    return source.length - parser_1.exec(result).length <= firstline(source, false).length ? result : undefined;
+                    return source.length - parser_1.exec(result).length <= firstline(source, false).length ? result : void 0;
                 };
             }
             exports.subline = subline;
@@ -1530,7 +1530,7 @@ require = function () {
                     return parser_1.exec(result).length < src.length ? [
                         parser_1.eval(result),
                         parser_1.exec(result) + source.slice(src.length)
-                    ] : undefined;
+                    ] : void 0;
                 };
             }
             exports.focus = focus;
@@ -1548,7 +1548,7 @@ require = function () {
                     return parser_1.exec(res2).length < src.length ? [
                         parser_1.eval(res2),
                         parser_1.exec(res2) + parser_1.exec(res1)
-                    ] : undefined;
+                    ] : void 0;
                 };
             }
             exports.rewrite = rewrite;
@@ -1566,7 +1566,7 @@ require = function () {
                     WeakMap
                 } = global;
                 function guard(f, parser) {
-                    return (source, config) => f(config) ? parser(source, config) : undefined;
+                    return (source, config) => f(config) ? parser(source, config) : void 0;
                 }
                 exports.guard = guard;
                 const singleton = Obj.freeze({});
@@ -1624,7 +1624,7 @@ require = function () {
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
                         rest
-                    ] : undefined;
+                    ] : void 0;
                 });
             }
             exports.indent = indent;
@@ -1668,7 +1668,7 @@ require = function () {
                     const result = f(param)(rest, config);
                     if (!result)
                         return;
-                    return parser_1.exec(result).length < source.length && parser_1.exec(result).length <= rest.length ? result : undefined;
+                    return parser_1.exec(result).length < source.length && parser_1.exec(result).length <= rest.length ? result : void 0;
                 };
             }
             exports.match = match;
@@ -1712,7 +1712,7 @@ require = function () {
                     if (lmr_ === '')
                         return;
                     const l = match(lmr_, start);
-                    if (l === undefined)
+                    if (l === void 0)
                         return;
                     const mr_ = l ? lmr_.slice(l.length) : lmr_;
                     const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, config) || [];
@@ -1721,12 +1721,12 @@ require = function () {
                     if (r_.length > mr_.length)
                         return;
                     const r = match(r_, end);
-                    if (r === undefined)
+                    if (r === void 0)
                         return;
                     return l + r !== '' || r_.length - r.length < lmr_.length ? [
                         rs,
                         r ? r_.slice(r.length) : r_
-                    ] : undefined;
+                    ] : void 0;
                 };
             }
             exports.surround = surround;
@@ -1734,9 +1734,9 @@ require = function () {
                 if (pattern === '')
                     return pattern;
                 if (typeof pattern === 'string')
-                    return source.startsWith(pattern) ? pattern : undefined;
+                    return source.startsWith(pattern) ? pattern : void 0;
                 const result = source.match(pattern);
-                return result && source.startsWith(result[0]) ? result[0] : undefined;
+                return result && source.startsWith(result[0]) ? result[0] : void 0;
             }
         },
         {}
@@ -1776,7 +1776,7 @@ require = function () {
                     const res2 = f(parser_1.eval(res1), parser_1.exec(res1), config);
                     if (!res2)
                         return;
-                    return parser_1.exec(res2).length <= parser_1.exec(res1).length ? res2 : undefined;
+                    return parser_1.exec(res2).length <= parser_1.exec(res1).length ? res2 : void 0;
                 };
             }
             exports.bind = bind;
@@ -1839,7 +1839,7 @@ require = function () {
                     return rest.length < source.length ? [
                         data,
                         rest
-                    ] : undefined;
+                    ] : void 0;
                 };
             }
             exports.inits = inits;
@@ -1871,7 +1871,7 @@ require = function () {
                     return rest.length < source.length ? [
                         data,
                         rest
-                    ] : undefined;
+                    ] : void 0;
                 };
             }
             exports.sequence = sequence;
@@ -1909,7 +1909,7 @@ require = function () {
                     return rest.length < source.length ? [
                         data,
                         rest
-                    ] : undefined;
+                    ] : void 0;
                 };
             }
             exports.some = some;
@@ -1976,7 +1976,7 @@ require = function () {
             function union(parsers) {
                 switch (parsers.length) {
                 case 0:
-                    return () => undefined;
+                    return () => void 0;
                 case 1:
                     return parsers[0];
                 default:
@@ -2579,8 +2579,8 @@ require = function () {
                 ])]))));
             function attrs(label, content, caption) {
                 const group = label.split('-', 1)[0];
-                const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
-                const invalid = group !== '$' || rebase ? undefined : !content.classList.contains('math') || caption.length > 0 || undefined;
+                const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || void 0;
+                const invalid = group !== '$' || rebase ? void 0 : !content.classList.contains('math') || caption.length > 0 || void 0;
                 return {
                     'data-label': label,
                     'data-group': group,
@@ -2767,9 +2767,9 @@ require = function () {
                 const ty = es[0].getAttribute('data-type');
                 return [typed_dom_1.html('ol', {
                         type: ty,
-                        start: ty === '1' ? es[0].getAttribute('value') : undefined
+                        start: ty === '1' ? es[0].getAttribute('value') : void 0
                     }, es.map(el => typed_dom_1.define(el, {
-                        value: ty === '1' ? undefined : null,
+                        value: ty === '1' ? void 0 : null,
                         'data-type': null
                     })))];
             })));
@@ -2779,7 +2779,7 @@ require = function () {
                     return;
                 switch (true) {
                 case +index === 0:
-                    return undefined;
+                    return void 0;
                 case +index > 0:
                     return '1';
                 case index === index.toLowerCase():
@@ -2792,8 +2792,8 @@ require = function () {
             }
             function format(index) {
                 switch (type(index)) {
-                case undefined:
-                    return undefined;
+                case void 0:
+                    return void 0;
                 case '1':
                     return `${ +index }`;
                 case 'a':
@@ -2878,7 +2878,7 @@ require = function () {
             const char_1 = _dereq_('../../../source/char');
             const util_1 = _dereq_('../../../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.line(combinator_1.fmap(combinator_1.validate(/^>+(?!>)\S+\s*$/, combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.sequence([
+            exports.address = combinator_1.line(combinator_1.fmap(combinator_1.validate(/^>+(?!>)\S+\s*$/, combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.sequence([
                 util_1.defrag(combinator_1.some(char_1.char('>'))),
                 combinator_1.union([
                     combinator_1.focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*(?=\s*$)/, combinator_1.convert(source => `[]{ ${ source } }`, inline_1.link)),
@@ -2959,7 +2959,7 @@ require = function () {
                         }
                     }
                     function extend(aligns, size) {
-                        return size > aligns.length ? void concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : undefined;
+                        return size > aligns.length ? void concat_1.concat(aligns, Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : void 0;
                     }
                 }
                 const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?\s*$/, strict)), es => [typed_dom_1.html('tr', es)]);
@@ -3309,7 +3309,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
-            exports.uri = combinator_1.lazy(() => combinator_1.subline(combinator_1.validate(/^h?ttps?:\/\/[^/?#\s]/, combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.rewrite(combinator_1.some(combinator_1.union([
+            exports.uri = combinator_1.lazy(() => combinator_1.subline(combinator_1.validate(/^h?ttps?:\/\/[^/?#\s]/, combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                 link_1.bracket,
                 combinator_1.some(source_1.unescsource, closer)
             ])), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.union([link_1.link])))))));
@@ -3544,7 +3544,7 @@ require = function () {
             exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.configure({
                 syntax: {
                     inline: {
-                        link: undefined,
+                        link: void 0,
                         media: false
                     }
                 },
@@ -3622,7 +3622,7 @@ require = function () {
             const link_1 = _dereq_('../link');
             const typed_dom_1 = _dereq_('typed-dom');
             const parser = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/, combinator_1.convert(query => `[\\${ query }]{#}`, link_1.link));
-            exports.label = combinator_1.subline(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { link: undefined } } }, combinator_1.union([
+            exports.label = combinator_1.subline(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.union([
                 combinator_1.surround('[', parser, ']'),
                 parser
             ])), ([el]) => [typed_dom_1.define(el, {
@@ -3730,7 +3730,7 @@ require = function () {
                     let invalid = classes.includes('invalid');
                     const attrs = new Map(params.map(arg => [
                         arg.split('=', 1)[0],
-                        arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined
+                        arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : void 0
                     ]));
                     if (spec) {
                         for (const [key, value] of attrs) {
@@ -3829,7 +3829,7 @@ require = function () {
                 const concat_1 = _dereq_('spica/concat');
                 const typed_dom_1 = _dereq_('typed-dom');
                 const {Array} = global;
-                exports.attributes = { nofollow: [undefined] };
+                exports.attributes = { nofollow: [void 0] };
                 exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{(?![{}]).+?}/, combinator_1.guard(config => {
                     var _a, _b, _c;
                     return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
@@ -3880,7 +3880,7 @@ require = function () {
                 }), ([text, param], rest) => {
                     const [INSECURE_URL, ...params] = param.map(t => t.textContent);
                     const path = uri_1.sanitize(INSECURE_URL, ['tel:']);
-                    if (path === undefined)
+                    if (path === void 0)
                         return;
                     const el = typed_dom_1.html('a', {
                         href: path,
@@ -3950,7 +3950,7 @@ require = function () {
                 function attrs(spec, params, classes, syntax) {
                     const attrs = html_1.attrs(spec, params, classes, syntax);
                     for (const name of ['nofollow']) {
-                        attrs[name] = undefined;
+                        attrs[name] = void 0;
                     }
                     return attrs;
                 }
@@ -4057,7 +4057,7 @@ require = function () {
                     ];
                 }), ([text, INSECURE_URL, ...params], rest) => {
                     const path = uri_1.sanitize(INSECURE_URL.trim());
-                    if (path === undefined)
+                    if (path === void 0)
                         return;
                     const uri = new url_1.URL(path, window.location.href).reference;
                     const media = exports.cache.has(uri) ? exports.cache.get(uri).cloneNode(true) : typed_dom_1.html('img', {
@@ -4438,11 +4438,11 @@ require = function () {
             exports.emptyline = combinator_1.line(s => isEmpty(s) ? [
                 [],
                 ''
-            ] : undefined, false);
+            ] : void 0, false);
             exports.contentline = combinator_1.line(s => !isEmpty(s) ? [
                 [],
                 ''
-            ] : undefined, false);
+            ] : void 0, false);
             function isEmpty(line) {
                 return line === '' || line === '\n' || line.trim() === '';
             }
@@ -4483,7 +4483,7 @@ require = function () {
                     switch (source[0]) {
                     case '\\':
                         switch (source[1]) {
-                        case undefined:
+                        case void 0:
                             return [
                                 [],
                                 ''
@@ -4570,7 +4570,7 @@ require = function () {
                 return [
                     'http:',
                     'https:'
-                ].includes(parser.protocol) || protocols.includes(parser.protocol) ? uri : undefined;
+                ].includes(parser.protocol) || protocols.includes(parser.protocol) ? uri : void 0;
             }
             exports.sanitize = sanitize;
             function decode(uri) {
@@ -4628,7 +4628,7 @@ require = function () {
                         }
                         void acc.push(curr);
                         return curr;
-                    }, undefined);
+                    }, void 0);
                     return acc;
                 });
             }
@@ -4807,10 +4807,10 @@ require = function () {
             });
             function math(target) {
                 const source = target.textContent;
-                return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : undefined);
+                return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : void 0);
             }
             exports.math = math;
-            function queue(target, callback = () => undefined) {
+            function queue(target, callback = () => void 0) {
                 void MathJax.Hub.Queue([
                     'Typeset',
                     MathJax.Hub,
