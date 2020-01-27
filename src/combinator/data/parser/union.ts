@@ -5,7 +5,7 @@ export function union<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
   switch (parsers.length) {
     case 0:
-      return () => undefined;
+      return () => void 0;
     case 1:
       return parsers[0];
     default:

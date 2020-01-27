@@ -72,7 +72,7 @@ export function attrs(
   const result: Record<string, string> = {};
   let invalid = classes.includes('invalid');
   const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
-    arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : undefined]));
+    arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : void 0]));
   if (spec) {
     for (const [key, value] of attrs) {
       spec.hasOwnProperty(key) && spec[key].includes(value)

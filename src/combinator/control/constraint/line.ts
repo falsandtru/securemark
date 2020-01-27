@@ -11,7 +11,7 @@ export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allow
     if (!result) return;
     return (allowTrailingWhitespace ? exec(result).trim() === '' : exec(result) === '')
       ? [eval(result), source.slice(fst.length)]
-      : undefined;
+      : void 0;
   };
 }
 
@@ -25,7 +25,7 @@ export function subline<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): P
     if (!result) return result;
     return source.length - exec(result).length <= firstline(source, false).length
       ? result
-      : undefined;
+      : void 0;
   };
 }
 

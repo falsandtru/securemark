@@ -72,10 +72,10 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
 
 function attrs(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
-  const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
+  const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || void 0;
   const invalid = group !== '$' || rebase
-    ? undefined
-    : !content.classList.contains('math') || caption.length > 0 || undefined;
+    ? void 0
+    : !content.classList.contains('math') || caption.length > 0 || void 0;
   return {
     'data-label': label,
     'data-group': group,

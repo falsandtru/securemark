@@ -12,7 +12,7 @@ import { frag, html, text, define } from 'typed-dom';
 const { Array } = global;
 
 export const attributes: DeepImmutable<Record<string, Array<string | undefined>>> = {
-  nofollow: [undefined],
+  nofollow: [void 0],
 };
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
@@ -58,7 +58,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   ([text, param]: [(HTMLElement | Text)[], Text[]], rest) => {
     const [INSECURE_URL, ...params]: string[] = param.map(t => t.textContent!);
     const path = sanitize(INSECURE_URL, ['tel:']);
-    if (path === undefined) return;
+    if (path === void 0) return;
     const el = html('a',
       {
         href: path,
@@ -112,7 +112,7 @@ export function attrs(
 ): Record<string, string | undefined> {
   const attrs = attrs_(spec, params, classes, syntax);
   for (const name of ['nofollow']) {
-    attrs[name] = undefined;
+    attrs[name] = void 0;
   }
   return attrs;
 }

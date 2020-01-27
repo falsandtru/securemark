@@ -7,7 +7,7 @@ export function sanitize(uri: string, protocols: ('tel:')[] = []): string | unde
   void parser.setAttribute('href', uri);
   return ['http:', 'https:'].includes(parser.protocol) || protocols.includes(parser.protocol as any)
     ? uri
-    : undefined;
+    : void 0;
 }
 
 export function decode(uri: string): string {

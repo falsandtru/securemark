@@ -7,7 +7,7 @@ import { define } from 'typed-dom';
 
 export const address: ParagraphParser.MentionParser.AddressParser = line(fmap(validate(
   /^>+(?!>)\S+\s*$/,
-  configure({ syntax: { inline: { link: undefined } } },
+  configure({ syntax: { inline: { link: void 0 } } },
   sequence([
     defrag(some(char('>'))),
     union([

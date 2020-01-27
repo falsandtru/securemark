@@ -8,7 +8,7 @@ export function guard<T extends object, D extends Parser<unknown, any, S, C>[], 
   return (source, config) =>
     f(config)
       ? parser(source, config)
-      : undefined;
+      : void 0;
 }
 
 const singleton = Obj.freeze({});

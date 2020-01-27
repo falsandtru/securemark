@@ -18,7 +18,7 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
     if (!result) return;
     return exec(result).length < source.length
       ? result
-      : undefined;
+      : void 0;
   };
 
   function match(source: string, pattern: string | RegExp): boolean {
@@ -42,6 +42,6 @@ export function verify<T, D extends Parser<unknown, any, S, C>[], S extends obje
     if (!cond(eval(result), exec(result), config)) return;
     return exec(result).length < source.length
       ? result
-      : undefined;
+      : void 0;
   };
 }

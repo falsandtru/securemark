@@ -17,7 +17,7 @@ export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, pa
     assert(exec(result)==='');
     return exec(result).length < src.length
       ? [eval(result), exec(result) + source.slice(src.length)]
-      : undefined;
+      : void 0;
   };
 }
 
@@ -39,6 +39,6 @@ export function rewrite<T, D extends Parser<unknown>[]>(scope: Parser<never>, pa
     assert(exec(res2) === '');
     return exec(res2).length < src.length
       ? [eval(res2), exec(res2) + exec(res1)]
-      : undefined;
+      : void 0;
   };
 }

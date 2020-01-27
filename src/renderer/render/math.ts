@@ -16,9 +16,9 @@ export function math(target: HTMLElement): void {
     : void queue(target, () =>
         target.matches('span')
           ? void cache.set(source, target.cloneNode(true))
-          : undefined);
+          : void 0);
 }
 
-function queue(target: HTMLElement, callback = () => undefined): void {
+function queue(target: HTMLElement, callback = () => void 0): void {
   void MathJax.Hub.Queue(['Typeset', MathJax.Hub, target, callback]);
 }

@@ -29,11 +29,11 @@ export const olist: OListParser = lazy(() => block(fmap(validate(
       html('ol',
         {
           type: ty,
-          start: ty === '1' ? es[0].getAttribute('value') : undefined
+          start: ty === '1' ? es[0].getAttribute('value') : void 0
         },
         es.map(el =>
           define(el, {
-            value: ty === '1' ? undefined : null,
+            value: ty === '1' ? void 0 : null,
             'data-type': null
           })))
     ];
@@ -49,7 +49,7 @@ function type(index: string | null): IndexType {
   if (index === null) return;
   switch (true) {
     case +index === 0:
-      return undefined;
+      return void 0;
     case +index > 0:
       return '1';
     case index === index.toLowerCase():
@@ -63,8 +63,8 @@ function type(index: string | null): IndexType {
 
 function format(index: string): string | undefined {
   switch (type(index)) {
-    case undefined:
-      return undefined;
+    case void 0:
+      return void 0;
     case '1':
       return `${+index}`;
     case 'a':

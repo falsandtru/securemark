@@ -18,6 +18,6 @@ export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
     assert(rest.length <= source.length);
     return rest.length < source.length
       ? [data, rest]
-      : undefined;
+      : void 0;
   };
 }

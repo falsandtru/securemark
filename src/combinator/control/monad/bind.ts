@@ -16,6 +16,6 @@ export function bind<T, U, D extends Parser<unknown, any, S, C>[], S extends obj
     if (!res2) return;
     return exec(res2).length <= exec(res1).length
       ? res2
-      : undefined;
+      : void 0;
   };
 }

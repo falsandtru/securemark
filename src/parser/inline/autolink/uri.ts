@@ -7,7 +7,7 @@ const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 
 export const uri: AutolinkParser.UriParser = lazy(() => subline(validate(
   /^h?ttps?:\/\/[^/?#\s]/,
-  configure({ syntax: { inline: { link: undefined } } },
+  configure({ syntax: { inline: { link: void 0 } } },
   rewrite(
     some(union([bracket, some(unescsource, closer)])),
     convert(

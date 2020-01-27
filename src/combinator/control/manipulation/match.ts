@@ -15,7 +15,7 @@ export function match<T, D extends Parser<unknown>[]>(pattern: RegExp, f: (match
     if (!result) return;
     return exec(result).length < source.length && exec(result).length <= rest.length
       ? result
-      : undefined;
+      : void 0;
   };
 }
 

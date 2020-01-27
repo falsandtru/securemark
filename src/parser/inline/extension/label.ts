@@ -10,7 +10,7 @@ const parser = focus(
     link));
 
 export const label: ExtensionParser.LabelParser = subline(fmap(
-  configure({ syntax: { inline: { link: undefined } } },
+  configure({ syntax: { inline: { link: void 0 } } },
   union([
     surround('[', parser, ']'),
     parser,

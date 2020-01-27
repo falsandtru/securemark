@@ -12,6 +12,6 @@ export function block<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, sepa
     if (separation && firstline(rest).trim() !== '') return;
     return rest === '' || source[source.length - rest.length - 1] === '\n'
       ? result
-      : undefined;
+      : void 0;
   };
 }

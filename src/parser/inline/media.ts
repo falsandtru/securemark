@@ -27,7 +27,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ([text, param]: (HTMLElement | Text)[][]) => [text[0]?.textContent || '', ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     const path = sanitize(INSECURE_URL.trim());
-    if (path === undefined) return;
+    if (path === void 0) return;
     const uri = new URL(path, window.location.href).reference;
     const media = cache.has(uri)
       ? cache.get(uri)!.cloneNode(true)

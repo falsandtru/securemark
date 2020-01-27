@@ -52,7 +52,7 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
           aligns,
           Array(size - aligns.length)
             .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
-      : undefined;
+      : void 0;
   }
 }
 

@@ -43,7 +43,7 @@ export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S
       }
       void acc.push(curr);
       return curr;
-    }, undefined);
+    }, void 0);
     return acc;
   });
 }

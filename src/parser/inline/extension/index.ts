@@ -5,7 +5,7 @@ import { indexee } from './indexee';
 import { define } from 'typed-dom';
 
 export const index: ExtensionParser.IndexParser = lazy(() => subline(fmap(
-  configure({ syntax: { inline: { link: undefined, media: false } }, insecure: true },
+  configure({ syntax: { inline: { link: void 0, media: false } }, insecure: true },
   rewrite(
     surround('[#', some(inline, /^\\?\n|^]/), ']'),
     convert(

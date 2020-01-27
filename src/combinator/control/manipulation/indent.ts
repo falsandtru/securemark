@@ -20,6 +20,6 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
       const result = parser(rs.join('\n'), config);
       return result && exec(result) === ''
         ? [eval(result), rest]
-        : undefined;
+        : void 0;
     });
 }
