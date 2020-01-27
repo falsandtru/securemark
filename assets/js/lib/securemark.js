@@ -53,6 +53,23 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            function indexOf(as, a) {
+                const isNaN = a !== a;
+                for (let i = 0; i < as.length; ++i) {
+                    const ai = as[i];
+                    if (isNaN ? ai !== ai : ai === a)
+                        return i;
+                }
+                return -1;
+            }
+            exports.indexOf = indexOf;
+        },
+        {}
+    ],
+    6: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
             const global_1 = _dereq_('./global');
             const type_1 = _dereq_('./type');
             const concat_1 = _dereq_('./concat');
@@ -145,21 +162,22 @@ require = function () {
             }
         },
         {
-            './concat': 8,
+            './concat': 9,
             './global': 12,
-            './type': 17
+            './type': 18
         }
     ],
-    6: [
+    7: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const global_1 = _dereq_('./global');
             const assign_1 = _dereq_('./assign');
-            const equal_1 = _dereq_('./equal');
+            const concat_1 = _dereq_('./concat');
+            const array_1 = _dereq_('./array');
             const {Map} = global_1.global;
             class Cache {
-                constructor(size, callback = () => undefined, opts = {}) {
+                constructor(size, callback = () => void 0, opts = {}) {
                     this.size = size;
                     this.callback = callback;
                     this.settings = {
@@ -186,10 +204,9 @@ require = function () {
                         LFU
                     };
                     this.store = new Map(entries);
-                    for (const k of [
-                            ...stats[1],
-                            ...stats[0]
-                        ].slice(LFU.length + LRU.length)) {
+                    if (!opts.data)
+                        return;
+                    for (const k of concat_1.concat(stats[1].slice(LFU.length), stats[0].slice(LRU.length))) {
                         void this.store.delete(k);
                     }
                     if (this.store.size !== LFU.length + LRU.length)
@@ -243,7 +260,7 @@ require = function () {
                             LFU,
                             LRU
                         ]) {
-                        const index = equal_1.findIndex(key, stat);
+                        const index = array_1.indexOf(stat, key);
                         if (index === -1)
                             continue;
                         const val = this.store.get(key);
@@ -294,7 +311,7 @@ require = function () {
                     if (!this.store.has(key))
                         return false;
                     const {LRU} = this.stats;
-                    const index = equal_1.findIndex(key, LRU);
+                    const index = array_1.indexOf(LRU, key);
                     if (index === -1)
                         return false;
                     const {LFU} = this.stats;
@@ -305,7 +322,7 @@ require = function () {
                     if (!this.store.has(key))
                         return false;
                     const {LFU} = this.stats;
-                    const index = equal_1.findIndex(key, LFU);
+                    const index = array_1.indexOf(LFU, key);
                     if (index === -1)
                         return false;
                     void LFU.unshift(...LFU.splice(index, 1));
@@ -315,12 +332,13 @@ require = function () {
             exports.Cache = Cache;
         },
         {
-            './assign': 5,
-            './equal': 10,
+            './array': 5,
+            './assign': 6,
+            './concat': 9,
             './global': 12
         }
     ],
-    7: [
+    8: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -332,16 +350,19 @@ require = function () {
                     }
                 }
                 get(key) {
-                    return (this.store.get(key) || [])[0];
+                    var _a;
+                    return (_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a[0];
                 }
                 take(key, size) {
-                    return (this.store.get(key) || []).splice(0, size);
+                    var _a;
+                    return ((_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a.splice(0, size)) || [];
                 }
                 ref(key) {
-                    return this.store.get(key) || this.store.set(key, []).get(key);
+                    return this.store.get(key) || [];
                 }
                 set(key, val) {
-                    this.store.has(key) ? void this.store.get(key).push(val) : void this.store.set(key, [val]);
+                    var _a;
+                    ((_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a.push(val)) || this.store.set(key, [val]);
                     return this;
                 }
                 has(key) {
@@ -355,7 +376,7 @@ require = function () {
         },
         {}
     ],
-    8: [
+    9: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -366,7 +387,7 @@ require = function () {
         },
         {}
     ],
-    9: [
+    10: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -380,23 +401,6 @@ require = function () {
         },
         {}
     ],
-    10: [
-        function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            function findIndex(a1, as) {
-                const isNaN = a1 !== a1;
-                for (let i = 0; i < as.length; ++i) {
-                    const a2 = as[i];
-                    if (isNaN ? a2 !== a2 : a2 === a1)
-                        return i;
-                }
-                return -1;
-            }
-            exports.findIndex = findIndex;
-        },
-        {}
-    ],
     11: [
         function (_dereq_, module, exports) {
             'use strict';
@@ -407,7 +411,7 @@ require = function () {
             }
             exports.flip = flip;
         },
-        { './curry': 9 }
+        { './curry': 10 }
     ],
     12: [
         function (_dereq_, module, exports) {
@@ -441,144 +445,230 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             __export(_dereq_('./collection/multimap'));
         },
-        { './collection/multimap': 7 }
+        { './collection/multimap': 8 }
     ],
     15: [
         function (_dereq_, module, exports) {
             'use strict';
-            var _a;
             Object.defineProperty(exports, '__esModule', { value: true });
-            const concat_1 = _dereq_('./concat');
-            var State;
-            (function (State) {
-                State[State['pending'] = 0] = 'pending';
-                State[State['resolved'] = 1] = 'resolved';
-                State[State['rejected'] = 2] = 'rejected';
-            }(State || (State = {})));
-            class Internal {
-                constructor() {
-                    this.status = { state: 0 };
-                    this.fulfillReactions = [];
-                    this.rejectReactions = [];
-                    this.isHandled = false;
-                }
+            function noop() {
+                return;
             }
-            const internal = Symbol.for('spica/promise::internal');
-            class AtomicPromise {
-                constructor(executor) {
-                    this[Symbol.toStringTag] = 'Promise';
-                    this[_a] = new Internal();
-                    try {
-                        void executor(value => {
-                            if (this[internal].status.state === 0) {
-                                this[internal].status = {
-                                    state: 1,
-                                    result: isPromiseLike(value) ? {
-                                        value,
-                                        promise: true
-                                    } : {
-                                        value: value,
-                                        promise: false
-                                    }
-                                };
-                            }
-                            void resume(this[internal]);
-                        }, reason => {
-                            if (this[internal].status.state === 0) {
-                                this[internal].status = {
-                                    state: 2,
-                                    result: { value: reason }
-                                };
-                            }
-                            void resume(this[internal]);
-                        });
-                    } catch (reason) {
-                        if (this[internal].status.state === 0) {
-                            this[internal].status = {
-                                state: 2,
-                                result: { value: reason }
-                            };
-                        }
-                        void resume(this[internal]);
-                    }
-                }
-                static get [Symbol.species]() {
-                    return AtomicPromise;
-                }
-                static all(values) {
-                    return values.reduce((acc, value) => acc.then(vs => AtomicPromise.resolve(value).then(value => concat_1.concat(vs, [value]))), AtomicPromise.resolve([]));
-                }
-                static race(values) {
-                    return new AtomicPromise((resolve, reject) => {
-                        for (const value of values) {
-                            void AtomicPromise.resolve(value).then(resolve, reject);
-                        }
-                    });
-                }
-                static resolve(value) {
-                    return new AtomicPromise(resolve => void resolve(value));
-                }
-                static reject(reason) {
-                    return new AtomicPromise((_, reject) => void reject(reason));
-                }
-                then(onfulfilled, onrejected) {
-                    return new AtomicPromise((resolve, reject) => {
-                        const {fulfillReactions, rejectReactions} = this[internal];
-                        void fulfillReactions.push(value => {
-                            if (!onfulfilled)
-                                return void resolve(value);
-                            try {
-                                void resolve(onfulfilled(value));
-                            } catch (reason) {
-                                void reject(reason);
-                            }
-                        });
-                        void rejectReactions.push(reason => {
-                            if (!onrejected)
-                                return void reject(reason);
-                            try {
-                                void resolve(onrejected(reason));
-                            } catch (reason) {
-                                void reject(reason);
-                            }
-                        });
-                        void resume(this[internal]);
-                    });
-                }
-                catch(onrejected) {
-                    return this.then(undefined, onrejected);
-                }
-                finally(onfinally) {
-                    return this.then(onfinally, onfinally).then(() => this);
-                }
-            }
-            exports.AtomicPromise = AtomicPromise;
-            _a = internal;
-            function resume(internal) {
-                const {status, fulfillReactions, rejectReactions} = internal;
-                internal.isHandled = true;
-                switch (status.state) {
-                case 0:
-                    return;
-                case 1:
-                    return status.result.promise ? void status.result.value.then(value => void consume(fulfillReactions, value), reason => void consume(rejectReactions, reason)) : void consume(fulfillReactions, status.result.value);
-                case 2:
-                    return void consume(rejectReactions, status.result.value);
-                }
-            }
-            function consume(fs, a) {
-                while (fs.length > 0) {
-                    void fs.shift()(a);
-                }
-            }
-            function isPromiseLike(value) {
-                return !!value && typeof value === 'object' && 'then' in value && typeof value.then === 'function';
-            }
-            exports.isPromiseLike = isPromiseLike;
+            exports.noop = noop;
         },
-        { './concat': 8 }
+        {}
     ],
     16: [
+        function (_dereq_, module, exports) {
+            (function (global) {
+                'use strict';
+                var _a;
+                Object.defineProperty(exports, '__esModule', { value: true });
+                _dereq_('./global');
+                const {Array} = global;
+                var State;
+                (function (State) {
+                    State[State['pending'] = 0] = 'pending';
+                    State[State['resolved'] = 1] = 'resolved';
+                    State[State['fulfilled'] = 2] = 'fulfilled';
+                    State[State['rejected'] = 3] = 'rejected';
+                }(State || (State = {})));
+                class Internal {
+                    constructor() {
+                        this.status = { state: 0 };
+                        this.fulfillReactions = [];
+                        this.rejectReactions = [];
+                        this.isHandled = false;
+                    }
+                }
+                const internal = Symbol.for('spica/promise::internal');
+                class AtomicPromise {
+                    constructor(executor) {
+                        this[Symbol.toStringTag] = 'Promise';
+                        this[_a] = new Internal();
+                        const intl = internal;
+                        try {
+                            const internal = this[intl];
+                            void executor(value => {
+                                if (internal.status.state !== 0)
+                                    return;
+                                if (isPromiseLike(value)) {
+                                    internal.status = {
+                                        state: 1,
+                                        result: value
+                                    };
+                                    void value.then(value => {
+                                        internal.status = {
+                                            state: 2,
+                                            result: value
+                                        };
+                                        void resume(internal);
+                                    }, reason => {
+                                        internal.status = {
+                                            state: 3,
+                                            result: reason
+                                        };
+                                        void resume(internal);
+                                    });
+                                } else {
+                                    internal.status = {
+                                        state: 2,
+                                        result: value
+                                    };
+                                    void resume(internal);
+                                }
+                            }, reason => {
+                                if (internal.status.state !== 0)
+                                    return;
+                                internal.status = {
+                                    state: 3,
+                                    result: reason
+                                };
+                                void resume(internal);
+                            });
+                        } catch (reason) {
+                            const internal = this[intl];
+                            if (internal.status.state !== 0)
+                                return;
+                            internal.status = {
+                                state: 3,
+                                result: reason
+                            };
+                            void resume(internal);
+                        }
+                    }
+                    static get [Symbol.species]() {
+                        return AtomicPromise;
+                    }
+                    static all(vs) {
+                        return new AtomicPromise((resolve, reject) => {
+                            const values = [...vs];
+                            const length = values.length;
+                            const acc = Array(length);
+                            let cnt = 0;
+                            for (let i = 0; i < length; ++i) {
+                                const value = values[i];
+                                if (isPromiseLike(value)) {
+                                    void value.then(value => {
+                                        acc[i] = value;
+                                        void ++cnt;
+                                        cnt === length && void resolve(acc);
+                                    }, reason => {
+                                        i = length;
+                                        void reject(reason);
+                                    });
+                                } else {
+                                    acc[i] = value;
+                                    void ++cnt;
+                                }
+                            }
+                            cnt === length && void resolve(acc);
+                        });
+                    }
+                    static race(values) {
+                        return new AtomicPromise((resolve, reject) => {
+                            let done = false;
+                            for (const value of values) {
+                                if (done)
+                                    break;
+                                if (isPromiseLike(value)) {
+                                    void value.then(value => {
+                                        done = true;
+                                        void resolve(value);
+                                    }, reason => {
+                                        done = true;
+                                        void reject(reason);
+                                    });
+                                } else {
+                                    done = true;
+                                    void resolve(value);
+                                }
+                            }
+                        });
+                    }
+                    static resolve(value) {
+                        return new AtomicPromise(resolve => void resolve(value));
+                    }
+                    static reject(reason) {
+                        return new AtomicPromise((_, reject) => void reject(reason));
+                    }
+                    then(onfulfilled, onrejected) {
+                        return new AtomicPromise((resolve, reject) => {
+                            const {fulfillReactions, rejectReactions, status} = this[internal];
+                            if (status.state !== 3) {
+                                void fulfillReactions.push(value => {
+                                    if (!onfulfilled)
+                                        return void resolve(value);
+                                    try {
+                                        void resolve(onfulfilled(value));
+                                    } catch (reason) {
+                                        void reject(reason);
+                                    }
+                                });
+                            }
+                            if (status.state !== 2) {
+                                void rejectReactions.push(reason => {
+                                    if (!onrejected)
+                                        return void reject(reason);
+                                    try {
+                                        void resolve(onrejected(reason));
+                                    } catch (reason) {
+                                        void reject(reason);
+                                    }
+                                });
+                            }
+                            void resume(this[internal]);
+                        });
+                    }
+                    catch(onrejected) {
+                        return this.then(void 0, onrejected);
+                    }
+                    finally(onfinally) {
+                        return this.then(onfinally, onfinally).then(() => this);
+                    }
+                }
+                exports.AtomicPromise = AtomicPromise;
+                _a = internal;
+                function isPromiseLike(value) {
+                    return value !== null && typeof value === 'object' && 'then' in value && typeof value.then === 'function';
+                }
+                exports.isPromiseLike = isPromiseLike;
+                function resume(internal) {
+                    const {status, fulfillReactions, rejectReactions} = internal;
+                    switch (status.state) {
+                    case 0:
+                    case 1:
+                        return;
+                    case 2:
+                        if (!internal.isHandled && rejectReactions.length > 0) {
+                            rejectReactions.length = 0;
+                        }
+                        if (fulfillReactions.length === 0)
+                            return;
+                        internal.isHandled = true;
+                        void consume(fulfillReactions, status.result);
+                        return;
+                    case 3:
+                        if (!internal.isHandled && fulfillReactions.length > 0) {
+                            fulfillReactions.length = 0;
+                        }
+                        if (rejectReactions.length === 0)
+                            return;
+                        internal.isHandled = true;
+                        void consume(rejectReactions, status.result);
+                        return;
+                    }
+                }
+                function consume(fs, a) {
+                    while (fs.length > 0) {
+                        void fs.shift()(a);
+                    }
+                }
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+        },
+        { './global': 12 }
+    ],
+    17: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -593,13 +683,13 @@ require = function () {
                     if (id % 1 !== 0)
                         throw new TypeError(`Spica: sqid: A parameter value must be an integer: ${ id }`);
                 }
-                return id === undefined ? (zeros + ++cnt).slice(-15) : (zeros + id).slice(-15);
+                return id === void 0 ? (zeros + ++cnt).slice(-15) : (zeros + id).slice(-15);
             }
             exports.sqid = sqid;
         },
         {}
     ],
-    17: [
+    18: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -621,10 +711,20 @@ require = function () {
                 }
             }
             exports.type = type;
+            function isType(value, name) {
+                switch (name) {
+                case 'function':
+                    return typeof value === 'function';
+                case 'object':
+                    return value !== null && typeof value === 'object';
+                default:
+                    return type(value) === name;
+                }
+            }
+            exports.isType = isType;
             function isPrimitive(value) {
-                switch (type(value)) {
+                switch (typeof value) {
                 case 'undefined':
-                case 'null':
                 case 'boolean':
                 case 'number':
                 case 'bigint':
@@ -632,14 +732,14 @@ require = function () {
                 case 'symbol':
                     return true;
                 default:
-                    return false;
+                    return value === null;
                 }
             }
             exports.isPrimitive = isPrimitive;
         },
         {}
     ],
-    18: [
+    19: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -647,7 +747,7 @@ require = function () {
         },
         {}
     ],
-    19: [
+    20: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -701,10 +801,10 @@ require = function () {
         },
         {
             './global': 12,
-            './url/domain/format': 20
+            './url/domain/format': 21
         }
     ],
-    20: [
+    21: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
@@ -738,13 +838,13 @@ require = function () {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../../cache': 6,
+            '../../cache': 7,
             '../../flip': 11,
             '../../memoize': 13,
-            '../../uncurry': 18
+            '../../uncurry': 19
         }
     ],
-    21: [
+    22: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -768,7 +868,7 @@ require = function () {
         },
         {}
     ],
-    22: [
+    23: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -786,6 +886,7 @@ require = function () {
             exports.html = dom_1.html;
             exports.svg = dom_1.svg;
             exports.text = dom_1.text;
+            exports.element = dom_1.element;
             exports.define = dom_1.define;
             var listener_1 = _dereq_('./src/util/listener');
             exports.listen = listener_1.listen;
@@ -798,15 +899,15 @@ require = function () {
             exports.apply = query_1.apply;
         },
         {
-            './src/dom/builder': 23,
-            './src/dom/proxy': 25,
-            './src/util/dom': 26,
-            './src/util/listener': 27,
+            './src/dom/builder': 24,
+            './src/dom/proxy': 26,
+            './src/util/dom': 27,
+            './src/util/listener': 28,
             './src/util/query': 29,
             'spica/global': 12
         }
     ],
-    23: [
+    24: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
@@ -815,7 +916,7 @@ require = function () {
                 const dom_1 = _dereq_('../util/dom');
                 const {Object: Obj} = global;
                 function API(baseFactory, formatter = el => el) {
-                    return new Proxy(() => undefined, handle(baseFactory, formatter));
+                    return new Proxy(() => void 0, handle(baseFactory, formatter));
                 }
                 exports.API = API;
                 exports.Shadow = API(dom_1.html, dom_1.shadow);
@@ -831,11 +932,11 @@ require = function () {
                     function builder(tag, baseFactory) {
                         return function build(attrs, children, factory) {
                             if (typeof attrs === 'function')
-                                return build(undefined, undefined, attrs);
+                                return build(void 0, void 0, attrs);
                             if (typeof children === 'function')
-                                return build(attrs, undefined, children);
-                            if (attrs !== undefined && isChildren(attrs))
-                                return build(undefined, attrs, factory);
+                                return build(attrs, void 0, children);
+                            if (attrs !== void 0 && isChildren(attrs))
+                                return build(void 0, attrs, factory);
                             const node = formatter(elem(factory || defaultFactory, attrs, children));
                             return node.nodeType === 1 ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
                         };
@@ -868,11 +969,11 @@ require = function () {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../util/dom': 26,
-            './proxy': 25
+            '../util/dom': 27,
+            './proxy': 26
         }
     ],
-    24: [
+    25: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -885,11 +986,11 @@ require = function () {
             exports.uid = uid;
         },
         {
-            'spica/sqid': 16,
-            'spica/uuid': 21
+            'spica/sqid': 17,
+            'spica/uuid': 22
         }
     ],
-    25: [
+    26: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
@@ -925,7 +1026,7 @@ require = function () {
                         this.container = container;
                         this.id_ = this.element.id.trim();
                         switch (true) {
-                        case children_ === undefined:
+                        case children_ === void 0:
                             this.type = ElChildrenType.Void;
                             break;
                         case typeof children_ === 'string':
@@ -1155,36 +1256,43 @@ require = function () {
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
-            '../util/dom': 26,
-            './identity': 24
+            '../util/dom': 27,
+            './identity': 25
         }
     ],
-    26: [
+    27: [
         function (_dereq_, module, exports) {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
+                const memoize_1 = _dereq_('spica/memoize');
                 const {document} = global;
+                var NS;
+                (function (NS) {
+                    NS['HTML'] = 'HTML';
+                    NS['SVG'] = 'SVG';
+                }(NS || (NS = {})));
                 const shadows = new WeakMap();
-                var cache;
-                (function (cache) {
-                    cache.elem = new Map();
-                    cache.text = document.createTextNode('');
-                    cache.frag = document.createDocumentFragment();
-                }(cache || (cache = {})));
+                var caches;
+                (function (caches) {
+                    caches.elem = memoize_1.memoize(() => new Map(), new WeakMap());
+                    caches.text = document.createTextNode('');
+                    caches.frag = document.createDocumentFragment();
+                }(caches || (caches = {})));
                 function frag(children) {
-                    children = typeof children === 'string' ? [text(children)] : children;
-                    const frag = cache.frag.cloneNode();
-                    children && void frag.append(...children);
-                    return frag;
+                    if (typeof children === 'string')
+                        return frag([text(children)]);
+                    const node = caches.frag.cloneNode();
+                    children && void node.append(...children);
+                    return node;
                 }
                 exports.frag = frag;
                 function shadow(el, children, opts) {
                     if (typeof el === 'string')
                         return shadow(html(el), children, opts);
                     if (children && !isChildren(children))
-                        return shadow(el, undefined, children);
-                    return el.shadowRoot || shadows.has(el) ? define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children) : define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === undefined ? el.childNodes : children);
+                        return shadow(el, void 0, children);
+                    return el.shadowRoot || shadows.has(el) ? define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children) : define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === void 0 ? el.childNodes : children);
                 }
                 exports.shadow = shadow;
                 function html(tag, attrs, children) {
@@ -1196,23 +1304,22 @@ require = function () {
                 }
                 exports.svg = svg;
                 function text(source) {
-                    const text = cache.text.cloneNode();
+                    const text = caches.text.cloneNode();
                     text.data = source;
                     return text;
                 }
                 exports.text = text;
-                var NS;
-                (function (NS) {
-                    NS['HTML'] = 'HTML';
-                    NS['SVG'] = 'SVG';
-                }(NS || (NS = {})));
                 function element(context, ns, tag, attrs, children) {
+                    const cache = caches.elem(context);
                     const key = `${ ns }:${ tag }`;
-                    const el = tag.includes('-') ? elem(context, ns, tag) : cache.elem.has(key) ? cache.elem.get(key).cloneNode(true) : cache.elem.set(key, elem(context, ns, tag)).get(key).cloneNode(true);
+                    const el = tag.includes('-') ? elem(context, ns, tag) : cache.has(key) ? cache.get(key).cloneNode(true) : cache.set(key, elem(context, ns, tag)).get(key).cloneNode(true);
                     void define(el, attrs, children);
                     return el;
                 }
+                exports.element = element;
                 function elem(context, ns, tag) {
+                    if (context.nodeType === 1)
+                        throw new Error(`TypedDOM: Scoped custom elements are not supported.`);
                     switch (ns) {
                     case 'HTML':
                         return context.createElement(tag);
@@ -1222,7 +1329,7 @@ require = function () {
                 }
                 function define(el, attrs, children) {
                     if (isChildren(attrs))
-                        return define(el, undefined, attrs);
+                        return define(el, void 0, attrs);
                     if (typeof children === 'string')
                         return define(el, attrs, [text(children)]);
                     if (attrs)
@@ -1266,19 +1373,19 @@ require = function () {
                 }
                 exports.define = define;
                 function isChildren(o) {
-                    return !!o && !!o[Symbol.iterator];
+                    return !!(o === null || o === void 0 ? void 0 : o[Symbol.iterator]);
                 }
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
-        {}
+        { 'spica/memoize': 13 }
     ],
-    27: [
+    28: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const noop_1 = _dereq_('./noop');
             const promise_1 = _dereq_('spica/promise');
-            exports.currentTarget = Symbol();
+            const noop_1 = _dereq_('spica/noop');
+            exports.currentTarget = Symbol.for('currentTarget');
             function listen(target, a, b, c = false, d = {}) {
                 return typeof b === 'string' ? delegate(target, a, b, c, d) : bind(target, a, b, c);
             }
@@ -1311,20 +1418,9 @@ require = function () {
             exports.bind = bind;
         },
         {
-            './noop': 28,
-            'spica/promise': 15
+            'spica/noop': 15,
+            'spica/promise': 16
         }
-    ],
-    28: [
-        function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            function noop() {
-                return;
-            }
-            exports.noop = noop;
-        },
-        {}
     ],
     29: [
         function (_dereq_, module, exports) {
@@ -1340,7 +1436,7 @@ require = function () {
             }
             exports.apply = apply;
         },
-        { './dom': 26 }
+        { './dom': 27 }
     ],
     30: [
         function (_dereq_, module, exports) {
@@ -1580,7 +1676,7 @@ require = function () {
                 exports.configure = configure;
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
-        { 'spica/assign': 5 }
+        { 'spica/assign': 6 }
     ],
     36: [
         function (_dereq_, module, exports) {
@@ -1846,7 +1942,7 @@ require = function () {
         },
         {
             '../parser': 45,
-            'spica/concat': 8
+            'spica/concat': 9
         }
     ],
     47: [
@@ -1878,7 +1974,7 @@ require = function () {
         },
         {
             '../parser': 45,
-            'spica/concat': 8
+            'spica/concat': 9
         }
     ],
     48: [
@@ -1919,7 +2015,7 @@ require = function () {
         },
         {
             '../parser': 45,
-            'spica/concat': 8
+            'spica/concat': 9
         }
     ],
     49: [
@@ -2180,8 +2276,8 @@ require = function () {
             '../block': 59,
             '../segment': 114,
             './normalize': 56,
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     58: [
@@ -2299,7 +2395,7 @@ require = function () {
             '../autolink': 58,
             '../source': 115,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     61: [
@@ -2359,7 +2455,7 @@ require = function () {
             '../autolink': 58,
             '../source': 115,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     62: [
@@ -2392,8 +2488,8 @@ require = function () {
             '../source': 115,
             '../util': 123,
             './paragraph': 73,
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     63: [
@@ -2484,7 +2580,7 @@ require = function () {
             '../../api/parse': 57,
             '../../util': 123,
             '../mathblock': 71,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     65: [
@@ -2602,7 +2698,7 @@ require = function () {
             '../paragraph': 73,
             '../table': 77,
             './example': 64,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     67: [
@@ -2628,7 +2724,7 @@ require = function () {
         {
             '../../../combinator': 30,
             '../../inline': 79,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     68: [
@@ -2653,7 +2749,7 @@ require = function () {
             '../inline': 79,
             '../source/char': 116,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     69: [
@@ -2669,7 +2765,7 @@ require = function () {
         },
         {
             '../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     70: [
@@ -2702,7 +2798,7 @@ require = function () {
             '../util': 123,
             './olist': 72,
             './ulist': 78,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     71: [
@@ -2736,7 +2832,7 @@ require = function () {
         },
         {
             '../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     72: [
@@ -2810,7 +2906,7 @@ require = function () {
             '../util': 123,
             './ilist': 70,
             './ulist': 78,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     73: [
@@ -2847,8 +2943,8 @@ require = function () {
             '../source': 115,
             '../util': 123,
             './paragraph/mention': 74,
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     74: [
@@ -2895,7 +2991,7 @@ require = function () {
             '../../../inline': 79,
             '../../../source/char': 116,
             '../../../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     76: [
@@ -2917,7 +3013,7 @@ require = function () {
             '../../../autolink': 58,
             '../../../source': 115,
             '../../../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     77: [
@@ -2989,8 +3085,8 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     78: [
@@ -3029,8 +3125,8 @@ require = function () {
             '../util': 123,
             './ilist': 70,
             './olist': 72,
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     79: [
@@ -3157,7 +3253,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     81: [
@@ -3196,7 +3292,7 @@ require = function () {
             './autolink/hashref': 85,
             './autolink/hashtag': 86,
             './autolink/uri': 87,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     82: [
@@ -3215,7 +3311,7 @@ require = function () {
         },
         {
             '../../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     83: [
@@ -3240,7 +3336,7 @@ require = function () {
             '../../util': 123,
             './account': 82,
             './hashtag': 86,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     84: [
@@ -3260,7 +3356,7 @@ require = function () {
         },
         {
             '../../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     85: [
@@ -3279,7 +3375,7 @@ require = function () {
         },
         {
             '../../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     86: [
@@ -3298,7 +3394,7 @@ require = function () {
         },
         {
             '../../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     87: [
@@ -3363,7 +3459,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     89: [
@@ -3384,7 +3480,7 @@ require = function () {
         {
             '../../combinator': 30,
             '../source': 115,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     90: [
@@ -3403,7 +3499,7 @@ require = function () {
         },
         {
             '../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     91: [
@@ -3438,7 +3534,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     92: [
@@ -3471,7 +3567,7 @@ require = function () {
             '../inline': 79,
             '../util': 123,
             './strong': 110,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     93: [
@@ -3529,7 +3625,7 @@ require = function () {
             '../../inline': 79,
             '../../source': 115,
             '../../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     95: [
@@ -3560,7 +3656,7 @@ require = function () {
             '../../inline': 79,
             '../link': 103,
             './indexee': 96,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     96: [
@@ -3593,7 +3689,7 @@ require = function () {
         },
         {
             '../../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     97: [
@@ -3611,7 +3707,7 @@ require = function () {
         {
             '../../../combinator': 30,
             './index': 95,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     98: [
@@ -3656,7 +3752,7 @@ require = function () {
         {
             '../../../combinator': 30,
             '../link': 103,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     99: [
@@ -3677,7 +3773,7 @@ require = function () {
             '../../../combinator': 30,
             '../../inline': 79,
             '../../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     100: [
@@ -3755,7 +3851,7 @@ require = function () {
             '../inline': 79,
             '../source': 115,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     101: [
@@ -3776,7 +3872,7 @@ require = function () {
         },
         {
             '../../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     102: [
@@ -3811,7 +3907,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     103: [
@@ -3965,8 +4061,8 @@ require = function () {
             '../string/uri': 122,
             '../util': 123,
             './html': 100,
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     104: [
@@ -3994,7 +4090,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     105: [
@@ -4019,8 +4115,8 @@ require = function () {
             '../../combinator': 30,
             '../source': 115,
             '../util': 123,
-            'spica/cache': 6,
-            'typed-dom': 22
+            'spica/cache': 7,
+            'typed-dom': 23
         }
     ],
     106: [
@@ -4080,10 +4176,10 @@ require = function () {
             '../util': 123,
             './html': 100,
             './link': 103,
-            'spica/cache': 6,
-            'spica/concat': 8,
-            'spica/url': 19,
-            'typed-dom': 22
+            'spica/cache': 7,
+            'spica/concat': 9,
+            'spica/url': 20,
+            'typed-dom': 23
         }
     ],
     107: [
@@ -4111,7 +4207,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     108: [
@@ -4150,8 +4246,8 @@ require = function () {
             '../source': 115,
             '../util': 123,
             './htmlentity': 101,
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     109: [
@@ -4194,7 +4290,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../util': 123,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     111: [
@@ -4220,7 +4316,7 @@ require = function () {
             '../../combinator': 30,
             '../inline': 79,
             '../source': 115,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     112: [
@@ -4282,7 +4378,7 @@ require = function () {
         {
             '../combinator': 30,
             './locale/ja': 113,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     113: [
@@ -4385,7 +4481,7 @@ require = function () {
             exports.char = char;
             ;
         },
-        { 'typed-dom': 22 }
+        { 'typed-dom': 23 }
     ],
     117: [
         function (_dereq_, module, exports) {
@@ -4424,7 +4520,7 @@ require = function () {
                 }
             };
         },
-        { 'typed-dom': 22 }
+        { 'typed-dom': 23 }
     ],
     118: [
         function (_dereq_, module, exports) {
@@ -4522,7 +4618,7 @@ require = function () {
                 }
             };
         },
-        { 'typed-dom': 22 }
+        { 'typed-dom': 23 }
     ],
     121: [
         function (_dereq_, module, exports) {
@@ -4555,7 +4651,7 @@ require = function () {
         },
         {
             './text': 120,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     122: [
@@ -4582,7 +4678,7 @@ require = function () {
             }
             exports.decode = decode;
         },
-        { 'typed-dom': 22 }
+        { 'typed-dom': 23 }
     ],
     123: [
         function (_dereq_, module, exports) {
@@ -4710,7 +4806,7 @@ require = function () {
         },
         {
             '../combinator': 30,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     124: [
@@ -4770,7 +4866,7 @@ require = function () {
             './render/code': 126,
             './render/math': 127,
             './render/media': 128,
-            'spica/url': 19
+            'spica/url': 20
         }
     ],
     126: [
@@ -4821,7 +4917,7 @@ require = function () {
         },
         {
             '../../parser/inline/math': 105,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     128: [
@@ -4893,7 +4989,7 @@ require = function () {
         },
         {
             '../../../parser/inline/media': 106,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     130: [
@@ -4950,7 +5046,7 @@ require = function () {
         {
             '../../../parser': 52,
             '../../../parser/inline/media': 106,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     131: [
@@ -4973,7 +5069,7 @@ require = function () {
         },
         {
             '../../../parser/inline/media': 106,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     132: [
@@ -5006,7 +5102,7 @@ require = function () {
         {
             '../../../parser': 52,
             '../../../parser/inline/media': 106,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     133: [
@@ -5057,7 +5153,7 @@ require = function () {
         {
             '../../../parser': 52,
             '../../../parser/inline/media': 106,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     134: [
@@ -5116,8 +5212,8 @@ require = function () {
         },
         {
             '../../../parser': 52,
-            'spica/cache': 6,
-            'typed-dom': 22
+            'spica/cache': 7,
+            'typed-dom': 23
         }
     ],
     135: [
@@ -5148,7 +5244,7 @@ require = function () {
         },
         {
             '../../../parser/inline/media': 106,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     136: [
@@ -5184,7 +5280,7 @@ require = function () {
         },
         {
             '../../../parser/inline/media': 106,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     137: [
@@ -5304,7 +5400,7 @@ require = function () {
             '../parser/inline/extension/label': 98,
             './context': 138,
             'spica/multimap': 14,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     140: [
@@ -5364,7 +5460,7 @@ require = function () {
         {
             '../parser/inline/extension/indexee': 96,
             './context': 138,
-            'typed-dom': 22
+            'typed-dom': 23
         }
     ],
     141: [
@@ -5440,8 +5536,8 @@ require = function () {
             }
         },
         {
-            'spica/concat': 8,
-            'typed-dom': 22
+            'spica/concat': 9,
+            'typed-dom': 23
         }
     ],
     'securemark': [
