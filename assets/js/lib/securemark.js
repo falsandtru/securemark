@@ -1557,24 +1557,17 @@ require = function () {
             function validate(patterns, parser) {
                 if (!alias_1.isArray(patterns))
                     return validate([patterns], parser);
+                const match = patterns.reduceRight((match, pattern) => typeof pattern === 'string' ? source => source.startsWith(pattern) || match(source) : source => pattern.test(source) || match(source), _ => false);
                 return (source, config) => {
                     if (source === '')
                         return;
-                    if (patterns.every(pattern => !match(source, pattern)))
+                    if (!match(source))
                         return;
                     const result = parser(source, config);
                     if (!result)
                         return;
                     return parser_1.exec(result).length < source.length ? result : void 0;
                 };
-                function match(source, pattern) {
-                    switch (typeof pattern) {
-                    case 'string':
-                        return source.startsWith(pattern);
-                    default:
-                        return pattern.test(source);
-                    }
-                }
             }
             exports.validate = validate;
             function verify(parser, cond) {
@@ -1641,10 +1634,14 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function focus(scope, parser) {
+                const match = typeof scope === 'string' ? source => source.startsWith(scope) ? scope : '' : source => {
+                    var _a;
+                    return ((_a = source.match(scope)) === null || _a === void 0 ? void 0 : _a[0]) || '';
+                };
                 return (source, config) => {
                     if (source === '')
                         return;
-                    const [src = ''] = typeof scope === 'string' ? source.startsWith(scope) ? [scope] : [] : source.match(scope) || [];
+                    const src = match(source);
                     if (src === '')
                         return;
                     const result = parser(src, config);
@@ -1831,10 +1828,12 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             function surround(start, parser, end, strict = true) {
+                const starts = match(start);
+                const ends = match(end);
                 return (lmr_, config) => {
                     if (lmr_ === '')
                         return;
-                    const l = match(lmr_, start);
+                    const l = starts(lmr_);
                     if (l === void 0)
                         return;
                     const mr_ = l ? lmr_.slice(l.length) : lmr_;
@@ -1843,7 +1842,7 @@ require = function () {
                         return;
                     if (r_.length > mr_.length)
                         return;
-                    const r = match(r_, end);
+                    const r = ends(r_);
                     if (r === void 0)
                         return;
                     return l + r !== '' || r_.length - r.length < lmr_.length ? [
@@ -1853,13 +1852,11 @@ require = function () {
                 };
             }
             exports.surround = surround;
-            function match(source, pattern) {
-                if (pattern === '')
-                    return pattern;
-                if (typeof pattern === 'string')
-                    return source.startsWith(pattern) ? pattern : void 0;
-                const result = source.match(pattern);
-                return result && source.startsWith(result[0]) ? result[0] : void 0;
+            function match(pattern) {
+                return typeof pattern === 'string' ? source => source.startsWith(pattern) ? pattern : void 0 : source => {
+                    var _a;
+                    return (_a = source.match(pattern)) === null || _a === void 0 ? void 0 : _a[0];
+                };
             }
         },
         {}
@@ -2011,6 +2008,7 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const concat_1 = _dereq_('spica/concat');
             function some(parser, until) {
+                const match = typeof until === 'string' && until !== undefined ? source => source.startsWith(until) : source => !!until && until.test(source);
                 let memory = '';
                 return (source, config) => {
                     if (source === memory)
@@ -2020,7 +2018,7 @@ require = function () {
                     while (true) {
                         if (rest === '')
                             break;
-                        if (until && match(rest, until))
+                        if (match(rest))
                             break;
                         const result = parser(rest, config);
                         if (!result)
@@ -2036,9 +2034,6 @@ require = function () {
                 };
             }
             exports.some = some;
-            function match(source, pattern) {
-                return typeof pattern === 'string' ? source.startsWith(pattern) : pattern.test(source);
-            }
         },
         {
             '../parser': 46,
