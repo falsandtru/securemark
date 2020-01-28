@@ -1965,10 +1965,10 @@ require = function () {
                 return (source, config) => {
                     let rest = source;
                     const data = [];
-                    for (const parser of parsers) {
+                    for (let i = 0, len = parsers.length; i < len; ++i) {
                         if (rest === '')
                             break;
-                        const result = parser(rest, config);
+                        const result = parsers[i](rest, config);
                         if (!result)
                             break;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -1997,10 +1997,10 @@ require = function () {
                 return (source, config) => {
                     let rest = source;
                     const data = [];
-                    for (const parser of parsers) {
+                    for (let i = 0, len = parsers.length; i < len; ++i) {
                         if (rest === '')
                             return;
-                        const result = parser(rest, config);
+                        const result = parsers[i](rest, config);
                         if (!result)
                             return;
                         void concat_1.concat(data, parser_1.eval(result));
@@ -2117,8 +2117,8 @@ require = function () {
                     return parsers[0];
                 default:
                     return (source, config) => {
-                        for (const parser of parsers) {
-                            const result = parser(source, config);
+                        for (let i = 0, len = parsers.length; i < len; ++i) {
+                            const result = parsers[i](source, config);
                             if (result)
                                 return result;
                         }
@@ -4083,9 +4083,7 @@ require = function () {
             ])));
             function attrs(spec, params, classes, syntax) {
                 const attrs = html_1.attrs(spec, params, classes, syntax);
-                for (const name of ['nofollow']) {
-                    attrs[name] = void 0;
-                }
+                attrs['nofollow'] = void 0;
                 return attrs;
             }
             exports.attrs = attrs;
@@ -4378,8 +4376,10 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             function localize(block) {
                 return combinator_1.fmap(block, es => {
-                    for (const block of es) {
-                        for (const el of block.getElementsByClassName('linebreak')) {
+                    for (let i = 0, len = es.length; i < len; ++i) {
+                        const bs = es[i].getElementsByClassName('linebreak');
+                        for (let i = 0, len = bs.length; i < len; ++i) {
+                            const el = bs[i];
                             if (!el.firstChild || el.firstElementChild)
                                 continue;
                             if (!check(el))
@@ -4810,7 +4810,8 @@ require = function () {
                 if (target.nodeName === 'OL') {
                     void typed_dom_1.apply(target, '.footnote > sup:last-child > a', { href: null });
                 }
-                for (const child of target.children) {
+                for (let i = 0, len = target.children.length; i < len; ++i) {
+                    const child = target.children[i];
                     switch (child.tagName) {
                     case 'DL':
                         void typed_dom_1.apply(child, 'dt', { id: null });
