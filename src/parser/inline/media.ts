@@ -1,4 +1,4 @@
-import { Array, location, encodeURI, assert } from 'spica/global';
+import { Array, location, encodeURI } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, guard, fmap, bind } from '../../combinator';
 import { text } from '../source';
