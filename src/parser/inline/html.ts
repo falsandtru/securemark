@@ -1,5 +1,5 @@
 import { Map } from 'spica/global';
-import { isFrozen, ObjectEntries, ObjectFreeze } from 'spica/alias';
+import { hasOwnProperty, isFrozen, ObjectEntries, ObjectFreeze } from 'spica/alias';
 import { HTMLParser, inline } from '../inline';
 import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, memoize, lazy, fmap } from '../../combinator';
 import { escsource, unescsource, char } from '../source';
@@ -75,7 +75,7 @@ export function attrs(
     arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : void 0]));
   if (spec) {
     for (const [key, value] of attrs) {
-      spec.hasOwnProperty(key) && spec[key].includes(value)
+      hasOwnProperty(spec, key) && spec[key].includes(value)
         ? result[key] = value || ''
         : invalid = true;
     }
