@@ -1551,13 +1551,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const alias_1 = _dereq_('spica/alias');
             const parser_1 = _dereq_('../../data/parser');
             function contract(patterns, parser, cond) {
                 return verify(validate(patterns, parser), cond);
             }
             exports.contract = contract;
             function validate(patterns, parser) {
-                if (!Array.isArray(patterns))
+                if (!alias_1.isArray(patterns))
                     return validate([patterns], parser);
                 return (source, config) => {
                     if (source === '')
@@ -1593,7 +1594,10 @@ require = function () {
             }
             exports.verify = verify;
         },
-        { '../../data/parser': 46 }
+        {
+            '../../data/parser': 46,
+            'spica/alias': 5
+        }
     ],
     34: [
         function (_dereq_, module, exports) {
