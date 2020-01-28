@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.143.2
+
+- Optimization.
+
 ## 0.143.1
 
 - Refactoring.
