@@ -9,11 +9,17 @@ export function contract<T, D extends Parser<unknown>[]>(patterns: string | RegE
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P): P;
 export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T, D>): Parser<T, D> {
   if (!isArray(patterns)) return validate([patterns], parser);
-  assert(patterns.some(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
+  assert(patterns.length > 0);
+  assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
   assert(parser);
+  const match = patterns.reduceRight((match, pattern) =>
+    typeof pattern === 'string'
+      ? (source: string) => source.startsWith(pattern) || match(source)
+      : (source: string) => pattern.test(source) || match(source)
+  , (_: string) => false);
   return (source, config) => {
     if (source === '') return;
-    if (patterns.every(pattern => !match(source, pattern))) return;
+    if (!match(source)) return;
     const result = parser(source, config);
     assert(check(source, result));
     if (!result) return;
@@ -21,15 +27,6 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
       ? result
       : void 0;
   };
-
-  function match(source: string, pattern: string | RegExp): boolean {
-    switch (typeof pattern) {
-      case 'string':
-        return source.startsWith(pattern);
-      default:
-        return pattern.test(source);
-    }
-  }
 }
 
 export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Data<P>[], rest: string, config: Config<P>) => boolean): P;

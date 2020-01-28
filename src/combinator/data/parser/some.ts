@@ -5,6 +5,9 @@ export function some<P extends Parser<unknown>>(parser: P, until?: string | RegE
 export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until?: string | RegExp): Parser<T, D> {
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
+  const match = typeof until === 'string' && until !== undefined
+    ? (source: string) => source.startsWith(until)
+    : (source: string) => !!until && until.test(source);
   let memory = '';
   return (source, config) => {
     if (source === memory) return;
@@ -12,7 +15,7 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
     const data: T[] = [];
     while (true) {
       if (rest === '') break;
-      if (until && match(rest, until)) break;
+      if (match(rest)) break;
       const result = parser(rest, config);
       assert(check(rest, result));
       if (!result) break;
@@ -25,10 +28,4 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
       ? [data, rest]
       : void 0;
   };
-}
-
-function match(source: string, pattern: string | RegExp): boolean {
-  return typeof pattern === 'string'
-    ? source.startsWith(pattern)
-    : pattern.test(source);
 }
