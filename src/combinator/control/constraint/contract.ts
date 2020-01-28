@@ -12,11 +12,16 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
   assert(patterns.length > 0);
   assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
   assert(parser);
-  const match = patterns.reduceRight((match, pattern) =>
+  const matchers = patterns.map(pattern =>
     typeof pattern === 'string'
-      ? (source: string) => source.startsWith(pattern) || match(source)
-      : (source: string) => pattern.test(source) || match(source)
-  , (_: string) => false);
+      ? (source: string) => source.startsWith(pattern)
+      : (source: string) => pattern.test(source));
+  const match = (source: string) => {
+    for (let i = 0, len = matchers.length; i < len; ++i) {
+      if (matchers[i](source)) return true;
+    }
+    return false;
+  };
   return (source, config) => {
     if (source === '') return;
     if (!match(source)) return;
