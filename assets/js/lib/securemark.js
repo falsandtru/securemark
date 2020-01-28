@@ -4017,7 +4017,7 @@ require = function () {
                         return;
                     break;
                 default:
-                    if (el.origin === window.location.origin)
+                    if (el.origin === global_1.location.origin)
                         break;
                     void el.setAttribute('target', '_blank');
                 }
@@ -4183,7 +4183,7 @@ require = function () {
                 const path = uri_1.sanitize(INSECURE_URL.trim());
                 if (path === void 0)
                     return;
-                const uri = new url_1.URL(path, window.location.href).reference;
+                const uri = new url_1.URL(path, global_1.location.href).reference;
                 const media = exports.cache.has(uri) ? exports.cache.get(uri).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': path,
@@ -4850,6 +4850,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('spica/global');
             const code_1 = _dereq_('./render/code');
             const math_1 = _dereq_('./render/math');
             const media_1 = _dereq_('./render/media');
@@ -4874,7 +4875,7 @@ require = function () {
                             const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
-                            void el.setAttribute('data-src', new url_1.URL(target.getAttribute('data-src'), window.location.href).reference);
+                            void el.setAttribute('data-src', new url_1.URL(target.getAttribute('data-src'), global_1.location.href).reference);
                             const scope = el.matches('img') ? target : target.parentElement;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
@@ -4894,6 +4895,7 @@ require = function () {
             './render/code': 127,
             './render/math': 128,
             './render/media': 129,
+            'spica/global': 13,
             'spica/url': 21
         }
     ],
@@ -4952,6 +4954,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('spica/global');
             const twitter_1 = _dereq_('./media/twitter');
             const youtube_1 = _dereq_('./media/youtube');
             const gist_1 = _dereq_('./media/gist');
@@ -4972,7 +4975,7 @@ require = function () {
                     audio: audio_1.audio,
                     image: image_1.image
                 }, opts);
-                const url = new URL(target.getAttribute('data-src'), window.location.href);
+                const url = new URL(target.getAttribute('data-src'), global_1.location.href);
                 const alt = target.getAttribute('alt') || '';
                 (_a = opts.video) === null || _a === void 0 ? void 0 : _a.call(opts, url, alt);
                 return ((_b = opts.twitter) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.youtube) === null || _c === void 0 ? void 0 : _c.call(opts, url)) || ((_d = opts.gist) === null || _d === void 0 ? void 0 : _d.call(opts, url)) || ((_e = opts.slideshare) === null || _e === void 0 ? void 0 : _e.call(opts, url)) || ((_f = opts.pdf) === null || _f === void 0 ? void 0 : _f.call(opts, url)) || ((_g = opts.video) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt)) || ((_h = opts.audio) === null || _h === void 0 ? void 0 : _h.call(opts, url, alt)) || ((_j = opts.image) === null || _j === void 0 ? void 0 : _j.call(opts, url, alt));
@@ -4987,7 +4990,8 @@ require = function () {
             './media/slideshare': 134,
             './media/twitter': 135,
             './media/video': 136,
-            './media/youtube': 137
+            './media/youtube': 137,
+            'spica/global': 13
         }
     ],
     130: [
@@ -5025,6 +5029,7 @@ require = function () {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
+                const global_1 = _dereq_('spica/global');
                 const parser_1 = _dereq_('../../../parser');
                 const media_1 = _dereq_('../../../parser/inline/media');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
@@ -5053,9 +5058,9 @@ require = function () {
                                 const gist = outer.querySelector('.gist');
                                 void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.HTML.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
-                                if (document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
+                                if (global_1.document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
-                                void document.head.appendChild(typed_dom_1.html('link', {
+                                void global_1.document.head.appendChild(typed_dom_1.html('link', {
                                     rel: 'stylesheet',
                                     href: stylesheet,
                                     crossorigin: 'anonymous'
@@ -5074,6 +5079,7 @@ require = function () {
         {
             '../../../parser': 53,
             '../../../parser/inline/media': 107,
+            'spica/global': 13,
             'typed-dom': 24
         }
     ],
@@ -5189,6 +5195,7 @@ require = function () {
             (function (global) {
                 'use strict';
                 Object.defineProperty(exports, '__esModule', { value: true });
+                const global_1 = _dereq_('spica/global');
                 const parser_1 = _dereq_('../../../parser');
                 const cache_1 = _dereq_('spica/cache');
                 const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
@@ -5203,7 +5210,7 @@ require = function () {
                         return;
                     if (cache.has(url.href)) {
                         const el = cache.get(url.href).cloneNode(true);
-                        (_a = window.twttr) === null || _a === void 0 ? void 0 : _a.widgets.load(el);
+                        (_a = global_1.window.twttr) === null || _a === void 0 ? void 0 : _a.widgets.load(el);
                         return el;
                     }
                     return typed_dom_1.HTML.div({
@@ -5218,12 +5225,12 @@ require = function () {
                             success({html}) {
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`);
                                 void cache.set(url.href, outer.cloneNode(true));
-                                if (window.twttr)
-                                    return void window.twttr.widgets.load(outer);
+                                if (global_1.window.twttr)
+                                    return void global_1.window.twttr.widgets.load(outer);
                                 const id = 'twitter-wjs';
-                                if (document.getElementById(id))
+                                if (global_1.document.getElementById(id))
                                     return;
-                                void document.body.appendChild(typed_dom_1.html('script', {
+                                void global_1.document.body.appendChild(typed_dom_1.html('script', {
                                     id,
                                     src: 'https://platform.twitter.com/widgets.js'
                                 }));
@@ -5241,6 +5248,7 @@ require = function () {
         {
             '../../../parser': 53,
             'spica/cache': 8,
+            'spica/global': 13,
             'typed-dom': 24
         }
     ],
