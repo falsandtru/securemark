@@ -9,5 +9,5 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => subline
     /^\[[:^]/,
     verify(trimNodeEnd(defrag(some(union([inline]), /^\\?\n|^]/))), ns => isTightVisible(html('div', ns))),
     ']'),
-  () =>
-    [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`, {})))])));
+  (_, config) =>
+    [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`, config)))])));

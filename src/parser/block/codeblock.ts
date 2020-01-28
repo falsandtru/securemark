@@ -21,7 +21,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
       ? [lang, param]
       : ['', lang + param];
     param = param.trim();
-    const path = stringify(eval(some(escsource, /^\s/)(param, {})));
+    const path = stringify(eval(some(escsource, /^\s/)(param, config)));
     const file = path.split('/').pop() || '';
     const ext = file && file.includes('.') && !file.startsWith('.')
       ? file.split('.').pop()!
