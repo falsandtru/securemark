@@ -453,7 +453,7 @@ require = function () {
             'use strict';
             const global = void 0 || typeof globalThis !== 'undefined' && globalThis || typeof self !== 'undefined' && self || Function('return this')();
             global.global = global;
-            module.exports = global;
+            module.exports = global.global;
         },
         {}
     ],
@@ -935,68 +935,67 @@ require = function () {
     ],
     25: [
         function (_dereq_, module, exports) {
-            (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                const proxy_1 = _dereq_('./proxy');
-                const dom_1 = _dereq_('../util/dom');
-                const {Object: Obj} = global;
-                function API(baseFactory, formatter = el => el) {
-                    return new Proxy(() => void 0, handle(baseFactory, formatter));
-                }
-                exports.API = API;
-                exports.Shadow = API(dom_1.html, dom_1.shadow);
-                exports.HTML = API(dom_1.html);
-                exports.SVG = API(dom_1.svg);
-                function handle(baseFactory, formatter) {
-                    return {
-                        apply(target, _, [prop, ...args]) {
-                            return this.get(target, prop, target)(...args);
-                        },
-                        get: (target, prop) => target[prop] || prop in target || typeof prop !== 'string' ? target[prop] : target[prop] = builder(prop, baseFactory)
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const alias_1 = _dereq_('spica/alias');
+            const proxy_1 = _dereq_('./proxy');
+            const dom_1 = _dereq_('../util/dom');
+            function API(baseFactory, formatter = el => el) {
+                return new Proxy(() => void 0, handle(baseFactory, formatter));
+            }
+            exports.API = API;
+            exports.Shadow = API(dom_1.html, dom_1.shadow);
+            exports.HTML = API(dom_1.html);
+            exports.SVG = API(dom_1.svg);
+            function handle(baseFactory, formatter) {
+                return {
+                    apply(target, _, [prop, ...args]) {
+                        return this.get(target, prop, target)(...args);
+                    },
+                    get: (target, prop) => target[prop] || prop in target || typeof prop !== 'string' ? target[prop] : target[prop] = builder(prop, baseFactory)
+                };
+                function builder(tag, baseFactory) {
+                    return function build(attrs, children, factory) {
+                        if (typeof attrs === 'function')
+                            return build(void 0, void 0, attrs);
+                        if (typeof children === 'function')
+                            return build(attrs, void 0, children);
+                        if (attrs !== void 0 && isChildren(attrs))
+                            return build(void 0, attrs, factory);
+                        const node = formatter(elem(factory || defaultFactory, attrs, children));
+                        return node.nodeType === 1 ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
                     };
-                    function builder(tag, baseFactory) {
-                        return function build(attrs, children, factory) {
-                            if (typeof attrs === 'function')
-                                return build(void 0, void 0, attrs);
-                            if (typeof children === 'function')
-                                return build(attrs, void 0, children);
-                            if (attrs !== void 0 && isChildren(attrs))
-                                return build(void 0, attrs, factory);
-                            const node = formatter(elem(factory || defaultFactory, attrs, children));
-                            return node.nodeType === 1 ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
-                        };
-                        function isChildren(children) {
-                            return typeof children !== 'object' || Obj.values(children).slice(-1).every(val => typeof val === 'object');
+                    function isChildren(children) {
+                        return typeof children !== 'object' || alias_1.ObjectValues(children).slice(-1).every(val => typeof val === 'object');
+                    }
+                    function elem(factory, attrs, children) {
+                        const el = factory(baseFactory, tag, attrs || {}, children);
+                        if (tag !== el.tagName.toLowerCase())
+                            throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
+                        if (factory !== defaultFactory) {
+                            if (attrs)
+                                for (const k in attrs) {
+                                    if (!alias_1.hasOwnProperty(attrs, k))
+                                        continue;
+                                    const v = attrs[k];
+                                    if (typeof v !== 'function')
+                                        continue;
+                                    void el.removeEventListener(k, v);
+                                }
+                            void dom_1.define(el, attrs);
                         }
-                        function elem(factory, attrs, children) {
-                            const el = factory(baseFactory, tag, attrs || {}, children);
-                            if (tag !== el.tagName.toLowerCase())
-                                throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
-                            if (factory !== defaultFactory) {
-                                if (attrs)
-                                    for (const k in attrs) {
-                                        if (!attrs.hasOwnProperty(k))
-                                            continue;
-                                        const v = attrs[k];
-                                        if (typeof v !== 'function')
-                                            continue;
-                                        void el.removeEventListener(k, v);
-                                    }
-                                void dom_1.define(el, attrs);
-                            }
-                            return el;
-                        }
-                        function defaultFactory(factory, tag, attrs) {
-                            return factory(tag, attrs);
-                        }
+                        return el;
+                    }
+                    function defaultFactory(factory, tag, attrs) {
+                        return factory(tag, attrs);
                     }
                 }
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+            }
         },
         {
             '../util/dom': 28,
-            './proxy': 27
+            './proxy': 27,
+            'spica/alias': 5
         }
     ],
     26: [
@@ -1018,392 +1017,390 @@ require = function () {
     ],
     27: [
         function (_dereq_, module, exports) {
-            (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                const identity_1 = _dereq_('./identity');
-                const dom_1 = _dereq_('../util/dom');
-                const {
-                    Array,
-                    Object: Obj,
-                    WeakMap,
-                    WeakSet,
-                    Event
-                } = global;
-                var ElChildrenType;
-                (function (ElChildrenType) {
-                    ElChildrenType.Void = 'void';
-                    ElChildrenType.Text = 'text';
-                    ElChildrenType.Array = 'array';
-                    ElChildrenType.Record = 'record';
-                }(ElChildrenType || (ElChildrenType = {})));
-                const proxies = new WeakMap();
-                function proxy(el) {
-                    if (!proxies.has(el))
-                        throw new Error(`TypedDOM: This element has no proxy.`);
-                    return proxies.get(el);
-                }
-                exports.proxy = proxy;
-                const tag = Symbol.for('typed-dom/tag');
-                class Elem {
-                    constructor(element, children_, container = element) {
-                        this.element = element;
-                        this.children_ = children_;
-                        this.container = container;
-                        this.id_ = this.element.id.trim();
-                        switch (true) {
-                        case children_ === void 0:
-                            this.type = ElChildrenType.Void;
-                            break;
-                        case typeof children_ === 'string':
-                            this.type = ElChildrenType.Text;
-                            break;
-                        case Array.isArray(children_):
-                            this.type = ElChildrenType.Array;
-                            break;
-                        case children_ && typeof children_ === 'object':
-                            this.type = ElChildrenType.Record;
-                            break;
-                        default:
-                            throw new Error(`TypedDOM: Invalid type children.`);
-                        }
-                        void throwErrorIfNotUsable(this);
-                        void proxies.set(this.element, this);
-                        switch (this.type) {
-                        case ElChildrenType.Void:
-                            this.initialChildren = new WeakSet();
-                            return;
-                        case ElChildrenType.Text:
-                            this.initialChildren = new WeakSet();
-                            void dom_1.define(this.container, []);
-                            this.children_ = this.container.appendChild(dom_1.text(''));
-                            this.children = children_;
-                            return;
-                        case ElChildrenType.Array:
-                            this.initialChildren = new WeakSet(children_);
-                            void dom_1.define(this.container, []);
-                            this.children_ = [];
-                            this.children = children_;
-                            return;
-                        case ElChildrenType.Record:
-                            this.initialChildren = new WeakSet(Obj.values(children_));
-                            void dom_1.define(this.container, []);
-                            this.children_ = observe(this.container, Object.assign({}, children_));
-                            this.children = children_;
-                            return;
-                        default:
-                            throw new Error(`TypedDOM: Unreachable code.`);
-                        }
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
+            const identity_1 = _dereq_('./identity');
+            const dom_1 = _dereq_('../util/dom');
+            var ElChildrenType;
+            (function (ElChildrenType) {
+                ElChildrenType.Void = 'void';
+                ElChildrenType.Text = 'text';
+                ElChildrenType.Array = 'array';
+                ElChildrenType.Record = 'record';
+            }(ElChildrenType || (ElChildrenType = {})));
+            const proxies = new global_1.WeakMap();
+            function proxy(el) {
+                if (!proxies.has(el))
+                    throw new Error(`TypedDOM: This element has no proxy.`);
+                return proxies.get(el);
+            }
+            exports.proxy = proxy;
+            const tag = Symbol.for('typed-dom/tag');
+            class Elem {
+                constructor(element, children_, container = element) {
+                    this.element = element;
+                    this.children_ = children_;
+                    this.container = container;
+                    this.id_ = this.element.id.trim();
+                    switch (true) {
+                    case children_ === void 0:
+                        this.type = ElChildrenType.Void;
+                        break;
+                    case typeof children_ === 'string':
+                        this.type = ElChildrenType.Text;
+                        break;
+                    case global_1.Array.isArray(children_):
+                        this.type = ElChildrenType.Array;
+                        break;
+                    case children_ && typeof children_ === 'object':
+                        this.type = ElChildrenType.Record;
+                        break;
+                    default:
+                        throw new Error(`TypedDOM: Invalid type children.`);
                     }
-                    get id() {
-                        if (this.id_)
-                            return this.id_;
-                        this.id_ = identity_1.uid();
-                        void this.element.classList.add(this.id_);
+                    void throwErrorIfNotUsable(this);
+                    void proxies.set(this.element, this);
+                    switch (this.type) {
+                    case ElChildrenType.Void:
+                        this.initialChildren = new global_1.WeakSet();
+                        return;
+                    case ElChildrenType.Text:
+                        this.initialChildren = new global_1.WeakSet();
+                        void dom_1.define(this.container, []);
+                        this.children_ = this.container.appendChild(dom_1.text(''));
+                        this.children = children_;
+                        return;
+                    case ElChildrenType.Array:
+                        this.initialChildren = new global_1.WeakSet(children_);
+                        void dom_1.define(this.container, []);
+                        this.children_ = [];
+                        this.children = children_;
+                        return;
+                    case ElChildrenType.Record:
+                        this.initialChildren = new global_1.WeakSet(alias_1.ObjectValues(children_));
+                        void dom_1.define(this.container, []);
+                        this.children_ = observe(this.container, Object.assign({}, children_));
+                        this.children = children_;
+                        return;
+                    default:
+                        throw new Error(`TypedDOM: Unreachable code.`);
+                    }
+                }
+                get id() {
+                    if (this.id_)
                         return this.id_;
-                    }
-                    get query() {
-                        switch (true) {
-                        case this.element !== this.container:
-                            return ':host';
-                        case this.id === this.element.id.trim():
-                            return `#${ this.id }`;
-                        default:
-                            return `.${ this.id }`;
-                        }
-                    }
-                    scope(child) {
-                        if (child.element.nodeName !== 'STYLE')
-                            return;
-                        const syntax = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
-                        const style = child.element;
-                        const query = this.query;
-                        if (style.innerHTML.search(syntax) === -1)
-                            return;
-                        style.innerHTML = style.innerHTML.replace(syntax, (_, frag, space) => `${ frag }${ space }${ query }`);
-                        switch (query[0]) {
-                        case '.': {
-                                const id = query.slice(1);
-                                if (!style.classList.contains(id))
-                                    break;
-                                void style.classList.add(id);
-                                break;
-                            }
-                        }
-                        if (style.children.length === 0)
-                            return;
-                        for (const el of style.querySelectorAll('*')) {
-                            void el.remove();
-                        }
-                    }
-                    get children() {
-                        switch (this.type) {
-                        case ElChildrenType.Text:
-                            this.children_ = this.children_.parentNode === this.container ? this.children_ : [...this.container.childNodes].find(node => node.nodeType === 3) || this.children_.cloneNode();
-                            return this.children_.textContent;
-                        default:
-                            return this.children_;
-                        }
-                    }
-                    set children(children) {
-                        const removedChildren = [];
-                        const addedChildren = [];
-                        switch (this.type) {
-                        case ElChildrenType.Void:
-                            return;
-                        case ElChildrenType.Text: {
-                                if (children === this.children && !this.initialChildren.has(this.children_))
-                                    return;
-                                const targetChildren = this.children_;
-                                const oldText = targetChildren.textContent;
-                                const newText = children;
-                                targetChildren.textContent = newText;
-                                if (newText === oldText)
-                                    return;
-                                void this.element.dispatchEvent(new Event('change', {
-                                    bubbles: false,
-                                    cancelable: true
-                                }));
-                                return;
-                            }
-                        case ElChildrenType.Array: {
-                                const sourceChildren = children;
-                                const targetChildren = [];
-                                this.children_ = targetChildren;
-                                const log = new WeakSet();
-                                for (let i = 0; i < sourceChildren.length; ++i) {
-                                    const newChild = sourceChildren[i];
-                                    if (log.has(newChild))
-                                        throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                    void log.add(newChild);
-                                    if (newChild.element.parentNode !== this.container) {
-                                        void throwErrorIfNotUsable(newChild);
-                                    }
-                                    if (newChild.element === this.container.children[i]) {
-                                        void targetChildren.push(newChild);
-                                    } else {
-                                        if (newChild.element.parentNode !== this.container) {
-                                            void this.scope(newChild);
-                                            void addedChildren.push(newChild);
-                                        }
-                                        void this.container.insertBefore(newChild.element, this.container.children[i]);
-                                        void targetChildren.push(newChild);
-                                    }
-                                }
-                                void Obj.freeze(targetChildren);
-                                for (let i = this.container.children.length; i >= sourceChildren.length; --i) {
-                                    if (!proxies.has(this.container.children[i]))
-                                        continue;
-                                    void removedChildren.push(proxy(this.container.removeChild(this.container.children[i])));
-                                }
-                                break;
-                            }
-                        case ElChildrenType.Record: {
-                                const sourceChildren = children;
-                                const targetChildren = this.children_;
-                                const log = new WeakSet();
-                                for (const name in targetChildren) {
-                                    if (!sourceChildren.hasOwnProperty(name))
-                                        continue;
-                                    const oldChild = targetChildren[name];
-                                    const newChild = sourceChildren[name];
-                                    if (log.has(newChild))
-                                        throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                    void log.add(newChild);
-                                    if (newChild.element.parentNode !== this.container) {
-                                        void throwErrorIfNotUsable(newChild);
-                                    }
-                                    if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
-                                        void this.scope(newChild);
-                                        void addedChildren.push(newChild);
-                                        void removedChildren.push(oldChild);
-                                    }
-                                    targetChildren[name] = sourceChildren[name];
-                                }
-                                break;
-                            }
-                        }
-                        for (const child of removedChildren) {
-                            if (this.initialChildren.has(child))
-                                continue;
-                            void child.element.dispatchEvent(new Event('disconnect', {
-                                bubbles: false,
-                                cancelable: true
-                            }));
-                        }
-                        for (const child of addedChildren) {
-                            void child.element.dispatchEvent(new Event('connect', {
-                                bubbles: false,
-                                cancelable: true
-                            }));
-                        }
-                        if (removedChildren.length + addedChildren.length > 0) {
-                            void this.element.dispatchEvent(new Event('change', {
-                                bubbles: false,
-                                cancelable: true
-                            }));
-                        }
+                    this.id_ = identity_1.uid();
+                    void this.element.classList.add(this.id_);
+                    return this.id_;
+                }
+                get query() {
+                    switch (true) {
+                    case this.element !== this.container:
+                        return ':host';
+                    case this.id === this.element.id.trim():
+                        return `#${ this.id }`;
+                    default:
+                        return `.${ this.id }`;
                     }
                 }
-                exports.Elem = Elem;
-                function observe(node, children) {
-                    const descs = {};
-                    for (const name in children) {
-                        if (!children.hasOwnProperty(name))
-                            continue;
-                        let child = children[name];
-                        void throwErrorIfNotUsable(child);
-                        void node.appendChild(child.element);
-                        descs[name] = {
-                            configurable: true,
-                            enumerable: true,
-                            get: () => {
-                                return child;
-                            },
-                            set: newChild => {
-                                const oldChild = child;
-                                if (newChild === oldChild)
-                                    return;
-                                if (newChild.element.parentElement !== node) {
+                scope(child) {
+                    if (child.element.nodeName !== 'STYLE')
+                        return;
+                    const syntax = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
+                    const style = child.element;
+                    const query = this.query;
+                    if (style.innerHTML.search(syntax) === -1)
+                        return;
+                    style.innerHTML = style.innerHTML.replace(syntax, (_, frag, space) => `${ frag }${ space }${ query }`);
+                    switch (query[0]) {
+                    case '.': {
+                            const id = query.slice(1);
+                            if (!style.classList.contains(id))
+                                break;
+                            void style.classList.add(id);
+                            break;
+                        }
+                    }
+                    if (style.children.length === 0)
+                        return;
+                    for (const el of style.querySelectorAll('*')) {
+                        void el.remove();
+                    }
+                }
+                get children() {
+                    switch (this.type) {
+                    case ElChildrenType.Text:
+                        this.children_ = this.children_.parentNode === this.container ? this.children_ : [...this.container.childNodes].find(node => node.nodeType === 3) || this.children_.cloneNode();
+                        return this.children_.textContent;
+                    default:
+                        return this.children_;
+                    }
+                }
+                set children(children) {
+                    const removedChildren = [];
+                    const addedChildren = [];
+                    switch (this.type) {
+                    case ElChildrenType.Void:
+                        return;
+                    case ElChildrenType.Text: {
+                            if (children === this.children && !this.initialChildren.has(this.children_))
+                                return;
+                            const targetChildren = this.children_;
+                            const oldText = targetChildren.textContent;
+                            const newText = children;
+                            targetChildren.textContent = newText;
+                            if (newText === oldText)
+                                return;
+                            void this.element.dispatchEvent(new global_1.Event('change', {
+                                bubbles: false,
+                                cancelable: true
+                            }));
+                            return;
+                        }
+                    case ElChildrenType.Array: {
+                            const sourceChildren = children;
+                            const targetChildren = [];
+                            this.children_ = targetChildren;
+                            const log = new global_1.WeakSet();
+                            for (let i = 0; i < sourceChildren.length; ++i) {
+                                const newChild = sourceChildren[i];
+                                if (log.has(newChild))
+                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
+                                void log.add(newChild);
+                                if (newChild.element.parentNode !== this.container) {
                                     void throwErrorIfNotUsable(newChild);
                                 }
-                                void node.replaceChild(newChild.element, oldChild.element);
-                                child = newChild;
+                                if (newChild.element === this.container.children[i]) {
+                                    void targetChildren.push(newChild);
+                                } else {
+                                    if (newChild.element.parentNode !== this.container) {
+                                        void this.scope(newChild);
+                                        void addedChildren.push(newChild);
+                                    }
+                                    void this.container.insertBefore(newChild.element, this.container.children[i]);
+                                    void targetChildren.push(newChild);
+                                }
                             }
-                        };
+                            void alias_1.ObjectFreeze(targetChildren);
+                            for (let i = this.container.children.length; i >= sourceChildren.length; --i) {
+                                if (!proxies.has(this.container.children[i]))
+                                    continue;
+                                void removedChildren.push(proxy(this.container.removeChild(this.container.children[i])));
+                            }
+                            break;
+                        }
+                    case ElChildrenType.Record: {
+                            const sourceChildren = children;
+                            const targetChildren = this.children_;
+                            const log = new global_1.WeakSet();
+                            for (const name in targetChildren) {
+                                if (!alias_1.hasOwnProperty(sourceChildren, name))
+                                    continue;
+                                const oldChild = targetChildren[name];
+                                const newChild = sourceChildren[name];
+                                if (log.has(newChild))
+                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
+                                void log.add(newChild);
+                                if (newChild.element.parentNode !== this.container) {
+                                    void throwErrorIfNotUsable(newChild);
+                                }
+                                if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
+                                    void this.scope(newChild);
+                                    void addedChildren.push(newChild);
+                                    void removedChildren.push(oldChild);
+                                }
+                                targetChildren[name] = sourceChildren[name];
+                            }
+                            break;
+                        }
                     }
-                    return Obj.defineProperties(children, descs);
+                    for (const child of removedChildren) {
+                        if (this.initialChildren.has(child))
+                            continue;
+                        void child.element.dispatchEvent(new global_1.Event('disconnect', {
+                            bubbles: false,
+                            cancelable: true
+                        }));
+                    }
+                    for (const child of addedChildren) {
+                        void child.element.dispatchEvent(new global_1.Event('connect', {
+                            bubbles: false,
+                            cancelable: true
+                        }));
+                    }
+                    if (removedChildren.length + addedChildren.length > 0) {
+                        void this.element.dispatchEvent(new global_1.Event('change', {
+                            bubbles: false,
+                            cancelable: true
+                        }));
+                    }
                 }
-                function throwErrorIfNotUsable({element}) {
-                    if (!element.parentElement || !proxies.has(element.parentElement))
-                        return;
-                    throw new Error(`TypedDOM: Typed DOM children can't be used to another typed DOM.`);
+            }
+            exports.Elem = Elem;
+            function observe(node, children) {
+                const descs = {};
+                for (const name in children) {
+                    if (!alias_1.hasOwnProperty(children, name))
+                        continue;
+                    let child = children[name];
+                    void throwErrorIfNotUsable(child);
+                    void node.appendChild(child.element);
+                    descs[name] = {
+                        configurable: true,
+                        enumerable: true,
+                        get: () => {
+                            return child;
+                        },
+                        set: newChild => {
+                            const oldChild = child;
+                            if (newChild === oldChild)
+                                return;
+                            if (newChild.element.parentElement !== node) {
+                                void throwErrorIfNotUsable(newChild);
+                            }
+                            void node.replaceChild(newChild.element, oldChild.element);
+                            child = newChild;
+                        }
+                    };
                 }
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+                return alias_1.ObjectDefineProperties(children, descs);
+            }
+            function throwErrorIfNotUsable({element}) {
+                if (!element.parentElement || !proxies.has(element.parentElement))
+                    return;
+                throw new Error(`TypedDOM: Typed DOM children can't be used to another typed DOM.`);
+            }
         },
         {
             '../util/dom': 28,
-            './identity': 26
+            './identity': 26,
+            'spica/alias': 5,
+            'spica/global': 13
         }
     ],
     28: [
         function (_dereq_, module, exports) {
-            (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                const memoize_1 = _dereq_('spica/memoize');
-                const {document} = global;
-                var NS;
-                (function (NS) {
-                    NS['HTML'] = 'HTML';
-                    NS['SVG'] = 'SVG';
-                }(NS || (NS = {})));
-                const shadows = new WeakMap();
-                var caches;
-                (function (caches) {
-                    caches.elem = memoize_1.memoize(() => new Map(), new WeakMap());
-                    caches.text = document.createTextNode('');
-                    caches.frag = document.createDocumentFragment();
-                }(caches || (caches = {})));
-                function frag(children) {
-                    if (typeof children === 'string')
-                        return frag([text(children)]);
-                    const node = caches.frag.cloneNode();
-                    children && void node.append(...children);
-                    return node;
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
+            const memoize_1 = _dereq_('spica/memoize');
+            var NS;
+            (function (NS) {
+                NS['HTML'] = 'HTML';
+                NS['SVG'] = 'SVG';
+            }(NS || (NS = {})));
+            const shadows = new WeakMap();
+            var caches;
+            (function (caches) {
+                caches.elem = memoize_1.memoize(() => new Map(), new WeakMap());
+                caches.text = global_1.document.createTextNode('');
+                caches.frag = global_1.document.createDocumentFragment();
+            }(caches || (caches = {})));
+            function frag(children) {
+                if (typeof children === 'string')
+                    return frag([text(children)]);
+                const node = caches.frag.cloneNode();
+                children && void node.append(...children);
+                return node;
+            }
+            exports.frag = frag;
+            function shadow(el, children, opts) {
+                if (typeof el === 'string')
+                    return shadow(html(el), children, opts);
+                if (children && !isChildren(children))
+                    return shadow(el, void 0, children);
+                return el.shadowRoot || shadows.has(el) ? define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children) : define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === void 0 ? el.childNodes : children);
+            }
+            exports.shadow = shadow;
+            function html(tag, attrs, children) {
+                return element(global_1.document, 'HTML', tag, attrs, children);
+            }
+            exports.html = html;
+            function svg(tag, attrs, children) {
+                return element(global_1.document, 'SVG', tag, attrs, children);
+            }
+            exports.svg = svg;
+            function text(source) {
+                const text = caches.text.cloneNode();
+                text.data = source;
+                return text;
+            }
+            exports.text = text;
+            function element(context, ns, tag, attrs, children) {
+                const cache = caches.elem(context);
+                const key = `${ ns }:${ tag }`;
+                const el = tag.includes('-') ? elem(context, ns, tag) : cache.has(key) ? cache.get(key).cloneNode(true) : cache.set(key, elem(context, ns, tag)).get(key).cloneNode(true);
+                void define(el, attrs, children);
+                return el;
+            }
+            exports.element = element;
+            function elem(context, ns, tag) {
+                if (context.nodeType === 1)
+                    throw new Error(`TypedDOM: Scoped custom elements are not supported.`);
+                switch (ns) {
+                case 'HTML':
+                    return context.createElement(tag);
+                case 'SVG':
+                    return context.createElementNS('http://www.w3.org/2000/svg', tag);
                 }
-                exports.frag = frag;
-                function shadow(el, children, opts) {
-                    if (typeof el === 'string')
-                        return shadow(html(el), children, opts);
-                    if (children && !isChildren(children))
-                        return shadow(el, void 0, children);
-                    return el.shadowRoot || shadows.has(el) ? define(opts ? opts.mode === 'open' ? el.shadowRoot || el.attachShadow(opts) : shadows.get(el) || shadows.set(el, el.attachShadow(opts)).get(el) : el.shadowRoot || shadows.get(el), children) : define(!opts || opts.mode === 'open' ? el.attachShadow({ mode: 'open' }) : shadows.set(el, el.attachShadow(opts)).get(el), children === void 0 ? el.childNodes : children);
-                }
-                exports.shadow = shadow;
-                function html(tag, attrs, children) {
-                    return element(document, 'HTML', tag, attrs, children);
-                }
-                exports.html = html;
-                function svg(tag, attrs, children) {
-                    return element(document, 'SVG', tag, attrs, children);
-                }
-                exports.svg = svg;
-                function text(source) {
-                    const text = caches.text.cloneNode();
-                    text.data = source;
-                    return text;
-                }
-                exports.text = text;
-                function element(context, ns, tag, attrs, children) {
-                    const cache = caches.elem(context);
-                    const key = `${ ns }:${ tag }`;
-                    const el = tag.includes('-') ? elem(context, ns, tag) : cache.has(key) ? cache.get(key).cloneNode(true) : cache.set(key, elem(context, ns, tag)).get(key).cloneNode(true);
-                    void define(el, attrs, children);
-                    return el;
-                }
-                exports.element = element;
-                function elem(context, ns, tag) {
-                    if (context.nodeType === 1)
-                        throw new Error(`TypedDOM: Scoped custom elements are not supported.`);
-                    switch (ns) {
-                    case 'HTML':
-                        return context.createElement(tag);
-                    case 'SVG':
-                        return context.createElementNS('http://www.w3.org/2000/svg', tag);
-                    }
-                }
-                function define(el, attrs, children) {
-                    if (isChildren(attrs))
-                        return define(el, void 0, attrs);
-                    if (typeof children === 'string')
-                        return define(el, attrs, [text(children)]);
-                    if (attrs)
-                        for (const name in attrs) {
-                            if (!attrs.hasOwnProperty(name))
-                                continue;
-                            const value = attrs[name];
-                            switch (typeof value) {
-                            case 'string':
-                                void el.setAttribute(name, value);
-                                continue;
-                            case 'function':
-                                if (name.length < 3)
-                                    throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${ name }".`);
-                                if (!name.startsWith('on'))
-                                    throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${ name }".`);
-                                void el.addEventListener(name.slice(2), value, {
-                                    passive: [
-                                        'wheel',
-                                        'mousewheel',
-                                        'touchstart',
-                                        'touchmove'
-                                    ].includes(name.slice(2))
-                                });
-                                continue;
-                            case 'object':
-                                void el.removeAttribute(name);
-                                continue;
-                            default:
-                                continue;
-                            }
+            }
+            function define(el, attrs, children) {
+                if (isChildren(attrs))
+                    return define(el, void 0, attrs);
+                if (typeof children === 'string')
+                    return define(el, attrs, [text(children)]);
+                if (attrs)
+                    for (const name in attrs) {
+                        if (!alias_1.hasOwnProperty(attrs, name))
+                            continue;
+                        const value = attrs[name];
+                        switch (typeof value) {
+                        case 'string':
+                            void el.setAttribute(name, value);
+                            continue;
+                        case 'function':
+                            if (name.length < 3)
+                                throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${ name }".`);
+                            if (!name.startsWith('on'))
+                                throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${ name }".`);
+                            void el.addEventListener(name.slice(2), value, {
+                                passive: [
+                                    'wheel',
+                                    'mousewheel',
+                                    'touchstart',
+                                    'touchmove'
+                                ].includes(name.slice(2))
+                            });
+                            continue;
+                        case 'object':
+                            void el.removeAttribute(name);
+                            continue;
+                        default:
+                            continue;
                         }
-                    if (children) {
-                        el.innerHTML = '';
-                        while (el.firstChild) {
-                            void el.removeChild(el.firstChild);
-                        }
-                        void el.append(...children);
                     }
-                    return el;
+                if (children) {
+                    el.innerHTML = '';
+                    while (el.firstChild) {
+                        void el.removeChild(el.firstChild);
+                    }
+                    void el.append(...children);
                 }
-                exports.define = define;
-                function isChildren(o) {
-                    return !!(o === null || o === void 0 ? void 0 : o[Symbol.iterator]);
-                }
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+                return el;
+            }
+            exports.define = define;
+            function isChildren(o) {
+                return !!(o === null || o === void 0 ? void 0 : o[Symbol.iterator]);
+            }
         },
-        { 'spica/memoize': 14 }
+        {
+            'spica/alias': 5,
+            'spica/global': 13,
+            'spica/memoize': 14
+        }
     ],
     29: [
         function (_dereq_, module, exports) {
@@ -3815,6 +3812,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const util_1 = _dereq_('../util');
+            const memoize_1 = _dereq_('spica/memoize');
             const typed_dom_1 = _dereq_('typed-dom');
             const attributes = {
                 bdo: {
@@ -3847,6 +3845,7 @@ require = function () {
                 source_1.char('='),
                 util_1.defrag(combinator_1.rewrite(combinator_1.surround('"', combinator_1.some(source_1.escsource, '"'), '"', false), combinator_1.some(source_1.escsource)))
             ]), ''), ts => ts.length !== 2));
+            const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)), new global_1.WeakMap());
             function attrs(spec, params, classes, syntax) {
                 const result = {};
                 let invalid = classes.includes('invalid');
@@ -3856,11 +3855,11 @@ require = function () {
                 ]));
                 if (spec) {
                     for (const [key, value] of attrs) {
-                        spec.hasOwnProperty(key) && spec[key].includes(value) ? result[key] = value || '' : invalid = true;
+                        alias_1.hasOwnProperty(spec, key) && spec[key].includes(value) ? result[key] = value || '' : invalid = true;
                     }
                 }
                 invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
-                invalid = invalid || !!spec && !alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)).every(([k]) => attrs.has(k));
+                invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => attrs.has(k));
                 if (invalid) {
                     void classes.push('invalid');
                     result.class = classes.join(' ').trim();
@@ -3878,6 +3877,7 @@ require = function () {
             '../util': 124,
             'spica/alias': 5,
             'spica/global': 13,
+            'spica/memoize': 14,
             'typed-dom': 24
         }
     ],
