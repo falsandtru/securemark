@@ -1705,26 +1705,22 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const global_1 = _dereq_('spica/global');
-            const alias_1 = _dereq_('spica/alias');
             const assign_1 = _dereq_('spica/assign');
+            const memoize_1 = _dereq_('spica/memoize');
             function guard(f, parser) {
                 return (source, config) => f(config) ? parser(source, config) : void 0;
             }
             exports.guard = guard;
-            const singleton = alias_1.ObjectFreeze({});
             function configure(config, parser) {
-                const memory = new global_1.WeakMap();
-                return (source, base) => {
-                    base = !memory.has(base) && alias_1.ObjectKeys(base).length === 0 ? singleton : base;
-                    return parser(source, memory.get(base) || memory.set(base, assign_1.extend({}, base, config)).get(base));
-                };
+                const ex = memoize_1.memoize(base => assign_1.extend({}, base, config), new global_1.WeakMap());
+                return (source, base) => parser(source, ex(base));
             }
             exports.configure = configure;
         },
         {
-            'spica/alias': 5,
             'spica/assign': 7,
-            'spica/global': 13
+            'spica/global': 13,
+            'spica/memoize': 14
         }
     ],
     37: [
