@@ -1,4 +1,4 @@
-import { Array } from 'spica/global';
+import { Array, location } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, guard, fmap, bind } from '../../combinator';
 import { text } from '../source';
@@ -27,7 +27,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === void 0) return;
-    const uri = new URL(path, window.location.href).reference;
+    const uri = new URL(path, location.href).reference;
     const media = cache.has(uri)
       ? cache.get(uri)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: text });

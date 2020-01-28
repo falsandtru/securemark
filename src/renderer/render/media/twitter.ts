@@ -1,3 +1,4 @@
+import { window, document } from 'spica/global';
 import { parse } from '../../../parser';
 import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';

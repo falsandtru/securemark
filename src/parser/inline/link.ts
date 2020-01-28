@@ -1,4 +1,4 @@
-import { Array } from 'spica/global';
+import { Array, location } from 'spica/global';
 import { LinkParser, media, shortmedia, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind, eval } from '../../combinator';
 import { unescsource } from '../source';
@@ -73,7 +73,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         if (el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
         break;
       default:
-        if (el.origin === window.location.origin) break;
+        if (el.origin === location.origin) break;
         void el.setAttribute('target', '_blank');
     }
     return [[define(el, attrs(attributes, params, [...el.classList], 'link'))], rest];

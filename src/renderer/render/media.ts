@@ -1,3 +1,4 @@
+import { location } from 'spica/global';
 import { RenderingOptions } from '../../../';
 import { twitter } from './media/twitter';
 import { youtube } from './media/youtube';
@@ -11,7 +12,7 @@ import { image } from './media/image';
 export function media(target: HTMLImageElement, opts: NonNullable<RenderingOptions['media']>): HTMLElement | undefined {
   assert(target.matches('img:not([src])[data-src]'));
   opts = { twitter, youtube, gist, slideshare, pdf, video, audio, image, ...opts };
-  const url = new URL(target.getAttribute('data-src')!, window.location.href);
+  const url = new URL(target.getAttribute('data-src')!, location.href);
   const alt = target.getAttribute('alt') || '';
   opts.video?.(url, alt)
   return opts.twitter?.(url)
