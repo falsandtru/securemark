@@ -1,3 +1,4 @@
+import { Array } from 'spica/global';
 import { LinkParser, media, shortmedia, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind, eval } from '../../combinator';
 import { unescsource } from '../source';
@@ -8,8 +9,6 @@ import { sanitize, decode } from '../string/uri';
 import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
 import { frag, html, text, define } from 'typed-dom';
-
-const { Array } = global;
 
 export const attributes: DeepImmutable<Record<string, Array<string | undefined>>> = {
   nofollow: [void 0],

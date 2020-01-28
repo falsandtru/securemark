@@ -1,3 +1,4 @@
+import { Array } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, guard, fmap, bind } from '../../combinator';
 import { text } from '../source';
@@ -9,8 +10,6 @@ import { URL } from 'spica/url';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
-
-const { Array } = global;
 
 export const cache = new Cache<string, HTMLElement>(10);
 

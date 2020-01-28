@@ -1,11 +1,10 @@
+import { Array } from 'spica/global';
 import { TableParser } from '../block';
 import { union, sequence, some, block, line, focus, validate, surround, configure, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
-
-const { Array } = global;
 
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
