@@ -1,17 +1,18 @@
-import { Map } from 'spica/global';
+import { Map, WeakMap } from 'spica/global';
 import { hasOwnProperty, isFrozen, ObjectEntries, ObjectFreeze } from 'spica/alias';
 import { HTMLParser, inline } from '../inline';
 import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, memoize, lazy, fmap } from '../../combinator';
 import { escsource, unescsource, char } from '../source';
 import { defrag, dup, hasText } from '../util';
 import { DeepImmutable } from 'spica/type';
+import { memoize as memo } from 'spica/memoize';
 import { html as htm } from 'typed-dom';
 
-const attributes: DeepImmutable<Record<string, Record<string, Array<string | undefined>> | undefined>> = {
+const attributes = {
   bdo: {
-    dir: ObjectFreeze(['ltr', 'rtl']),
+    dir: ObjectFreeze(['ltr', 'rtl'] as const),
   },
-};
+} as const;
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
   match(
@@ -63,6 +64,11 @@ export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
     ''),
   ts => ts.length !== 2));
 
+const requiredAttributes = memo(
+  (spec: DeepImmutable<Record<string, Array<string | undefined>>>) =>
+    ObjectEntries(spec).filter(([, v]) => isFrozen(v)),
+  new WeakMap());
+
 export function attrs(
   spec: DeepImmutable<Record<string, Array<string | undefined>>> | undefined,
   params: string[],
@@ -81,7 +87,7 @@ export function attrs(
     }
   }
   invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
-  invalid = invalid || !!spec && !ObjectEntries(spec).filter(([, v]) => isFrozen(v)).every(([k]) => attrs.has(k));
+  invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => attrs.has(k));
   if (invalid) {
     void classes.push('invalid');
     result.class = classes.join(' ').trim();

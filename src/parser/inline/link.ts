@@ -10,9 +10,9 @@ import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
 import { frag, html, text, define } from 'typed-dom';
 
-export const attributes: DeepImmutable<Record<string, Array<string | undefined>>> = {
+export const attributes = {
   nofollow: [void 0],
-};
+} as const;
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{(?![{}]).+?}/,
