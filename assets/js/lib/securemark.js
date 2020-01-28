@@ -1575,7 +1575,14 @@ require = function () {
             function validate(patterns, parser) {
                 if (!alias_1.isArray(patterns))
                     return validate([patterns], parser);
-                const match = patterns.reduceRight((match, pattern) => typeof pattern === 'string' ? source => source.startsWith(pattern) || match(source) : source => pattern.test(source) || match(source), _ => false);
+                const matchers = patterns.map(pattern => typeof pattern === 'string' ? source => source.startsWith(pattern) : source => pattern.test(source));
+                const match = source => {
+                    for (let i = 0, len = matchers.length; i < len; ++i) {
+                        if (matchers[i](source))
+                            return true;
+                    }
+                    return false;
+                };
                 return (source, config) => {
                     if (source === '')
                         return;
