@@ -1,8 +1,10 @@
 import { html } from 'typed-dom';
 
+type Protocol = 'tel:';
+
 const parser = html('a');
 
-export function sanitize(uri: string, protocols: ('tel:')[] = []): string | undefined {
+export function sanitize(uri: string, protocols: Protocol[] = []): string | undefined {
   uri = uri.replace(/\s+/g, encodeURI);
   void parser.setAttribute('href', uri);
   return ['http:', 'https:'].includes(parser.protocol) || protocols.includes(parser.protocol as any)
