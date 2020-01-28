@@ -4200,7 +4200,6 @@ require = function () {
                     ...param.map(t => t.textContent)
                 ];
             }), ([text, INSECURE_URL, ...params], rest) => {
-                global_1.assert(INSECURE_URL === INSECURE_URL.trim());
                 const url = new url_1.URL(INSECURE_URL, origin).reference;
                 if (![
                         'http:',
@@ -4213,11 +4212,6 @@ require = function () {
                     alt: text
                 });
                 if (exports.cache.has(url) && media.hasAttribute('alt')) {
-                    global_1.assert([
-                        'IMG',
-                        'AUDIO',
-                        'VIDEO'
-                    ].includes(media.tagName));
                     void typed_dom_1.define(media, { alt: text });
                 }
                 void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, [...media.classList], 'media'));
