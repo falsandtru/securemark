@@ -415,12 +415,20 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const alias_1 = _dereq_('./alias');
             function concat(target, source) {
-                return void target.push(...source), target;
+                if (alias_1.isArray(source)) {
+                    for (let i = 0; i < source.length; ++i) {
+                        void target.push(source[i]);
+                    }
+                } else {
+                    void target.push(...source);
+                }
+                return target;
             }
             exports.concat = concat;
         },
-        {}
+        { './alias': 5 }
     ],
     11: [
         function (_dereq_, module, exports) {
