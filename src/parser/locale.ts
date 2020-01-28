@@ -5,8 +5,10 @@ import { html } from 'typed-dom';
 
 export function localize(block: BlockParser): BlockParser {
   return fmap(block, es => {
-    for (const block of es) {
-      for (const el of block.getElementsByClassName('linebreak')) {
+    for (let i = 0, len = es.length; i < len; ++i) {
+      const bs = es[i].getElementsByClassName('linebreak');
+      for (let i = 0, len = bs.length; i < len; ++i) {
+        const el = bs[i];
         if (!el.firstChild || el.firstElementChild) continue;
         if (!check(el)) continue;
         assert(el.firstChild.textContent === ' ');

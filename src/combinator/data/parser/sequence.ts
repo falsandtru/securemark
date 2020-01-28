@@ -7,9 +7,9 @@ export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   return (source, config) => {
     let rest = source;
     const data: T[] = [];
-    for (const parser of parsers) {
+    for (let i = 0, len = parsers.length; i < len; ++i) {
       if (rest === '') return;
-      const result = parser(rest, config);
+      const result = parsers[i](rest, config);
       assert(check(rest, result));
       if (!result) return;
       void concat(data, eval(result));

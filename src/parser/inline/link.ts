@@ -115,9 +115,7 @@ export function attrs(
   syntax: string,
 ): Record<string, string | undefined> {
   const attrs = attrs_(spec, params, classes, syntax);
-  for (const name of ['nofollow']) {
-    attrs[name] = void 0;
-  }
+  attrs['nofollow'] = void 0;
   return attrs;
 }
 
