@@ -1,3 +1,4 @@
+import { isArray } from 'spica/alias';
 import { Parser, Data, Config, eval, exec, check } from '../../data/parser';
 
 export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
@@ -7,7 +8,7 @@ export function contract<T, D extends Parser<unknown>[]>(patterns: string | RegE
 
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P): P;
 export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T, D>): Parser<T, D> {
-  if (!Array.isArray(patterns)) return validate([patterns], parser);
+  if (!isArray(patterns)) return validate([patterns], parser);
   assert(patterns.some(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
   assert(parser);
   return (source, config) => {
