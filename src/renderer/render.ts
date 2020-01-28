@@ -5,6 +5,8 @@ import { math } from './render/math';
 import { media } from './render/media';
 import { URL } from 'spica/url';
 
+const { origin } = location;
+
 export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   opts = { code, math, media: {}, ...opts };
   try {
@@ -28,7 +30,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         const el = media(target as HTMLImageElement, opts.media!);
         if (!el) return;
         assert(el.matches('.media'));
-        void el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, location.href).reference);
+        void el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, origin).reference);
         const scope = el.matches('img')
           ? target
           : target.parentElement as HTMLAnchorElement;

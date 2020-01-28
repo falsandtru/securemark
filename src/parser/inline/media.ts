@@ -11,6 +11,8 @@ import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 
+const { origin } = location;
+
 export const cache = new Cache<string, HTMLElement>(10);
 
 export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
@@ -27,7 +29,7 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     const path = sanitize(INSECURE_URL.trim());
     if (path === void 0) return;
-    const uri = new URL(path, location.href).reference;
+    const uri = new URL(path, origin).reference;
     const media = cache.has(uri)
       ? cache.get(uri)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': path, alt: text });

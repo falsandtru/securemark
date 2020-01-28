@@ -9,10 +9,12 @@ import { video } from './media/video';
 import { audio } from './media/audio';
 import { image } from './media/image';
 
+const { origin } = location;
+
 export function media(target: HTMLImageElement, opts: NonNullable<RenderingOptions['media']>): HTMLElement | undefined {
   assert(target.matches('img:not([src])[data-src]'));
   opts = { twitter, youtube, gist, slideshare, pdf, video, audio, image, ...opts };
-  const url = new URL(target.getAttribute('data-src')!, location.href);
+  const url = new URL(target.getAttribute('data-src')!, origin);
   const alt = target.getAttribute('alt') || '';
   opts.video?.(url, alt)
   return opts.twitter?.(url)

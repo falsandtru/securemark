@@ -10,9 +10,13 @@ import { concat } from 'spica/concat';
 import { DeepImmutable } from 'spica/type';
 import { frag, html, text, define } from 'typed-dom';
 
+const { origin } = location;
+
 export const attributes = {
   nofollow: [void 0],
 } as const;
+
+const url = new URL(origin);
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{(?![{}]).+?}/,
@@ -68,12 +72,16 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         : (sanitize(decode(INSECURE_URL || '.'), ['tel:']) || '')
             .replace(/^tel:/, '')
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
-    switch (el.protocol) {
+    url.href = el.href;
+    assert(url.href === el.href);
+    assert(url.protocol === el.protocol);
+    assert(url.origin === el.origin);
+    switch (url.protocol) {
       case 'tel:':
         if (el.getAttribute('href') !== `tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}`) return;
         break;
       default:
-        if (el.origin === location.origin) break;
+        if (url.origin === origin) break;
         void el.setAttribute('target', '_blank');
     }
     return [[define(el, attrs(attributes, params, [...el.classList], 'link'))], rest];
