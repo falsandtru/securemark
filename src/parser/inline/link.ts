@@ -82,13 +82,11 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
     return [[define(el, attrs(attributes, params, [...el.classList], 'link'))], rest];
   })));
 
-export const uri: LinkParser.ParamParser.UriParser = subline(verify(defrag(match(
+export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
   /^ ?(?! )/,
   memoize(([flag]) => flag,
   flag =>
-    some(union([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)))),
-  ts =>
-    ts.length === 1 && ts[0].textContent === ts[0].textContent!.trim()));
+    some(union([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)))));
 
 export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() => subline(union([
   fmap(
