@@ -6,8 +6,8 @@ import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 
 export function figure(target: DocumentFragment | HTMLElement | ShadowRoot): void {
-  const refs = new MultiMap<string, Element>(
-    [...target.querySelectorAll('a.label')]
+  const refs = new MultiMap<string, HTMLAnchorElement>(
+    [...target.querySelectorAll<HTMLAnchorElement>('a.label')]
       .filter(context(target))
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
@@ -67,7 +67,7 @@ export function figure(target: DocumentFragment | HTMLElement | ShadowRoot): voi
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
     void define([...def.children].find(el => el.classList.contains('figindex'))!, group === '$' ? figindex : `${figindex}. `);
-    for (const ref of refs.take(figid, Infinity)) {
+    for (const ref of refs.take(figid, Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
       void define(ref, { href: `#${def.id}` }, figindex);
     }
   }
