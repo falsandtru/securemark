@@ -45,7 +45,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
           isChanged = true;
         }
         if (isChanged) {
-          void text.splice(0, Infinity, ...proxy.childNodes as NodeListOf<typeof text[number]>);
+          void text.splice(0, text.length, ...proxy.childNodes as NodeListOf<typeof text[number]>);
         }
       }
       else {
