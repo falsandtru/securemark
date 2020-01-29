@@ -27,12 +27,12 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ([text, param]: (HTMLElement | Text)[][]) => [text[0]?.textContent || '', ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
-    const url = new URL(INSECURE_URL, origin).reference;
-    if (!['http:', 'https:'].includes(url.slice(0, url.indexOf(':') + 1))) return;
-    const media = cache.has(url)
-      ? cache.get(url)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text });
-    if (cache.has(url) && media.hasAttribute('alt')) {
+    const url = new URL(INSECURE_URL, origin);
+    if (!['http:', 'https:'].includes(url.protocol)) return;
+    const media = void 0
+      || cache.get(url.resource)?.cloneNode(true)
+      || html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text });
+    if (cache.has(url.resource) && media.hasAttribute('alt')) {
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
       void define(media, { alt: text });
     }
