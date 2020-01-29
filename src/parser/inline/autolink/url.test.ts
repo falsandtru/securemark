@@ -2,8 +2,8 @@ import { autolink } from '../autolink';
 import { some } from '../../../combinator';
 import { inspect } from '../../../debug.test';
 
-describe('Unit: parser/inline/autolink/uri', () => {
-  describe('uri', () => {
+describe('Unit: parser/inline/autolink/url', () => {
+  describe('url', () => {
     const parser = (source: string) => some(autolink)(source, {});
 
     it('invalid', () => {
@@ -12,6 +12,7 @@ describe('Unit: parser/inline/autolink/uri', () => {
       assert.deepStrictEqual(inspect(parser('ttp')), undefined);
       assert.deepStrictEqual(inspect(parser('http://')), undefined);
       assert.deepStrictEqual(inspect(parser('Http://host')), undefined);
+      assert.deepStrictEqual(inspect(parser('http://[::ffff:0:0/96]')), undefined);
     });
 
     it('basic', () => {

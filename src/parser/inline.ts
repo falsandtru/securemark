@@ -73,7 +73,7 @@ export { link } from './inline/link';
 export { media } from './inline/media';
 export { shortmedia } from './inline/shortmedia';
 export { autolink } from './inline/autolink';
-export { uri, address, attribute } from './inline/autolink/uri';
+export { url, address, attribute } from './inline/autolink/url';
 export { indexer } from './inline/extension/indexer';
 export { indexee } from './inline/extension/indexee';
 export { label, isFixed, isFormatted } from './inline/extension/label';

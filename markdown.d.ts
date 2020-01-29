@@ -712,7 +712,7 @@ export namespace MarkdownParser {
     export interface AutolinkParser extends
       Inline<'autolink'>,
       Parser<HTMLAnchorElement | HTMLImageElement | Text, [
-        AutolinkParser.UriParser,
+        AutolinkParser.UrlParser,
         AutolinkParser.EmailParser,
         SourceParser.UnescapableSourceParser,
         SourceParser.UnescapableSourceParser,
@@ -724,9 +724,9 @@ export namespace MarkdownParser {
       ], State, Config> {
     }
     export namespace AutolinkParser {
-      export interface UriParser extends
+      export interface UrlParser extends
         // https://host
-        Inline<'uri'>,
+        Inline<'url'>,
         Parser<HTMLAnchorElement, [
           LinkParser,
         ], State, Config> {

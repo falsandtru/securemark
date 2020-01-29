@@ -5,7 +5,7 @@ import { link, bracket } from '../link';
 
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 
-export const uri: AutolinkParser.UriParser = lazy(() => subline(validate(
+export const url: AutolinkParser.UrlParser = lazy(() => subline(validate(
   /^h?ttps?:\/\/[^/?#\s]/,
   configure({ syntax: { inline: { link: void 0 } } },
   rewrite(
