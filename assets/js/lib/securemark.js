@@ -3226,10 +3226,10 @@ require = function () {
             exports.shortmedia = shortmedia_2.shortmedia;
             var autolink_2 = _dereq_('./inline/autolink');
             exports.autolink = autolink_2.autolink;
-            var uri_1 = _dereq_('./inline/autolink/uri');
-            exports.uri = uri_1.uri;
-            exports.address = uri_1.address;
-            exports.attribute = uri_1.attribute;
+            var url_1 = _dereq_('./inline/autolink/url');
+            exports.url = url_1.url;
+            exports.address = url_1.address;
+            exports.attribute = url_1.attribute;
             var indexer_1 = _dereq_('./inline/extension/indexer');
             exports.indexer = indexer_1.indexer;
             var indexee_1 = _dereq_('./inline/extension/indexee');
@@ -3243,7 +3243,7 @@ require = function () {
             '../combinator': 31,
             './inline/annotation': 81,
             './inline/autolink': 82,
-            './inline/autolink/uri': 88,
+            './inline/autolink/url': 88,
             './inline/bracket': 89,
             './inline/code': 90,
             './inline/comment': 91,
@@ -3301,7 +3301,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
-            const uri_1 = _dereq_('./autolink/uri');
+            const url_1 = _dereq_('./autolink/url');
             const email_1 = _dereq_('./autolink/email');
             const channel_1 = _dereq_('./autolink/channel');
             const account_1 = _dereq_('./autolink/account');
@@ -3311,7 +3311,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.autolink = combinator_1.fmap(combinator_1.validate(/^[@#a-zA-Z0-9]|^[^\x00-\x7F\s]#/, combinator_1.some(combinator_1.union([
-                uri_1.uri,
+                url_1.url,
                 email_1.email,
                 combinator_1.focus(/^[a-zA-Z0-9]+(?:[.+_-][a-zA-Z0-9]+)*(?:@(?:[a-zA-Z0-9]+(?:[.-][a-zA-Z0-9]+)*)?)+/, combinator_1.some(source_1.unescsource)),
                 combinator_1.focus(/^[@#]+(?![0-9a-zA-Z]|[^\x00-\x7F\s])/, combinator_1.some(source_1.unescsource)),
@@ -3331,7 +3331,7 @@ require = function () {
             './autolink/email': 85,
             './autolink/hashref': 86,
             './autolink/hashtag': 87,
-            './autolink/uri': 88,
+            './autolink/url': 88,
             'typed-dom': 24
         }
     ],
@@ -3445,7 +3445,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
-            exports.uri = combinator_1.lazy(() => combinator_1.subline(combinator_1.validate(/^h?ttps?:\/\/[^/?#\s]/, combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.rewrite(combinator_1.some(combinator_1.union([
+            exports.url = combinator_1.lazy(() => combinator_1.subline(combinator_1.validate(/^h?ttps?:\/\/[^/?#\s]/, combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.rewrite(combinator_1.some(combinator_1.union([
                 link_1.bracket,
                 combinator_1.some(source_1.unescsource, closer)
             ])), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.union([link_1.link])))))));
@@ -4026,6 +4026,8 @@ require = function () {
                     break;
                 case 'http:':
                 case 'https:':
+                    if (!el.host)
+                        return;
                     el.origin !== origin && void el.setAttribute('target', '_blank');
                     break;
                 default:
@@ -4172,11 +4174,10 @@ require = function () {
             const link_1 = _dereq_('./link');
             const html_1 = _dereq_('./html');
             const util_1 = _dereq_('../util');
-            const url_1 = _dereq_('spica/url');
             const cache_1 = _dereq_('spica/cache');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            const {origin} = global_1.location;
+            const url = typed_dom_1.html('a');
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.subline(combinator_1.bind(combinator_1.fmap(combinator_1.verify(combinator_1.fmap(combinator_1.surround(/^!(?=(?:\[.*?\])?{(?![{}]).+?})/, combinator_1.guard(config => {
                 var _a, _b, _c;
@@ -4195,18 +4196,20 @@ require = function () {
                 ];
             }), ([text, INSECURE_URL, ...params], rest) => {
                 var _a;
-                const url = new url_1.URL(INSECURE_URL, origin);
+                url.href = INSECURE_URL;
+                if (!url.host)
+                    return;
                 if (![
                         'http:',
                         'https:'
                     ].includes(url.protocol))
                     return;
-                const media = void 0 || ((_a = exports.cache.get(url.resource)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || typed_dom_1.html('img', {
+                const media = void 0 || ((_a = exports.cache.get(url.href)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': INSECURE_URL.replace(/\s+/g, global_1.encodeURI),
                     alt: text
                 });
-                if (exports.cache.has(url.resource) && media.hasAttribute('alt')) {
+                if (exports.cache.has(url.href) && media.hasAttribute('alt')) {
                     void typed_dom_1.define(media, { alt: text });
                 }
                 void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, [...media.classList], 'media'));
@@ -4222,7 +4225,6 @@ require = function () {
             'spica/cache': 8,
             'spica/concat': 10,
             'spica/global': 13,
-            'spica/url': 21,
             'typed-dom': 24
         }
     ],
@@ -4299,13 +4301,13 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
-            const uri_1 = _dereq_('./autolink/uri');
+            const url_1 = _dereq_('./autolink/url');
             const media_1 = _dereq_('./media');
-            exports.shortmedia = combinator_1.subline(combinator_1.rewrite(combinator_1.surround('!', uri_1.uri, ''), combinator_1.convert(source => `!{ ${ uri_1.address(source.slice(1)) }${ uri_1.attribute(source.slice(1)) } }`, combinator_1.union([media_1.media]))));
+            exports.shortmedia = combinator_1.subline(combinator_1.rewrite(combinator_1.surround('!', url_1.url, ''), combinator_1.convert(source => `!{ ${ url_1.address(source.slice(1)) }${ url_1.attribute(source.slice(1)) } }`, combinator_1.union([media_1.media]))));
         },
         {
             '../../combinator': 31,
-            './autolink/uri': 88,
+            './autolink/url': 88,
             './media': 107
         }
     ],
