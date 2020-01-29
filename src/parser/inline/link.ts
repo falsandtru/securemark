@@ -74,6 +74,7 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         break;
       case 'http:':
       case 'https:':
+        if (!el.host) return;
         el.origin !== origin && void el.setAttribute('target', '_blank');
         break;
       default:

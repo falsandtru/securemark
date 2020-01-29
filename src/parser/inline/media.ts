@@ -1,16 +1,15 @@
-import { Array, location, encodeURI } from 'spica/global';
+import { Array, encodeURI } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, subline, verify, surround, guard, fmap, bind } from '../../combinator';
 import { text } from '../source';
 import { link, attributes, uri, attrs } from './link';
 import { attribute } from './html';
 import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
-import { URL } from 'spica/url';
 import { Cache } from 'spica/cache';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 
-const { origin } = location;
+const url = html('a');
 
 export const cache = new Cache<string, HTMLElement>(10);
 
@@ -27,12 +26,13 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
   ([text, param]: (HTMLElement | Text)[][]) => [text[0]?.textContent || '', ...param.map(t => t.textContent!)]),
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
-    const url = new URL(INSECURE_URL, origin);
+    url.href = INSECURE_URL;
+    if (!url.host) return;
     if (!['http:', 'https:'].includes(url.protocol)) return;
     const media = void 0
-      || cache.get(url.resource)?.cloneNode(true)
+      || cache.get(url.href)?.cloneNode(true)
       || html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text });
-    if (cache.has(url.resource) && media.hasAttribute('alt')) {
+    if (cache.has(url.href) && media.hasAttribute('alt')) {
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
       void define(media, { alt: text });
     }

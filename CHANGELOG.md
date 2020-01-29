@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.143.3
+
+- Fix parsers to be possible to handle invalid URL.
+
 ## 0.143.2
 
 - Optimization.

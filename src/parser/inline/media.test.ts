@@ -46,6 +46,7 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![a\\\nb]{ab}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{ttp://host}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{tel:1234567890}')), undefined);
+      assert.deepStrictEqual(inspect(parser('!{http://[::ffff:0:0/96]}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{/}')), undefined);
       assert.deepStrictEqual(inspect(parser('a![]{/}')), undefined);
     });
