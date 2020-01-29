@@ -340,11 +340,11 @@ require = function () {
                     ];
                 }
                 access(key) {
+                    if (!this.store.has(key))
+                        return false;
                     return this.accessLFU(key) || this.accessLRU(key);
                 }
                 accessLRU(key) {
-                    if (!this.store.has(key))
-                        return false;
                     const {LRU} = this.stats;
                     const index = array_1.indexOf(LRU, key);
                     if (index === -1)
@@ -354,8 +354,6 @@ require = function () {
                     return true;
                 }
                 accessLFU(key) {
-                    if (!this.store.has(key))
-                        return false;
                     const {LFU} = this.stats;
                     const index = array_1.indexOf(LFU, key);
                     if (index === -1)
@@ -377,6 +375,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('../global');
             class MultiMap {
                 constructor(entries = [], store = new Map()) {
                     this.store = store;
@@ -389,8 +388,8 @@ require = function () {
                     return (_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a[0];
                 }
                 take(key, size) {
-                    var _a;
-                    return ((_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a.splice(0, size)) || [];
+                    const vs = this.store.get(key);
+                    return (vs === null || vs === void 0 ? void 0 : vs.splice(0, size === global_1.Infinity ? vs.length : size)) || [];
                 }
                 ref(key) {
                     return this.store.get(key) || [];
@@ -409,7 +408,7 @@ require = function () {
             }
             exports.MultiMap = MultiMap;
         },
-        {}
+        { '../global': 13 }
     ],
     10: [
         function (_dereq_, module, exports) {
@@ -803,8 +802,7 @@ require = function () {
                     return this.reference_ = (_a = this.reference_) !== null && _a !== void 0 ? _a : this.url.href;
                 }
                 get resource() {
-                    var _a;
-                    return this.resource_ = (_a = this.resource_) !== null && _a !== void 0 ? _a : `${ this.origin }${ this.pathname }${ this.query === '?' ? '' : this.query }`;
+                    return this.resource_ = this.resource_ === void 0 ? this.reference.slice(0, this.query === '?' ? this.fragment ? -this.fragment.length - 1 : -1 : -this.fragment.length || this.reference.length) : this.resource_;
                 }
                 get origin() {
                     var _a;
@@ -816,7 +814,7 @@ require = function () {
                 }
                 get protocol() {
                     var _a;
-                    return this.protocol_ = (_a = this.protocol_) !== null && _a !== void 0 ? _a : this.url.protocol;
+                    return this.protocol_ = (_a = this.protocol_) !== null && _a !== void 0 ? _a : this.reference.slice(0, this.reference.indexOf(':') + 1);
                 }
                 get host() {
                     var _a;
@@ -839,10 +837,10 @@ require = function () {
                     return this.pathname_ = (_a = this.pathname_) !== null && _a !== void 0 ? _a : this.url.pathname;
                 }
                 get query() {
-                    return this.query_ = this.query_ === void 0 ? this.url.search || !this.url.href.split('#', 1)[0].includes('?') ? this.url.search : '?' : this.query_;
+                    return this.query_ = this.query_ === void 0 ? this.reference.slice((this.reference.slice(0, -this.fragment.length || this.reference.length).indexOf('?') + 1 || this.reference.length + 1) - 1, -this.fragment.length || this.reference.length) : this.query_;
                 }
                 get fragment() {
-                    return this.fragment_ = this.fragment_ === void 0 ? this.url.hash || !this.url.href.includes('#') ? this.url.hash : '#' : this.fragment_;
+                    return this.fragment_ = this.fragment_ === void 0 ? this.reference.slice((this.reference.indexOf('#') + 1 || this.reference.length + 1) - 1) : this.fragment_;
                 }
             }
             exports.URL = URL;
@@ -4007,7 +4005,7 @@ require = function () {
                             isChanged = true;
                         }
                         if (isChanged) {
-                            void text.splice(0, Infinity, ...proxy.childNodes);
+                            void text.splice(0, text.length, ...proxy.childNodes);
                         }
                     } else {
                         if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(proxy.textContent, { insecure: true })).some(node => node instanceof HTMLElement))
@@ -4038,10 +4036,10 @@ require = function () {
                     rest
                 ];
             })));
-            exports.uri = combinator_1.subline(combinator_1.verify(util_1.defrag(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([flag]) => flag, flag => combinator_1.some(combinator_1.union([
+            exports.uri = combinator_1.subline(util_1.defrag(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([flag]) => flag, flag => combinator_1.some(combinator_1.union([
                 exports.bracket,
                 source_1.unescsource
-            ]), flag === ' ' ? /^\s/ : /^[\s}]/)))), ts => ts.length === 1 && ts[0].textContent === ts[0].textContent.trim()));
+            ]), flag === ' ' ? /^\s/ : /^[\s}]/)))));
             exports.bracket = combinator_1.lazy(() => combinator_1.subline(combinator_1.union([
                 combinator_1.fmap(combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
@@ -4196,18 +4194,19 @@ require = function () {
                     ...param.map(t => t.textContent)
                 ];
             }), ([text, INSECURE_URL, ...params], rest) => {
-                const url = new url_1.URL(INSECURE_URL, origin).reference;
+                var _a;
+                const url = new url_1.URL(INSECURE_URL, origin);
                 if (![
                         'http:',
                         'https:'
-                    ].includes(url.slice(0, url.indexOf(':') + 1)))
+                    ].includes(url.protocol))
                     return;
-                const media = exports.cache.has(url) ? exports.cache.get(url).cloneNode(true) : typed_dom_1.html('img', {
+                const media = void 0 || ((_a = exports.cache.get(url.resource)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': INSECURE_URL.replace(/\s+/g, global_1.encodeURI),
                     alt: text
                 });
-                if (exports.cache.has(url) && media.hasAttribute('alt')) {
+                if (exports.cache.has(url.resource) && media.hasAttribute('alt')) {
                     void typed_dom_1.define(media, { alt: text });
                 }
                 void typed_dom_1.define(media, link_1.attrs(link_1.attributes, params, [...media.classList], 'media'));
@@ -5359,6 +5358,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('spica/global');
             const context_1 = _dereq_('./context');
             const inline_1 = _dereq_('../parser/inline');
             const label_1 = _dereq_('../parser/inline/extension/label');
@@ -5409,7 +5409,7 @@ require = function () {
                     void def.setAttribute('id', `label:${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
                     void typed_dom_1.define([...def.children].find(el => el.classList.contains('figindex')), group === '$' ? figindex : `${ figindex }. `);
-                    for (const ref of refs.take(figid, Infinity)) {
+                    for (const ref of refs.take(figid, global_1.Infinity)) {
                         void typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
                 }
@@ -5431,6 +5431,7 @@ require = function () {
             '../parser/inline': 80,
             '../parser/inline/extension/label': 99,
             './context': 138,
+            'spica/global': 13,
             'spica/multimap': 15,
             'typed-dom': 24
         }
