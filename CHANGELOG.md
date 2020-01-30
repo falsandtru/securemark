@@ -3,6 +3,7 @@
 ## 0.144.0
 
 - Hide figure function and footnote function.
+- Change bind function also to yield figure links.
 
 ## 0.143.3
 

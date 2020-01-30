@@ -13,7 +13,7 @@ export function parse(source: string, opts: Partial<ParserConfigs> = {}): Docume
     .reduce((acc, seg) =>
       concat(acc, eval(block(seg, {})))
     , []));
-  void figure(node);
+  void [...figure(node)];
   void footnote(node, opts.footnote ?? {
     annotation: html('ol'),
     reference: html('ol'),

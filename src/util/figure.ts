@@ -5,7 +5,7 @@ import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 
-export function figure(target: DocumentFragment | HTMLElement | ShadowRoot): void {
+export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot): Generator<HTMLAnchorElement, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(
     [...target.querySelectorAll<HTMLAnchorElement>('a.label')]
       .filter(context(target))
@@ -68,9 +68,10 @@ export function figure(target: DocumentFragment | HTMLElement | ShadowRoot): voi
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
     void define([...def.children].find(el => el.classList.contains('figindex'))!, group === '$' ? figindex : `${figindex}. `);
     for (const ref of refs.take(figid, Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
-      void define(ref, { href: `#${def.id}` }, figindex);
+      yield define(ref, { href: `#${def.id}` }, figindex);
     }
   }
+  return;
 }
 
 function increment(bases: readonly string[], el: HTMLHeadingElement): string {

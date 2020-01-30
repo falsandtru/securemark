@@ -72,7 +72,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       if (rev !== revision) return yield;
     }
     assert(rev === revision);
-    void figure(target);
+    yield* figure(target);
     void footnote(target, cfgs.footnote);
   };
 
