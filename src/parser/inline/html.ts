@@ -16,26 +16,26 @@ const attributes = {
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ />]/, union([
   match(
-    /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/,
+    /^<(sup|sub|small|bdi|bdo)(?=(?: [^\n>]*)?>)/,
     memoize(([, tag]) => tag,
     tag =>
       configure({ state: { nest: [tag] } },
       guard(config => (config.state?.nest?.length || 0) <= 2,
       verify(fmap(
         sequence([
-          dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
+          dup(surround(``, some(defrag(union([attribute]))), /^ ?>/, false)),
           dup(surround(``, defrag(some(union([inline]), `</${tag}>`)), `</${tag}>`)),
         ]),
         ([attrs_, contents]: [Text[], (HTMLElement | Text)[]]) =>
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'), contents)]),
         ([el]) => !el.classList.contains('invalid') && hasText(el)))))),
   match(
-    /^(?=<(wbr)(?: [^\n>]*)?>)/,
+    /^<(wbr)(?=(?: [^\n>]*)?>)/,
     memoize(([, tag]) => tag,
     tag =>
       verify(fmap(
         sequence([
-          dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
+          dup(surround(``, some(defrag(union([attribute]))), /^ ?>/, false)),
         ]),
         ([attrs_]) =>
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'))]),
@@ -46,12 +46,12 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ />]/, union([
       union([
         surround(/^<[a-z]+(?=(?: [^\n>]*)?\/>)/, some(union([attribute])), /^ ?\/>/, false),
         match(
-          /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+          /^<([a-z]+)(?=(?: [^\n>]*)?>)/,
           ([, tag]) =>
             configure({ state: { nest: [tag] } },
             guard(config => (config.state?.nest?.length || 0) <= 2,
             inits([
-              dup(surround(`<${tag}`, some(union([attribute])), /^ ?>/, false)),
+              dup(surround(``, some(union([attribute])), /^ ?>/, false)),
               dup(surround(``, some(union([inline]), `</${tag}>`), `</${tag}>`, false)),
             ])))),
       ]),
