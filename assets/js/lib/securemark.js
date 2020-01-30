@@ -5453,6 +5453,8 @@ require = function () {
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
                     void typed_dom_1.define([...def.children].find(el => el.classList.contains('figindex')), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.take(figid, global_1.Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
+                        if (ref.hash.slice(1) === def.id && ref.textContent === figindex)
+                            continue;
                         yield typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
                 }
@@ -5513,18 +5515,18 @@ require = function () {
                         const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : defs.size + 1;
                         const defId = def ? def.id : `${ group }:def:${ defIndex }`;
                         !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
-                        void typed_dom_1.define(ref, {
+                        yield typed_dom_1.define(ref, {
                             id: refId,
                             title: ref.title || indexee_1.text(ref)
                         }, [typed_dom_1.html('a', {
                                 href: `#${ defId }`,
                                 rel: 'noopener'
-                            }, marker(defIndex))]);
+                            }, marker(defIndex))]).firstChild;
                         if (def) {
                             void def.lastChild.appendChild(typed_dom_1.html('a', {
                                 href: `#${ refId }`,
                                 rel: 'noopener'
-                            }, `~${ refIndex }`));
+                            }, ` ~${ refIndex }`));
                         } else {
                             const content = contents.get(ref);
                             void defs.set(identity, typed_dom_1.html('li', {
@@ -5535,7 +5537,7 @@ require = function () {
                                 typed_dom_1.html('sup', [typed_dom_1.html('a', {
                                         href: `#${ refId }`,
                                         rel: 'noopener'
-                                    }, `~${ refIndex }`)])
+                                    }, ` ~${ refIndex }`)])
                             ]));
                         }
                     }
