@@ -5498,11 +5498,9 @@ require = function () {
             function build(group, marker) {
                 const contents = new WeakMap();
                 return function* (target, footnote) {
+                    var _a;
                     const check = context_1.context(target);
                     const defs = new Map();
-                    while (footnote.firstChild) {
-                        yield footnote.removeChild(footnote.firstChild);
-                    }
                     let count = 0;
                     for (const ref of target.querySelectorAll(`.${ group }`)) {
                         if (!check(ref))
@@ -5523,24 +5521,33 @@ require = function () {
                                 rel: 'noopener'
                             }, marker(defIndex))]);
                         if (def) {
-                            yield def.lastChild.appendChild(typed_dom_1.html('a', {
+                            void def.lastChild.appendChild(typed_dom_1.html('a', {
                                 href: `#${ refId }`,
                                 rel: 'noopener'
                             }, `~${ refIndex }`));
                         } else {
-                            const def = typed_dom_1.html('li', {
+                            const content = contents.get(ref);
+                            void defs.set(identity, typed_dom_1.html('li', {
                                 id: defId,
                                 class: 'footnote'
                             }, [
-                                ...contents.get(ref),
+                                content.length === 0 || content[0].parentNode === ref ? typed_dom_1.frag(content) : typed_dom_1.frag(content).cloneNode(true),
                                 typed_dom_1.html('sup', [typed_dom_1.html('a', {
                                         href: `#${ refId }`,
                                         rel: 'noopener'
                                     }, `~${ refIndex }`)])
-                            ]);
-                            void defs.set(identity, def);
-                            yield footnote.appendChild(def).lastChild.lastChild;
+                            ]));
                         }
+                    }
+                    count = 0;
+                    for (const def of defs.values()) {
+                        void ++count;
+                        if (((_a = footnote.children[count - 1]) === null || _a === void 0 ? void 0 : _a.outerHTML) === def.outerHTML)
+                            continue;
+                        yield footnote.insertBefore(def, footnote.children[count - 1] || null);
+                    }
+                    while (footnote.children.length > defs.size) {
+                        yield footnote.removeChild(footnote.children[defs.size]);
                     }
                     return;
                 };
