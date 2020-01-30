@@ -34,7 +34,7 @@
     "@types/dompurify": "2.0.1",
     "@types/jquery": "^3.3.31",
     "@types/mathjax": "0.0.36",
-    "@types/mocha": "^5.2.7",
+    "@types/mocha": "^7.0.1",
     "@types/power-assert": "1.5.3",
     "@types/prismjs": "^1.16.0",
     "browserify": "^16.5.0",
@@ -66,7 +66,7 @@
     "spica": "0.0.324",
     "tsify": "^4.0.1",
     "typed-dom": "0.0.161",
-    "typescript": "3.8.0-dev.20200128",
+    "typescript": "3.8.0-dev.20200130",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   },
