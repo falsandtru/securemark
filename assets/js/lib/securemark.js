@@ -5500,7 +5500,9 @@ require = function () {
                 return function* (target, footnote) {
                     const check = context_1.context(target);
                     const defs = new Map();
-                    void typed_dom_1.define(footnote, []);
+                    while (footnote.firstChild) {
+                        yield footnote.removeChild(footnote.firstChild);
+                    }
                     let count = 0;
                     for (const ref of target.querySelectorAll(`.${ group }`)) {
                         if (!check(ref))

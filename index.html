@@ -367,6 +367,7 @@
       if (!el) throw new Error('Abort.');
       switch (el.tagName) {
         case 'A':
+        case 'LI':
           break;
         default:
           el.parentNode
