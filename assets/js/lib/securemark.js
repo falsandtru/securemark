@@ -5514,7 +5514,7 @@ require = function () {
                         const def = defs.get(identity);
                         const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : defs.size + 1;
                         const defId = def ? def.id : `${ group }:def:${ defIndex }`;
-                        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
+                        !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
                         void typed_dom_1.define(ref, {
                             id: refId,
                             title: ref.title || indexee_1.text(ref)
