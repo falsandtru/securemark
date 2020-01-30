@@ -5,7 +5,7 @@ import { html } from 'typed-dom';
 describe('Unit: util/figure', () => {
   describe('figure', () => {
     it('empty', () => {
-      const source = parse('', { figure: false });
+      const source = parse('');
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -19,7 +19,7 @@ describe('Unit: util/figure', () => {
         '$fig-a\n> ',
         '$fig-a',
         '$fig-a',
-      ].join('\n\n'), { figure: false });
+      ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -38,7 +38,7 @@ describe('Unit: util/figure', () => {
         '## 0',
         '$table-a\n> ',
         '$fig-b\n> ',
-      ].join('\n\n'), { figure: false });
+      ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -58,7 +58,7 @@ describe('Unit: util/figure', () => {
         '$fig-b-0.0\n> ',
         '$fig-c\n> ',
         '$fig-b',
-      ].join('\n\n'), { figure: false });
+      ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -81,7 +81,7 @@ describe('Unit: util/figure', () => {
         '$fig-b\n> ',
         '$fig-1.0',
         '$-4.1',
-      ].join('\n\n'), { figure: false });
+      ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -133,7 +133,7 @@ describe('Unit: util/figure', () => {
         '$fig-i\n> ',
         '# 0',
         '$fig-j\n> ',
-      ].join('\n\n'), { figure: false });
+      ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -180,7 +180,7 @@ describe('Unit: util/figure', () => {
       const source = parse([
         '$-a\n$$\n$$',
         '$-a',
-      ].join('\n\n'), { figure: false });
+      ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -198,7 +198,7 @@ describe('Unit: util/figure', () => {
         '~~~~example/markdown\n~~~figure $fig-a\n> \n\n~~~\n\n$fig-a\n~~~~',
         '~~~figure $fig-b\n> \n\n~~~',
         '~~~figure $fig-a\n> \n\n~~~',
-      ].join('\n\n'), { figure: false }).children);
+      ].join('\n\n')).children);
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(
@@ -217,7 +217,7 @@ describe('Unit: util/figure', () => {
         '~~~figure [$fig-a]\n> \n\n~~~',
         '[$fig-a]',
         '[$fig-a]',
-      ].join('\n\n'), { figure: false });
+      ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         figure(source);
         assert.deepStrictEqual(

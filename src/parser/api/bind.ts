@@ -3,7 +3,8 @@ import { eval } from '../../combinator';
 import { segment } from '../segment';
 import { block } from '../block';
 import { normalize } from './normalize';
-import { figure, footnote } from '../../util';
+import { figure } from '../../util/figure';
+import { footnote } from '../../util/footnote';
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];

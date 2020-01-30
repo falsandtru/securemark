@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.144.0
+
+- Hide figure function and footnote function.
+
 ## 0.143.3
 
 - Fix parsers to be possible to handle invalid URL.
