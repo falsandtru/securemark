@@ -20,7 +20,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('((a \n b))');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        [...annotation(source, target)];
+        assert.deepStrictEqual([...annotation(source, target)].length, i === 0 ? 1 : 0);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
@@ -47,7 +47,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('((1))((12345678901234567890))');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        [...annotation(source, target)];
+        assert.deepStrictEqual([...annotation(source, target)].length, i === 0 ? 2 : 0);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [

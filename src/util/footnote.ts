@@ -1,8 +1,8 @@
 import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
-import { html, define } from 'typed-dom';
+import { frag, html, define } from 'typed-dom';
 
-export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLLIElement | HTMLAnchorElement, undefined, undefined> {
+export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLLIElement, undefined, undefined> {
   yield* annotation(target, footnotes.annotation);
   yield* reference(target, footnotes.reference);
   return;
@@ -11,15 +11,12 @@ export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, f
 export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', n => `[${n}]`);
 
-function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLLIElement | HTMLAnchorElement, undefined, undefined> {
+function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLLIElement, undefined, undefined> {
   assert(group.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
-  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLLIElement | HTMLAnchorElement, undefined, undefined> {
+  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLLIElement, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
-    while (footnote.firstChild) {
-      yield footnote.removeChild(footnote.firstChild) as HTMLLIElement;
-    }
     let count = 0;
     for (const ref of target.querySelectorAll<HTMLElement>(`.${group}`)) {
       if (!check(ref)) continue;
@@ -35,20 +32,31 @@ function build(group: string, marker: (index: number) => string): (target: Docum
         ? def.id
         : `${group}:def:${defIndex}`;
       !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
+      assert(contents.has(ref));
       void define(ref, { id: refId, title: ref.title || text(ref) }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
       if (def) {
-        yield def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
+        void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
       }
       else {
-        const def = html('li', { id: defId, class: 'footnote' }, [
-          ...contents.get(ref)!,
+        const content = contents.get(ref)!;
+        void defs.set(identity, html('li', { id: defId, class: 'footnote' }, [
+          content.length === 0 || content[0].parentNode === ref
+            ? frag(content)
+            : frag(content).cloneNode(true),
           html('sup', [
             html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`),
-          ])
-        ]);
-        void defs.set(identity, def);
-        yield footnote.appendChild(def).lastChild!.lastChild! as HTMLAnchorElement;
+          ]),
+        ]));
       }
+    }
+    count = 0;
+    for (const def of defs.values()) {
+      void ++count;
+      if (footnote.children[count - 1]?.outerHTML === def.outerHTML) continue;
+      yield footnote.insertBefore(def, footnote.children[count - 1] || null);
+    }
+    while (footnote.children.length > defs.size) {
+      yield footnote.removeChild(footnote.children[defs.size]) as HTMLLIElement;
     }
     return;
   }

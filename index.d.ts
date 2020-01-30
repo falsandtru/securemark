@@ -6,7 +6,7 @@
 */
 
 export function parse(source: string, opts?: Partial<ParserConfigs>): DocumentFragment;
-// `bind` function yields added or removed child elements of the target container element and added anchor elements or removed list item elements of the footnotes.
+// `bind` function yields added or removed child elements of the target container element and the footnote elements.
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement | undefined, undefined, undefined>;
 export function render(target: HTMLElement, opts?: RenderingOptions): void;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
