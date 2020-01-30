@@ -2,7 +2,7 @@ import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
 import { html, define } from 'typed-dom';
 
-export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement, undefined, undefined> {
+export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLLIElement | HTMLAnchorElement, undefined, undefined> {
   yield* annotation(target, footnotes.annotation);
   yield* reference(target, footnotes.reference);
   return;
@@ -11,13 +11,15 @@ export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, f
 export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', n => `[${n}]`);
 
-function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLAnchorElement, undefined, undefined> {
+function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLLIElement | HTMLAnchorElement, undefined, undefined> {
   assert(group.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
-  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLAnchorElement, undefined, undefined> {
+  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLLIElement | HTMLAnchorElement, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
-    void define(footnote, []);
+    while (footnote.firstChild) {
+      yield footnote.removeChild(footnote.firstChild) as HTMLLIElement;
+    }
     let count = 0;
     for (const ref of target.querySelectorAll<HTMLElement>(`.${group}`)) {
       if (!check(ref)) continue;
