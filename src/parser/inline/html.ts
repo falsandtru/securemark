@@ -1,7 +1,7 @@
 import { Map, WeakMap } from 'spica/global';
 import { hasOwnProperty, isFrozen, ObjectEntries, ObjectFreeze } from 'spica/alias';
 import { HTMLParser, inline } from '../inline';
-import { union, inits, sequence, some, subline, rewrite, focus, validate, verify, surround, match, memoize, lazy, fmap } from '../../combinator';
+import { union, inits, sequence, some, subline, rewrite, rewrite_, focus, validate, verify, surround, match, memoize, guard, configure, lazy, fmap } from '../../combinator';
 import { escsource, unescsource, char } from '../source';
 import { defrag, dup, hasText } from '../util';
 import { DeepImmutable } from 'spica/type';
@@ -14,11 +14,13 @@ const attributes = {
   },
 } as const;
 
-export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
+export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ />]/, union([
   match(
     /^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/,
     memoize(([, tag]) => tag,
     tag =>
+      configure({ state: { nest: [tag] } },
+      guard(config => (config.state?.nest?.length || 0) <= 2,
       verify(fmap(
         sequence([
           dup(surround(`<${tag}`, some(defrag(union([attribute]))), /^ ?>/, false)),
@@ -26,7 +28,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ]),
         ([attrs_, contents]: [Text[], (HTMLElement | Text)[]]) =>
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'), contents)]),
-        ([el]) => !el.classList.contains('invalid') && hasText(el)))),
+        ([el]) => !el.classList.contains('invalid') && hasText(el)))))),
   match(
     /^(?=<(wbr)(?: [^\n>]*)?>)/,
     memoize(([, tag]) => tag,
@@ -38,15 +40,22 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ >]/, union([
         ([attrs_]) =>
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'))]),
         ([el]) => !el.classList.contains('invalid')))),
-  rewrite(
+  rewrite_(
     // Don't use large size keys for memoization to prevent memory leaks.
-    match(
-      /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
-      ([, tag]) =>
-      inits([
-        surround(`<${tag}`, some(union([attribute])), /^ ?\/?>/, false),
-        surround(``, some(union([inline]), `</${tag}>`), `</${tag}>`, false),
-      ])),
+    fmap(
+      union([
+        surround(/^<[a-z]+(?=(?: [^\n>]*)?\/>)/, some(union([attribute])), /^ ?\/>/, false),
+        match(
+          /^(?=<([a-z]+)(?: [^\n>]*)?>)/,
+          ([, tag]) =>
+            configure({ state: { nest: [tag] } },
+            guard(config => (config.state?.nest?.length || 0) <= 2,
+            inits([
+              dup(surround(`<${tag}`, some(union([attribute])), /^ ?>/, false)),
+              dup(surround(``, some(union([inline]), `</${tag}>`), `</${tag}>`, false)),
+            ])))),
+      ]),
+      () => []),
     source =>
       [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '']),
 ])));

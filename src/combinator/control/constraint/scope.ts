@@ -43,3 +43,7 @@ export function rewrite<T, D extends Parser<unknown>[]>(scope: Parser<never>, pa
       : void 0;
   };
 }
+export function rewrite_<P extends Parser<unknown>>(scope: P, parser: P): P;
+export function rewrite_<T, D extends Parser<unknown>[]>(scope: Parser<never>, parser: Parser<T, D>): Parser<T, D> {
+  return rewrite(scope, parser);
+}

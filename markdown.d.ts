@@ -26,6 +26,9 @@ export namespace MarkdownParser {
       };
     };
     readonly insecure?: boolean;
+    readonly state?: {
+      nest: string[];
+    };
   }
   export interface State {
   }
@@ -609,10 +612,7 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           HTMLParser.ParamParser,
         ], State, Config>,
-        Parser<HTMLElement, [
-          HTMLParser.ParamParser,
-          HTMLParser.ContentParser,
-        ], State, Config>,
+        HTMLParser.PlaceholderParser,
       ], State, Config> {
     }
     export namespace HTMLParser {
@@ -636,6 +636,18 @@ export namespace MarkdownParser {
         Inline<'html/content'>,
         Parser<(HTMLElement | Text)[], [
           InlineParser,
+        ], State, Config> {
+      }
+      export interface PlaceholderParser extends
+        Inline<'html/placeholder'>,
+        Parser<HTMLElement, [
+          Parser<Text, [
+            ParamParser.AttributeParser,
+          ], State, Config>,
+          Parser<(HTMLElement|Text)[], [
+            HTMLParser.ParamParser,
+            HTMLParser.ContentParser,
+          ], State, Config>,
         ], State, Config> {
       }
     }
