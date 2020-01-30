@@ -33,8 +33,11 @@ function build(group: string, marker: (index: number) => string): (target: Docum
         : `${group}:def:${defIndex}`;
       !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
       assert(contents.has(ref));
+      const refChild = ref.firstChild as HTMLAnchorElement | null;
       yield define(ref, { id: refId, title: ref.title || text(ref) },
-        [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
+        refChild?.hash?.slice(1) === defId && refChild.textContent === marker(defIndex)
+          ? undefined
+          : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
         .firstChild as HTMLAnchorElement;
       if (def) {
         void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`));
