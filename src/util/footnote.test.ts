@@ -20,7 +20,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('((a \n b))');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(source, target)].length, i === 0 ? 1 : 0);
+        assert.deepStrictEqual([...annotation(source, target)].length, i === 0 ? 2 : 1);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
@@ -37,7 +37,7 @@ describe('Unit: util/footnote', () => {
               text('a'),
               html('br'),
               text(' b'),
-              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
           ]).outerHTML);
       }
@@ -47,7 +47,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('((1))((12345678901234567890))');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(source, target)].length, i === 0 ? 2 : 0);
+        assert.deepStrictEqual([...annotation(source, target)].length, i === 0 ? 4 : 2);
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
@@ -65,11 +65,11 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'annotation:def:1', class: 'footnote' }, [
               text('1'),
-              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
             html('li', { id: 'annotation:def:2', class: 'footnote' }, [
               text('12345678901234567890'),
-              html('sup', [html('a', { href: '#annotation:ref:2', rel: 'noopener' }, '~2')])
+              html('sup', [html('a', { href: '#annotation:ref:2', rel: 'noopener' }, ' ~2')])
             ]),
           ]).outerHTML);
       }
@@ -106,22 +106,22 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'annotation:def:1', class: 'footnote' }, [
               text('1'),
-              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
             html('li', { id: 'annotation:def:2', class: 'footnote' }, [
               text('2'),
               html('sup', [
-                html('a', { href: '#annotation:ref:2', rel: 'noopener' }, '~2'),
-                html('a', { href: '#annotation:ref:4', rel: 'noopener' }, '~4'),
+                html('a', { href: '#annotation:ref:2', rel: 'noopener' }, ' ~2'),
+                html('a', { href: '#annotation:ref:4', rel: 'noopener' }, ' ~4'),
               ]),
             ]),
             html('li', { id: 'annotation:def:3', class: 'footnote' }, [
               text('3'),
-              html('sup', [html('a', { href: '#annotation:ref:3', rel: 'noopener' }, '~3')])
+              html('sup', [html('a', { href: '#annotation:ref:3', rel: 'noopener' }, ' ~3')])
             ]),
             html('li', { id: 'annotation:def:4', class: 'footnote' }, [
               text('4'),
-              html('sup', [html('a', { href: '#annotation:ref:5', rel: 'noopener' }, '~5')])
+              html('sup', [html('a', { href: '#annotation:ref:5', rel: 'noopener' }, ' ~5')])
             ]),
           ]).outerHTML);
       }
@@ -144,12 +144,12 @@ describe('Unit: util/footnote', () => {
           [...source.children].map(el => el.outerHTML),
           [
             '<blockquote><blockquote><p><sup class="annotation" title="a"><a rel="noopener">*1</a></sup></p></blockquote><p><sup class="annotation" title="a"><a rel="noopener">*1</a></sup><br>~~~</p></blockquote>',
-            '<aside class="example" data-type="markdown"><pre>((a))</pre><div><p><sup class="annotation" title="a"><a rel="noopener">*1</a></sup></p></div><ol><li class="footnote">a<sup><a rel="noopener">~1</a></sup></li></ol><ol></ol></aside>',
+            '<aside class="example" data-type="markdown"><pre>((a))</pre><div><p><sup class="annotation" title="a"><a rel="noopener">*1</a></sup></p></div><ol><li class="footnote">a<sup><a rel="noopener"> ~1</a></sup></li></ol><ol></ol></aside>',
             '<p><sup class="annotation" id="annotation:ref:1" title="a"><a href="#annotation:def:1" rel="noopener">*1</a></sup></p>',
           ]);
         assert.deepStrictEqual(
           target.outerHTML,
-          '<ol><li id="annotation:def:1" class="footnote">a<sup><a href="#annotation:ref:1" rel="noopener">~1</a></sup></li></ol>');
+          '<ol><li id="annotation:def:1" class="footnote">a<sup><a href="#annotation:ref:1" rel="noopener"> ~1</a></sup></li></ol>');
       }
     });
 
@@ -175,7 +175,7 @@ describe('Unit: util/footnote', () => {
           html('ol', [
             html('li', { id: 'reference:def:1', class: 'footnote' }, [
               text('a b'),
-              html('sup', [html('a', { href: '#reference:ref:1', rel: 'noopener' }, '~1')])
+              html('sup', [html('a', { href: '#reference:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
           ]).outerHTML);
       }

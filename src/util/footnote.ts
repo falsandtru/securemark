@@ -2,7 +2,7 @@ import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
 import { frag, html, define } from 'typed-dom';
 
-export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLLIElement, undefined, undefined> {
+export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
   yield* annotation(target, footnotes.annotation);
   yield* reference(target, footnotes.reference);
   return;
@@ -11,10 +11,10 @@ export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, f
 export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', n => `[${n}]`);
 
-function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLLIElement, undefined, undefined> {
+function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
   assert(group.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
-  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLLIElement, undefined, undefined> {
+  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
     let count = 0;
@@ -33,9 +33,11 @@ function build(group: string, marker: (index: number) => string): (target: Docum
         : `${group}:def:${defIndex}`;
       !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
       assert(contents.has(ref));
-      void define(ref, { id: refId, title: ref.title || text(ref) }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
+      yield define(ref, { id: refId, title: ref.title || text(ref) },
+        [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
+        .firstChild as HTMLAnchorElement;
       if (def) {
-        void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
+        void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`));
       }
       else {
         const content = contents.get(ref)!;
@@ -44,7 +46,7 @@ function build(group: string, marker: (index: number) => string): (target: Docum
             ? frag(content)
             : frag(content).cloneNode(true),
           html('sup', [
-            html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`),
+            html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`),
           ]),
         ]));
       }

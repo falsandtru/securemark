@@ -4,6 +4,7 @@
 
 - Hide figure function and footnote function.
 - Change bind function also to yield figure links.
+- Change bind function also to yield footnote links.
 - Change bind function also to yield added and removed list items of footnotes.
 
 ## 0.143.3

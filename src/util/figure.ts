@@ -28,7 +28,11 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot): Ge
       label,
       numbers.has(group) && !isFixed(label)
         ? numbers.get(group)!.split('.')
-            .slice(0, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length).join('.')
+            .slice(
+              0,
+              isFormatted(label)
+                ? label.slice(label.lastIndexOf('-') + 1).split('.').length
+                : bases.length).join('.')
         : base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.split('.').pop() === '0') {
@@ -66,8 +70,11 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot): Ge
     const figid = isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
-    void define([...def.children].find(el => el.classList.contains('figindex'))!, group === '$' ? figindex : `${figindex}. `);
+    void define(
+      [...def.children].find(el => el.classList.contains('figindex'))!,
+      group === '$' ? figindex : `${figindex}. `);
     for (const ref of refs.take(figid, Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
+      if (ref.hash.slice(1) === def.id && ref.textContent === figindex) continue;
       yield define(ref, { href: `#${def.id}` }, figindex);
     }
   }
