@@ -7,7 +7,7 @@ describe('Unit: util/footnote', () => {
     it('empty', () => {
       const source = parse('');
       const target = html('ol');
-      annotation(source, target);
+      [...annotation(source, target)];
       assert.deepStrictEqual(
         [...source.children].map(el => el.outerHTML),
         []);
@@ -20,7 +20,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('((a \n b))');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        annotation(source, target);
+        [...annotation(source, target)];
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
@@ -47,7 +47,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('((1))((12345678901234567890))');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        annotation(source, target);
+        [...annotation(source, target)];
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
@@ -79,7 +79,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('((1))((2))((3))((2))((4))');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        annotation(source, target);
+        [...annotation(source, target)];
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
@@ -125,7 +125,7 @@ describe('Unit: util/footnote', () => {
             ]),
           ]).outerHTML);
       }
-      annotation(parse(''), target);
+      [...annotation(parse(''), target)];
       assert.deepStrictEqual(
         target.outerHTML,
         html('ol').outerHTML);
@@ -139,7 +139,7 @@ describe('Unit: util/footnote', () => {
       ].join('\n\n')).children);
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        annotation(source, target);
+        [...annotation(source, target)];
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [
@@ -160,7 +160,7 @@ describe('Unit: util/footnote', () => {
       const source = parse('[[a b]]');
       const target = html('ol');
       for (let i = 0; i < 3; ++i) {
-        reference(source, target);
+        [...reference(source, target)];
         assert.deepStrictEqual(
           [...source.children].map(el => el.outerHTML),
           [

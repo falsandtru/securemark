@@ -73,7 +73,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
     }
     assert(rev === revision);
     yield* figure(target);
-    void footnote(target, cfgs.footnote);
+    yield* footnote(target, cfgs.footnote);
   };
 
   function next(index: number): Node | null {

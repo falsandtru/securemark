@@ -2,46 +2,52 @@ import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
 import { html, define } from 'typed-dom';
 
-export function footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): void {
-  void annotation(target, footnotes.annotation);
-  void reference(target, footnotes.reference);
+export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement, undefined, undefined> {
+  yield* annotation(target, footnotes.annotation);
+  yield* reference(target, footnotes.reference);
+  return;
 }
 
 export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', n => `[${n}]`);
 
-function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => void {
+function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLAnchorElement, undefined, undefined> {
   assert(group.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
-  return (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => {
-    return void define(footnote, [...target.querySelectorAll<HTMLElement>(`.${group}`)]
-      .filter(context(target))
-      .reduce<Map<string, HTMLLIElement>>((acc, ref, i) => {
-        const identity = ref.innerHTML;
-        const refIndex = i + 1;
-        const refId = ref.id || `${group}:ref:${i + 1}`;
-        const def = acc.get(identity);
-        const defIndex = def
-          ? +def.id.slice(def.id.lastIndexOf(':') + 1)
-          : acc.size + 1;
-        const defId = def
-          ? def.id
-          : `${group}:def:${defIndex}`;
-        void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
-        void define(ref, { id: refId, title: ref.title || text(ref) }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
-        if (def) {
-          void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
-        }
-        else {
-          void acc.set(identity, html('li', { id: defId, class: 'footnote' }, [
-            ...contents.get(ref)!,
-            html('sup', [
-              html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`),
-            ])
-          ]));
-        }
-        return acc;
-      }, new Map())
-      .values());
-  };
+  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLAnchorElement, undefined, undefined> {
+    const check = context(target);
+    const defs = new Map<string, HTMLLIElement>();
+    void define(footnote, []);
+    let count = 0;
+    for (const ref of target.querySelectorAll<HTMLElement>(`.${group}`)) {
+      if (!check(ref)) continue;
+      void ++count;
+      const identity = ref.innerHTML;
+      const refIndex = count;
+      const refId = ref.id || `${group}:ref:${count}`;
+      const def = defs.get(identity);
+      const defIndex = def
+        ? +def.id.slice(def.id.lastIndexOf(':') + 1)
+        : defs.size + 1;
+      const defId = def
+        ? def.id
+        : `${group}:def:${defIndex}`;
+      void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
+      void define(ref, { id: refId, title: ref.title || text(ref) }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
+      if (def) {
+        yield def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
+      }
+      else {
+        const def = html('li', { id: defId, class: 'footnote' }, [
+          ...contents.get(ref)!,
+          html('sup', [
+            html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`),
+          ])
+        ]);
+        void defs.set(identity, def);
+        yield footnote.appendChild(def).lastChild!.lastChild! as HTMLAnchorElement;
+      }
+    }
+    return;
+  }
 }

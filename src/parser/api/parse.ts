@@ -14,9 +14,9 @@ export function parse(source: string, opts: Partial<ParserConfigs> = {}): Docume
       concat(acc, eval(block(seg, {})))
     , []));
   void [...figure(node)];
-  void footnote(node, opts.footnote ?? {
+  void [...footnote(node, opts.footnote ?? {
     annotation: html('ol'),
     reference: html('ol'),
-  });
+  })];
   return node;
 }
