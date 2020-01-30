@@ -365,9 +365,14 @@
     let resource = 100;
     for (const el of update(document.getElementById('editor').value)) {
       if (!el) throw new Error('Abort.');
-      el.parentNode
-         ? observer.observe(el)
-         : observer.unobserve(el);
+      switch (el.tagName) {
+        case 'A':
+          break;
+        default:
+          el.parentNode
+            ? observer.observe(el)
+            : observer.unobserve(el);
+      }
       delta = Date.now() - start;
       time += delta;
       resource = resource - delta > 0

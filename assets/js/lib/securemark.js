@@ -1695,6 +1695,10 @@ require = function () {
                 };
             }
             exports.rewrite = rewrite;
+            function rewrite_(scope, parser) {
+                return rewrite(scope, parser);
+            }
+            exports.rewrite_ = rewrite_;
         },
         { '../../data/parser': 46 }
     ],
@@ -1703,22 +1707,48 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
             const assign_1 = _dereq_('spica/assign');
+            const concat_1 = _dereq_('spica/concat');
+            const type_1 = _dereq_('spica/type');
             const memoize_1 = _dereq_('spica/memoize');
             function guard(f, parser) {
                 return (source, config) => f(config) ? parser(source, config) : void 0;
             }
             exports.guard = guard;
             function configure(config, parser) {
-                const ex = memoize_1.memoize(base => assign_1.extend({}, base, config), new global_1.WeakMap());
+                const ex = memoize_1.memoize(base => merge({}, base, config), new global_1.WeakMap());
                 return (source, base) => parser(source, ex(base));
             }
             exports.configure = configure;
+            const merge = assign_1.template((prop, target, source) => {
+                switch (type_1.type(source[prop])) {
+                case 'Array':
+                    switch (type_1.type(target[prop])) {
+                    case 'Array':
+                        return target[prop] = concat_1.concat(target[prop].slice(), source[prop]);
+                    default:
+                        return target[prop] = merge([], source[prop]);
+                    }
+                case 'Object':
+                    switch (type_1.type(target[prop])) {
+                    case 'Object':
+                        return target[prop] = merge(target[prop], source[prop]);
+                    default:
+                        return target[prop] = merge(source[prop] instanceof Object ? {} : alias_1.ObjectCreate(null), source[prop]);
+                    }
+                default:
+                    return target[prop] = source[prop];
+                }
+            });
         },
         {
+            'spica/alias': 5,
             'spica/assign': 7,
+            'spica/concat': 10,
             'spica/global': 13,
-            'spica/memoize': 14
+            'spica/memoize': 14,
+            'spica/type': 19
         }
     ],
     37: [
@@ -2168,7 +2198,8 @@ require = function () {
             const segment_1 = _dereq_('../segment');
             const block_1 = _dereq_('../block');
             const normalize_1 = _dereq_('./normalize');
-            const util_1 = _dereq_('../../util');
+            const figure_1 = _dereq_('../../util/figure');
+            const footnote_1 = _dereq_('../../util/footnote');
             function bind(target, cfgs) {
                 const pairs = [];
                 const adds = [];
@@ -2233,8 +2264,8 @@ require = function () {
                         if (rev !== revision)
                             return yield;
                     }
-                    void util_1.figure(target);
-                    void util_1.footnote(target, cfgs.footnote);
+                    yield* figure_1.figure(target);
+                    yield* footnote_1.footnote(target, cfgs.footnote);
                 };
                 function next(index) {
                     for (let i = index; i < pairs.length; ++i) {
@@ -2249,7 +2280,8 @@ require = function () {
         },
         {
             '../../combinator': 31,
-            '../../util': 137,
+            '../../util/figure': 139,
+            '../../util/footnote': 140,
             '../block': 60,
             '../segment': 115,
             './normalize': 57
@@ -2300,20 +2332,26 @@ require = function () {
             const block_1 = _dereq_('../block');
             const segment_1 = _dereq_('../segment');
             const normalize_1 = _dereq_('./normalize');
-            const util_1 = _dereq_('../../util');
+            const figure_1 = _dereq_('../../util/figure');
+            const footnote_1 = _dereq_('../../util/footnote');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
             function parse(source, opts = {}) {
+                var _a;
                 const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg, {}))), []));
-                opts.figure !== false && void util_1.figure(node);
-                opts.footnote && void util_1.footnote(node, opts.footnote);
+                void [...figure_1.figure(node)];
+                void [...footnote_1.footnote(node, (_a = opts.footnote) !== null && _a !== void 0 ? _a : {
+                        annotation: typed_dom_1.html('ol'),
+                        reference: typed_dom_1.html('ol')
+                    })];
                 return node;
             }
             exports.parse = parse;
         },
         {
             '../../combinator': 31,
-            '../../util': 137,
+            '../../util/figure': 139,
+            '../../util/footnote': 140,
             '../block': 60,
             '../segment': 115,
             './normalize': 57,
@@ -3836,16 +3874,25 @@ require = function () {
                     ])
                 }
             };
-            exports.html = combinator_1.lazy(() => combinator_1.validate(/^<[a-z]+[ >]/, combinator_1.union([
-                combinator_1.match(/^(?=<(sup|sub|small|bdi|bdo)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
-                    util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
+            exports.html = combinator_1.lazy(() => combinator_1.validate(/^<[a-z]+[ />]/, combinator_1.union([
+                combinator_1.match(/^<(sup|sub|small|bdi|bdo)(?=(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.configure({ state: { nest: [tag] } }, combinator_1.guard(config => {
+                    var _a, _b;
+                    return (((_b = (_a = config.state) === null || _a === void 0 ? void 0 : _a.nest) === null || _b === void 0 ? void 0 : _b.length) || 0) <= 2;
+                }, combinator_1.verify(combinator_1.fmap(combinator_1.sequence([
+                    util_1.dup(combinator_1.surround(``, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false)),
                     util_1.dup(combinator_1.surround(``, util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`))
-                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.classList.contains('invalid') && util_1.hasText(el)))),
-                combinator_1.match(/^(?=<(wbr)(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(`<${ tag }`, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'))]), ([el]) => !el.classList.contains('invalid')))),
-                combinator_1.rewrite(combinator_1.match(/^(?=<([a-z]+)(?: [^\n>]*)?>)/, ([, tag]) => combinator_1.inits([
-                    combinator_1.surround(`<${ tag }`, combinator_1.some(combinator_1.union([exports.attribute])), /^ ?\/?>/, false),
-                    combinator_1.surround(``, combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`), `</${ tag }>`, false)
-                ])), source => [
+                ]), ([attrs_, contents]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'), contents)]), ([el]) => !el.classList.contains('invalid') && util_1.hasText(el)))))),
+                combinator_1.match(/^<(wbr)(?=(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.verify(combinator_1.fmap(combinator_1.sequence([util_1.dup(combinator_1.surround(``, combinator_1.some(util_1.defrag(combinator_1.union([exports.attribute]))), /^ ?>/, false))]), ([attrs_]) => [typed_dom_1.html(tag, attrs(attributes[tag], attrs_.map(t => t.textContent), [], 'html'))]), ([el]) => !el.classList.contains('invalid')))),
+                combinator_1.rewrite_(combinator_1.fmap(combinator_1.union([
+                    combinator_1.surround(/^<[a-z]+(?=(?: [^\n>]*)?\/>)/, combinator_1.some(combinator_1.union([exports.attribute])), /^ ?\/>/, false),
+                    combinator_1.match(/^<([a-z]+)(?=(?: [^\n>]*)?>)/, ([, tag]) => combinator_1.configure({ state: { nest: [tag] } }, combinator_1.guard(config => {
+                        var _a, _b;
+                        return (((_b = (_a = config.state) === null || _a === void 0 ? void 0 : _a.nest) === null || _b === void 0 ? void 0 : _b.length) || 0) <= 2;
+                    }, combinator_1.inits([
+                        util_1.dup(combinator_1.surround(``, combinator_1.some(combinator_1.union([exports.attribute])), /^ ?>/, false)),
+                        util_1.dup(combinator_1.surround(``, combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`), `</${ tag }>`, false))
+                    ]))))
+                ]), () => []), source => [
                     [typed_dom_1.html('span', {
                             class: 'invalid',
                             'data-invalid-syntax': 'html',
@@ -5320,10 +5367,6 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            var figure_1 = _dereq_('./util/figure');
-            exports.figure = figure_1.figure;
-            var footnote_1 = _dereq_('./util/footnote');
-            exports.footnote = footnote_1.footnote;
             var toc_1 = _dereq_('./util/toc');
             exports.toc = toc_1.toc;
             var info_1 = _dereq_('./util/info');
@@ -5333,8 +5376,6 @@ require = function () {
         },
         {
             './util/context': 138,
-            './util/figure': 139,
-            './util/footnote': 140,
             './util/info': 141,
             './util/toc': 142
         }
@@ -5366,7 +5407,7 @@ require = function () {
             const label_1 = _dereq_('../parser/inline/extension/label');
             const multimap_1 = _dereq_('spica/multimap');
             const typed_dom_1 = _dereq_('typed-dom');
-            function figure(target) {
+            function* figure(target) {
                 const refs = new multimap_1.MultiMap([...target.querySelectorAll('a.label')].filter(context_1.context(target)).map(el => [
                     el.getAttribute('data-label'),
                     el
@@ -5412,9 +5453,10 @@ require = function () {
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
                     void typed_dom_1.define([...def.children].find(el => el.classList.contains('figindex')), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.take(figid, global_1.Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
-                        void typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
+                        yield typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
                     }
                 }
+                return;
             }
             exports.figure = figure;
             function increment(bases, el) {
@@ -5445,22 +5487,30 @@ require = function () {
             const context_1 = _dereq_('./context');
             const indexee_1 = _dereq_('../parser/inline/extension/indexee');
             const typed_dom_1 = _dereq_('typed-dom');
-            function footnote(target, footnotes) {
-                void exports.annotation(target, footnotes.annotation);
-                void exports.reference(target, footnotes.reference);
+            function* footnote(target, footnotes) {
+                yield* exports.annotation(target, footnotes.annotation);
+                yield* exports.reference(target, footnotes.reference);
+                return;
             }
             exports.footnote = footnote;
             exports.annotation = build('annotation', n => `*${ n }`);
             exports.reference = build('reference', n => `[${ n }]`);
             function build(group, marker) {
                 const contents = new WeakMap();
-                return (target, footnote) => {
-                    return void typed_dom_1.define(footnote, [...target.querySelectorAll(`.${ group }`)].filter(context_1.context(target)).reduce((acc, ref, i) => {
+                return function* (target, footnote) {
+                    const check = context_1.context(target);
+                    const defs = new Map();
+                    void typed_dom_1.define(footnote, []);
+                    let count = 0;
+                    for (const ref of target.querySelectorAll(`.${ group }`)) {
+                        if (!check(ref))
+                            continue;
+                        void ++count;
                         const identity = ref.innerHTML;
-                        const refIndex = i + 1;
-                        const refId = ref.id || `${ group }:ref:${ i + 1 }`;
-                        const def = acc.get(identity);
-                        const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : acc.size + 1;
+                        const refIndex = count;
+                        const refId = ref.id || `${ group }:ref:${ count }`;
+                        const def = defs.get(identity);
+                        const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : defs.size + 1;
                         const defId = def ? def.id : `${ group }:def:${ defIndex }`;
                         void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
                         void typed_dom_1.define(ref, {
@@ -5471,12 +5521,12 @@ require = function () {
                                 rel: 'noopener'
                             }, marker(defIndex))]);
                         if (def) {
-                            void def.lastChild.appendChild(typed_dom_1.html('a', {
+                            yield def.lastChild.appendChild(typed_dom_1.html('a', {
                                 href: `#${ refId }`,
                                 rel: 'noopener'
                             }, `~${ refIndex }`));
                         } else {
-                            void acc.set(identity, typed_dom_1.html('li', {
+                            const def = typed_dom_1.html('li', {
                                 id: defId,
                                 class: 'footnote'
                             }, [
@@ -5485,10 +5535,12 @@ require = function () {
                                         href: `#${ refId }`,
                                         rel: 'noopener'
                                     }, `~${ refIndex }`)])
-                            ]));
+                            ]);
+                            void defs.set(identity, def);
+                            yield footnote.appendChild(def).lastChild.lastChild;
                         }
-                        return acc;
-                    }, new Map()).values());
+                    }
+                    return;
                 };
             }
         },
