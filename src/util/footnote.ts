@@ -34,7 +34,7 @@ function build(group: string, marker: (index: number) => string): (target: Docum
       const defId = def
         ? def.id
         : `${group}:def:${defIndex}`;
-      void contents.set(ref, contents.get(ref) || [...ref.childNodes]);
+      !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
       void define(ref, { id: refId, title: ref.title || text(ref) }, [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))]);
       if (def) {
         yield def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, `~${refIndex}`));
