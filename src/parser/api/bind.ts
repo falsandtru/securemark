@@ -71,9 +71,16 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       yield el;
       if (rev !== revision) return yield;
     }
-    assert(rev === revision);
-    yield* figure(target);
-    yield* footnote(target, cfgs.footnote);
+    for (const el of figure(target)) {
+      assert(rev === revision);
+      yield el;
+      if (rev !== revision) return yield;
+    }
+    for (const el of footnote(target, cfgs.footnote)) {
+      assert(rev === revision);
+      yield el;
+      if (rev !== revision) return yield;
+    }
   };
 
   function next(index: number): Node | null {
