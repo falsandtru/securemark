@@ -2313,8 +2313,16 @@ require = function () {
                         if (rev !== revision)
                             return yield;
                     }
-                    yield* figure_1.figure(target);
-                    yield* footnote_1.footnote(target, cfgs.footnote);
+                    for (const el of figure_1.figure(target)) {
+                        yield el;
+                        if (rev !== revision)
+                            return yield;
+                    }
+                    for (const el of footnote_1.footnote(target, cfgs.footnote)) {
+                        yield el;
+                        if (rev !== revision)
+                            return yield;
+                    }
                 };
                 function next(index) {
                     for (let i = index; i < pairs.length; ++i) {
