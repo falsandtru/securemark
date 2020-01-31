@@ -1060,6 +1060,8 @@ require = function () {
                     this.children_ = children_;
                     this.container = container;
                     this.id_ = this.element.id.trim();
+                    this.isPartialUpdate = false;
+                    this.isInitialization = true;
                     switch (true) {
                     case children_ === void 0:
                         this.type = ElChildrenType.Void;
@@ -1080,25 +1082,25 @@ require = function () {
                     void proxies.set(this.element, this);
                     switch (this.type) {
                     case ElChildrenType.Void:
-                        this.initialChildren = new global_1.WeakSet();
+                        this.isInitialization = false;
                         return;
                     case ElChildrenType.Text:
-                        this.initialChildren = new global_1.WeakSet();
                         void dom_1.define(this.container, []);
                         this.children_ = this.container.appendChild(dom_1.text(''));
                         this.children = children_;
+                        this.isInitialization = false;
                         return;
                     case ElChildrenType.Array:
-                        this.initialChildren = new global_1.WeakSet(children_);
                         void dom_1.define(this.container, []);
                         this.children_ = [];
                         this.children = children_;
+                        this.isInitialization = false;
                         return;
                     case ElChildrenType.Record:
-                        this.initialChildren = new global_1.WeakSet(alias_1.ObjectValues(children_));
                         void dom_1.define(this.container, []);
-                        this.children_ = observe(this.container, Object.assign({}, children_));
+                        this.children_ = this.observe(Object.assign({}, children_));
                         this.children = children_;
+                        this.isInitialization = false;
                         return;
                     default:
                         throw new Error(`TypedDOM: Unreachable code.`);
@@ -1120,6 +1122,42 @@ require = function () {
                     default:
                         return `.${ this.id }`;
                     }
+                }
+                observe(children) {
+                    const descs = {};
+                    for (const name in children) {
+                        if (!alias_1.hasOwnProperty(children, name))
+                            continue;
+                        let child = children[name];
+                        void throwErrorIfNotUsable(child);
+                        void this.container.appendChild(child.element);
+                        descs[name] = {
+                            configurable: true,
+                            enumerable: true,
+                            get: () => {
+                                return child;
+                            },
+                            set: newChild => {
+                                const oldChild = child;
+                                if (newChild === oldChild)
+                                    return;
+                                if (this.isPartialUpdate) {
+                                    child = newChild;
+                                    if (newChild.element.parentNode === oldChild.element.parentNode) {
+                                        const ref = newChild.element.nextSibling !== oldChild.element ? newChild.element.nextSibling : oldChild.element.nextSibling;
+                                        void this.container.replaceChild(newChild.element, oldChild.element);
+                                        void this.container.insertBefore(oldChild.element, ref);
+                                    } else {
+                                        void this.container.insertBefore(newChild.element, oldChild.element);
+                                        void this.container.removeChild(oldChild.element);
+                                    }
+                                } else {
+                                    this.children = Object.assign(Object.assign({}, this.children_), { [name]: newChild });
+                                }
+                            }
+                        };
+                    }
+                    return alias_1.ObjectDefineProperties(children, descs);
                 }
                 scope(child) {
                     if (child.element.nodeName !== 'STYLE')
@@ -1157,11 +1195,12 @@ require = function () {
                 set children(children) {
                     const removedChildren = [];
                     const addedChildren = [];
+                    let isChanged = false;
                     switch (this.type) {
                     case ElChildrenType.Void:
                         return;
                     case ElChildrenType.Text: {
-                            if (children === this.children && !this.initialChildren.has(this.children_))
+                            if (!this.isInitialization && children === this.children)
                                 return;
                             const targetChildren = this.children_;
                             const oldText = targetChildren.textContent;
@@ -1188,22 +1227,23 @@ require = function () {
                                 if (newChild.element.parentNode !== this.container) {
                                     void throwErrorIfNotUsable(newChild);
                                 }
-                                if (newChild.element === this.container.children[i]) {
-                                    void targetChildren.push(newChild);
-                                } else {
+                                if (newChild.element !== this.container.children[i]) {
                                     if (newChild.element.parentNode !== this.container) {
                                         void this.scope(newChild);
                                         void addedChildren.push(newChild);
                                     }
                                     void this.container.insertBefore(newChild.element, this.container.children[i]);
-                                    void targetChildren.push(newChild);
+                                    isChanged = true;
                                 }
+                                void targetChildren.push(newChild);
                             }
                             void alias_1.ObjectFreeze(targetChildren);
-                            for (let i = this.container.children.length; i >= sourceChildren.length; --i) {
+                            for (let i = sourceChildren.length; i < this.container.children.length; ++i) {
                                 if (!proxies.has(this.container.children[i]))
                                     continue;
                                 void removedChildren.push(proxy(this.container.removeChild(this.container.children[i])));
+                                isChanged = true;
+                                void --i;
                             }
                             break;
                         }
@@ -1219,22 +1259,32 @@ require = function () {
                                 if (log.has(newChild))
                                     throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
                                 void log.add(newChild);
+                                if (!this.isInitialization && newChild === oldChild)
+                                    continue;
                                 if (newChild.element.parentNode !== this.container) {
                                     void throwErrorIfNotUsable(newChild);
                                 }
-                                if (oldChild.element !== newChild.element || this.initialChildren.has(oldChild)) {
+                                if (this.isInitialization || newChild !== oldChild && newChild.element.parentNode !== oldChild.element.parentNode) {
                                     void this.scope(newChild);
                                     void addedChildren.push(newChild);
-                                    void removedChildren.push(oldChild);
+                                    if (!this.isInitialization) {
+                                        let i = 0;
+                                        i = removedChildren.lastIndexOf(newChild);
+                                        i > -1 && removedChildren.splice(i, 1);
+                                        void removedChildren.push(oldChild);
+                                        i = addedChildren.lastIndexOf(oldChild);
+                                        i > -1 && addedChildren.splice(i, 1);
+                                    }
                                 }
+                                this.isPartialUpdate = true;
                                 targetChildren[name] = sourceChildren[name];
+                                this.isPartialUpdate = false;
+                                isChanged = true;
                             }
                             break;
                         }
                     }
                     for (const child of removedChildren) {
-                        if (this.initialChildren.has(child))
-                            continue;
                         void child.element.dispatchEvent(new global_1.Event('disconnect', {
                             bubbles: false,
                             cancelable: true
@@ -1246,7 +1296,7 @@ require = function () {
                             cancelable: true
                         }));
                     }
-                    if (removedChildren.length + addedChildren.length > 0) {
+                    if (isChanged) {
                         void this.element.dispatchEvent(new global_1.Event('change', {
                             bubbles: false,
                             cancelable: true
@@ -1255,34 +1305,6 @@ require = function () {
                 }
             }
             exports.Elem = Elem;
-            function observe(node, children) {
-                const descs = {};
-                for (const name in children) {
-                    if (!alias_1.hasOwnProperty(children, name))
-                        continue;
-                    let child = children[name];
-                    void throwErrorIfNotUsable(child);
-                    void node.appendChild(child.element);
-                    descs[name] = {
-                        configurable: true,
-                        enumerable: true,
-                        get: () => {
-                            return child;
-                        },
-                        set: newChild => {
-                            const oldChild = child;
-                            if (newChild === oldChild)
-                                return;
-                            if (newChild.element.parentElement !== node) {
-                                void throwErrorIfNotUsable(newChild);
-                            }
-                            void node.replaceChild(newChild.element, oldChild.element);
-                            child = newChild;
-                        }
-                    };
-                }
-                return alias_1.ObjectDefineProperties(children, descs);
-            }
             function throwErrorIfNotUsable({element}) {
                 if (!element.parentElement || !proxies.has(element.parentElement))
                     return;
@@ -1399,11 +1421,21 @@ require = function () {
                         }
                     }
                 if (children) {
-                    el.innerHTML = '';
-                    while (el.firstChild) {
-                        void el.removeChild(el.firstChild);
+                    const {childNodes} = el;
+                    if (childNodes.length === 0) {
+                        void el.append(...children);
+                    } else {
+                        let cnt = 0;
+                        for (const child of children) {
+                            void ++cnt;
+                            if (childNodes.length <= cnt && child === childNodes[cnt - 1])
+                                continue;
+                            void el.insertBefore(child, childNodes[cnt - 1] || null);
+                        }
+                        while (childNodes.length > cnt) {
+                            void el.removeChild(childNodes[cnt]);
+                        }
                     }
-                    void el.append(...children);
                 }
                 return el;
             }
@@ -5515,10 +5547,11 @@ require = function () {
                         const defIndex = def ? +def.id.slice(def.id.lastIndexOf(':') + 1) : defs.size + 1;
                         const defId = def ? def.id : `${ group }:def:${ defIndex }`;
                         !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
+                        const refChild = ref.firstChild;
                         yield typed_dom_1.define(ref, {
                             id: refId,
                             title: ref.title || indexee_1.text(ref)
-                        }, [typed_dom_1.html('a', {
+                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.hash) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && refChild.textContent === marker(defIndex) ? undefined : [typed_dom_1.html('a', {
                                 href: `#${ defId }`,
                                 rel: 'noopener'
                             }, marker(defIndex))]).firstChild;
@@ -5544,7 +5577,12 @@ require = function () {
                     count = 0;
                     for (const def of defs.values()) {
                         void ++count;
-                        if (((_a = footnote.children[count - 1]) === null || _a === void 0 ? void 0 : _a.outerHTML) === def.outerHTML)
+                        while (footnote.children.length > defs.size) {
+                            if (footnote.children[count - 1].outerHTML === def.outerHTML)
+                                break;
+                            yield footnote.removeChild(footnote.children[count - 1]);
+                        }
+                        if (footnote.children.length >= count && footnote.children[count - 1].outerHTML === def.outerHTML)
                             continue;
                         yield footnote.insertBefore(def, footnote.children[count - 1] || null);
                     }
