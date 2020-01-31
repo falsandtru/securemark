@@ -354,7 +354,7 @@
       await wait;
       log(await display());
       share();
-    }, 300);
+    }, 500);
   }
   document.getElementById('editor').addEventListener('input', run);
   document.getElementById('editor').addEventListener('change', run);
@@ -377,7 +377,7 @@
       time += delta;
       resource = resource - delta > 0
         ? resource - delta
-        : void await new Promise(requestAnimationFrame) || 300 - 50;
+        : void await new Promise(requestAnimationFrame) || 200;
       start = Date.now();
     }
     return time += Date.now() - start;
