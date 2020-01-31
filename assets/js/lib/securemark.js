@@ -1424,6 +1424,23 @@ require = function () {
                     const {childNodes} = el;
                     if (childNodes.length === 0) {
                         void el.append(...children);
+                    } else if (alias_1.isArray(children)) {
+                        let cnt = 0;
+                        I:
+                            for (const child of children) {
+                                void ++cnt;
+                                while (el.childNodes.length > children.length) {
+                                    if (el.childNodes[cnt - 1] === child)
+                                        continue I;
+                                    void el.removeChild(el.childNodes[cnt - 1]);
+                                }
+                                if (el.childNodes.length >= cnt && el.childNodes[cnt - 1] === child)
+                                    continue;
+                                void el.insertBefore(child, el.childNodes[cnt - 1] || null);
+                            }
+                        while (el.childNodes.length > children.length) {
+                            void el.removeChild(el.childNodes[children.length]);
+                        }
                     } else {
                         let cnt = 0;
                         for (const child of children) {
@@ -5575,17 +5592,18 @@ require = function () {
                         }
                     }
                     count = 0;
-                    for (const def of defs.values()) {
-                        void ++count;
-                        while (footnote.children.length > defs.size) {
-                            if (footnote.children[count - 1].outerHTML === def.outerHTML)
-                                break;
-                            yield footnote.removeChild(footnote.children[count - 1]);
+                    I:
+                        for (const def of defs.values()) {
+                            void ++count;
+                            while (footnote.children.length > defs.size) {
+                                if (footnote.children[count - 1].outerHTML === def.outerHTML)
+                                    continue I;
+                                yield footnote.removeChild(footnote.children[count - 1]);
+                            }
+                            if (footnote.children.length >= count && footnote.children[count - 1].outerHTML === def.outerHTML)
+                                continue;
+                            yield footnote.insertBefore(def, footnote.children[count - 1] || null);
                         }
-                        if (footnote.children.length >= count && footnote.children[count - 1].outerHTML === def.outerHTML)
-                            continue;
-                        yield footnote.insertBefore(def, footnote.children[count - 1] || null);
-                    }
                     while (footnote.children.length > defs.size) {
                         yield footnote.removeChild(footnote.children[defs.size]);
                     }
