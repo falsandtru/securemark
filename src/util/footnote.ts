@@ -55,10 +55,11 @@ function build(group: string, marker: (index: number) => string): (target: Docum
       }
     }
     count = 0;
+    I:
     for (const def of defs.values()) {
       void ++count;
       while (footnote.children.length > defs.size) {
-        if (footnote.children[count - 1].outerHTML === def.outerHTML) break;
+        if (footnote.children[count - 1].outerHTML === def.outerHTML) continue I;
         yield footnote.removeChild(footnote.children[count - 1]) as HTMLLIElement;
       }
       if (footnote.children.length >= count && footnote.children[count - 1].outerHTML === def.outerHTML) continue;
