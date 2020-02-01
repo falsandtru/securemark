@@ -12,20 +12,22 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
   return (source, config) => {
     if (source === memory) return;
     let rest = source;
-    const data: T[] = [];
+    let data: T[] | undefined;
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
       const result = parser(rest, config);
       assert(check(rest, result));
       if (!result) break;
-      void concat(data, eval(result));
+      data = data
+        ? concat(data, eval(result))
+        : eval(result);
       rest = exec(result);
     }
     memory = rest || memory;
     assert(rest.length <= source.length);
     return rest.length < source.length
-      ? [data, rest]
+      ? [data || [], rest]
       : void 0;
   };
 }
