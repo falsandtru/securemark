@@ -1597,7 +1597,7 @@ require = function () {
                     if (!result)
                         return;
                     const rest = parser_1.exec(result);
-                    if (separation && line_1.firstline(rest).trim() !== '')
+                    if (separation && !line_1.isEmpty(line_1.firstline(rest)))
                         return;
                     return rest === '' || source[source.length - rest.length - 1] === '\n' ? result : void 0;
                 };
@@ -1674,7 +1674,7 @@ require = function () {
                     const result = parser(fst, config);
                     if (!result)
                         return;
-                    return (allowTrailingWhitespace ? parser_1.exec(result).trim() === '' : parser_1.exec(result) === '') ? [
+                    return parser_1.exec(result) === '' || allowTrailingWhitespace && isEmpty(parser_1.exec(result)) ? [
                         parser_1.eval(result),
                         source.slice(fst.length)
                     ] : void 0;
@@ -1697,6 +1697,10 @@ require = function () {
                 return i === -1 ? source : source.slice(0, keepLinebreak ? i + 1 : i);
             }
             exports.firstline = firstline;
+            function isEmpty(line) {
+                return line === '' || line === '\n' || line.trim() === '';
+            }
+            exports.isEmpty = isEmpty;
         },
         { '../../data/parser': 46 }
     ],
@@ -4683,17 +4687,14 @@ require = function () {
                 [],
                 ''
             ], false);
-            exports.emptyline = combinator_1.line(s => isEmpty(s) ? [
+            exports.emptyline = combinator_1.line(s => combinator_1.isEmpty(s) ? [
                 [],
                 ''
             ] : void 0, false);
-            exports.contentline = combinator_1.line(s => !isEmpty(s) ? [
+            exports.contentline = combinator_1.line(s => !combinator_1.isEmpty(s) ? [
                 [],
                 ''
             ] : void 0, false);
-            function isEmpty(line) {
-                return line === '' || line === '\n' || line.trim() === '';
-            }
         },
         { '../../combinator': 31 }
     ],
@@ -4843,10 +4844,11 @@ require = function () {
                     const acc = [];
                     void nodes.reduce((prev, curr) => {
                         if (curr.nodeType === 3) {
-                            if (curr.textContent === '')
+                            const text = curr.textContent;
+                            if (text === '')
                                 return prev;
                             if ((prev === null || prev === void 0 ? void 0 : prev.nodeType) === 3)
-                                return prev.textContent += curr.textContent, prev;
+                                return prev.textContent += text, prev;
                         }
                         void acc.push(curr);
                         return curr;
