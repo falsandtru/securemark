@@ -41,12 +41,13 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ />]/, union([
           [htm(tag as 'span', attrs(attributes[tag], attrs_.map(t => t.textContent!), [], 'html'))]),
         ([el]) => !el.classList.contains('invalid')))),
   rewrite_(
-    // Don't use large size keys for memoization to prevent memory leaks.
     fmap(
       union([
         surround(/^<[a-z]+(?=(?: [^\n>]*)?\/>)/, some(union([attribute])), /^ ?\/>/, false),
         match(
           /^<([a-z]+)(?=(?: [^\n>]*)?>)/,
+          // Don't memoize this function because this key size is unlimited
+          // and it makes a vulnerability of memory leaks.
           ([, tag]) =>
             configure({ state: { nest: [tag] } },
             guard(config => (config.state?.nest?.length || 0) <= 2,
