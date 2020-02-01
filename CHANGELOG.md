@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.144.1
+
+- Optimization.
+
 ## 0.144.0
 
 - Hide figure function and footnote function.
