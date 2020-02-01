@@ -2639,7 +2639,7 @@ require = function () {
             const placeholder_1 = _dereq_('./extension/placeholder');
             exports.segment = combinator_1.validate([
                 '~~~',
-                '[',
+                '[$',
                 '$'
             ], combinator_1.validate(/^~{3,}[a-z]|^\[?\$[a-z-]\S+[^\S\n]*\n/, combinator_1.union([
                 fig_1.segment,
@@ -4566,7 +4566,7 @@ require = function () {
                 const segments = [];
                 while (source !== '') {
                     const rest = combinator_1.exec(parser(source, {}));
-                    void segments.push(source.length - rest.length > 100000 ? '# ***Too large block***' : source.slice(0, source.length - rest.length));
+                    void segments.push(source.length - rest.length > 100 * 1000 ? '# ***Too large block over 100,000 characters***' : source.slice(0, source.length - rest.length));
                     source = rest;
                 }
                 return segments;
