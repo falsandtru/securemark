@@ -23,7 +23,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
     param = param.trim();
     const path = stringify(eval(some(escsource, /^\s/)(param, config)));
     const file = path.split('/').pop() || '';
-    const ext = file && file.includes('.') && !file.startsWith('.')
+    const ext = file && file.includes('.') && file[0] !== '.'
       ? file.split('.').pop()!
       : '';
     lang = language.test(lang || ext)

@@ -4,9 +4,9 @@ export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser:
 export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, parser: Parser<T, D>): Parser<T, D> {
   assert(scope instanceof RegExp ? !scope.global && scope.source.startsWith('^') : true);
   assert(parser);
-  const match = typeof scope === 'string'
-    ? (source: string) => source.startsWith(scope) ? scope : ''
-    : (source: string) => source.match(scope)?.[0] || '';
+  const match: (source: string) => string = typeof scope === 'string'
+    ? source => source.slice(0, scope.length) === scope ? scope : ''
+    : source => source.match(scope)?.[0] || '';
   return (source, config) => {
     if (source === '') return;
     const src = match(source);

@@ -28,6 +28,6 @@ export function surround<T, D extends Parser<unknown>[]>(start: string | RegExp,
 
 function match(pattern: string | RegExp): (source: string) => string | undefined {
   return typeof pattern === 'string'
-    ? (source: string) => source.startsWith(pattern) ? pattern : void 0
-    : (source: string) => source.match(pattern)?.[0];
+    ? source => source.slice(0, pattern.length) === pattern ? pattern : void 0
+    : source => source.match(pattern)?.[0];
 }

@@ -15,13 +15,13 @@ export const url: AutolinkParser.UrlParser = lazy(() => subline(validate(
       union([link])))))));
 
 export function address(source: string): string {
-  return source.startsWith('ttp')
+  return source.slice(0, 3) === 'ttp'
     ? `h${source}`
     : source;
 }
 
 export function attribute(source: string): string {
-  return source.startsWith('ttp')
+  return source.slice(0, 3) === 'ttp'
     ? ' nofollow'
     : '';
 }

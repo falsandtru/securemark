@@ -5,9 +5,9 @@ export function some<P extends Parser<unknown>>(parser: P, until?: string | RegE
 export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until?: string | RegExp): Parser<T, D> {
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
-  const match = typeof until === 'string' && until !== undefined
-    ? (source: string) => source.startsWith(until)
-    : (source: string) => !!until && until.test(source);
+  const match: (source: string) => boolean = typeof until === 'string' && until !== undefined
+    ? source => source.slice(0, until.length) === until
+    : source => !!until && until.test(source);
   let memory = '';
   return (source, config) => {
     if (source === memory) return;
