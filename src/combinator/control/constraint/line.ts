@@ -9,7 +9,7 @@ export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allow
     const result = parser(fst, config);
     assert(check(fst, result));
     if (!result) return;
-    return exec(result) === '' || allowTrailingWhitespace && exec(result).trim() === ''
+    return exec(result) === '' || allowTrailingWhitespace && isEmpty(exec(result))
       ? [eval(result), source.slice(fst.length)]
       : void 0;
   };
@@ -34,4 +34,10 @@ export function firstline(source: string, keepLinebreak = true): string {
   return i === -1
     ? source
     : source.slice(0, keepLinebreak ? i + 1 : i);
+}
+
+export function isEmpty(line: string): boolean {
+  return line === ''
+      || line === '\n'
+      || line.trim() === '';
 }
