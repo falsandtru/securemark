@@ -22,9 +22,12 @@ export function segment(source: string): string[] {
   while (source !== '') {
     const rest = exec(parser(source, {}));
     assert(source.slice(1).endsWith(rest));
+    // Limit the size of a segment not to block user operations
+    // bacause of a long process caused by a huge segment.
     void segments.push(
-      source.length - rest.length > 100_000
-        ? '# ***Too large block***'
+      // Allow a table over 30 cols x 300 rows (10 characters per cell).
+      source.length - rest.length > 100 * 1000
+        ? '# ***Too large block over 100,000 characters***'
         : source.slice(0, source.length - rest.length));
     source = rest;
   }
