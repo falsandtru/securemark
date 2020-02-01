@@ -1622,7 +1622,7 @@ require = function () {
             function validate(patterns, parser) {
                 if (!alias_1.isArray(patterns))
                     return validate([patterns], parser);
-                const matchers = patterns.map(pattern => typeof pattern === 'string' ? source => source.startsWith(pattern) : source => pattern.test(source));
+                const matchers = patterns.map(pattern => typeof pattern === 'string' ? source => source.slice(0, pattern.length) === pattern : source => pattern.test(source));
                 const match = source => {
                     for (let i = 0, len = matchers.length; i < len; ++i) {
                         if (matchers[i](source))
@@ -1706,7 +1706,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const parser_1 = _dereq_('../../data/parser');
             function focus(scope, parser) {
-                const match = typeof scope === 'string' ? source => source.startsWith(scope) ? scope : '' : source => {
+                const match = typeof scope === 'string' ? source => source.slice(0, scope.length) === scope ? scope : '' : source => {
                     var _a;
                     return ((_a = source.match(scope)) === null || _a === void 0 ? void 0 : _a[0]) || '';
                 };
@@ -1951,7 +1951,7 @@ require = function () {
             }
             exports.surround = surround;
             function match(pattern) {
-                return typeof pattern === 'string' ? source => source.startsWith(pattern) ? pattern : void 0 : source => {
+                return typeof pattern === 'string' ? source => source.slice(0, pattern.length) === pattern ? pattern : void 0 : source => {
                     var _a;
                     return (_a = source.match(pattern)) === null || _a === void 0 ? void 0 : _a[0];
                 };
@@ -2044,18 +2044,18 @@ require = function () {
             function inits(parsers) {
                 return (source, config) => {
                     let rest = source;
-                    const data = [];
+                    let data;
                     for (let i = 0, len = parsers.length; i < len; ++i) {
                         if (rest === '')
                             break;
                         const result = parsers[i](rest, config);
                         if (!result)
                             break;
-                        void concat_1.concat(data, parser_1.eval(result));
+                        data = data ? concat_1.concat(data, parser_1.eval(result)) : parser_1.eval(result);
                         rest = parser_1.exec(result);
                     }
                     return rest.length < source.length ? [
-                        data,
+                        data || [],
                         rest
                     ] : void 0;
                 };
@@ -2076,18 +2076,18 @@ require = function () {
             function sequence(parsers) {
                 return (source, config) => {
                     let rest = source;
-                    const data = [];
+                    let data;
                     for (let i = 0, len = parsers.length; i < len; ++i) {
                         if (rest === '')
                             return;
                         const result = parsers[i](rest, config);
                         if (!result)
                             return;
-                        void concat_1.concat(data, parser_1.eval(result));
+                        data = data ? concat_1.concat(data, parser_1.eval(result)) : parser_1.eval(result);
                         rest = parser_1.exec(result);
                     }
                     return rest.length < source.length ? [
-                        data,
+                        data || [],
                         rest
                     ] : void 0;
                 };
@@ -2106,13 +2106,13 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const concat_1 = _dereq_('spica/concat');
             function some(parser, until) {
-                const match = typeof until === 'string' && until !== undefined ? source => source.startsWith(until) : source => !!until && until.test(source);
+                const match = typeof until === 'string' && until !== undefined ? source => source.slice(0, until.length) === until : source => !!until && until.test(source);
                 let memory = '';
                 return (source, config) => {
                     if (source === memory)
                         return;
                     let rest = source;
-                    const data = [];
+                    let data;
                     while (true) {
                         if (rest === '')
                             break;
@@ -2121,12 +2121,12 @@ require = function () {
                         const result = parser(rest, config);
                         if (!result)
                             break;
-                        void concat_1.concat(data, parser_1.eval(result));
+                        data = data ? concat_1.concat(data, parser_1.eval(result)) : parser_1.eval(result);
                         rest = parser_1.exec(result);
                     }
                     memory = rest || memory;
                     return rest.length < source.length ? [
-                        data,
+                        data || [],
                         rest
                     ] : void 0;
                 };
@@ -2560,7 +2560,7 @@ require = function () {
                 param = param.trim();
                 const path = util_1.stringify(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, config)));
                 const file = path.split('/').pop() || '';
-                const ext = file && file.includes('.') && !file.startsWith('.') ? file.split('.').pop() : '';
+                const ext = file && file.includes('.') && file[0] !== '.' ? file.split('.').pop() : '';
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1));
                 if (lang) {
@@ -3545,11 +3545,11 @@ require = function () {
                 combinator_1.some(source_1.unescsource, closer)
             ])), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.union([link_1.link])))))));
             function address(source) {
-                return source.startsWith('ttp') ? `h${ source }` : source;
+                return source.slice(0, 3) === 'ttp' ? `h${ source }` : source;
             }
             exports.address = address;
             function attribute(source) {
-                return source.startsWith('ttp') ? ' nofollow' : '';
+                return source.slice(0, 3) === 'ttp' ? ' nofollow' : '';
             }
             exports.attribute = attribute;
         },
