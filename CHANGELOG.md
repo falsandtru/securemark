@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.144.2
+
+- Optimization.
+
 ## 0.144.1
 
 - Optimization.
