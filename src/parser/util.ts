@@ -38,8 +38,9 @@ export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S
     const acc: T[] = [];
     void nodes.reduce<T | undefined>((prev, curr) => {
       if (curr.nodeType === 3) {
-        if (curr.textContent === '') return prev;
-        if (prev?.nodeType === 3) return prev.textContent += curr.textContent!, prev;
+        const text = curr.textContent!;
+        if (text === '') return prev;
+        if (prev?.nodeType === 3) return prev.textContent += text, prev;
       }
       void acc.push(curr);
       return curr;
