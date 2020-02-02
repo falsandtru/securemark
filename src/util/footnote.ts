@@ -35,6 +35,7 @@ function build(group: string, marker: (index: number) => string): (target: Docum
       assert(contents.has(ref));
       const refChild = ref.firstChild as HTMLAnchorElement | null;
       yield define(ref, { id: refId, title: ref.title || text(ref) },
+        // FIXME: #36031
         refChild?.hash?.slice(1) === defId && refChild.textContent === marker(defIndex)
           ? undefined
           : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
