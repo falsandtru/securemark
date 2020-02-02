@@ -1,6 +1,8 @@
 import { figure } from './figure';
-import { parse } from '../parser';
+import { parse as parse_ } from '../parser';
 import { html } from 'typed-dom';
+
+const parse = (s: string) => parse_(s, { test: true });
 
 describe('Unit: util/figure', () => {
   describe('figure', () => {

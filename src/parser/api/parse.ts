@@ -8,11 +8,16 @@ import { footnote } from '../../util/footnote';
 import { concat } from 'spica/concat';
 import { frag, html } from 'typed-dom';
 
-export function parse(source: string, opts: Partial<ParserSettings> = {}): DocumentFragment {
+interface Options extends Partial<ParserSettings> {
+  readonly test?: boolean;
+}
+
+export function parse(source: string, opts: Options = {}): DocumentFragment {
   const node = frag(segment(normalize(source))
     .reduce((acc, seg) =>
       concat(acc, eval(block(seg, {})))
     , []));
+  if (opts.test) return node;
   void [...figure(node)];
   void [...footnote(node, opts.footnotes ?? {
     annotation: html('ol'),
