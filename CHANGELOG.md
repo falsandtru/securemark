@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.145.0
+
+- Limit the max size of joined headings to 1,000.
+
 ## 0.144.2
 
 - Optimization.

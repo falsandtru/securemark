@@ -6,7 +6,7 @@ import { defrag } from '../util';
 import { html } from 'typed-dom';
 
 export const heading: HeadingParser = block(focus(
-  /^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?)*(?:$|\n)/,
+  /^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?){0,999}(?:$|\n)/,
   configure({ syntax: { inline: { media: false } } },
   some(line(indexee(fmap(inits([
     defrag(some(char('#'))),
