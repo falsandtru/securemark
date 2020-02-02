@@ -1,5 +1,6 @@
 import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
+import { memoize } from 'spica/memoize';
 import { frag, html, define } from 'typed-dom';
 
 export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
@@ -11,6 +12,10 @@ export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, f
 export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', n => `[${n}]`);
 
+const identify = memoize<HTMLElement, string>(
+  ref => ref.getAttribute('data-abbr') || ref.innerHTML,
+  new WeakMap());
+
 function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
   assert(group.match(/^[a-z]+$/));
   const contents = new WeakMap<HTMLElement, Node[]>();
@@ -21,7 +26,7 @@ function build(group: string, marker: (index: number) => string): (target: Docum
     for (const ref of target.querySelectorAll<HTMLElement>(`.${group}`)) {
       if (!check(ref)) continue;
       void ++count;
-      const identity = ref.innerHTML;
+      const identity = identify(ref);
       const refIndex = count;
       const refId = ref.id || `${group}:ref:${count}`;
       const def = defs.get(identity);
