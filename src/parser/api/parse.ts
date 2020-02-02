@@ -1,4 +1,4 @@
-import { ParserConfigs } from '../../..';
+import { ParserSettings } from '../../..';
 import { eval } from '../../combinator';
 import { block } from '../block';
 import { segment } from '../segment';
@@ -8,13 +8,13 @@ import { footnote } from '../../util/footnote';
 import { concat } from 'spica/concat';
 import { frag, html } from 'typed-dom';
 
-export function parse(source: string, opts: Partial<ParserConfigs> = {}): DocumentFragment {
+export function parse(source: string, opts: Partial<ParserSettings> = {}): DocumentFragment {
   const node = frag(segment(normalize(source))
     .reduce((acc, seg) =>
       concat(acc, eval(block(seg, {})))
     , []));
   void [...figure(node)];
-  void [...footnote(node, opts.footnote ?? {
+  void [...footnote(node, opts.footnotes ?? {
     annotation: html('ol'),
     reference: html('ol'),
   })];

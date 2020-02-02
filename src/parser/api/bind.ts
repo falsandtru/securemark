@@ -1,4 +1,4 @@
-import { ParserConfigs } from '../../..';
+import { ParserSettings } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
 import { block } from '../block';
@@ -6,7 +6,7 @@ import { normalize } from './normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: ParserConfigs): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, stgs: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   const adds: [HTMLElement, Node | null][] = [];
@@ -76,7 +76,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, cfgs: 
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of footnote(target, cfgs.footnote)) {
+    for (const el of footnote(target, stgs.footnotes)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;

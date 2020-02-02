@@ -1,4 +1,4 @@
-import { ParserConfigs } from '../../..';
+import { ParserSettings } from '../../..';
 import { bind } from './bind';
 import { html } from 'typed-dom';
 
@@ -7,7 +7,7 @@ describe('Unit: parser/api/bind', () => {
     function inspect(iter: Iterable<HTMLElement | undefined>) {
       return [...iter].filter(e => e?.parentNode).map(e => e?.outerHTML);
     }
-    const cfgs: ParserConfigs = { footnote: { annotation: html('ol'), reference: html('ol') } };
+    const cfgs: ParserSettings = { footnotes: { annotation: html('ol'), reference: html('ol') } };
 
     it('empty', () => {
       const el = html('div');
@@ -47,7 +47,7 @@ describe('Unit: parser/api/bind', () => {
       // change middle segments
       assert.deepStrictEqual(inspect(update('9\n\n5\n\n1\n\n')), ['<p>5</p>']);
       assert(el.innerHTML === '<p>9</p><p>5</p><p>1</p><ol></ol>');
-      // change segments at the both ends 
+      // change segments at the both ends
       assert.deepStrictEqual(inspect(update('1\n\n5\n\n9\n\n')), ['<p>1</p>', '<p>5</p>', '<p>9</p>']);
       assert(el.innerHTML === '<p>1</p><p>5</p><p>9</p><ol></ol>');
       // insert
