@@ -38,10 +38,10 @@ function build(group: string, marker: (index: number) => string): (target: Docum
         ? def.id
         : `${group}:def:${defIndex}`;
       const title = ref.classList.contains('invalid')
-        ? ''
+        ? void 0
         : titles.get(identifier) || ref.title || text(ref);
       const refChild = ref.firstChild as HTMLAnchorElement | null;
-      title && !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
+      !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
       title && !titles.has(title) && void titles.set(identifier, title);
       yield define(ref,
         title
@@ -62,18 +62,20 @@ function build(group: string, marker: (index: number) => string): (target: Docum
       if (def) {
         void def.lastChild!.appendChild(
           html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`));
-        if (def.childNodes.length === 1 && contents.has(ref)) {
-          const content = contents.get(ref) || [];
+        if (title && def.childNodes.length === 1) {
+          const content = contents.get(ref)!;
+          assert(content.length > 0);
           void def.insertBefore(
-            content.length === 0 || content[0].parentNode === ref
+            content[0].parentNode === ref
               ? frag(content)
               : frag(content).cloneNode(true),
             def.lastChild);
+          assert(def.childNodes.length > 1);
         }
         continue;
       }
       else {
-        const content = contents.get(ref) || [];
+        const content = contents.get(ref)!;
         void defs.set(identifier,
           html('li', { id: defId, class: 'footnote' }, [
             content.length === 0 || content[0].parentNode === ref
