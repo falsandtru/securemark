@@ -2253,7 +2253,7 @@ require = function () {
             const normalize_1 = _dereq_('./normalize');
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
-            function bind(target, cfgs) {
+            function bind(target, stgs) {
                 const pairs = [];
                 const adds = [];
                 const dels = [];
@@ -2322,7 +2322,7 @@ require = function () {
                         if (rev !== revision)
                             return yield;
                     }
-                    for (const el of footnote_1.footnote(target, cfgs.footnote)) {
+                    for (const el of footnote_1.footnote(target, stgs.footnotes)) {
                         yield el;
                         if (rev !== revision)
                             return yield;
@@ -2401,7 +2401,7 @@ require = function () {
                 var _a;
                 const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => concat_1.concat(acc, combinator_1.eval(block_1.block(seg, {}))), []));
                 void [...figure_1.figure(node)];
-                void [...footnote_1.footnote(node, (_a = opts.footnote) !== null && _a !== void 0 ? _a : {
+                void [...footnote_1.footnote(node, (_a = opts.footnotes) !== null && _a !== void 0 ? _a : {
                         annotation: typed_dom_1.html('ol'),
                         reference: typed_dom_1.html('ol')
                     })];
@@ -2520,7 +2520,7 @@ require = function () {
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, source)),
                 combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, source => [
                     [util_1.suppress(parse_1.parse(source, {
-                            footnote: {
+                            footnotes: {
                                 annotation: typed_dom_1.html('ol'),
                                 reference: typed_dom_1.html('ol')
                             }
@@ -2685,7 +2685,7 @@ require = function () {
                     const annotation = typed_dom_1.html('ol');
                     const reference = typed_dom_1.html('ol');
                     const view = parse_1.parse(body.slice(1, -1), {
-                        footnote: {
+                        footnotes: {
                             annotation,
                             reference
                         }
@@ -2876,7 +2876,7 @@ require = function () {
             const char_1 = _dereq_('../source/char');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.heading = combinator_1.block(combinator_1.focus(/^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?)*(?:$|\n)/, combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.inits([
+            exports.heading = combinator_1.block(combinator_1.focus(/^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?){0,999}(?:$|\n)/, combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.inits([
                 util_1.defrag(combinator_1.some(char_1.char('#'))),
                 util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                     inline_1.indexer,
