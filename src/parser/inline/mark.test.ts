@@ -37,7 +37,7 @@ describe('Unit: parser/inline/mark', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('==*==a==*==')), [['<mark><em><span class="invalid" data-invalid-syntax="mark" data-invalid-type="nesting">==a==</span></em></mark>'], '']);
+      assert.deepStrictEqual(inspect(parser('==*==a==*==')), [['<mark><em><span class="invalid" data-invalid-syntax="mark" data-invalid-message="Cannot nest this syntax">==a==</span></em></mark>'], '']);
     });
 
   });

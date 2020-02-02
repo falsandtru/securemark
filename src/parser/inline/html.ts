@@ -58,7 +58,7 @@ export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ />]/, union([
       ]),
       () => []),
     source =>
-      [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-type': 'syntax' }, source)], '']),
+      [[htm('span', { class: 'invalid', 'data-invalid-syntax': 'html', 'data-invalid-message': 'Invalid tag name, attribute, or invisible content' }, source)], '']),
 ])));
 
 export const attribute: HTMLParser.ParamParser.AttributeParser = subline(verify(
@@ -102,7 +102,7 @@ export function attrs(
     void classes.push('invalid');
     result.class = classes.join(' ').trim();
     result['data-invalid-syntax'] = syntax;
-    result['data-invalid-type'] = 'parameter';
+    result['data-invalid-message'] = 'Invalid parameter';
   }
   return result;
 }

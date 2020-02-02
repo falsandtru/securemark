@@ -16,10 +16,10 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('***a***')), [['<em><strong>a</strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser('***a****')), [['<em><strong>a</strong></em>', '*'], '']);
       assert.deepStrictEqual(inspect(parser('****a***')), [['*', '<em><strong>a</strong></em>'], '']);
-      assert.deepStrictEqual(inspect(parser('****a****')), [['<em><strong><span class="invalid" data-invalid-syntax="emphasis" data-invalid-type="nesting">*a*</span></strong></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('****a****')), [['<em><strong><span class="invalid" data-invalid-syntax="emphasis" data-invalid-message="Cannot nest this syntax">*a*</span></strong></em>'], '']);
       assert.deepStrictEqual(inspect(parser('**[*a*]**')), [['<strong>[<em>a</em>]</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('*[**a**]*')), [['<em>[<strong>a</strong>]</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*<a>`b`&c; &amp;*')), [['<em><span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;a&gt;</span><code data-src="`b`">b</code>&amp;c; &amp;</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*<a>`b`&c; &amp;*')), [['<em><span class="invalid" data-invalid-syntax="html" data-invalid-message="Invalid tag name, attribute, or invisible content">&lt;a&gt;</span><code data-src="`b`">b</code>&amp;c; &amp;</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*<small>`a`</small>*')), [['<em><small><code data-src="`a`">a</code></small></em>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>*<bdi>a</bdi>*</small>')), [['<small><em><bdi>a</bdi></em></small>'], '']);
       assert.deepStrictEqual(inspect(parser('*[*]')), [['*', '[*]'], '']);

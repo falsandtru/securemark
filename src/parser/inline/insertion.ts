@@ -10,4 +10,4 @@ export const insertion: InsertionParser = lazy(() => fmap(validate(
   (ns, config) =>
     config.syntax?.inline?.insertion ?? true
       ? [html('ins', ns)]
-      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'insertion', 'data-invalid-type': 'nesting' }, [text('++'), ...ns, text('++')])]));
+      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'insertion', 'data-invalid-message': 'Cannot nest this syntax' }, [text('++'), ...ns, text('++')])]));

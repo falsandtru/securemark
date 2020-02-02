@@ -194,7 +194,7 @@ describe('Unit: util/footnote', () => {
             html('p', [
               html('sup', { class: "reference invalid", 'data-alias': "a", id: "reference:ref:1",
                 'data-invalid-syntax': 'reference',
-                'data-invalid-type': 'content'
+                'data-invalid-message': 'Footnotes must be set a content at the first use of the each alias'
               }, [
                 html('a', { href: "#reference:def:1", rel: "noopener" }, '[1]')
               ]),

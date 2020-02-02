@@ -45,7 +45,7 @@ export const codeblock: CodeBlockParser = block(rewrite(segment, trim(match(
       void el.classList.add('invalid');
       void define(el, {
         'data-invalid-syntax': 'codeblock',
-        'data-invalid-type': 'parameter',
+        'data-invalid-message': 'Invalid parameter',
       });
     }
     return [[el], rest];

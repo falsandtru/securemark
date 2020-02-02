@@ -43,7 +43,7 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<p class="invalid" data-invalid-syntax="paragraph" data-invalid-type="visibility"><sup class="comment" title="a"></sup></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<p class="invalid" data-invalid-syntax="paragraph" data-invalid-message="All paragraphs must have a visible content"><sup class="comment" title="a"></sup></p>'], '']);
       assert.deepStrictEqual(inspect(parser('<# a #>b')), [['<p><sup class="comment" title="a"></sup>b</p>'], '']);
     });
 

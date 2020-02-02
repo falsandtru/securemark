@@ -33,7 +33,7 @@ describe('Unit: parser/inline/strong', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('**<a>**')), [['<strong><span class="invalid" data-invalid-syntax="html" data-invalid-type="syntax">&lt;a&gt;</span></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**<a>**')), [['<strong><span class="invalid" data-invalid-syntax="html" data-invalid-message="Invalid tag name, attribute, or invisible content">&lt;a&gt;</span></strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**`a`**')), [['<strong><code data-src="`a`">a</code></strong>'], '']);
     });
 

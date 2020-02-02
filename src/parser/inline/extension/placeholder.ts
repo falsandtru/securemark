@@ -1,5 +1,5 @@
 import { ExtensionParser, inline } from '../../inline';
-import { union, some, subline, verify, surround, lazy, fmap, eval } from '../../../combinator';
+import { union, some, subline, verify, surround, lazy, fmap } from '../../../combinator';
 import { defrag, trimNodeEnd, isTightVisible } from '../../util';
 import { html } from 'typed-dom';
 
@@ -9,5 +9,5 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => subline
     /^\[[:^]/,
     verify(trimNodeEnd(defrag(some(union([inline]), /^\\?\n|^]/))), ns => isTightVisible(html('div', ns))),
     ']'),
-  (_, config) =>
-    [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax' }, eval(some(inline)(`Invalid syntax: Extension: Invalid flag.`, config)))])));
+  ns =>
+    [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-message': 'Invalid flag' }, ns)])));

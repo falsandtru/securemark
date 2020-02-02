@@ -16,7 +16,7 @@ export const mathblock: MathBlockParser = block(rewrite(segment, trim(match(
       void define(el, {
         class: [...el.classList, 'invalid'].join(' '),
         'data-invalid-syntax': 'math',
-        'data-invalid-type': 'parameter',
+        'data-invalid-message': 'Invalid parameter',
       });
     }
     return [[el], rest];

@@ -37,8 +37,8 @@ describe('Unit: parser/inline/deletion', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('~~*~~a~~*~~')), [['<del><em><span class="invalid" data-invalid-syntax="deletion" data-invalid-type="nesting">~~a~~</span></em></del>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~*++a++*~~')), [['<del><em><span class="invalid" data-invalid-syntax="insertion" data-invalid-type="nesting">++a++</span></em></del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~*~~a~~*~~')), [['<del><em><span class="invalid" data-invalid-syntax="deletion" data-invalid-message="Cannot nest this syntax">~~a~~</span></em></del>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~*++a++*~~')), [['<del><em><span class="invalid" data-invalid-syntax="insertion" data-invalid-message="Cannot nest this syntax">++a++</span></em></del>'], '']);
     });
 
   });

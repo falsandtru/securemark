@@ -10,4 +10,4 @@ export const mark: MarkParser = lazy(() => fmap(validate(
   (ns, config) =>
     config.syntax?.inline?.mark ?? true
       ? [html('mark', ns)]
-      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'mark', 'data-invalid-type': 'nesting' }, [text('=='), ...ns, text('==')])]));
+      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'mark', 'data-invalid-message': 'Cannot nest this syntax' }, [text('=='), ...ns, text('==')])]));

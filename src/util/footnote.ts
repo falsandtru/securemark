@@ -51,7 +51,7 @@ function build(group: string, marker: (index: number) => string): (target: Docum
                 ? undefined
                 : [...ref.classList, 'invalid'].join(' '),
               'data-invalid-syntax': group,
-              'data-invalid-type': 'content',
+              'data-invalid-message': 'Footnotes must be set a content at the first use of the each alias',
             },
         // FIXME: #36031
         refChild?.hash?.slice(1) === defId && refChild.textContent === marker(defIndex)

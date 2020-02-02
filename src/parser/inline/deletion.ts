@@ -10,4 +10,4 @@ export const deletion: DeletionParser = lazy(() => fmap(validate(
   (ns, config) =>
     config.syntax?.inline?.deletion ?? true
       ? [html('del', ns)]
-      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'deletion', 'data-invalid-type': 'nesting' }, [text('~~'), ...ns, text('~~')])]));
+      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'deletion', 'data-invalid-message': 'Cannot nest this syntax' }, [text('~~'), ...ns, text('~~')])]));
