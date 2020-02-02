@@ -13,7 +13,7 @@ export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', n => `[${n}]`);
 
 const identify = memoize<HTMLElement, string>(
-  ref => ref.getAttribute('data-abbr') || ref.innerHTML,
+  ref => ref.getAttribute('data-alias') || ref.innerHTML,
   new WeakMap());
 
 function build(group: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
@@ -22,42 +22,68 @@ function build(group: string, marker: (index: number) => string): (target: Docum
   return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
+    const titles = new Map<string, string>();
     let count = 0;
     for (const ref of target.querySelectorAll<HTMLElement>(`.${group}`)) {
       if (!check(ref)) continue;
       void ++count;
-      const identity = identify(ref);
+      const identifier = identify(ref);
       const refIndex = count;
       const refId = ref.id || `${group}:ref:${count}`;
-      const def = defs.get(identity);
+      const def = defs.get(identifier);
       const defIndex = def
         ? +def.id.slice(def.id.lastIndexOf(':') + 1)
         : defs.size + 1;
       const defId = def
         ? def.id
         : `${group}:def:${defIndex}`;
-      !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
-      assert(contents.has(ref));
+      const title = ref.classList.contains('invalid')
+        ? ''
+        : titles.get(identifier) || ref.title || text(ref);
       const refChild = ref.firstChild as HTMLAnchorElement | null;
-      yield define(ref, { id: refId, title: ref.title || text(ref) },
+      title && !contents.has(ref) && void contents.set(ref, [...ref.childNodes]);
+      title && !titles.has(title) && void titles.set(identifier, title);
+      yield define(ref,
+        title
+          ? { id: refId, title }
+          : { id: refId,
+              class: ref.classList.contains('invalid')
+                ? undefined
+                : [...ref.classList, 'invalid'].join(' '),
+              'data-invalid-syntax': group,
+              'data-invalid-type': 'content',
+            },
         // FIXME: #36031
         refChild?.hash?.slice(1) === defId && refChild.textContent === marker(defIndex)
           ? undefined
           : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
         .firstChild as HTMLAnchorElement;
+      assert(ref.firstChild);
       if (def) {
-        void def.lastChild!.appendChild(html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`));
+        void def.lastChild!.appendChild(
+          html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`));
+        if (def.childNodes.length === 1 && contents.has(ref)) {
+          const content = contents.get(ref) || [];
+          void def.insertBefore(
+            content.length === 0 || content[0].parentNode === ref
+              ? frag(content)
+              : frag(content).cloneNode(true),
+            def.lastChild);
+        }
+        continue;
       }
       else {
-        const content = contents.get(ref)!;
-        void defs.set(identity, html('li', { id: defId, class: 'footnote' }, [
-          content.length === 0 || content[0].parentNode === ref
-            ? frag(content)
-            : frag(content).cloneNode(true),
-          html('sup', [
-            html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`),
-          ]),
-        ]));
+        const content = contents.get(ref) || [];
+        void defs.set(identifier,
+          html('li', { id: defId, class: 'footnote' }, [
+            content.length === 0 || content[0].parentNode === ref
+              ? frag(content)
+              : frag(content).cloneNode(true),
+            html('sup', [
+              html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`),
+            ]),
+          ]));
+        continue;
       }
     }
     count = 0;

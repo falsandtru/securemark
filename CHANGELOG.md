@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.146.0
+
+- Add alias syntax into reference syntax.
+
 ## 0.145.0
 
 - Rename ParserSettings.footnote to ParserSettings.footnotes.

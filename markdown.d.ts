@@ -453,8 +453,20 @@ export namespace MarkdownParser {
       // [[abc]]
       Inline<'reference'>,
       Parser<HTMLElement, [
+        ReferenceParser.AliasParser,
         InlineParser,
       ], State, Config> {
+    }
+    export namespace ReferenceParser {
+      export interface AliasParser extends
+        // ~Xyz2020:
+        // ~X, 2020:
+        // ~X, Y, 2020, p1-2:
+        Inline<'reference/alias'>,
+        Parser<HTMLElement, [
+          SourceParser.UnescapableSourceParser,
+        ], State, Config> {
+      }
     }
     export interface TemplateParser extends
       // {{abc}}

@@ -183,6 +183,44 @@ describe('Unit: util/footnote', () => {
       }
     });
 
+    it('alias', () => {
+      const target = parse('[[~a]][[~a: b]][[~a]]');
+      const footnote = html('ol');
+      for (let i = 0; i < 3; ++i) {
+        [...reference(target, footnote)];
+        assert.deepStrictEqual(
+          [...target.children].map(el => el.outerHTML),
+          [
+            html('p', [
+              html('sup', { class: "reference invalid", 'data-alias': "a", id: "reference:ref:1",
+                'data-invalid-syntax': 'reference',
+                'data-invalid-type': 'content'
+              }, [
+                html('a', { href: "#reference:def:1", rel: "noopener" }, '[1]')
+              ]),
+              html('sup', { class: "reference", 'data-alias': "a", id: "reference:ref:2", title: "b" }, [
+                html('a', { href: "#reference:def:1", rel: "noopener" }, '[1]')
+              ]),
+              html('sup', { class: "reference", 'data-alias': "a", id: "reference:ref:3", title: "b" }, [
+                html('a', { href: "#reference:def:1", rel: "noopener" }, '[1]')
+              ]),
+            ]).outerHTML,
+          ]);
+        assert.deepStrictEqual(
+          footnote.outerHTML,
+          html('ol', [
+            html('li', { id: 'reference:def:1', class: 'footnote' }, [
+              text('b'),
+              html('sup', [
+                html('a', { href: '#reference:ref:1', rel: 'noopener' }, ' ~1'),
+                html('a', { href: '#reference:ref:2', rel: 'noopener' }, ' ~2'),
+                html('a', { href: '#reference:ref:3', rel: 'noopener' }, ' ~3'),
+              ])
+            ]),
+          ]).outerHTML);
+      }
+    });
+
   });
 
 });
