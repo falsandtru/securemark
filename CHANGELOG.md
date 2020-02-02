@@ -2,7 +2,6 @@
 
 ## 0.145.0
 
-- Limit the max size of joined headings to 1,000.
 - Rename ParserSettings.footnote to ParserSettings.footnotes.
 
 ## 0.144.2

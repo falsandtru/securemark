@@ -18,7 +18,6 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a\nb')), undefined);
       assert.deepStrictEqual(inspect(parser('# *a\nb*')), undefined);
       assert.deepStrictEqual(inspect(parser('# a\n#b')), undefined);
-      assert.deepStrictEqual(inspect(parser(`# a${'\n# b'.repeat(1000)}`)), undefined);
       assert.deepStrictEqual(inspect(parser('####### a')), undefined);
     });
 
