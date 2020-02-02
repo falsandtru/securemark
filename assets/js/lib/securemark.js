@@ -2876,7 +2876,7 @@ require = function () {
             const char_1 = _dereq_('../source/char');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.heading = combinator_1.block(combinator_1.focus(/^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?){0,999}(?:$|\n)/, combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.inits([
+            exports.heading = combinator_1.block(combinator_1.focus(/^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?)*(?:$|\n)/, combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.inits([
                 util_1.defrag(combinator_1.some(char_1.char('#'))),
                 util_1.defrag(combinator_1.trim(combinator_1.some(combinator_1.union([
                     inline_1.indexer,
