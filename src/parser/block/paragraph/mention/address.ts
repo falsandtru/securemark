@@ -11,7 +11,7 @@ export const address: ParagraphParser.MentionParser.AddressParser = line(fmap(va
   sequence([
     defrag(some(char('>'))),
     union([
-      focus(/^[a-zA-Z0-9]+(?:[/-][a-zA-Z0-9]+)*(?=\s*$)/, convert(source => `[]{ ${source} }`, link)),
+      focus(/^[A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*(?=\s*$)/, convert(source => `[]{ ${source} }`, link)),
       focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, convert(source => `[]{ ${addr(source)}${attr(source)} }`, link)),
     ]),
   ]))),
