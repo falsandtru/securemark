@@ -81,7 +81,15 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
       assert(ref.title || ref.matches('.invalid'));
       assert(ref.firstChild);
       void def.lastChild!.appendChild(
-        html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`));
+        html('a',
+          {
+            href: `#${refId}`,
+            rel: 'noopener',
+            title: content.childNodes.length > 0 && ref.hasAttribute('data-alias')
+              ? title
+              : void 0,
+          },
+          ` ~${refIndex}`));
     }
     count = 0;
     const { children } = footnote;

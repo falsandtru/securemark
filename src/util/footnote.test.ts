@@ -210,7 +210,7 @@ describe('Unit: util/footnote', () => {
               text('b'),
               html('sup', [
                 html('a', { href: '#reference:ref:1', rel: 'noopener' }, ' ~1'),
-                html('a', { href: '#reference:ref:2', rel: 'noopener' }, ' ~2'),
+                html('a', { href: '#reference:ref:2', rel: 'noopener', title: 'b' }, ' ~2'),
                 html('a', { href: '#reference:ref:3', rel: 'noopener' }, ' ~3'),
               ])
             ]),
