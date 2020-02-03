@@ -347,7 +347,7 @@
   document.getElementById('chars').textContent = document.getElementById('editor').value.length;
   (async () => log(await display()))();
   let timer = 0;
-  let wait;
+  let wait = undefined;
   function run() {
     clearTimeout(timer);
     wait = wait || new Promise(requestAnimationFrame);
