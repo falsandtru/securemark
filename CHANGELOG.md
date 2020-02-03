@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.146.1
+
+- Enhance footenote processing.
+
 ## 0.146.0
 
 - Add alias syntax into reference syntax.
