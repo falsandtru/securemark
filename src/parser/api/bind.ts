@@ -23,6 +23,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, stgs: 
       if (targetSegments[start] !== sourceSegments[start]) break;
     }
     assert(start <= targetSegments.length);
+    if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && start === sourceSegments.length) return;
     let end = 0;
     for (; start + end < targetSegments.length && start + end < sourceSegments.length; ++end) {
       if (targetSegments[targetSegments.length - end - 1] !== sourceSegments[sourceSegments.length - end - 1]) break;
