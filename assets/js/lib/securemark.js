@@ -4924,8 +4924,8 @@ require = function () {
                 if (target.nodeName === 'OL') {
                     void typed_dom_1.apply(target, '.footnote > sup:last-child > a', { href: null });
                 }
-                for (let i = 0, len = target.children.length; i < len; ++i) {
-                    const child = target.children[i];
+                for (let i = 0, {children} = target, len = children.length; i < len; ++i) {
+                    const child = children[i];
                     switch (child.tagName) {
                     case 'DL':
                         void typed_dom_1.apply(child, 'dt', { id: null });
@@ -5484,7 +5484,8 @@ require = function () {
                 const numbers = new Map();
                 let base = '0';
                 let bases = base.split('.');
-                for (const def of target.children) {
+                for (let i = 0, {children} = target, len = children.length; i < len; ++i) {
+                    const def = children[i];
                     if (![
                             'FIGURE',
                             'H1',
@@ -5620,20 +5621,21 @@ require = function () {
                         }, ` ~${ refIndex }`));
                     }
                     count = 0;
+                    const {children} = footnote;
                     I:
                         for (const def of defs.values()) {
                             void ++count;
-                            while (footnote.children.length > defs.size) {
-                                if (compare(footnote.children[count - 1], def))
+                            while (children.length > defs.size) {
+                                if (compare(children[count - 1], def))
                                     continue I;
-                                yield footnote.removeChild(footnote.children[count - 1]);
+                                yield footnote.removeChild(children[count - 1]);
                             }
-                            if (footnote.children.length >= count && compare(footnote.children[count - 1], def))
+                            if (children.length >= count && compare(children[count - 1], def))
                                 continue;
-                            yield footnote.insertBefore(def, footnote.children[count - 1] || null);
+                            yield footnote.insertBefore(def, children[count - 1] || null);
                         }
-                    while (footnote.children.length > defs.size) {
-                        yield footnote.removeChild(footnote.children[defs.size]);
+                    while (children.length > defs.size) {
+                        yield footnote.removeChild(children[defs.size]);
                     }
                     return;
                 };
