@@ -30,10 +30,15 @@ export function subline<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): P
 }
 
 export function firstline(source: string, keepLinebreak = true): string {
-  const i = source.indexOf('\n');
-  return i === -1
-    ? source
-    : source.slice(0, keepLinebreak ? i + 1 : i);
+  const i = source[0] === '\n' ? 0 : source.indexOf('\n');
+  switch (i) {
+    case -1:
+      return source;
+    case 0:
+      return keepLinebreak ? '\n' : '';
+    default:
+      return source.slice(0, keepLinebreak ? i + 1 : i);
+  }
 }
 
 export function isEmpty(line: string): boolean {
