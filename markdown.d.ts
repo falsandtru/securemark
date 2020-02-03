@@ -506,8 +506,8 @@ export namespace MarkdownParser {
         // [$group-name]
         Inline<'extension/label'>,
         Parser<HTMLAnchorElement, [
-          LinkParser,
-          LinkParser,
+          SourceParser.UnescapableSourceParser,
+          SourceParser.UnescapableSourceParser,
         ], State, Config> {
       }
       export interface DataParser extends

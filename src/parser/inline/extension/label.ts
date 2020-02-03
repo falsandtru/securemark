@@ -1,13 +1,10 @@
 import { ExtensionParser } from '../../inline';
-import { union, subline, focus, surround, convert, configure, fmap } from '../../../combinator';
-import { link } from '../link';
-import { define } from 'typed-dom';
+import { union, subline, focus, surround, configure, fmap } from '../../../combinator';
+import { html, text } from 'typed-dom';
 
 const parser = focus(
   /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/,
-  convert(
-    query => `[\\${query}]{#}`,
-    link));
+  query => [[text(query)], '']);
 
 export const label: ExtensionParser.LabelParser = subline(fmap(
   configure({ syntax: { inline: { link: void 0 } } },
@@ -15,7 +12,8 @@ export const label: ExtensionParser.LabelParser = subline(fmap(
     surround('[', parser, ']'),
     parser,
   ])),
-  ([el]) => [define(el, { class: 'label', 'data-label': el.textContent!.slice(el.textContent![1] === '-' ? 0 : 1), href: null })]));
+  ([text]) =>
+    [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])]));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

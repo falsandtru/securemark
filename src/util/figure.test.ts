@@ -28,8 +28,8 @@ describe('Unit: util/figure', () => {
           [...target.children].map(el => el.outerHTML),
           [
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure>',
-            '<p><a rel="noopener" class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
-            '<p><a rel="noopener" class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
+            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
+            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
           ]);
       }
     });
@@ -69,7 +69,7 @@ describe('Unit: util/figure', () => {
             '<figure data-label="fig-a-0.0.0" data-group="fig" data-number="1.0.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.0.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-b-0.0" data-group="fig" data-number="1.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-c" data-group="fig" data-number="2" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2. </span><figcaption></figcaption></figure>',
-            '<p><a rel="noopener" class="label" data-label="fig-b" href="#label:fig-b">Fig. 1.1</a></p>',
+            '<p><a class="label" data-label="fig-b" href="#label:fig-b">Fig. 1.1</a></p>',
           ]);
       }
     });
@@ -94,8 +94,8 @@ describe('Unit: util/figure', () => {
             '<figure data-label="$-4.1" data-group="$" data-number="4.1" id="label:$-4.1"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(4.1)</span><figcaption></figcaption></figure>',
             '<figure data-label="$-a" data-group="$" data-number="5" id="label:$-a"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(5)</span><figcaption></figcaption></figure>',
             '<figure data-label="fig-b" data-group="fig" data-number="3" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 3. </span><figcaption></figcaption></figure>',
-            '<p><a rel="noopener" class="label" data-label="fig-1.0">$fig-1.0</a></p>',
-            '<p><a rel="noopener" class="label" data-label="$-4.1" href="#label:$-4.1">(4.1)</a></p>',
+            '<p><a class="label" data-label="fig-1.0">$fig-1.0</a></p>',
+            '<p><a class="label" data-label="$-4.1" href="#label:$-4.1">(4.1)</a></p>',
           ]);
       }
     });
@@ -189,7 +189,7 @@ describe('Unit: util/figure', () => {
           [...target.children].map(el => el.outerHTML),
           [
             '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
-            '<p><a rel="noopener" class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
+            '<p><a class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
           ]);
       }
     });
@@ -207,7 +207,7 @@ describe('Unit: util/figure', () => {
           [...target.children].map(el => el.outerHTML),
           [
             '<blockquote><blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure></blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure></blockquote>',
-            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><div><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure><p><a rel="noopener" class="label" data-label="fig-a">Fig. 1</a></p></div><ol></ol><ol></ol></aside>',
+            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><div><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure><p><a class="label" data-label="fig-a">Fig. 1</a></p></div><ol></ol><ol></ol></aside>',
             '<figure data-label="fig-b" data-group="fig" data-number="1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-a" data-group="fig" data-number="2" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2. </span><figcaption></figcaption></figure>',
           ]);
@@ -226,8 +226,8 @@ describe('Unit: util/figure', () => {
           [...target.children].map(el => el.outerHTML),
           [
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1. </span><figcaption></figcaption></figure>',
-            '<p><a rel="noopener" class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
-            '<p><a rel="noopener" class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
+            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
+            '<p><a class="label" data-label="fig-a" href="#label:fig-a">Fig. 1</a></p>',
           ]);
       }
     });
