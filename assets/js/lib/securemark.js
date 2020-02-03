@@ -3866,17 +3866,18 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
-            const link_1 = _dereq_('../link');
             const typed_dom_1 = _dereq_('typed-dom');
-            const parser = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/, combinator_1.convert(query => `[\\${ query }]{#}`, link_1.link));
+            const parser = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/, query => [
+                [typed_dom_1.text(query)],
+                ''
+            ]);
             exports.label = combinator_1.subline(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.union([
                 combinator_1.surround('[', parser, ']'),
                 parser
-            ])), ([el]) => [typed_dom_1.define(el, {
+            ])), ([text]) => [typed_dom_1.html('a', {
                     class: 'label',
-                    'data-label': el.textContent.slice(el.textContent[1] === '-' ? 0 : 1),
-                    href: null
-                })]));
+                    'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1)
+                }, [text])]));
             function number(label, base) {
                 return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length);
             }
@@ -3902,7 +3903,6 @@ require = function () {
         },
         {
             '../../../combinator': 31,
-            '../link': 104,
             'typed-dom': 24
         }
     ],
