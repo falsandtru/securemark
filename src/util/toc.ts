@@ -1,11 +1,13 @@
 import { concat } from 'spica/concat';
 import { html, frag } from 'typed-dom';
 
+const Tags = [...Array(6)].map((_, i) => `H${i + 1}`);
+
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   const hs = [...source.children]
     .filter((el): el is HTMLHeadingElement =>
       el.id !== '' &&
-      el instanceof HTMLHeadingElement);
+      Tags.includes(el.tagName));
   return parse(cons(hs));
 }
 

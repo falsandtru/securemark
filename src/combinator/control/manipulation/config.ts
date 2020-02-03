@@ -1,5 +1,4 @@
 import { WeakMap } from 'spica/global';
-import { ObjectCreate } from 'spica/alias';
 import { Parser, Config } from '../../data/parser';
 import { template } from 'spica/assign';
 import { concat } from 'spica/concat';
@@ -35,7 +34,7 @@ const merge = template((prop, target, source) => {
         case 'Object':
           return target[prop] = merge(target[prop], source[prop]);
         default:
-          return target[prop] = merge(source[prop] instanceof Object ? {} : ObjectCreate(null), source[prop]);
+          return target[prop] = merge({}, source[prop]);
       }
     default:
       return target[prop] = source[prop];
