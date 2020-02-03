@@ -76,18 +76,19 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
         html('a', { href: `#${refId}`, rel: 'noopener' }, ` ~${refIndex}`));
     }
     count = 0;
+    const { children } = footnote;
     I:
     for (const def of defs.values()) {
       void ++count;
-      while (footnote.children.length > defs.size) {
-        if (compare(footnote.children[count - 1], def)) continue I;
-        yield footnote.removeChild(footnote.children[count - 1]) as HTMLLIElement;
+      while (children.length > defs.size) {
+        if (compare(children[count - 1], def)) continue I;
+        yield footnote.removeChild(children[count - 1]) as HTMLLIElement;
       }
-      if (footnote.children.length >= count && compare(footnote.children[count - 1], def)) continue;
-      yield footnote.insertBefore(def, footnote.children[count - 1] || null);
+      if (children.length >= count && compare(children[count - 1], def)) continue;
+      yield footnote.insertBefore(def, children[count - 1] || null);
     }
-    while (footnote.children.length > defs.size) {
-      yield footnote.removeChild(footnote.children[defs.size]) as HTMLLIElement;
+    while (children.length > defs.size) {
+      yield footnote.removeChild(children[defs.size]) as HTMLLIElement;
     }
     return;
   }

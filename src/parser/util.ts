@@ -109,8 +109,8 @@ export function suppress<T extends HTMLOListElement | DocumentFragment>(target: 
     assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
     void apply(target, '.footnote > sup:last-child > a', { href: null });
   }
-  for (let i = 0, len = target.children.length; i < len; ++i) {
-    const child = target.children[i];
+  for (let i = 0, { children } = target, len = children.length; i < len; ++i) {
+    const child = children[i];
     switch (child.tagName) {
       case 'DL':
         assert.deepStrictEqual([...child.querySelectorAll('dt')], [...child.querySelectorAll(':scope > dt')]);
