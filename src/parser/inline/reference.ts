@@ -1,13 +1,14 @@
 import { ReferenceParser } from '../inline';
-import { subsequence, some, subline, contract, verify, focus, surround, guard, configure, lazy, fmap } from '../../combinator';
+import { subsequence, some, subline, contract, validate, verify, focus, surround, guard, configure, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { defrag, trimNodeEnd, hasTightText } from '../util';
 import { html } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => subline(verify(fmap(
+export const reference: ReferenceParser = lazy(() => subline(verify(fmap(validate(
+  '[[',
   guard(config => config.syntax?.inline?.reference ?? true,
   configure({ syntax: { inline: { annotation: false, reference: false, media: false } } },
-  surround('[[', subsequence([alias, trimNodeEnd(defrag(some(inline, /^\\?\n|^]]/)))]), ']]'))),
+  surround('[[', subsequence([alias, trimNodeEnd(defrag(some(inline, /^\\?\n|^]]/)))]), ']]')))),
   ns => [
     html('sup',
       {

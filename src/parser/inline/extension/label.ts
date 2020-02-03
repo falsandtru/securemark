@@ -1,17 +1,18 @@
 import { ExtensionParser } from '../../inline';
-import { union, subline, focus, surround, configure, fmap } from '../../../combinator';
+import { union, subline, validate, focus, surround, configure, fmap } from '../../../combinator';
 import { html, text } from 'typed-dom';
 
 const parser = focus(
   /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/,
   query => [[text(query)], '']);
 
-export const label: ExtensionParser.LabelParser = subline(fmap(
+export const label: ExtensionParser.LabelParser = subline(fmap(validate(
+  ['[$', '$'],
   configure({ syntax: { inline: { link: void 0 } } },
   union([
     surround('[', parser, ']'),
     parser,
-  ])),
+  ]))),
   ([text]) =>
     [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])]));
 
