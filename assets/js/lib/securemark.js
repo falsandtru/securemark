@@ -1428,8 +1428,13 @@ require = function () {
                         let cnt = 0;
                         I:
                             for (const child of children) {
+                                if (child.nodeType === 11) {
+                                    cnt += child.childNodes.length;
+                                    void el.insertBefore(child, el.childNodes[cnt - child.childNodes.length] || null);
+                                    continue;
+                                }
                                 void ++cnt;
-                                while (el.childNodes.length > children.length) {
+                                while (el.childNodes.length > cnt) {
                                     if (el.childNodes[cnt - 1] === child)
                                         continue I;
                                     void el.removeChild(el.childNodes[cnt - 1]);
@@ -1438,12 +1443,17 @@ require = function () {
                                     continue;
                                 void el.insertBefore(child, el.childNodes[cnt - 1] || null);
                             }
-                        while (el.childNodes.length > children.length) {
-                            void el.removeChild(el.childNodes[children.length]);
+                        while (el.childNodes.length > cnt) {
+                            void el.removeChild(el.childNodes[cnt]);
                         }
                     } else {
                         let cnt = 0;
                         for (const child of children) {
+                            if (child.nodeType === 11) {
+                                cnt += child.childNodes.length;
+                                void el.insertBefore(child, el.childNodes[cnt - child.childNodes.length] || null);
+                                continue;
+                            }
                             void ++cnt;
                             if (childNodes.length <= cnt && child === childNodes[cnt - 1])
                                 continue;
@@ -4364,10 +4374,10 @@ require = function () {
                     class: 'reference',
                     'data-alias': ns[0].nodeName === 'ABBR' ? ns.shift().textContent : undefined
                 }, ns)]), ([el]) => util_1.hasTightText(el) || el.hasAttribute('data-alias'))));
-            const alias = combinator_1.subline(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',. -]*(?:: |(?=]]))/, source => [
-                [typed_dom_1.html('abbr', source.slice(1, source[source.length - 2] === ':' ? -2 : source.length))],
+            const alias = combinator_1.subline(combinator_1.contract('~', combinator_1.focus(/^~[A-za-z][A-Za-z0-9', -]*(?:(?=]])|:(?:(?=]])| ))/, source => !source.includes('  ') ? [
+                [typed_dom_1.html('abbr', source.slice(1, ~(~source.indexOf(':', -2) || ~source.length)))],
                 ''
-            ]));
+            ] : void 0), ([el]) => util_1.hasTightText(el)));
         },
         {
             '../../combinator': 31,
@@ -5558,8 +5568,10 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            const global_1 = _dereq_('spica/global');
             const context_1 = _dereq_('./context');
             const indexee_1 = _dereq_('../parser/inline/extension/indexee');
+            const multimap_1 = _dereq_('spica/multimap');
             const memoize_1 = _dereq_('spica/memoize');
             const typed_dom_1 = _dereq_('typed-dom');
             function* footnote(target, footnotes) {
@@ -5577,6 +5589,7 @@ require = function () {
                     var _a;
                     const check = context_1.context(target);
                     const defs = new Map();
+                    const refs = new multimap_1.MultiMap();
                     const titles = new Map();
                     let count = 0;
                     for (const ref of target.querySelectorAll(`.${ syntax }`)) {
@@ -5584,8 +5597,9 @@ require = function () {
                             continue;
                         void ++count;
                         const identifier = identify(ref);
-                        const title = ref.classList.contains('invalid') ? void 0 : titles.get(identifier) || ref.title || indexee_1.text(ref);
+                        const title = ref.classList.contains('invalid') ? void 0 : titles.get(identifier) || ref.title || indexee_1.text(ref) || void 0;
                         title && !titles.has(title) && void titles.set(identifier, title);
+                        !title && void refs.set(identifier, ref);
                         const content = contentify(ref);
                         const refIndex = count;
                         const refId = ref.id || `${ syntax }:ref:${ count }`;
@@ -5596,8 +5610,16 @@ require = function () {
                             content.cloneNode(true),
                             typed_dom_1.html('sup', [])
                         ])).get(identifier);
-                        if (title && def.childNodes.length === 1) {
+                        if (title && def.childNodes.length === 1 && content.childNodes.length > 0) {
                             void def.insertBefore(content.cloneNode(true), def.lastChild);
+                            for (const ref of refs.take(identifier, global_1.Infinity)) {
+                                void ref.classList.remove('invalid');
+                                void typed_dom_1.define(ref, {
+                                    title,
+                                    'data-invalid-syntax': null,
+                                    'data-invalid-message': null
+                                });
+                            }
                         }
                         const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1);
                         const defId = def.id;
@@ -5612,14 +5634,15 @@ require = function () {
                                 'invalid'
                             ].join(' '),
                             'data-invalid-syntax': syntax,
-                            'data-invalid-message': 'Footnotes must be set a content at the first use of the each alias'
-                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.hash) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && refChild.textContent === marker(defIndex) ? undefined : [typed_dom_1.html('a', {
+                            'data-invalid-message': 'Missing a content'
+                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && refChild.textContent === marker(defIndex) ? undefined : [typed_dom_1.html('a', {
                                 href: `#${ defId }`,
                                 rel: 'noopener'
                             }, marker(defIndex))]).firstChild;
                         void def.lastChild.appendChild(typed_dom_1.html('a', {
                             href: `#${ refId }`,
-                            rel: 'noopener'
+                            rel: 'noopener',
+                            title: content.childNodes.length > 0 && ref.hasAttribute('data-alias') ? title : void 0
                         }, ` ~${ refIndex }`));
                     }
                     count = 0;
@@ -5649,7 +5672,9 @@ require = function () {
         {
             '../parser/inline/extension/indexee': 97,
             './context': 138,
+            'spica/global': 13,
             'spica/memoize': 14,
+            'spica/multimap': 15,
             'typed-dom': 24
         }
     ],
