@@ -65,8 +65,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
               'data-invalid-syntax': syntax,
               'data-invalid-message': 'Footnotes must be set a content at the first use of the each alias',
             },
-        // FIXME: #36031
-        refChild?.hash?.slice(1) === defId && refChild.textContent === marker(defIndex)
+        refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
           ? undefined
           : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
         .firstChild as HTMLAnchorElement;
