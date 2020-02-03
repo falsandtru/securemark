@@ -347,11 +347,13 @@
   document.getElementById('chars').textContent = document.getElementById('editor').value.length;
   (async () => log(await display()))();
   let timer = 0;
+  let wait;
   function run() {
     clearTimeout(timer);
-    wait = new Promise(requestAnimationFrame);
+    wait = wait || new Promise(requestAnimationFrame);
     timer = setTimeout(async function () {
       await wait;
+      wait = undefined;
       log(await display());
       share();
     }, 500);
@@ -364,7 +366,7 @@
     let time = 0;
     let resource = 100;
     for (const el of update(document.getElementById('editor').value)) {
-      if (!el) throw new Error('Abort.');
+      if (!el || wait) throw new Error('Abort.');
       switch (el.tagName) {
         case 'A':
           break;
