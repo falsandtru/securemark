@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { subsequence, some, subline, verify, focus, surround, guard, configure, lazy, fmap } from '../../combinator';
+import { subsequence, some, subline, contract, verify, focus, surround, guard, configure, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { defrag, trimNodeEnd, hasTightText } from '../util';
 import { html } from 'typed-dom';
@@ -20,6 +20,10 @@ export const reference: ReferenceParser = lazy(() => subline(verify(fmap(
   ]),
   ([el]) => hasTightText(el) || el.hasAttribute('data-alias'))));
 
-const alias: ReferenceParser.AliasParser = subline(focus(
-  /^~[A-za-z][A-Za-z0-9',. -]*(?:: |(?=]]))/,
-  source => [[html('abbr', source.slice(1, source[source.length - 2] === ':' ? -2 : source.length))], '']));
+const alias: ReferenceParser.AliasParser = subline(contract('~', focus(
+  /^~[A-za-z][A-Za-z0-9', -]*(?:(?=]])|:(?:(?=]])| ))/,
+  source =>
+    !source.includes('  ')
+      ? [[html('abbr', source.slice(1, ~(~source.indexOf(':', -2) || ~source.length)))], '']
+      : void 0),
+  ([el]) => hasTightText(el)));
