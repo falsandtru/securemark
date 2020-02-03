@@ -38,9 +38,9 @@ export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S
     const acc: T[] = [];
     void nodes.reduce<T | undefined>((prev, curr) => {
       if (curr.nodeType === 3) {
-        const text = curr.textContent!;
+        const text = (curr as Node as Text).data;
         if (text === '') return prev;
-        if (prev?.nodeType === 3) return prev.textContent += text, prev;
+        if (prev?.nodeType === 3) return (prev as Node as Text).data += text, prev;
       }
       void acc.push(curr);
       return curr;
@@ -62,17 +62,17 @@ function trimNode_<T extends HTMLElement | Text, D extends Parser<unknown, any, 
     switch (node.nodeType) {
       case 3:
         assert(ns[mode === 'start' ? 1 : ns.length - 2] instanceof Text === false);
-        const text = node.textContent!;
+        const text = (node as Node as Text).data;
         assert(text !== '');
         if (ns.length === 1 && text.length === 1) break;
         switch (mode) {
           case 'start':
             if (text[0]?.trim() !== '') break;
-            node.textContent = text.slice(1);
+            (node as Node as Text).data = text.slice(1);
             break;
           case 'end':
             if (text[text.length - 1]?.trim() !== '') break;
-            node.textContent = text.slice(0, -1);
+            (node as Node as Text).data = text.slice(0, -1);
             break;
         }
         break;
@@ -98,7 +98,7 @@ function trimNode_<T extends HTMLElement | Text, D extends Parser<unknown, any, 
 }
 
 export function stringify(nodes: Node[]): string {
-  return nodes.reduce((acc, node) => acc + node.textContent, '');
+  return nodes.reduce((acc, node) => acc + (node.nodeType === 3 ? (node as Node as Text).data : node.textContent), '');
 }
 
 export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T {

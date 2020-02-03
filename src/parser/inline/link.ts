@@ -49,14 +49,14 @@ export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
         }
       }
       else {
-        if (eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node instanceof HTMLElement)) return false;
+        if (eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node.nodeType === 1)) return false;
       }
       assert(!proxy.querySelector('a, .annotation, .reference'));
     }
     return true;
   }),
   ([text, param]: [(HTMLElement | Text)[], Text[]], rest) => {
-    const [INSECURE_URL, ...params]: string[] = param.map(t => t.textContent!);
+    const [INSECURE_URL, ...params]: string[] = param.map(({ data }) => data);
     assert(INSECURE_URL === INSECURE_URL.trim());
     const el = html('a',
       {

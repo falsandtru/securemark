@@ -15,12 +15,12 @@ export const address: ParagraphParser.MentionParser.AddressParser = line(fmap(va
       focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, convert(source => `[]{ ${addr(source)}${attr(source)} }`, link)),
     ]),
   ]))),
-  ([flag, link]: [Text, HTMLAnchorElement]) => [
+  ([{ data: flag }, link]: [Text, HTMLAnchorElement]) => [
     define(link,
       {
         class: 'address',
-        'data-level': `${flag.textContent!.length}`,
+        'data-level': `${flag.length}`,
         href: null
       },
-      `${flag.textContent}${link.textContent}`)
+      `${flag}${link.textContent}`)
   ]));
