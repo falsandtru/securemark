@@ -3178,7 +3178,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const concat_1 = _dereq_('spica/concat');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate('|', combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.sequence([
+            exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^\|[^\n]*(?:\n\|[^\n]*){2,}/, combinator_1.configure({ syntax: { inline: { media: false } } }, combinator_1.sequence([
                 row(cell(data), false),
                 row(cell(alignment), true),
                 combinator_1.some(row(cell(data), false))
@@ -3387,7 +3387,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.annotation = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.guard(config => {
+            exports.annotation = combinator_1.lazy(() => combinator_1.verify(combinator_1.fmap(combinator_1.validate('((', combinator_1.guard(config => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.annotation) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.configure({
@@ -3398,7 +3398,7 @@ require = function () {
                         media: false
                     }
                 }
-            }, combinator_1.surround('((', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '))'))), '))'))), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el)));
+            }, combinator_1.surround('((', util_1.trimNodeEnd(util_1.defrag(combinator_1.some(combinator_1.union([inline_1.inline]), '))'))), '))')))), ns => [typed_dom_1.html('sup', { class: 'annotation' }, ns)]), ([el]) => util_1.hasTightText(el)));
         },
         {
             '../../combinator': 31,
@@ -3788,7 +3788,7 @@ require = function () {
             const link_1 = _dereq_('../link');
             const indexee_1 = _dereq_('./indexee');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.configure({
+            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.fmap(combinator_1.validate('[#', combinator_1.configure({
                 syntax: {
                     inline: {
                         link: void 0,
@@ -3796,7 +3796,7 @@ require = function () {
                     }
                 },
                 insecure: true
-            }, combinator_1.rewrite(combinator_1.surround('[#', combinator_1.some(inline_1.inline, /^\\?\n|^]/), ']'), combinator_1.convert(source => `[${ source.slice(2, -1) }]{#}`, indexee_1.indexee(combinator_1.union([link_1.link]))))), ([el]) => [typed_dom_1.define(el, {
+            }, combinator_1.rewrite(combinator_1.surround('[#', combinator_1.some(inline_1.inline, /^\\?\n|^]/), ']'), combinator_1.convert(source => `[${ source.slice(2, -1) }]{#}`, indexee_1.indexee(combinator_1.union([link_1.link])))))), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: `#${ el.id }`
@@ -3871,10 +3871,13 @@ require = function () {
                 [typed_dom_1.text(query)],
                 ''
             ]);
-            exports.label = combinator_1.subline(combinator_1.fmap(combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.union([
+            exports.label = combinator_1.subline(combinator_1.fmap(combinator_1.validate([
+                '[$',
+                '$'
+            ], combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.union([
                 combinator_1.surround('[', parser, ']'),
                 parser
-            ])), ([text]) => [typed_dom_1.html('a', {
+            ]))), ([text]) => [typed_dom_1.html('a', {
                     class: 'label',
                     'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1)
                 }, [text])]));
@@ -4356,7 +4359,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.reference = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.guard(config => {
+            exports.reference = combinator_1.lazy(() => combinator_1.subline(combinator_1.verify(combinator_1.fmap(combinator_1.validate('[[', combinator_1.guard(config => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.configure({
@@ -4370,7 +4373,7 @@ require = function () {
             }, combinator_1.surround('[[', combinator_1.subsequence([
                 alias,
                 util_1.trimNodeEnd(util_1.defrag(combinator_1.some(inline_1.inline, /^\\?\n|^]]/)))
-            ]), ']]'))), ns => [typed_dom_1.html('sup', {
+            ]), ']]')))), ns => [typed_dom_1.html('sup', {
                     class: 'reference',
                     'data-alias': ns[0].nodeName === 'ABBR' ? ns.shift().textContent : undefined
                 }, ns)]), ([el]) => util_1.hasTightText(el) || el.hasAttribute('data-alias'))));
