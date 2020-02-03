@@ -192,10 +192,7 @@ describe('Unit: util/footnote', () => {
           [...target.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "reference invalid", 'data-alias': "a", id: "reference:ref:1",
-                'data-invalid-syntax': 'reference',
-                'data-invalid-message': 'Footnotes must be set a content at the first use of the each alias'
-              }, [
+              html('sup', { class: "reference", 'data-alias': "a", id: "reference:ref:1", title: "b" }, [
                 html('a', { href: "#reference:def:1", rel: "noopener" }, '[1]')
               ]),
               html('sup', { class: "reference", 'data-alias': "a", id: "reference:ref:2", title: "b" }, [

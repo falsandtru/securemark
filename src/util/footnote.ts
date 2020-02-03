@@ -1,5 +1,7 @@
+import { Infinity } from 'spica/global';
 import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
+import { MultiMap } from 'spica/multimap';
 import { memoize } from 'spica/memoize';
 import { frag, html, define } from 'typed-dom';
 
@@ -24,6 +26,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
   return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
+    const refs = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     let count = 0;
     for (const ref of target.querySelectorAll<HTMLElement>(`.${syntax}`)) {
@@ -32,8 +35,9 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
       const identifier = identify(ref);
       const title = ref.classList.contains('invalid')
         ? void 0
-        : titles.get(identifier) || ref.title || text(ref);
+        : titles.get(identifier) || ref.title || text(ref) || void 0;
       title && !titles.has(title) && void titles.set(identifier, title);
+      !title && void refs.set(identifier, ref);
       const content = contentify(ref);
       const refIndex = count;
       const refId = ref.id || `${syntax}:ref:${count}`;
@@ -44,12 +48,17 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
             [content.cloneNode(true), html('sup', [])]))
             .get(identifier)!;
       assert(def.lastChild);
-      if (title && def.childNodes.length === 1) {
-        assert(content.childNodes.length > 0);
-        void def.insertBefore(
-          content.cloneNode(true),
-          def.lastChild);
+      if (title && def.childNodes.length === 1 && content.childNodes.length > 0) {
+        void def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
+        for (const ref of refs.take(identifier, Infinity)) {
+          void ref.classList.remove('invalid');
+          void define(ref, {
+            title,
+            'data-invalid-syntax': null,
+            'data-invalid-message': null,
+          });
+        }
       }
       const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1);
       const defId = def.id;
@@ -63,7 +72,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
                 ? undefined
                 : [...ref.classList, 'invalid'].join(' '),
               'data-invalid-syntax': syntax,
-              'data-invalid-message': 'Footnotes must be set a content at the first use of the each alias',
+              'data-invalid-message': 'Missing a content',
             },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
           ? undefined
