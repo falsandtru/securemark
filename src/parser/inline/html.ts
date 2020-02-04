@@ -95,11 +95,9 @@ export function attrs(
         ? param.slice(key.length + 2, -1)
         : void 0;
       invalid = invalid || !spec || key in attrs;
-      if (spec) {
-        key in spec && spec[key].includes(val)
-          ? attrs[key] = val || ''
-          : invalid = true;
-      }
+      spec?.[key]?.includes(val)
+        ? attrs[key] = val || ''
+        : invalid = invalid || !!spec;
       return attrs;
     }, ObjectCreate(null));
   invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
