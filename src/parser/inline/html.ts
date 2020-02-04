@@ -1,5 +1,5 @@
-import { Map, WeakMap } from 'spica/global';
-import { hasOwnProperty, isFrozen, ObjectEntries, ObjectFreeze } from 'spica/alias';
+import { WeakMap } from 'spica/global';
+import { hasOwnProperty, isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze } from 'spica/alias';
 import { HTMLParser, inline } from '../inline';
 import { union, inits, sequence, some, subline, rewrite, rewrite_, focus, validate, verify, surround, match, memoize, guard, configure, lazy, fmap } from '../../combinator';
 import { escsource, unescsource, char } from '../source';
@@ -85,24 +85,27 @@ export function attrs(
   classes: string[],
   syntax: string,
 ): Record<string, string | undefined> {
-  const result: Record<string, string> = {};
   let invalid = classes.includes('invalid');
-  const attrs: Map<string, string | undefined> = new Map(params.map<[string, string | undefined]>(
-    arg => [arg.split('=', 1)[0], arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : void 0]));
-  if (spec) {
-    for (const [key, value] of attrs) {
-      hasOwnProperty(spec, key) && spec[key].includes(value)
-        ? result[key] = value || ''
-        : invalid = true;
-    }
-  }
-  invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
-  invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => attrs.has(k));
+  const attrs = params
+    .reduce<Record<string, string>>((attrs, param) => {
+      const key = param.split('=', 1)[0];
+      const val = param.includes('=')
+        ? param.slice(key.length + 2, -1)
+        : void 0;
+      invalid = invalid || !spec || key in attrs;
+      if (spec) {
+        hasOwnProperty(spec, key) && spec[key].includes(val)
+          ? attrs[key] = val || ''
+          : invalid = true;
+      }
+      return attrs;
+    }, ObjectCreate(null));
+  invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
   if (invalid) {
     void classes.push('invalid');
-    result.class = classes.join(' ').trim();
-    result['data-invalid-syntax'] = syntax;
-    result['data-invalid-message'] = 'Invalid parameter';
+    attrs.class = classes.join(' ').trim();
+    attrs['data-invalid-syntax'] = syntax;
+    attrs['data-invalid-message'] = 'Invalid parameter';
   }
-  return result;
+  return attrs;
 }
