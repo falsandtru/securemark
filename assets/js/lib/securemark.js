@@ -4001,12 +4001,11 @@ require = function () {
             function attrs(spec, params, classes, syntax) {
                 let invalid = classes.includes('invalid');
                 const attrs = params.reduce((attrs, param) => {
+                    var _a;
                     const key = param.split('=', 1)[0];
                     const val = param.includes('=') ? param.slice(key.length + 2, -1) : void 0;
                     invalid = invalid || !spec || key in attrs;
-                    if (spec) {
-                        key in spec && spec[key].includes(val) ? attrs[key] = val || '' : invalid = true;
-                    }
+                    ((_a = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _a === void 0 ? void 0 : _a.includes(val)) ? attrs[key] = val || '' : invalid = invalid || !!spec;
                     return attrs;
                 }, alias_1.ObjectCreate(null));
                 invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
