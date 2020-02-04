@@ -1,4 +1,5 @@
 import { Array, location, encodeURI, decodeURI } from 'spica/global';
+import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, media, shortmedia, inline } from '../inline';
 import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind, eval } from '../../combinator';
 import { unescsource } from '../source';
@@ -14,6 +15,7 @@ const { origin } = location;
 export const attributes = {
   nofollow: [void 0],
 } as const;
+void ObjectSetPrototypeOf(attributes, null);
 
 export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
   /^(?:\[.*?\])?{(?![{}]).+?}/,

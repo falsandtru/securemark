@@ -1,5 +1,5 @@
 import { WeakMap } from 'spica/global';
-import { hasOwnProperty, isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze } from 'spica/alias';
+import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { HTMLParser, inline } from '../inline';
 import { union, inits, sequence, some, subline, rewrite, rewrite_, focus, validate, verify, surround, match, memoize, guard, configure, lazy, fmap } from '../../combinator';
 import { escsource, unescsource, char } from '../source';
@@ -13,6 +13,8 @@ const attributes = {
     dir: ObjectFreeze(['ltr', 'rtl'] as const),
   },
 } as const;
+void ObjectSetPrototypeOf(attributes, null);
+void ObjectValues(attributes).forEach(o => void ObjectSetPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => validate(/^<[a-z]+[ />]/, union([
   match(
@@ -94,7 +96,7 @@ export function attrs(
         : void 0;
       invalid = invalid || !spec || key in attrs;
       if (spec) {
-        hasOwnProperty(spec, key) && spec[key].includes(val)
+        key in spec && spec[key].includes(val)
           ? attrs[key] = val || ''
           : invalid = true;
       }
