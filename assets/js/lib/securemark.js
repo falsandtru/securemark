@@ -2753,9 +2753,9 @@ require = function () {
             const mathblock_1 = _dereq_('../mathblock');
             const example_1 = _dereq_('../extension/example');
             const blockquote_1 = _dereq_('../blockquote');
-            const inline_1 = _dereq_('../../inline');
+            const label_1 = _dereq_('../../inline/extension/label');
             exports.segment = combinator_1.block(combinator_1.sequence([
-                combinator_1.line(inline_1.label),
+                combinator_1.line(label_1.segment),
                 combinator_1.union([
                     codeblock_1.segment,
                     mathblock_1.segment,
@@ -2771,7 +2771,7 @@ require = function () {
         },
         {
             '../../../combinator': 31,
-            '../../inline': 80,
+            '../../inline/extension/label': 99,
             '../../source': 116,
             '../blockquote': 61,
             '../codeblock': 62,
@@ -2791,12 +2791,13 @@ require = function () {
             const mathblock_1 = _dereq_('../mathblock');
             const example_1 = _dereq_('./example');
             const blockquote_1 = _dereq_('../blockquote');
+            const label_1 = _dereq_('../../inline/extension/label');
             const paragraph_1 = _dereq_('../paragraph');
             const inline_1 = _dereq_('../../inline');
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, combinator_1.memoize(([, bracket]) => bracket, (bracket, closer = new RegExp(`^${ bracket }[^\\S\\n]*(?:$|\\n)`)) => combinator_1.surround('', combinator_1.sequence([
-                combinator_1.line(inline_1.label),
+                combinator_1.line(label_1.segment),
                 combinator_1.inits([
                     combinator_1.union([
                         codeblock_1.segment_,
@@ -2813,7 +2814,7 @@ require = function () {
                 ])
             ]), closer))));
             exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')), combinator_1.sequence([
-                combinator_1.line(inline_1.label),
+                combinator_1.line(label_1.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
                         table_1.table,
@@ -2849,6 +2850,7 @@ require = function () {
         {
             '../../../combinator': 31,
             '../../inline': 80,
+            '../../inline/extension/label': 99,
             '../../source': 116,
             '../../util': 123,
             '../blockquote': 61,
@@ -3351,7 +3353,6 @@ require = function () {
             var indexee_1 = _dereq_('./inline/extension/indexee');
             exports.indexee = indexee_1.indexee;
             var label_1 = _dereq_('./inline/extension/label');
-            exports.label = label_1.label;
             exports.isFixed = label_1.isFixed;
             exports.isFormatted = label_1.isFormatted;
         },
@@ -3738,7 +3739,10 @@ require = function () {
             exports.extension = combinator_1.guard(config => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.extension) !== null && _c !== void 0 ? _c : true;
-            }, combinator_1.validate(/^[[$]/, combinator_1.union([
+            }, combinator_1.validate([
+                '[',
+                '$'
+            ], combinator_1.union([
                 index_1.index,
                 label_1.label,
                 data_1.data,
@@ -3872,20 +3876,27 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            const parser = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/, query => [
+            const body = combinator_1.focus(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/, query => [
                 [typed_dom_1.text(query)],
                 ''
             ]);
-            exports.label = combinator_1.subline(combinator_1.fmap(combinator_1.validate([
+            exports.segment = combinator_1.subline(combinator_1.fmap(combinator_1.validate([
+                '[$',
+                '$'
+            ], combinator_1.union([
+                combinator_1.surround('[', body, ']'),
+                body
+            ])), () => []));
+            exports.label = combinator_1.subline(combinator_1.rewrite(exports.segment, combinator_1.fmap(combinator_1.validate([
                 '[$',
                 '$'
             ], combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.union([
-                combinator_1.surround('[', parser, ']'),
-                parser
+                combinator_1.surround('[', body, ']'),
+                body
             ]))), ([text]) => [typed_dom_1.html('a', {
                     class: 'label',
                     'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1)
-                }, [text])]));
+                }, [text])])));
             function number(label, base) {
                 return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length);
             }
@@ -5526,7 +5537,7 @@ require = function () {
                             number = `0${ '.0'.repeat(bases.length - 1) }`;
                             break;
                         case number.startsWith('0.'):
-                            number = bases.slice().reduce((ns, _, i, bs) => {
+                            number = bases.slice(0).reduce((ns, _, i, bs) => {
                                 i === ns.length ? bs.length = i : ns[i] = +ns[i] > +bs[i] ? ns[i] : +ns[i] === 0 ? bs[i] : `${ +bs[i] + 1 }`;
                                 return ns;
                             }, number.split('.')).join('.');
