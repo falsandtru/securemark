@@ -6,14 +6,14 @@ import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
 import { segment as seg_example } from '../extension/example';
 import { segment as seg_blockquote } from '../blockquote';
-import { label } from '../../inline';
+import { segment as seg_label } from '../../inline/extension/label';
 
 import FigParser = ExtensionParser.FigParser;
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigParser.SegmentParser = block(
   sequence([
-    line(label),
+    line(seg_label),
     union([
       seg_code,
       seg_math,

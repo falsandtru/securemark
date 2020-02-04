@@ -76,4 +76,4 @@ export { autolink } from './inline/autolink';
 export { url, address, attribute } from './inline/autolink/url';
 export { indexer } from './inline/extension/indexer';
 export { indexee } from './inline/extension/indexee';
-export { label, isFixed, isFormatted } from './inline/extension/label';
+export { isFixed, isFormatted } from './inline/extension/label';

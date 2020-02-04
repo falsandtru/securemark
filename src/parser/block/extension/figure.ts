@@ -6,8 +6,9 @@ import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example, segment_ as seg_example } from './example';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
+import { label, segment as seg_label } from '../../inline/extension/label';
 import { blankline } from '../paragraph';
-import { inline, label, media, shortmedia } from '../../inline';
+import { inline, media, shortmedia } from '../../inline';
 import { defrag } from '../../util';
 import { html } from 'typed-dom';
 
@@ -20,7 +21,7 @@ export const segment: FigureParser.SegmentParser = block(match(
     surround(
       '',
       sequence([
-        line(label),
+        line(seg_label),
         inits([
           // All parsers which can include closing terms.
           union([

@@ -34,7 +34,7 @@ export namespace MarkdownParser {
   }
   export interface SegmentParser extends
     Markdown<'segment'>,
-    Parser<HTMLElement, [
+    Parser<never, [
       BlockParser.CodeBlockParser.SegmentParser,
       BlockParser.MathBlockParser.SegmentParser,
       BlockParser.ExtensionParser.SegmentParser,
@@ -280,7 +280,7 @@ export namespace MarkdownParser {
     export namespace ExtensionParser {
       export interface SegmentParser extends
         Block<'extension/segment'>,
-        Parser<HTMLElement, [
+        Parser<never, [
           FigParser.SegmentParser,
           FigureParser.SegmentParser,
           ExampleParser.SegmentParser,
@@ -317,8 +317,8 @@ export namespace MarkdownParser {
       export namespace FigureParser {
         export interface SegmentParser extends
           Block<'extension/figure/segment'>,
-          Parser<HTMLElement, [
-            InlineParser.ExtensionParser.LabelParser,
+          Parser<never, [
+            InlineParser.ExtensionParser.LabelParser.SegmentParser,
             Parser<never, [
               Parser<never, [
                 CodeBlockParser.SegmentParser,
@@ -339,8 +339,8 @@ export namespace MarkdownParser {
       export namespace FigParser {
         export interface SegmentParser extends
           Block<'extension/figure/segment'>,
-          Parser<HTMLElement, [
-            InlineParser.ExtensionParser.LabelParser,
+          Parser<never, [
+            InlineParser.ExtensionParser.LabelParser.SegmentParser,
             Parser<never, [
               CodeBlockParser.SegmentParser,
               MathBlockParser.SegmentParser,
@@ -509,6 +509,15 @@ export namespace MarkdownParser {
           SourceParser.UnescapableSourceParser,
           SourceParser.UnescapableSourceParser,
         ], State, Config> {
+      }
+      export namespace LabelParser {
+        export interface SegmentParser extends
+          Inline<'extension/label/segment'>,
+          Parser<never, [
+            SourceParser.UnescapableSourceParser,
+            SourceParser.UnescapableSourceParser,
+          ], State, Config> {
+        }
       }
       export interface DataParser extends
         // [~name]

@@ -1,20 +1,28 @@
 import { ExtensionParser } from '../../inline';
-import { union, subline, validate, focus, surround, configure, fmap } from '../../../combinator';
+import { union, subline, validate, rewrite, focus, surround, configure, fmap } from '../../../combinator';
 import { html, text } from 'typed-dom';
 
-const parser = focus(
+const body = focus(
   /^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/,
   query => [[text(query)], '']);
 
-export const label: ExtensionParser.LabelParser = subline(fmap(validate(
+export const segment: ExtensionParser.LabelParser.SegmentParser = subline(fmap(validate(
+  ['[$', '$'],
+  union([
+    surround('[', body, ']'),
+    body,
+  ])),
+  () => []));
+
+export const label: ExtensionParser.LabelParser = subline(rewrite(segment, fmap(validate(
   ['[$', '$'],
   configure({ syntax: { inline: { link: void 0 } } },
   union([
-    surround('[', parser, ']'),
-    parser,
+    surround('[', body, ']'),
+    body,
   ]))),
   ([text]) =>
-    [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])]));
+    [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])])));
 
 export function number(label: string, base: string): string {
   return isFixed(label)
