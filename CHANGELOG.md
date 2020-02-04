@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.146.2
+
+- Optimization.
+
 ## 0.146.1
 
 - Enhance footenote processing.
