@@ -44,7 +44,7 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot): Ge
           break;
         case number.startsWith('0.'):
           assert(number.endsWith('.0'));
-          number = bases.slice()
+          number = bases.slice(0)
             .reduce((ns, _, i, bs) => {
               i === ns.length
                 ? bs.length = i
