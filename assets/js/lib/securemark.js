@@ -3887,13 +3887,10 @@ require = function () {
                 combinator_1.surround('[', body, ']'),
                 body
             ])), () => []));
-            exports.label = combinator_1.subline(combinator_1.rewrite(exports.segment, combinator_1.fmap(combinator_1.validate([
-                '[$',
-                '$'
-            ], combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.union([
+            exports.label = combinator_1.subline(combinator_1.rewrite(exports.segment, combinator_1.fmap(combinator_1.configure({ syntax: { inline: { link: void 0 } } }, combinator_1.union([
                 combinator_1.surround('[', body, ']'),
                 body
-            ]))), ([text]) => [typed_dom_1.html('a', {
+            ])), ([text]) => [typed_dom_1.html('a', {
                     class: 'label',
                     'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1)
                 }, [text])])));
