@@ -3963,6 +3963,8 @@ require = function () {
                     ])
                 }
             };
+            void alias_1.ObjectSetPrototypeOf(attributes, null);
+            void alias_1.ObjectValues(attributes).forEach(o => void alias_1.ObjectSetPrototypeOf(o, null));
             exports.html = combinator_1.lazy(() => combinator_1.validate(/^<[a-z]+[ />]/, combinator_1.union([
                 combinator_1.match(/^<(sup|sub|small|bdi|bdo)(?=(?: [^\n>]*)?>)/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.configure({ state: { nest: [tag] } }, combinator_1.guard(config => {
                     var _a, _b;
@@ -3997,26 +3999,24 @@ require = function () {
             ]), ''), ts => ts.length !== 2));
             const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)), new global_1.WeakMap());
             function attrs(spec, params, classes, syntax) {
-                const result = {};
                 let invalid = classes.includes('invalid');
-                const attrs = new global_1.Map(params.map(arg => [
-                    arg.split('=', 1)[0],
-                    arg.includes('=') ? arg.slice(arg.split('=', 1)[0].length + 2, -1) : void 0
-                ]));
-                if (spec) {
-                    for (const [key, value] of attrs) {
-                        alias_1.hasOwnProperty(spec, key) && spec[key].includes(value) ? result[key] = value || '' : invalid = true;
+                const attrs = params.reduce((attrs, param) => {
+                    const key = param.split('=', 1)[0];
+                    const val = param.includes('=') ? param.slice(key.length + 2, -1) : void 0;
+                    invalid = invalid || !spec || key in attrs;
+                    if (spec) {
+                        key in spec && spec[key].includes(val) ? attrs[key] = val || '' : invalid = true;
                     }
-                }
-                invalid = invalid || !spec && params.length > 0 || attrs.size !== params.length;
-                invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => attrs.has(k));
+                    return attrs;
+                }, alias_1.ObjectCreate(null));
+                invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
                 if (invalid) {
                     void classes.push('invalid');
-                    result.class = classes.join(' ').trim();
-                    result['data-invalid-syntax'] = syntax;
-                    result['data-invalid-message'] = 'Invalid parameter';
+                    attrs.class = classes.join(' ').trim();
+                    attrs['data-invalid-syntax'] = syntax;
+                    attrs['data-invalid-message'] = 'Invalid parameter';
                 }
-                return result;
+                return attrs;
             }
             exports.attrs = attrs;
         },
@@ -4092,6 +4092,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
             const inline_1 = _dereq_('../inline');
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
@@ -4102,6 +4103,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const {origin} = global_1.location;
             exports.attributes = { nofollow: [void 0] };
+            void alias_1.ObjectSetPrototypeOf(exports.attributes, null);
             exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.bind(combinator_1.verify(combinator_1.fmap(combinator_1.validate(/^(?:\[.*?\])?{(?![{}]).+?}/, combinator_1.guard(config => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = config.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
@@ -4241,6 +4243,7 @@ require = function () {
             '../source': 116,
             '../util': 123,
             './html': 101,
+            'spica/alias': 5,
             'spica/concat': 10,
             'spica/global': 13,
             'typed-dom': 24
