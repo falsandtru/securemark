@@ -14,13 +14,12 @@ export const segment: ExtensionParser.LabelParser.SegmentParser = subline(fmap(v
   ])),
   () => []));
 
-export const label: ExtensionParser.LabelParser = subline(rewrite(segment, fmap(validate(
-  ['[$', '$'],
+export const label: ExtensionParser.LabelParser = subline(rewrite(segment, fmap(
   configure({ syntax: { inline: { link: void 0 } } },
   union([
     surround('[', body, ']'),
     body,
-  ]))),
+  ])),
   ([text]) =>
     [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])])));
 
