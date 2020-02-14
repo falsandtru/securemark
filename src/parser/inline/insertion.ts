@@ -1,13 +1,11 @@
 import { InsertionParser, inline } from '../inline';
-import { union, some, validate, surround, configure, lazy, fmap } from '../../combinator';
+import { union, some, creation, backtrack, surround, lazy, fmap } from '../../combinator';
+import { str } from '../source';
 import { defrag } from '../util';
-import { html, text } from 'typed-dom';
+import { html } from 'typed-dom';
 
-export const insertion: InsertionParser = lazy(() => fmap(validate(
-  /^\+\+[\s\S]+?\+\+/,
-  configure({ syntax: { inline: { insertion: false, deletion: false } } },
-  surround('++', defrag(some(union([inline]), '++')), '++'))),
-  (ns, config) =>
-    config.syntax?.inline?.insertion ?? true
-      ? [html('ins', ns)]
-      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'insertion', 'data-invalid-message': 'Cannot nest this syntax' }, [text('++'), ...ns, text('++')])]));
+export const insertion: InsertionParser = lazy(() => creation(fmap(surround(
+  '++',
+  some(union([inline]), '++'),
+  backtrack(str('++'))),
+  ns => [html('ins', defrag(ns))])));

@@ -7,11 +7,11 @@ describe('Unit: parser/block/extension/example', () => {
     const parser = (source: string) => some(example)(source, {});
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('~~~example/markdown\n~~~\n~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~example/markdown\na\n~~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~~example/markdown\na\n~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser(' ~~~example/markdown\na\n~~~')), undefined);
-      assert(!parser('~~~example/markdown\n' + '\n'.repeat(101) + '~~~'));
+      assert.deepStrictEqual(inspect(parser('~~~example\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~example/\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~example/a\n~~~')), [['<pre class="example notranslate invalid">~~~example/a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~example/markdown a\n~~~')), [['<pre class="example notranslate invalid">~~~example/markdown a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser(`~~~example/markdown\n${'\n'.repeat(101)}~~~`), '>'), [['<pre class="example notranslate invalid">'], '']);
     });
 
     it('valid', () => {
@@ -26,7 +26,7 @@ describe('Unit: parser/block/extension/example', () => {
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\n((a))[[b]]\n~~~')), [['<aside class="example" data-type="markdown"><pre>((a))[[b]]</pre><div><p><sup class="annotation" title="a"><a rel="noopener">*1</a></sup><sup class="reference" title="b"><a rel="noopener">[1]</a></sup></p></div><ol><li class="footnote">a<sup><a rel="noopener"> ~1</a></sup></li></ol><ol><li class="footnote">b<sup><a rel="noopener"> ~1</a></sup></li></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~~example/markdown\na\n~~~~')), [['<aside class="example" data-type="markdown"><pre>a</pre><div><p>a</p></div><ol></ol><ol></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/math\na\n~~~')), [['<aside class="example" data-type="math"><pre>a</pre><div class="math notranslate">$$\na\n$$</div></aside>'], '']);
-      assert(parser('~~~example/markdown\n' + '\n'.repeat(100) + '~~~'));
+      assert.deepStrictEqual(inspect(parser(`~~~example/math\n${'\n'.repeat(100)}~~~`), '>'), [['<aside class="example" data-type="math">'], '']);
     });
 
   });

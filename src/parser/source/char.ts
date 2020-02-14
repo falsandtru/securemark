@@ -1,14 +1,11 @@
 import { CharParser } from '../source';
-import { Parser } from '../../combinator';
+import { Parser, creation } from '../../combinator';
 import { text } from 'typed-dom';
 
-export function char(char: '#'): CharParser.SharpParser;
-export function char(char: '>'): CharParser.GreaterThanParser;
-export function char(char: '!'): CharParser.ExclamationParser;
-export function char(char: '='): CharParser.EqualParser;
-export function char(char: '`'): CharParser.BackquoteParser;
+export function char(char: string): CharParser;
 export function char(char: string): Parser<Text, []> {
-  return source => {
+  assert(char.length === 1);
+  return creation(source => {
     if (source === '') return;
     switch (source[0]) {
       case char:
@@ -16,5 +13,5 @@ export function char(char: string): Parser<Text, []> {
       default:
         return;
     }
-  };
+  });
 };

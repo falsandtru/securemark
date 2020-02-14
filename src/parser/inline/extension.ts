@@ -5,9 +5,12 @@ import { label } from './extension/label';
 import { data } from './extension/data';
 import { placeholder } from './extension/placeholder';
 
-export const extension: ExtensionParser = guard(config => config.syntax?.inline?.extension ?? true, validate(['[', '$'], union([
-  index,
-  label,
-  data,
-  placeholder,
-])));
+export const extension: ExtensionParser =
+  guard(context => context.syntax?.inline?.extension ?? true,
+  validate(['[', '$'],
+  union([
+    index,
+    label,
+    data,
+    placeholder,
+  ])));

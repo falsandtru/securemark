@@ -1,19 +1,19 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, some, block, line, rewrite, convert } from '../../../combinator';
+import { union, sequence, some, block, line, rewrite, clear, convert } from '../../../combinator';
 import { contentline } from '../../source';
 import { figure } from './figure';
+import { label } from '../../inline/extension/label';
 import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
 import { segment as seg_example } from '../extension/example';
 import { segment as seg_blockquote } from '../blockquote';
-import { segment as seg_label } from '../../inline/extension/label';
 
 import FigParser = ExtensionParser.FigParser;
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigParser.SegmentParser = block(
   sequence([
-    line(seg_label),
+    line(clear(label)),
     union([
       seg_code,
       seg_math,

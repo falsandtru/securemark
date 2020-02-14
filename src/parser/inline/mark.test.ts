@@ -10,12 +10,8 @@ describe('Unit: parser/inline/mark', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('=')), undefined);
       assert.deepStrictEqual(inspect(parser('==')), undefined);
-      assert.deepStrictEqual(inspect(parser('===')), undefined);
-      assert.deepStrictEqual(inspect(parser('====')), undefined);
-      assert.deepStrictEqual(inspect(parser('=====')), undefined);
-      assert.deepStrictEqual(inspect(parser('====a==b==')), undefined);
-      assert.deepStrictEqual(inspect(parser('====a==b==c====')), undefined);
-      assert.deepStrictEqual(inspect(parser('a==a==')), undefined);
+      assert.deepStrictEqual(inspect(parser('==a')), undefined);
+      assert.deepStrictEqual(inspect(parser('==a=')), undefined);
     });
 
     it('basic', () => {
@@ -37,7 +33,7 @@ describe('Unit: parser/inline/mark', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('==*==a==*==')), [['<mark><em><span class="invalid" data-invalid-syntax="mark" data-invalid-message="Cannot nest this syntax">==a==</span></em></mark>'], '']);
+      assert.deepStrictEqual(inspect(parser('==*==a==*==')), [['<mark><em><mark>a</mark></em></mark>'], '']);
     });
 
   });

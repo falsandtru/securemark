@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.147.0
+
+- Refine parsers to manage backtracking.
+- Limit the max size of a block to 10,000.
+
 ## 0.146.2
 
 - Optimization.

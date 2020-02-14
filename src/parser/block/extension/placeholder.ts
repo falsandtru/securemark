@@ -1,10 +1,13 @@
 import { ExtensionParser } from '../../block';
-import { block, rewrite, focus } from '../../../combinator';
+import { block, validate, fence, clear, fmap } from '../../../combinator';
 import { html } from 'typed-dom';
 
-export const segment: ExtensionParser.PlaceholderParser.SegmentParser = block(focus(
-  /^(~{3,})[a-z][^\n]*\n(?:[^\n]*\n){0,300}?\1[^\S\n]*(?:$|\n)/,
-  () => [[], '']));
+const opener = /^(~{3,})(?!~)[^\n]*\n?/;
 
-export const placeholder: ExtensionParser.PlaceholderParser = block(rewrite(segment,
-  () => [[html('p', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-message': 'Invalid extension name, parameter, or content' })], '']));
+export const segment: ExtensionParser.PlaceholderParser.SegmentParser = block(validate('~~~',
+  clear(fence(opener, 300, true))));
+
+export const placeholder: ExtensionParser.PlaceholderParser = block(validate('~~~', fmap(
+  fence(opener, 300, true),
+  ([body, closer, opener]) =>
+    [html('pre', { class: 'notranslate invalid', 'data-invalid-syntax': 'extension', 'data-invalid-message': 'Invalid syntax' }, `${opener}${body}${closer}`)])));

@@ -18,8 +18,8 @@ export const paragraph: ParagraphParser = block(fmap(
     fmap(
       rewrite(
         some(anyline, '>'),
-        defrag(trim(some(inline)))),
-      ns => concat(ns, [html('br')])),
+        trim(some(inline))),
+      ns => concat(defrag(ns), [html('br')])),
   ]))),
   ns =>
     ns.length > 0

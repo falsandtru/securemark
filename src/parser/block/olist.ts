@@ -1,5 +1,5 @@
 import { OListParser } from '../block';
-import { union, inits, some, block, line, validate, focus, surround, convert, indent, trim, configure, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, focus, surround, convert, indent, trim, update, lazy, fmap } from '../../combinator';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
@@ -9,19 +9,19 @@ import { html, define } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(fmap(validate(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
-  configure({ syntax: { inline: { media: false } } },
+  update({ syntax: { inline: { media: false } } },
   some(union([
     fmap(
       inits([
         line(inits([
           focus(
             /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:\.\s|\.?(?=$|\n))/,
-            defrag(trim(surround('', some(unescsource, /^[.\n]/), /^\.?/)))),
-          defrag(trim(some(inline))),
+            trim(surround('', some(unescsource, /^[.\n]/), /^\.?/))),
+          trim(some(inline)),
         ])),
         indent(union([ulist_, olist_, ilist_]))
       ]),
-      ([{ textContent: index }, ...ns]) => [html('li', { value: format(index!), 'data-type': type(index) }, fillFirstLine(ns))]),
+      ([{ textContent: index }, ...ns]) => [html('li', { value: format(index!), 'data-type': type(index) }, fillFirstLine(defrag(ns)))]),
   ])))),
   es => {
     const ty = es[0].getAttribute('data-type');

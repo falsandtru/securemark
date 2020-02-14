@@ -1,6 +1,6 @@
 import { Array } from 'spica/global';
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, surround, configure, lazy, fmap } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, surround, update, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { defrag } from '../util';
 import { concat } from 'spica/concat';
@@ -11,7 +11,7 @@ import CellParser = RowParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
   /^\|[^\n]*(?:\n\|[^\n]*){2,}/,
-  configure({ syntax: { inline: { media: false } } },
+  update({ syntax: { inline: { media: false } } },
   sequence([
     row(cell(data), false),
     row(cell(alignment), true),
@@ -63,12 +63,13 @@ const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => f
   union([parser]),
   ns => [html('td', ns)]);
 
-const data: CellParser.DataParser = defrag(
+const data: CellParser.DataParser = fmap(
   surround(
     /^\|(?:\\?\s)*(?=\S)/,
     some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
     /^[^|]*/,
-    false));
+    false),
+  defrag);
 
 const alignment: CellParser.AlignmentParser =
   surround(

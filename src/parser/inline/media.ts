@@ -1,34 +1,33 @@
-import { Array, encodeURI } from 'spica/global';
+import { encodeURI } from 'spica/global';
+import { ObjectAssign } from 'spica/alias';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, subline, verify, surround, guard, fmap, bind } from '../../combinator';
-import { text } from '../source';
-import { link, attributes, uri, attrs } from './link';
-import { attribute } from './html';
-import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
-import { Cache } from 'spica/cache';
+import { union, inits, tails, some, creation, backtrack, surround, guard, fmap, bind } from '../../combinator';
+import { link, attributes, uri, attribute } from './link';
+import { str, char } from '../source';
+import { makeAttrs } from './html';
+import { dup } from '../util';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
+import { Cache } from 'spica/cache';
 
 const url = html('a');
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
-  /^!(?=(?:\[.*?\])?{(?![{}]).+?})/,
-  guard(config => config.syntax?.inline?.media ?? true,
+export const media: MediaParser = creation(bind(fmap(surround(
+  '!',
+  guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround('[', trimNodeEnd(defrag(some(union([text]), /^\\?\n|^]/))), ']', false)),
-    dup(surround(/^{(?![{}])/, inits([uri, some(defrag(attribute))]), /^ ?}/)),
+    dup(surround('[', union([str(/^(?!\\?\s)(?:[^\]\n]|\\[^\n])+/)]), backtrack(char(']')), false)),
+    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtrack(str(/^ ?}/)))),
   ])),
   ''),
-  ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
-  ([text]) => text.length === 0 || hasTightText(text[0])),
-  ([text, param]: (HTMLElement | Text)[][]) => [text[0]?.textContent || '', ...param.map(t => t.textContent!)]),
+  (ts: Text[][]) =>
+    concat([ts.length > 1 && ts[ts.length - 2][0]?.data || ''], ts[ts.length - 1].map(t => t.data))),
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
+    text = text.trim().replace(/\\(.?)/g, '$1');
     url.href = INSECURE_URL;
-    if (!url.host) return;
-    if (!['http:', 'https:'].includes(url.protocol)) return;
     const media = void 0
       || cache.get(url.href)?.cloneNode(true)
       || html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text });
@@ -36,7 +35,12 @@ export const media: MediaParser = subline(bind(fmap(verify(fmap(surround(
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
       void define(media, { alt: text });
     }
-    void define(media, attrs(attributes, params, [...media.classList], 'media'));
-    return fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [media])])
-      (`{ ${INSECURE_URL}${params.map(p => ' ' + p).join('')} }${rest}`, {});
+    void define(media, ObjectAssign(
+      makeAttrs(attributes, params, [...media.classList], 'media'),
+      { nofollow: void 0 }));
+    return fmap(
+      link as MediaParser,
+      ([el]: [HTMLAnchorElement]) =>
+        [define(el, { target: '_blank' }, [define(media, { 'data-src': el.getAttribute('href') })])])
+      (`{ ${INSECURE_URL}${params.join('')} }${rest}`, {});
   }));

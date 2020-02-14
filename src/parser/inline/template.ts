@@ -1,13 +1,8 @@
 import { TemplateParser, inline } from '../inline';
-import { tails, some, subline, rewrite, surround, lazy, fmap } from '../../combinator';
-import { char } from '../source';
-import { html, text } from 'typed-dom';
+import { some, rewrite, creation, backtrack, surround, lazy } from '../../combinator';
+import { str } from '../source';
+import { html} from 'typed-dom';
 
-export const template: TemplateParser = lazy(() => subline(fmap(
-  tails([
-    char('!'),
-    rewrite(
-      surround('{{', some(inline, /^\\?\n|^}}/), '}}', false),
-      source => [[text(source)], '']),
-  ]),
-  ns => [html('span', { class: 'template' }, [ns.pop()!]), ...ns].reverse())));
+export const template: TemplateParser = lazy(() => creation(rewrite(
+  surround('{{', some(inline, '}}'), backtrack(str('}}')), false),
+  source => [[html('span', { class: 'template' }, source)], ''])));

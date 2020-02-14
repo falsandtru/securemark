@@ -46,12 +46,6 @@ describe('Unit: parser/api/parse', () => {
       assert.deepStrictEqual(
         [...parse('a\n\\\nb').children].map(el => el.outerHTML),
         ['<p>a<br>b</p>']);
-      assert.deepStrictEqual(
-        [...parse('~~~a\ninvalid\n~~~').children].map(el => el.outerHTML),
-        ['<p class="invalid" data-invalid-syntax="extension" data-invalid-message="Invalid extension name, parameter, or content"></p>']);
-      assert.deepStrictEqual(
-        [...parse('~~~a\ninvalid\n\ncaption\n~~~').children].map(el => el.outerHTML),
-        ['<p class="invalid" data-invalid-syntax="extension" data-invalid-message="Invalid extension name, parameter, or content"></p>']);
     });
 
     it('normalize', () => {
@@ -60,15 +54,55 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
-    it('stress', function () {
-      this.timeout(10 * 1000);
+/*
+    it('stress bracket', function () {
       assert.deepStrictEqual(
-        [...parse('('.repeat(100) + ')'.repeat(99)).children].map(el => el.innerHTML[0]),
+        [...parse(`${'('.repeat(500)}`).children].map(el => el.innerHTML[0]),
         ['(']);
+    });
+
+    it('stress link', function () {
       assert.deepStrictEqual(
-        [...parse('('.repeat(10000) + ')'.repeat(9999) + '\n\na').children].map(el => el.textContent!.includes('Error:')),
+        [...parse(`${'['.repeat(500)}](`).children].map(el => el.innerHTML[0]),
+        ['[']);
+    });
+
+    it('stress media', function () {
+      assert.deepStrictEqual(
+        [...parse(`${'!['.repeat(500)}](`).children].map(el => el.innerHTML[0]),
+        ['!']);
+    });
+
+    it('stress ruby', function () {
+      assert.deepStrictEqual(
+        [...parse(`${'[a](b\n'.repeat(50)}`).children].map(el => el.innerHTML[0]),
+        ['[']);
+    });
+
+    it('stress math', function () {
+      assert.deepStrictEqual(
+        [...parse(`${'${'.repeat(500)}a`).children].map(el => el.innerHTML[0]),
+        ['$']);
+    });
+
+    it('stress comment', function () {
+      assert.deepStrictEqual(
+        [...parse(`${'<# '.repeat(500)}`).children].map(el => el.innerHTML[0]),
+        ['<']);
+    });
+
+    it('stress parser', function () {
+      assert.deepStrictEqual(
+        [...parse(`!${'!{a}'.repeat(2000)}}`).children].map(el => el.innerHTML[0]),
+        ['!']);
+    });
+
+    it('recursion', function () {
+      assert.deepStrictEqual(
+        [...parse(`${'('.repeat(9000)}${'{a}'})\n\na`).children].map(el => el.textContent!.includes('Error:')),
         [true, false]);
     });
+*/
 
   });
 

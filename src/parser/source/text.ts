@@ -1,10 +1,13 @@
 import { TextParser } from '../source';
+import { creation } from '../../combinator';
+import { str } from './str';
 import { html, text as txt } from 'typed-dom';
 
 export const separator = /\s|(?=[^A-Za-z0-9\s])[\x00-\x7F]|[A-Za-z0-9][A-Za-z0-9.+_-]*@[A-Za-z0-9]|\S#/;
 const next = /[\S\n]|$/;
+const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = source => {
+export const text: TextParser = creation((source, context) => {
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {
@@ -23,6 +26,10 @@ export const text: TextParser = source => {
           }
         case '\n':
           return [[html('br')], source.slice(1)];
+        case '*':
+          return source[1] === source[0]
+            ? repeat(source, context)
+            : [[txt(source[0])], source.slice(1)];
         default:
           const i = source[0].trim() === '' ? source.search(next) : 0;
           assert(i !== -1);
@@ -36,4 +43,4 @@ export const text: TextParser = source => {
     default:
       return [[txt(source.slice(0, i))], source.slice(i)];
   }
-};
+});

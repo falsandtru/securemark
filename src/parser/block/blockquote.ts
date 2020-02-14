@@ -32,7 +32,7 @@ const text: BlockquoteParser.TextParser = lazy(() => fmap(
       convert(unindent, text)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(defrag(some(autolink)), ns => [html('pre', ns)]))),
+      convert(unindent, fmap(some(autolink), ns => [html('pre', defrag(ns))]))),
   ])),
   ns => [html('blockquote', ns)]));
 
@@ -43,6 +43,6 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
       convert(unindent, source)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, source => [[suppress(parse(source, { footnotes: { annotation: html('ol'), reference: html('ol') } }))], ''])),
+      convert(unindent, (source, context) => [[suppress(parse(source, { context, footnotes: { annotation: html('ol'), reference: html('ol') } }))], ''])),
   ])),
   ns => [html('blockquote', ns)]));

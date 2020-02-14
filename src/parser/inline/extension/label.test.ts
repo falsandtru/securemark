@@ -12,9 +12,11 @@ describe('Unit: parser/inline/extension/label', () => {
       assert.deepStrictEqual(inspect(parser('[$a]')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a--]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[$a-0')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a-0.]')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a-.0]')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a-0b]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[$a-b')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a-b-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a-b-1]')), undefined);
       assert.deepStrictEqual(inspect(parser('[$a-b-0.]')), undefined);

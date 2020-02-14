@@ -1,15 +1,14 @@
 import { EmphasisParser, inline } from '../inline';
-import { union, some, validate, verify, surround, configure, lazy, fmap } from '../../combinator';
+import { union, some, creation, backtrack, open, close, lazy, fmap } from '../../combinator';
 import { strong } from './strong';
-import { defrag, trimNodeEnd, hasTightText } from '../util';
-import { html, text } from 'typed-dom';
+import { str } from '../source';
+import { defrag, startTight } from '../util';
+import { html } from 'typed-dom';
 
-export const emphasis: EmphasisParser = lazy(() => verify(fmap(validate(
-  /^\*\S[\s\S]*?\*/,
-  configure({ syntax: { inline: { emphasis: false } } },
-  surround('*', trimNodeEnd(defrag(some(union([strong, some(inline, '*')])))), '*'))),
-  (ns, config) =>
-    config.syntax?.inline?.emphasis ?? true
-      ? [html('em', ns)]
-      : [html('span', { class: 'invalid', 'data-invalid-syntax': 'emphasis', 'data-invalid-message': 'Cannot nest this syntax' }, [text('*'), ...ns, text('*')])]),
-  ([el]) => hasTightText(el)));
+export const emphasis: EmphasisParser = lazy(() => creation(fmap(open(
+  str('*'), close(
+  startTight(some(union([strong, some(inline, '*')]))),
+  backtrack(str('*')), true, void 0,
+  (ns, rest) => [[html('em', ns.pop()! && defrag(ns))], rest],
+  (ns, rest) => [ns, rest])),
+  ns => 'id' in ns[1] && ns[1].nodeName === 'EM' ? ns.shift()! && ns : ns)));

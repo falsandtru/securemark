@@ -10,12 +10,8 @@ describe('Unit: parser/inline/insertion', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('+')), undefined);
       assert.deepStrictEqual(inspect(parser('++')), undefined);
-      assert.deepStrictEqual(inspect(parser('+++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++++')), undefined);
-      assert.deepStrictEqual(inspect(parser('+++++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++++a++b++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++++a++b++c++++')), undefined);
-      assert.deepStrictEqual(inspect(parser('a++a++')), undefined);
+      assert.deepStrictEqual(inspect(parser('++a')), undefined);
+      assert.deepStrictEqual(inspect(parser('++a+')), undefined);
     });
 
     it('basic', () => {
@@ -37,8 +33,8 @@ describe('Unit: parser/inline/insertion', () => {
     });
 
     it('nest', () => {
-      assert.deepStrictEqual(inspect(parser('++*++a++*++')), [['<ins><em><span class="invalid" data-invalid-syntax="insertion" data-invalid-message="Cannot nest this syntax">++a++</span></em></ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('++*~~a~~*++')), [['<ins><em><span class="invalid" data-invalid-syntax="deletion" data-invalid-message="Cannot nest this syntax">~~a~~</span></em></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++*++a++*++')), [['<ins><em><ins>a</ins></em></ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++*~~a~~*++')), [['<ins><em><del>a</del></em></ins>'], '']);
     });
 
   });

@@ -1,12 +1,12 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, surround, match, memoize, convert, trim, configure, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, surround, clear, match, memoize, convert, trim, update, fmap } from '../../../combinator';
 import { contentline, emptyline } from '../../source';
+import { label } from '../../inline/extension/label';
 import { table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { example, segment_ as seg_example } from './example';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
-import { label, segment as seg_label } from '../../inline/extension/label';
 import { blankline } from '../paragraph';
 import { inline, media, shortmedia } from '../../inline';
 import { defrag } from '../../util';
@@ -16,12 +16,12 @@ import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
-  memoize(([, bracket]) => bracket,
-  (bracket, closer = new RegExp(`^${bracket}[^\\S\\n]*(?:$|\\n)`)) =>
+  memoize(([, fence]) => fence,
+  (fence, closer = new RegExp(`^${fence}[^\\S\\n]*(?:$|\\n)`)) =>
     surround(
       '',
       sequence([
-        line(seg_label),
+        line(clear(label)),
         inits([
           // All parsers which can include closing terms.
           union([
@@ -57,8 +57,8 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
       emptyline,
       block(
         convert(source => source.replace(blankline, ''),
-        configure({ syntax: { inline: { media: false } } },
-        defrag(trim(some(inline)))))),
+        update({ syntax: { inline: { media: false } } },
+        trim(some(inline))))),
     ]),
   ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
@@ -67,7 +67,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
       [
         html('div', { class: 'figcontent' }, [content]),
         html('span', { class: 'figindex' }),
-        html('figcaption', caption)
+        html('figcaption', defrag(caption))
       ])
   ]))));
 

@@ -1,13 +1,10 @@
 import { HTMLEntityParser } from '../inline';
-import { subline, focus } from '../../combinator';
-import { html, text } from 'typed-dom';
-
-export const htmlentity: HTMLEntityParser = subline(focus(
-  /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i,
-  entity => [[text(parse(entity))], '']));
+import { focus, creation } from '../../combinator';
+import { html } from 'typed-dom';
 
 const parser = html('span');
-function parse(str: string): string {
-  parser.innerHTML = str;
-  return parser.textContent!;
-}
+
+export const htmlentity: HTMLEntityParser = creation(focus(
+  /^&(?:[0-9a-z]+|#[0-9]{1,8}|#x[0-9a-f]{1,8});/i,
+  entity =>
+    [[[parser.innerHTML = entity as never, parser.firstChild!.cloneNode() as Text][1]], '']));

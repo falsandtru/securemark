@@ -20,7 +20,6 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a\\ \n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\n')), [['<p>a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\\\nb')), [['<p>a<span class="linebreak"> </span>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('*a\\\n*')), [['<p><em>a</em></p>'], '']);
       assert.deepStrictEqual(inspect(parser(' a')), [['<p>a</p>'], '']);
     });
 
@@ -43,7 +42,7 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<p class="invalid" data-invalid-syntax="paragraph" data-invalid-message="All paragraphs must have a visible content"><sup class="comment" title="a"></sup></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<p class="invalid"><sup class="comment" title="a"></sup></p>'], '']);
       assert.deepStrictEqual(inspect(parser('<# a #>b')), [['<p><sup class="comment" title="a"></sup>b</p>'], '']);
     });
 

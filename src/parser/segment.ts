@@ -18,6 +18,7 @@ const parser: SegmentParser = union([
 
 export function segment(source: string): string[] {
   assert(source === normalize(source));
+  if (source.length > 1000 * 1000) return ['# ***Too large input over 1,000,000 characters***'];
   const segments: string[] = [];
   while (source !== '') {
     const rest = exec(parser(source, {}));
@@ -25,12 +26,11 @@ export function segment(source: string): string[] {
     // Limit the size of a segment not to block user operations
     // bacause of a long process caused by a huge segment.
     void segments.push(
-      // Allow a table over 30 cols x 300 rows (10 characters per cell).
-      source.length - rest.length > 100 * 1000
-        ? '# ***Too large block over 100,000 characters***'
+      source.length - rest.length > 10 * 1000
+        ? '# ***Too large block over 10,000 characters***'
         : source.slice(0, source.length - rest.length));
     source = rest;
   }
-  assert(segments.join('') === arguments[0]);
+  assert(segments.join('') === arguments[0] || segments.some(seg => seg === '# ***Too large block over 10,000 characters***'));
   return segments;
 }

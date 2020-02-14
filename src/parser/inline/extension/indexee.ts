@@ -3,10 +3,10 @@ import { define } from 'typed-dom';
 
 export function indexee<P extends Parser<HTMLElement>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
-  return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || null })]);
+  return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || void 0 })]);
 }
 
-export function text(source: Element): string {
+export function text(source: HTMLElement): string {
   assert(!source.matches('.indexer'));
   assert(source.querySelectorAll('.indexer').length < 2);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));

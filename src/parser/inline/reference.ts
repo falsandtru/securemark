@@ -1,14 +1,24 @@
 import { ReferenceParser } from '../inline';
-import { subsequence, some, subline, contract, validate, verify, focus, surround, guard, configure, lazy, fmap } from '../../combinator';
+import { subsequence, some, subline, focus, creation, backtrack, surround, guard, update, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
-import { defrag, trimNodeEnd, hasTightText } from '../util';
+import { str } from '../source';
+import { defrag, startTight } from '../util';
 import { html } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => subline(verify(fmap(validate(
+export const reference: ReferenceParser = lazy(() => creation(fmap(surround(
   '[[',
-  guard(config => config.syntax?.inline?.reference ?? true,
-  configure({ syntax: { inline: { annotation: false, reference: false, media: false } } },
-  surround('[[', subsequence([alias, trimNodeEnd(defrag(some(inline, /^\\?\n|^]]/)))]), ']]')))),
+  guard(context => context.syntax?.inline?.reference ?? true,
+  subline(
+  update({ syntax: { inline: {
+    annotation: false,
+    reference: false,
+    extension: true,
+    media: false,
+    link: true,
+    autolink: true,
+  }}},
+  startTight(subsequence([alias, some(inline, ']]')]))))),
+  backtrack(str(']]'))),
   ns => [
     html('sup',
       {
@@ -17,14 +27,9 @@ export const reference: ReferenceParser = lazy(() => subline(verify(fmap(validat
           ? ns.shift()!.textContent
           : undefined
       },
-      ns)
-  ]),
-  ([el]) => hasTightText(el) || el.hasAttribute('data-alias'))));
+      defrag(ns))
+  ])));
 
-const alias: ReferenceParser.AliasParser = subline(contract('~', focus(
-  /^~[A-za-z][A-Za-z0-9', -]*(?:(?=]])|:(?:(?=]])| ))/,
-  source =>
-    !source.includes('  ')
-      ? [[html('abbr', source.slice(1, ~(~source.indexOf(':', -2) || ~source.length)))], '']
-      : void 0),
-  ([el]) => hasTightText(el)));
+const alias: ReferenceParser.AliasParser = creation(focus(
+  /^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/,
+  source => [[html('abbr', source.slice(1, ~(~source.indexOf('|', -2) || ~source.length)))], '']));

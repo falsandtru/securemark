@@ -1,123 +1,122 @@
-import { Array, location, encodeURI, decodeURI } from 'spica/global';
-import { ObjectSetPrototypeOf } from 'spica/alias';
-import { LinkParser, media, shortmedia, inline } from '../inline';
-import { union, inits, tails, some, subline, validate, verify, surround, match, memoize, guard, configure, lazy, fmap, bind, eval } from '../../combinator';
-import { unescsource } from '../source';
-import { attribute, attrs as attrs_ } from './html';
+import { location, encodeURI, decodeURI } from 'spica/global';
+import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
+import { LinkParser, inline, media, shortmedia } from '../inline';
+import { union, inits, tails, some, creation, backtrack, surround, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
+import { str, char } from '../source';
+import { makeAttrs } from './html';
 import { autolink } from '../autolink';
-import { defrag, dup, trimNodeEnd, hasTightText } from '../util';
-import { concat } from 'spica/concat';
-import { DeepImmutable } from 'spica/type';
-import { frag, html, text, define } from 'typed-dom';
+import { defrag, startTight, dup, stringify } from '../util';
+import { frag, html, define } from 'typed-dom';
 
 const { origin } = location;
+const log = new WeakSet<Element>();
 
 export const attributes = {
   nofollow: [void 0],
 } as const;
 void ObjectSetPrototypeOf(attributes, null);
 
-export const link: LinkParser = lazy(() => subline(bind(verify(fmap(validate(
-  /^(?:\[.*?\])?{(?![{}]).+?}/,
-  guard(config => config.syntax?.inline?.link ?? true,
-  configure({ syntax: { inline: { link: false, annotation: false, reference: false, extension: false } } },
+export const link: LinkParser = lazy(() => creation(bind(fmap(
+  guard(context => context.syntax?.inline?.link ?? true,
   tails([
     dup(union([
       surround('[', media, ']'),
       surround('[', shortmedia, ']'),
-      surround('[', configure({ syntax: { inline: { media: false } } }, trimNodeEnd(defrag(some(inline, /^\\?\n|^]/)))), ']', false),
+      surround(
+        '[',
+        update({ syntax: { inline: {
+          link: false,
+          media: false,
+          annotation: false,
+          reference: false,
+          extension: false,
+          autolink: false,
+        }}},
+        startTight(some(inline, /^\\?\n|^]/))),
+        backtrack(char(']')),
+        false),
     ])),
-    dup(surround(/^{(?![{}])/, inits([uri, some(defrag(attribute))]), /^ ?}/)),
-  ])))),
-  ns => concat([...Array(2 - ns.length)].map(() => []), ns)),
-  ([text], _, config) => {
-    if (text.length === 0) return true;
-    if (text.length === 1 && text[0] instanceof HTMLAnchorElement && text[0].firstElementChild?.classList.contains('media')) {
-      text[0] = text[0].firstElementChild as HTMLElement;
-      assert(text[0].matches('.media'));
+    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtrack(str(/^ ?}/)))),
+  ])),
+  nss => nss.length === 1 ? [[], nss[0]] : nss),
+  ([content, param]: [(HTMLElement | Text)[], Text[]], rest, _, context) => {
+    assert(param.every(n => n instanceof Text));
+    switch (true) {
+      case content.length === 0:
+        break;
+      case content.length === 1
+        && content[0].nodeName === 'A'
+        && (content[0] as HTMLElement).firstElementChild?.classList.contains('media')
+        && !log.has((content[0] as HTMLElement).firstElementChild!):
+        content[0] = (content[0] as HTMLElement).firstElementChild as HTMLElement;
+        assert(!log.has(content[0]));
+        log.add(content[0]);
+        assert(content[0].matches('.media'));
+        break;
+      case !context.insecure
+        && !!frag(eval(some(autolink)(stringify(content), { ...context, insecure: true }))).firstElementChild:
+        return;
     }
-    else {
-      const proxy = html('div', text);
-      assert(!proxy.querySelector('.media'));
-      if (!hasTightText(proxy)) return false;
-      if (config.insecure) {
-        let isChanged = false;
-        for (const el of proxy.querySelectorAll('a')) {
-          void el.parentNode!.replaceChild(frag(el.childNodes), el);
-          isChanged = true;
-        }
-        if (isChanged) {
-          void text.splice(0, text.length, ...proxy.childNodes as NodeListOf<typeof text[number]>);
-        }
-      }
-      else {
-        if (eval(some(autolink)(proxy.textContent!, { insecure: true })).some(node => node.nodeType === 1)) return false;
-      }
-      assert(!proxy.querySelector('a, .annotation, .reference'));
-    }
-    return true;
-  }),
-  ([text, param]: [(HTMLElement | Text)[], Text[]], rest) => {
-    const [INSECURE_URL, ...params]: string[] = param.map(({ data }) => data);
+    assert(!frag(content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
+    const [INSECURE_URL, ...params]: string[] = param.map(t => t.data);
     assert(INSECURE_URL === INSECURE_URL.trim());
     const el = html('a',
       {
         href: INSECURE_URL,
-        rel: `noopener${params.includes('nofollow') ? ' nofollow noreferrer' : ''}`,
+        rel: `noopener${params.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
-      text.length > 0
-        ? text
+      content.length > 0
+        ? content = defrag(content)
         : decode(INSECURE_URL || '.')
             .replace(/^tel:/, '')
-            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes('nofollow') ? '' : 'h'));
-    switch (el.protocol) {
-      case 'tel:':
-        if (`tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}` !== INSECURE_URL) return;
-        break;
-      case 'http:':
-      case 'https:':
-        if (!el.host) return;
-        el.origin !== origin && void el.setAttribute('target', '_blank');
-        break;
-      default:
-        return;
-    }
-    return [[define(el, attrs(attributes, params, [...el.classList], 'link'))], rest];
+            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h'));
+    if (!verify(el, INSECURE_URL)) return [[el], rest];
+    void define(el, ObjectAssign(
+      makeAttrs(attributes, params, [...el.classList], 'link'),
+      { nofollow: void 0 }));
+    return [[el], rest];
   })));
 
-export const uri: LinkParser.ParamParser.UriParser = subline(defrag(match(
+export const uri: LinkParser.ParamParser.UriParser = creation(match(
   /^ ?(?! )/,
-  memoize(([flag]) => flag,
-  flag =>
-    some(union([bracket, unescsource]), flag === ' ' ? /^\s/ : /^[\s}]/)))));
+  memoize(([delim]) => delim,
+  delim => union([str(delim ? /^\S+/ : /^[^\s{}]+/)]))));
 
-export const bracket: LinkParser.ParamParser.UriParser.BracketParser = lazy(() => subline(union([
-  fmap(
-    surround('(', some(union([bracket, unescsource]), /^[\s\)]/), ')', false),
-    ts => [text('('), ...ts, text(')')]),
-  fmap(
-    surround('[', some(union([bracket, unescsource]), /^[\s\]]/), ']', false),
-    ts => [text('['), ...ts, text(']')]),
-  fmap(
-    surround('{', some(union([bracket, unescsource]), /^[\s\}]/), '}', false),
-    ts => [text('{'), ...ts, text('}')]),
-  fmap(
-    surround('<', some(union([bracket, unescsource]), /^[\s\>]/), '>', false),
-    ts => [text('<'), ...ts, text('>')]),
-  fmap(
-    surround('"', some(union([bracket, unescsource]), /^[\s\"]/), '"', false),
-    ts => [text('"'), ...ts, text('"')]),
-])));
+export const attribute: LinkParser.ParamParser.AttributeParser = creation(union([
+  str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
+]));
 
-export function attrs(
-  spec: DeepImmutable<Record<string, Array<string | undefined>>> | undefined,
-  params: string[],
-  classes: string[],
-  syntax: string,
-): Record<string, string | undefined> {
-  const attrs = attrs_(spec, params, classes, syntax);
-  attrs['nofollow'] = void 0;
-  return attrs;
+function verify(el: HTMLAnchorElement, url: string): boolean {
+  let message: string;
+  switch (el.protocol) {
+    case 'tel:':
+      if (`tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}` === url) return true;
+      void define(el, {
+        class: 'invalid',
+        'data-invalid-syntax': 'link',
+        'data-invalid-message': 'Invalid protocol',
+      });
+      message = 'Invalid phone number';
+      break;
+    case 'http:':
+    case 'https:': {
+      const { host } = el;
+      host && el.origin !== origin && void el.setAttribute('target', '_blank');
+      if (host) return true;
+      message = 'Invalid host';
+      break;
+    }
+    default:
+      message = 'Invalid protocol';
+  }
+  void define(el, {
+    class: 'invalid',
+    'data-invalid-syntax': 'link',
+    'data-invalid-message': message,
+    href: null,
+    rel: null,
+  });
+  return false;
 }
 
 function decode(uri: string): string {

@@ -5,7 +5,7 @@ import { figure, segment as seg_figure } from './extension/figure';
 import { example, segment as seg_example } from './extension/example';
 import { placeholder, segment as seg_placeholder } from './extension/placeholder';
 
-export const segment: ExtensionParser.SegmentParser = validate(['~~~', '[$', '$'], validate(/^~{3,}[a-z]|^\[?\$[a-z-]\S+[^\S\n]*\n/, union([
+export const segment: ExtensionParser.SegmentParser = validate(['~~~', '[$', '$'], validate(/^~{3,}|^\[?\$[a-z-]\S+[^\S\n]*\n/, union([
   seg_fig,
   seg_figure,
   seg_example,

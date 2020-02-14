@@ -65,15 +65,17 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
       const refChild = ref.firstChild as HTMLAnchorElement | null;
       assert(refChild instanceof HTMLAnchorElement || !refChild);
       yield define(ref,
-        title
-          ? { id: refId, title }
-          : { id: refId,
-              class: ref.classList.contains('invalid')
-                ? undefined
-                : [...ref.classList, 'invalid'].join(' '),
-              'data-invalid-syntax': syntax,
-              'data-invalid-message': 'Missing a content',
-            },
+        {
+          id: refId,
+          ...title
+            ? { title }
+            : { class: ref.classList.contains('invalid')
+                  ? undefined
+                  : [...ref.classList, 'invalid'].join(' '),
+                'data-invalid-syntax': syntax,
+                'data-invalid-message': 'Missing a content',
+              }
+        },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
           ? undefined
           : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])

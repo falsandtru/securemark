@@ -4,7 +4,7 @@ import { inspect } from '../../../debug.test';
 describe('Unit: combinator/block', () => {
   describe('block', () => {
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(block(_ => [[], '\n'])(' \n')), undefined);
+      assert.throws(() => block(_ => [[], '\n'])(' \n'));
     });
 
     it('valid', () => {

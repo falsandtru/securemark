@@ -1,40 +1,55 @@
 import { ExtensionParser } from '../../block';
-import { union, block, rewrite, focus, match, trim, lazy, eval } from '../../../combinator';
+import { block, validate, clear, fence, fmap, eval } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { suppress } from '../../util';
 import { html } from 'typed-dom';
 
-export const segment: ExtensionParser.ExampleParser.SegmentParser = lazy(() => block(segment_));
+const opener = /^(~{3,})(?!~)example\/(\S+)([^\n]*)\n?/;
 
-export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(focus(
-  /^(~{3,})example\/(?:markdown|math)[^\S\n]*\n(?:[^\n]*\n){0,100}?\1[^\S\n]*(?:$|\n)/,
-  () => [[], '']), false);
+export const segment: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
+  clear(fence(opener, 100, true))));
 
-export const example: ExtensionParser.ExampleParser = block(rewrite(segment, trim(union([
-  match(
-    /^(~{3,})example\/markdown[^\S\n]*(\n[\s\S]*)\1$/,
-    ([, , body]) => rest => {
-      const annotation = html('ol');
-      const reference = html('ol');
-      const view = parse(body.slice(1, -1), {
-        footnotes: {
-          annotation,
-          reference,
-        },
-      });
-      return [[html('aside', { class: 'example', 'data-type': 'markdown' }, [
-        html('pre', body.slice(1, -1)),
-        html('div', [suppress(view)]),
-        suppress(annotation),
-        suppress(reference),
-      ])], rest];
-    }),
-  match(
-    /^(~{3,})example\/math[^\S\n]*(\n[\s\S]*)\1$/,
-    ([, , body]) => (rest, config) =>
-      [[html('aside', { class: 'example', 'data-type': 'math' }, [
-        html('pre', body.slice(1, -1)),
-        ...eval(mathblock(`$$${body}$$`, config))
-      ])], rest]),
-]))));
+export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
+  clear(fence(opener, 100, false))), false);
+
+export const example: ExtensionParser.ExampleParser = block(validate('~~~', fmap(
+  fence(opener, 100, true),
+  // Bug: Remove the annotation.
+  ([body, closer, opener, , type, param]: string[], _, __, context) => {
+    if (!closer || param.trim() !== '') return [html('pre', {
+      class: 'example notranslate invalid',
+      'data-invalid-syntax': 'example',
+      'data-invalid-message': `Invalid ${closer ? 'parameter' : 'content'}`,
+    }, `${opener}${body}${closer}`)];
+    switch (type) {
+      case 'markdown': {
+        const annotation = html('ol');
+        const reference = html('ol');
+        const view = parse(body.slice(0, -1), {
+          context,
+          footnotes: {
+            annotation,
+            reference,
+          },
+        });
+        return [html('aside', { class: 'example', 'data-type': 'markdown' }, [
+          html('pre', body.slice(0, -1)),
+          html('div', [suppress(view)]),
+          suppress(annotation),
+          suppress(reference),
+        ])];
+      }
+      case 'math':
+        return [html('aside', { class: 'example', 'data-type': 'math' }, [
+          html('pre', body.slice(0, -1)),
+          ...eval(mathblock(`$$\n${body}$$`, context))
+        ])];
+      default:
+        return [html('pre', {
+          class: 'example notranslate invalid',
+          'data-invalid-syntax': 'example',
+          'data-invalid-message': `Invalid example type`,
+        }, `${opener}${body}${closer}`)];
+    }
+  })));

@@ -1,6 +1,6 @@
 import { IListParser } from '../block';
 import { union, inits, some, block, line, validate, surround, convert, indent, trim, lazy, fmap } from '../../combinator';
-import { ulist_ } from './ulist';
+import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
 import { defrag } from '../util';
@@ -11,10 +11,10 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
   some(union([
     fmap(
       inits([
-        line(surround(/^[-+*](?:$|\s)/, defrag(trim(some(inline))), '', false)),
+        line(surround(/^[-+*](?:$|\s)/, trim(some(inline)), '', false)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
-      () => [html('li')]),
+      ns => [html('li', fillFirstLine(defrag(ns)))]),
   ]))),
   es => [html('ul', { class: 'invalid', 'data-invalid-syntax': 'list', 'data-invalid-message': 'Use - instead of + or *' }, es)])));
 

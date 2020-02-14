@@ -1,12 +1,10 @@
 import { CodeParser } from '../inline';
-import { union, some, subline, match } from '../../combinator';
-import { char } from '../source';
-import { html } from 'typed-dom';
+import { validate, creation, backtrack, match } from '../../combinator';
+import { html, text } from 'typed-dom';
 
-export const code: CodeParser = subline(union([
-  match(
-    /^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/,
-    ([whole, , body]) => rest =>
-      [[html('code', { 'data-src': whole }, body.trim() || body)], rest]),
-  some(char('`')),
-]));
+export const code: CodeParser = creation(validate('`', backtrack(match(
+  /^(`+)(?!`)(?:([^\n]*?[^`\n])\1(?!`))?/,
+  ([whole, , body]) => rest =>
+    body
+      ? [[html('code', { 'data-src': whole }, body.trim() || body)], rest]
+      : [[text(whole)], rest]))));

@@ -1,4 +1,4 @@
-import { Parser } from './src/combinator';
+import { Parser, Ctx } from './src/combinator';
 
 declare abstract class Markdown<T> {
   private parser?: T;
@@ -7,30 +7,28 @@ export interface MarkdownParser extends
   Markdown<'markdown'>,
   Parser<DocumentFragment, [
     MarkdownParser.BlockParser,
-  ], MarkdownParser.State, MarkdownParser.Config> {
+  ], MarkdownParser.Context> {
 }
 export namespace MarkdownParser {
-  export interface Config {
+  export interface Context extends Ctx {
     readonly syntax?: {
       readonly inline?: {
-        readonly emphasis?: boolean;
-        readonly strong?: boolean;
         readonly link?: boolean;
         readonly media?: boolean;
-        readonly insertion?: boolean;
-        readonly deletion?: boolean;
-        readonly mark?: boolean;
         readonly annotation?: boolean;
         readonly reference?: boolean;
         readonly extension?: boolean;
+        readonly autolink?: boolean;
+      };
+    };
+    readonly state?: {
+      readonly in?: {
+        readonly bdx?: boolean;
+        readonly supsub?: boolean;
+        readonly small?: boolean;
       };
     };
     readonly insecure?: boolean;
-    readonly state?: {
-      nest: string[];
-    };
-  }
-  export interface State {
   }
   export interface SegmentParser extends
     Markdown<'segment'>,
@@ -40,7 +38,7 @@ export namespace MarkdownParser {
       BlockParser.ExtensionParser.SegmentParser,
       SourceParser.ContentLineParser,
       SourceParser.EmptyLineParser,
-    ], State, Config> {
+    ], Context> {
   }
   export interface BlockParser extends
     Markdown<'block'>,
@@ -58,7 +56,7 @@ export namespace MarkdownParser {
       BlockParser.ExtensionParser,
       BlockParser.BlockquoteParser,
       BlockParser.ParagraphParser,
-    ], State, Config> {
+    ], Context> {
   }
   export namespace BlockParser {
     interface Block<T> extends Markdown<['block', T]> { }
@@ -67,25 +65,22 @@ export namespace MarkdownParser {
       Block<'horizontalrule'>,
       Parser<HTMLHRElement, [
         SourceParser.ContentLineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export interface HeadingParser extends
       // # Title
       Block<'header'>,
       Parser<HTMLHeadingElement, [
-        SourceParser.CharParser.SharpParser,
-        Parser<HTMLElement | Text, [
-          InlineParser.ExtensionParser.IndexerParser,
-          InlineParser,
-        ], State, Config>,
-      ], State, Config> {
+        InlineParser.ExtensionParser.IndexerParser,
+        InlineParser,
+      ], Context> {
     }
     export interface UListParser extends
       // - item
       Block<'ulist'>,
       Parser<HTMLUListElement, [
         UListParser.ListItemParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace UListParser {
       export interface ListItemParser extends
@@ -96,8 +91,8 @@ export namespace MarkdownParser {
             UListParser,
             OListParser,
             IListParser,
-          ], State, Config>,
-        ], State, Config> {
+          ], Context>,
+        ], Context> {
       }
     }
     export interface OListParser extends
@@ -105,7 +100,7 @@ export namespace MarkdownParser {
       Block<'olist'>,
       Parser<HTMLOListElement, [
         OListParser.ListItemParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace OListParser {
       export interface ListItemParser extends
@@ -114,13 +109,13 @@ export namespace MarkdownParser {
           Parser<HTMLElement | Text, [
             SourceParser.UnescapableSourceParser,
             InlineParser,
-          ], State, Config>,
+          ], Context>,
           Parser<HTMLUListElement | HTMLOListElement, [
             UListParser,
             OListParser,
             IListParser,
-          ], State, Config>,
-        ], State, Config> {
+          ], Context>,
+        ], Context> {
       }
     }
     export interface IListParser extends
@@ -128,7 +123,7 @@ export namespace MarkdownParser {
       Block<'ilist'>,
       Parser<HTMLUListElement, [
         IListParser.ListItemParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace IListParser {
       export type ListItemParser = UListParser.ListItemParser;
@@ -140,7 +135,7 @@ export namespace MarkdownParser {
       Parser<HTMLDListElement, [
         DListParser.TermParser,
         DListParser.DescriptionParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace DListParser {
       export interface TermParser extends
@@ -148,13 +143,13 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           InlineParser.ExtensionParser.IndexerParser,
           InlineParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface DescriptionParser extends
         Block<'dlist/description'>,
         Parser<HTMLElement, [
           InlineParser,
-        ], State, Config> {
+        ], Context> {
       }
     }
     export interface TableParser extends
@@ -166,21 +161,21 @@ export namespace MarkdownParser {
         TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>,
         TableParser.RowParser<TableParser.RowParser.CellParser.AlignmentParser>,
         TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace TableParser {
       export interface RowParser<P extends RowParser.CellParser.ContentParser> extends
         Block<'table/row'>,
         Parser<HTMLTableRowElement, [
           RowParser.CellParser<P>,
-        ], State, Config> {
+        ], Context> {
       }
       export namespace RowParser {
         export interface CellParser<P extends CellParser.ContentParser> extends
           Block<'table/row/cell'>,
           Parser<HTMLTableDataCellElement, [
             P,
-          ], State, Config> {
+          ], Context> {
         }
         export namespace CellParser {
           export type ContentParser = DataParser | AlignmentParser;
@@ -188,7 +183,7 @@ export namespace MarkdownParser {
             Block<'table/row/cell/data'>,
             Parser<HTMLElement | Text, [
               InlineParser,
-            ], State, Config> {
+            ], Context> {
           }
           export interface AlignmentParser extends
             Block<'table/row/cell/alignment'>,
@@ -197,7 +192,7 @@ export namespace MarkdownParser {
               SourceParser.UnescapableSourceParser,
               SourceParser.UnescapableSourceParser,
               SourceParser.UnescapableSourceParser,
-            ], State, Config> {
+            ], Context> {
           }
         }
       }
@@ -208,28 +203,28 @@ export namespace MarkdownParser {
       Parser<HTMLQuoteElement, [
         BlockquoteParser.TextParser,
         BlockquoteParser.SourceParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace BlockquoteParser {
       export interface SegmentParser extends
         Block<'blockquote/segment'>,
         Parser<never, [
           SourceParser.ContentLineParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface TextParser extends
         Block<'blockquote/text'>,
         Parser<HTMLQuoteElement, [
           TextParser,
           AutolinkParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface SourceParser extends
         Block<'blockquote/source'>,
         Parser<HTMLQuoteElement, [
           SourceParser,
           MarkdownParser,
-        ], State, Config> {
+        ], Context> {
       }
     }
     export interface CodeBlockParser extends
@@ -237,16 +232,12 @@ export namespace MarkdownParser {
       // abc
       // ```
       Block<'codeblock'>,
-      Parser<HTMLPreElement, [
-        AutolinkParser,
-      ], State, Config> {
+      Parser<HTMLPreElement, [], Context> {
     }
     export namespace CodeBlockParser {
       export interface SegmentParser extends
         Block<'codeblock/segment'>,
-        Parser<never, [
-          SourceParser.ContentLineParser,
-        ], State, Config> {
+        Parser<never, [], Context> {
       }
     }
     export interface MathBlockParser extends
@@ -254,16 +245,12 @@ export namespace MarkdownParser {
       // expr
       // $$
       Block<'mathblock'>,
-      Parser<HTMLDivElement, [
-        SourceParser.EscapableSourceParser,
-      ], State, Config> {
+      Parser<HTMLDivElement | HTMLPreElement, [], Context> {
     }
     export namespace MathBlockParser {
       export interface SegmentParser extends
         Block<'mathblock/segment'>,
-        Parser<never, [
-          SourceParser.ContentLineParser,
-        ], State, Config> {
+        Parser<never, [], Context> {
       }
     }
     export interface ExtensionParser extends
@@ -275,7 +262,7 @@ export namespace MarkdownParser {
         ExtensionParser.FigureParser,
         ExtensionParser.ExampleParser,
         ExtensionParser.PlaceholderParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace ExtensionParser {
       export interface SegmentParser extends
@@ -285,7 +272,7 @@ export namespace MarkdownParser {
           FigureParser.SegmentParser,
           ExampleParser.SegmentParser,
           PlaceholderParser.SegmentParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface FigureParser extends
         // ~~~figure [$group-name]
@@ -300,7 +287,7 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           InlineParser.ExtensionParser.LabelParser,
           Parser<HTMLElement | Text, [
-            Parser<HTMLElement, [
+            Parser<HTMLElement | Text, [
               TableParser,
               CodeBlockParser,
               MathBlockParser,
@@ -308,11 +295,11 @@ export namespace MarkdownParser {
               BlockquoteParser,
               InlineParser.MediaParser,
               InlineParser.ShortmediaParser,
-            ], State, Config>,
+            ], Context>,
             SourceParser.EmptyLineParser,
             InlineParser,
-          ], State, Config>,
-        ], State, Config> {
+          ], Context>,
+        ], Context> {
       }
       export namespace FigureParser {
         export interface SegmentParser extends
@@ -326,14 +313,14 @@ export namespace MarkdownParser {
                 ExtensionParser.ExampleParser.SegmentParser,
                 BlockquoteParser.SegmentParser,
                 SourceParser.ContentLineParser,
-              ], State, Config>,
+              ], Context>,
               SourceParser.EmptyLineParser,
               Parser<never, [
                 SourceParser.EmptyLineParser,
                 SourceParser.ContentLineParser,
-              ], State, Config>,
-            ], State, Config>,
-          ], State, Config> {
+              ], Context>,
+            ], Context>,
+          ], Context> {
         }
       }
       export namespace FigParser {
@@ -347,30 +334,30 @@ export namespace MarkdownParser {
               ExtensionParser.ExampleParser.SegmentParser,
               BlockquoteParser.SegmentParser,
               SourceParser.ContentLineParser,
-            ], State, Config>,
-          ], State, Config> {
+            ], Context>,
+          ], Context> {
         }
       }
       export interface ExampleParser extends
         // ~~~example
         // ~~~
         Block<'extension/example'>,
-        Parser<HTMLElement, Parser<HTMLElement, [], State, Config>[], State, Config> {
+        Parser<HTMLElement, [], Context> {
       }
       export namespace ExampleParser {
         export interface SegmentParser extends
           Block<'extension/example/segment'>,
-          Parser<never, [], State, Config> {
+          Parser<never, [], Context> {
         }
       }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,
-        Parser<HTMLElement, [], State, Config> {
+        Parser<HTMLElement, [], Context> {
       }
       export namespace PlaceholderParser {
         export interface SegmentParser extends
           Block<'extension/placeholder/segment'>,
-          Parser<never, [], State, Config> {
+          Parser<never, [], Context> {
         }
       }
     }
@@ -380,7 +367,7 @@ export namespace MarkdownParser {
       Parser<HTMLParagraphElement, [
         ParagraphParser.MentionParser,
         InlineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace ParagraphParser {
       export interface MentionParser extends
@@ -389,19 +376,19 @@ export namespace MarkdownParser {
         Parser<HTMLSpanElement, [
           ParagraphParser.MentionParser.AddressParser,
           ParagraphParser.MentionParser.QuotationParser,
-        ], State, Config> {
+        ], Context> {
       }
       export namespace MentionParser {
         export interface AddressParser extends
           // >0a
           Block<'paragraph/mention/address'>,
           Parser<HTMLAnchorElement, [
-            SourceParser.CharParser.GreaterThanParser,
-            Parser<HTMLAnchorElement, [
+            SourceParser.StrParser,
+            Parser<HTMLElement | Text, [
               InlineParser.LinkParser,
               InlineParser.LinkParser,
-            ], State, Config>,
-          ], State, Config> {
+            ], Context>,
+          ], Context> {
         }
         export interface QuotationParser extends
           // > text
@@ -409,7 +396,7 @@ export namespace MarkdownParser {
           Parser<HTMLSpanElement, [
             AutolinkParser,
             AutolinkParser,
-          ], State, Config> {
+          ], Context> {
         }
       }
     }
@@ -417,20 +404,22 @@ export namespace MarkdownParser {
   export interface InlineParser extends
     Markdown<'inline'>,
     Parser<HTMLElement | Text, [
+      InlineParser.EscapeParser,
       InlineParser.AnnotationParser,
       InlineParser.ReferenceParser,
       InlineParser.TemplateParser,
       InlineParser.ExtensionParser,
+      InlineParser.RubyParser,
       InlineParser.LinkParser,
       InlineParser.MediaParser,
-      InlineParser.RubyParser,
       InlineParser.HTMLParser,
       InlineParser.CommentParser,
       InlineParser.InsertionParser,
       InlineParser.DeletionParser,
       InlineParser.MarkParser,
-      InlineParser.EmphasisParser,
+      InlineParser.EmStrongParser,
       InlineParser.StrongParser,
+      InlineParser.EmphasisParser,
       InlineParser.CodeParser,
       InlineParser.MathParser,
       InlineParser.HTMLEntityParser,
@@ -438,7 +427,7 @@ export namespace MarkdownParser {
       InlineParser.AutolinkParser,
       InlineParser.BracketParser,
       SourceParser.TextParser,
-    ], State, Config> {
+    ], Context> {
   }
   export namespace InlineParser {
     interface Inline<T> extends Markdown<['inline', T]> { }
@@ -447,7 +436,17 @@ export namespace MarkdownParser {
       Inline<'annotation'>,
       Parser<HTMLElement, [
         InlineParser,
-      ], State, Config> {
+      ], Context> {
+    }
+    export interface EscapeParser extends
+      // ****
+      // +++
+      // ~~~
+      // ===
+      Inline<'escape'>,
+      Parser<Text, [
+        SourceParser.StrParser,
+      ], Context> {
     }
     export interface ReferenceParser extends
       // [[abc]]
@@ -455,7 +454,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement, [
         ReferenceParser.AliasParser,
         InlineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace ReferenceParser {
       export interface AliasParser extends
@@ -465,16 +464,16 @@ export namespace MarkdownParser {
         Inline<'reference/alias'>,
         Parser<HTMLElement, [
           SourceParser.UnescapableSourceParser,
-        ], State, Config> {
+        ], Context> {
       }
     }
     export interface TemplateParser extends
       // {{abc}}
       Inline<'template'>,
       Parser<HTMLSpanElement | Text, [
-        SourceParser.CharParser.ExclamationParser,
+        SourceParser.CharParser,
         InlineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export interface ExtensionParser extends
       // [#abc]
@@ -484,39 +483,39 @@ export namespace MarkdownParser {
         ExtensionParser.LabelParser,
         ExtensionParser.DataParser,
         ExtensionParser.PlaceholderParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace ExtensionParser {
       export interface IndexParser extends
         // [#index]
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, [
-          LinkParser,
-        ], State, Config> {
+          InlineParser,
+        ], Context> {
       }
       export interface IndexerParser extends
         // [#index]
         Inline<'extension/indexer'>,
-        Parser<HTMLSpanElement, [
+        Parser<HTMLElement | Text, [
           IndexParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface LabelParser extends
         // $group-name
         // [$group-name]
         Inline<'extension/label'>,
         Parser<HTMLAnchorElement, [
-          SourceParser.UnescapableSourceParser,
-          SourceParser.UnescapableSourceParser,
-        ], State, Config> {
+          SourceParser.StrParser,
+          SourceParser.StrParser,
+        ], Context> {
       }
       export namespace LabelParser {
         export interface SegmentParser extends
           Inline<'extension/label/segment'>,
           Parser<never, [
-            SourceParser.UnescapableSourceParser,
-            SourceParser.UnescapableSourceParser,
-          ], State, Config> {
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+          ], Context> {
         }
       }
       export interface DataParser extends
@@ -525,26 +524,35 @@ export namespace MarkdownParser {
         // [~name=value|text]
         Inline<'extension/data'>,
         Parser<HTMLSpanElement, [
-          SourceParser.UnescapableSourceParser,
+          SourceParser.StrParser,
+          SourceParser.CharParser,
           InlineParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface PlaceholderParser extends
         // [^abc]
         Inline<'extension/placeholder'>,
         Parser<HTMLSpanElement, [
           InlineParser,
-        ], State, Config> {
+        ], Context> {
       }
+    }
+    export interface RubyParser extends
+      // [AB](a b)
+      Inline<'ruby'>,
+      Parser<HTMLElement, [
+        SourceParser.StrParser,
+        SourceParser.StrParser,
+      ], Context> {
     }
     export interface LinkParser extends
       // {uri}
       // [abc]{uri}
       Inline<'link'>,
-      Parser<HTMLAnchorElement, [
+      Parser<HTMLElement, [
         LinkParser.ContentParser,
         LinkParser.ParamParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace LinkParser {
       export interface ContentParser extends
@@ -553,31 +561,27 @@ export namespace MarkdownParser {
           MediaParser,
           ShortmediaParser,
           InlineParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface ParamParser extends
         Inline<'link/param'>,
         Parser<Text[], [
           LinkParser.ParamParser.UriParser,
-          HTMLParser.ParamParser.AttributeParser,
-        ], State, Config> {
+          LinkParser.ParamParser.AttributeParser,
+        ], Context> {
       }
       export namespace ParamParser {
         export interface UriParser extends
-          Inline<'link/uri'>,
+          Inline<'link/param/uri'>,
           Parser<Text, [
-            UriParser.BracketParser,
-            SourceParser.UnescapableSourceParser,
-          ], State, Config> {
+            SourceParser.StrParser,
+          ], Context> {
         }
-        export namespace UriParser {
-          export interface BracketParser extends
-            Inline<'link/uri/bracket'>,
-            Parser<Text, Parser<Text, [
-              BracketParser,
-              SourceParser.UnescapableSourceParser,
-            ], State, Config>[], State, Config> {
-          }
+        export interface AttributeParser extends
+          Inline<'link/param/attribute'>,
+          Parser<Text, [
+            SourceParser.StrParser,
+          ], Context> {
         }
       }
     }
@@ -585,191 +589,175 @@ export namespace MarkdownParser {
       // !{uri}
       // ![abc]{uri}
       Inline<'media'>,
-      Parser<HTMLAnchorElement, [
+      Parser<HTMLElement, [
         MediaParser.TextParser,
         MediaParser.ParamParser,
-      ], State, Config> {
+      ], Context> {
     }
     export namespace MediaParser {
       export interface TextParser extends
         Inline<'media/text'>,
-        Parser<(HTMLElement | Text)[], [
-          SourceParser.TextParser,
-        ], State, Config> {
+        Parser<Text[], [
+          SourceParser.StrParser,
+        ], Context> {
       }
       export interface ParamParser extends
         Inline<'media/param'>,
         Parser<Text[], [
           LinkParser.ParamParser.UriParser,
-          HTMLParser.ParamParser.AttributeParser,
-        ], State, Config> {
-      }
-    }
-    export interface RubyParser extends
-      // [AB](a b)
-      Inline<'ruby'>,
-      Parser<HTMLElement, [
-        RubyParser.TextParser,
-        RubyParser.TextParser,
-      ], State, Config> {
-    }
-    export namespace RubyParser {
-      export interface TextParser extends
-        Inline<'ruby/text'>,
-        Parser<(HTMLElement | Text)[], [
-          HTMLEntityParser,
-          SourceParser.TextParser,
-        ], State, Config> {
+          LinkParser.ParamParser.AttributeParser,
+        ], Context> {
       }
     }
     export interface HTMLParser extends
       // <small>abc</small>
       Inline<'html'>,
-      Parser<HTMLElement, [
-        Parser<HTMLElement, [
-          HTMLParser.ParamParser,
-          HTMLParser.ContentParser,
-        ], State, Config>,
-        Parser<HTMLElement, [
-          HTMLParser.ParamParser,
-        ], State, Config>,
-        HTMLParser.PlaceholderParser,
-      ], State, Config> {
+      Parser<HTMLElement | Text, [
+        HTMLParser.OpenTagParser,
+        HTMLParser.TagParser,
+        HTMLParser.TagParser,
+      ], Context> {
     }
     export namespace HTMLParser {
-      export interface ParamParser extends
-        Inline<'html/param'>,
-        Parser<Text[], [
-          ParamParser.AttributeParser,
-        ], State, Config> {
+      export interface OpenTagParser extends
+        Inline<'html/opentag'>,
+        Parser<HTMLElement | Text, [
+          TagParser.AttributeParser,
+        ], Context> {
       }
-      export namespace ParamParser {
-        export interface AttributeParser extends
-          Inline<'html/param/attribute'>,
-          Parser<Text, [
-            SourceParser.UnescapableSourceParser,
-            SourceParser.CharParser.EqualParser,
-            SourceParser.EscapableSourceParser,
-          ], State, Config> {
-        }
-      }
-      export interface ContentParser extends
-        Inline<'html/content'>,
-        Parser<(HTMLElement | Text)[], [
+      export interface TagParser extends
+        Inline<'html/tag'>,
+        Parser<HTMLElement | Text, [
           InlineParser,
-        ], State, Config> {
+        ], Context> {
       }
-      export interface PlaceholderParser extends
-        Inline<'html/placeholder'>,
-        Parser<HTMLElement, [
+      export namespace TagParser {
+        export interface AttributeParser extends
+          Inline<'html/tag/attribute'>,
           Parser<Text, [
-            ParamParser.AttributeParser,
-          ], State, Config>,
-          Parser<(HTMLElement|Text)[], [
-            HTMLParser.ParamParser,
-            HTMLParser.ContentParser,
-          ], State, Config>,
-        ], State, Config> {
+            SourceParser.StrParser,
+          ], Context> {
+        }
       }
     }
     export interface CommentParser extends
       // <# comment #>
       Inline<'comment'>,
-      Parser<HTMLElement, [], State, Config> {
+      Parser<HTMLElement, [], Context> {
     }
     export interface InsertionParser extends
       // ++abc++
       Inline<'insertion'>,
       Parser<HTMLElement, [
         InlineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export interface DeletionParser extends
       // ~~abc~~
       Inline<'deletion'>,
       Parser<HTMLElement, [
         InlineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export interface MarkParser extends
       // ==abc==
       Inline<'mark'>,
       Parser<HTMLElement, [
         InlineParser,
-      ], State, Config> {
+      ], Context> {
+    }
+    export interface EmStrongParser extends
+      // *abc*
+      Inline<'emstrong'>,
+      Parser<HTMLElement | Text, [
+        InlineParser,
+      ] | [
+        EmphasisParser | StrongParser,
+        InlineParser,
+      ], Context> {
     }
     export interface EmphasisParser extends
       // *abc*
       Inline<'emphasis'>,
-      Parser<HTMLElement, [
+      Parser<HTMLElement | Text, [
         StrongParser,
         InlineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export interface StrongParser extends
       // **abc**
       Inline<'strong'>,
-      Parser<HTMLElement, [
+      Parser<HTMLElement | Text, [
+        EmphasisParser,
         InlineParser,
-      ], State, Config> {
+      ], Context> {
     }
     export interface CodeParser extends
       // `abc`
       Inline<'code'>,
       Parser<HTMLElement | Text, [
-        Parser<HTMLElement, [
-          SourceParser.UnescapableSourceParser,
-        ], State, Config>,
-        SourceParser.CharParser.BackquoteParser,
-      ], State, Config> {
+        SourceParser.StrParser,
+      ], Context> {
     }
     export interface MathParser extends
       // ${expr}$
       Inline<'math'>,
-      Parser<HTMLSpanElement, [
-        SourceParser.EscapableSourceParser,
-      ], State, Config> {
+      Parser<HTMLElement, [
+        SourceParser.StrParser,
+      ], Context> {
     }
     export interface HTMLEntityParser extends
       // &copy;
       Inline<'htmlentity'>,
-      Parser<Text, [], State, Config> {
+      Parser<Text, [], Context> {
     }
     export interface ShortmediaParser extends
       // !https://host
       Inline<'shortmedia'>,
-      Parser<HTMLAnchorElement, [
+      Parser<HTMLElement, [
         MediaParser,
-      ], State, Config> {
+      ], Context> {
     }
     export interface AutolinkParser extends
       Inline<'autolink'>,
-      Parser<HTMLAnchorElement | HTMLImageElement | Text, [
+      Parser<HTMLElement | Text, [
         AutolinkParser.UrlParser,
         AutolinkParser.EmailParser,
-        SourceParser.UnescapableSourceParser,
-        SourceParser.UnescapableSourceParser,
+        SourceParser.StrParser,
+        SourceParser.StrParser,
         AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser,
         AutolinkParser.HashtagParser,
         AutolinkParser.HashrefParser,
-        SourceParser.UnescapableSourceParser,
-      ], State, Config> {
+        SourceParser.StrParser,
+      ], Context> {
     }
     export namespace AutolinkParser {
       export interface UrlParser extends
         // https://host
         Inline<'url'>,
-        Parser<HTMLAnchorElement, [
+        Parser<HTMLElement, [
           LinkParser,
-        ], State, Config> {
+        ], Context> {
+      }
+      export namespace UrlParser {
+        export interface BracketParser extends
+          Inline<'url/bracket'>,
+          Parser<Text, [
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+          ], Context> {
+        }
       }
       export interface EmailParser extends
         // account@host
         Inline<'email'>,
         Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface ChannelParser extends
         // @account#tag
@@ -777,37 +765,40 @@ export namespace MarkdownParser {
         Parser<HTMLAnchorElement, [
           InlineParser.AutolinkParser.AccountParser,
           InlineParser.AutolinkParser.HashtagParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface AccountParser extends
         // @account
         Inline<'account'>,
         Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
-        ], State, Config> {
+        ], Context> {
       }
       export interface HashrefParser extends
         // #1
         Inline<'hashref'>,
         Parser<HTMLAnchorElement, [
           SourceParser.UnescapableSourceParser,
-        ], State, Config> {
+        ], Context> {
       }
     }
     export interface BracketParser extends
       // ()
       // []
       // {}
-      // ""
       Inline<'bracket'>,
-      Parser<HTMLElement | Text, InlineParser[], State, Config> {
+      Parser<HTMLElement | Text, [
+        InlineParser,
+        InlineParser,
+        InlineParser,
+      ], Context> {
     }
   }
   export interface AutolinkParser extends
@@ -816,67 +807,48 @@ export namespace MarkdownParser {
       InlineParser.AutolinkParser,
       SourceParser.LinebreakParser,
       SourceParser.UnescapableSourceParser,
-    ], State, Config> {
+    ], Context> {
   }
   export namespace SourceParser {
     interface Source<T> extends Markdown<['source', T]> { }
     export interface TextParser extends
       // abc
       Source<'text'>,
-      Parser<HTMLBRElement | HTMLSpanElement | Text, [], State, Config> {
+      Parser<HTMLBRElement | HTMLSpanElement | Text, [], Context> {
     }
     export interface LinebreakParser extends
       Source<'linebreak'>,
-      Parser<HTMLBRElement, [TextParser], State, Config> {
+      Parser<HTMLBRElement, [TextParser], Context> {
     }
     export interface EscapableSourceParser extends
       // abc
       Source<'escsource'>,
-      Parser<Text, [], State, Config> {
+      Parser<Text, [], Context> {
     }
     export interface UnescapableSourceParser extends
       // abc
       Source<'unescsource'>,
-      Parser<Text, [], State, Config> {
+      Parser<Text, [], Context> {
     }
-    export namespace CharParser {
-      export interface SharpParser extends
-        // #
-        Source<'char/sharp'>,
-        Parser<Text, [], State, Config> {
-      }
-      export interface GreaterThanParser extends
-        // >
-        Source<'char/greater-than'>,
-        Parser<Text, [], State, Config> {
-      }
-      export interface ExclamationParser extends
-        // !
-        Source<'char/exclamation'>,
-        Parser<Text, [], State, Config> {
-      }
-      export interface EqualParser extends
-        // =
-        Source<'char/equal'>,
-        Parser<Text, [], State, Config> {
-      }
-      export interface BackquoteParser extends
-        // `
-        Source<'char/backquote'>,
-        Parser<Text, [], State, Config> {
-      }
+    export interface StrParser extends
+      Source<'str'>,
+      Parser<Text, [], Context> {
+    }
+    export interface CharParser extends
+      Source<'char'>,
+      Parser<Text, [], Context> {
     }
     export interface ContentLineParser extends
       Source<'contentline'>,
-      Parser<never, [], State, Config> {
+      Parser<never, [], Context> {
     }
     export interface EmptyLineParser extends
       Source<'emptyline'>,
-      Parser<never, [], State, Config> {
+      Parser<never, [], Context> {
     }
     export interface AnyLineParser extends
       Source<'anyline'>,
-      Parser<never, [], State, Config> {
+      Parser<never, [], Context> {
     }
   }
 }

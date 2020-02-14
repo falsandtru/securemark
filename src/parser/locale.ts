@@ -35,7 +35,7 @@ function endingChar(node: Node | null): string {
   return '';
 }
 
-function text(node: Node): string {
+function text(node: Node | Text): string {
   switch (node.nodeName) {
     case 'RUBY':
       for (let i = node.childNodes.length; i--;) {
@@ -50,6 +50,8 @@ function text(node: Node): string {
       }
       return '';
     default:
-      return node.textContent!;
+      return 'data' in node
+        ? node.data
+        : node.textContent!;
   }
 }

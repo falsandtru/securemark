@@ -1,9 +1,10 @@
 import { EscapableSourceParser } from '../source';
+import { creation } from '../../combinator';
 import { text } from 'typed-dom';
 
 const separator = /\s|(?=[\x00-\x7F])[^A-Za-z0-9\s]/;
 
-export const escsource: EscapableSourceParser = source => {
+export const escsource: EscapableSourceParser = creation(source => {
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {
@@ -19,4 +20,4 @@ export const escsource: EscapableSourceParser = source => {
     default:
       return [[text(source.slice(0, i))], source.slice(i)];
   }
-};
+});

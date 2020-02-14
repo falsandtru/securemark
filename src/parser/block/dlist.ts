@@ -1,5 +1,5 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, validate, rewrite, surround, convert, trim, configure, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, rewrite, surround, convert, trim, update, lazy, fmap } from '../../combinator';
 import { anyline } from '../source';
 import { inline, indexer, indexee } from '../inline';
 import { blankline } from './paragraph';
@@ -10,7 +10,7 @@ import { html } from 'typed-dom';
 export const dlist: DListParser = lazy(() => block(fmap(validate(
   /^~(?=$|\s)/,
   convert(source => source.replace(blankline, ''),
-  configure({ syntax: { inline: { media: false } } },
+  update({ syntax: { inline: { media: false } } },
   some(inits([
     some(term),
     some(desc),
@@ -20,7 +20,7 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
 const term: DListParser.TermParser = line(indexee(fmap(
   surround(
     /^~(?=$|\s)/,
-    defrag(trim(some(union([indexer, inline])))),
+    fmap(trim(some(union([indexer, inline]))), defrag),
     '',
     false),
   ns => [html('dt', ns)])));
@@ -30,10 +30,10 @@ const desc: DListParser.DescriptionParser = block(fmap(
     /^:(?=$|\s)|/,
     rewrite(
       some(anyline, /^[~:](?=$|\s)/),
-      defrag(trim(some(union([inline]))))),
+      trim(some(union([inline])))),
     '',
     false),
-  ns => [html('dd', ns)]),
+  ns => [html('dd', defrag(ns))]),
   false);
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {

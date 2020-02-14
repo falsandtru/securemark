@@ -1,19 +1,21 @@
 import { BracketParser, inline } from '../inline';
-import { union, some, surround, lazy, fmap } from '../../combinator';
-import { defrag } from '../util';
-import { text } from 'typed-dom';
+import { union, some, open, close, lazy } from '../../combinator';
+import { char } from '../source';
 
-export const bracket: BracketParser = lazy(() => defrag(union([
-  fmap(
-    surround('(', some(inline, ')'), ')', false),
-    ns => [text('('), ...ns, text(')')]),
-  fmap(
-    surround('[', some(inline, ']'), ']', false),
-    ns => [text('['), ...ns, text(']')]),
-  fmap(
-    surround('{', some(inline, '}'), '}', false),
-    ns => [text('{'), ...ns, text('}')]),
-  fmap(
-    surround('"', some(inline, '"'), '"', false),
-    ns => [text('"'), ...ns, text('"')]),
-])));
+export const bracket: BracketParser = lazy(() => union([
+  open(
+    char('('), close(
+    some(inline, ')'),
+    char(')'), true, true, void 0,
+    (ns, rest) => [ns, rest]), true),
+  open(
+    char('['), close(
+    some(inline, ']'),
+    char(']'), true, true, void 0,
+    (ns, rest) => [ns, rest]), true),
+  open(
+    char('{'), close(
+    some(inline, '}'),
+    char('}'), true, true, void 0,
+    (ns, rest) => [ns, rest]), true),
+]));

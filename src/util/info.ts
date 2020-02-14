@@ -2,7 +2,7 @@ import { Info } from '../..';
 import { context } from './context';
 
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
-  const filter = context(source, 'blockquote, aside, .media, pre.notranslate, .math');
+  const filter = context(source, 'section, article, aside, blockquote, .media, pre.notranslate, .math');
   return {
     hashtag: find('a.hashtag[href]'),
     hashref: find('a.hashref[href]'),

@@ -9,14 +9,14 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
     ? source => source.slice(0, until.length) === until
     : source => !!until && until.test(source);
   let memory = '';
-  return (source, config) => {
+  return (source, context) => {
     if (source === memory) return;
     let rest = source;
     let data: T[] | undefined;
     while (true) {
       if (rest === '') break;
       if (match(rest)) break;
-      const result = parser(rest, config);
+      const result = parser(rest, context);
       assert(check(rest, result));
       if (!result) break;
       data = data

@@ -1,13 +1,16 @@
 import { AutolinkParser } from '../../inline';
-import { sequence, some, subline, fmap } from '../../../combinator';
+import { inits, some, fmap } from '../../../combinator';
 import { account } from './account';
 import { hashtag } from './hashtag';
 import { stringify } from '../../util';
 import { html } from 'typed-dom';
 
-export const channel: AutolinkParser.ChannelParser = subline(fmap(
-  sequence([
+export const channel: AutolinkParser.ChannelParser = fmap(
+  inits([
     account,
     some(hashtag),
   ]),
-  ns => [html('a', { class: 'channel', rel: 'noopener' }, stringify(ns))]));
+  ns =>
+    ns.length > 1
+      ? [html('a', { class: 'channel', rel: 'noopener' }, stringify(ns))]
+      : ns);

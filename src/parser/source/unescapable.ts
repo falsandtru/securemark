@@ -1,8 +1,9 @@
 import { UnescapableSourceParser } from '../source';
+import { creation } from '../../combinator';
 import { separator } from './text';
 import { text } from 'typed-dom';
 
-export const unescsource: UnescapableSourceParser = source => {
+export const unescsource: UnescapableSourceParser = creation(source => {
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {
@@ -13,4 +14,4 @@ export const unescsource: UnescapableSourceParser = source => {
     default:
       return [[text(source.slice(0, i))], source.slice(i)];
   }
-};
+});

@@ -6,7 +6,7 @@ import { normalize } from './normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, stgs: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { footnotes }: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   const adds: [HTMLElement, Node | null][] = [];
@@ -72,12 +72,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, stgs: 
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of figure(target)) {
+    for (const el of figure(target, footnotes)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of footnote(target, stgs.footnotes)) {
+    for (const el of footnote(target, footnotes)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;

@@ -8,6 +8,7 @@ describe('Unit: parser/block/extension/figure', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure\n!https://host\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name\n!https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\nhttps://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\\\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\n\\\n~~~')), undefined);
@@ -44,8 +45,8 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure [$-0.0]\n> \n\n~~~')), [['<figure data-label="$-0.0" data-group="$" style="display: none;"><div class="figcontent"><blockquote></blockquote></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~~figure [$group-name]\n!https://host\n~~~~')), [['<figure data-label="group-name" data-group="group"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure $group-name\n!https://host\n~~~')), [['<figure data-label="group-name" data-group="group"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~figure [$-name]\n!https://host\n~~~')), [['<figure data-label="$-name" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-message="A figure labeled to define a formula number can contain only a math formula and no caption"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~figure [$-name]\n$$\n\n$$\n\ncaption\n~~~')), [['<figure data-label="$-name" data-group="$" class="invalid" data-invalid-syntax="figure" data-invalid-message="A figure labeled to define a formula number can contain only a math formula and no caption"><div class="figcontent"><div class="math notranslate">$$\n\n$$</div></div><span class="figindex"></span><figcaption>caption</figcaption></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$-name]\n!https://host\n~~~')), [['<figure data-label="$-name" data-group="$" class="invalid"><div class="figcontent"><a href="https://host" rel="noopener" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$-name]\n$$\n\n$$\n\ncaption\n~~~')), [['<figure data-label="$-name" data-group="$" class="invalid"><div class="figcontent"><div class="math notranslate">$$\n\n$$</div></div><span class="figindex"></span><figcaption>caption</figcaption></figure>'], '']);
       assert(parser('~~~figure [$group-name]\n```\n' + '\n'.repeat(300) + '```\n~~~'));
       assert(parser('~~~figure [$group-name]\n' + '>\n'.repeat(500) + '\n~~~'));
     });

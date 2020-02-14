@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown.d';
-import { union, recover } from '../combinator';
+import { union, update, recover } from '../combinator';
 import { emptyline } from './source/line';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -14,6 +14,7 @@ import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 import { localize } from './locale';
+import { html } from 'typed-dom';
 
 export import BlockParser = MarkdownParser.BlockParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
@@ -29,18 +30,28 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = recover(localize(union([
-  emptyline,
-  horizontalrule,
-  heading,
-  ulist,
-  olist,
-  ilist,
-  dlist,
-  table,
-  codeblock,
-  mathblock,
-  extension,
-  blockquote,
-  paragraph
-])), (_, config, reason) => block(reason instanceof Error ? `# ${reason.name}: ${reason.message}\\` : `# Unknown error: ${reason}\\`, config));
+export const block: BlockParser = recover(localize(
+  update({ resource: { creation: 100 * 1000, backtrack: 100 * 1000 } },
+  union([
+    emptyline,
+    horizontalrule,
+    heading,
+    ulist,
+    olist,
+    ilist,
+    dlist,
+    table,
+    codeblock,
+    mathblock,
+    extension,
+    blockquote,
+    paragraph
+  ]))),
+  (_, __, reason) => [
+    [html('h1',
+      { class: 'invalid' },
+      reason instanceof Error
+        ? `${reason.name}: ${reason.message}`
+        : `Unknown error: ${reason}`)],
+    ''
+  ]);

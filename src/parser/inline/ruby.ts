@@ -1,37 +1,73 @@
 import { RubyParser } from '../inline';
-import { union, sequence, some, subline, validate, verify, surround, fmap } from '../../combinator';
+import { Parser, union, sequence, some, creation, backtrack, surround, fmap, bind, eval } from '../../combinator';
 import { htmlentity } from './htmlentity';
-import { text } from '../source';
-import { defrag, trimNodeEnd, stringify, hasText, hasTightText } from '../util';
+import { str, char } from '../source';
+import { defrag } from '../util';
 import { concat } from 'spica/concat';
-import { html, text as txt } from 'typed-dom';
+import { html, text } from 'typed-dom';
 
-export const ruby: RubyParser = subline(fmap(fmap(verify(fmap(validate(
-  /^\[.+?\]\(.+?\)/,
+const parser: Parser<string> = some(union([
+  fmap(htmlentity, (ts: Text[]) => [ts[0].data]),
+  (s: string) => {
+    const i = s.indexOf('&');
+    return i === -1
+      ? [[s], '']
+      : [[s.slice(0, i || 1)], s.slice(i || 1)];
+  }
+]));
+
+export const ruby: RubyParser = creation(bind(
   sequence([
-    fmap(verify(
-      surround('[', trimNodeEnd(defrag(some(union([htmlentity, text]), /^\\?\n|^]/))), ']'),
-      ([text]) => hasTightText(text)),
-      ([text]) => [text.textContent!.split(/\s/).map(txt)]),
-    fmap(verify(
-      surround('(', defrag(some(union([htmlentity, text]), /^\\?\n|^\)/)), ')'),
-      ([text]) => hasText(text)),
-      ([text]) => [text.textContent!.split(/\s/).map(txt)]),
-  ])),
-  ([text, ruby]) =>
-    text.length === 1 && text.length < ruby.length
-      ? [[...stringify(text)].map(txt), ruby]
-      : [text, ruby]),
-  ([text, ruby]) =>
-    text.length >= ruby.length),
-  ([text, ruby]) => [
-    text
-      .reduce((acc, _, i) =>
-        concat(concat(acc, [text[i]]),
-          i < ruby.length && ruby[i].textContent!.trim() !== ''
-            ? [html('rp', '('), html('rt', [ruby[i]]), html('rp', ')')]
-            : [html('rt')])
-      , [])
+    surround('[', str(/^(?!\\?\s)(?:[^\]\n]|\\[^\n])+/), backtrack(char(']'))),
+    backtrack(surround('(', str(/^(?:[^\)\n]|\\[^\n])+/), backtrack(char(')')))),
   ]),
-  ([ns]) =>
-    [html('ruby', ns)]));
+  ([{ data: t }, { data: r }], rest, _, context) => {
+    const texts = split(eval(parser(t, context)).join(''));
+    const rubies = split(eval(parser(r, context)).join(''));
+    if (!texts.join('').trim() || !rubies.join('').trim()) return;
+    switch (true) {
+      case rubies.length <= texts.length:
+        return [[html('ruby', defrag(texts
+          .reduce<(HTMLElement | Text)[]>((acc, _, i) =>
+            concat(concat(acc, [text(texts[i])]),
+              i < rubies.length && rubies[i].trim() !== ''
+                ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
+                : [html('rt')])
+          , [])))], rest];
+      case texts.length === 1 && [...texts[0]].length >= rubies.length:
+        return [[html('ruby', defrag([...texts[0]]
+          .reduce<(HTMLElement | Text)[]>((acc, _, i, texts) =>
+            concat(concat(acc, [text(texts[i])]),
+              i < rubies.length && rubies[i].trim() !== ''
+                ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
+                : [html('rt')])
+          , [])))], rest];
+      default:
+        return [[
+          html('ruby', defrag([
+            text(texts.join(' ')),
+            html('rp', '('),
+            html('rt', rubies.join(' ') || void 0),
+            html('rp', ')')]))
+        ], rest];
+    }
+  }));
+
+function split(target: string): string[] {
+  const acc: string[] = [''];
+  for (let i = 0; i < target.length; ++i) {
+    switch (target[i]) {
+      case ' ':
+      case '\t':
+        void acc.push('');
+        continue;
+      case '\\':
+        acc[acc.length - 1] += target[++i];
+        continue;
+      default:
+        acc[acc.length - 1] += target[i];
+        continue;
+    }
+  }
+  return acc;
+}

@@ -1,23 +1,23 @@
 import { MathBlockParser } from '../block';
-import { block, validate, rewrite, focus, match, trim, lazy } from '../../combinator';
-import { html, define } from 'typed-dom';
+import { block, validate, clear, fence, fmap } from '../../combinator';
+import { html } from 'typed-dom';
 
-export const segment: MathBlockParser.SegmentParser = lazy(() => block(segment_));
+const opener = /^(\$\$)(?!\$)([^\n]*)\n?/;
 
-export const segment_: MathBlockParser.SegmentParser = block(validate('$$', focus(
-  /^(\$\$)(?!\$)([^\n]*)(\n(?:[^\n]*\n){0,100}?)\1[^\S\n]*(?:$|\n)/,
-  () => [[], ''])), false);
+export const segment: MathBlockParser.SegmentParser = block(validate('$$',
+  clear(fence(opener, 100, true))));
 
-export const mathblock: MathBlockParser = block(rewrite(segment, trim(match(
-  /^(\$\$)(?!\$)([^\n]*)(\n[\s\S]*)\1$/,
-  ([, , param, body]) => rest => {
-    const el = html('div', { class: `math notranslate` }, `$$${body}$$`);
-    if (param.trim() !== '') {
-      void define(el, {
-        class: [...el.classList, 'invalid'].join(' '),
-        'data-invalid-syntax': 'math',
-        'data-invalid-message': 'Invalid parameter',
-      });
-    }
-    return [[el], rest];
-  }))));
+export const segment_: MathBlockParser.SegmentParser = block(validate('$$',
+  clear(fence(opener, 100, false))), false);
+
+export const mathblock: MathBlockParser = block(validate('$$', fmap(
+  fence(opener, 100, true),
+  // Bug: Remove the annotation.
+  ([body, closer, opener, , param]: string[]) =>
+    closer && param.trim() === ''
+      ? [html('div', { class: `math notranslate` }, `$$\n${body}$$`)]
+      : [html('pre', {
+          class: 'math notranslate invalid',
+          'data-invalid-syntax': 'math',
+          'data-invalid-message': `Invalid ${closer ? 'parameter' : 'content'}`,
+        }, `${opener}${body}${closer}`)])));

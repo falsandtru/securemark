@@ -5,9 +5,12 @@ import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 
-export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot): Generator<HTMLAnchorElement, undefined, undefined> {
+export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes?: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(
-    [...target.querySelectorAll<HTMLAnchorElement>('a.label')]
+    [
+      ...target.querySelectorAll<HTMLAnchorElement>('a.label'),
+      ...footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label') || [],
+    ]
       .filter(context(target))
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();

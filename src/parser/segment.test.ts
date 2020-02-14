@@ -55,21 +55,21 @@ describe('Unit: parser/segment', () => {
     it('extension', () => {
       assert.deepStrictEqual(segment('~~~'), ['~~~']);
       assert.deepStrictEqual(segment('~~~\n~~~'), ['~~~\n~~~']);
-      assert.deepStrictEqual(segment('~~~\n\n\n~~~'), ['~~~\n', '\n\n', '~~~']);
+      assert.deepStrictEqual(segment('~~~\n\n\n~~~'), ['~~~\n\n\n~~~']);
       assert.deepStrictEqual(segment('~~~\n~~~~\n~~~'), ['~~~\n~~~~\n~~~']);
       assert.deepStrictEqual(segment('~~~~\n~~~\n~~~~'), ['~~~~\n~~~\n~~~~']);
-      assert.deepStrictEqual(segment('~~~\n\n\n~~~\n\n'), ['~~~\n', '\n\n', '~~~\n', '\n']);
+      assert.deepStrictEqual(segment('~~~\n\n\n~~~\n\n'), ['~~~\n\n\n~~~\n', '\n']);
       assert.deepStrictEqual(segment('~~~\n```\n~~~\n```\n~~~'), ['~~~\n```\n~~~\n```\n~~~']);
       assert.deepStrictEqual(segment('~~~\ninvalid\n~~~'), ['~~~\ninvalid\n~~~']);
-      assert.deepStrictEqual(segment('~~~\ninvalid\n\ncaption\n~~~'), ['~~~\ninvalid\n', '\n', 'caption\n~~~']);
+      assert.deepStrictEqual(segment('~~~\ninvalid\n\ncaption\n~~~'), ['~~~\ninvalid\n\ncaption\n~~~']);
       assert.deepStrictEqual(segment('~~~figure [$-name]\n$$\n$$\n\n```\n~~~'), ['~~~figure [$-name]\n$$\n$$\n\n```\n~~~']);
     });
 
     it('mixed', () => {
-      assert.deepStrictEqual(segment('```\n\n\n'), ['```\n', '\n\n']);
-      assert.deepStrictEqual(segment('~~~\n\n\n'), ['~~~\n', '\n\n']);
+      assert.deepStrictEqual(segment('```\n\n\n'), ['```\n\n\n']);
+      assert.deepStrictEqual(segment('~~~\n\n\n'), ['~~~\n\n\n']);
       assert.deepStrictEqual(segment('```\n\n\n~~~\n\n\n```'), ['```\n\n\n~~~\n\n\n```']);
-      assert.deepStrictEqual(segment('~~~\n\n\n```\n\n\n~~~'), ['~~~\n', '\n\n', '```\n', '\n\n', '~~~']);
+      assert.deepStrictEqual(segment('~~~\n\n\n```\n\n\n~~~'), ['~~~\n\n\n```\n\n\n~~~']);
       assert.deepStrictEqual(segment('```\n```\n\n~~~\n~~~'), ['```\n```\n', '\n', '~~~\n~~~']);
       assert.deepStrictEqual(segment('~~~\n~~~\n\n```\n```'), ['~~~\n~~~\n', '\n', '```\n```']);
       assert.deepStrictEqual(segment(' ```\n\n\n```'), [' ```\n', '\n\n', '```']);

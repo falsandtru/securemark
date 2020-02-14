@@ -1,8 +1,8 @@
 import { window, document } from 'spica/global';
 import { parse } from '../../../parser';
-import { Cache } from 'spica/cache';
 import { sanitize } from 'dompurify';
 import { HTML, html as h, define } from 'typed-dom';
+import { Cache } from 'spica/cache';
 
 declare global {
   interface Window {

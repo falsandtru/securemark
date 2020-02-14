@@ -1,4 +1,6 @@
-import { Parser, fmap } from '../combinator';
+import { Parser, Ctx, fmap } from '../combinator';
+import { syntax as comment } from './inline/comment';
+import { DeepMutable } from 'spica/type';
 import { define, apply } from 'typed-dom';
 
 export function isVisible(node: HTMLElement): boolean {
@@ -6,99 +8,63 @@ export function isVisible(node: HTMLElement): boolean {
       || hasMedia(node);
 }
 
-export function isTightVisible(node: HTMLElement): boolean {
-  return isTight(node)
-      && isVisible(node);
-}
-
-export function hasText(node: HTMLElement | Text): boolean {
+function hasText(node: HTMLElement | Text): boolean {
   return node.textContent!.trim() !== '';
-}
-
-export function hasTightText(node: HTMLElement | Text): boolean {
-  return isTight(node)
-      && hasText(node);
 }
 
 function hasMedia(node: HTMLElement): boolean {
   return node.getElementsByClassName('media').length > 0;
 }
 
-function isTight(node: HTMLElement | Text): boolean {
-  return node.textContent === node.textContent!.trim();
+export function startTight<P extends Parser<unknown>>(parser: P): P;
+export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
+  return (source, context: DeepMutable<Ctx>) => {
+    switch (true) {
+      case source === '':
+      case (source[0] === '\\' ? source[1] || '' : source[0]).trim() === '':
+      case source.length >= 5
+        && source[0] === '<'
+        && source.slice(0, 5) === '<wbr>':
+        return;
+      case source.length >= 7
+        && source[0] === '<'
+        && source[1] === '#'
+        && comment.test(source):
+        context.resource && void --context.resource.backtrack;
+        return;
+      default:
+        return parser(source, context);
+    }
+  }
 }
 
-export function dup<T, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T[], D, S, C> {
+export function dup<T, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>): Parser<T[], D, C> {
   return fmap(parser, ns => [ns]);
 }
 
-export function defrag<P extends Parser<Node>>(parser: P): P;
-export function defrag<T extends Node, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
-  return fmap(parser, nodes => {
-    const acc: T[] = [];
-    void nodes.reduce<T | undefined>((prev, curr) => {
-      if (curr.nodeType === 3) {
-        const text = (curr as Node as Text).data;
-        if (text === '') return prev;
-        if (prev?.nodeType === 3) return (prev as Node as Text).data += text, prev;
+export function defrag<T extends Node>(nodes: T[]): T[];
+export function defrag(nodes: (Node | Text)[]): Node[] {
+  const acc: Node[] = [];
+  for (let i = 0, prev: Node | Text | undefined; i < nodes.length; ++i) {
+    const curr = nodes[i];
+    if ('data' in curr) {
+      const text = curr.data;
+      if (text === '') continue;
+      if (prev && 'data' in prev) {
+        prev.data += text;
+        continue;
       }
-      void acc.push(curr);
-      return curr;
-    }, void 0);
-    return acc;
-  });
-}
-
-export function trimNodeEnd<P extends Parser<HTMLElement | Text>>(parser: P): P;
-export function trimNodeEnd<T extends HTMLElement | Text, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>): Parser<T, D, S, C> {
-  return trimNode_(parser, 'end');
-}
-
-function trimNode_<P extends Parser<HTMLElement | Text>>(parser: P, mode: 'start' | 'end'): P;
-function trimNode_<T extends HTMLElement | Text, D extends Parser<unknown, any, S, C>[], S extends object, C extends object>(parser: Parser<T, D, S, C>, mode: 'start' | 'end'): Parser<T, D, S, C> {
-  return fmap(parser, ns => {
-    if (ns.length === 0) return ns;
-    const node = ns[mode === 'start' ? 0 : ns.length - 1];
-    switch (node.nodeType) {
-      case 3:
-        assert(ns[mode === 'start' ? 1 : ns.length - 2] instanceof Text === false);
-        const text = (node as Node as Text).data;
-        assert(text !== '');
-        if (ns.length === 1 && text.length === 1) break;
-        switch (mode) {
-          case 'start':
-            if (text[0]?.trim() !== '') break;
-            (node as Node as Text).data = text.slice(1);
-            break;
-          case 'end':
-            if (text[text.length - 1]?.trim() !== '') break;
-            (node as Node as Text).data = text.slice(0, -1);
-            break;
-        }
-        break;
-      case 1:
-        if (ns.length === 1) break;
-        switch (true) {
-          case (node as HTMLElement).tagName === 'BR':
-          case (node as HTMLElement).classList.contains('linebreak'):
-            switch (mode) {
-              case 'start':
-                void ns.shift();
-                break;
-              case 'end':
-                void ns.pop();
-                break;
-            }
-            break;
-        }
-        break;
     }
-    return ns;
-  });
+    void acc.push(curr);
+    prev = curr;
+  }
+  return acc;
 }
 
-export function stringify(nodes: Node[]): string {
-  return nodes.reduce((acc, node) => acc + (node.nodeType === 3 ? (node as Node as Text).data : node.textContent), '');
+export function stringify(nodes: (Node | Text)[]): string {
+  return nodes.reduce((acc, node) =>
+    `${acc}${'data' in node ? node.data : node.textContent}`
+  , '');
 }
 
 export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T {
