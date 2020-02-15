@@ -1,8 +1,8 @@
 import { StrongParser, inline } from '../inline';
 import { union, some, creator, open, close, lazy, fmap } from '../../combinator';
+import { defrag, startTight } from '../util';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { defrag, startTight } from '../util';
 import { html } from 'typed-dom';
 
 export const strong: StrongParser = lazy(() => creator(fmap(open(

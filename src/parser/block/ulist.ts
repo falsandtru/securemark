@@ -1,9 +1,9 @@
 import { UListParser } from '../block';
 import { union, inits, some, block, line, validate, surround, convert, indent, trim, update, lazy, fmap } from '../../combinator';
+import { defrag } from '../util';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
 

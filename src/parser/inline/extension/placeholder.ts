@@ -1,7 +1,7 @@
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, creator, backtracker, surround, update, lazy, fmap } from '../../../combinator';
-import { str } from '../../source';
 import { defrag, startTight } from '../../util';
+import { str } from '../../source';
 import { html } from 'typed-dom';
 
 // Already used symbols: !@$&*<

@@ -1,8 +1,8 @@
 import { ParagraphParser } from '../../../block';
 import { union, some, block, validate, rewrite, creator, convert, lazy, fmap } from '../../../../combinator';
+import { defrag } from '../../../util';
 import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
-import { defrag } from '../../../util';
 import { html } from 'typed-dom';
 
 export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() => block(creator(fmap(

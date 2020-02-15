@@ -1,7 +1,7 @@
 import { ExtensionParser, inline } from '../../inline';
 import { inits, some, creator, backtracker, surround, lazy, fmap } from '../../../combinator';
-import { str, char } from '../../source';
 import { defrag, startTight } from '../../util';
+import { str, char } from '../../source';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
 

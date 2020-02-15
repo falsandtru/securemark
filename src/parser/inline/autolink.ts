@@ -1,5 +1,6 @@
 import { AutolinkParser } from '../inline';
 import { union, some, validate, guard, fmap } from '../../combinator';
+import { stringify } from '../util';
 import { url } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
@@ -7,7 +8,6 @@ import { account } from './autolink/account';
 import { hashtag } from './autolink/hashtag';
 import { hashref } from './autolink/hashref';
 import { str } from '../source';
-import { stringify } from '../util';
 import { text } from 'typed-dom';
 
 export const autolink: AutolinkParser = fmap(

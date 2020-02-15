@@ -1,8 +1,8 @@
 import { ExtensionParser } from '../../block';
 import { block, validate, clear, fence, fmap, eval } from '../../../combinator';
+import { suppress } from '../../util';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
-import { suppress } from '../../util';
 import { html } from 'typed-dom';
 
 const opener = /^(~{3,})(?!~)example\/(\S+)([^\n]*)\n?/;

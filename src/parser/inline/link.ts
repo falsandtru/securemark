@@ -2,10 +2,10 @@ import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, creator, backtracker, surround, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
+import { defrag, startTight, dup, stringify } from '../util';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
-import { defrag, startTight, dup, stringify } from '../util';
 import { frag, html, define } from 'typed-dom';
 
 const { origin } = location;

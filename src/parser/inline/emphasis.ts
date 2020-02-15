@@ -1,8 +1,8 @@
 import { EmphasisParser, inline } from '../inline';
 import { union, some, creator, open, close, lazy, fmap } from '../../combinator';
+import { defrag, startTight } from '../util';
 import { strong } from './strong';
 import { str } from '../source';
-import { defrag, startTight } from '../util';
 import { html } from 'typed-dom';
 
 export const emphasis: EmphasisParser = lazy(() => creator(fmap(open(

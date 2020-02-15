@@ -1,9 +1,9 @@
 import { EmStrongParser, inline } from '../inline';
 import { union, some, creator, open, close, lazy, fmap, bind } from '../../combinator';
+import { defrag, startTight } from '../util';
 import { emphasis } from './emphasis';
 import { strong } from './strong';
 import { str } from '../source';
-import { defrag, startTight } from '../util';
 import { html } from 'typed-dom';
 import { concat } from 'spica/concat';
 

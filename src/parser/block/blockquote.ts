@@ -1,9 +1,9 @@
 import { BlockquoteParser } from '../block';
 import { union, some, block, validate, rewrite, surround, convert, lazy, fmap } from '../../combinator';
+import { defrag, suppress } from '../util';
 import { contentline } from '../source';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
-import { defrag, suppress } from '../util';
 import { html } from 'typed-dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(union([

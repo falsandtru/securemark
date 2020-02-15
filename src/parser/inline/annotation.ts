@@ -1,8 +1,8 @@
 import { AnnotationParser } from '../inline';
 import { union, some, creator, backtracker, surround, guard, update, lazy, fmap } from '../../combinator';
+import { defrag, startTight } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
-import { defrag, startTight } from '../util';
 import { html } from 'typed-dom';
 
 export const annotation: AnnotationParser = lazy(() => creator(fmap(surround(

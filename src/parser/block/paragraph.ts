@@ -1,9 +1,9 @@
 import { ParagraphParser } from '../block';
 import { subsequence, some, block, rewrite, convert, trim, fmap } from '../../combinator';
+import { defrag, isVisible } from '../util';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { anyline } from '../source';
-import { defrag, isVisible } from '../util';
 import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 

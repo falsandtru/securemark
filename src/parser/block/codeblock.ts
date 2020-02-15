@@ -1,7 +1,7 @@
 import { CodeBlockParser } from '../block';
 import { some, block, validate, clear, fence, fmap, eval } from '../../combinator';
-import { escsource } from '../source';
 import { defrag, stringify } from '../util';
+import { escsource } from '../source';
 import { html, define } from 'typed-dom';
 import { autolink } from '../autolink';
 

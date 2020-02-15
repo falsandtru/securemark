@@ -1,7 +1,7 @@
 import { MarkParser, inline } from '../inline';
 import { union, some, creator, open, close, lazy, fmap } from '../../combinator';
-import { str } from '../source';
 import { defrag } from '../util';
+import { str } from '../source';
 import { html } from 'typed-dom';
 
 export const mark: MarkParser = lazy(() => creator(fmap(open(

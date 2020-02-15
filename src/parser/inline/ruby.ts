@@ -1,8 +1,8 @@
 import { RubyParser } from '../inline';
 import { Ctx, sequence, creator, backtracker, surround, bind } from '../../combinator';
+import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { str, char } from '../source';
-import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
 

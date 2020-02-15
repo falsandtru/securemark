@@ -1,10 +1,10 @@
 import { OListParser } from '../block';
 import { union, inits, some, block, line, validate, focus, surround, convert, indent, trim, update, lazy, fmap } from '../../combinator';
+import { defrag } from '../util';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
 import { str } from '../source';
-import { defrag } from '../util';
 import { html, define } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(fmap(validate(

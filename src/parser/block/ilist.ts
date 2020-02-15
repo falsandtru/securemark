@@ -1,9 +1,9 @@
 import { IListParser } from '../block';
 import { union, inits, some, block, line, validate, surround, convert, indent, trim, lazy, fmap } from '../../combinator';
+import { defrag } from '../util';
 import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
-import { defrag } from '../util';
 import { html } from 'typed-dom';
 
 export const ilist: IListParser = lazy(() => block(fmap(validate(

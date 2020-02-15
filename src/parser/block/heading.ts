@@ -1,8 +1,8 @@
 import { HeadingParser } from '../block';
 import { union, open, some, block, line, focus, trim, update, fmap } from '../../combinator';
+import { defrag } from '../util';
 import { inline, indexer, indexee } from '../inline';
 import { str } from '../source';
-import { defrag } from '../util';
 import { html } from 'typed-dom';
 
 export const heading: HeadingParser = block(focus(
