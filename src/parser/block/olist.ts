@@ -3,7 +3,7 @@ import { union, inits, some, block, line, validate, focus, surround, convert, in
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { unescsource } from '../source';
+import { str } from '../source';
 import { defrag } from '../util';
 import { html, define } from 'typed-dom';
 
@@ -16,7 +16,7 @@ export const olist: OListParser = lazy(() => block(fmap(validate(
         line(inits([
           focus(
             /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:\.\s|\.?(?=$|\n))/,
-            trim(surround('', some(unescsource, /^[.\n]/), /^\.?/))),
+            surround('', str(/^[0-9A-Za-z]+/), /^\.?\s*/)),
           trim(some(inline)),
         ])),
         indent(union([ulist_, olist_, ilist_]))

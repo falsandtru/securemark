@@ -107,7 +107,7 @@ export namespace MarkdownParser {
         Block<'olist/listitem'>,
         Parser<HTMLLIElement, [
           Parser<HTMLElement | Text, [
-            SourceParser.UnescapableSourceParser,
+            SourceParser.StrParser,
             InlineParser,
           ], Context>,
           Parser<HTMLUListElement | HTMLOListElement, [
