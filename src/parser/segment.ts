@@ -19,6 +19,7 @@ const parser: SegmentParser = union([
 export function segment(source: string): string[] {
   assert(source === normalize(source));
   if (source.length > 1000 * 1000) return ['# ***Too large input over 1,000,000 characters***'];
+  assert(source.length < 2 ** 32 / 2);
   const segments: string[] = [];
   while (source !== '') {
     const rest = exec(parser(source, {}));
