@@ -18,8 +18,8 @@ const parser: Parser<string> = some(union([
 
 export const ruby: RubyParser = creator(bind(
   sequence([
-    surround('[', str(/^(?!\\?\s)(?:[^\]\n]|\\[^\n])+/), backtracker(char(']'))),
-    backtracker(surround('(', str(/^(?:[^\)\n]|\\[^\n])+/), backtracker(char(')')))),
+    surround('[', str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), backtracker(char(']'))),
+    backtracker(surround('(', str(/^(?:\\[^\n]|[^\)\n])+/), backtracker(char(')')))),
   ]),
   ([{ data: t }, { data: r }], rest, _, context) => {
     const texts = split(eval(parser(t, context)).join(''));

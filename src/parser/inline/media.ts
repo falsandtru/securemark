@@ -18,7 +18,7 @@ export const media: MediaParser = creator(bind(fmap(surround(
   '!',
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround('[', union([str(/^(?!\\?\s)(?:[^\]\n]|\\[^\n])+/)]), backtracker(char(']')), false)),
+    dup(surround('[', union([str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/)]), backtracker(char(']')), false)),
     // TODO: Count this backtracking.
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(str(/^ ?}/)))),
   ])),
