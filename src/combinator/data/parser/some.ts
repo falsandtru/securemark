@@ -1,5 +1,5 @@
 import { Parser, eval, exec, check } from '../parser';
-import { concat } from 'spica/concat';
+import { push } from 'spica/array';
 
 export function some<P extends Parser<unknown>>(parser: P, until?: string | RegExp): P;
 export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until?: string | RegExp): Parser<T, D> {
@@ -20,7 +20,7 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
       assert(check(rest, result));
       if (!result) break;
       data = data
-        ? concat(data, eval(result))
+        ? push(data, eval(result))
         : eval(result);
       rest = exec(result);
     }

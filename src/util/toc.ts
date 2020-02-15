@@ -1,5 +1,5 @@
-import { concat } from 'spica/concat';
 import { html, frag } from 'typed-dom';
+import { push } from 'spica/array';
 
 const Tags = [...Array(6)].map((_, i) => `H${i + 1}`);
 
@@ -28,8 +28,8 @@ function cons(hs: HTMLHeadingElement[]): Tree {
     .reduce<HTMLHeadingElement[][]>((hss, h) => {
       const hs = hss.pop() || [];
       return hs.length === 0 || level(h) > level(hs[0])
-        ? concat(hss, [concat(hs, [h])])
-        : concat(hss, [hs, [h]]);
+        ? push(hss, [push(hs, [h])])
+        : push(hss, [hs, [h]]);
     }, [])
     .map(hs =>
       [hs.shift()!, cons(hs)]);

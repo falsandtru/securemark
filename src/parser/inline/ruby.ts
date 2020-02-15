@@ -3,8 +3,8 @@ import { Ctx, sequence, creator, backtracker, surround, bind } from '../../combi
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { str, char } from '../source';
-import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
+import { unshift, push } from 'spica/array';
 
 export const ruby: RubyParser = creator(bind(
   sequence([
@@ -19,18 +19,18 @@ export const ruby: RubyParser = creator(bind(
       case rubies.length <= texts.length:
         return [[defrag(html('ruby', texts
           .reduce<(HTMLElement | Text)[]>((acc, _, i) =>
-            concat(concat(acc, [text(texts[i])]),
+            push(acc, unshift([text(texts[i])],
               i < rubies.length && rubies[i].trim() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
-                : [html('rt')])
+                : [html('rt')] as typeof acc))
           , [])))], rest];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
         return [[defrag(html('ruby', [...texts[0]]
           .reduce<(HTMLElement | Text)[]>((acc, _, i, texts) =>
-            concat(concat(acc, [text(texts[i])]),
+            push(acc, unshift([text(texts[i])],
               i < rubies.length && rubies[i].trim() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
-                : [html('rt')])
+                : [html('rt')] as typeof acc))
           , [])))], rest];
       default:
         return [[

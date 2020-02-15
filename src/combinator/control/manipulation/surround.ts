@@ -1,7 +1,7 @@
 import { Parser, Ctx, Result, Data, Context, exec } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { bind } from '../monad/bind';
-import { concat } from 'spica/concat';
+import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>>(start: string | RegExp, parser: P, end: string | RegExp | Parser<unknown>, strict?: boolean): P;
 export function surround<T, D extends Parser<unknown>[]>(start: string | RegExp, parser: Parser<T, D>, end: string | RegExp | Parser<unknown>, strict = true): Parser<T, D> {
@@ -76,7 +76,7 @@ export function close<T, U, D extends Parser<unknown, any, C>[], C extends objec
     if (rest.length === r_.length) return g ? g(rs, rest, source, context) : void 0;
     assert(rr.length === 1);
     !keepSymbols && rs.length > 0 && void rs.shift();
-    keepSymbols && rr.length > 0 && void concat(rs, rr);
+    keepSymbols && rr.length > 0 && void push(rs, rr);
     return f
       ? f(rs, rest, source, context)
       : [rs, rest];
@@ -107,7 +107,7 @@ export function close_<T, U, D extends Parser<unknown, any, C>[], C extends obje
     return rest.length < r_.length
       ? f
         ? f([rs[0], rs[1] || [], rr], rest, source, context)
-        : [concat(concat(rs[0], rs[1] || []), rr), rest]
+        : [push(unshift(rs[0], rs[1] || []), rr), rest]
       : g
         ? g(rs as T[][] as [T[]], r_, source, context)
         : void 0;

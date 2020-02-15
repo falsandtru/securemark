@@ -6,9 +6,9 @@ import { dup } from '../util';
 import { link, attributes, uri, attribute } from './link';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
-import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
+import { push } from 'spica/array';
 
 const url = html('a');
 
@@ -24,7 +24,7 @@ export const media: MediaParser = creator(bind(fmap(surround(
   ])),
   ''),
   (ts: Text[][]) =>
-    concat([ts.length > 1 && ts[ts.length - 2][0]?.data || ''], ts[ts.length - 1].map(t => t.data))),
+    push([ts.length > 1 && ts[ts.length - 2][0]?.data || ''], ts[ts.length - 1].map(t => t.data))),
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
     text = text.trim().replace(/\\(.?)/g, '$1');

@@ -4,8 +4,8 @@ import { defrag } from '../util';
 import { anyline } from '../source';
 import { inline, indexer, indexee } from '../inline';
 import { blankline } from './paragraph';
-import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
+import { push } from 'spica/array';
 
 export const dlist: DListParser = lazy(() => block(fmap(validate(
   /^~(?=$|\s)/,
@@ -38,6 +38,6 @@ const desc: DListParser.DescriptionParser = block(fmap(
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {
   return es.length > 0 && es[es.length - 1].tagName === 'DT'
-    ? concat(es, [html('dd')])
+    ? push(es, [html('dd')])
     : es;
 }

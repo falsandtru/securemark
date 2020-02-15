@@ -5,7 +5,7 @@ import { emphasis } from './emphasis';
 import { strong } from './strong';
 import { str } from '../source';
 import { html } from 'typed-dom';
-import { concat } from 'spica/concat';
+import { shift, push } from 'spica/array';
 
 export const emstrong: EmStrongParser = lazy(() => creator(bind(open(
   str('***'), close(
@@ -20,7 +20,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(bind(open(
           ms =>
             'id' in ms[0]
               ? [defrag(html('strong', [defrag(html('em', ns.slice(1, -1))), ...ms[0].childNodes]))]
-              : concat(ns, ms.shift()! && ms))
+              : push(ns, shift(ms)[1]))
           ('**' + rest, context) || [ns, rest];
       case '**':
         return fmap(
@@ -28,7 +28,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(bind(open(
           ms =>
             'id' in ms[0]
               ? [defrag(html('em', [defrag(html('strong', ns.slice(1, -1))), ...ms[0].childNodes]))]
-              : concat(ns, ms.shift()! && ms))
+              : push(ns, shift(ms)[1]))
           ('*' + rest, context) || [ns, rest];
       case '***':
         return [[html('em', [defrag(html('strong', ns.slice(1, -1)))])], rest];

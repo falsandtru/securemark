@@ -4,6 +4,7 @@ import { defrag, startTight } from '../../util';
 import { str, char } from '../../source';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
+import { shift } from 'spica/array';
 
 import DataParser = ExtensionParser.DataParser;
 
@@ -15,7 +16,7 @@ export const data: DataParser = lazy(() => creator(fmap(surround(
     startTight(some(inline, ']')),
   ]),
   backtracker(str(']'))),
-  ns => [defrag(html('span', attr(ns.shift()!.textContent!), ns.shift() && ns))])));
+  ns => [defrag(html('span', attr(ns.shift()!.textContent!), shift(ns)[1]))])));
 
 function attr(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');

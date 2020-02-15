@@ -4,8 +4,8 @@ import { defrag } from '../util';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { concat } from 'spica/concat';
 import { html } from 'typed-dom';
+import { unshift } from 'spica/array';
 
 const opener = /^-(?:$|\s)/;
 
@@ -28,6 +28,6 @@ export const ulist_: UListParser = convert(
 
 export function fillFirstLine(ns: Node[]): Node[] {
   return ['UL', 'OL'].includes(ns[0]?.nodeName)
-    ? concat([html('br')], ns)
+    ? unshift([html('br')], ns)
     : ns;
 }

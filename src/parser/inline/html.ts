@@ -7,8 +7,8 @@ import { defrag, startTight } from '../util';
 import { str } from '../source';
 import { DeepImmutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';
-import { concat } from 'spica/concat';
 import { html as h } from 'typed-dom';
+import { unshift, push } from 'spica/array';
 
 const tags = ObjectFreeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
 const attributes = {
@@ -121,7 +121,7 @@ function invalid(message: string, as: Node[], bs: Node[], cs: Node[]): HTMLEleme
     class: 'invalid',
     'data-invalid-syntax': 'html',
     'data-invalid-message': message,
-  }, concat(concat(as, bs), cs)));
+  }, push(unshift(as, bs), cs)));
 }
 
 const requiredAttributes = memo(

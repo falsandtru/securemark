@@ -4,8 +4,8 @@ import { defrag, isVisible } from '../util';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { anyline } from '../source';
-import { concat } from 'spica/concat';
 import { html, define } from 'typed-dom';
+import { push } from 'spica/array';
 
 export const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
 
@@ -14,12 +14,12 @@ export const paragraph: ParagraphParser = block(fmap(
   some(subsequence([
     fmap(
       some(mention),
-      es => es.reduce((acc, el) => concat(acc, [el, html('br')]), [])),
+      es => es.reduce((acc, el) => push(acc, [el, html('br')]), [])),
     fmap(
       rewrite(
         some(anyline, '>'),
         trim(some(inline))),
-      ns => concat(ns, [html('br')])),
+      ns => push(ns, [html('br')])),
   ]))),
   ns =>
     ns.length > 0

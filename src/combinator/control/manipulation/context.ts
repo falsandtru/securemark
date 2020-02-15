@@ -1,9 +1,9 @@
 import { WeakMap } from 'spica/global';
 import { Parser, Ctx, Context } from '../../data/parser';
 import { template } from 'spica/assign';
-import { concat } from 'spica/concat';
 import { type } from 'spica/type';
 import { memoize } from 'spica/memoize';
+import { push } from 'spica/array';
 
 export function guard<P extends Parser<object>>(f: (context: Context<P>) => boolean, parser: P): P;
 export function guard<T extends object, D extends Parser<unknown, any>[]>(f: (context: Ctx) => boolean, parser: Parser<T, D>): Parser<T, D> {
@@ -29,7 +29,7 @@ const merge = template((prop, target, source) => {
     case 'Array':
       switch (type(target[prop])) {
         case 'Array':
-          return target[prop] = concat(target[prop].slice(), source[prop]);
+          return target[prop] = push(target[prop].slice(), source[prop]);
         default:
           return target[prop] = merge([], source[prop]);
       }

@@ -3,8 +3,8 @@ import { TableParser } from '../block';
 import { union, sequence, some, block, line, focus, validate, surround, update, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { inline } from '../inline';
-import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
+import { push } from 'spica/array';
 
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
@@ -26,7 +26,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
 function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: HTMLTableRowElement[]): void {
   const as = [...alignment.children]
     .reduce((acc, el) =>
-      concat(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
+      push(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
     , []);
   void apply(head, as.slice(0, 2));
   for (const row of rows) {
@@ -47,7 +47,7 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
 
   function extend(aligns: string[], size: number): void {
     return size > aligns.length
-      ? void concat(
+      ? void push(
           aligns,
           Array(size - aligns.length)
             .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
