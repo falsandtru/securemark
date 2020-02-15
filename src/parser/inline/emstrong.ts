@@ -1,5 +1,5 @@
 import { EmStrongParser, inline } from '../inline';
-import { union, some, creator, backtracker, open, close, lazy, fmap, bind } from '../../combinator';
+import { union, some, creator, open, close, lazy, fmap, bind } from '../../combinator';
 import { emphasis } from './emphasis';
 import { strong } from './strong';
 import { str } from '../source';
@@ -10,7 +10,7 @@ import { concat } from 'spica/concat';
 export const emstrong: EmStrongParser = lazy(() => creator(bind(open(
   str('***'), close(
   startTight(union([some(inline, '*')])),
-  backtracker(str(/^\*{1,3}/)), true)),
+  str(/^\*{1,3}/), true)),
   (ns, rest, _, context) => {
     if (ns.length === 1) return;
     switch (ns[ns.length - 1].textContent) {
