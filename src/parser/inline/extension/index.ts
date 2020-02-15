@@ -18,5 +18,5 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap<HTMLAn
   }}},
   startTight(union([some(inline, ']')])))),
   backtracker(str(']'))),
-  ns => [html('a', defrag(ns))])),
+  ns => [defrag(html('a', ns))])),
   ([el]) => [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : void 0 }, el.childNodes)])));

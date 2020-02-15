@@ -42,23 +42,8 @@ export function dup<T, D extends Parser<unknown, any, C>[], C extends object>(pa
   return fmap(parser, ns => [ns]);
 }
 
-export function defrag<T extends Node>(nodes: T[]): T[];
-export function defrag(nodes: (Node | Text)[]): Node[] {
-  const acc: Node[] = [];
-  for (let i = 0, prev: Node | Text | undefined; i < nodes.length; ++i) {
-    const curr = nodes[i];
-    if ('data' in curr) {
-      const text = curr.data;
-      if (text === '') continue;
-      if (prev && 'data' in prev) {
-        prev.data += text;
-        continue;
-      }
-    }
-    void acc.push(curr);
-    prev = curr;
-  }
-  return acc;
+export function defrag<T extends Node>(node: T): T {
+  return void node.normalize(), node;
 }
 
 export function stringify(nodes: (Node | Text)[]): string {

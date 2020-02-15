@@ -20,14 +20,14 @@ export const reference: ReferenceParser = lazy(() => creator(fmap(surround(
   startTight(subsequence([alias, some(inline, ']]')]))))),
   backtracker(str(']]'))),
   ns => [
-    html('sup',
+    defrag(html('sup',
       {
         class: 'reference',
         'data-alias': ns[0].nodeName === 'ABBR'
           ? ns.shift()!.textContent
           : undefined
       },
-      defrag(ns))
+      ns))
   ])));
 
 const alias: ReferenceParser.AliasParser = creator(focus(

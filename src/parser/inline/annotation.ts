@@ -18,4 +18,4 @@ export const annotation: AnnotationParser = lazy(() => creator(fmap(surround(
   }}},
   startTight(union([some(inline, '))')])))),
   backtracker(str('))'))),
-  ns => [html('sup', { class: 'annotation' }, defrag(ns))])));
+  ns => [defrag(html('sup', { class: 'annotation' }, ns))])));

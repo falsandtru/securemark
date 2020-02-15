@@ -18,4 +18,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
   startTight(some(union([inline]), ']'))),
   backtracker(str(']'))),
   ns =>
-    [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-message': 'Invalid flag' }, defrag(ns))])));
+    [defrag(html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-message': 'Invalid flag' }, ns))])));

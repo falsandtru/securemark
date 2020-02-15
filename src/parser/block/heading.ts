@@ -11,4 +11,4 @@ export const heading: HeadingParser = block(focus(
   some(line(indexee(fmap(open(
     str(/^#+/),
     trim(some(union([indexer, inline]))), true),
-  ns => [html(`h${ns.shift()!.textContent!.length}` as 'h1', defrag(ns))])))))));
+  ns => [defrag(html(`h${ns.shift()!.textContent!.length}` as 'h1', ns))])))))));

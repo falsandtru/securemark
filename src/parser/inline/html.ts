@@ -113,15 +113,15 @@ function elem(tag: string, as: (HTMLElement | Text)[], bs: (HTMLElement | Text)[
     case cs.length === 0:
       return invalid('Unclosed HTML tag', as, bs, cs);
     default:
-      return h(tag as 'span', attrs!, defrag(bs));
+      return defrag(h(tag as 'span', attrs!, bs));
   }
 }
 function invalid(message: string, as: Node[], bs: Node[], cs: Node[]): HTMLElement {
-  return h('span', {
+  return defrag(h('span', {
     class: 'invalid',
     'data-invalid-syntax': 'html',
     'data-invalid-message': message,
-  }, defrag(concat(concat(as, bs), cs)));
+  }, concat(concat(as, bs), cs)));
 }
 
 const requiredAttributes = memo(

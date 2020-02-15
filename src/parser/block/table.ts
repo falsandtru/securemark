@@ -61,23 +61,20 @@ const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, strict: 
 
 const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => fmap(
   union([parser]),
-  ns => [html('td', ns)]);
+  ns => [defrag(html('td', ns))]);
 
-const data: CellParser.DataParser = fmap(
-  surround(
-    /^\|(?:\\?\s)*(?=\S)/,
-    some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
-    /^[^|]*/,
-    false),
-  defrag);
+const data: CellParser.DataParser = surround(
+  /^\|(?:\\?\s)*(?=\S)/,
+  some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
+  /^[^|]*/,
+  false);
 
-const alignment: CellParser.AlignmentParser =
-  surround(
-    '|',
-    union([
-      focus(/^:-+:/, () => [[text('center')], '']),
-      focus(/^:-+/, () => [[text('left')], '']),
-      focus(/^-+:/, () => [[text('right')], '']),
-      focus(/^-+/, () => [[text('')], '']),
-    ]),
-    '');
+const alignment: CellParser.AlignmentParser = surround(
+  '|',
+  union([
+    focus(/^:-+:/, () => [[text('center')], '']),
+    focus(/^:-+/, () => [[text('left')], '']),
+    focus(/^-+:/, () => [[text('right')], '']),
+    focus(/^-+/, () => [[text('')], '']),
+  ]),
+  '');

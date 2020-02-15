@@ -19,7 +19,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(bind(open(
           strong,
           ms =>
             'id' in ms[0]
-              ? [html('strong', [html('em', defrag(ns.slice(1, -1))), ...defrag(ms)[0].childNodes])]
+              ? [defrag(html('strong', [defrag(html('em', ns.slice(1, -1))), ...ms[0].childNodes]))]
               : concat(ns, ms.shift()! && ms))
           ('**' + rest, context) || [ns, rest];
       case '**':
@@ -27,11 +27,11 @@ export const emstrong: EmStrongParser = lazy(() => creator(bind(open(
           emphasis,
           ms =>
             'id' in ms[0]
-              ? [html('em', [html('strong', defrag(ns.slice(1, -1))), ...defrag(ms)[0].childNodes])]
+              ? [defrag(html('em', [defrag(html('strong', ns.slice(1, -1))), ...ms[0].childNodes]))]
               : concat(ns, ms.shift()! && ms))
           ('*' + rest, context) || [ns, rest];
       case '***':
-        return [[html('em', [html('strong', defrag(ns.slice(1, -1)))])], rest];
+        return [[html('em', [defrag(html('strong', ns.slice(1, -1)))])], rest];
       default:
         return [ns, rest];
     }

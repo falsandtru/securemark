@@ -61,16 +61,16 @@ export const link: LinkParser = lazy(() => creator(bind(fmap(
     assert(!frag(content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const [INSECURE_URL, ...params]: string[] = param.map(t => t.data);
     assert(INSECURE_URL === INSECURE_URL.trim());
-    const el = html('a',
+    const el = defrag(html('a',
       {
         href: INSECURE_URL,
         rel: `noopener${params.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
-        ? content = defrag(content)
+        ? content = content
         : decode(INSECURE_URL || '.')
             .replace(/^tel:/, '')
-            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h'));
+            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h')));
     if (!verify(el, INSECURE_URL)) return [[el], rest];
     void define(el, ObjectAssign(
       makeAttrs(attributes, params, [...el.classList], 'link'),

@@ -19,11 +19,11 @@ export const paragraph: ParagraphParser = block(fmap(
       rewrite(
         some(anyline, '>'),
         trim(some(inline))),
-      ns => concat(defrag(ns), [html('br')])),
+      ns => concat(ns, [html('br')])),
   ]))),
   ns =>
     ns.length > 0
-      ? [html('p', format(ns))].map(el =>
+      ? [format(defrag(html('p', ns)))].map(el =>
           isVisible(el)
             ? el
             : define(el, {
@@ -33,11 +33,9 @@ export const paragraph: ParagraphParser = block(fmap(
               }))
       : []));
 
-function format<T extends Node[]>(ns: T): T {
-  assert(ns.length > 1);
-  assert(ns[ns.length - 1] instanceof HTMLBRElement);
-  void ns.pop();
-  assert(ns.length > 0);
-  assert(ns[ns.length - 1] instanceof HTMLBRElement === false);
-  return ns;
+function format<T extends Node>(node: T): T {
+  assert(node.lastChild instanceof HTMLBRElement);
+  void node.lastChild?.remove();
+  assert(node.lastChild instanceof HTMLBRElement === false);
+  return node;
 }

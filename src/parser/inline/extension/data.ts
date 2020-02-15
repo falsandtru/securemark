@@ -15,7 +15,7 @@ export const data: DataParser = lazy(() => creator(fmap(surround(
     startTight(some(inline, ']')),
   ]),
   backtracker(str(']'))),
-  ns => [html('span', attr(ns.shift()!.textContent!), ns.shift() && defrag(ns))])));
+  ns => [defrag(html('span', attr(ns.shift()!.textContent!), ns.shift() && ns))])));
 
 function attr(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');

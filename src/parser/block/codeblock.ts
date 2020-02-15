@@ -42,7 +42,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       void el.setAttribute('data-lang', lang);
     }
     else {
-      void define(el, defrag(eval(some(autolink)(el.textContent!, context))));
+      void defrag(define(el, eval(some(autolink)(el.textContent!, context))));
     }
     if (path) {
       void el.setAttribute('data-file', path);

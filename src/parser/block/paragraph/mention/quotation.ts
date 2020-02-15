@@ -14,5 +14,5 @@ export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() 
       some(validate(/^>+/, contentline)),
       convert(source => source.replace(/\n$/, ''), some(autolink))),
   ]),
-  ns => [html('span', { class: 'quotation' }, defrag(ns))])),
+  ns => [defrag(html('span', { class: 'quotation' }, ns))])),
   false));

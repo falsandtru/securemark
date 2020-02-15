@@ -32,7 +32,7 @@ const text: BlockquoteParser.TextParser = lazy(() => fmap(
       convert(unindent, text)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(some(autolink), ns => [html('pre', defrag(ns))]))),
+      convert(unindent, fmap(some(autolink), ns => [defrag(html('pre', ns))]))),
   ])),
   ns => [html('blockquote', ns)]));
 

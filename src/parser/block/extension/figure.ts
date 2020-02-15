@@ -67,7 +67,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
       [
         html('div', { class: 'figcontent' }, [content]),
         html('span', { class: 'figindex' }),
-        html('figcaption', defrag(caption))
+        defrag(html('figcaption', caption))
       ])
   ]))));
 

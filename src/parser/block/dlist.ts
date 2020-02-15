@@ -20,10 +20,10 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
 const term: DListParser.TermParser = line(indexee(fmap(
   surround(
     /^~(?=$|\s)/,
-    fmap(trim(some(union([indexer, inline]))), defrag),
+    trim(some(union([indexer, inline]))),
     '',
     false),
-  ns => [html('dt', ns)])));
+  ns => [defrag(html('dt', ns))])));
 
 const desc: DListParser.DescriptionParser = block(fmap(
   surround(
@@ -33,7 +33,7 @@ const desc: DListParser.DescriptionParser = block(fmap(
       trim(some(union([inline])))),
     '',
     false),
-  ns => [html('dd', defrag(ns))]),
+  ns => [defrag(html('dd', ns))]),
   false);
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {
