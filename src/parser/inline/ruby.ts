@@ -1,20 +1,10 @@
 import { RubyParser } from '../inline';
-import { Parser, union, sequence, some, creator, backtracker, surround, fmap, bind, eval } from '../../combinator';
+import { Ctx, sequence, creator, backtracker, surround, bind } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { str, char } from '../source';
 import { defrag } from '../util';
 import { concat } from 'spica/concat';
 import { html, text } from 'typed-dom';
-
-const parser: Parser<string> = some(union([
-  fmap(htmlentity, (ts: Text[]) => [ts[0].data]),
-  (s: string) => {
-    const i = s.indexOf('&');
-    return i === -1
-      ? [[s], '']
-      : [[s.slice(0, i || 1)], s.slice(i || 1)];
-  }
-]));
 
 export const ruby: RubyParser = creator(bind(
   sequence([
@@ -22,8 +12,8 @@ export const ruby: RubyParser = creator(bind(
     backtracker(surround('(', str(/^(?:\\[^\n]|[^\)\n])+/), backtracker(char(')')))),
   ]),
   ([{ data: t }, { data: r }], rest, _, context) => {
-    const texts = split(eval(parser(t, context)).join(''));
-    const rubies = split(eval(parser(r, context)).join(''));
+    const texts = parse(t, context);
+    const rubies = parse(r, context);
     if (!texts.join('').trim() || !rubies.join('').trim()) return;
     switch (true) {
       case rubies.length <= texts.length:
@@ -53,17 +43,22 @@ export const ruby: RubyParser = creator(bind(
     }
   }));
 
-function split(target: string): string[] {
+function parse(target: string, context: Ctx): string[] {
   const acc: string[] = [''];
   for (let i = 0; i < target.length; ++i) {
-    switch (target[i]) {
-      case ' ':
-      case '\t':
+    switch (target[i].trim()) {
+      case '':
         void acc.push('');
         continue;
       case '\\':
         acc[acc.length - 1] += target[++i];
         continue;
+      case '&': {
+        const [[{ data = '&' }] = [{}], rest = target.slice(i + data.length)] = htmlentity(target.slice(i), context) || [];
+        acc[acc.length - 1] += data;
+        i = target.length - rest.length - 1;
+        continue;
+      }
       default:
         acc[acc.length - 1] += target[i];
         continue;
