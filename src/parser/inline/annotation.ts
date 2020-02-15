@@ -11,7 +11,7 @@ export const annotation: AnnotationParser = lazy(() => creator(fmap(surround(
   update({ syntax: { inline: {
     annotation: false,
     reference: false,
-    extension: false,
+    extension: true,
     media: false,
     link: true,
     autolink: true,

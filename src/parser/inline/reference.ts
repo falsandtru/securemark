@@ -12,7 +12,7 @@ export const reference: ReferenceParser = lazy(() => creator(fmap(surround(
   update({ syntax: { inline: {
     annotation: false,
     reference: false,
-    extension: true,
+    extension: false,
     media: false,
     link: true,
     autolink: true,
