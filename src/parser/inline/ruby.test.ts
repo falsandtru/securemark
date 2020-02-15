@@ -38,6 +38,7 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser('[秦 　 こころ](はた の こころ)')), [['<ruby>秦<rp>(</rp><rt>はた</rt><rp>)</rp>　<rp>(</rp><rt>の</rt><rp>)</rp>こころ<rp>(</rp><rt>こころ</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[&amp;](&amp;)')), [['<ruby>&amp;<rp>(</rp><rt>&amp;</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[*A*](*a*)')), [['<ruby>*A*<rp>(</rp><rt>*a*</rt><rp>)</rp></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[<wbr>](<wbr>)')), [['<ruby>&lt;wbr&gt;<rp>(</rp><rt>&lt;wbr&gt;</rt><rp>)</rp></ruby>'], '']);
     });
 
   });
