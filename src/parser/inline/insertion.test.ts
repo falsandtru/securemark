@@ -10,8 +10,8 @@ describe('Unit: parser/inline/insertion', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('+')), undefined);
       assert.deepStrictEqual(inspect(parser('++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++a')), undefined);
-      assert.deepStrictEqual(inspect(parser('++a+')), undefined);
+      assert.deepStrictEqual(inspect(parser('++a')), [['++', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('++a+')), [['++', 'a', '+'], '']);
     });
 
     it('basic', () => {

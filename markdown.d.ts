@@ -648,21 +648,21 @@ export namespace MarkdownParser {
     export interface InsertionParser extends
       // ++abc++
       Inline<'insertion'>,
-      Parser<HTMLElement, [
+      Parser<HTMLElement | Text, [
         InlineParser,
       ], Context> {
     }
     export interface DeletionParser extends
       // ~~abc~~
       Inline<'deletion'>,
-      Parser<HTMLElement, [
+      Parser<HTMLElement | Text, [
         InlineParser,
       ], Context> {
     }
     export interface MarkParser extends
       // ==abc==
       Inline<'mark'>,
-      Parser<HTMLElement, [
+      Parser<HTMLElement | Text, [
         InlineParser,
       ], Context> {
     }
