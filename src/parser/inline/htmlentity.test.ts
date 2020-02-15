@@ -22,6 +22,14 @@ describe('Unit: parser/inline/htmlentity', () => {
       assert.deepStrictEqual(inspect(parser('&<;')), undefined);
       assert.deepStrictEqual(inspect(parser('&<>;')), undefined);
       assert.deepStrictEqual(inspect(parser('&>;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#35;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#1234;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#992;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#98765432;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#0;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#X22;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#XD06;')), undefined);
+      assert.deepStrictEqual(inspect(parser('&#xcab;')), undefined);
     });
 
     it('entity', () => {
@@ -35,14 +43,6 @@ describe('Unit: parser/inline/htmlentity', () => {
       assert.deepStrictEqual(inspect(parser('&DifferentialD;')), [['ⅆ'], '']);
       assert.deepStrictEqual(inspect(parser('&ClockwiseContourIntegral;')), [['∲'], '']);
       assert.deepStrictEqual(inspect(parser('&ngE;')), [['≧̸'], '']);
-      assert.deepStrictEqual(inspect(parser('&#35;')), [['#'], '']);
-      assert.deepStrictEqual(inspect(parser('&#1234;')), [['Ӓ'], '']);
-      assert.deepStrictEqual(inspect(parser('&#992;')), [['Ϡ'], '']);
-      assert.deepStrictEqual(inspect(parser('&#98765432;')), [['�'], '']);
-      assert.deepStrictEqual(inspect(parser('&#0;')), [['�'], '']);
-      assert.deepStrictEqual(inspect(parser('&#X22;')), [['"'], '']);
-      assert.deepStrictEqual(inspect(parser('&#XD06;')), [['ആ'], '']);
-      assert.deepStrictEqual(inspect(parser('&#xcab;')), [['ಫ'], '']);
     });
 
   });
