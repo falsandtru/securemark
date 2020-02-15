@@ -2,7 +2,7 @@ import { WeakMap } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
-import { union, some, validate, creation, backtrack, open_, close_, match, memoize, update, lazy } from '../../combinator';
+import { union, some, validate, creator, backtracker, open_, close_, match, memoize, update, lazy } from '../../combinator';
 import { str } from '../source';
 import { defrag, startTight } from '../util';
 import { DeepImmutable } from 'spica/type';
@@ -19,7 +19,7 @@ const attributes = {
 void ObjectSetPrototypeOf(attributes, null);
 void ObjectValues(attributes).forEach(o => void ObjectSetPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => creation(validate('<', union([
+export const html: HTMLParser = lazy(() => creator(validate('<', union([
   match(
     /^(?=<(wbr)(?=[ >]))/,
     memoize(([, tag]) => tag,
@@ -27,7 +27,7 @@ export const html: HTMLParser = lazy(() => creation(validate('<', union([
       close_(open_(
         str(`<${tag}`),
         some(union([attribute])), true),
-        backtrack(str('>')),
+        backtracker(str('>')),
         ([, as], rest) => [
           [h(tag as 'span', makeAttrs(attributes[tag], as.map(t => t.data), [], 'html'))],
           rest
@@ -39,7 +39,7 @@ export const html: HTMLParser = lazy(() => creation(validate('<', union([
       close_(open_(close_(open_(
         str(`<${tag}`),
         some(union([attribute])), true),
-        backtrack(str('>'))),
+        backtracker(str('>'))),
         startTight(
         update((() => {
           switch (tag) {
@@ -55,7 +55,7 @@ export const html: HTMLParser = lazy(() => creation(validate('<', union([
           }
         })(),
         some(union([inline]), `</${tag}>`)))),
-        backtrack(str(`</${tag}>`)),
+        backtracker(str(`</${tag}>`)),
         ([as, bs, cs], rest, _, context) =>
           [[elem(tag, as, bs, cs, context)], rest]))),
   match(
@@ -66,15 +66,15 @@ export const html: HTMLParser = lazy(() => creation(validate('<', union([
       close_(open_(close_(open_(
         str(`<${tag}`),
         some(union([attribute])), true),
-        backtrack(str('>'))),
+        backtracker(str('>'))),
         startTight(
         some(union([inline]), `</${tag}>`))),
-        backtrack(str(`</${tag}>`)),
+        backtracker(str(`</${tag}>`)),
         ([as, bs, cs], rest) =>
           [[elem(tag, as, bs, cs, {})], rest])),
 ]))));
 
-export const attribute: HTMLParser.TagParser.AttributeParser = creation(union([
+export const attribute: HTMLParser.TagParser.AttributeParser = creator(union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/),
 ]));
 

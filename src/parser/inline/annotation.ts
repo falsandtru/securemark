@@ -1,11 +1,11 @@
 import { AnnotationParser } from '../inline';
-import { union, some, creation, backtrack, surround, guard, update, lazy, fmap } from '../../combinator';
+import { union, some, creator, backtracker, surround, guard, update, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { defrag, startTight } from '../util';
 import { html } from 'typed-dom';
 
-export const annotation: AnnotationParser = lazy(() => creation(fmap(surround(
+export const annotation: AnnotationParser = lazy(() => creator(fmap(surround(
   '((',
   guard(context => context.syntax?.inline?.annotation ?? true,
   update({ syntax: { inline: {
@@ -17,5 +17,5 @@ export const annotation: AnnotationParser = lazy(() => creation(fmap(surround(
     autolink: true,
   }}},
   startTight(union([some(inline, '))')])))),
-  backtrack(str('))'))),
+  backtracker(str('))'))),
   ns => [html('sup', { class: 'annotation' }, defrag(ns))])));

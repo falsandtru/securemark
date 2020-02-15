@@ -1,5 +1,5 @@
 import { RubyParser } from '../inline';
-import { Parser, union, sequence, some, creation, backtrack, surround, fmap, bind, eval } from '../../combinator';
+import { Parser, union, sequence, some, creator, backtracker, surround, fmap, bind, eval } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { str, char } from '../source';
 import { defrag } from '../util';
@@ -16,10 +16,10 @@ const parser: Parser<string> = some(union([
   }
 ]));
 
-export const ruby: RubyParser = creation(bind(
+export const ruby: RubyParser = creator(bind(
   sequence([
-    surround('[', str(/^(?!\\?\s)(?:[^\]\n]|\\[^\n])+/), backtrack(char(']'))),
-    backtrack(surround('(', str(/^(?:[^\)\n]|\\[^\n])+/), backtrack(char(')')))),
+    surround('[', str(/^(?!\\?\s)(?:[^\]\n]|\\[^\n])+/), backtracker(char(']'))),
+    backtracker(surround('(', str(/^(?:[^\)\n]|\\[^\n])+/), backtracker(char(')')))),
   ]),
   ([{ data: t }, { data: r }], rest, _, context) => {
     const texts = split(eval(parser(t, context)).join(''));

@@ -1,7 +1,7 @@
 import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, creation, backtrack, surround, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
+import { union, inits, tails, some, creator, backtracker, surround, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
@@ -16,7 +16,7 @@ export const attributes = {
 } as const;
 void ObjectSetPrototypeOf(attributes, null);
 
-export const link: LinkParser = lazy(() => creation(bind(fmap(
+export const link: LinkParser = lazy(() => creator(bind(fmap(
   guard(context => context.syntax?.inline?.link ?? true,
   tails([
     dup(union([
@@ -33,10 +33,11 @@ export const link: LinkParser = lazy(() => creation(bind(fmap(
           autolink: false,
         }}},
         startTight(some(inline, /^\\?\n|^]/))),
-        backtrack(char(']')),
+        backtracker(char(']')),
         false),
     ])),
-    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtrack(str(/^ ?}/)))),
+    // TODO: Count this backtracking.
+    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(str(/^ ?}/)))),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
   ([content, param]: [(HTMLElement | Text)[], Text[]], rest, _, context) => {
@@ -77,12 +78,12 @@ export const link: LinkParser = lazy(() => creation(bind(fmap(
     return [[el], rest];
   })));
 
-export const uri: LinkParser.ParamParser.UriParser = creation(match(
+export const uri: LinkParser.ParamParser.UriParser = creator(match(
   /^ ?(?! )/,
   memoize(([delim]) => delim,
   delim => union([str(delim ? /^\S+/ : /^[^\s{}]+/)]))));
 
-export const attribute: LinkParser.ParamParser.AttributeParser = creation(union([
+export const attribute: LinkParser.ParamParser.AttributeParser = creator(union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]));
 

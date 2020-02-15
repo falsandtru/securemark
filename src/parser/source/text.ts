@@ -1,5 +1,5 @@
 import { TextParser } from '../source';
-import { creation } from '../../combinator';
+import { creator } from '../../combinator';
 import { str } from './str';
 import { html, text as txt } from 'typed-dom';
 
@@ -7,7 +7,7 @@ export const separator = /\s|(?=[^A-Za-z0-9\s])[\x00-\x7F]|[A-Za-z0-9][A-Za-z0-9
 const next = /[\S\n]|$/;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = creation((source, context) => {
+export const text: TextParser = creator((source, context) => {
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {

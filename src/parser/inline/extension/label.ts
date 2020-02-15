@@ -1,11 +1,11 @@
 import { ExtensionParser } from '../../inline';
-import { union, creation, surround, fmap } from '../../../combinator';
+import { union, creator, surround, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom';
 
 const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
 
-export const label: ExtensionParser.LabelParser = creation(fmap(
+export const label: ExtensionParser.LabelParser = creator(fmap(
   union([
     surround('[', body, ']'),
     body,

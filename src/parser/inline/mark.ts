@@ -1,11 +1,11 @@
 import { MarkParser, inline } from '../inline';
-import { union, some, creation, backtrack, surround, lazy, fmap } from '../../combinator';
+import { union, some, creator, backtracker, surround, lazy, fmap } from '../../combinator';
 import { str } from '../source';
 import { defrag } from '../util';
 import { html } from 'typed-dom';
 
-export const mark: MarkParser = lazy(() => creation(fmap(surround(
+export const mark: MarkParser = lazy(() => creator(fmap(surround(
   '==',
   some(union([inline]), '=='),
-  backtrack(str('=='))),
+  backtracker(str('=='))),
   ns => [html('mark', defrag(ns))])));

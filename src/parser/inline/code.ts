@@ -1,8 +1,8 @@
 import { CodeParser } from '../inline';
-import { validate, creation, backtrack, match } from '../../combinator';
+import { validate, creator, backtracker, match } from '../../combinator';
 import { html, text } from 'typed-dom';
 
-export const code: CodeParser = creation(validate('`', backtrack(match(
+export const code: CodeParser = creator(validate('`', backtracker(match(
   /^(`+)(?!`)(?:([^\n]*?[^`\n])\1(?!`))?/,
   ([whole, , body]) => rest =>
     body

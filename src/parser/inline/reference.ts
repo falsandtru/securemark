@@ -1,11 +1,11 @@
 import { ReferenceParser } from '../inline';
-import { subsequence, some, subline, focus, creation, backtrack, surround, guard, update, lazy, fmap } from '../../combinator';
+import { subsequence, some, subline, focus, creator, backtracker, surround, guard, update, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { defrag, startTight } from '../util';
 import { html } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => creation(fmap(surround(
+export const reference: ReferenceParser = lazy(() => creator(fmap(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   subline(
@@ -18,7 +18,7 @@ export const reference: ReferenceParser = lazy(() => creation(fmap(surround(
     autolink: true,
   }}},
   startTight(subsequence([alias, some(inline, ']]')]))))),
-  backtrack(str(']]'))),
+  backtracker(str(']]'))),
   ns => [
     html('sup',
       {
@@ -30,6 +30,6 @@ export const reference: ReferenceParser = lazy(() => creation(fmap(surround(
       defrag(ns))
   ])));
 
-const alias: ReferenceParser.AliasParser = creation(focus(
+const alias: ReferenceParser.AliasParser = creator(focus(
   /^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/,
   source => [[html('abbr', source.slice(1, ~(~source.indexOf('|', -2) || ~source.length)))], '']));
