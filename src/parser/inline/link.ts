@@ -62,23 +62,23 @@ export const link: LinkParser = lazy(() => creator(bind(fmap(
         assert(content[0].matches('.media'));
         break;
       case !context.insecure
-        && !!frag(eval(some(autolink)(stringify(content), { ...context, insecure: true }))).firstElementChild:
+        && !!eval(some(autolink)(stringify(content), { ...context, insecure: true })).some(node => 'id' in node):
         return;
     }
     assert(!frag(content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
-    const [INSECURE_URL, ...params]: string[] = param.map(t => t.data);
-    assert(INSECURE_URL === INSECURE_URL.trim());
+    const [INSECURE_URI, ...params]: string[] = param.map(t => t.data);
+    assert(INSECURE_URI === INSECURE_URI.trim());
     const el = defrag(html('a',
       {
-        href: INSECURE_URL,
+        href: INSECURE_URI,
         rel: `noopener${params.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
         ? content = content
-        : decode(INSECURE_URL || '.')
-            .replace(/^tel:/, '')
-            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h')));
-    if (!verify(el, INSECURE_URL)) return [[el], rest];
+        : decode(INSECURE_URI || '.')
+            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h')
+            .replace(/^tel:/, '')));
+    if (!verify(el, INSECURE_URI)) return [[el], rest];
     void define(el, ObjectAssign(
       makeAttrs(attributes, params, [...el.classList], 'link'),
       { nofollow: void 0 }));
@@ -94,18 +94,9 @@ export const attribute: LinkParser.ParamParser.AttributeParser = creator(union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]));
 
-function verify(el: HTMLAnchorElement, url: string): boolean {
+function verify(el: HTMLAnchorElement, uri: string): boolean {
   let message: string;
   switch (el.protocol) {
-    case 'tel:':
-      if (`tel:${el.innerHTML.replace(/-(?=[0-9])/g, '')}` === url) return true;
-      void define(el, {
-        class: 'invalid',
-        'data-invalid-syntax': 'link',
-        'data-invalid-message': 'Invalid protocol',
-      });
-      message = 'Invalid phone number';
-      break;
     case 'http:':
     case 'https:': {
       const { host } = el;
@@ -114,6 +105,10 @@ function verify(el: HTMLAnchorElement, url: string): boolean {
       message = 'Invalid host';
       break;
     }
+    case 'tel:':
+      if (`tel:${el.textContent!.replace(/-(?=[0-9])/g, '')}` === uri) return true;
+      message = 'Invalid phone number';
+      break;
     default:
       message = 'Invalid protocol';
   }
