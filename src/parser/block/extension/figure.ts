@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, surround, clear, match, memoize, convert, trim, update, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, close, clear, match, memoize, convert, trim, update, fmap } from '../../../combinator';
 import { defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label } from '../../inline/extension/label';
@@ -18,8 +18,7 @@ export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
   memoize(([, fence]) => fence,
   (fence, closer = new RegExp(`^${fence}[^\\S\\n]*(?:$|\\n)`)) =>
-    surround(
-      '',
+    close(
       sequence([
         line(clear(label)),
         inits([

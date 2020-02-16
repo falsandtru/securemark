@@ -6,16 +6,16 @@ export const bracket: BracketParser = lazy(() => union([
   open(
     char('('), close(
     some(inline, ')'),
-    char(')'), true, true, void 0,
+    char(')'), true, void 0,
     (ns, rest) => [ns, rest]), true),
   open(
     char('['), close(
     some(inline, ']'),
-    char(']'), true, true, void 0,
+    char(']'), true, void 0,
     (ns, rest) => [ns, rest]), true),
   open(
     char('{'), close(
     some(inline, '}'),
-    char('}'), true, true, void 0,
+    char('}'), true, void 0,
     (ns, rest) => [ns, rest]), true),
 ]));

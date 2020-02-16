@@ -1,85 +1,103 @@
-import { Parser, Result, Ctx, Data, Context, exec } from '../../data/parser';
+import { Parser, Result, Ctx, Data, SubParsers, Context } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { bind } from '../monad/bind';
 import { unshift, push } from 'spica/array';
 
-export function surround<P extends Parser<unknown>>(start: string | RegExp, parser: P, end: string | RegExp | Parser<unknown>, strict?: boolean): P;
-export function surround<T, D extends Parser<unknown>[]>(start: string | RegExp, parser: Parser<T, D>, end: string | RegExp | Parser<unknown>, strict = true): Parser<T, D> {
-  assert(start instanceof RegExp ? !start.global && start.source.startsWith('^') : true);
-  assert(end instanceof RegExp ? !end.global && end.source.startsWith('^') : true);
-  assert(parser);
-  const starts = match(start);
-  const ends = match(end);
+export function surround<P extends Parser<unknown>, S = never>(
+  opener: string | RegExp | Parser<S, any, Context<P>>, parser: P, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: boolean,
+  f?: (rss: [S[], Data<P>[] | undefined, S[]], rest: string, source: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
+  g?: (rss: [S[], Data<P>[] | undefined], rest: string, source: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
+): P;
+export function surround<T, D extends Parser<unknown>[]>(
+  opener: string | RegExp | Parser<T, any>, parser: Parser<T, D>, closer: string | RegExp | Parser<T, any>, optional = false,
+  f?: (rss: [T[], T[] | undefined, T[]], rest: string, source: string, context: Ctx) => Result<T, D, Ctx>,
+  g?: (rss: [T[], T[] | undefined], rest: string, source: string, context: Ctx) => Result<T, D, Ctx>,
+): Parser<T, D> {
+  switch (typeof opener) {
+    case 'string':
+    case 'object':
+      return surround(match(opener), parser, closer, optional, f, g);
+  }
+  switch (typeof closer) {
+    case 'string':
+    case 'object':
+      return surround(opener, parser, match(closer), optional, f, g);
+  }
   return (lmr_, context) => {
     if (lmr_ === '') return;
-    const l = starts(lmr_, context);
-    if (l === void 0) return;
-    assert(lmr_.startsWith(l));
-    const mr_ = l ? lmr_.slice(l.length) : lmr_;
-    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, context) || [];
+    const [rl = [], mr_] = opener(lmr_, context) || [];
+    if (mr_ === void 0) return;
+    assert(lmr_.endsWith(mr_));
+    const [rm, r_ = mr_] = mr_ !== '' && parser(mr_, context) || [];
     assert(mr_.endsWith(r_));
-    if (strict && r_.length === mr_.length) return;
-    const r = ends(r_, context);
-    if (r === void 0) return;
-    assert(r_.startsWith(r));
-    return l + r !== '' || r_.length - r.length < lmr_.length
-      ? [rs, r ? r_.slice(r.length) : r_]
-      : void 0;
+    if (!optional && r_.length === mr_.length) return;
+    const [rr = [], rest = r_] = r_ !== '' && closer(r_, context) || [];
+    if (rest.length === lmr_.length) return;
+    assert(r_.endsWith(rest));
+    return rest.length < r_.length
+      ? f
+        ? f([rl, rm, rr], rest, lmr_, context)
+        : [rm ? push(unshift(rl, rm), rr) : push(rl, rr), rest]
+      : g
+        ? g([rl, rm], rest, lmr_, context)
+        : void 0;
   };
 }
 
-function match(pattern: string | RegExp | Parser<unknown>): (source: string, context: Ctx) => string | undefined {
+function match(pattern: string | RegExp): (source: string, context: Ctx) => [never[], string] | undefined {
   switch (typeof pattern) {
     case 'string':
-      return source => source.slice(0, pattern.length) === pattern ? pattern : void 0;
+      return source => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : void 0;
     case 'object':
-      return source => source.match(pattern)?.[0];
-    default:
-      return (source, context) => {
-        const res = pattern(source, context);
-        return res && source.slice(0, source.length - exec(res).length);
+      return source => {
+        const m = source.match(pattern);
+        return m
+          ? [[], source.slice(m[0].length)]
+          : void 0;
       };
   }
 }
 
-export function open<P extends Parser<unknown, any, object>>(opener: Parser<Data<P>, any, Context<P>>, parser: P, optional?: boolean): P;
-//export function open<T, D extends Parser<unknown, any, C>[], C extends object>(opener: Parser<T, any, C>, parser: Parser<T, D, C>, optional?: boolean): Parser<T, D, C>;
-export function open<T, D extends Parser<unknown, any, C>[], C extends object>(opener: Parser<T, any, C>, parser: Parser<T, D, C>, optional = false): Parser<T, D, C> {
-  return (lmr_, context) => {
-    if (lmr_ === '') return;
-    const [rl = [], mr_ = lmr_] = opener(lmr_, context) || [];
-    assert(lmr_.endsWith(mr_));
-    if (mr_.length === lmr_.length) return;
-    assert(rl.length === 1);
-    const [rm = [], r_ = mr_] = mr_ !== '' && parser(mr_, context) || [];
+export function open<P extends Parser<unknown, any, object>>(opener: string | RegExp | Parser<Data<P>, any, Context<P>>, parser: P, optional?: boolean): P;
+//export function open<T, D extends Parser<unknown, any, C>[], C extends object>(opener: string | RegExp | Parser<T, any, C>, parser: Parser<T, D, C>, optional?: boolean): Parser<T, D, C>;
+export function open<T, D extends Parser<unknown, any, C>[], C extends object>(opener: string | RegExp | Parser<T, any, C>, parser: Parser<T, D, C>, optional = false): Parser<T, D, C> {
+  if (typeof opener === 'string') return open(match(opener), parser, optional);
+  if (typeof opener === 'object') return open(match(opener), parser, optional);
+  return (source, context) => {
+    if (source === '') return;
+    const [rl = [], mr_] = opener(source, context) || [];
+    if (mr_ === void 0) return;
+    assert(source.endsWith(mr_));
+    const [rm = [], r_] = mr_ !== '' && parser(mr_, context) || [];
+    if (r_ === void 0) return optional && mr_.length < source.length ? [rl, mr_] : void 0;
     assert(mr_.endsWith(r_));
-    if (r_.length === mr_.length) return optional ? [rl, mr_] : void 0;
-    rl.length > 0 && void rm.unshift(...rl);
-    return r_.length < lmr_.length
+    void unshift(rl, rm);
+    return r_.length < source.length
       ? [rm, r_]
       : void 0;
   };
 }
-export function close<P extends Parser<unknown, any, object>>(parser: P, closer: Parser<Data<P>, any, Context<P>>, f?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, any, Context<P>>, g?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, any, Context<P>>): P;
-export function close<P extends Parser<unknown, any, object>>(parser: P, closer: Parser<Data<P>, any, Context<P>>, keepSymbols?: boolean, optional?: boolean, f?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, any, Context<P>>, g?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, any, Context<P>>): P;
-//export function close<T, U, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, closer: Parser<T, any, C>, f?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>, g?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>): Parser<T | U, D, C>;
-//export function close<T, U, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, closer: Parser<T, any, C>, keepSymbols?: boolean, f?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>, g?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>): Parser<T | U, D, C>;
-export function close<T, U, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, closer: Parser<T, any, C>, keepSymbols: ((rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>) | boolean = true, optional: ((rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>) | boolean = false, f?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>, g?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>): Parser<T | U, D, C> {
-  if (typeof keepSymbols === 'function' || typeof optional === 'function') return close(parser, closer as any, void 0, void 0, keepSymbols as any, optional as any);
+export function close<P extends Parser<unknown, any, object>>(parser: P, closer: string | RegExp | Parser<Data<P>, any, Context<P>>, f?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>, g?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, any, Context<P>>): P;
+export function close<P extends Parser<unknown, any, object>>(parser: P, closer: string | RegExp | Parser<Data<P>, any, Context<P>>, optional?: boolean, f?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>, g?: (rs: Data<P>[], rest: string, source: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>): P;
+//export function close<T, U, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, closer: string | RegExp | Parser<T, any, C>, f?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, SubParsers<P>, C>, g?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, SubParsers<P>, C>): Parser<T | U, D, C>;
+//export function close<T, U, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, closer: string | RegExp | Parser<T, any, C>, optional?: boolean, f?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, SubParsers<P>, C>, g?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, SubParsers<P>, C>): Parser<T | U, D, C>;
+export function close<T, U, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, closer: string | RegExp | Parser<T, any, C>, optional: ((rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>) | boolean = false, f?: ((rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>), g?: (rs: T[], rest: string, source: string, context: C) => Result<T | U, any, C>): Parser<T | U, D, C> {
+  if (typeof closer === 'string') return close(parser, match(closer), optional as any, f as any, g as any);
+  if (typeof closer === 'object') return close(parser, match(closer), optional as any, f as any, g as any);
+  if (typeof optional === 'function') return close(parser, closer as any, void 0, optional as any, f as any);
   return (source, context) => {
-    const [rs = [], r_ = source] = parser(source, context) || [];
+    if (source === '') return;
+    const [rm = [], r_ = source] = parser(source, context) || [];
     assert(source.endsWith(r_));
     if (!optional && r_.length === source.length) return;
-    const [rr = [], rest = r_] = r_ !== '' && closer(r_, context) || [];
+    const [rr = [], rest] = r_ !== '' && closer(r_, context) || [];
+    if (rest === void 0) return g ? g(rm, r_, source, context) : void 0;
     assert(r_.endsWith(rest));
     if (rest.length === source.length) return;
-    if (rest.length === r_.length) return g ? g(rs, rest, source, context) : void 0;
-    assert(rr.length === 1);
-    !keepSymbols && rs.length > 0 && void rs.shift();
-    keepSymbols && rr.length > 0 && void push(rs, rr);
+    void push(rm, rr);
     return f
-      ? f(rs, rest, source, context)
-      : [rs, rest];
+      ? f(rm, rest, source, context)
+      : [rm, rest];
   };
 }
 

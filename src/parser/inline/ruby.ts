@@ -1,5 +1,5 @@
 import { RubyParser } from '../inline';
-import { Ctx, sequence, creator, backtracker, surround, bind } from '../../combinator';
+import { Ctx, sequence, creator, backtracker, surround, clear, bind } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { str, char } from '../source';
@@ -8,8 +8,8 @@ import { unshift, push } from 'spica/array';
 
 export const ruby: RubyParser = creator(bind(
   sequence([
-    surround('[', str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), backtracker(char(']'))),
-    backtracker(surround('(', str(/^(?:\\[^\n]|[^\)\n])+/), backtracker(char(')')))),
+    surround('[', str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), backtracker(clear(char(']')))),
+    backtracker(surround('(', str(/^(?:\\[^\n]|[^\)\n])+/), backtracker(clear(char(')'))))),
   ]),
   ([{ data: t }, { data: r }], rest, _, context) => {
     const texts = parse(t, context);

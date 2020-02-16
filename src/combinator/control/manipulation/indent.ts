@@ -4,7 +4,7 @@ import { line, firstline } from '../constraint/line';
 import { rewrite } from '../constraint/scope';
 import { bind } from '../monad/bind';
 import { match, memoize } from './match';
-import { surround } from './surround';
+import { open } from './surround';
 
 export function indent<P extends Parser<unknown>>(parser: P): P;
 export function indent<T>(parser: Parser<T>): Parser<T> {
@@ -15,7 +15,7 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
     indent =>
       some(line(rewrite(
         source => [[], source.slice(firstline(source).length)],
-        surround(indent, source => [[firstline(source, false)], ''], '')))))),
+        open(indent, source => [[firstline(source, false)], ''])))))),
     (rs, rest, _, context) => {
       const result = parser(rs.join('\n'), context);
       return result && exec(result) === ''

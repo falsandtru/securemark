@@ -108,6 +108,7 @@ export namespace MarkdownParser {
         Parser<HTMLLIElement, [
           Parser<HTMLElement | Text, [
             SourceParser.StrParser,
+            SourceParser.StrParser,
             InlineParser,
           ], Context>,
           Parser<HTMLUListElement | HTMLOListElement, [

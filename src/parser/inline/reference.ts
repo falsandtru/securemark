@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { Result, Ctx, subsequence, some, subline, focus, creator, backtracker, surround, guard, update, lazy, bind } from '../../combinator';
+import { Result, Ctx, subsequence, some, subline, focus, creator, backtracker, surround, clear, guard, update, lazy, bind } from '../../combinator';
 import { startTight, isTight, defrag } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -18,7 +18,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     autolink: true,
   }}},
   subline(subsequence([alias, startTight(some(inline, ']]'))])))),
-  backtracker(str(']]'))),
+  backtracker(clear(str(']]')))),
   (ns, rest, _, context: DeepMutable<Ctx>) =>
     isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack
       ? Result(

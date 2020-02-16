@@ -1,12 +1,12 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, rewrite, backtracker, convert, open_, update, lazy } from '../../../combinator';
+import { union, some, rewrite, backtracker, convert, open, update, lazy } from '../../../combinator';
 import { unescsource, str } from '../../source';
 import { link } from '../link';
 
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
-  open_(
+  open(
     str(/^h?ttps?:\/\/(?=[^/?#\s])/),
     backtracker(some(union([bracket, some(unescsource, closer)])))),
   convert(

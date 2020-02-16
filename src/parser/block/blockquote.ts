@@ -1,5 +1,5 @@
 import { BlockquoteParser } from '../block';
-import { union, some, block, validate, rewrite, surround, convert, lazy, fmap } from '../../combinator';
+import { union, some, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
 import { defrag, suppress } from '../util';
 import { contentline } from '../source';
 import { autolink } from '../autolink';
@@ -11,13 +11,13 @@ export const segment: BlockquoteParser.SegmentParser = block(union([
 ]));
 
 export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
-  surround(/^(?=>)/, text, ''),
-  surround(/^!(?=>)/, source, ''),
+  open(/^(?=>)/, text),
+  open(/^!(?=>)/, source),
 ]))));
 
 const opener = /^(?=>>+(?:$|\s))/;
 
-const indent = block(surround(opener, some(contentline, /^>(?:$|\s)/), ''), false);
+const indent = block(open(opener, some(contentline, /^>(?:$|\s)/)), false);
 
 function unindent(source: string): string {
   return source

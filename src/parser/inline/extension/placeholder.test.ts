@@ -12,7 +12,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert.deepStrictEqual(inspect(parser('[ab]')), undefined);
       assert.deepStrictEqual(inspect(parser('[^]')), undefined);
       assert.deepStrictEqual(inspect(parser('[^]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[^\\]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[^\\]')), [['[^', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^ ]')), [['[^', ' ', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^ a]')), [['[^', ' ', 'a', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^\\ ]')), [['[^', ' ', ']'], '']);
@@ -23,6 +23,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert.deepStrictEqual(inspect(parser('[^<# a #>]')), [['[^', '<sup class="comment" title="a"></sup>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^<# a #>b]')), [['[^', '<sup class="comment" title="a"></sup>', 'b', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^ !http://host]')), [['[^', ' ', '<a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a')), [['[^', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('[^a  ]')), [['[^', 'a', '  ', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^a\\ \\ ]')), [['[^', 'a', ' ', ' ', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^a\n]')), [['[^', 'a', '<br>', ']'], '']);

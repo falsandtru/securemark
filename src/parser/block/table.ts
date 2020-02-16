@@ -1,6 +1,6 @@
 import { Array } from 'spica/global';
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, surround, update, lazy, fmap } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, surround, open, update, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { inline } from '../inline';
 import { html, text } from 'typed-dom';
@@ -13,9 +13,9 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   /^\|[^\n]*(?:\n\|[^\n]*){2,}/,
   update({ syntax: { inline: { media: false } } },
   sequence([
-    row(cell(data), false),
-    row(cell(alignment), true),
-    some(row(cell(data), false)),
+    row(cell(data), true),
+    row(cell(alignment), false),
+    some(row(cell(data), true)),
   ]))),
   ([head, alignment, ...rows]) => {
     assert(alignment.children.length > 0);
@@ -55,8 +55,8 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
   }
 }
 
-const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, strict: boolean): RowParser<P> => fmap(
-  line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, strict)),
+const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, optional: boolean): RowParser<P> => fmap(
+  line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional, void 0, ([, bs = []], rest) => [bs, rest])),
   es => [html('tr', es)]);
 
 const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => fmap(
@@ -66,15 +66,15 @@ const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => f
 const data: CellParser.DataParser = surround(
   /^\|(?:\\?\s)*(?=\S)/,
   some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
-  /^[^|]*/,
-  false);
+  /^[^|]*/, true,
+  void 0,
+  ([, bs = []], rest) => [bs, rest]);
 
-const alignment: CellParser.AlignmentParser = surround(
+const alignment: CellParser.AlignmentParser = open(
   '|',
   union([
     focus(/^:-+:/, () => [[text('center')], '']),
     focus(/^:-+/, () => [[text('left')], '']),
     focus(/^-+:/, () => [[text('right')], '']),
     focus(/^-+/, () => [[text('')], '']),
-  ]),
-  '');
+  ]));

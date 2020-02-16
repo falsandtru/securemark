@@ -1,7 +1,7 @@
 import { encodeURI } from 'spica/global';
 import { ObjectAssign } from 'spica/alias';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, creator, backtracker, surround, guard, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, creator, backtracker, surround, open, clear, guard, fmap, bind } from '../../combinator';
 import { dup } from '../util';
 import { link, attributes, uri, attribute } from './link';
 import { str, char } from '../source';
@@ -14,15 +14,14 @@ const url = html('a');
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = creator(bind(fmap(surround(
+export const media: MediaParser = creator(bind(fmap(open(
   '!',
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround('[', union([str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/)]), backtracker(char(']')), false)),
+    dup(surround('[', union([str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/)]), backtracker(clear(char(']'))), true)),
     // TODO: Count this backtracking.
-    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(str(/^ ?}/)))),
-  ])),
-  ''),
+    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(clear(str(/^ ?}/))))),
+  ]))),
   (ts: Text[][]) =>
     push([ts.length > 1 && ts[ts.length - 2][0]?.data || ''], ts[ts.length - 1].map(t => t.data))),
   ([text, INSECURE_URL, ...params]: string[], rest) => {

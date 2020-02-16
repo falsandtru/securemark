@@ -1,26 +1,28 @@
 import { ExtensionParser, inline } from '../../inline';
-import { inits, some, creator, backtracker, open, close, lazy } from '../../../combinator';
+import { inits, some, creator, backtracker, surround, lazy } from '../../../combinator';
 import { isTight, defrag } from '../../util';
 import { str, char } from '../../source';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
+import { unshift, push } from 'spica/array';
 
 import DataParser = ExtensionParser.DataParser;
 
-export const data: DataParser = lazy(() => creator(close(open(
+export const data: DataParser = lazy(() => creator(surround(
   str('[~'),
   inits([
     str(/^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?(?=[|\]])/),
     char('|'),
     some(inline, ']'),
-  ])),
-  backtracker(str(']')),
-  (ns, rest) => [
-    ns.length <= 3 || isTight(ns, 3, -1)
-      ? [defrag(html('span', attrs(ns[1].textContent!), ns.slice(3, -1)))]
-      : ns,
+  ]),
+  backtracker(char(']')), false,
+  ([as, bs = [], cs], rest) => [
+    isTight(bs, 2, bs.length)
+      ? [defrag(html('span', attrs(bs[0].textContent!), bs.slice(2)))]
+      : push(unshift(as, bs), cs),
     rest
-  ])));
+  ],
+  ([as, bs = []], rest) => [unshift(as, bs), rest])));
 
 function attrs(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');

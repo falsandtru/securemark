@@ -2,7 +2,7 @@ import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, creator, backtracker, surround, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
+import { union, inits, tails, some, creator, backtracker, surround, clear, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
 import { startTight, isTight, dup, defrag, stringify } from '../util';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
@@ -35,11 +35,11 @@ export const link: LinkParser = lazy(() => creator(bind(fmap(
           autolink: false,
         }}},
         startTight(some(inline, /^\\?\n|^]/))),
-        backtracker(char(']')),
-        false),
+        backtracker(clear(char(']'))),
+        true),
     ])),
     // TODO: Count this backtracking.
-    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(str(/^ ?}/)))),
+    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(clear(str(/^ ?}/))))),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
   ([content, param]: [(HTMLElement | Text)[], Text[]], rest, _, context: DeepMutable<MarkdownParser.Context>) => {

@@ -1,5 +1,5 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, validate, rewrite, surround, convert, trim, update, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, rewrite, open, convert, trim, update, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { anyline } from '../source';
 import { inline, indexer, indexee } from '../inline';
@@ -18,21 +18,19 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
   es => [html('dl', fillTrailingDescription(es))])));
 
 const term: DListParser.TermParser = line(indexee(fmap(
-  surround(
+  open(
     /^~(?=$|\s)/,
     trim(some(union([indexer, inline]))),
-    '',
-    false),
+    true),
   ns => [defrag(html('dt', ns))])));
 
 const desc: DListParser.DescriptionParser = block(fmap(
-  surround(
+  open(
     /^:(?=$|\s)|/,
     rewrite(
       some(anyline, /^[~:](?=$|\s)/),
       trim(some(union([inline])))),
-    '',
-    false),
+    true),
   ns => [defrag(html('dd', ns))]),
   false);
 
