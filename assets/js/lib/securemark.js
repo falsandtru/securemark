@@ -1572,6 +1572,7 @@ require = function () {
             }
             Object.defineProperty(exports, '__esModule', { value: true });
             var parser_1 = _dereq_('./combinator/data/parser');
+            exports.Result = parser_1.Result;
             exports.eval = parser_1.eval;
             exports.exec = parser_1.exec;
             __export(_dereq_('./combinator/data/parser/union'));
@@ -2213,14 +2214,6 @@ require = function () {
                 return convert_1.convert(source => source.trim(), parser);
             }
             exports.trim = trim;
-            function trimStart(parser) {
-                return convert_1.convert(source => source.slice(source.lastIndexOf(source.trim())), parser);
-            }
-            exports.trimStart = trimStart;
-            function trimEnd(parser) {
-                return convert_1.convert((source, str) => source.slice(0, source.lastIndexOf(str = source.trim()) + str.length), parser);
-            }
-            exports.trimEnd = trimEnd;
         },
         { './convert': 36 }
     ],
@@ -2265,6 +2258,13 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
+            function Result(data, rest) {
+                return [
+                    [data],
+                    rest
+                ];
+            }
+            exports.Result = Result;
             function eval_(result, default_ = []) {
                 return result ? result[0] : default_;
             }
@@ -3303,7 +3303,7 @@ require = function () {
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, '>'), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
-            ]))), ns => ns.length > 0 ? [format(util_1.defrag(typed_dom_1.html('p', ns)))].map(el => util_1.hasVisible(el) ? el : typed_dom_1.define(el, {
+            ]))), ns => ns.length > 0 ? [format(util_1.defrag(typed_dom_1.html('p', ns)))].map(el => isVisible(el) ? el : typed_dom_1.define(el, {
                 class: 'invalid',
                 'data-invalid-syntax': 'paragraph',
                 'data-invalid-message': 'All paragraphs must have a visible content'
@@ -3312,6 +3312,9 @@ require = function () {
                 var _a;
                 void ((_a = node.lastChild) === null || _a === void 0 ? void 0 : _a.remove());
                 return node;
+            }
+            function isVisible(node) {
+                return node.textContent.trim() !== '' || node.getElementsByClassName('media').length > 0;
             }
         },
         {
@@ -3615,7 +3618,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.annotation = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.surround('((', combinator_1.guard(context => {
+            exports.annotation = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.surround('((', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.annotation) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.update({
@@ -3629,7 +3632,10 @@ require = function () {
                         autolink: true
                     }
                 }
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), combinator_1.backtracker(source_1.str('))'))), ns => [util_1.defrag(typed_dom_1.html('sup', { class: 'annotation' }, ns))])));
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), combinator_1.backtracker(source_1.str('))'))), (ns, rest, _, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
+                [util_1.defrag(typed_dom_1.html('sup', { class: 'annotation' }, ns))],
+                rest
+            ] : void 0)));
         },
         {
             '../../combinator': 30,
@@ -3925,7 +3931,7 @@ require = function () {
             exports.emphasis = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.open(source_1.str('*'), combinator_1.close(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
-            ])), source_1.str('*'), (ns, rest) => util_1.isVisible(ns[0]) ? [
+            ])), source_1.str('*'), (ns, rest) => util_1.isTight(ns, 0, -1) ? [
                 [util_1.defrag(typed_dom_1.html('em', array_1.pop(ns)[0]))],
                 rest
             ] : [
@@ -3959,7 +3965,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.emstrong = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.open(source_1.str('***'), combinator_1.close(combinator_1.union([combinator_1.some(inline_1.inline, '*')]), source_1.str(/^\*{1,3}/), (ns, rest, _, context) => {
-                if (!util_1.isVisible(ns[0]))
+                if (!util_1.isTight(ns, 0, -1))
                     return [
                         ns,
                         ns.pop().textContent + rest
@@ -4081,10 +4087,10 @@ require = function () {
                 source_1.char('|'),
                 combinator_1.some(inline_1.inline, ']')
             ])), combinator_1.backtracker(source_1.str(']')), (ns, rest) => [
-                ns.length >= 3 && (ns.length <= 4 || util_1.isVisible(ns[3])) ? [util_1.defrag(typed_dom_1.html('span', attr(ns[1].textContent), ns.slice(3, -1)))] : ns,
+                ns.length <= 3 || util_1.isTight(ns, 3, -1) ? [util_1.defrag(typed_dom_1.html('span', attrs(ns[1].textContent), ns.slice(3, -1)))] : ns,
                 rest
             ])));
-            function attr(data) {
+            function attrs(data) {
                 const name = data.split('=', 1)[0];
                 const value = data.slice(name.length + 1);
                 return {
@@ -4112,7 +4118,7 @@ require = function () {
             const indexee_1 = _dereq_('./indexee');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(indexee_1.indexee(combinator_1.fmap(combinator_1.surround('[#', combinator_1.subline(combinator_1.update({
+            exports.index = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(indexee_1.indexee(combinator_1.bind(combinator_1.surround('[#', combinator_1.subline(combinator_1.update({
                 syntax: {
                     inline: {
                         link: false,
@@ -4123,7 +4129,10 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), combinator_1.backtracker(source_1.str(']'))), ns => [util_1.defrag(typed_dom_1.html('a', ns))])), ([el]) => [typed_dom_1.define(el, {
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), combinator_1.backtracker(source_1.str(']'))), (ns, rest, _, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
+                [util_1.defrag(typed_dom_1.html('a', ns))],
+                rest
+            ] : void 0)), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : void 0
@@ -4248,7 +4257,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.close(combinator_1.open(source_1.str(/^\[[:^]/), combinator_1.some(combinator_1.union([inline_1.inline]), ']')), combinator_1.backtracker(source_1.str(']')), (ns, rest) => [
-                ns.length >= 3 && util_1.isVisible(ns[1]) ? [util_1.defrag(typed_dom_1.html('span', {
+                ns.length >= 3 && util_1.isTight(ns, 1, -1) ? [util_1.defrag(typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-message': 'Invalid flag'
@@ -4268,7 +4277,6 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const inline_1 = _dereq_('../inline');
             const combinator_1 = _dereq_('../../combinator');
@@ -4311,14 +4319,14 @@ require = function () {
                     default:
                         return { state: { in: { small: true } } };
                     }
-                })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)))), combinator_1.backtracker(source_1.str(`</${ tag }>`)), ([as, bs, cs], rest, _, context) => [
+                })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)))), combinator_1.backtracker(source_1.str(`</${ tag }>`)), ([as, bs, cs], rest, _, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
                     [elem(tag, as, bs, cs, context)],
                     rest
-                ]))),
-                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.close_(combinator_1.open_(combinator_1.close_(combinator_1.open_(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), true), combinator_1.backtracker(source_1.str('>'))), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), combinator_1.backtracker(source_1.str(`</${ tag }>`)), ([as, bs, cs], rest) => [
+                ] : void 0))),
+                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.close_(combinator_1.open_(combinator_1.close_(combinator_1.open_(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), true), combinator_1.backtracker(source_1.str('>'))), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), combinator_1.backtracker(source_1.str(`</${ tag }>`)), ([as, bs, cs], rest, _, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
                     [elem(tag, as, bs, cs, {})],
                     rest
-                ]))
+                ] : void 0))
             ]))));
             exports.attribute = combinator_1.creator(combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]));
             function elem(tag, as, bs, cs, context) {
@@ -4366,7 +4374,7 @@ require = function () {
                     'data-invalid-message': message
                 }, array_1.push(array_1.unshift(as, bs), cs)));
             }
-            const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)), new global_1.WeakMap());
+            const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)), new WeakMap());
             function makeAttrs(spec, params, classes, syntax) {
                 let invalid = classes.includes('invalid');
                 const attrs = params.reduce((attrs, param) => {
@@ -4396,7 +4404,6 @@ require = function () {
             '../util': 127,
             'spica/alias': 5,
             'spica/array': 6,
-            'spica/global': 12,
             'spica/memoize': 13,
             'typed-dom': 23
         }
@@ -4494,6 +4501,10 @@ require = function () {
                 nss[0]
             ] : nss), ([content, param], rest, _, context) => {
                 var _a;
+                if (!util_1.isTight(content, 0, content.length)) {
+                    context.resource && --context.resource.backtrack;
+                    return;
+                }
                 switch (true) {
                 case content.length === 0:
                     break;
@@ -4690,7 +4701,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.surround('[[', combinator_1.guard(context => {
+            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.update({
@@ -4704,15 +4715,15 @@ require = function () {
                         autolink: true
                     }
                 }
-            }, combinator_1.subline(util_1.startTight(combinator_1.subsequence([
+            }, combinator_1.subline(combinator_1.subsequence([
                 alias,
-                combinator_1.some(inline_1.inline, ']]')
-            ]))))), combinator_1.backtracker(source_1.str(']]'))), ns => [util_1.defrag(typed_dom_1.html('sup', {
-                    class: 'reference',
-                    'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR' ? ns.shift().textContent : undefined
-                }, ns))])));
+                util_1.startTight(combinator_1.some(inline_1.inline, ']]'))
+            ])))), combinator_1.backtracker(source_1.str(']]'))), (ns, rest, _, context) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
+                class: 'reference',
+                'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR' ? ns.shift().textContent : undefined
+            }, ns)), rest) : void 0)));
             const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
-                [typed_dom_1.html('abbr', source.slice(1, ~(~source.indexOf('|', -2) || ~source.length)))],
+                [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
                 ''
             ]));
         },
@@ -4840,7 +4851,7 @@ require = function () {
             exports.strong = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.open(source_1.str('**'), combinator_1.close(combinator_1.some(combinator_1.union([
                 emphasis_1.emphasis,
                 combinator_1.some(inline_1.inline, '*')
-            ]), '**'), source_1.str('**'), (ns, rest) => util_1.isVisible(ns[0]) ? [
+            ]), '**'), source_1.str('**'), (ns, rest) => util_1.isTight(ns, 0, -1) ? [
                 [util_1.defrag(typed_dom_1.html('strong', array_1.pop(ns)[0]))],
                 rest
             ] : [
@@ -4913,6 +4924,8 @@ require = function () {
             }
             function endingChar(node) {
                 while (node) {
+                    if ('id' in node && node.classList.contains('media'))
+                        return '';
                     const str = text(node);
                     if (str)
                         return [...str.slice(-2)].pop() || '';
@@ -4921,16 +4934,16 @@ require = function () {
                 return '';
             }
             function text(node) {
-                switch (node.nodeName) {
+                switch ('id' in node && node.tagName) {
                 case 'RUBY':
                     for (let i = node.childNodes.length; i--;) {
                         const child = node.childNodes[i];
-                        switch (child.nodeName) {
+                        switch ('id' in child && child.tagName) {
                         case 'RT':
                         case 'RP':
                             break;
                         default:
-                            return child.textContent;
+                            return 'data' in child ? child.data : child.textContent;
                         }
                     }
                     return '';
@@ -4949,9 +4962,16 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const endings = /^[、。！？]/;
             function japanese(char) {
-                return endings.test(char);
+                switch (char) {
+                case '\u3001':
+                case '\u3002':
+                case '\uFF01':
+                case '\uFF1F':
+                    return true;
+                default:
+                    return false;
+                }
             }
             exports.japanese = japanese;
         },
@@ -5281,29 +5301,38 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const comment_1 = _dereq_('./inline/comment');
             const typed_dom_1 = _dereq_('typed-dom');
-            function hasVisible(node) {
-                return hasText(node) || hasMedia(node);
+            function isTight(nodes, start, end) {
+                if (end < 0)
+                    return isTight(nodes, start, nodes.length + end);
+                if (start >= nodes.length)
+                    return true;
+                switch (false) {
+                case start < nodes.length:
+                case end <= nodes.length:
+                case isVisible(nodes[start], 'start'):
+                    return false;
+                case end > start:
+                    return true;
+                }
+                --end;
+                const data = 'data' in nodes[end] ? nodes[end].data : '';
+                return data.length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || isVisible(nodes[end - 1], 'end');
             }
-            exports.hasVisible = hasVisible;
-            function hasText(node) {
-                return node.textContent.trim() !== '';
-            }
-            function hasMedia(node) {
-                return node.getElementsByClassName('media').length > 0;
-            }
-            function isVisible(node) {
+            exports.isTight = isTight;
+            function isVisible(node, dir, offset = 0) {
                 if (!node)
                     return false;
                 if ('data' in node) {
                     const data = node.data;
-                    switch (data) {
+                    const char = data[dir === 'start' ? 0 + offset : data.length - 1 - offset];
+                    switch (char) {
                     case '':
                     case ' ':
                     case '\t':
                     case '\n':
                         return false;
                     default:
-                        return data.trim() !== '';
+                        return char.trim() !== '';
                     }
                 } else {
                     switch (node.tagName) {
@@ -5319,16 +5348,22 @@ require = function () {
                     }
                 }
             }
-            exports.isVisible = isVisible;
             function startTight(parser) {
                 return (source, context) => {
                     if (source === '')
                         return;
                     switch (true) {
-                    case source.length >= 7 && source[0] === '<' && source[1] === '#' && comment_1.syntax.test(source):
-                        context.resource && void --context.resource.backtrack;
-                        return;
-                    case source.length >= 5 && source[0] === '<' && source[1] === 'w' && source.slice(0, 5) === '<wbr>':
+                    case source[0] === '<':
+                        switch (true) {
+                        case source.length >= 7 && source[0] === '<' && source[1] === '#' && comment_1.syntax.test(source):
+                            context.resource && void --context.resource.backtrack;
+                            return;
+                        case source.length >= 5 && source[1] === 'w' && source.slice(0, 5) === '<wbr>':
+                        case source.length >= 4 && source[1] === 'b' && source.slice(0, 4) === '<br>':
+                            return;
+                        default:
+                            return parser(source, context);
+                        }
                     case source[0] === ' ':
                     case source[0] === '\n':
                     case (source[0] === '\\' ? source[1] || '' : source[0]).trim() === '':
@@ -5352,7 +5387,7 @@ require = function () {
             }
             exports.stringify = stringify;
             function suppress(target) {
-                if (target.nodeName === 'OL') {
+                if ('id' in target && target.tagName === 'OL') {
                     void typed_dom_1.apply(target, '.footnote > sup:last-child > a', { href: null });
                 }
                 for (let i = 0, {children} = target, len = children.length; i < len; ++i) {
