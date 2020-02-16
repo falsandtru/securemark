@@ -1,45 +1,46 @@
 import { placeholder } from './placeholder';
 import { some } from '../../../combinator';
+import { inspect } from '../../../debug.test';
 
 describe('Unit: parser/inline/extension/placeholder', () => {
   describe('placeholder', () => {
     const parser = (source: string) => some(placeholder)(source, {});
 
     it('invalid', () => {
-      assert(!parser('[]'));
-      assert(!parser('[a]'));
-      assert(!parser('[ab]'));
-      assert(!parser('[^]'));
-      assert(!parser('[^]]'));
-      assert(!parser('[^\\]'));
-      assert(!parser('[^ ]'));
-      assert(!parser('[^ a]'));
-      assert(!parser('[^\\ ]'));
-      assert(!parser('[^\\ a]'));
-      assert(!parser('[^\n]'));
-      assert(!parser('[^\\\n]'));
-      assert(!parser('[^ !http://host]'));
-      assert(!parser('[^<# a #>]'));
-      assert(!parser('[[]'));
-      assert(!parser('[]]'));
-      assert(!parser('[[]]'));
-      assert(!parser('[[ ]]'));
-      assert(!parser('[[a]]'));
+      assert.deepStrictEqual(inspect(parser('[]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[a]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[ab]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[^]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[^]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[^\\]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[^ ]')), [['[^', ' ', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^ a]')), [['[^', ' ', 'a', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^\\ ]')), [['[^', ' ', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^\\ a]')), [['[^', ' ', 'a', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^\n]')), [['[^', '<br>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^\na]')), [['[^', '<br>', 'a', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^\\\na]')), [['[^', '<span class="linebreak"> </span>', 'a', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^<# a #>]')), [['[^', '<sup class="comment" title="a"></sup>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^<# a #>b]')), [['[^', '<sup class="comment" title="a"></sup>', 'b', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[^ !http://host]')), [['[^', ' ', '<a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[[]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[ ]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a]]')), undefined);
     });
 
     it('valid', () => {
-      assert(parser('[^a]'));
-      assert(parser('[^a ]'));
-      assert(parser('[^a b]'));
-      assert(parser('[^a\\ ]'));
-      assert(parser('[^a\nb]'));
-      assert(parser('[^a\\\nb]'));
-      assert(parser('[^\\]]'));
-      assert(parser('[^*]*]'));
-      assert(parser('[^!http://host]'));
-      assert(parser('[^!http://host ]'));
-      assert(parser('[^!http://host\\ ]'));
-      assert(parser('[^a<# b #>]'));
+      assert.deepStrictEqual(inspect(parser('[^a]')), [['<span class="invalid">a</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a ]')), [['<span class="invalid">a </span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a b]')), [['<span class="invalid">a b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a\\ ]')), [['<span class="invalid">a </span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a\nb]')), [['<span class="invalid">a<br>b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a\\\nb]')), [['<span class="invalid">a<span class="linebreak"> </span>b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a<# b #>c]')), [['<span class="invalid">a<sup class="comment" title="b"></sup>c</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^\\]]')), [['<span class="invalid">]</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^(])]')), [['<span class="invalid">(])</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^!http://host]')), [['<span class="invalid"><a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a></span>'], '']);
     });
 
   });

@@ -1,6 +1,6 @@
 import { ParagraphParser } from '../block';
 import { subsequence, some, block, rewrite, convert, trim, fmap } from '../../combinator';
-import { defrag, isVisible } from '../util';
+import { defrag, hasVisible } from '../util';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { anyline } from '../source';
@@ -24,7 +24,7 @@ export const paragraph: ParagraphParser = block(fmap(
   ns =>
     ns.length > 0
       ? [format(defrag(html('p', ns)))].map(el =>
-          isVisible(el)
+          hasVisible(el)
             ? el
             : define(el, {
                 class: 'invalid',

@@ -18,11 +18,11 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a |b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a\n|b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a|\\]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[~a| ]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[~a|\\ ]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[~a|\n]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[~a|\\\n]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[~a|<# b #>]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[~a| ]')), [['[~', 'a', '|', ' ', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|\\ ]')), [['[~', 'a', '|', ' ', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|\n]')), [['[~', 'a', '|', '<br>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|\\\n]')), [['[~', 'a', '|', '<span class="linebreak"> </span>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|<# b #>]')), [['[~', 'a', '|', '<sup class="comment" title="b"></sup>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[~-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~-a]')), undefined);

@@ -44,6 +44,12 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small/>')), undefined);
       assert.deepStrictEqual(inspect(parser('<b><b><b>a</b></b></b>z')), [['<span class="invalid">&lt;b&gt;<span class="invalid">&lt;b&gt;<span class="invalid">&lt;b&gt;a&lt;/b&gt;</span>&lt;/b&gt;</span>&lt;/b&gt;</span>'], 'z']);
       assert.deepStrictEqual(inspect(parser('<small><small><small>a</small></small></small>z')), [['<small><span class="invalid">&lt;small&gt;<span class="invalid">&lt;small&gt;a&lt;/small&gt;</span>&lt;/small&gt;</span></small>'], 'z']);
+      assert.deepStrictEqual(inspect(parser('<x a="*b*"')), undefined);
+      assert.deepStrictEqual(inspect(parser('<x a="*b*">')), undefined);
+      assert.deepStrictEqual(inspect(parser('<x a="*b*">c')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small a="*b*"')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small a="*b*">')), undefined);
+      assert.deepStrictEqual(inspect(parser('<small a="*b*">c')), undefined);
       assert.deepStrictEqual(inspect(parser('<small a b="*" *c*')), undefined);
       assert.deepStrictEqual(inspect(parser('<small a b="*" *c*>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small a b="*" *c*>d</small>z')), undefined);

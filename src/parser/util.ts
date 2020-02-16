@@ -3,7 +3,7 @@ import { syntax as comment } from './inline/comment';
 import { DeepMutable } from 'spica/type';
 import { define, apply } from 'typed-dom';
 
-export function isVisible(node: HTMLElement): boolean {
+export function hasVisible(node: HTMLElement): boolean {
   return hasText(node)
       || hasMedia(node);
 }
@@ -16,21 +16,53 @@ function hasMedia(node: HTMLElement): boolean {
   return node.getElementsByClassName('media').length > 0;
 }
 
+export function isVisible(node: HTMLElement | Text | undefined): boolean {
+  if (!node) return false;
+  if ('data' in node) {
+    const data = node.data;
+    switch (data) {
+      case '':
+      case ' ':
+      case '\t':
+      case '\n':
+        return false;
+      default:
+        return data.trim() !== '';
+    }
+  }
+  else {
+    switch (node.tagName) {
+      case 'BR':
+      case 'WBR':
+        return false;
+      case 'SPAN':
+        return node.className !== 'linebreak';
+      case 'SUP':
+        return node.className !== 'comment';
+      default:
+        return true;
+    }
+  }
+}
+
 export function startTight<P extends Parser<unknown>>(parser: P): P;
 export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
   return (source, context: DeepMutable<Ctx>) => {
+    if (source === '') return;
     switch (true) {
-      case source === '':
-      case (source[0] === '\\' ? source[1] || '' : source[0]).trim() === '':
-      case source.length >= 5
-        && source[0] === '<'
-        && source.slice(0, 5) === '<wbr>':
-        return;
       case source.length >= 7
         && source[0] === '<'
         && source[1] === '#'
         && comment.test(source):
         context.resource && void --context.resource.backtrack;
+        return;
+      case source.length >= 5
+        && source[0] === '<'
+        && source[1] === 'w'
+        && source.slice(0, 5) === '<wbr>':
+      case source[0] === ' ':
+      case source[0] === '\n':
+      case (source[0] === '\\' ? source[1] || '' : source[0]).trim() === '':
         return;
       default:
         return parser(source, context);

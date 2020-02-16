@@ -3,7 +3,7 @@ import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototype
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
 import { union, some, validate, creator, backtracker, open_, close_, match, memoize, update, lazy } from '../../combinator';
-import { defrag, startTight } from '../util';
+import { startTight, defrag } from '../util';
 import { str } from '../source';
 import { DeepImmutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';

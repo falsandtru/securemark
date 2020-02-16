@@ -1,6 +1,6 @@
 import { ReferenceParser } from '../inline';
 import { subsequence, some, subline, focus, creator, backtracker, surround, guard, update, lazy, fmap } from '../../combinator';
-import { defrag, startTight } from '../util';
+import { startTight, defrag } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html } from 'typed-dom';
@@ -8,7 +8,6 @@ import { html } from 'typed-dom';
 export const reference: ReferenceParser = lazy(() => creator(fmap(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
-  subline(
   update({ syntax: { inline: {
     annotation: false,
     reference: false,
@@ -17,13 +16,13 @@ export const reference: ReferenceParser = lazy(() => creator(fmap(surround(
     link: true,
     autolink: true,
   }}},
-  startTight(subsequence([alias, some(inline, ']]')]))))),
+  subline(startTight(subsequence([alias, some(inline, ']]')]))))),
   backtracker(str(']]'))),
   ns => [
     defrag(html('sup',
       {
         class: 'reference',
-        'data-alias': ns[0].nodeName === 'ABBR'
+        'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR'
           ? ns.shift()!.textContent
           : undefined
       },

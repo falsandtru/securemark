@@ -1,6 +1,6 @@
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, subline, creator, backtracker, surround, update, lazy, fmap } from '../../../combinator';
-import { defrag, startTight } from '../../util';
+import { startTight, defrag } from '../../util';
 import { indexee } from './indexee';
 import { str } from '../../source';
 import { html, define } from 'typed-dom';

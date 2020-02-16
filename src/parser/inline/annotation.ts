@@ -1,6 +1,6 @@
 import { AnnotationParser } from '../inline';
 import { union, some, creator, backtracker, surround, guard, update, lazy, fmap } from '../../combinator';
-import { defrag, startTight } from '../util';
+import { startTight, defrag } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html } from 'typed-dom';

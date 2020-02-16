@@ -2,7 +2,7 @@ import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, creator, backtracker, surround, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
-import { defrag, startTight, dup, stringify } from '../util';
+import { startTight, dup, defrag, stringify } from '../util';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
@@ -46,9 +46,10 @@ export const link: LinkParser = lazy(() => creator(bind(fmap(
       case content.length === 0:
         break;
       case content.length === 1
-        && content[0].nodeName === 'A'
-        && (content[0] as HTMLElement).firstElementChild?.classList.contains('media')
-        && !log.has((content[0] as HTMLElement).firstElementChild!):
+        && 'id' in content[0]
+        && content[0].tagName === 'A'
+        && content[0].firstElementChild?.classList.contains('media')
+        && !log.has(content[0].firstElementChild!):
         content[0] = (content[0] as HTMLElement).firstElementChild as HTMLElement;
         assert(!log.has(content[0]));
         log.add(content[0]);
