@@ -1,5 +1,11 @@
-const endings = /^[、。！？]/;
-
 export function japanese(char: string): boolean {
-  return endings.test(char);
+  switch (char) {
+    case '、':
+    case '。':
+    case '！':
+    case '？':
+      return true;
+    default:
+      return false;
+  }
 }

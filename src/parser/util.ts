@@ -61,16 +61,24 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
   return (source, context: DeepMutable<Ctx>) => {
     if (source === '') return;
     switch (true) {
-      case source.length >= 7
-        && source[0] === '<'
-        && source[1] === '#'
-        && comment.test(source):
-        context.resource && void --context.resource.backtrack;
-        return;
-      case source.length >= 5
-        && source[0] === '<'
-        && source[1] === 'w'
-        && source.slice(0, 5) === '<wbr>':
+      case source[0] === '<':
+        switch (true) {
+          case source.length >= 7
+            && source[0] === '<'
+            && source[1] === '#'
+            && comment.test(source):
+            context.resource && void --context.resource.backtrack;
+            return;
+          case source.length >= 5
+            && source[1] === 'w'
+            && source.slice(0, 5) === '<wbr>':
+          case source.length >= 4
+            && source[1] === 'b'
+            && source.slice(0, 4) === '<br>':
+            return;
+          default:
+            return parser(source, context);
+        }
       case source[0] === ' ':
       case source[0] === '\n':
       case (source[0] === '\\' ? source[1] || '' : source[0]).trim() === '':
@@ -95,10 +103,11 @@ export function stringify(nodes: (Node | Text)[]): string {
   , '');
 }
 
-export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T {
+export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T;
+export function suppress(target: HTMLOListElement | DocumentFragment): HTMLOListElement | DocumentFragment {
   assert(!target.parentElement);
   assert(target instanceof DocumentFragment || target instanceof HTMLOListElement);
-  if (target.nodeName === 'OL') {
+  if ('id' in target && target.tagName === 'OL') {
     assert.deepStrictEqual([...target.querySelectorAll('.footnote')], [...target.querySelectorAll(':scope > li')]);
     assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
     void apply(target, '.footnote > sup:last-child > a', { href: null });

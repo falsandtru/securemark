@@ -26,8 +26,9 @@ function check(el: Element): boolean {
   return japanese(char);
 }
 
-function endingChar(node: Node | null): string {
+function endingChar(node: Node | null | HTMLElement): string {
   while (node) {
+    if ('id' in node && node.classList.contains('media')) return '';
     const str = text(node);
     if (str) return [...str.slice(-2)].pop() || '';
     node = node.previousSibling;
@@ -35,17 +36,19 @@ function endingChar(node: Node | null): string {
   return '';
 }
 
-function text(node: Node | Text): string {
-  switch (node.nodeName) {
+function text(node: Node | Text | HTMLElement): string {
+  switch ('id' in node && node.tagName) {
     case 'RUBY':
       for (let i = node.childNodes.length; i--;) {
-        const child = node.childNodes[i];
-        switch (child.nodeName) {
+        const child = node.childNodes[i] as Node | Text | HTMLElement;
+        switch ('id' in child && child.tagName) {
           case 'RT':
           case 'RP':
             break;
           default:
-            return child.textContent!;
+            return 'data' in child
+              ? child.data
+              : child.textContent!;
         }
       }
       return '';
