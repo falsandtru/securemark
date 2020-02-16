@@ -1940,10 +1940,10 @@ require = function () {
                 return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, match_1.memoize(([, indent]) => indent, indent => some_1.some(line_1.line(scope_1.rewrite(source => [
                     [],
                     source.slice(line_1.firstline(source).length)
-                ], surround_1.surround(indent, source => [
+                ], surround_1.open(indent, source => [
                     [line_1.firstline(source, false)],
                     ''
-                ], '')))))), (rs, rest, _, context) => {
+                ])))))), (rs, rest, _, context) => {
                     const result = parser(rs.join('\n'), context);
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
@@ -2066,86 +2066,109 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            const parser_1 = _dereq_('../../data/parser');
             const fmap_1 = _dereq_('../monad/fmap');
             const bind_1 = _dereq_('../monad/bind');
             const array_1 = _dereq_('spica/array');
-            function surround(start, parser, end, strict = true) {
-                const starts = match(start);
-                const ends = match(end);
+            function surround(opener, parser, closer, optional = false, f, g) {
+                switch (typeof opener) {
+                case 'string':
+                case 'object':
+                    return surround(match(opener), parser, closer, optional, f, g);
+                }
+                switch (typeof closer) {
+                case 'string':
+                case 'object':
+                    return surround(opener, parser, match(closer), optional, f, g);
+                }
                 return (lmr_, context) => {
                     if (lmr_ === '')
                         return;
-                    const l = starts(lmr_, context);
-                    if (l === void 0)
+                    const [rl = [], mr_] = opener(lmr_, context) || [];
+                    if (mr_ === void 0)
                         return;
-                    const mr_ = l ? lmr_.slice(l.length) : lmr_;
-                    const [rs = [], r_ = mr_] = mr_ !== '' && parser(mr_, context) || [];
-                    if (strict && r_.length === mr_.length)
+                    const [rm, r_ = mr_] = mr_ !== '' && parser(mr_, context) || [];
+                    if (!optional && r_.length === mr_.length)
                         return;
-                    const r = ends(r_, context);
-                    if (r === void 0)
+                    const [rr = [], rest = r_] = r_ !== '' && closer(r_, context) || [];
+                    if (rest.length === lmr_.length)
                         return;
-                    return l + r !== '' || r_.length - r.length < lmr_.length ? [
-                        rs,
-                        r ? r_.slice(r.length) : r_
-                    ] : void 0;
+                    return rest.length < r_.length ? f ? f([
+                        rl,
+                        rm,
+                        rr
+                    ], rest, lmr_, context) : [
+                        rm ? array_1.push(array_1.unshift(rl, rm), rr) : array_1.push(rl, rr),
+                        rest
+                    ] : g ? g([
+                        rl,
+                        rm
+                    ], rest, lmr_, context) : void 0;
                 };
             }
             exports.surround = surround;
             function match(pattern) {
                 switch (typeof pattern) {
                 case 'string':
-                    return source => source.slice(0, pattern.length) === pattern ? pattern : void 0;
+                    return source => source.slice(0, pattern.length) === pattern ? [
+                        [],
+                        source.slice(pattern.length)
+                    ] : void 0;
                 case 'object':
                     return source => {
-                        var _a;
-                        return (_a = source.match(pattern)) === null || _a === void 0 ? void 0 : _a[0];
-                    };
-                default:
-                    return (source, context) => {
-                        const res = pattern(source, context);
-                        return res && source.slice(0, source.length - parser_1.exec(res).length);
+                        const m = source.match(pattern);
+                        return m ? [
+                            [],
+                            source.slice(m[0].length)
+                        ] : void 0;
                     };
                 }
             }
             function open(opener, parser, optional = false) {
-                return (lmr_, context) => {
-                    if (lmr_ === '')
+                if (typeof opener === 'string')
+                    return open(match(opener), parser, optional);
+                if (typeof opener === 'object')
+                    return open(match(opener), parser, optional);
+                return (source, context) => {
+                    if (source === '')
                         return;
-                    const [rl = [], mr_ = lmr_] = opener(lmr_, context) || [];
-                    if (mr_.length === lmr_.length)
+                    const [rl = [], mr_] = opener(source, context) || [];
+                    if (mr_ === void 0)
                         return;
-                    const [rm = [], r_ = mr_] = mr_ !== '' && parser(mr_, context) || [];
-                    if (r_.length === mr_.length)
-                        return optional ? [
+                    const [rm = [], r_] = mr_ !== '' && parser(mr_, context) || [];
+                    if (r_ === void 0)
+                        return optional && mr_.length < source.length ? [
                             rl,
                             mr_
                         ] : void 0;
-                    rl.length > 0 && void rm.unshift(...rl);
-                    return r_.length < lmr_.length ? [
+                    void array_1.unshift(rl, rm);
+                    return r_.length < source.length ? [
                         rm,
                         r_
                     ] : void 0;
                 };
             }
             exports.open = open;
-            function close(parser, closer, keepSymbols = true, optional = false, f, g) {
-                if (typeof keepSymbols === 'function' || typeof optional === 'function')
-                    return close(parser, closer, void 0, void 0, keepSymbols, optional);
+            function close(parser, closer, optional = false, f, g) {
+                if (typeof closer === 'string')
+                    return close(parser, match(closer), optional, f, g);
+                if (typeof closer === 'object')
+                    return close(parser, match(closer), optional, f, g);
+                if (typeof optional === 'function')
+                    return close(parser, closer, void 0, optional, f);
                 return (source, context) => {
-                    const [rs = [], r_ = source] = parser(source, context) || [];
+                    if (source === '')
+                        return;
+                    const [rm = [], r_ = source] = parser(source, context) || [];
                     if (!optional && r_.length === source.length)
                         return;
-                    const [rr = [], rest = r_] = r_ !== '' && closer(r_, context) || [];
+                    const [rr = [], rest] = r_ !== '' && closer(r_, context) || [];
+                    if (rest === void 0)
+                        return g ? g(rm, r_, source, context) : void 0;
                     if (rest.length === source.length)
                         return;
-                    if (rest.length === r_.length)
-                        return g ? g(rs, rest, source, context) : void 0;
-                    !keepSymbols && rs.length > 0 && void rs.shift();
-                    keepSymbols && rr.length > 0 && void array_1.push(rs, rr);
-                    return f ? f(rs, rest, source, context) : [
-                        rs,
+                    void array_1.push(rm, rr);
+                    return f ? f(rm, rest, source, context) : [
+                        rm,
                         rest
                     ];
                 };
@@ -2199,7 +2222,6 @@ require = function () {
             exports.clear = clear;
         },
         {
-            '../../data/parser': 47,
             '../monad/bind': 45,
             '../monad/fmap': 46,
             'spica/array': 6
@@ -2759,11 +2781,11 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.segment = combinator_1.block(combinator_1.union([combinator_1.validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline))]));
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
-                combinator_1.surround(/^(?=>)/, text, ''),
-                combinator_1.surround(/^!(?=>)/, source, '')
+                combinator_1.open(/^(?=>)/, text),
+                combinator_1.open(/^!(?=>)/, source)
             ]))));
             const opener = /^(?=>>+(?:$|\s))/;
-            const indent = combinator_1.block(combinator_1.surround(opener, combinator_1.some(source_1.contentline, /^>(?:$|\s)/), ''), false);
+            const indent = combinator_1.block(combinator_1.open(opener, combinator_1.some(source_1.contentline, /^>(?:$|\s)/)), false);
             function unindent(source) {
                 return source.replace(/\n$/, '').replace(/^>(?:$|\s|(?=>+(?:$|\s)))/mg, '');
             }
@@ -2863,11 +2885,11 @@ require = function () {
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ]))))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.surround(/^~(?=$|\s)/, combinator_1.trim(combinator_1.some(combinator_1.union([
+            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~(?=$|\s)/, combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ]))), '', false), ns => [util_1.defrag(typed_dom_1.html('dt', ns))])));
-            const desc = combinator_1.block(combinator_1.fmap(combinator_1.surround(/^:(?=$|\s)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=$|\s)/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), '', false), ns => [util_1.defrag(typed_dom_1.html('dd', ns))]), false);
+            ]))), true), ns => [util_1.defrag(typed_dom_1.html('dt', ns))])));
+            const desc = combinator_1.block(combinator_1.fmap(combinator_1.open(/^:(?=$|\s)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=$|\s)/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [util_1.defrag(typed_dom_1.html('dd', ns))]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? array_1.push(es, [typed_dom_1.html('dd')]) : es;
             }
@@ -3035,7 +3057,7 @@ require = function () {
             const paragraph_1 = _dereq_('../paragraph');
             const inline_1 = _dereq_('../../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, combinator_1.memoize(([, fence]) => fence, (fence, closer = new RegExp(`^${ fence }[^\\S\\n]*(?:$|\\n)`)) => combinator_1.surround('', combinator_1.sequence([
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, combinator_1.memoize(([, fence]) => fence, (fence, closer = new RegExp(`^${ fence }[^\\S\\n]*(?:$|\\n)`)) => combinator_1.close(combinator_1.sequence([
                 combinator_1.line(combinator_1.clear(label_1.label)),
                 combinator_1.inits([
                     combinator_1.union([
@@ -3169,7 +3191,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^[-+*](?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.surround(/^[-+*](?:$|\s)/, combinator_1.trim(combinator_1.some(inline_1.inline)), '', false)),
+                    combinator_1.line(combinator_1.open(/^[-+*](?:$|\s)/, combinator_1.trim(combinator_1.some(inline_1.inline)), true)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist_,
                         olist_1.olist_,
@@ -3224,7 +3246,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, combinator_1.update({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.inits([
-                        combinator_1.focus(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?:\.\s|\.?(?=$|\n))/, combinator_1.surround('', source_1.str(/^[0-9A-Za-z]+/), /^\.?\s*/)),
+                        source_1.str(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?=\.\s|\.?(?=$|\n))/),
+                        source_1.str(/^\.?\s*/),
                         combinator_1.trim(combinator_1.some(inline_1.inline))
                     ])),
                     combinator_1.indent(combinator_1.union([
@@ -3232,7 +3255,7 @@ require = function () {
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ([{textContent: index}, ...ns]) => [util_1.defrag(typed_dom_1.html('li', {
+                ]), ([{data: index}, , ...ns]) => [util_1.defrag(typed_dom_1.html('li', {
                         value: format(index),
                         'data-type': type(index)
                     }, ulist_1.fillFirstLine(ns)))])])))), es => {
@@ -3247,8 +3270,6 @@ require = function () {
             })));
             exports.olist_ = combinator_1.convert(source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=$|\n)/, `$1. `), exports.olist);
             function type(index) {
-                if (index === null)
-                    return;
                 switch (true) {
                 case +index === 0:
                     return void 0;
@@ -3405,9 +3426,9 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.table = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^\|[^\n]*(?:\n\|[^\n]*){2,}/, combinator_1.update({ syntax: { inline: { media: false } } }, combinator_1.sequence([
-                row(cell(data), false),
-                row(cell(alignment), true),
-                combinator_1.some(row(cell(data), false))
+                row(cell(data), true),
+                row(cell(alignment), false),
+                combinator_1.some(row(cell(data), true))
             ]))), ([head, alignment, ...rows]) => {
                 void align(head, alignment, rows);
                 return [typed_dom_1.html('table', [
@@ -3435,10 +3456,16 @@ require = function () {
                     return size > aligns.length ? void array_1.push(aligns, global_1.Array(size - aligns.length).fill(aligns.length > 0 ? aligns[aligns.length - 1] : '')) : void 0;
                 }
             }
-            const row = (parser, strict) => combinator_1.fmap(combinator_1.line(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?\s*$/, strict)), es => [typed_dom_1.html('tr', es)]);
+            const row = (parser, optional) => combinator_1.fmap(combinator_1.line(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?\s*$/, optional, void 0, ([, bs = []], rest) => [
+                bs,
+                rest
+            ])), es => [typed_dom_1.html('tr', es)]);
             const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [util_1.defrag(typed_dom_1.html('td', ns))]);
-            const data = combinator_1.surround(/^\|(?:\\?\s)*(?=\S)/, combinator_1.some(combinator_1.union([inline_1.inline]), /^(?:\\?\s)*(?=\||\\?$)/), /^[^|]*/, false);
-            const alignment = combinator_1.surround('|', combinator_1.union([
+            const data = combinator_1.surround(/^\|(?:\\?\s)*(?=\S)/, combinator_1.some(combinator_1.union([inline_1.inline]), /^(?:\\?\s)*(?=\||\\?$)/), /^[^|]*/, true, void 0, ([, bs = []], rest) => [
+                bs,
+                rest
+            ]);
+            const alignment = combinator_1.open('|', combinator_1.union([
                 combinator_1.focus(/^:-+:/, () => [
                     [typed_dom_1.text('center')],
                     ''
@@ -3455,7 +3482,7 @@ require = function () {
                     [typed_dom_1.text('')],
                     ''
                 ])
-            ]), '');
+            ]));
         },
         {
             '../../combinator': 30,
@@ -3477,9 +3504,8 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const opener = /^-(?:$|\s)/;
             exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.update({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.surround(opener, combinator_1.trim(combinator_1.some(inline_1.inline)), '', false)),
+                    combinator_1.line(combinator_1.open(/^-(?:$|\s)/, combinator_1.trim(combinator_1.some(inline_1.inline)), true)),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist_,
                         olist_1.olist_,
@@ -3632,7 +3658,7 @@ require = function () {
                         autolink: true
                     }
                 }
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), combinator_1.backtracker(source_1.str('))'))), (ns, rest, _, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), combinator_1.backtracker(combinator_1.clear(source_1.str('))')))), (ns, rest, _, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
                 [util_1.defrag(typed_dom_1.html('sup', { class: 'annotation' }, ns))],
                 rest
             ] : void 0)));
@@ -3797,7 +3823,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
-            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.open_(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.backtracker(combinator_1.some(combinator_1.union([
+            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.backtracker(combinator_1.some(combinator_1.union([
                 exports.bracket,
                 combinator_1.some(source_1.unescsource, closer)
             ])))), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.update({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
@@ -3831,15 +3857,15 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             exports.bracket = combinator_1.lazy(() => combinator_1.union([
-                combinator_1.open(source_1.char('('), combinator_1.close(combinator_1.some(inline_1.inline, ')'), source_1.char(')'), true, true, void 0, (ns, rest) => [
+                combinator_1.open(source_1.char('('), combinator_1.close(combinator_1.some(inline_1.inline, ')'), source_1.char(')'), true, void 0, (ns, rest) => [
                     ns,
                     rest
                 ]), true),
-                combinator_1.open(source_1.char('['), combinator_1.close(combinator_1.some(inline_1.inline, ']'), source_1.char(']'), true, true, void 0, (ns, rest) => [
+                combinator_1.open(source_1.char('['), combinator_1.close(combinator_1.some(inline_1.inline, ']'), source_1.char(']'), true, void 0, (ns, rest) => [
                     ns,
                     rest
                 ]), true),
-                combinator_1.open(source_1.char('{'), combinator_1.close(combinator_1.some(inline_1.inline, '}'), source_1.char('}'), true, true, void 0, (ns, rest) => [
+                combinator_1.open(source_1.char('{'), combinator_1.close(combinator_1.some(inline_1.inline, '}'), source_1.char('}'), true, void 0, (ns, rest) => [
                     ns,
                     rest
                 ]), true)
@@ -3928,19 +3954,19 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.emphasis = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.open(source_1.str('*'), combinator_1.close(combinator_1.some(combinator_1.union([
+            exports.emphasis = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.char('*'), combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
-            ])), source_1.str('*'), (ns, rest) => util_1.isTight(ns, 0, -1) ? [
-                [util_1.defrag(typed_dom_1.html('em', array_1.pop(ns)[0]))],
+            ])), source_1.char('*'), false, ([as, bs = [], cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+                [util_1.defrag(typed_dom_1.html('em', bs))],
                 rest
             ] : [
-                ns,
-                ns.pop().textContent + rest
-            ], (ns, rest) => [
-                ns,
+                array_1.unshift(as, bs),
+                cs[0].data + rest
+            ], ([as, bs], rest) => [
+                bs ? array_1.unshift(as, bs) : as,
                 rest
-            ])), ns => 'id' in ns[1] && ns[1].tagName === 'EM' ? array_1.shift(ns)[1] : ns)));
+            ])));
         },
         {
             '../../combinator': 30,
@@ -3964,44 +3990,44 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.emstrong = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.open(source_1.str('***'), combinator_1.close(combinator_1.union([combinator_1.some(inline_1.inline, '*')]), source_1.str(/^\*{1,3}/), (ns, rest, _, context) => {
-                if (!util_1.isTight(ns, 0, -1))
+            exports.emstrong = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('***'), combinator_1.union([combinator_1.some(inline_1.inline, '*')]), source_1.str(/^\*{1,3}/), false, ([as, bs = [], cs], rest, _, context) => {
+                if (!util_1.isTight(bs, 0, bs.length))
                     return [
-                        ns,
-                        ns.pop().textContent + rest
+                        array_1.unshift(as, bs),
+                        cs[0].data + rest
                     ];
-                switch (ns[ns.length - 1].textContent) {
+                switch (cs[0].data) {
                 case '*':
                     return combinator_1.fmap(strong_1.strong, ms => 'id' in ms[0] ? [util_1.defrag(typed_dom_1.html('strong', [
-                            util_1.defrag(typed_dom_1.html('em', array_1.pop(ns)[0])),
+                            util_1.defrag(typed_dom_1.html('em', bs)),
                             ...ms[0].childNodes
-                        ]))] : array_1.push(ns, array_1.shift(ms)[1]))('**' + rest, context) || [
-                        ns,
+                        ]))] : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
+                        array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
                 case '**':
                     return combinator_1.fmap(emphasis_1.emphasis, ms => 'id' in ms[0] ? [util_1.defrag(typed_dom_1.html('em', [
-                            util_1.defrag(typed_dom_1.html('strong', array_1.pop(ns)[0])),
+                            util_1.defrag(typed_dom_1.html('strong', bs)),
                             ...ms[0].childNodes
-                        ]))] : array_1.push(ns, array_1.shift(ms)[1]))('*' + rest, context) || [
-                        ns,
+                        ]))] : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
+                        array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
                 case '***':
                     return [
-                        [typed_dom_1.html('em', [util_1.defrag(typed_dom_1.html('strong', array_1.pop(ns)[0]))])],
+                        [typed_dom_1.html('em', [util_1.defrag(typed_dom_1.html('strong', bs))])],
                         rest
                     ];
                 default:
                     return [
-                        ns,
+                        array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
                 }
-            })), ns => 'id' in ns[1] && [
-                'EM',
-                'STRONG'
-            ].includes(ns[1].tagName) ? array_1.shift(ns)[1] : ns)));
+            }, ([as, bs], rest) => [
+                bs ? array_1.unshift(as, bs) : as,
+                rest
+            ])));
         },
         {
             '../../combinator': 30,
@@ -4082,12 +4108,16 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.data = combinator_1.lazy(() => combinator_1.creator(combinator_1.close(combinator_1.open(source_1.str('[~'), combinator_1.inits([
+            const array_1 = _dereq_('spica/array');
+            exports.data = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('[~'), combinator_1.inits([
                 source_1.str(/^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?(?=[|\]])/),
                 source_1.char('|'),
                 combinator_1.some(inline_1.inline, ']')
-            ])), combinator_1.backtracker(source_1.str(']')), (ns, rest) => [
-                ns.length <= 3 || util_1.isTight(ns, 3, -1) ? [util_1.defrag(typed_dom_1.html('span', attrs(ns[1].textContent), ns.slice(3, -1)))] : ns,
+            ]), combinator_1.backtracker(source_1.char(']')), false, ([as, bs = [], cs], rest) => [
+                util_1.isTight(bs, 2, bs.length) ? [util_1.defrag(typed_dom_1.html('span', attrs(bs[0].textContent), bs.slice(2)))] : array_1.push(array_1.unshift(as, bs), cs),
+                rest
+            ], ([as, bs = []], rest) => [
+                array_1.unshift(as, bs),
                 rest
             ])));
             function attrs(data) {
@@ -4105,6 +4135,7 @@ require = function () {
             '../../inline': 81,
             '../../source': 119,
             '../../util': 127,
+            'spica/array': 6,
             'typed-dom': 23
         }
     ],
@@ -4129,7 +4160,7 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), combinator_1.backtracker(source_1.str(']'))), (ns, rest, _, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), combinator_1.backtracker(combinator_1.clear(source_1.char(']')))), (ns, rest, _, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
                 [util_1.defrag(typed_dom_1.html('a', ns))],
                 rest
             ] : void 0)), ([el]) => [typed_dom_1.define(el, {
@@ -4256,12 +4287,16 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.close(combinator_1.open(source_1.str(/^\[[:^]/), combinator_1.some(combinator_1.union([inline_1.inline]), ']')), combinator_1.backtracker(source_1.str(']')), (ns, rest) => [
-                ns.length >= 3 && util_1.isTight(ns, 1, -1) ? [util_1.defrag(typed_dom_1.html('span', {
+            const array_1 = _dereq_('spica/array');
+            exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str(/^\[[:^]/), combinator_1.some(combinator_1.union([inline_1.inline]), ']'), source_1.char(']'), false, ([as, bs = [], cs], rest) => [
+                util_1.isTight(bs, 0, bs.length) ? [util_1.defrag(typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-message': 'Invalid flag'
-                    }, ns.slice(1, -1)))] : ns,
+                    }, bs))] : array_1.push(array_1.unshift(as, bs), cs),
+                rest
+            ], ([as, bs = []], rest) => [
+                array_1.unshift(as, bs),
                 rest
             ])));
         },
@@ -4270,6 +4305,7 @@ require = function () {
             '../../inline': 81,
             '../../source': 119,
             '../../util': 127,
+            'spica/array': 6,
             'typed-dom': 23
         }
     ],
@@ -4490,12 +4526,12 @@ require = function () {
                                 autolink: false
                             }
                         }
-                    }, util_1.startTight(combinator_1.some(inline_1.inline, /^\\?\n|^]/))), combinator_1.backtracker(source_1.char(']')), false)
+                    }, util_1.startTight(combinator_1.some(inline_1.inline, /^\\?\n|^]/))), combinator_1.backtracker(combinator_1.clear(source_1.char(']'))), true)
                 ])),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     exports.uri,
                     combinator_1.some(exports.attribute)
-                ]), combinator_1.backtracker(source_1.str(/^ ?}/))))
+                ]), combinator_1.backtracker(combinator_1.clear(source_1.str(/^ ?}/)))))
             ])), nss => nss.length === 1 ? [
                 [],
                 nss[0]
@@ -4512,15 +4548,15 @@ require = function () {
                     content[0] = content[0].firstElementChild;
                     log.add(content[0]);
                     break;
-                case !context.insecure && !!typed_dom_1.frag(combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), Object.assign(Object.assign({}, context), { insecure: true })))).firstElementChild:
+                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), Object.assign(Object.assign({}, context), { insecure: true }))).some(node => 'id' in node):
                     return;
                 }
-                const [INSECURE_URL, ...params] = param.map(t => t.data);
+                const [INSECURE_URI, ...params] = param.map(t => t.data);
                 const el = util_1.defrag(typed_dom_1.html('a', {
-                    href: INSECURE_URL,
+                    href: INSECURE_URI,
                     rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                }, content.length > 0 ? content = content : decode(INSECURE_URL || '.').replace(/^tel:/, '').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h')));
-                if (!verify(el, INSECURE_URL))
+                }, content.length > 0 ? content = content : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, '')));
+                if (!verify(el, INSECURE_URI))
                     return [
                         [el],
                         rest
@@ -4533,19 +4569,9 @@ require = function () {
             })));
             exports.uri = combinator_1.creator(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => combinator_1.union([source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)]))));
             exports.attribute = combinator_1.creator(combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]));
-            function verify(el, url) {
+            function verify(el, uri) {
                 let message;
                 switch (el.protocol) {
-                case 'tel:':
-                    if (`tel:${ el.innerHTML.replace(/-(?=[0-9])/g, '') }` === url)
-                        return true;
-                    void typed_dom_1.define(el, {
-                        class: 'invalid',
-                        'data-invalid-syntax': 'link',
-                        'data-invalid-message': 'Invalid protocol'
-                    });
-                    message = 'Invalid phone number';
-                    break;
                 case 'http:':
                 case 'https:': {
                         const {host} = el;
@@ -4555,6 +4581,11 @@ require = function () {
                         message = 'Invalid host';
                         break;
                     }
+                case 'tel:':
+                    if (`tel:${ el.textContent.replace(/-(?=[0-9])/g, '') }` === uri)
+                        return true;
+                    message = 'Invalid phone number';
+                    break;
                 default:
                     message = 'Invalid protocol';
                 }
@@ -4623,7 +4654,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const cache_1 = _dereq_('spica/cache');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^(?:(?!}\$)[^\n])+/)]), combinator_1.backtracker(source_1.str('}$'))), ([{data: source}]) => exports.cache.has(source = `\${${ source.trim() }}$`) ? [exports.cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
+            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^(?:(?!}\$)[^\n])+/)]), combinator_1.backtracker(combinator_1.clear(source_1.str('}$')))), ([{data: source}]) => exports.cache.has(source = `\${${ source.trim() }}$`) ? [exports.cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
                     class: 'math notranslate',
                     'data-src': source
                 }, source)]));
@@ -4651,16 +4682,16 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const url = typed_dom_1.html('a');
             exports.cache = new cache_1.Cache(10);
-            exports.media = combinator_1.creator(combinator_1.bind(combinator_1.fmap(combinator_1.surround('!', combinator_1.guard(context => {
+            exports.media = combinator_1.creator(combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.tails([
-                util_1.dup(combinator_1.surround('[', combinator_1.union([source_1.str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/)]), combinator_1.backtracker(source_1.char(']')), false)),
+                util_1.dup(combinator_1.surround('[', combinator_1.union([source_1.str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/)]), combinator_1.backtracker(combinator_1.clear(source_1.char(']'))), true)),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(link_1.attribute)
-                ]), combinator_1.backtracker(source_1.str(/^ ?}/))))
-            ])), ''), ts => {
+                ]), combinator_1.backtracker(combinator_1.clear(source_1.str(/^ ?}/)))))
+            ]))), ts => {
                 var _a;
                 return array_1.push([ts.length > 1 && ((_a = ts[ts.length - 2][0]) === null || _a === void 0 ? void 0 : _a.data) || ''], ts[ts.length - 1].map(t => t.data));
             }), ([text, INSECURE_URL, ...params], rest) => {
@@ -4718,7 +4749,7 @@ require = function () {
             }, combinator_1.subline(combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']]'))
-            ])))), combinator_1.backtracker(source_1.str(']]'))), (ns, rest, _, context) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
+            ])))), combinator_1.backtracker(combinator_1.clear(source_1.str(']]')))), (ns, rest, _, context) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
                 class: 'reference',
                 'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR' ? ns.shift().textContent : undefined
             }, ns)), rest) : void 0)));
@@ -4746,8 +4777,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.ruby = combinator_1.creator(combinator_1.bind(combinator_1.sequence([
-                combinator_1.surround('[', source_1.str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), combinator_1.backtracker(source_1.char(']'))),
-                combinator_1.backtracker(combinator_1.surround('(', source_1.str(/^(?:\\[^\n]|[^\)\n])+/), combinator_1.backtracker(source_1.char(')'))))
+                combinator_1.surround('[', source_1.str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), combinator_1.backtracker(combinator_1.clear(source_1.char(']')))),
+                combinator_1.backtracker(combinator_1.surround('(', source_1.str(/^(?:\\[^\n]|[^\)\n])+/), combinator_1.backtracker(combinator_1.clear(source_1.char(')')))))
             ]), ([{data: t}, {data: r}], rest, _, context) => {
                 const texts = parse(t, context);
                 const rubies = parse(r, context);
@@ -4829,7 +4860,7 @@ require = function () {
             exports.shortmedia = combinator_1.rewrite(combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
-            }, combinator_1.surround('!', url_1.url, '')), combinator_1.convert(source => `!{ ${ url_1.address(source.slice(1)) }${ url_1.attribute(source.slice(1)) } }`, combinator_1.union([media_1.media])));
+            }, combinator_1.open('!', url_1.url)), combinator_1.convert(source => `!{ ${ url_1.address(source.slice(1)) }${ url_1.attribute(source.slice(1)) } }`, combinator_1.union([media_1.media])));
         },
         {
             '../../combinator': 30,
@@ -4848,19 +4879,19 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.strong = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(combinator_1.open(source_1.str('**'), combinator_1.close(combinator_1.some(combinator_1.union([
+            exports.strong = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('**'), combinator_1.some(combinator_1.union([
                 emphasis_1.emphasis,
                 combinator_1.some(inline_1.inline, '*')
-            ]), '**'), source_1.str('**'), (ns, rest) => util_1.isTight(ns, 0, -1) ? [
-                [util_1.defrag(typed_dom_1.html('strong', array_1.pop(ns)[0]))],
+            ]), '**'), source_1.str('**'), false, ([as, bs = [], cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+                [util_1.defrag(typed_dom_1.html('strong', bs))],
                 rest
             ] : [
-                ns,
-                ns.pop().textContent + rest
-            ], (ns, rest) => [
-                ns,
+                array_1.unshift(as, bs),
+                cs[0].data + rest
+            ], ([as, bs], rest) => [
+                bs ? array_1.unshift(as, bs) : as,
                 rest
-            ])), ns => 'id' in ns[1] && ns[1].tagName === 'STRONG' ? array_1.shift(ns)[1] : ns)));
+            ])));
         },
         {
             '../../combinator': 30,
@@ -4880,7 +4911,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, '}}'), combinator_1.backtracker(source_1.str('}}')), false), source => [
+            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, '}}'), combinator_1.backtracker(source_1.str('}}')), true), source => [
                 [typed_dom_1.html('span', { class: 'template' }, source)],
                 ''
             ])));
@@ -5316,7 +5347,7 @@ require = function () {
                 }
                 --end;
                 const data = 'data' in nodes[end] ? nodes[end].data : '';
-                return data.length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || isVisible(nodes[end - 1], 'end');
+                return data.length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || nodes[end].nodeName !== 'BR' && isVisible(nodes[end - 1], 'end');
             }
             exports.isTight = isTight;
             function isVisible(node, dir, offset = 0) {
