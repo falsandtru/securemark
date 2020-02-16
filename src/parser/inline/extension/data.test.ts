@@ -18,11 +18,12 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a |b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a\n|b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a|\\]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[~a| ]')), [['[~', 'a', '|', ' ', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[~a|\\ ]')), [['[~', 'a', '|', ' ', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[~a|\n]')), [['[~', 'a', '|', '<br>', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[~a|\\\n]')), [['[~', 'a', '|', '<span class="linebreak"> </span>', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('[~a|<# b #>]')), [['[~', 'a', '|', '<sup class="comment" title="b"></sup>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|  ]')), [['[~', 'a', '|', '  ', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|\\ \\ ]')), [['[~', 'a', '|', ' ', ' ', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|\n\n]')), [['[~', 'a', '|', '<br>', '<br>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|\\\n\\\n]')), [['[~', 'a', '|', '<span class="linebreak"> </span>', '<span class="linebreak"> </span>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|<wbr><wbr>]')), [['[~', 'a', '|', '<wbr>', '<wbr>', ']'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|<# b #><# b #>]')), [['[~', 'a', '|', '<sup class="comment" title="b"></sup>', '<sup class="comment" title="b"></sup>', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[~-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~a-]')), undefined);
       assert.deepStrictEqual(inspect(parser('[~-a]')), undefined);
@@ -48,6 +49,8 @@ describe('Unit: parser/inline/extension/data', () => {
       assert.deepStrictEqual(inspect(parser('[~a|b\\\n]')), [['<span class="data-a" data-name="a" data-value="">b<span class="linebreak"> </span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a|b\nc]')), [['<span class="data-a" data-name="a" data-value="">b<br>c</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a|b\\\nc]')), [['<span class="data-a" data-name="a" data-value="">b<span class="linebreak"> </span>c</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|b<wbr>]')), [['<span class="data-a" data-name="a" data-value="">b<wbr></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[~a|b<# c #>]')), [['<span class="data-a" data-name="a" data-value="">b<sup class="comment" title="c"></sup></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=0]')), [['<span class="data-a" data-name="a" data-value="0"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=0|]')), [['<span class="data-a" data-name="a" data-value="0"></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a=b]')), [['<span class="data-a" data-name="a" data-value="b"></span>'], '']);

@@ -1,6 +1,6 @@
 import { EmStrongParser, inline } from '../inline';
 import { union, some, creator, open, close, lazy, fmap } from '../../combinator';
-import { isVisible, defrag } from '../util';
+import { isTight, defrag } from '../util';
 import { emphasis } from './emphasis';
 import { strong } from './strong';
 import { str } from '../source';
@@ -12,7 +12,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(fmap(open(
   union([some(inline, '*')]),
   str(/^\*{1,3}/),
   (ns, rest, _, context) => {
-    if (!isVisible(ns[0])) return [ns, ns.pop()!.textContent + rest];
+    if (!isTight(ns, 0, -1)) return [ns, ns.pop()!.textContent + rest];
     switch (ns[ns.length - 1].textContent) {
       case '*':
         return fmap(

@@ -1,4 +1,4 @@
-import { Parser, Ctx, Result, Data, Context, exec } from '../../data/parser';
+import { Parser, Result, Ctx, Data, Context, exec } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { bind } from '../monad/bind';
 import { unshift, push } from 'spica/array';

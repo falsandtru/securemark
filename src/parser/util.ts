@@ -3,31 +3,42 @@ import { syntax as comment } from './inline/comment';
 import { DeepMutable } from 'spica/type';
 import { define, apply } from 'typed-dom';
 
-export function hasVisible(node: HTMLElement): boolean {
-  return hasText(node)
-      || hasMedia(node);
+export function isTight(nodes: (HTMLElement | Text)[], start: number, end: number): boolean {
+  if (end < 0) return isTight(nodes, start, nodes.length + end);
+  if (start >= nodes.length) return true;
+  switch (false) {
+    case start < nodes.length:
+    case end <= nodes.length:
+    case isVisible(nodes[start], 'start'):
+      return false;
+    case end > start:
+      return true;
+  }
+  --end;
+  const data = 'data' in nodes[end]
+    ? (nodes[end] as Text).data
+    : '';
+  return data.length > 1
+    ? isVisible(nodes[end], 'end', 0) ||
+      isVisible(nodes[end], 'end', 1)
+    : isVisible(nodes[end], 'end') ||
+      isVisible(nodes[end - 1], 'end');
 }
-
-function hasText(node: HTMLElement | Text): boolean {
-  return node.textContent!.trim() !== '';
-}
-
-function hasMedia(node: HTMLElement): boolean {
-  return node.getElementsByClassName('media').length > 0;
-}
-
-export function isVisible(node: HTMLElement | Text | undefined): boolean {
+function isVisible(node: HTMLElement | Text | undefined, dir: 'start' | 'end', offset = 0): boolean {
+  assert(offset >= 0);
   if (!node) return false;
   if ('data' in node) {
     const data = node.data;
-    switch (data) {
+    const char = data[dir === 'start' ? 0 + offset : data.length - 1 - offset];
+    assert(char);
+    switch (char) {
       case '':
       case ' ':
       case '\t':
       case '\n':
         return false;
       default:
-        return data.trim() !== '';
+        return char.trim() !== '';
     }
   }
   else {

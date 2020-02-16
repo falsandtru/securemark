@@ -1,6 +1,6 @@
 import { ParagraphParser } from '../block';
 import { subsequence, some, block, rewrite, convert, trim, fmap } from '../../combinator';
-import { defrag, hasVisible } from '../util';
+import { defrag } from '../util';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';
 import { anyline } from '../source';
@@ -24,7 +24,7 @@ export const paragraph: ParagraphParser = block(fmap(
   ns =>
     ns.length > 0
       ? [format(defrag(html('p', ns)))].map(el =>
-          hasVisible(el)
+          isVisible(el)
             ? el
             : define(el, {
                 class: 'invalid',
@@ -38,4 +38,9 @@ function format<T extends Node>(node: T): T {
   void node.lastChild?.remove();
   assert(node.lastChild instanceof HTMLBRElement === false);
   return node;
+}
+
+function isVisible(node: HTMLElement): boolean {
+  return node.textContent!.trim() !== ''
+      || node.getElementsByClassName('media').length > 0;
 }

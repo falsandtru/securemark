@@ -1,6 +1,6 @@
 import { EmphasisParser, inline } from '../inline';
 import { union, some, creator, open, close, lazy, fmap } from '../../combinator';
-import { isVisible, defrag } from '../util';
+import { isTight, defrag } from '../util';
 import { strong } from './strong';
 import { str } from '../source';
 import { html } from 'typed-dom';
@@ -11,7 +11,7 @@ export const emphasis: EmphasisParser = lazy(() => creator(fmap(open(
   some(union([strong, some(inline, '*')])),
   str('*'),
   (ns, rest) =>
-    isVisible(ns[0])
+    isTight(ns, 0, -1)
       ? [[defrag(html('em', pop(ns)[0]))], rest]
       : [ns, ns.pop()!.textContent! + rest],
   (ns, rest) => [ns, rest])),

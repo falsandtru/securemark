@@ -1,11 +1,12 @@
 import { AnnotationParser } from '../inline';
-import { union, some, creator, backtracker, surround, guard, update, lazy, fmap } from '../../combinator';
-import { startTight, defrag } from '../util';
+import { Ctx, union, some, creator, backtracker, surround, guard, update, lazy, bind } from '../../combinator';
+import { startTight, isTight, defrag } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html } from 'typed-dom';
+import { DeepMutable } from 'spica/type';
 
-export const annotation: AnnotationParser = lazy(() => creator(fmap(surround(
+export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   '((',
   guard(context => context.syntax?.inline?.annotation ?? true,
   update({ syntax: { inline: {
@@ -18,4 +19,7 @@ export const annotation: AnnotationParser = lazy(() => creator(fmap(surround(
   }}},
   startTight(union([some(inline, '))')])))),
   backtracker(str('))'))),
-  ns => [defrag(html('sup', { class: 'annotation' }, ns))])));
+  (ns, rest, _, context: DeepMutable<Ctx>) =>
+    isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack
+      ? [[defrag(html('sup', { class: 'annotation' }, ns))], rest]
+      : void 0)));

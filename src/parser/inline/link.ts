@@ -1,12 +1,14 @@
 import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
+import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, creator, backtracker, surround, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
-import { startTight, dup, defrag, stringify } from '../util';
+import { startTight, isTight, dup, defrag, stringify } from '../util';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
 import { frag, html, define } from 'typed-dom';
+import { DeepMutable } from 'spica/type';
 
 const { origin } = location;
 const log = new WeakSet<Element>();
@@ -40,8 +42,12 @@ export const link: LinkParser = lazy(() => creator(bind(fmap(
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(str(/^ ?}/)))),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
-  ([content, param]: [(HTMLElement | Text)[], Text[]], rest, _, context) => {
+  ([content, param]: [(HTMLElement | Text)[], Text[]], rest, _, context: DeepMutable<MarkdownParser.Context>) => {
     assert(param.every(n => n instanceof Text));
+    if (!isTight(content, 0, content.length)) {
+      context.resource && --context.resource.backtrack;
+      return;
+    }
     switch (true) {
       case content.length === 0:
         break;

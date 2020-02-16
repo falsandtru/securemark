@@ -1,11 +1,10 @@
-import { WeakMap } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
-import { union, some, validate, creator, backtracker, open_, close_, match, memoize, update, lazy } from '../../combinator';
-import { startTight, defrag } from '../util';
+import { Ctx, union, some, validate, creator, backtracker, open_, close_, match, memoize, update, lazy } from '../../combinator';
+import { startTight, isTight, defrag } from '../util';
 import { str } from '../source';
-import { DeepImmutable } from 'spica/type';
+import { DeepImmutable, DeepMutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';
 import { html as h } from 'typed-dom';
 import { unshift, push } from 'spica/array';
@@ -56,8 +55,10 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         })(),
         some(union([inline]), `</${tag}>`)))),
         backtracker(str(`</${tag}>`)),
-        ([as, bs, cs], rest, _, context) =>
-          [[elem(tag, as, bs, cs, context)], rest]))),
+        ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
+          isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
+            ? [[elem(tag, as, bs, cs, context)], rest]
+            : void 0))),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
     // Don't memoize this function because this key size is unlimited
@@ -70,8 +71,10 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         startTight(
         some(union([inline]), `</${tag}>`))),
         backtracker(str(`</${tag}>`)),
-        ([as, bs, cs], rest) =>
-          [[elem(tag, as, bs, cs, {})], rest])),
+        ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
+          isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
+            ? [[elem(tag, as, bs, cs, {})], rest]
+            : void 0)),
 ]))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = creator(union([

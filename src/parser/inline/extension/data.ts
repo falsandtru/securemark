@@ -1,6 +1,6 @@
 import { ExtensionParser, inline } from '../../inline';
 import { inits, some, creator, backtracker, open, close, lazy } from '../../../combinator';
-import { isVisible, defrag } from '../../util';
+import { isTight, defrag } from '../../util';
 import { str, char } from '../../source';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
@@ -16,13 +16,13 @@ export const data: DataParser = lazy(() => creator(close(open(
   ])),
   backtracker(str(']')),
   (ns, rest) => [
-    ns.length >= 3 && (ns.length <= 4 || isVisible(ns[3]))
-      ? [defrag(html('span', attr(ns[1].textContent!), ns.slice(3, -1)))]
+    ns.length <= 3 || isTight(ns, 3, -1)
+      ? [defrag(html('span', attrs(ns[1].textContent!), ns.slice(3, -1)))]
       : ns,
     rest
   ])));
 
-function attr(data: string): DeepImmutable<Record<string, string>> {
+function attrs(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');
   const name = data.split('=', 1)[0];
   const value = data.slice(name.length + 1);
