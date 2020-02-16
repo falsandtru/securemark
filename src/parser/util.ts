@@ -22,7 +22,7 @@ export function isTight(nodes: (HTMLElement | Text)[], start: number, end: numbe
     ? isVisible(nodes[end], 'end', 0) ||
       isVisible(nodes[end], 'end', 1)
     : isVisible(nodes[end], 'end') ||
-      isVisible(nodes[end - 1], 'end');
+      nodes[end].nodeName !== 'BR' && isVisible(nodes[end - 1], 'end');
 }
 function isVisible(node: HTMLElement | Text | undefined, dir: 'start' | 'end', offset = 0): boolean {
   assert(offset >= 0);
