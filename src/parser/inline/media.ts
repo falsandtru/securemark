@@ -26,6 +26,7 @@ export const media: MediaParser = creator(bind(fmap(open(
     push([ts.length > 1 && ts[ts.length - 2][0]?.data || ''], ts[ts.length - 1].map(t => t.data))),
   ([text, INSECURE_URL, ...params]: string[], rest) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
+    if (text.length > 0 && text.slice(-2).trim() === '') return;
     text = text.trim().replace(/\\(.?)/g, '$1');
     url.href = INSECURE_URL;
     const media = void 0
