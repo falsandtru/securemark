@@ -2,7 +2,7 @@ import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototype
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
 import { Ctx, union, some, validate, creator, backtracker, surround, match, memoize, update, lazy } from '../../combinator';
-import { startTight, isTight, defrag } from '../util';
+import { startTight, isTight, trimEnd, defrag } from '../util';
 import { str } from '../source';
 import { DeepImmutable, DeepMutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';
@@ -57,7 +57,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         backtracker(str(`</${tag}>`)), false,
         ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
           isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
-            ? [[elem(tag, as, bs, cs, context)], rest]
+            ? [[elem(tag, as, trimEnd(bs), cs, context)], rest]
             : void 0))),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
@@ -73,7 +73,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         backtracker(str(`</${tag}>`)), false,
         ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
           isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
-            ? [[elem(tag, as, bs, cs, {})], rest]
+            ? [[elem(tag, as, trimEnd(bs), cs, {})], rest]
             : void 0)),
 ]))));
 

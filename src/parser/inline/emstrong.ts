@@ -1,6 +1,6 @@
 import { EmStrongParser, inline } from '../inline';
 import { union, some, creator, surround, lazy, fmap } from '../../combinator';
-import { isTight, defrag } from '../util';
+import { isTight, trimEnd, defrag } from '../util';
 import { emphasis } from './emphasis';
 import { strong } from './strong';
 import { str } from '../source';
@@ -19,7 +19,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
           strong,
           ms =>
             'id' in ms[0]
-              ? [defrag(html('strong', [defrag(html('em', bs)), ...ms[0].childNodes]))]
+              ? [defrag(html('strong', [defrag(html('em', trimEnd(bs))), ...ms[0].childNodes]))]
               : push(unshift(as, bs), shift(ms)[1]))
           ('**' + rest, context) || [push(unshift(as, bs), cs), rest];
       case '**':
@@ -27,11 +27,11 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
           emphasis,
           ms =>
             'id' in ms[0]
-              ? [defrag(html('em', [defrag(html('strong', bs)), ...ms[0].childNodes]))]
+              ? [defrag(html('em', [defrag(html('strong', trimEnd(bs))), ...ms[0].childNodes]))]
               : push(unshift(as, bs), shift(ms)[1]))
           ('*' + rest, context) || [push(unshift(as, bs), cs), rest];
       case '***':
-        return [[html('em', [defrag(html('strong', bs))])], rest];
+        return [[html('em', [defrag(html('strong', trimEnd(bs)))])], rest];
       default:
         return [push(unshift(as, bs), cs), rest];
     }

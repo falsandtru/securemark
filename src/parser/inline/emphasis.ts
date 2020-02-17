@@ -1,6 +1,6 @@
 import { EmphasisParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
-import { isTight, defrag } from '../util';
+import { isTight, trimEnd, defrag } from '../util';
 import { strong } from './strong';
 import { char } from '../source';
 import { html } from 'typed-dom';
@@ -12,6 +12,6 @@ export const emphasis: EmphasisParser = lazy(() => creator(surround(
   char('*'), false,
   ([as, bs, cs], rest) =>
     isTight(bs, 0, bs.length)
-      ? [[defrag(html('em', bs))], rest]
+      ? [[defrag(html('em', trimEnd(bs)))], rest]
       : [unshift(as, bs), cs[0].data + rest],
   ([as, bs], rest) => [bs ? unshift(as, bs) : as, rest])));

@@ -1,6 +1,6 @@
 import { AnnotationParser } from '../inline';
 import { Ctx, union, some, creator, backtracker, surround, clear, guard, update, lazy, bind } from '../../combinator';
-import { startTight, isTight, defrag } from '../util';
+import { startTight, isTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html } from 'typed-dom';
@@ -21,5 +21,5 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   backtracker(clear(str('))')))),
   (ns, rest, _, context: DeepMutable<Ctx>) =>
     isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack
-      ? [[defrag(html('sup', { class: 'annotation' }, ns))], rest]
+      ? [[defrag(html('sup', { class: 'annotation' }, trimEnd(ns)))], rest]
       : void 0)));

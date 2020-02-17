@@ -2,6 +2,7 @@ import { Parser, Ctx, fmap } from '../combinator';
 import { syntax as comment } from './inline/comment';
 import { DeepMutable } from 'spica/type';
 import { define, apply } from 'typed-dom';
+import { pop } from 'spica/array';
 
 export function isTight(nodes: (HTMLElement | Text)[], start: number, end: number): boolean {
   if (end < 0) return isTight(nodes, start, nodes.length + end);
@@ -22,7 +23,7 @@ export function isTight(nodes: (HTMLElement | Text)[], start: number, end: numbe
     ? isVisible(nodes[end], 'end', 0) ||
       isVisible(nodes[end], 'end', 1)
     : isVisible(nodes[end], 'end') ||
-      nodes[end].nodeName !== 'BR' && isVisible(nodes[end - 1], 'end');
+      isVisible(nodes[end - 1], 'end');
 }
 function isVisible(node: HTMLElement | Text | undefined, dir: 'start' | 'end', offset = 0): boolean {
   assert(offset >= 0);
@@ -87,6 +88,15 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
         return parser(source, context);
     }
   }
+}
+
+export function trimEnd<T extends HTMLElement | Text>(nodes: T[]): T[];
+export function trimEnd(nodes: (HTMLElement | Text)[]): (HTMLElement | Text)[] {
+  if (nodes.length === 0) return nodes;
+  const node = nodes[nodes.length - 1];
+  return 'id' in node && node.tagName === 'BR'
+    ? pop(nodes)[0]
+    : nodes;
 }
 
 export function dup<T, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>): Parser<T[], D, C> {

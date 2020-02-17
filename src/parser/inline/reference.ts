@@ -1,6 +1,6 @@
 import { ReferenceParser } from '../inline';
 import { Result, Ctx, subsequence, some, subline, focus, creator, backtracker, surround, clear, guard, update, lazy, bind } from '../../combinator';
-import { startTight, isTight, defrag } from '../util';
+import { startTight, isTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html } from 'typed-dom';
@@ -29,7 +29,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
                 ? ns.shift()!.textContent
                 : undefined
             },
-            ns)),
+            trimEnd(ns))),
           rest)
       : void 0)));
 

@@ -3,7 +3,7 @@ import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, creator, backtracker, surround, clear, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
-import { startTight, isTight, dup, defrag, stringify } from '../util';
+import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
@@ -74,7 +74,7 @@ export const link: LinkParser = lazy(() => creator(bind(fmap(
         rel: `noopener${params.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
-        ? content = content
+        ? content = trimEnd(content)
         : decode(INSECURE_URI || '.')
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h')
             .replace(/^tel:/, '')));
