@@ -490,7 +490,7 @@ export namespace MarkdownParser {
       export interface IndexParser extends
         // [#index]
         Inline<'extension/index'>,
-        Parser<HTMLAnchorElement, [
+        Parser<HTMLElement | Text, [
           InlineParser,
         ], Context> {
       }

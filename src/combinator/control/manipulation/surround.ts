@@ -3,6 +3,8 @@ import { fmap } from '../monad/fmap';
 import { bind } from '../monad/bind';
 import { unshift, push } from 'spica/array';
 
+export function surround<P extends Parser<unknown>>(
+  opener: string | RegExp | Parser<Data<P>, any, Context<P>>, parser: P, closer: string | RegExp | Parser<Data<P>, any, Context<P>>, strict?: boolean): P;
 export function surround<P extends Parser<unknown>, S = never>(
   opener: string | RegExp | Parser<S, any, Context<P>>, parser: P, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: boolean,
   f?: (rss: [S[], Data<P>[] | undefined, S[]], rest: string, source: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
