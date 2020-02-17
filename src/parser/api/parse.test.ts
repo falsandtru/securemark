@@ -27,6 +27,11 @@ describe('Unit: parser/api/parse', () => {
         []);
     });
 
+    it('linebreak', () => {
+      assert('a\n\nb'.match(/^\s*$/m));
+      assert(!parse('*a\n*\nb').textContent?.match(/^\s*$/m));
+    });
+
     it('separation', () => {
       assert.deepStrictEqual(
         [...parse('\\ ').children].map(el => el.outerHTML),
