@@ -12,20 +12,21 @@ describe('Unit: parser/inline/mark', () => {
       assert.deepStrictEqual(inspect(parser('==')), undefined);
       assert.deepStrictEqual(inspect(parser('==a')), [['==', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('==a=')), [['==', 'a', '='], '']);
+      assert.deepStrictEqual(inspect(parser('== ==')), [['==', ' '], '==']);
+      assert.deepStrictEqual(inspect(parser('== a==')), [['==', ' ', 'a'], '==']);
+      assert.deepStrictEqual(inspect(parser('== a ==')), [['==', ' ', 'a', ' '], '==']);
+      assert.deepStrictEqual(inspect(parser('==\na==')), [['==', '<br>', 'a'], '==']);
+      assert.deepStrictEqual(inspect(parser('==\\\na==')), [['==', '<span class="linebreak"> </span>', 'a'], '==']);
+      assert.deepStrictEqual(inspect(parser('==<wbr>a==')), [['==', '<wbr>', 'a'], '==']);
+      assert.deepStrictEqual(inspect(parser('==<# a #>b==')), [['==', '<sup class="comment" title="a"></sup>', 'b'], '==']);
     });
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('==a==')), [['<mark>a</mark>'], '']);
       assert.deepStrictEqual(inspect(parser('==a===')), [['<mark>a</mark>'], '=']);
       assert.deepStrictEqual(inspect(parser('==a ==')), [['<mark>a </mark>'], '']);
-      assert.deepStrictEqual(inspect(parser('== a==')), [['<mark> a</mark>'], '']);
-      assert.deepStrictEqual(inspect(parser('== a ==')), [['<mark> a </mark>'], '']);
-      assert.deepStrictEqual(inspect(parser('== ==')), [['<mark> </mark>'], '']);
       assert.deepStrictEqual(inspect(parser('===a==')), [['<mark>=a</mark>'], '']);
       assert.deepStrictEqual(inspect(parser('===a===')), [['<mark>=a</mark>'], '=']);
-      assert.deepStrictEqual(inspect(parser('==\n==')), [['<mark><br></mark>'], '']);
-      assert.deepStrictEqual(inspect(parser('==\\\n==')), [['<mark><span class="linebreak"> </span></mark>'], '']);
-      assert.deepStrictEqual(inspect(parser('==<wbr>==')), [['<mark><wbr></mark>'], '']);
       assert.deepStrictEqual(inspect(parser('==ab==')), [['<mark>ab</mark>'], '']);
       assert.deepStrictEqual(inspect(parser('==a\nb==')), [['<mark>a<br>b</mark>'], '']);
       assert.deepStrictEqual(inspect(parser('==a\\\nb==')), [['<mark>a<span class="linebreak"> </span>b</mark>'], '']);
