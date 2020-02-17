@@ -1815,11 +1815,11 @@ require = function () {
             }
             exports.guard = guard;
             function update(context, parser) {
-                const extend = memoize_1.memoize(base => merge({}, base, context), new global_1.WeakMap());
-                return (source, base) => parser(source, extend(base));
+                const extend = memoize_1.memoize(base => extend_({}, base, context), new global_1.WeakMap());
+                return (source, base) => context.resource ? parser(source, extend_({}, base, context)) : parser(source, extend(base));
             }
             exports.update = update;
-            const merge = assign_1.template((prop, target, source) => {
+            const extend_ = assign_1.template((prop, target, source) => {
                 switch (prop) {
                 case 'resource':
                     return target[prop] = target[prop] || source[prop];
@@ -1830,14 +1830,14 @@ require = function () {
                     case 'Array':
                         return target[prop] = array_1.push(target[prop].slice(), source[prop]);
                     default:
-                        return target[prop] = merge([], source[prop]);
+                        return target[prop] = extend_([], source[prop]);
                     }
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[prop] = merge(target[prop], source[prop]);
+                        return target[prop] = extend_(target[prop], source[prop]);
                     default:
-                        return target[prop] = merge({}, source[prop]);
+                        return target[prop] = extend_({}, source[prop]);
                     }
                 case 'number':
                     switch (type_1.type(target[prop])) {
