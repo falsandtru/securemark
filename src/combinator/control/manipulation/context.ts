@@ -15,12 +15,14 @@ export function guard<T extends object, D extends Parser<unknown, any>[]>(f: (co
 
 export function update<P extends Parser<object>>(context: Context<P>, parser: P): P;
 export function update<T extends object, D extends Parser<unknown, any, C>[], C extends Ctx>(context: C, parser: Parser<T, D, C>): Parser<T, D, C> {
-  const extend = memoize<C, C>(base => merge<C>({}, base, context), new WeakMap());
+  const extend = memoize<C, C>(base => extend_<C>({}, base, context), new WeakMap());
   return (source, base) =>
-    parser(source, extend(base));
+    context.resource
+      ? parser(source, extend_<C>({}, base, context))
+      : parser(source, extend(base));
 }
 
-const merge = template((prop, target, source) => {
+const extend_ = template((prop, target, source) => {
   switch (prop) {
     case 'resource':
       return target[prop] = target[prop] || source[prop];
@@ -31,14 +33,14 @@ const merge = template((prop, target, source) => {
         case 'Array':
           return target[prop] = push(target[prop].slice(), source[prop]);
         default:
-          return target[prop] = merge([], source[prop]);
+          return target[prop] = extend_([], source[prop]);
       }
     case 'Object':
       switch (type(target[prop])) {
         case 'Object':
-          return target[prop] = merge(target[prop], source[prop]);
+          return target[prop] = extend_(target[prop], source[prop]);
         default:
-          return target[prop] = merge({}, source[prop]);
+          return target[prop] = extend_({}, source[prop]);
       }
     case 'number':
       switch (type(target[prop])) {
