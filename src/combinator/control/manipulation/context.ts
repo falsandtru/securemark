@@ -3,7 +3,6 @@ import { Parser, Ctx, Context } from '../../data/parser';
 import { extend, template } from 'spica/assign';
 import { type } from 'spica/type';
 import { memoize } from 'spica/memoize';
-import { push } from 'spica/array';
 
 export function guard<P extends Parser<object>>(f: (context: Context<P>) => boolean, parser: P): P;
 export function guard<T extends object, D extends Parser<unknown, any>[]>(f: (context: Ctx) => boolean, parser: Parser<T, D>): Parser<T, D> {
@@ -32,26 +31,12 @@ const merge = template((prop, target, source) => {
       return target[prop] = target[prop] || source[prop];
   }
   switch (type(source[prop])) {
-    case 'Array':
-      switch (type(target[prop])) {
-        case 'Array':
-          return target[prop] = push(target[prop].slice(), source[prop]);
-        default:
-          return target[prop] = merge([], source[prop]);
-      }
     case 'Object':
       switch (type(target[prop])) {
         case 'Object':
           return target[prop] = merge(target[prop], source[prop]);
         default:
           return target[prop] = merge({}, source[prop]);
-      }
-    case 'number':
-      switch (type(target[prop])) {
-        case 'number':
-          return target[prop] = target[prop] + source[prop];
-        default:
-          return target[prop] = source[prop];
       }
     default:
       return target[prop] = source[prop];
