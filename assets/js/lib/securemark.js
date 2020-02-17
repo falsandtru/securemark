@@ -1814,12 +1814,16 @@ require = function () {
                 return (source, context) => f(context) ? parser(source, context) : void 0;
             }
             exports.guard = guard;
+            function configure(context, parser) {
+                return (source, base) => parser(source, assign_1.extend(base, context));
+            }
+            exports.configure = configure;
             function update(context, parser) {
-                const extend = memoize_1.memoize(base => extend_({}, base, context), new global_1.WeakMap());
-                return (source, base) => context.resource ? parser(source, extend_({}, base, context)) : parser(source, extend(base));
+                const extend = memoize_1.memoize(base => merge({}, base, context), new global_1.WeakMap());
+                return (source, base) => parser(source, extend(base));
             }
             exports.update = update;
-            const extend_ = assign_1.template((prop, target, source) => {
+            const merge = assign_1.template((prop, target, source) => {
                 switch (prop) {
                 case 'resource':
                     return target[prop] = target[prop] || source[prop];
@@ -1830,14 +1834,14 @@ require = function () {
                     case 'Array':
                         return target[prop] = array_1.push(target[prop].slice(), source[prop]);
                     default:
-                        return target[prop] = extend_([], source[prop]);
+                        return target[prop] = merge([], source[prop]);
                     }
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[prop] = extend_(target[prop], source[prop]);
+                        return target[prop] = merge(target[prop], source[prop]);
                     default:
-                        return target[prop] = extend_({}, source[prop]);
+                        return target[prop] = merge({}, source[prop]);
                     }
                 case 'number':
                     switch (type_1.type(target[prop])) {
@@ -2691,7 +2695,7 @@ require = function () {
             const paragraph_1 = _dereq_('./block/paragraph');
             const locale_1 = _dereq_('./locale');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.block = combinator_1.recover(locale_1.localize(combinator_1.update({
+            exports.block = combinator_1.recover(locale_1.localize(combinator_1.configure({
                 resource: {
                     creation: 100 * 1000,
                     backtrack: 100 * 1000
