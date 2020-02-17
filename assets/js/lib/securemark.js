@@ -1794,10 +1794,6 @@ require = function () {
                 };
             }
             exports.rewrite = rewrite;
-            function rewrite_(scope, parser) {
-                return rewrite(scope, parser);
-            }
-            exports.rewrite_ = rewrite_;
         },
         { '../../data/parser': 47 }
     ],
@@ -3293,16 +3289,11 @@ require = function () {
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, '>'), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
-            ]))), ns => ns.length > 0 ? [format(util_1.defrag(typed_dom_1.html('p', ns)))].map(el => isVisible(el) ? el : typed_dom_1.define(el, {
+            ]))), ns => ns.length > 0 ? [util_1.defrag(typed_dom_1.html('p', util_1.trimEnd(ns)))].map(el => isVisible(el) ? el : typed_dom_1.define(el, {
                 class: 'invalid',
                 'data-invalid-syntax': 'paragraph',
                 'data-invalid-message': 'All paragraphs must have a visible content'
             })) : []));
-            function format(node) {
-                var _a;
-                void ((_a = node.lastChild) === null || _a === void 0 ? void 0 : _a.remove());
-                return node;
-            }
             function isVisible(node) {
                 return node.textContent.trim() !== '' || node.getElementsByClassName('media').length > 0;
             }
@@ -3622,7 +3613,7 @@ require = function () {
                     }
                 }
             }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), combinator_1.backtracker(combinator_1.clear(source_1.str('))')))), (ns, rest, _, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
-                [util_1.defrag(typed_dom_1.html('sup', { class: 'annotation' }, ns))],
+                [util_1.defrag(typed_dom_1.html('sup', { class: 'annotation' }, util_1.trimEnd(ns)))],
                 rest
             ] : void 0)));
         },
@@ -3890,7 +3881,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.deletion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('~~'), combinator_1.union([combinator_1.some(inline_1.inline, '~~')]), source_1.str('~~'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('del', bs))],
+                [util_1.defrag(typed_dom_1.html('del', util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -3924,7 +3915,7 @@ require = function () {
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
             ])), source_1.char('*'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('em', bs))],
+                [util_1.defrag(typed_dom_1.html('em', util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -3965,7 +3956,7 @@ require = function () {
                 switch (cs[0].data) {
                 case '*':
                     return combinator_1.fmap(strong_1.strong, ms => 'id' in ms[0] ? [util_1.defrag(typed_dom_1.html('strong', [
-                            util_1.defrag(typed_dom_1.html('em', bs)),
+                            util_1.defrag(typed_dom_1.html('em', util_1.trimEnd(bs))),
                             ...ms[0].childNodes
                         ]))] : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
@@ -3973,7 +3964,7 @@ require = function () {
                     ];
                 case '**':
                     return combinator_1.fmap(emphasis_1.emphasis, ms => 'id' in ms[0] ? [util_1.defrag(typed_dom_1.html('em', [
-                            util_1.defrag(typed_dom_1.html('strong', bs)),
+                            util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs))),
                             ...ms[0].childNodes
                         ]))] : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
@@ -3981,7 +3972,7 @@ require = function () {
                     ];
                 case '***':
                     return [
-                        [typed_dom_1.html('em', [util_1.defrag(typed_dom_1.html('strong', bs))])],
+                        [typed_dom_1.html('em', [util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs)))])],
                         rest
                     ];
                 default:
@@ -4080,7 +4071,7 @@ require = function () {
                 source_1.char('|'),
                 combinator_1.some(inline_1.inline, ']')
             ]), source_1.char(']'), false, ([as, bs, cs], rest) => [
-                util_1.isTight(bs, 2, bs.length) ? [util_1.defrag(typed_dom_1.html('span', attrs(bs[0].textContent), bs.slice(2)))] : array_1.push(array_1.unshift(as, bs), cs),
+                util_1.isTight(bs, 2, bs.length) ? [util_1.defrag(typed_dom_1.html('span', attrs(bs[0].textContent), util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
                 rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
@@ -4127,7 +4118,7 @@ require = function () {
                     }
                 }
             }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), combinator_1.backtracker(combinator_1.clear(source_1.char(']'))), false, ([, bs], rest, _, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
-                [util_1.defrag(typed_dom_1.html('a', bs))],
+                [util_1.defrag(typed_dom_1.html('a', util_1.trimEnd(bs)))],
                 rest
             ] : void 0)), ([el]) => [typed_dom_1.define(el, {
                     id: null,
@@ -4264,7 +4255,7 @@ require = function () {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-message': 'Invalid flag'
-                    }, bs))] : array_1.push(array_1.unshift(as, bs), cs),
+                    }, util_1.trimEnd(bs)))] : array_1.push(array_1.unshift(as, bs), cs),
                 rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
@@ -4327,11 +4318,11 @@ require = function () {
                         return { state: { in: { small: true } } };
                     }
                 })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), combinator_1.backtracker(source_1.str(`</${ tag }>`)), false, ([as, bs, cs], rest, _, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
-                    [elem(tag, as, bs, cs, context)],
+                    [elem(tag, as, util_1.trimEnd(bs), cs, context)],
                     rest
                 ] : void 0))),
                 combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), combinator_1.backtracker(source_1.str('>')), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), combinator_1.backtracker(source_1.str(`</${ tag }>`)), false, ([as, bs, cs], rest, _, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
-                    [elem(tag, as, bs, cs, {})],
+                    [elem(tag, as, util_1.trimEnd(bs), cs, {})],
                     rest
                 ] : void 0))
             ]))));
@@ -4446,7 +4437,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.insertion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('++'), combinator_1.union([combinator_1.some(inline_1.inline, '++')]), source_1.str('++'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('ins', bs))],
+                [util_1.defrag(typed_dom_1.html('ins', util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -4529,7 +4520,7 @@ require = function () {
                 const el = util_1.defrag(typed_dom_1.html('a', {
                     href: INSECURE_URI,
                     rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                }, content.length > 0 ? content = content : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, '')));
+                }, content.length > 0 ? content = util_1.trimEnd(content) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, '')));
                 if (!verify(el, INSECURE_URI))
                     return [
                         [el],
@@ -4603,7 +4594,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.mark = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('=='), combinator_1.union([combinator_1.some(inline_1.inline, '==')]), source_1.str('=='), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('mark', bs))],
+                [util_1.defrag(typed_dom_1.html('mark', util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -4731,7 +4722,7 @@ require = function () {
             ])))), combinator_1.backtracker(combinator_1.clear(source_1.str(']]')))), (ns, rest, _, context) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
                 class: 'reference',
                 'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR' ? ns.shift().textContent : undefined
-            }, ns)), rest) : void 0)));
+            }, util_1.trimEnd(ns))), rest) : void 0)));
             const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
                 ''
@@ -4862,7 +4853,7 @@ require = function () {
                 emphasis_1.emphasis,
                 combinator_1.some(inline_1.inline, '*')
             ]), '**'), source_1.str('**'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('strong', bs))],
+                [util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -5311,6 +5302,7 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const comment_1 = _dereq_('./inline/comment');
             const typed_dom_1 = _dereq_('typed-dom');
+            const array_1 = _dereq_('spica/array');
             function isTight(nodes, start, end) {
                 if (end < 0)
                     return isTight(nodes, start, nodes.length + end);
@@ -5326,7 +5318,7 @@ require = function () {
                 }
                 --end;
                 const data = 'data' in nodes[end] ? nodes[end].data : '';
-                return data.length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || nodes[end].nodeName !== 'BR' && isVisible(nodes[end - 1], 'end');
+                return data.length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || isVisible(nodes[end - 1], 'end');
             }
             exports.isTight = isTight;
             function isVisible(node, dir, offset = 0) {
@@ -5384,6 +5376,13 @@ require = function () {
                 };
             }
             exports.startTight = startTight;
+            function trimEnd(nodes) {
+                if (nodes.length === 0)
+                    return nodes;
+                const node = nodes[nodes.length - 1];
+                return 'id' in node && node.tagName === 'BR' ? array_1.pop(nodes)[0] : nodes;
+            }
+            exports.trimEnd = trimEnd;
             function dup(parser) {
                 return combinator_1.fmap(parser, ns => [ns]);
             }
@@ -5422,6 +5421,7 @@ require = function () {
         {
             '../combinator': 30,
             './inline/comment': 92,
+            'spica/array': 6,
             'typed-dom': 23
         }
     ],
