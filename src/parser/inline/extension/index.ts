@@ -19,9 +19,9 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexe
   }}},
   startTight(union([some(inline, ']')])))),
   backtracker(clear(char(']'))), false,
-  ([, bs = []], rest, _, context: DeepMutable<Ctx>) =>
+  ([, bs], rest, _, context: DeepMutable<Ctx>) =>
     isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
       ? [[defrag(html('a', bs))], rest]
       : void 0)),
-  ([el]: [HTMLElement]) =>
+  ([el]: [HTMLAnchorElement]) =>
     [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : void 0 }, el.childNodes)])));

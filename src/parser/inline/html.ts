@@ -1,7 +1,7 @@
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
-import { Ctx, union, some, validate, creator, backtracker, open_, close_, match, memoize, update, lazy } from '../../combinator';
+import { Ctx, union, some, validate, creator, backtracker, surround, match, memoize, update, lazy } from '../../combinator';
 import { startTight, isTight, defrag } from '../util';
 import { str } from '../source';
 import { DeepImmutable, DeepMutable } from 'spica/type';
@@ -23,11 +23,11 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     /^(?=<(wbr)(?=[ >]))/,
     memoize(([, tag]) => tag,
     tag =>
-      close_(open_(
+      surround(
         str(`<${tag}`),
-        some(union([attribute])), true),
-        backtracker(str('>')),
-        ([, as], rest) => [
+        some(union([attribute])),
+        backtracker(str('>')), true,
+        ([, as = []], rest) => [
           [h(tag as 'span', makeAttrs(attributes[tag], as.map(t => t.data), [], 'html'))],
           rest
         ]))),
@@ -35,10 +35,10 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     /^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/,
     memoize(([, tag]) => tag,
     tag =>
-      close_(open_(close_(open_(
+      surround(surround(
         str(`<${tag}`),
-        some(union([attribute])), true),
-        backtracker(str('>'))),
+        some(union([attribute])),
+        backtracker(str('>')), true),
         startTight(
         update((() => {
           switch (tag) {
@@ -53,8 +53,8 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
               return { state: { in: { small: true } } };
           }
         })(),
-        some(union([inline]), `</${tag}>`)))),
-        backtracker(str(`</${tag}>`)),
+        some(union([inline]), `</${tag}>`))),
+        backtracker(str(`</${tag}>`)), false,
         ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
           isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
             ? [[elem(tag, as, bs, cs, context)], rest]
@@ -64,13 +64,13 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     // Don't memoize this function because this key size is unlimited
     // and it makes a vulnerability of memory leaks.
     ([, tag]) =>
-      close_(open_(close_(open_(
+      surround(surround(
         str(`<${tag}`),
-        some(union([attribute])), true),
-        backtracker(str('>'))),
+        some(union([attribute])),
+        backtracker(str('>')), true),
         startTight(
-        some(union([inline]), `</${tag}>`))),
-        backtracker(str(`</${tag}>`)),
+        some(union([inline]), `</${tag}>`)),
+        backtracker(str(`</${tag}>`)), false,
         ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
           isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
             ? [[elem(tag, as, bs, cs, {})], rest]

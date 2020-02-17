@@ -9,7 +9,7 @@ export const mark: MarkParser = lazy(() => creator(surround(
   str('=='),
   union([some(inline, '==')]),
   str('=='), false,
-  ([as, bs = [], cs], rest) =>
+  ([as, bs, cs], rest) =>
     isTight(bs, 0, bs.length)
       ? [[defrag(html('mark', bs))], rest]
       : [unshift(as, bs), cs[0].data + rest],

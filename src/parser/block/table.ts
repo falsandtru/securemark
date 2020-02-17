@@ -56,7 +56,7 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
 }
 
 const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, optional: boolean): RowParser<P> => fmap(
-  line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional, void 0, ([, bs = []], rest) => [bs, rest])),
+  line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional)),
   es => [html('tr', es)]);
 
 const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => fmap(
@@ -66,9 +66,7 @@ const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => f
 const data: CellParser.DataParser = surround(
   /^\|(?:\\?\s)*(?=\S)/,
   some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
-  /^[^|]*/, true,
-  void 0,
-  ([, bs = []], rest) => [bs, rest]);
+  /^[^|]*/, true);
 
 const alignment: CellParser.AlignmentParser = open(
   '|',

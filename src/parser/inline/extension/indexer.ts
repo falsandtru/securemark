@@ -1,14 +1,16 @@
 import { ExtensionParser } from '../../inline';
-import { union, open, when } from '../../../combinator';
+import { union, surround } from '../../../combinator';
 import { index } from './index';
 import { str } from '../../source';
 import { html } from 'typed-dom';
+import { unshift } from 'spica/array';
 
-export const indexer: ExtensionParser.IndexerParser = when(open(
-  str(/^\s+(?=\[#)/),
-  union([index])),
-  (ns, rest): ns is [never, HTMLAnchorElement] => ns.length === 2 && rest.trim() === '',
-  ([, el]) => [
+export const indexer: ExtensionParser.IndexerParser = surround(
+  str(/^\s+(?=\[#[^\s\]])/),
+  union([index]),
+  /^\s*$/, false,
+  ([, [el]], rest) => [
     [html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })],
-    ''
-  ]);
+    rest
+  ],
+  ([as, bs], rest) => [unshift<HTMLElement | Text>(as, bs), rest]);

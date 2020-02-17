@@ -97,7 +97,7 @@ export function defrag<T extends Node>(node: T): T {
   return void node.normalize(), node;
 }
 
-export function stringify(nodes: (Node | Text)[]): string {
+export function stringify(nodes: (HTMLElement | Text)[]): string {
   return nodes.reduce((acc, node) =>
     `${acc}${'data' in node ? node.data : node.textContent}`
   , '');
