@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown.d';
-import { union, configure, recover } from '../combinator';
+import { union, update, recover } from '../combinator';
 import { emptyline } from './source/line';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -31,7 +31,7 @@ export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = recover(localize(
-  configure({ resource: { creation: 100 * 1000, backtrack: 100 * 1000 } },
+  update({ resource: { creation: 100 * 1000, backtrack: 100 * 1000 } },
   union([
     emptyline,
     horizontalrule,

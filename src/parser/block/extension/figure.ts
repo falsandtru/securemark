@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, close, clear, match, memoize, convert, trim, update, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, close, clear, match, memoize, convert, trim, context, fmap } from '../../../combinator';
 import { defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label } from '../../inline/extension/label';
@@ -56,7 +56,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
       emptyline,
       block(
         convert(source => source.replace(blankline, ''),
-        update({ syntax: { inline: { media: false } } },
+        context({ syntax: { inline: { media: false } } },
         trim(some(inline))))),
     ]),
   ])),

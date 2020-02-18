@@ -2,7 +2,7 @@ import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, subline, creator, backtracker, surround, clear, match, memoize, guard, update, lazy, fmap, bind, eval } from '../../combinator';
+import { union, inits, tails, some, subline, creator, backtracker, surround, clear, match, memoize, guard, context, lazy, fmap, bind, eval } from '../../combinator';
 import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str, char } from '../source';
 import { makeAttrs } from './html';
@@ -26,7 +26,7 @@ export const link: LinkParser = lazy(() => subline(creator(bind(fmap(
       surround('[', shortmedia, ']'),
       surround(
         '[',
-        update({ syntax: { inline: {
+        context({ syntax: { inline: {
           link: false,
           media: false,
           annotation: false,

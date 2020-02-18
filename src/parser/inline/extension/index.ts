@@ -1,5 +1,5 @@
 import { ExtensionParser, inline } from '../../inline';
-import { Ctx, union, some, subline, creator, backtracker, surround, clear, update, lazy, fmap } from '../../../combinator';
+import { Ctx, union, some, subline, creator, backtracker, surround, clear, context, lazy, fmap } from '../../../combinator';
 import { startTight, isTight, trimEnd, defrag } from '../../util';
 import { indexee } from './indexee';
 import { char } from '../../source';
@@ -9,7 +9,7 @@ import { DeepMutable } from 'spica/type';
 export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexee(surround(
   '[#',
   subline(
-  update({ syntax: { inline: {
+  context({ syntax: { inline: {
     link: false,
     media: false,
     annotation: false,

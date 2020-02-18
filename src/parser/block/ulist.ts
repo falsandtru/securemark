@@ -1,5 +1,5 @@
 import { UListParser } from '../block';
-import { union, inits, some, block, line, validate, open, convert, indent, trim, update, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, open, convert, indent, trim, context, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
@@ -9,7 +9,7 @@ import { unshift } from 'spica/array';
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
   /^-(?:[^\S\n]|\n[^\S\n]*\S)/,
-  update({ syntax: { inline: { media: false } } },
+  context({ syntax: { inline: { media: false } } },
   some(union([
     fmap(
       inits([

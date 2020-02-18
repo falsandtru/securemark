@@ -1,5 +1,5 @@
 import { OListParser } from '../block';
-import { union, inits, some, block, line, validate, convert, indent, trim, update, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, convert, indent, trim, context, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
@@ -9,7 +9,7 @@ import { html, define } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(fmap(validate(
   /^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/,
-  update({ syntax: { inline: { media: false } } },
+  context({ syntax: { inline: { media: false } } },
   some(union([
     fmap(
       inits([

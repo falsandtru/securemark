@@ -1,5 +1,5 @@
 import { AnnotationParser } from '../inline';
-import { Ctx, union, some, creator, backtracker, surround, clear, guard, update, lazy, bind } from '../../combinator';
+import { Ctx, union, some, creator, backtracker, surround, clear, guard, context, lazy, bind } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { str } from '../source';
@@ -9,7 +9,7 @@ import { DeepMutable } from 'spica/type';
 export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   '((',
   guard(context => context.syntax?.inline?.annotation ?? true,
-  update({ syntax: { inline: {
+  context({ syntax: { inline: {
     annotation: false,
     reference: false,
     extension: true,

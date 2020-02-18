@@ -1,7 +1,7 @@
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
-import { Ctx, union, some, validate, creator, backtracker, surround, match, memoize, update, lazy } from '../../combinator';
+import { Ctx, union, some, validate, creator, backtracker, surround, match, memoize, context, lazy } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag } from '../util';
 import { str } from '../source';
 import { DeepImmutable, DeepMutable } from 'spica/type';
@@ -40,7 +40,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         some(union([attribute])),
         backtracker(str('>')), true),
         startTight(
-        update((() => {
+        context((() => {
           switch (tag) {
             case 'bdo':
             case 'bdi':

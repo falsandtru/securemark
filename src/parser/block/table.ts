@@ -1,6 +1,6 @@
 import { Array } from 'spica/global';
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, surround, open, update, lazy, fmap } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, surround, open, context, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { inline } from '../inline';
 import { html, text } from 'typed-dom';
@@ -11,7 +11,7 @@ import CellParser = RowParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
   /^\|[^\n]*(?:\n\|[^\n]*){2,}/,
-  update({ syntax: { inline: { media: false } } },
+  context({ syntax: { inline: { media: false } } },
   sequence([
     row(cell(data), true),
     row(cell(alignment), false),

@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, rewrite, backtracker, convert, open, update, lazy } from '../../../combinator';
+import { union, some, rewrite, backtracker, convert, open, context, lazy } from '../../../combinator';
 import { unescsource, str } from '../../source';
 import { link } from '../link';
 
@@ -11,7 +11,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     backtracker(some(union([bracket, some(unescsource, closer)])))),
   convert(
     source => `{ ${address(source)}${attribute(source)} }`,
-    update({ syntax: { inline: { link: void 0 } } },
+    context({ syntax: { inline: { link: void 0 } } },
     union([link])))));
 
 export const bracket: AutolinkParser.UrlParser.BracketParser = union([

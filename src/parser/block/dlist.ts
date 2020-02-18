@@ -1,5 +1,5 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, validate, rewrite, open, convert, trim, update, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, validate, rewrite, open, convert, trim, context, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { anyline } from '../source';
 import { inline, indexer, indexee } from '../inline';
@@ -10,7 +10,7 @@ import { push } from 'spica/array';
 export const dlist: DListParser = lazy(() => block(fmap(validate(
   /^~(?=$|\s)/,
   convert(source => source.replace(blankline, ''),
-  update({ syntax: { inline: { media: false } } },
+  context({ syntax: { inline: { media: false } } },
   some(inits([
     some(term),
     some(desc),

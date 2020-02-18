@@ -13,14 +13,14 @@ export function guard<T extends object, D extends Parser<unknown, any>[]>(f: (co
       : void 0;
 }
 
-export function configure<P extends Parser<object>>(context: Context<P>, parser: P): P;
-export function configure<T extends object, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
+export function update<P extends Parser<object>>(context: Context<P>, parser: P): P;
+export function update<T extends object, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
   return (source, context) =>
     parser(source, merge(ObjectCreate(context), base));
 }
 
-export function update<P extends Parser<object>>(context: Context<P>, parser: P): P;
-export function update<T extends object, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
+export function context<P extends Parser<object>>(context: Context<P>, parser: P): P;
+export function context<T extends object, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
   const merge_ = memoize<C, C>(context => merge(ObjectCreate(context), base), new WeakMap());
   return (source, context) =>
     parser(source, merge_(context));
