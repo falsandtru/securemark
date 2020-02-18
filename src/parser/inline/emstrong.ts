@@ -36,4 +36,4 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
         return [push(unshift(as, bs), cs), rest];
     }
   },
-  ([as, bs], rest) => [bs ? unshift(as, bs) : as, rest])));
+  ([as, bs], rest) => [unshift(as, bs), rest])));
