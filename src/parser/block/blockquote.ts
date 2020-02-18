@@ -6,9 +6,9 @@ import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { html } from 'typed-dom';
 
-export const segment: BlockquoteParser.SegmentParser = block(union([
+export const segment: BlockquoteParser.SegmentParser = block(validate(['!', '>'], union([
   validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, some(contentline)),
-]));
+])));
 
 export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
   open(/^(?=>)/, text),
