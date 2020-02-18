@@ -160,11 +160,11 @@ require = function () {
             exports.clone = template((prop, target, source) => {
                 switch (type_1.type(source[prop])) {
                 case 'Array':
-                    return target[prop] = exports.clone([], source[prop]);
+                    return target[prop] = source[prop].slice();
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[prop] = exports.clone(source[prop] instanceof global_1.Object ? {} : alias_1.ObjectCreate(null), source[prop]);
+                        return target[prop] = exports.clone(empty_(source[prop]), source[prop]);
                     default:
                         return target[prop] = source[prop];
                     }
@@ -175,13 +175,13 @@ require = function () {
             exports.extend = template((prop, target, source) => {
                 switch (type_1.type(source[prop])) {
                 case 'Array':
-                    return target[prop] = exports.extend([], source[prop]);
+                    return target[prop] = source[prop].slice();
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
                         return target[prop] = exports.extend(target[prop], source[prop]);
                     default:
-                        return target[prop] = exports.extend(source[prop] instanceof global_1.Object ? {} : alias_1.ObjectCreate(null), source[prop]);
+                        return target[prop] = exports.extend(empty_(source[prop]), source[prop]);
                     }
                 default:
                     return target[prop] = source[prop];
@@ -194,19 +194,35 @@ require = function () {
                     case 'Array':
                         return target[prop] = array_1.push(target[prop], source[prop]);
                     default:
-                        return target[prop] = exports.merge([], source[prop]);
+                        return target[prop] = source[prop].slice();
                     }
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
                         return target[prop] = exports.merge(target[prop], source[prop]);
                     default:
-                        return target[prop] = exports.merge(source[prop] instanceof global_1.Object ? {} : alias_1.ObjectCreate(null), source[prop]);
+                        return target[prop] = exports.merge(empty_(source[prop]), source[prop]);
                     }
                 default:
                     return target[prop] = source[prop];
                 }
             });
+            exports.inherit = template((prop, target, source) => {
+                switch (type_1.type(source[prop])) {
+                case 'Array':
+                    return target[prop] = source[prop].slice();
+                case 'Object':
+                    switch (type_1.type(target[prop])) {
+                    case 'Object':
+                        return target[prop] = isOwnProperty(target, prop) ? exports.inherit(target[prop], source[prop]) : exports.inherit(alias_1.ObjectCreate(target[prop]), source[prop]);
+                    default:
+                        return target[prop] = alias_1.ObjectCreate(source[prop]);
+                    }
+                default:
+                    return target[prop] = source[prop];
+                }
+            });
+            const isOwnProperty = '__proto__' in {} ? (o, p) => !('__proto__' in o) || o[p] !== o['__proto__'][p] : alias_1.hasOwnProperty;
             function template(strategy, empty = empty_) {
                 return walk;
                 function walk(target, ...sources) {
@@ -485,7 +501,7 @@ require = function () {
             'use strict';
             const global = void 0 || typeof globalThis !== 'undefined' && globalThis || typeof self !== 'undefined' && self || Function('return this')();
             global.global = global;
-            module.exports = global.global;
+            module.exports = global;
         },
         {}
     ],
