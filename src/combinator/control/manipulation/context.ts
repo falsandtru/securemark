@@ -15,12 +15,14 @@ export function guard<T extends object, D extends Parser<unknown, any>[]>(f: (co
 
 export function update<P extends Parser<object>>(context: Context<P>, parser: P): P;
 export function update<T extends object, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
+  assert(Object.getPrototypeOf(base) === Object.prototype);
   return (source, context) =>
     parser(source, merge(ObjectCreate(context), base));
 }
 
 export function context<P extends Parser<object>>(context: Context<P>, parser: P): P;
 export function context<T extends object, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
+  assert(Object.getPrototypeOf(base) === Object.prototype);
   const merge_ = memoize<C, C>(context => merge(ObjectCreate(context), base), new WeakMap());
   return (source, context) =>
     parser(source, merge_(context));
@@ -34,6 +36,7 @@ const merge = template((prop, target, source) => {
   }
   switch (type(source[prop])) {
     case 'Object':
+      assert(Object.getPrototypeOf(source[prop]) === Object.prototype);
       switch (type(target[prop])) {
         case 'Object':
           return target[prop] = isOwnProperty(target, prop)
