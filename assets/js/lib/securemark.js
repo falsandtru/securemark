@@ -3879,7 +3879,7 @@ require = function () {
                 array_1.unshift(as, bs),
                 cs[0].data + rest
             ], ([as, bs], rest) => [
-                bs ? array_1.unshift(as, bs) : as,
+                array_1.unshift(as, bs),
                 rest
             ])));
         },
@@ -3913,7 +3913,7 @@ require = function () {
                 array_1.unshift(as, bs),
                 cs[0].data + rest
             ], ([as, bs], rest) => [
-                bs ? array_1.unshift(as, bs) : as,
+                array_1.unshift(as, bs),
                 rest
             ])));
         },
@@ -3974,7 +3974,7 @@ require = function () {
                     ];
                 }
             }, ([as, bs], rest) => [
-                bs ? array_1.unshift(as, bs) : as,
+                array_1.unshift(as, bs),
                 rest
             ])));
         },
@@ -4592,7 +4592,7 @@ require = function () {
                 array_1.unshift(as, bs),
                 cs[0].data + rest
             ], ([as, bs], rest) => [
-                bs ? array_1.unshift(as, bs) : as,
+                array_1.unshift(as, bs),
                 rest
             ])));
         },
