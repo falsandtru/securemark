@@ -10,6 +10,7 @@ export function creator(cost: number | Parser<unknown>, parser?: Parser<unknown>
     const result = parser!(source, context);
     if (result && context.resource) {
       context.resource.creation -= cost;
+      assert(Object.getPrototypeOf(context.resource).creation % 10 === 0);
     }
     return result;
   };
@@ -21,7 +22,8 @@ export function backtracker(parser: Parser<unknown>): Parser<unknown> {
     if (context.resource?.backtrack! < 0) throw new Error('Too many backtracking');
     const result = parser(source, context);
     if (!result && context.resource) {
-      void --context.resource.backtrack;
+      context.resource.backtrack -= 1;
+      assert(Object.getPrototypeOf(context.resource).backtrack % 10 === 0);
     }
     return result;
   };
