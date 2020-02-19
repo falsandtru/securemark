@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, rewrite, backtracker, convert, open, context, lazy } from '../../../combinator';
-import { unescsource, str } from '../../source';
+import { union, some, rewrite, backtracker, convert, surround, open, context, lazy } from '../../../combinator';
+import { unescsource, str, char } from '../../source';
 import { link } from '../link';
 
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
@@ -14,13 +14,13 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     context({ syntax: { inline: { link: void 0 } } },
     union([link])))));
 
-export const bracket: AutolinkParser.UrlParser.BracketParser = union([
-  str(/^\([^\s\)]{0,100}\)/),
-  str(/^\[[^\s\]]{0,100}\]/),
-  str(/^\{[^\s\}]{0,100}\}/),
-  str(/^\<[^\s\>]{0,100}\>/),
-  str(/^\"[^\s\"]{0,100}\"/),
-]);
+export const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
+  surround('(', some(union([bracket, some(unescsource, ')')])), backtracker(char(')')), true),
+  surround('[', some(union([bracket, some(unescsource, ']')])), backtracker(char(']')), true),
+  surround('{', some(union([bracket, some(unescsource, '}')])), backtracker(char('}')), true),
+  surround('<', some(union([bracket, some(unescsource, '>')])), backtracker(char('>')), true),
+  surround('"', some(unescsource, '"'), backtracker(char('"')), true),
+]));
 
 export function address(source: string): string {
   return source.slice(0, 3) === 'ttp'
