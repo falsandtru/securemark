@@ -44,13 +44,23 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
           switch (tag) {
             case 'bdo':
             case 'bdi':
-              return { state: { in: { bdx: true } } };
+              return {
+                state: { in: { bdx: true } }
+              };
             case 'sup':
             case 'sub':
-              return { state: { in: { supsub: true } } };
+              return {
+                state: { in: { supsub: true } },
+                syntax: { inline: {
+                  annotation: false,
+                  reference: false,
+                }},
+              };
             case 'small':
             default:
-              return { state: { in: { small: true } } };
+              return {
+                state: { in: { small: true } }
+              };
           }
         })(),
         some(union([inline]), `</${tag}>`))),
