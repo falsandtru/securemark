@@ -27,7 +27,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
               class: 'reference',
               'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR'
                 ? ns.shift()!.textContent
-                : undefined
+                : void 0
             },
             trimEnd(ns))),
           rest)

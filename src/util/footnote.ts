@@ -70,14 +70,14 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
           ...title
             ? { title }
             : { class: ref.classList.contains('invalid')
-                  ? undefined
+                  ? void 0
                   : [...ref.classList, 'invalid'].join(' '),
                 'data-invalid-syntax': syntax,
                 'data-invalid-message': 'Missing a content',
               }
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
-          ? undefined
+          ? void 0
           : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
         .firstChild as HTMLAnchorElement;
       assert(ref.title || ref.matches('.invalid'));
