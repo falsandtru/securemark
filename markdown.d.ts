@@ -747,19 +747,19 @@ export namespace MarkdownParser {
           Parser<Text, [
             Parser<Text, [
               BracketParser,
-              SourceParser.UnescapableSourceParser,
+              SourceParser.StrParser,
             ], Context>,
             Parser<Text, [
               BracketParser,
-              SourceParser.UnescapableSourceParser,
+              SourceParser.StrParser,
             ], Context>,
             Parser<Text, [
               BracketParser,
-              SourceParser.UnescapableSourceParser,
+              SourceParser.StrParser,
             ], Context>,
             Parser<Text, [
               BracketParser,
-              SourceParser.UnescapableSourceParser,
+              SourceParser.StrParser,
             ], Context>,
             SourceParser.UnescapableSourceParser,
           ], Context> {

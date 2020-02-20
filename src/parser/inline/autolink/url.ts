@@ -15,11 +15,11 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     union([link])))));
 
 export const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
-  surround('(', some(union([bracket, some(unescsource, ')')])), backtracker(char(')')), true),
-  surround('[', some(union([bracket, some(unescsource, ']')])), backtracker(char(']')), true),
-  surround('{', some(union([bracket, some(unescsource, '}')])), backtracker(char('}')), true),
-  surround('<', some(union([bracket, some(unescsource, '>')])), backtracker(char('>')), true),
-  surround('"', some(unescsource, '"'), backtracker(char('"')), true),
+  surround('(', some(union([bracket, str(/^[^\s\)([{<"]+/)])), char(')'), true),
+  surround('[', some(union([bracket, str(/^[^\s\]([{<"]+/)])), char(']'), true),
+  surround('{', some(union([bracket, str(/^[^\s\}([{<"]+/)])), char('}'), true),
+  surround('<', some(union([bracket, str(/^[^\s\>([{<"]+/)])), char('>'), true),
+  surround('"', some(unescsource, /^[\s"]/), char('"'), true),
 ]));
 
 export function address(source: string): string {
