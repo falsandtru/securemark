@@ -599,8 +599,33 @@ export namespace MarkdownParser {
       export interface TextParser extends
         Inline<'media/text'>,
         Parser<Text[], [
-          SourceParser.StrParser,
+          TextParser.BracketParser,
+          SourceParser.EscapableSourceParser,
         ], Context> {
+      }
+      export namespace TextParser {
+        export interface BracketParser extends
+          Inline<'url/bracket'>,
+          Parser<Text, [
+            Parser<Text, [
+              BracketParser,
+              SourceParser.StrParser,
+            ], Context>,
+            Parser<Text, [
+              BracketParser,
+              SourceParser.StrParser,
+            ], Context>,
+            Parser<Text, [
+              BracketParser,
+              SourceParser.StrParser,
+            ], Context>,
+            Parser<Text, [
+              BracketParser,
+              SourceParser.StrParser,
+            ], Context>,
+            SourceParser.StrParser,
+          ], Context> {
+        }
       }
       export interface ParamParser extends
         Inline<'media/param'>,
