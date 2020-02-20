@@ -11,7 +11,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
   str('***'),
   union([some(inline, '*')]),
   str(/^\*{1,3}/), false,
-  ([as, bs, cs], rest, _, context) => {
+  ([as, bs, cs], rest, context) => {
     if (!isTight(bs, 0, bs.length)) return [unshift(as, bs), cs[0].data + rest];
     switch (cs[0].data) {
       case '*':

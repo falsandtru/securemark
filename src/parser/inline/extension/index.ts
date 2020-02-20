@@ -19,7 +19,7 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexe
   }}},
   startTight(union([some(inline, ']')])))),
   backtracker(clear(char(']'))), false,
-  ([, bs], rest, _, context: DeepMutable<Ctx>) =>
+  ([, bs], rest, context: DeepMutable<Ctx>) =>
     isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
       ? [[defrag(html('a', trimEnd(bs)))], rest]
       : void 0)),

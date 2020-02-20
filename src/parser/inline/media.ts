@@ -24,7 +24,7 @@ export const media: MediaParser = lazy(() => creator(bind(fmap(open(
   ]))),
   (ts: Text[][]) =>
     unshift([ts.length > 1 ? stringify(ts[0]) : ''], ts[ts.length - 1].map(t => t.data))),
-  ([text, INSECURE_URL, ...params]: string[], rest, _, context) => {
+  ([text, INSECURE_URL, ...params]: string[], rest, context) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
     if (text.length > 0 && text.slice(-2).trim() === '') return;
     text = text.trim().replace(/\\(.?)/g, '$1');

@@ -20,7 +20,7 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   }}, state: void 0 },
   startTight(union([some(inline, '))')])))),
   backtracker(clear(str('))')))),
-  (ns, rest, _, context: DeepMutable<Ctx>) =>
+  (ns, rest, context: DeepMutable<Ctx>) =>
     isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack
       ? [[defrag(html('sup', { class: 'annotation' }, trimEnd(ns)))], rest]
       : void 0)));

@@ -65,7 +65,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         })(),
         some(union([inline]), `</${tag}>`))),
         backtracker(str(`</${tag}>`)), false,
-        ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
+        ([as, bs, cs], rest, context: DeepMutable<Ctx>) =>
           isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
             ? [[elem(tag, as, trimEnd(bs), cs, context)], rest]
             : void 0))),
@@ -81,7 +81,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         startTight(
         some(union([inline]), `</${tag}>`)),
         backtracker(str(`</${tag}>`)), false,
-        ([as, bs, cs], rest, _, context: DeepMutable<Ctx>) =>
+        ([as, bs, cs], rest, context: DeepMutable<Ctx>) =>
           isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
             ? [[elem(tag, as, trimEnd(bs), cs, {})], rest]
             : void 0)),

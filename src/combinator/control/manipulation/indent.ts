@@ -16,7 +16,7 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
       some(line(rewrite(
         source => [[], source.slice(firstline(source).length)],
         open(indent, source => [[firstline(source, false)], ''])))))),
-    (rs, rest, _, context) => {
+    (rs, rest, context) => {
       const result = parser(rs.join('\n'), context);
       return result && exec(result) === ''
         ? [eval(result), rest]

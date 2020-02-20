@@ -11,7 +11,7 @@ export const ruby: RubyParser = creator(bind(
     surround('[', str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), backtracker(clear(char(']')))),
     backtracker(surround('(', str(/^(?:\\[^\n]|[^\)\n])+/), backtracker(clear(char(')'))))),
   ]),
-  ([{ data: t }, { data: r }], rest, _, context) => {
+  ([{ data: t }, { data: r }], rest, context) => {
     const texts = parse(t, context);
     const rubies = parse(r, context);
     if (!texts.join('').trim() || !rubies.join('').trim()) return;

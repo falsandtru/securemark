@@ -20,7 +20,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
   }}, state: void 0 },
   subline(subsequence([alias, startTight(some(inline, ']]'))])))),
   backtracker(clear(str(']]')))),
-  (ns, rest, _, context: DeepMutable<Ctx>) =>
+  (ns, rest, context: DeepMutable<Ctx>) =>
     isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack
       ? Result(
           defrag(html('sup',

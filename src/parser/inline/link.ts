@@ -42,7 +42,7 @@ export const link: LinkParser = lazy(() => subline(creator(bind(fmap(
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(clear(str(/^ ?}/))))),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
-  ([content, param]: [(HTMLElement | Text)[], Text[]], rest, _, context: DeepMutable<MarkdownParser.Context>) => {
+  ([content, param]: [(HTMLElement | Text)[], Text[]], rest, context: DeepMutable<MarkdownParser.Context>) => {
     assert(param.every(n => n instanceof Text));
     if (!isTight(content, 0, content.length)) {
       context.resource && --context.resource.backtrack;
