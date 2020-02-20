@@ -3,6 +3,7 @@
 ## 0.147.1
 
 - Fix HTML parser to disallow annotation and reference parsers in `sup` or `sub` HTML tag.
+- Fix annotation and reference parsers to reset the state of HTML parser.
 
 ## 0.147.0
 

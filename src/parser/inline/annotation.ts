@@ -16,7 +16,7 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
     media: false,
     link: true,
     autolink: true, // Redundant
-  }}},
+  }}, state: void 0 },
   startTight(union([some(inline, '))')])))),
   backtracker(clear(str('))')))),
   (ns, rest, _, context: DeepMutable<Ctx>) =>

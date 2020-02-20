@@ -16,7 +16,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     media: false,
     link: true,
     autolink: true, // Redundant
-  }}},
+  }}, state: void 0 },
   subline(subsequence([alias, startTight(some(inline, ']]'))])))),
   backtracker(clear(str(']]')))),
   (ns, rest, _, context: DeepMutable<Ctx>) =>
