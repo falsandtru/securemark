@@ -5,6 +5,7 @@ import { block } from '../block';
 import { normalize } from './normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
+import { push } from 'spica/array';
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { footnotes }: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
@@ -40,7 +41,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
-      void adds.push(...es.map<typeof adds[number]>(el => [el, base]));
+      void push(adds, es.map<typeof adds[number]>(el => [el, base]));
       while (adds.length > 0) {
         assert(rev === revision);
         const [el, base] = adds.shift()!;
@@ -53,7 +54,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
     for (const [, es] of pairs.splice(index, pairs.length - sourceSegments.length)) {
       assert(rev === revision);
       if (es.length === 0) continue;
-      void dels.push(...es);
+      void push(dels, es);
     }
     assert(pairs.length === sourceSegments.length);
     while (adds.length > 0) {

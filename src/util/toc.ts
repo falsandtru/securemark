@@ -1,4 +1,4 @@
-import { html, frag } from 'typed-dom';
+import { html } from 'typed-dom';
 import { push } from 'spica/array';
 
 const Tags = [...Array(6)].map((_, i) => `H${i + 1}`);
@@ -15,11 +15,11 @@ type Tree = readonly [HTMLHeadingElement, Tree][];
 
 function parse(node: Tree, index: number[] = []): HTMLUListElement {
   return html('ul', node.map(([el, cs], i) => {
-    const idx = [...index, i + 1];
-    return html('li', [
-      html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx.join('.') }, el.textContent!),
-      cs.length > 0 ? parse(cs, idx) : frag()
-    ]);
+    const idx = push(index.slice(), [i + 1]);
+    return html('li',
+      push<HTMLElement>(
+        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx.join('.') }, el.textContent!)],
+        cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
 
