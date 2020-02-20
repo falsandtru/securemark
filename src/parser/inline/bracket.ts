@@ -1,21 +1,10 @@
 import { BracketParser, inline } from '../inline';
-import { union, some, open, close, lazy } from '../../combinator';
+import { union, some, surround, lazy } from '../../combinator';
 import { char } from '../source';
+import { unshift } from 'spica/array';
 
 export const bracket: BracketParser = lazy(() => union([
-  open(
-    char('('), close(
-    some(inline, ')'),
-    char(')'), true, void 0,
-    (ns, rest) => [ns, rest]), true),
-  open(
-    char('['), close(
-    some(inline, ']'),
-    char(']'), true, void 0,
-    (ns, rest) => [ns, rest]), true),
-  open(
-    char('{'), close(
-    some(inline, '}'),
-    char('}'), true, void 0,
-    (ns, rest) => [ns, rest]), true),
+  surround(char('('), some(inline, ')'), char(')'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('['), some(inline, ']'), char(']'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('{'), some(inline, '}'), char('}'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ]));
