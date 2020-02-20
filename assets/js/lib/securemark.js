@@ -2470,6 +2470,7 @@ require = function () {
             const normalize_1 = _dereq_('./normalize');
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
+            const array_1 = _dereq_('spica/array');
             function bind(target, {footnotes}) {
                 const pairs = [];
                 const adds = [];
@@ -2505,7 +2506,7 @@ require = function () {
                         ]);
                         if (es.length === 0)
                             continue;
-                        void adds.push(...es.map(el => [
+                        void array_1.push(adds, es.map(el => [
                             el,
                             base
                         ]));
@@ -2520,7 +2521,7 @@ require = function () {
                     for (const [, es] of pairs.splice(index, pairs.length - sourceSegments.length)) {
                         if (es.length === 0)
                             continue;
-                        void dels.push(...es);
+                        void array_1.push(dels, es);
                     }
                     while (adds.length > 0) {
                         const [el, base] = adds.shift();
@@ -2564,7 +2565,8 @@ require = function () {
             '../../util/footnote': 144,
             '../block': 61,
             '../segment': 118,
-            './normalize': 58
+            './normalize': 58,
+            'spica/array': 6
         }
     ],
     57: [
@@ -3962,18 +3964,12 @@ require = function () {
                     ];
                 switch (cs[0].data) {
                 case '*':
-                    return combinator_1.fmap(strong_1.strong, ms => 'id' in ms[0] ? [util_1.defrag(typed_dom_1.html('strong', [
-                            util_1.defrag(typed_dom_1.html('em', util_1.trimEnd(bs))),
-                            ...ms[0].childNodes
-                        ]))] : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
+                    return combinator_1.fmap(strong_1.strong, ms => 'id' in ms[0] ? void ms[0].prepend(util_1.defrag(typed_dom_1.html('em', util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
                 case '**':
-                    return combinator_1.fmap(emphasis_1.emphasis, ms => 'id' in ms[0] ? [util_1.defrag(typed_dom_1.html('em', [
-                            util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs))),
-                            ...ms[0].childNodes
-                        ]))] : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
+                    return combinator_1.fmap(emphasis_1.emphasis, ms => 'id' in ms[0] ? void ms[0].prepend(util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
@@ -6238,18 +6234,12 @@ require = function () {
             exports.toc = toc;
             function parse(node, index = []) {
                 return typed_dom_1.html('ul', node.map(([el, cs], i) => {
-                    const idx = [
-                        ...index,
-                        i + 1
-                    ];
-                    return typed_dom_1.html('li', [
-                        typed_dom_1.html('a', {
+                    const idx = array_1.push(index.slice(), [i + 1]);
+                    return typed_dom_1.html('li', array_1.push([typed_dom_1.html('a', {
                             href: `#${ el.id }`,
                             rel: 'noopener',
                             'data-index': idx.join('.')
-                        }, el.textContent),
-                        cs.length > 0 ? parse(cs, idx) : typed_dom_1.frag()
-                    ]);
+                        }, el.textContent)], cs.length > 0 ? [parse(cs, idx)] : []));
                 }));
             }
             function cons(hs) {
