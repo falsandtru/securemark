@@ -33,7 +33,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
       case '***':
         return [[html('em', [defrag(html('strong', trimEnd(bs)))])], rest];
       default:
-        return [push(unshift(as, bs), cs), rest];
+        throw new Error('Unreachable');
     }
   },
   ([as, bs], rest) => [unshift(as, bs), rest])));
