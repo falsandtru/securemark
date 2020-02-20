@@ -14,8 +14,9 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     reference: false,
     extension: false,
     media: false,
-    link: true,
-    autolink: true, // Redundant
+    // Redundant
+    //link: true,
+    //autolink: true,
   }}, state: void 0 },
   subline(subsequence([alias, startTight(some(inline, ']]'))])))),
   backtracker(clear(str(']]')))),

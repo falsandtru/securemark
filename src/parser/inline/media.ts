@@ -16,7 +16,7 @@ export const cache = new Cache<string, HTMLElement>(10);
 
 export const media: MediaParser = lazy(() => creator(bind(fmap(open(
   '!',
-  guard(context => context.syntax?.inline?.media ?? true,
+  guard(context => (context.syntax?.inline?.link ?? true) && (context.syntax?.inline?.media ?? true),
   tails([
     dup(surround(/^\[(?!\s)/, some(union([bracket, some(escsource, /^(?:\\?\n|[\]([{<"])/)]), ']'), backtracker(clear(char(']'))), true)),
     // TODO: Count this backtracking.
@@ -24,7 +24,7 @@ export const media: MediaParser = lazy(() => creator(bind(fmap(open(
   ]))),
   (ts: Text[][]) =>
     unshift([ts.length > 1 ? stringify(ts[0]) : ''], ts[ts.length - 1].map(t => t.data))),
-  ([text, INSECURE_URL, ...params]: string[], rest) => {
+  ([text, INSECURE_URL, ...params]: string[], rest, _, context) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
     if (text.length > 0 && text.slice(-2).trim() === '') return;
     text = text.trim().replace(/\\(.?)/g, '$1');
@@ -43,7 +43,7 @@ export const media: MediaParser = lazy(() => creator(bind(fmap(open(
       link as MediaParser,
       ([el]: [HTMLAnchorElement]) =>
         [define(el, { target: '_blank' }, [define(media, { 'data-src': el.getAttribute('href') })])])
-      (`{ ${INSECURE_URL}${params.join('')} }${rest}`, {});
+      (`{ ${INSECURE_URL}${params.join('')} }${rest}`, context);
   })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => rewrite(
