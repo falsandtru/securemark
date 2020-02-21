@@ -1,5 +1,5 @@
 import { InsertionParser, inline } from '../inline';
-import { union, some, creator, surround, lazy} from '../../combinator';
+import { union, some, creator, surround, lazy } from '../../combinator';
 import { isTight, trimEnd, defrag } from '../util';
 import { str } from '../source';
 import { html } from 'typed-dom';
