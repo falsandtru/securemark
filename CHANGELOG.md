@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.147.2
+
+- Refactoring.
+
 ## 0.147.1
 
 - Fix HTML parser to disallow annotation and reference parsers in `sup` or `sub` HTML tag.
