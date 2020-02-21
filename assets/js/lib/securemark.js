@@ -3968,10 +3968,7 @@ require = function () {
                         rest
                     ];
                 default:
-                    return [
-                        array_1.push(array_1.unshift(as, bs), cs),
-                        rest
-                    ];
+                    throw new Error('Unreachable');
                 }
             }, ([as, bs], rest) => [
                 array_1.unshift(as, bs),
