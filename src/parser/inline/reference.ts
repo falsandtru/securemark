@@ -4,7 +4,7 @@ import { startTight, isTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => creator(bind(surround(
+export const reference: ReferenceParser = lazy(() => creator(subline(bind(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   context({ syntax: { inline: {
@@ -16,7 +16,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     //link: true,
     //autolink: true,
   }}, state: void 0 },
-  subline(subsequence([alias, startTight(some(inline, ']]'))])))),
+  subsequence([alias, startTight(some(inline, ']]'))]))),
   ']]'),
   (ns, rest) =>
     isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
@@ -30,7 +30,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
             },
             trimEnd(ns))),
           rest)
-      : void 0)));
+      : void 0))));
 
 const alias: ReferenceParser.AliasParser = creator(focus(
   /^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/,
