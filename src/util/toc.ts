@@ -15,7 +15,7 @@ type Tree = readonly [HTMLHeadingElement, Tree][];
 
 function parse(node: Tree, index: number[] = []): HTMLUListElement {
   return html('ul', node.map(([el, cs], i) => {
-    const idx = push(index.slice(), [i + 1]);
+    const idx = push(index.slice(0), [i + 1]);
     return html('li',
       push<HTMLElement>(
         [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx.join('.') }, el.textContent!)],

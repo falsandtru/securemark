@@ -60,14 +60,17 @@ export function startTight<P extends Parser<unknown>>(parser: P): P;
 export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
   return (source, context) => {
     if (source === '') return;
-    switch (true) {
-      case source[0] === '<':
+    switch (source[0]) {
+      case ' ':
+      case '　':
+      case '\t':
+      case '\n':
+        return;
+      case '<':
         switch (true) {
           case source.length >= 7
-            && source[0] === '<'
             && source[1] === '#'
             && comment(source, context):
-            return;
           case source.length >= 5
             && source[1] === 'w'
             && source.slice(0, 5) === '<wbr>':
@@ -75,16 +78,12 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
             && source[1] === 'b'
             && source.slice(0, 4) === '<br>':
             return;
-          default:
-            return parser(source, context);
         }
-      case source[0] === ' ':
-      case source[0] === '\n':
-      case (source[0] === '\\' ? source[1] || '' : source[0]).trim() === '':
-        return;
-      default:
-        return parser(source, context);
+        break;
     }
+    return (source[0] === '\\' ? source[1] || '' : source[0]).trim()
+      ? parser(source, context)
+      : void 0;
   }
 }
 
