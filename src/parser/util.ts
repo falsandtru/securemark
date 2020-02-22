@@ -1,5 +1,5 @@
 import { Parser, fmap } from '../combinator';
-import { comment } from './inline/comment';
+import { htmlentity, comment } from './inline';
 import { define, apply } from 'typed-dom';
 import { pop } from 'spica/array';
 
@@ -66,11 +66,19 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
       case '\t':
       case '\n':
         return;
+      case '&':
+        switch (true) {
+          case source.length > 2
+            && source[1] !== ' '
+            && !!htmlentity(source, context):
+            return;
+        }
+        break;
       case '<':
         switch (true) {
           case source.length >= 7
             && source[1] === '#'
-            && comment(source, context):
+            && !!comment(source, context):
           case source.length >= 5
             && source[1] === 'w'
             && source.slice(0, 5) === '<wbr>':
@@ -81,7 +89,7 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
         }
         break;
     }
-    return (source[0] === '\\' ? source[1] || '' : source[0]).trim()
+    return (source[0] === '\\' ? source[1] : source[0])?.trim()
       ? parser(source, context)
       : void 0;
   }

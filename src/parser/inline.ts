@@ -74,6 +74,8 @@ export const inline: InlineParser = union([
   text
 ]);
 
+export { htmlentity } from './inline/htmlentity';
+export { comment } from './inline/comment';
 export { link } from './inline/link';
 export { media } from './inline/media';
 export { shortmedia } from './inline/shortmedia';
