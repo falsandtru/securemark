@@ -1,7 +1,7 @@
-import { Parser, Ctx, fmap } from '../../../combinator';
+import { Parser, fmap } from '../../../combinator';
 import { define } from 'typed-dom';
 
-export function indexee<T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>): Parser<T, D, C>;
+export function indexee<P extends Parser<unknown>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
   return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || void 0 })]);
 }

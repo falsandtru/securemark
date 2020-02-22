@@ -1,27 +1,19 @@
-import { Parser, Result, Ctx, Data, SubParsers, Context, IntermediateParser, SubData } from '../../data/parser';
+import { Parser, Result, Ctx, Data, SubParsers, Context, SubData } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { unshift, push } from 'spica/array';
 
-export function surround<T, U, D extends Parser<unknown, any, C>[], C extends Ctx>(
-  opener: string | RegExp | Parser<T, any, C>, parser: Parser<T, D, C>, closer: string | RegExp | Parser<T, any, C>, optional: false,
-  f?: (rss: [T[], T[], T[]], rest: string, context: C) => Result<U, D, C>,
-): Parser<U, D, C>;
-export function surround<T, U, D extends Parser<unknown, any, C>[], C extends Ctx>(
-  opener: string | RegExp | Parser<T, any, C>, parser: Parser<T, D, C>, closer: string | RegExp | Parser<T, any, C>, optional?: boolean,
-  f?: (rss: [T[], T[] | undefined, T[]], rest: string, context: C) => Result<U, D, C>,
-): Parser<U, D, C>;
 export function surround<P extends Parser<unknown>, S = never>(
-  opener: string | RegExp | Parser<S, any, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, any, Context<P>>, optional: false,
+  opener: string | RegExp | Parser<S, any, Context<P>>, parser: P, closer: string | RegExp | Parser<S, any, Context<P>>, optional: false,
   f?: (rss: [S[], SubData<P>[], S[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
   g?: (rss: [S[], SubData<P>[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
 ): P;
 export function surround<P extends Parser<unknown>, S = never>(
-  opener: string | RegExp | Parser<S, any, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: boolean,
+  opener: string | RegExp | Parser<S, any, Context<P>>, parser: P, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: boolean,
   f?: (rss: [S[], SubData<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
   g?: (rss: [S[], SubData<P>[] | undefined], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
 ): P;
 export function surround<T, D extends Parser<unknown>[]>(
-  opener: string | RegExp | Parser<T, any>, parser: IntermediateParser<Parser<T, D>>, closer: string | RegExp | Parser<T, any>, optional: boolean = false,
+  opener: string | RegExp | Parser<T, any>, parser: Parser<T, D>, closer: string | RegExp | Parser<T, any>, optional: boolean = false,
   f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T, D, Ctx>,
   g?: (rss: [T[], T[]], rest: string, context: Ctx) => Result<T, D, Ctx>,
 ): Parser<T, D> {

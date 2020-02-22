@@ -24,9 +24,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     memoize(([, tag]) => tag,
     tag =>
       surround(
-        str(`<${tag}`),
-        some(union([attribute])),
-        backtracker(str('>')), true,
+        str(`<${tag}`), some(union([attribute])), backtracker(str('>')), true,
         ([, as = []], rest) => [
           [h(tag as 'span', makeAttrs(attributes[tag], as.map(t => t.data), [], 'html'))],
           rest
@@ -36,9 +34,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     memoize(([, tag]) => tag,
     tag =>
       surround(surround(
-        str(`<${tag}`),
-        some(union([attribute])),
-        backtracker(str('>')), true),
+        str(`<${tag}`), some(attribute), backtracker(str('>')), true),
         startTight(
         context((() => {
           switch (tag) {
@@ -75,9 +71,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     // and it makes a vulnerability of memory leaks.
     ([, tag]) =>
       surround(surround(
-        str(`<${tag}`),
-        some(union([attribute])),
-        backtracker(str('>')), true),
+        str(`<${tag}`), some(attribute), backtracker(str('>')), true),
         startTight(
         some(union([inline]), `</${tag}>`)),
         backtracker(str(`</${tag}>`)), false,
