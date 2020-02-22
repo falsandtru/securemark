@@ -2,9 +2,9 @@ import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, subline, creator, backtracker, surround, clear, match, memoize, guard, context, lazy, fmap, bind, eval } from '../../combinator';
+import { union, inits, tails, some, subline, creator, surround, match, memoize, guard, context, lazy, fmap, bind, eval } from '../../combinator';
 import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
-import { str, char } from '../source';
+import { str } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
 import { frag, html, define } from 'typed-dom';
@@ -35,19 +35,15 @@ export const link: LinkParser = lazy(() => subline(creator(bind(fmap(
           autolink: false,
         }}},
         startTight(some(inline, /^\\?\n|^]/))),
-        backtracker(clear(char(']'))),
+        ']',
         true),
     ])),
-    // TODO: Count this backtracking.
-    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(clear(str(/^ ?}/))))),
+    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
   ([content, param]: [(HTMLElement | Text)[], Text[]], rest, context: DeepMutable<MarkdownParser.Context>) => {
     assert(param.every(n => n instanceof Text));
-    if (!isTight(content, 0, content.length)) {
-      context.resource && --context.resource.backtrack;
-      return;
-    }
+    if (!isTight(content, 0, content.length)) return;
     switch (true) {
       case content.length === 0:
         break;

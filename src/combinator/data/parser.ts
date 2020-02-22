@@ -1,7 +1,6 @@
 export interface Ctx {
   readonly resource?: {
     readonly creation: number;
-    readonly backtrack: number;
   };
 }
 

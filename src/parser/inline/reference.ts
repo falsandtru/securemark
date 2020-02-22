@@ -1,10 +1,8 @@
 import { ReferenceParser } from '../inline';
-import { Result, Ctx, subsequence, some, subline, focus, creator, backtracker, surround, clear, guard, context, lazy, bind } from '../../combinator';
+import { Result, subsequence, some, subline, focus, creator, surround, guard, context, lazy, bind } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
-import { str } from '../source';
 import { html } from 'typed-dom';
-import { DeepMutable } from 'spica/type';
 
 export const reference: ReferenceParser = lazy(() => creator(bind(surround(
   '[[',
@@ -19,9 +17,9 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     //autolink: true,
   }}, state: void 0 },
   subline(subsequence([alias, startTight(some(inline, ']]'))])))),
-  backtracker(clear(str(']]')))),
-  (ns, rest, context: DeepMutable<Ctx>) =>
-    isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack
+  ']]'),
+  (ns, rest) =>
+    isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
       ? Result(
           defrag(html('sup',
             {

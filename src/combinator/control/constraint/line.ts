@@ -24,9 +24,10 @@ export function subline<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): P
     if (source === '') return;
     const result = parser(source, context);
     assert(check(source, result));
-    if (!result) return result;
-    if (source.length - exec(result).length <= firstline(source, false).length) return result;
-    context?.resource && void --context.resource.backtrack;
+    if (!result) return;
+    return source.length - exec(result).length <= firstline(source, false).length
+      ? result
+      : void 0;
   };
 }
 

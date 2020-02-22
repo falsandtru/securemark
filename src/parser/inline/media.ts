@@ -1,10 +1,10 @@
 import { encodeURI } from 'spica/global';
 import { ObjectAssign } from 'spica/alias';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, rewrite, creator, backtracker, surround, open, clear, guard, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, rewrite, creator, surround, open, guard, lazy, fmap, bind } from '../../combinator';
 import { dup, stringify } from '../util';
 import { link, attributes, uri, attribute } from './link';
-import { escsource, str, char } from '../source';
+import { escsource, str } from '../source';
 import { makeAttrs } from './html';
 import { html, define, text } from 'typed-dom';
 import { Cache } from 'spica/cache';
@@ -18,9 +18,8 @@ export const media: MediaParser = lazy(() => creator(bind(fmap(open(
   '!',
   guard(context => (context.syntax?.inline?.link ?? true) && (context.syntax?.inline?.media ?? true),
   tails([
-    dup(surround(/^\[(?!\s)/, some(union([bracket, some(escsource, /^(?:\\?\n|[\]([{<"])/)]), ']'), backtracker(clear(char(']'))), true)),
-    // TODO: Count this backtracking.
-    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), backtracker(clear(str(/^ ?}/))))),
+    dup(surround(/^\[(?!\s)/, some(union([bracket, some(escsource, /^(?:\\?\n|[\]([{<"])/)]), ']'), ']', true)),
+    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ]))),
   (ts: Text[][]) =>
     unshift([ts.length > 1 ? stringify(ts[0]) : ''], ts[ts.length - 1].map(t => t.data))),
@@ -48,10 +47,10 @@ export const media: MediaParser = lazy(() => creator(bind(fmap(open(
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => rewrite(
   union([
-    surround('(', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)])), backtracker(char(')')), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('[', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\]([{<"\\])+/)])), backtracker(char(']')), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('{', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\}([{<"\\])+/)])), backtracker(char('}')), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('<', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\>([{<"\\])+/)])), backtracker(char('>')), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('"', str(/^(?:\\[^\n]?|[^\n([{<"\\])+/), backtracker(char('"')), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    surround('(', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)])), ')', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    surround('[', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\]([{<"\\])+/)])), ']', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    surround('{', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\}([{<"\\])+/)])), '}', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    surround('<', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\>([{<"\\])+/)])), '>', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+    surround('"', str(/^(?:\\[^\n]?|[^\n([{<"\\])+/), '"', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   ]),
   source => [[text(source)], '']));

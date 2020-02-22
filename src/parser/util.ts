@@ -1,6 +1,5 @@
-import { Parser, Ctx, fmap } from '../combinator';
-import { syntax as comment } from './inline/comment';
-import { DeepMutable } from 'spica/type';
+import { Parser, fmap } from '../combinator';
+import { comment } from './inline/comment';
 import { define, apply } from 'typed-dom';
 import { pop } from 'spica/array';
 
@@ -59,7 +58,7 @@ function isVisible(node: HTMLElement | Text | undefined, dir: 'start' | 'end', o
 
 export function startTight<P extends Parser<unknown>>(parser: P): P;
 export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
-  return (source, context: DeepMutable<Ctx>) => {
+  return (source, context) => {
     if (source === '') return;
     switch (true) {
       case source[0] === '<':
@@ -67,8 +66,7 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
           case source.length >= 7
             && source[0] === '<'
             && source[1] === '#'
-            && comment.test(source):
-            context.resource && void --context.resource.backtrack;
+            && comment(source, context):
             return;
           case source.length >= 5
             && source[1] === 'w'

@@ -31,7 +31,7 @@ export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = recover(localize(
-  update({ resource: { creation: 100 * 1000, backtrack: 100 * 1000 } },
+  update({ resource: { creation: 100 * 1000 } },
   union([
     emptyline,
     horizontalrule,

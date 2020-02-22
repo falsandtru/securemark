@@ -1,10 +1,8 @@
 import { ExtensionParser, inline } from '../../inline';
-import { Ctx, union, some, subline, creator, backtracker, surround, clear, context, lazy, fmap } from '../../../combinator';
+import { union, some, subline, creator, surround, context, lazy, fmap } from '../../../combinator';
 import { startTight, isTight, trimEnd, defrag } from '../../util';
 import { indexee } from './indexee';
-import { char } from '../../source';
 import { html, define } from 'typed-dom';
-import { DeepMutable } from 'spica/type';
 
 export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexee(surround(
   '[#',
@@ -18,9 +16,9 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexe
     autolink: false,
   }}},
   startTight(union([some(inline, ']')])))),
-  backtracker(clear(char(']'))), false,
-  ([, bs], rest, context: DeepMutable<Ctx>) =>
-    isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack
+  ']', false,
+  ([, bs], rest) =>
+    isTight(bs, 0, bs.length)
       ? [[defrag(html('a', trimEnd(bs)))], rest]
       : void 0)),
   ([el]: [HTMLAnchorElement]) =>
