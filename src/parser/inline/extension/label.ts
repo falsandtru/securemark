@@ -1,17 +1,17 @@
 import { ExtensionParser } from '../../inline';
-import { union, creator, surround, fmap } from '../../../combinator';
+import { union, validate, creator, surround, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom';
 
 const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
 
-export const label: ExtensionParser.LabelParser = creator(fmap(
+export const label: ExtensionParser.LabelParser = creator(validate(['[$', '$'], fmap(
   union([
     surround('[', body, ']'),
     body,
   ]),
   ([text]) =>
-    [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])]));
+    [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])])));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

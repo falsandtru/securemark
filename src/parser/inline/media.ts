@@ -1,7 +1,7 @@
 import { encodeURI } from 'spica/global';
 import { ObjectAssign } from 'spica/alias';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, rewrite, creator, surround, open, guard, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, validate, rewrite, creator, surround, open, guard, lazy, fmap, bind } from '../../combinator';
 import { dup, stringify } from '../util';
 import { link, attributes, uri, attribute } from './link';
 import { escsource, str } from '../source';
@@ -14,7 +14,7 @@ const url = html('a');
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = lazy(() => creator(bind(fmap(open(
+export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind(fmap(open(
   '!',
   guard(context => (context.syntax?.inline?.link ?? true) && (context.syntax?.inline?.media ?? true),
   tails([
@@ -43,7 +43,7 @@ export const media: MediaParser = lazy(() => creator(bind(fmap(open(
       ([el]: [HTMLAnchorElement]) =>
         [define(el, { target: '_blank' }, [define(media, { 'data-src': el.getAttribute('href') })])])
       (`{ ${INSECURE_URL}${params.join('')} }${rest}`, context);
-  })));
+  }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => rewrite(
   union([

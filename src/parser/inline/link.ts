@@ -2,7 +2,7 @@ import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, subline, creator, surround, match, memoize, guard, context, lazy, fmap, bind, eval } from '../../combinator';
+import { union, inits, tails, some, subline, validate, creator, surround, match, memoize, guard, context, lazy, fmap, bind, eval } from '../../combinator';
 import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str } from '../source';
 import { makeAttrs } from './html';
@@ -18,7 +18,7 @@ export const attributes = {
 } as const;
 void ObjectSetPrototypeOf(attributes, null);
 
-export const link: LinkParser = lazy(() => subline(creator(bind(fmap(
+export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], bind(fmap(
   guard(context => context.syntax?.inline?.link ?? true,
   tails([
     dup(union([
@@ -79,7 +79,7 @@ export const link: LinkParser = lazy(() => subline(creator(bind(fmap(
       makeAttrs(attributes, params, [...el.classList], 'link'),
       { nofollow: void 0 }));
     return [[el], rest];
-  }))));
+  })))));
 
 export const uri: LinkParser.ParamParser.UriParser = creator(match(
   /^ ?(?! )/,

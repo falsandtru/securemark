@@ -1,11 +1,11 @@
 import { AutolinkParser } from '../../inline';
-import { inits, some, fmap } from '../../../combinator';
+import { inits, some, validate, fmap } from '../../../combinator';
 import { stringify } from '../../util';
 import { account } from './account';
 import { hashtag } from './hashtag';
 import { html } from 'typed-dom';
 
-export const channel: AutolinkParser.ChannelParser = fmap(
+export const channel: AutolinkParser.ChannelParser = validate('@', fmap(
   inits([
     account,
     some(hashtag),
@@ -13,4 +13,4 @@ export const channel: AutolinkParser.ChannelParser = fmap(
   ns =>
     ns.length > 1
       ? [html('a', { class: 'channel', rel: 'noopener' }, stringify(ns))]
-      : ns);
+      : ns));

@@ -1,7 +1,7 @@
 import { AutolinkParser } from '../../inline';
-import { focus, creator } from '../../../combinator';
+import { validate, focus, creator } from '../../../combinator';
 import { html } from 'typed-dom';
 
-export const account: AutolinkParser.AccountParser = creator(focus(
+export const account: AutolinkParser.AccountParser = creator(validate('@', focus(
   /^@[A-Za-z0-9]+(?:-[0-9A-Za-z]+)*/,
-  source => [[html('a', { class: 'account', rel: 'noopener' }, source)], '']));
+  source => [[html('a', { class: 'account', rel: 'noopener' }, source)], ''])));

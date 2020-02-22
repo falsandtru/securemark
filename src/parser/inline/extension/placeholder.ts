@@ -1,12 +1,12 @@
 import { ExtensionParser, inline } from '../../inline';
-import { union, some, creator, surround, lazy } from '../../../combinator';
+import { union, some, validate, creator, surround, lazy } from '../../../combinator';
 import { isTight, trimEnd, defrag } from '../../util';
 import { str, char } from '../../source';
 import { html } from 'typed-dom';
 import { unshift, push } from 'spica/array';
 
 // Already used symbols: !@$&*<
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(validate(['[:', '[^'], surround(
   str(/^\[[:^]/),
   some(union([inline]), ']'),
   char(']'), false,
@@ -16,4 +16,4 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
       : push(unshift(as, bs), cs),
     rest
   ],
-  ([as, bs], rest) => [unshift(as, bs), rest])));
+  ([as, bs], rest) => [unshift(as, bs), rest]))));
