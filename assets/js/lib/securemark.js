@@ -1726,10 +1726,8 @@ require = function () {
                         return;
                     const result = parser(source, context);
                     if (!result)
-                        return result;
-                    if (source.length - parser_1.exec(result).length <= firstline(source, false).length)
-                        return result;
-                    (context === null || context === void 0 ? void 0 : context.resource) && void --context.resource.backtrack;
+                        return;
+                    return source.length - parser_1.exec(result).length <= firstline(source, false).length ? result : void 0;
                 };
             }
             exports.subline = subline;
@@ -2035,19 +2033,6 @@ require = function () {
                 };
             }
             exports.creator = creator;
-            function backtracker(parser) {
-                return (source, context) => {
-                    var _a;
-                    if (((_a = context.resource) === null || _a === void 0 ? void 0 : _a.backtrack) < 0)
-                        throw new Error('Too many backtracking');
-                    const result = parser(source, context);
-                    if (!result && context.resource) {
-                        context.resource.backtrack -= 1;
-                    }
-                    return result;
-                };
-            }
-            exports.backtracker = backtracker;
         },
         {}
     ],
@@ -2474,21 +2459,21 @@ require = function () {
                     source = normalize_1.normalize(source);
                     const sourceSegments = segment_1.segment(source);
                     const targetSegments = pairs.map(([seg]) => seg);
-                    let start = 0;
-                    for (; start < targetSegments.length; ++start) {
-                        if (targetSegments[start] !== sourceSegments[start])
+                    let head = 0;
+                    for (; head < targetSegments.length; ++head) {
+                        if (targetSegments[head] !== sourceSegments[head])
                             break;
                     }
-                    if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && start === sourceSegments.length)
+                    if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length)
                         return;
-                    let end = 0;
-                    for (; start + end < targetSegments.length && start + end < sourceSegments.length; ++end) {
-                        if (targetSegments[targetSegments.length - end - 1] !== sourceSegments[sourceSegments.length - end - 1])
+                    let last = 0;
+                    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+                        if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1])
                             break;
                     }
-                    const base = next(start);
-                    let index = start;
-                    for (; index < sourceSegments.length - end; ++index) {
+                    const base = next(head);
+                    let index = head;
+                    for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
                         const es = combinator_1.eval(block_1.block(seg, {}));
                         void pairs.splice(index, 0, [
@@ -2673,12 +2658,7 @@ require = function () {
             const paragraph_1 = _dereq_('./block/paragraph');
             const locale_1 = _dereq_('./locale');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.block = combinator_1.recover(locale_1.localize(combinator_1.update({
-                resource: {
-                    creation: 100 * 1000,
-                    backtrack: 100 * 1000
-                }
-            }, combinator_1.union([
+            exports.block = combinator_1.recover(locale_1.localize(combinator_1.update({ resource: { creation: 100 * 1000 } }, combinator_1.union([
                 line_1.emptyline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -3322,8 +3302,8 @@ require = function () {
             exports.address = combinator_1.line(combinator_1.creator(combinator_1.fmap(combinator_1.sequence([
                 source_1.str(/^>+(?!>)(?=\S+\s*$)/),
                 combinator_1.union([
-                    combinator_1.focus(/^[A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*(?=\s*$)/, combinator_1.backtracker(combinator_1.convert(source => `{ ${ source } }`, inline_1.link))),
-                    combinator_1.focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, combinator_1.backtracker(combinator_1.convert(source => `{ ${ inline_1.address(source) }${ inline_1.attribute(source) } }`, inline_1.link)))
+                    combinator_1.focus(/^[A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*(?=\s*$)/, combinator_1.convert(source => `{ ${ source } }`, inline_1.link)),
+                    combinator_1.focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, combinator_1.convert(source => `{ ${ inline_1.address(source) }${ inline_1.attribute(source) } }`, inline_1.link))
                 ])
             ]), ([{data: flag}, link]) => [typed_dom_1.define(link, {
                     class: 'address',
@@ -3581,7 +3561,6 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
-            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.annotation = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.surround('((', combinator_1.guard(context => {
                 var _a, _b, _c;
@@ -3596,7 +3575,7 @@ require = function () {
                     }
                 },
                 state: void 0
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), combinator_1.backtracker(combinator_1.clear(source_1.str('))')))), (ns, rest, context) => util_1.isTight(ns, 0, ns.length) || context.resource && void --context.resource.backtrack ? [
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), '))'), (ns, rest) => util_1.isTight(ns, 0, ns.length) ? [
                 [util_1.defrag(typed_dom_1.html('sup', { class: 'annotation' }, util_1.trimEnd(ns)))],
                 rest
             ] : void 0)));
@@ -3604,7 +3583,6 @@ require = function () {
         {
             '../../combinator': 30,
             '../inline': 81,
-            '../source': 119,
             '../util': 127,
             'typed-dom': 23
         }
@@ -3761,10 +3739,10 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
-            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.backtracker(combinator_1.some(combinator_1.union([
+            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.some(combinator_1.union([
                 exports.bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ])))), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
+            ]))), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
             exports.bracket = combinator_1.lazy(() => combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
@@ -3835,13 +3813,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.code = combinator_1.creator(combinator_1.validate('`', combinator_1.backtracker(combinator_1.match(/^(`+)(?!`)(?:([^\n]*?[^`\n])\1(?!`))?/, ([whole, , body]) => rest => body ? [
+            exports.code = combinator_1.creator(combinator_1.validate('`', combinator_1.match(/^(`+)(?!`)(?:([^\n]*?[^`\n])\1(?!`))?/, ([whole, , body]) => rest => body ? [
                 [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
                 rest
             ] : [
                 [typed_dom_1.text(whole)],
                 rest
-            ]))));
+            ])));
         },
         {
             '../../combinator': 30,
@@ -3854,14 +3832,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.syntax = /^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)\s+\1>/;
-            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.backtracker(combinator_1.match(exports.syntax, ([, , title]) => rest => [
+            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)(\s+\1>)?/, ([whole, , title, last]) => (rest, context) => last ? [
                 [typed_dom_1.html('sup', {
                         class: 'comment',
                         title
                     })],
                 rest
-            ]))));
+            ] : context.resource && void (context.resource.creation -= whole.match(/<#+\s/g).length))));
         },
         {
             '../../combinator': 30,
@@ -4093,7 +4070,6 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const util_1 = _dereq_('../../util');
             const indexee_1 = _dereq_('./indexee');
-            const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.index = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(indexee_1.indexee(combinator_1.surround('[#', combinator_1.subline(combinator_1.context({
                 syntax: {
@@ -4106,7 +4082,7 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), combinator_1.backtracker(combinator_1.clear(source_1.char(']'))), false, ([, bs], rest, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), ']', false, ([, bs], rest) => util_1.isTight(bs, 0, bs.length) ? [
                 [util_1.defrag(typed_dom_1.html('a', util_1.trimEnd(bs)))],
                 rest
             ] : void 0)), ([el]) => [typed_dom_1.define(el, {
@@ -4118,7 +4094,6 @@ require = function () {
         {
             '../../../combinator': 30,
             '../../inline': 81,
-            '../../source': 119,
             '../../util': 127,
             './indexee': 100,
             'typed-dom': 23
@@ -4290,11 +4265,11 @@ require = function () {
             void alias_1.ObjectSetPrototypeOf(attributes, null);
             void alias_1.ObjectValues(attributes).forEach(o => void alias_1.ObjectSetPrototypeOf(o, null));
             exports.html = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('<', combinator_1.union([
-                combinator_1.match(/^(?=<(wbr)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), combinator_1.backtracker(source_1.str('>')), true, ([, as = []], rest) => [
+                combinator_1.match(/^(?=<(wbr)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), source_1.str('>'), true, ([, as = []], rest) => [
                     [typed_dom_1.html(tag, makeAttrs(attributes[tag], as.map(t => t.data), [], 'html'))],
                     rest
                 ]))),
-                combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), combinator_1.backtracker(source_1.str('>')), true), util_1.startTight(combinator_1.context((() => {
+                combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
                     switch (tag) {
                     case 'bdo':
                     case 'bdi':
@@ -4314,11 +4289,11 @@ require = function () {
                     default:
                         return { state: { in: { small: true } } };
                     }
-                })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), combinator_1.backtracker(source_1.str(`</${ tag }>`)), false, ([as, bs, cs], rest, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
+                })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest, context) => util_1.isTight(bs, 0, bs.length) ? [
                     [elem(tag, as, util_1.trimEnd(bs), cs, context)],
                     rest
                 ] : void 0))),
-                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), combinator_1.backtracker(source_1.str('>')), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), combinator_1.backtracker(source_1.str(`</${ tag }>`)), false, ([as, bs, cs], rest, context) => util_1.isTight(bs, 0, bs.length) || context.resource && void --context.resource.backtrack ? [
+                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
                     [elem(tag, as, util_1.trimEnd(bs), cs, {})],
                     rest
                 ] : void 0))
@@ -4488,21 +4463,19 @@ require = function () {
                                 autolink: false
                             }
                         }
-                    }, util_1.startTight(combinator_1.some(inline_1.inline, /^\\?\n|^]/))), combinator_1.backtracker(combinator_1.clear(source_1.char(']'))), true)
+                    }, util_1.startTight(combinator_1.some(inline_1.inline, /^\\?\n|^]/))), ']', true)
                 ])),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     exports.uri,
                     combinator_1.some(exports.attribute)
-                ]), combinator_1.backtracker(combinator_1.clear(source_1.str(/^ ?}/)))))
+                ]), /^ ?}/))
             ])), nss => nss.length === 1 ? [
                 [],
                 nss[0]
             ] : nss), ([content, param], rest, context) => {
                 var _a;
-                if (!util_1.isTight(content, 0, content.length)) {
-                    context.resource && --context.resource.backtrack;
+                if (!util_1.isTight(content, 0, content.length))
                     return;
-                }
                 switch (true) {
                 case content.length === 0:
                     break;
@@ -4619,7 +4592,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const cache_1 = _dereq_('spica/cache');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^(?:(?!}\$)[^\n])+/)]), combinator_1.backtracker(combinator_1.clear(source_1.str('}$')))), ([{data: source}]) => exports.cache.has(source = `\${${ source.trim() }}$`) ? [exports.cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
+            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^(?:(?!}\$)[^\n])+/)]), '}$'), ([{data: source}]) => exports.cache.has(source = `\${${ source.trim() }}$`) ? [exports.cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
                     class: 'math notranslate',
                     'data-src': source
                 }, source)]));
@@ -4654,11 +4627,11 @@ require = function () {
                 util_1.dup(combinator_1.surround(/^\[(?!\s)/, combinator_1.some(combinator_1.union([
                     bracket,
                     combinator_1.some(source_1.escsource, /^(?:\\?\n|[\]([{<"])/)
-                ]), ']'), combinator_1.backtracker(combinator_1.clear(source_1.char(']'))), true)),
+                ]), ']'), ']', true)),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(link_1.attribute)
-                ]), combinator_1.backtracker(combinator_1.clear(source_1.str(/^ ?}/)))))
+                ]), /^ ?}/))
             ]))), ts => array_1.unshift([ts.length > 1 ? util_1.stringify(ts[0]) : ''], ts[ts.length - 1].map(t => t.data))), ([text, INSECURE_URL, ...params], rest, context) => {
                 var _a;
                 if (text.length > 0 && text.slice(-2).trim() === '')
@@ -4680,32 +4653,32 @@ require = function () {
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)
-                ])), combinator_1.backtracker(source_1.char(')')), true, void 0, ([as, bs = []], rest) => [
+                ])), ')', true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround('[', combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.str(/^(?:\\[^\n]?|[^\n\]([{<"\\])+/)
-                ])), combinator_1.backtracker(source_1.char(']')), true, void 0, ([as, bs = []], rest) => [
+                ])), ']', true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround('{', combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.str(/^(?:\\[^\n]?|[^\n\}([{<"\\])+/)
-                ])), combinator_1.backtracker(source_1.char('}')), true, void 0, ([as, bs = []], rest) => [
+                ])), '}', true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround('<', combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.str(/^(?:\\[^\n]?|[^\n\>([{<"\\])+/)
-                ])), combinator_1.backtracker(source_1.char('>')), true, void 0, ([as, bs = []], rest) => [
+                ])), '>', true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround('"', source_1.str(/^(?:\\[^\n]?|[^\n([{<"\\])+/), combinator_1.backtracker(source_1.char('"')), true, void 0, ([as, bs = []], rest) => [
+                combinator_1.surround('"', source_1.str(/^(?:\\[^\n]?|[^\n([{<"\\])+/), '"', true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
@@ -4734,7 +4707,6 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
-            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
                 var _a, _b, _c;
@@ -4752,7 +4724,7 @@ require = function () {
             }, combinator_1.subline(combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']]'))
-            ])))), combinator_1.backtracker(combinator_1.clear(source_1.str(']]')))), (ns, rest, context) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) || context.resource && void --context.resource.backtrack ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
+            ])))), ']]'), (ns, rest) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
                 class: 'reference',
                 'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR' ? ns.shift().textContent : void 0
             }, util_1.trimEnd(ns))), rest) : void 0)));
@@ -4764,7 +4736,6 @@ require = function () {
         {
             '../../combinator': 30,
             '../inline': 81,
-            '../source': 119,
             '../util': 127,
             'typed-dom': 23
         }
@@ -4780,8 +4751,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.ruby = combinator_1.creator(combinator_1.bind(combinator_1.sequence([
-                combinator_1.surround('[', source_1.str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), combinator_1.backtracker(combinator_1.clear(source_1.char(']')))),
-                combinator_1.backtracker(combinator_1.surround('(', source_1.str(/^(?:\\[^\n]|[^\)\n])+/), combinator_1.backtracker(combinator_1.clear(source_1.char(')')))))
+                combinator_1.surround('[', source_1.str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), ']'),
+                combinator_1.surround('(', source_1.str(/^(?:\\[^\n]|[^\)\n])+/), ')')
             ]), ([{data: t}, {data: r}], rest, context) => {
                 const texts = parse(t, context);
                 const rubies = parse(r, context);
@@ -4912,9 +4883,8 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const inline_1 = _dereq_('../inline');
             const combinator_1 = _dereq_('../../combinator');
-            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, '}}'), combinator_1.backtracker(source_1.str('}}')), true), source => [
+            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, '}}'), '}}', true), source => [
                 [typed_dom_1.html('span', { class: 'template' }, source)],
                 ''
             ])));
@@ -4922,7 +4892,6 @@ require = function () {
         {
             '../../combinator': 30,
             '../inline': 81,
-            '../source': 119,
             'typed-dom': 23
         }
     ],
@@ -5390,8 +5359,7 @@ require = function () {
                     switch (true) {
                     case source[0] === '<':
                         switch (true) {
-                        case source.length >= 7 && source[0] === '<' && source[1] === '#' && comment_1.syntax.test(source):
-                            context.resource && void --context.resource.backtrack;
+                        case source.length >= 7 && source[0] === '<' && source[1] === '#' && comment_1.comment(source, context):
                             return;
                         case source.length >= 5 && source[1] === 'w' && source.slice(0, 5) === '<wbr>':
                         case source.length >= 4 && source[1] === 'b' && source.slice(0, 4) === '<br>':
