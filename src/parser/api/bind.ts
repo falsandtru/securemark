@@ -19,21 +19,21 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
     source = normalize(source);
     const sourceSegments = segment(source);
     const targetSegments = pairs.map(([seg]) => seg);
-    let start = 0;
-    for (; start < targetSegments.length; ++start) {
-      if (targetSegments[start] !== sourceSegments[start]) break;
+    let head = 0;
+    for (; head < targetSegments.length; ++head) {
+      if (targetSegments[head] !== sourceSegments[head]) break;
     }
-    assert(start <= targetSegments.length);
-    if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && start === sourceSegments.length) return;
-    let end = 0;
-    for (; start + end < targetSegments.length && start + end < sourceSegments.length; ++end) {
-      if (targetSegments[targetSegments.length - end - 1] !== sourceSegments[sourceSegments.length - end - 1]) break;
+    assert(head <= targetSegments.length);
+    if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length) return;
+    let last = 0;
+    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+      if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1]) break;
     }
-    assert(end <= targetSegments.length);
-    assert(start + end <= targetSegments.length);
-    const base = next(start);
-    let index = start;
-    for (; index < sourceSegments.length - end; ++index) {
+    assert(last <= targetSegments.length);
+    assert(head + last <= targetSegments.length);
+    const base = next(head);
+    let index = head;
+    for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
       const es = eval(block(seg, {}));
