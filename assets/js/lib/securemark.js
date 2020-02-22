@@ -3503,6 +3503,10 @@ require = function () {
                 bracket_1.bracket,
                 source_1.text
             ]);
+            var htmlentity_2 = _dereq_('./inline/htmlentity');
+            exports.htmlentity = htmlentity_2.htmlentity;
+            var comment_2 = _dereq_('./inline/comment');
+            exports.comment = comment_2.comment;
             var link_2 = _dereq_('./inline/link');
             exports.link = link_2.link;
             var media_2 = _dereq_('./inline/media');
@@ -3635,13 +3639,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.focus(/^@[A-Za-z0-9]+(?:-[0-9A-Za-z]+)*/, source => [
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@[A-Za-z0-9]+(?:-[0-9A-Za-z]+)*/, source => [
                 [typed_dom_1.html('a', {
                         class: 'account',
                         rel: 'noopener'
                     }, source)],
                 ''
-            ]));
+            ])));
         },
         {
             '../../../combinator': 30,
@@ -3657,13 +3661,13 @@ require = function () {
             const account_1 = _dereq_('./account');
             const hashtag_1 = _dereq_('./hashtag');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.channel = combinator_1.fmap(combinator_1.inits([
+            exports.channel = combinator_1.validate('@', combinator_1.fmap(combinator_1.inits([
                 account_1.account,
                 combinator_1.some(hashtag_1.hashtag)
             ]), ns => ns.length > 1 ? [typed_dom_1.html('a', {
                     class: 'channel',
                     rel: 'noopener'
-                }, util_1.stringify(ns))] : ns);
+                }, util_1.stringify(ns))] : ns));
         },
         {
             '../../../combinator': 30,
@@ -3699,13 +3703,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.creator(combinator_1.focus(/^#[0-9]+(?![A-Za-z]|[^\x00-\x7F\s])/, ref => [
+            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![A-Za-z]|[^\x00-\x7F\s])/, ref => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
                         rel: 'noopener'
                     }, ref)],
                 ''
-            ]));
+            ])));
         },
         {
             '../../../combinator': 30,
@@ -3718,13 +3722,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.focus(/^#(?![0-9]+(?![A-Za-z]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, tag => [
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, tag => [
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
                         rel: 'noopener'
                     }, tag)],
                 ''
-            ]));
+            ])));
         },
         {
             '../../../combinator': 30,
@@ -3739,10 +3743,13 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
-            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.some(combinator_1.union([
+            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.validate([
+                'http',
+                'ttp'
+            ], combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.some(combinator_1.union([
                 exports.bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ]))), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
+            ])))), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
             exports.bracket = combinator_1.lazy(() => combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     exports.bracket,
@@ -4168,13 +4175,16 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const body = source_1.str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
-            exports.label = combinator_1.creator(combinator_1.fmap(combinator_1.union([
+            exports.label = combinator_1.creator(combinator_1.validate([
+                '[$',
+                '$'
+            ], combinator_1.fmap(combinator_1.union([
                 combinator_1.surround('[', body, ']'),
                 body
             ]), ([text]) => [typed_dom_1.html('a', {
                     class: 'label',
                     'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1)
-                }, [text])]));
+                }, [text])])));
             function number(label, base) {
                 return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length);
             }
@@ -4214,7 +4224,10 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str(/^\[[:^]/), combinator_1.some(combinator_1.union([inline_1.inline]), ']'), source_1.char(']'), false, ([as, bs, cs], rest) => [
+            exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate([
+                '[:',
+                '[^'
+            ], combinator_1.surround(source_1.str(/^\[[:^]/), combinator_1.some(combinator_1.union([inline_1.inline]), ']'), source_1.char(']'), false, ([as, bs, cs], rest) => [
                 util_1.isTight(bs, 0, bs.length) ? [util_1.defrag(typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
@@ -4224,7 +4237,7 @@ require = function () {
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
                 rest
-            ])));
+            ]))));
         },
         {
             '../../../combinator': 30,
@@ -4385,13 +4398,13 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const parser = typed_dom_1.html('span');
-            exports.htmlentity = combinator_1.creator(combinator_1.focus(/^&[0-9a-z]+;/i, entity => [
+            exports.htmlentity = combinator_1.creator(combinator_1.validate('&', combinator_1.focus(/^&[0-9A-Za-z]+;/, entity => [
                 [[
                         parser.innerHTML = entity,
                         parser.firstChild.cloneNode()
                     ][1]],
                 ''
-            ]));
+            ])));
         },
         {
             '../../combinator': 30,
@@ -4445,7 +4458,10 @@ require = function () {
             const log = new WeakSet();
             exports.attributes = { nofollow: [void 0] };
             void alias_1.ObjectSetPrototypeOf(exports.attributes, null);
-            exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(combinator_1.bind(combinator_1.fmap(combinator_1.guard(context => {
+            exports.link = combinator_1.lazy(() => combinator_1.creator(combinator_1.subline(combinator_1.validate([
+                '[',
+                '{'
+            ], combinator_1.bind(combinator_1.fmap(combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.tails([
@@ -4501,7 +4517,7 @@ require = function () {
                     [el],
                     rest
                 ];
-            }))));
+            })))));
             exports.uri = combinator_1.creator(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => combinator_1.union([source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)]))));
             exports.attribute = combinator_1.creator(combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]));
             function verify(el, uri) {
@@ -4620,7 +4636,10 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const url = typed_dom_1.html('a');
             exports.cache = new cache_1.Cache(10);
-            exports.media = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.guard(context => {
+            exports.media = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate([
+                '![',
+                '!{'
+            ], combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.guard(context => {
                 var _a, _b, _c, _d, _e, _f;
                 return ((_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true) && ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.media) !== null && _f !== void 0 ? _f : true);
             }, combinator_1.tails([
@@ -4648,7 +4667,7 @@ require = function () {
                 }
                 void typed_dom_1.define(media, alias_1.ObjectAssign(html_1.makeAttrs(link_1.attributes, params, [...media.classList], 'media'), { nofollow: void 0 }));
                 return combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [typed_dom_1.define(media, { 'data-src': el.getAttribute('href') })])])(`{ ${ INSECURE_URL }${ params.join('') } }${ rest }`, context);
-            })));
+            }))));
             const bracket = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
@@ -5302,7 +5321,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../combinator');
-            const comment_1 = _dereq_('./inline/comment');
+            const inline_1 = _dereq_('./inline');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function isTight(nodes, start, end) {
@@ -5354,26 +5373,31 @@ require = function () {
             }
             function startTight(parser) {
                 return (source, context) => {
+                    var _a;
                     if (source === '')
                         return;
-                    switch (true) {
-                    case source[0] === '<':
+                    switch (source[0]) {
+                    case ' ':
+                    case '\u3000':
+                    case '\t':
+                    case '\n':
+                        return;
+                    case '&':
                         switch (true) {
-                        case source.length >= 7 && source[0] === '<' && source[1] === '#' && comment_1.comment(source, context):
+                        case source.length > 2 && source[1] !== ' ' && !!inline_1.htmlentity(source, context):
                             return;
+                        }
+                        break;
+                    case '<':
+                        switch (true) {
+                        case source.length >= 7 && source[1] === '#' && !!inline_1.comment(source, context):
                         case source.length >= 5 && source[1] === 'w' && source.slice(0, 5) === '<wbr>':
                         case source.length >= 4 && source[1] === 'b' && source.slice(0, 4) === '<br>':
                             return;
-                        default:
-                            return parser(source, context);
                         }
-                    case source[0] === ' ':
-                    case source[0] === '\n':
-                    case (source[0] === '\\' ? source[1] || '' : source[0]).trim() === '':
-                        return;
-                    default:
-                        return parser(source, context);
+                        break;
                     }
+                    return ((_a = source[0] === '\\' ? source[1] : source[0]) === null || _a === void 0 ? void 0 : _a.trim()) ? parser(source, context) : void 0;
                 };
             }
             exports.startTight = startTight;
@@ -5421,7 +5445,7 @@ require = function () {
         },
         {
             '../combinator': 30,
-            './inline/comment': 92,
+            './inline': 81,
             'spica/array': 6,
             'typed-dom': 23
         }
@@ -6186,7 +6210,7 @@ require = function () {
             exports.toc = toc;
             function parse(node, index = []) {
                 return typed_dom_1.html('ul', node.map(([el, cs], i) => {
-                    const idx = array_1.push(index.slice(), [i + 1]);
+                    const idx = array_1.push(index.slice(0), [i + 1]);
                     return typed_dom_1.html('li', array_1.push([typed_dom_1.html('a', {
                             href: `#${ el.id }`,
                             rel: 'noopener',
