@@ -4078,7 +4078,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const indexee_1 = _dereq_('./indexee');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(indexee_1.indexee(combinator_1.surround('[#', combinator_1.subline(combinator_1.context({
+            exports.index = combinator_1.lazy(() => combinator_1.creator(combinator_1.subline(combinator_1.fmap(indexee_1.indexee(combinator_1.surround('[#', combinator_1.context({
                 syntax: {
                     inline: {
                         link: false,
@@ -4089,14 +4089,14 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), ']', false, ([, bs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')]))), ']', false, ([, bs], rest) => util_1.isTight(bs, 0, bs.length) ? [
                 [util_1.defrag(typed_dom_1.html('a', util_1.trimEnd(bs)))],
                 rest
             ] : void 0)), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : void 0
-                }, el.childNodes)])));
+                }, el.childNodes)]))));
         },
         {
             '../../../combinator': 30,
@@ -4727,7 +4727,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
+            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.subline(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.context({
@@ -4740,13 +4740,13 @@ require = function () {
                     }
                 },
                 state: void 0
-            }, combinator_1.subline(combinator_1.subsequence([
+            }, combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']]'))
-            ])))), ']]'), (ns, rest) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
+            ]))), ']]'), (ns, rest) => util_1.isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
                 class: 'reference',
                 'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR' ? ns.shift().textContent : void 0
-            }, util_1.trimEnd(ns))), rest) : void 0)));
+            }, util_1.trimEnd(ns))), rest) : void 0))));
             const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
                 ''
@@ -5180,18 +5180,18 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            function str(pat) {
-                return typeof pat === 'string' ? combinator_1.creator(source => {
+            function str(pattern) {
+                return typeof pattern === 'string' ? combinator_1.creator(source => {
                     if (source === '')
                         return;
-                    return source.slice(0, pat.length) === pat ? [
-                        [typed_dom_1.text(pat)],
-                        source.slice(pat.length)
+                    return source.slice(0, pattern.length) === pattern ? [
+                        [typed_dom_1.text(pattern)],
+                        source.slice(pattern.length)
                     ] : void 0;
                 }) : combinator_1.creator(source => {
                     if (source === '')
                         return;
-                    const m = source.match(pat);
+                    const m = source.match(pattern);
                     return m && m[0].length > 0 ? [
                         [typed_dom_1.text(m[0])],
                         source.slice(m[0].length)
