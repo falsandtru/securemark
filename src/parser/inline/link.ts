@@ -74,7 +74,7 @@ export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], 
         : decode(INSECURE_URI || '.')
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h')
             .replace(/^tel:/, '')));
-    if (!verify(el, INSECURE_URI)) return [[el], rest];
+    if (!sanitize(el, INSECURE_URI)) return [[el], rest];
     void define(el, ObjectAssign(
       makeAttrs(attributes, params, [...el.classList], 'link'),
       { nofollow: void 0 }));
@@ -90,7 +90,7 @@ export const attribute: LinkParser.ParamParser.AttributeParser = creator(union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]));
 
-function verify(el: HTMLAnchorElement, uri: string): boolean {
+function sanitize(el: HTMLAnchorElement, uri: string): boolean {
   let message: string;
   switch (el.protocol) {
     case 'http:':
