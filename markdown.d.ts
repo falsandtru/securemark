@@ -385,7 +385,7 @@ export namespace MarkdownParser {
           Block<'paragraph/mention/address'>,
           Parser<HTMLAnchorElement, [
             SourceParser.StrParser,
-            Parser<HTMLElement | Text, [
+            Parser<HTMLElement, [
               InlineParser.LinkParser,
               InlineParser.LinkParser,
             ], Context>,
