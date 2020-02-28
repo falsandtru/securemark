@@ -2192,12 +2192,12 @@ require = function () {
                 if (typeof cost === 'function')
                     return creator(1, cost);
                 return (source, context) => {
-                    var _a;
-                    if (((_a = context.resource) === null || _a === void 0 ? void 0 : _a.creation) < 0)
+                    const {resource} = context;
+                    if (resource && resource.creation < 0)
                         throw new Error('Too many creations');
                     const result = parser(source, context);
-                    if (result && context.resource) {
-                        context.resource.creation -= cost;
+                    if (result && resource) {
+                        resource.creation -= cost;
                     }
                     return result;
                 };
@@ -4101,13 +4101,13 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)(\s+\1>)?/, ([whole, , title, last]) => (rest, context) => last ? [
+            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)(\s+\1>)?/, ([whole, , title, last]) => (rest, {resource}) => last ? [
                 [typed_dom_1.html('sup', {
                         class: 'comment',
                         title
                     })],
                 rest
-            ] : context.resource && void (context.resource.creation -= whole.match(/<#+\s/g).length))));
+            ] : resource && void (resource.creation -= whole.match(/<#+\s/g).length))));
         },
         {
             '../../combinator': 30,
