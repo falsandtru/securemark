@@ -145,6 +145,14 @@ require = function () {
                 return as;
             }
             exports.push = push;
+            function join(as, sep = '') {
+                let acc = '';
+                for (let i = 0; i < as.length; ++i) {
+                    acc += i === 0 ? as[i] : sep + as[i];
+                }
+                return acc;
+            }
+            exports.join = join;
         },
         { './alias': 5 }
     ],
@@ -519,13 +527,27 @@ require = function () {
     14: [
         function (_dereq_, module, exports) {
             'use strict';
-            function __export(m) {
+            var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                Object.defineProperty(o, k2, {
+                    enumerable: true,
+                    get: function () {
+                        return m[k];
+                    }
+                });
+            } : function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                o[k2] = m[k];
+            });
+            var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
                     if (!exports.hasOwnProperty(p))
-                        exports[p] = m[p];
-            }
+                        __createBinding(exports, m, p);
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
-            __export(_dereq_('./collection/multimap'));
+            __exportStar(_dereq_('./collection/multimap'), exports);
         },
         { './collection/multimap': 9 }
     ],
@@ -833,7 +855,12 @@ require = function () {
             const global_1 = _dereq_('./global');
             const format_1 = _dereq_('./url/domain/format');
             var format_2 = _dereq_('./url/domain/format');
-            exports.standardize = format_2.standardize;
+            Object.defineProperty(exports, 'standardize', {
+                enumerable: true,
+                get: function () {
+                    return format_2.standardize;
+                }
+            });
             class URL {
                 constructor(url, base = global_1.location.href) {
                     this.url = format_1.newURL(url, base);
@@ -957,29 +984,124 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             _dereq_('spica/global');
             var builder_1 = _dereq_('./src/dom/builder');
-            exports.Shadow = builder_1.Shadow;
-            exports.HTML = builder_1.HTML;
-            exports.SVG = builder_1.SVG;
-            exports.API = builder_1.API;
+            Object.defineProperty(exports, 'Shadow', {
+                enumerable: true,
+                get: function () {
+                    return builder_1.Shadow;
+                }
+            });
+            Object.defineProperty(exports, 'HTML', {
+                enumerable: true,
+                get: function () {
+                    return builder_1.HTML;
+                }
+            });
+            Object.defineProperty(exports, 'SVG', {
+                enumerable: true,
+                get: function () {
+                    return builder_1.SVG;
+                }
+            });
+            Object.defineProperty(exports, 'API', {
+                enumerable: true,
+                get: function () {
+                    return builder_1.API;
+                }
+            });
             var proxy_1 = _dereq_('./src/dom/proxy');
-            exports.proxy = proxy_1.proxy;
+            Object.defineProperty(exports, 'proxy', {
+                enumerable: true,
+                get: function () {
+                    return proxy_1.proxy;
+                }
+            });
             var dom_1 = _dereq_('./src/util/dom');
-            exports.frag = dom_1.frag;
-            exports.shadow = dom_1.shadow;
-            exports.html = dom_1.html;
-            exports.svg = dom_1.svg;
-            exports.text = dom_1.text;
-            exports.element = dom_1.element;
-            exports.define = dom_1.define;
+            Object.defineProperty(exports, 'frag', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.frag;
+                }
+            });
+            Object.defineProperty(exports, 'shadow', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.shadow;
+                }
+            });
+            Object.defineProperty(exports, 'html', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.html;
+                }
+            });
+            Object.defineProperty(exports, 'svg', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.svg;
+                }
+            });
+            Object.defineProperty(exports, 'text', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.text;
+                }
+            });
+            Object.defineProperty(exports, 'element', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.element;
+                }
+            });
+            Object.defineProperty(exports, 'define', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.define;
+                }
+            });
             var listener_1 = _dereq_('./src/util/listener');
-            exports.listen = listener_1.listen;
-            exports.once = listener_1.once;
-            exports.wait = listener_1.wait;
-            exports.delegate = listener_1.delegate;
-            exports.bind = listener_1.bind;
-            exports.currentTarget = listener_1.currentTarget;
+            Object.defineProperty(exports, 'listen', {
+                enumerable: true,
+                get: function () {
+                    return listener_1.listen;
+                }
+            });
+            Object.defineProperty(exports, 'once', {
+                enumerable: true,
+                get: function () {
+                    return listener_1.once;
+                }
+            });
+            Object.defineProperty(exports, 'wait', {
+                enumerable: true,
+                get: function () {
+                    return listener_1.wait;
+                }
+            });
+            Object.defineProperty(exports, 'delegate', {
+                enumerable: true,
+                get: function () {
+                    return listener_1.delegate;
+                }
+            });
+            Object.defineProperty(exports, 'bind', {
+                enumerable: true,
+                get: function () {
+                    return listener_1.bind;
+                }
+            });
+            Object.defineProperty(exports, 'currentTarget', {
+                enumerable: true,
+                get: function () {
+                    return listener_1.currentTarget;
+                }
+            });
             var query_1 = _dereq_('./src/util/query');
-            exports.apply = query_1.apply;
+            Object.defineProperty(exports, 'apply', {
+                enumerable: true,
+                get: function () {
+                    return query_1.apply;
+                }
+            });
         },
         {
             './src/dom/builder': 24,
@@ -1110,7 +1232,7 @@ require = function () {
                     case typeof children_ === 'string':
                         this.type = ElChildrenType.Text;
                         break;
-                    case global_1.Array.isArray(children_):
+                    case alias_1.isArray(children_):
                         this.type = ElChildrenType.Array;
                         break;
                     case children_ && typeof children_ === 'object':
@@ -1430,7 +1552,7 @@ require = function () {
                 if (isChildren(attrs))
                     return define(el, void 0, attrs);
                 if (typeof children === 'string')
-                    return define(el, attrs, [text(children)]);
+                    return define(el, attrs, [children]);
                 if (attrs)
                     for (const name in attrs) {
                         if (!alias_1.hasOwnProperty(attrs, name))
@@ -1469,20 +1591,31 @@ require = function () {
                         let cnt = 0;
                         I:
                             for (const child of children) {
-                                if (child.nodeType === 11) {
+                                if (typeof child === 'object' && child.nodeType === 11) {
                                     cnt += child.childNodes.length;
                                     void el.insertBefore(child, el.childNodes[cnt - child.childNodes.length] || null);
                                     continue;
                                 }
                                 void ++cnt;
-                                while (el.childNodes.length > cnt) {
-                                    if (el.childNodes[cnt - 1] === child)
-                                        continue I;
-                                    void el.removeChild(el.childNodes[cnt - 1]);
+                                if (typeof child === 'object') {
+                                    while (el.childNodes.length > cnt) {
+                                        if (el.childNodes[cnt - 1] === child)
+                                            continue I;
+                                        void el.removeChild(el.childNodes[cnt - 1]);
+                                    }
+                                    if (childNodes.length <= cnt && child === childNodes[cnt - 1])
+                                        continue;
+                                    void el.insertBefore(child, childNodes[cnt - 1] || null);
+                                } else {
+                                    while (el.childNodes.length > cnt) {
+                                        if ('wholeText' in childNodes[cnt - 1] && child === childNodes[cnt - 1].data)
+                                            continue I;
+                                        void el.removeChild(el.childNodes[cnt - 1]);
+                                    }
+                                    if (childNodes.length <= cnt && 'wholeText' in childNodes[cnt - 1] && child === childNodes[cnt - 1].data)
+                                        continue;
+                                    void el.insertBefore(text(child), childNodes[cnt - 1] || null);
                                 }
-                                if (el.childNodes.length >= cnt && el.childNodes[cnt - 1] === child)
-                                    continue;
-                                void el.insertBefore(child, el.childNodes[cnt - 1] || null);
                             }
                         while (el.childNodes.length > cnt) {
                             void el.removeChild(el.childNodes[cnt]);
@@ -1490,15 +1623,21 @@ require = function () {
                     } else {
                         let cnt = 0;
                         for (const child of children) {
-                            if (child.nodeType === 11) {
+                            if (typeof child === 'object' && child.nodeType === 11) {
                                 cnt += child.childNodes.length;
                                 void el.insertBefore(child, el.childNodes[cnt - child.childNodes.length] || null);
                                 continue;
                             }
                             void ++cnt;
-                            if (childNodes.length <= cnt && child === childNodes[cnt - 1])
-                                continue;
-                            void el.insertBefore(child, childNodes[cnt - 1] || null);
+                            if (typeof child === 'object') {
+                                if (childNodes.length <= cnt && child === childNodes[cnt - 1])
+                                    continue;
+                                void el.insertBefore(child, childNodes[cnt - 1] || null);
+                            } else {
+                                if (childNodes.length <= cnt && 'wholeText' in childNodes[cnt - 1] && child === childNodes[cnt - 1].data)
+                                    continue;
+                                void el.insertBefore(text(child), childNodes[cnt - 1] || null);
+                            }
                         }
                         while (childNodes.length > cnt) {
                             void el.removeChild(childNodes[cnt]);
@@ -1509,7 +1648,7 @@ require = function () {
             }
             exports.define = define;
             function isChildren(o) {
-                return !!(o === null || o === void 0 ? void 0 : o[Symbol.iterator]);
+                return !!(o === null || o === void 0 ? void 0 : o[global_1.Symbol.iterator]);
             }
         },
         {
@@ -1580,38 +1719,67 @@ require = function () {
     30: [
         function (_dereq_, module, exports) {
             'use strict';
-            function __export(m) {
+            var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                Object.defineProperty(o, k2, {
+                    enumerable: true,
+                    get: function () {
+                        return m[k];
+                    }
+                });
+            } : function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                o[k2] = m[k];
+            });
+            var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
                     if (!exports.hasOwnProperty(p))
-                        exports[p] = m[p];
-            }
+                        __createBinding(exports, m, p);
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             var parser_1 = _dereq_('./combinator/data/parser');
-            exports.Result = parser_1.Result;
-            exports.eval = parser_1.eval;
-            exports.exec = parser_1.exec;
-            __export(_dereq_('./combinator/data/parser/union'));
-            __export(_dereq_('./combinator/data/parser/sequence'));
-            __export(_dereq_('./combinator/data/parser/subsequence'));
-            __export(_dereq_('./combinator/data/parser/inits'));
-            __export(_dereq_('./combinator/data/parser/tails'));
-            __export(_dereq_('./combinator/data/parser/some'));
-            __export(_dereq_('./combinator/control/constraint/block'));
-            __export(_dereq_('./combinator/control/constraint/line'));
-            __export(_dereq_('./combinator/control/constraint/scope'));
-            __export(_dereq_('./combinator/control/constraint/contract'));
-            __export(_dereq_('./combinator/control/manipulation/resource'));
-            __export(_dereq_('./combinator/control/manipulation/surround'));
-            __export(_dereq_('./combinator/control/manipulation/match'));
-            __export(_dereq_('./combinator/control/manipulation/convert'));
-            __export(_dereq_('./combinator/control/manipulation/indent'));
-            __export(_dereq_('./combinator/control/manipulation/fence'));
-            __export(_dereq_('./combinator/control/manipulation/trim'));
-            __export(_dereq_('./combinator/control/manipulation/context'));
-            __export(_dereq_('./combinator/control/manipulation/lazy'));
-            __export(_dereq_('./combinator/control/manipulation/recovery'));
-            __export(_dereq_('./combinator/control/monad/fmap'));
-            __export(_dereq_('./combinator/control/monad/bind'));
+            Object.defineProperty(exports, 'Result', {
+                enumerable: true,
+                get: function () {
+                    return parser_1.Result;
+                }
+            });
+            Object.defineProperty(exports, 'eval', {
+                enumerable: true,
+                get: function () {
+                    return parser_1.eval;
+                }
+            });
+            Object.defineProperty(exports, 'exec', {
+                enumerable: true,
+                get: function () {
+                    return parser_1.exec;
+                }
+            });
+            __exportStar(_dereq_('./combinator/data/parser/union'), exports);
+            __exportStar(_dereq_('./combinator/data/parser/sequence'), exports);
+            __exportStar(_dereq_('./combinator/data/parser/subsequence'), exports);
+            __exportStar(_dereq_('./combinator/data/parser/inits'), exports);
+            __exportStar(_dereq_('./combinator/data/parser/tails'), exports);
+            __exportStar(_dereq_('./combinator/data/parser/some'), exports);
+            __exportStar(_dereq_('./combinator/control/constraint/block'), exports);
+            __exportStar(_dereq_('./combinator/control/constraint/line'), exports);
+            __exportStar(_dereq_('./combinator/control/constraint/scope'), exports);
+            __exportStar(_dereq_('./combinator/control/constraint/contract'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/resource'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/surround'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/match'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/convert'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/indent'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/fence'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/trim'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/context'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/lazy'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/recovery'), exports);
+            __exportStar(_dereq_('./combinator/control/monad/fmap'), exports);
+            __exportStar(_dereq_('./combinator/control/monad/bind'), exports);
         },
         {
             './combinator/control/constraint/block': 31,
@@ -1923,6 +2091,7 @@ require = function () {
             const bind_1 = _dereq_('../monad/bind');
             const match_1 = _dereq_('./match');
             const surround_1 = _dereq_('./surround');
+            const array_1 = _dereq_('spica/array');
             function indent(parser) {
                 return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, match_1.memoize(([, indent]) => indent, indent => some_1.some(line_1.line(scope_1.rewrite(source => [
                     [],
@@ -1931,7 +2100,7 @@ require = function () {
                     [line_1.firstline(source, false)],
                     ''
                 ])))))), (rs, rest, context) => {
-                    const result = parser(rs.join('\n'), context);
+                    const result = parser(array_1.join(rs, '\n'), context);
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
                         rest
@@ -1947,7 +2116,8 @@ require = function () {
             '../constraint/scope': 34,
             '../monad/bind': 45,
             './match': 40,
-            './surround': 43
+            './surround': 43,
+            'spica/array': 6
         }
     ],
     39: [
@@ -2409,13 +2579,27 @@ require = function () {
     54: [
         function (_dereq_, module, exports) {
             'use strict';
-            function __export(m) {
+            var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                Object.defineProperty(o, k2, {
+                    enumerable: true,
+                    get: function () {
+                        return m[k];
+                    }
+                });
+            } : function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                o[k2] = m[k];
+            });
+            var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
                     if (!exports.hasOwnProperty(p))
-                        exports[p] = m[p];
-            }
+                        __createBinding(exports, m, p);
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
-            __export(_dereq_('./parser/api'));
+            __exportStar(_dereq_('./parser/api'), exports);
         },
         { './parser/api': 55 }
     ],
@@ -2424,11 +2608,26 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var parse_1 = _dereq_('./api/parse');
-            exports.parse = parse_1.parse;
+            Object.defineProperty(exports, 'parse', {
+                enumerable: true,
+                get: function () {
+                    return parse_1.parse;
+                }
+            });
             var bind_1 = _dereq_('./api/bind');
-            exports.bind = bind_1.bind;
+            Object.defineProperty(exports, 'bind', {
+                enumerable: true,
+                get: function () {
+                    return bind_1.bind;
+                }
+            });
             var cache_1 = _dereq_('./api/cache');
-            exports.caches = cache_1.caches;
+            Object.defineProperty(exports, 'caches', {
+                enumerable: true,
+                get: function () {
+                    return cache_1.caches;
+                }
+            });
         },
         {
             './api/bind': 56,
@@ -2753,8 +2952,8 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const source_1 = _dereq_('../source');
-            const typed_dom_1 = _dereq_('typed-dom');
             const autolink_1 = _dereq_('../autolink');
+            const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(`{3,})(?!`)(\S*)([^\n]*)\n?/;
             const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
             exports.segment = combinator_1.block(combinator_1.validate('```', combinator_1.clear(combinator_1.fence(opener, 300, true))));
@@ -3504,28 +3703,93 @@ require = function () {
                 source_1.text
             ]);
             var htmlentity_2 = _dereq_('./inline/htmlentity');
-            exports.htmlentity = htmlentity_2.htmlentity;
+            Object.defineProperty(exports, 'htmlentity', {
+                enumerable: true,
+                get: function () {
+                    return htmlentity_2.htmlentity;
+                }
+            });
             var comment_2 = _dereq_('./inline/comment');
-            exports.comment = comment_2.comment;
+            Object.defineProperty(exports, 'comment', {
+                enumerable: true,
+                get: function () {
+                    return comment_2.comment;
+                }
+            });
             var link_2 = _dereq_('./inline/link');
-            exports.link = link_2.link;
+            Object.defineProperty(exports, 'link', {
+                enumerable: true,
+                get: function () {
+                    return link_2.link;
+                }
+            });
             var media_2 = _dereq_('./inline/media');
-            exports.media = media_2.media;
+            Object.defineProperty(exports, 'media', {
+                enumerable: true,
+                get: function () {
+                    return media_2.media;
+                }
+            });
             var shortmedia_2 = _dereq_('./inline/shortmedia');
-            exports.shortmedia = shortmedia_2.shortmedia;
+            Object.defineProperty(exports, 'shortmedia', {
+                enumerable: true,
+                get: function () {
+                    return shortmedia_2.shortmedia;
+                }
+            });
             var autolink_2 = _dereq_('./inline/autolink');
-            exports.autolink = autolink_2.autolink;
+            Object.defineProperty(exports, 'autolink', {
+                enumerable: true,
+                get: function () {
+                    return autolink_2.autolink;
+                }
+            });
             var url_1 = _dereq_('./inline/autolink/url');
-            exports.url = url_1.url;
-            exports.address = url_1.address;
-            exports.attribute = url_1.attribute;
+            Object.defineProperty(exports, 'url', {
+                enumerable: true,
+                get: function () {
+                    return url_1.url;
+                }
+            });
+            Object.defineProperty(exports, 'address', {
+                enumerable: true,
+                get: function () {
+                    return url_1.address;
+                }
+            });
+            Object.defineProperty(exports, 'attribute', {
+                enumerable: true,
+                get: function () {
+                    return url_1.attribute;
+                }
+            });
             var indexer_1 = _dereq_('./inline/extension/indexer');
-            exports.indexer = indexer_1.indexer;
+            Object.defineProperty(exports, 'indexer', {
+                enumerable: true,
+                get: function () {
+                    return indexer_1.indexer;
+                }
+            });
             var indexee_1 = _dereq_('./inline/extension/indexee');
-            exports.indexee = indexee_1.indexee;
+            Object.defineProperty(exports, 'indexee', {
+                enumerable: true,
+                get: function () {
+                    return indexee_1.indexee;
+                }
+            });
             var label_1 = _dereq_('./inline/extension/label');
-            exports.isFixed = label_1.isFixed;
-            exports.isFormatted = label_1.isFormatted;
+            Object.defineProperty(exports, 'isFixed', {
+                enumerable: true,
+                get: function () {
+                    return label_1.isFixed;
+                }
+            });
+            Object.defineProperty(exports, 'isFormatted', {
+                enumerable: true,
+                get: function () {
+                    return label_1.isFormatted;
+                }
+            });
         },
         {
             '../combinator': 30,
@@ -4131,7 +4395,7 @@ require = function () {
             }
             exports.text = text;
             function identity(index) {
-                return index ? `index:${ index.trim().replace(/\s+/g, '_') }` : '';
+                return index ? `index:${ index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }` : '';
             }
         },
         {
@@ -4174,6 +4438,7 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
+            const array_1 = _dereq_('spica/array');
             const body = source_1.str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
             exports.label = combinator_1.creator(combinator_1.validate([
                 '[$',
@@ -4205,12 +4470,13 @@ require = function () {
                 for (let i = 0; i < position; ++i) {
                     void ms.push(i < ns.length ? i + 1 < position ? +ns[i] : +ns[i] + 1 : i + 1 < position ? 0 : 1);
                 }
-                return ms.join('.');
+                return array_1.join(ms, '.');
             }
         },
         {
             '../../../combinator': 30,
             '../../source': 119,
+            'spica/array': 6,
             'typed-dom': 23
         }
     ],
@@ -4372,7 +4638,7 @@ require = function () {
                 invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
                 if (invalid) {
                     void classes.push('invalid');
-                    attrs.class = classes.join(' ').trim();
+                    attrs.class = array_1.join(classes, ' ').trim();
                     attrs['data-invalid-syntax'] = syntax;
                     attrs['data-invalid-message'] = syntax === 'html' ? 'Invalid attribute' : 'Invalid parameter';
                 }
@@ -4507,7 +4773,7 @@ require = function () {
                     href: INSECURE_URI,
                     rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.trimEnd(content) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, '')));
-                if (!verify(el, INSECURE_URI))
+                if (!sanitize(el, INSECURE_URI))
                     return [
                         [el],
                         rest
@@ -4520,7 +4786,7 @@ require = function () {
             })))));
             exports.uri = combinator_1.creator(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => combinator_1.union([source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)]))));
             exports.attribute = combinator_1.creator(combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]));
-            function verify(el, uri) {
+            function sanitize(el, uri) {
                 let message;
                 switch (el.protocol) {
                 case 'http:':
@@ -4666,7 +4932,7 @@ require = function () {
                     void typed_dom_1.define(media, { alt: text });
                 }
                 void typed_dom_1.define(media, alias_1.ObjectAssign(html_1.makeAttrs(link_1.attributes, params, [...media.classList], 'media'), { nofollow: void 0 }));
-                return combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [typed_dom_1.define(media, { 'data-src': el.getAttribute('href') })])])(`{ ${ INSECURE_URL }${ params.join('') } }${ rest }`, context);
+                return combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [typed_dom_1.define(media, { 'data-src': el.getAttribute('href') })])])(`{ ${ INSECURE_URL }${ array_1.join(params) } }${ rest }`, context);
             }))));
             const bracket = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
@@ -4775,7 +5041,7 @@ require = function () {
             ]), ([{data: t}, {data: r}], rest, context) => {
                 const texts = parse(t, context);
                 const rubies = parse(r, context);
-                if (!texts.join('').trim() || !rubies.join('').trim())
+                if (!array_1.join(texts).trim() || !array_1.join(rubies).trim())
                     return;
                 switch (true) {
                 case rubies.length <= texts.length:
@@ -4799,10 +5065,12 @@ require = function () {
                 default:
                     return [
                         [util_1.defrag(typed_dom_1.html('ruby', [
-                                typed_dom_1.text(texts.join(' ')),
-                                typed_dom_1.html('rp', '('),
-                                typed_dom_1.html('rt', rubies.join(' ') || void 0),
-                                typed_dom_1.html('rp', ')')
+                                typed_dom_1.text(array_1.join(texts, ' ')),
+                                ...rubies.length === 0 ? [] : [
+                                    typed_dom_1.html('rp', '('),
+                                    typed_dom_1.html('rt', array_1.join(rubies, ' ')),
+                                    typed_dom_1.html('rp', ')')
+                                ]
                             ]))],
                         rest
                     ];
@@ -5043,21 +5311,66 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var text_1 = _dereq_('./source/text');
-            exports.text = text_1.text;
+            Object.defineProperty(exports, 'text', {
+                enumerable: true,
+                get: function () {
+                    return text_1.text;
+                }
+            });
             var linebreak_1 = _dereq_('./source/linebreak');
-            exports.linebreak = linebreak_1.linebreak;
+            Object.defineProperty(exports, 'linebreak', {
+                enumerable: true,
+                get: function () {
+                    return linebreak_1.linebreak;
+                }
+            });
             var escapable_1 = _dereq_('./source/escapable');
-            exports.escsource = escapable_1.escsource;
+            Object.defineProperty(exports, 'escsource', {
+                enumerable: true,
+                get: function () {
+                    return escapable_1.escsource;
+                }
+            });
             var unescapable_1 = _dereq_('./source/unescapable');
-            exports.unescsource = unescapable_1.unescsource;
+            Object.defineProperty(exports, 'unescsource', {
+                enumerable: true,
+                get: function () {
+                    return unescapable_1.unescsource;
+                }
+            });
             var str_1 = _dereq_('./source/str');
-            exports.str = str_1.str;
+            Object.defineProperty(exports, 'str', {
+                enumerable: true,
+                get: function () {
+                    return str_1.str;
+                }
+            });
             var char_1 = _dereq_('./source/char');
-            exports.char = char_1.char;
+            Object.defineProperty(exports, 'char', {
+                enumerable: true,
+                get: function () {
+                    return char_1.char;
+                }
+            });
             var line_1 = _dereq_('./source/line');
-            exports.contentline = line_1.contentline;
-            exports.emptyline = line_1.emptyline;
-            exports.anyline = line_1.anyline;
+            Object.defineProperty(exports, 'contentline', {
+                enumerable: true,
+                get: function () {
+                    return line_1.contentline;
+                }
+            });
+            Object.defineProperty(exports, 'emptyline', {
+                enumerable: true,
+                get: function () {
+                    return line_1.emptyline;
+                }
+            });
+            Object.defineProperty(exports, 'anyline', {
+                enumerable: true,
+                get: function () {
+                    return line_1.anyline;
+                }
+            });
         },
         {
             './source/char': 120,
@@ -5417,7 +5730,12 @@ require = function () {
             }
             exports.defrag = defrag;
             function stringify(nodes) {
-                return nodes.reduce((acc, node) => `${ acc }${ 'data' in node ? node.data : node.textContent }`, '');
+                let acc = '';
+                for (let i = 0; i < nodes.length; ++i) {
+                    const node = nodes[i];
+                    acc += 'data' in node ? node.data : node.textContent;
+                }
+                return acc;
             }
             exports.stringify = stringify;
             function suppress(target) {
@@ -5455,7 +5773,12 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var render_1 = _dereq_('./renderer/render');
-            exports.render = render_1.render;
+            Object.defineProperty(exports, 'render', {
+                enumerable: true,
+                get: function () {
+                    return render_1.render;
+                }
+            });
         },
         { './renderer/render': 129 }
     ],
@@ -5939,11 +6262,26 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             var toc_1 = _dereq_('./util/toc');
-            exports.toc = toc_1.toc;
+            Object.defineProperty(exports, 'toc', {
+                enumerable: true,
+                get: function () {
+                    return toc_1.toc;
+                }
+            });
             var info_1 = _dereq_('./util/info');
-            exports.info = info_1.info;
+            Object.defineProperty(exports, 'info', {
+                enumerable: true,
+                get: function () {
+                    return info_1.info;
+                }
+            });
             var context_1 = _dereq_('./util/context');
-            exports.context = context_1.context;
+            Object.defineProperty(exports, 'context', {
+                enumerable: true,
+                get: function () {
+                    return context_1.context;
+                }
+            });
         },
         {
             './util/context': 142,
@@ -5978,6 +6316,7 @@ require = function () {
             const label_1 = _dereq_('../parser/inline/extension/label');
             const multimap_1 = _dereq_('spica/multimap');
             const typed_dom_1 = _dereq_('typed-dom');
+            const array_1 = _dereq_('spica/array');
             function* figure(target, footnotes) {
                 const refs = new multimap_1.MultiMap([
                     ...target.querySelectorAll('a.label'),
@@ -6004,17 +6343,17 @@ require = function () {
                     if (label === '$-')
                         continue;
                     const group = label.split('-', 1)[0];
-                    let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? numbers.get(group).split('.').slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length).join('.') : base);
+                    let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? array_1.join(numbers.get(group).split('.').slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length), '.') : base);
                     if (number.split('.').pop() === '0') {
                         switch (true) {
                         case number === '0':
                             number = `0${ '.0'.repeat(bases.length - 1) }`;
                             break;
                         case number.startsWith('0.'):
-                            number = bases.slice(0).reduce((ns, _, i, bs) => {
+                            number = array_1.join(bases.slice(0).reduce((ns, _, i, bs) => {
                                 i === ns.length ? bs.length = i : ns[i] = +ns[i] > +bs[i] ? ns[i] : +ns[i] === 0 ? bs[i] : `${ +bs[i] + 1 }`;
                                 return ns;
-                            }, number.split('.')).join('.');
+                            }, number.split('.')), '.');
                             break;
                         }
                         base = number;
@@ -6038,11 +6377,11 @@ require = function () {
             exports.figure = figure;
             function increment(bases, el) {
                 const cursor = +el.tagName[1] - 1 || 1;
-                return cursor < bases.length || bases.length === 1 ? [
+                return cursor < bases.length || bases.length === 1 ? array_1.join([
                     ...bases.slice(0, cursor - 1),
                     +bases[cursor - 1] + 1,
                     '0'
-                ].join('.') : '';
+                ], '.') : '';
             }
             function capitalize(label) {
                 return label[0].toUpperCase() + label.slice(1);
@@ -6052,6 +6391,7 @@ require = function () {
             '../parser/inline': 81,
             '../parser/inline/extension/label': 102,
             './context': 142,
+            'spica/array': 6,
             'spica/global': 12,
             'spica/multimap': 14,
             'typed-dom': 23
@@ -6067,6 +6407,7 @@ require = function () {
             const multimap_1 = _dereq_('spica/multimap');
             const memoize_1 = _dereq_('spica/memoize');
             const typed_dom_1 = _dereq_('typed-dom');
+            const array_1 = _dereq_('spica/array');
             function* footnote(target, footnotes) {
                 yield* exports.annotation(target, footnotes.annotation);
                 yield* exports.reference(target, footnotes.reference);
@@ -6118,10 +6459,10 @@ require = function () {
                         const defId = def.id;
                         const refChild = ref.firstChild;
                         yield typed_dom_1.define(ref, Object.assign({ id: refId }, title ? { title } : {
-                            class: ref.classList.contains('invalid') ? void 0 : [
+                            class: ref.classList.contains('invalid') ? void 0 : array_1.join([
                                 ...ref.classList,
                                 'invalid'
-                            ].join(' '),
+                            ], ' '),
                             'data-invalid-syntax': syntax,
                             'data-invalid-message': 'Missing a content'
                         }), ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && refChild.textContent === marker(defIndex) ? void 0 : [typed_dom_1.html('a', {
@@ -6161,6 +6502,7 @@ require = function () {
         {
             '../parser/inline/extension/indexee': 100,
             './context': 142,
+            'spica/array': 6,
             'spica/global': 12,
             'spica/memoize': 13,
             'spica/multimap': 14,
@@ -6214,7 +6556,7 @@ require = function () {
                     return typed_dom_1.html('li', array_1.push([typed_dom_1.html('a', {
                             href: `#${ el.id }`,
                             rel: 'noopener',
-                            'data-index': idx.join('.')
+                            'data-index': array_1.join(idx, '.')
                         }, el.textContent)], cs.length > 0 ? [parse(cs, idx)] : []));
                 }));
             }
@@ -6242,16 +6584,30 @@ require = function () {
     'securemark': [
         function (_dereq_, module, exports) {
             'use strict';
-            function __export(m) {
+            var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                Object.defineProperty(o, k2, {
+                    enumerable: true,
+                    get: function () {
+                        return m[k];
+                    }
+                });
+            } : function (o, m, k, k2) {
+                if (k2 === undefined)
+                    k2 = k;
+                o[k2] = m[k];
+            });
+            var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
                     if (!exports.hasOwnProperty(p))
-                        exports[p] = m[p];
-            }
+                        __createBinding(exports, m, p);
+            };
             Object.defineProperty(exports, '__esModule', { value: true });
             _dereq_('spica/global');
-            __export(_dereq_('./src/parser'));
-            __export(_dereq_('./src/util'));
-            __export(_dereq_('./src/renderer'));
+            __exportStar(_dereq_('./src/parser'), exports);
+            __exportStar(_dereq_('./src/util'), exports);
+            __exportStar(_dereq_('./src/renderer'), exports);
         },
         {
             './src/parser': 54,
