@@ -2,8 +2,8 @@ import { CodeBlockParser } from '../block';
 import { some, block, validate, clear, fence, fmap, eval } from '../../combinator';
 import { defrag, stringify } from '../util';
 import { escsource } from '../source';
-import { html, define } from 'typed-dom';
 import { autolink } from '../autolink';
+import { html, define } from 'typed-dom';
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)\n?/;
 const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
