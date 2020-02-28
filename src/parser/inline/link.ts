@@ -59,7 +59,7 @@ export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], 
         break;
       case !context.insecure
         && !!eval(some(autolink)(stringify(content), { ...context, insecure: true }))
-            .some(node => typeof node === 'object' && 'id' in node):
+            .some(node => typeof node === 'object'):
         return;
     }
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
