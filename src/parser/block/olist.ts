@@ -20,7 +20,7 @@ export const olist: OListParser = lazy(() => block(fmap(validate(
         ])),
         indent(union([ulist_, olist_, ilist_]))
       ]),
-      ([{ data: index }, , ...ns]: [Text, ...Node[]]) => [defrag(html('li', { value: format(index), 'data-type': type(index) }, fillFirstLine(ns)))]),
+      ([index, , ...ns]: [string, ...(HTMLElement | string)[]]) => [defrag(html('li', { value: format(index), 'data-type': type(index) }, fillFirstLine(ns)))]),
   ])))),
   es => {
     const ty = es[0].getAttribute('data-type');
@@ -42,27 +42,24 @@ export const olist_: OListParser = convert(
   source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=$|\n)/, `$1. `),
   olist);
 
-type IndexType = undefined | '1' | 'a' | 'A';
-
-function type(index: string): IndexType {
+function type(index: string): undefined | '1' | 'a' | 'A' {
   switch (true) {
     case +index === 0:
-      return void 0;
+      return;
     case +index > 0:
       return '1';
     case index === index.toLowerCase():
       return 'a';
     case index === index.toUpperCase():
       return 'A';
-    default:
-      throw new Error(`${index}`);
   }
+  assert(false);
 }
 
 function format(index: string): string | undefined {
   switch (type(index)) {
     case void 0:
-      return void 0;
+      return;
     case '1':
       return `${+index}`;
     case 'a':

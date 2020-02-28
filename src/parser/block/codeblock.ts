@@ -1,9 +1,10 @@
 import { CodeBlockParser } from '../block';
 import { some, block, validate, clear, fence, fmap, eval } from '../../combinator';
-import { defrag, stringify } from '../util';
+import { defrag } from '../util';
 import { escsource } from '../source';
 import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
+import { join } from 'spica/array';
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)\n?/;
 const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
@@ -22,7 +23,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       ? [lang, param]
       : ['', lang + param];
     param = param.trim();
-    const path = stringify(eval(some(escsource, /^\s/)(param, context)));
+    const path = join(eval(some(escsource, /^\s/)(param, context)));
     if (!closer || param !== path) return [html('pre', {
       class: 'notranslate invalid',
       'data-invalid-syntax': 'codeblock',

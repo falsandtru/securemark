@@ -1,6 +1,6 @@
 import { annotation, reference } from './footnote';
 import { parse as parse_ } from '../parser';
-import { html, text } from 'typed-dom';
+import { html } from 'typed-dom';
 
 const parse = (s: string) => parse_(s, { test: true });
 
@@ -36,9 +36,9 @@ describe('Unit: util/footnote', () => {
           footnote.outerHTML,
           html('ol', [
             html('li', { id: 'annotation:def:1', class: 'footnote' }, [
-              text('a'),
+              'a',
               html('br'),
-              text(' b'),
+              ' b',
               html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
           ]).outerHTML);
@@ -66,11 +66,11 @@ describe('Unit: util/footnote', () => {
           footnote.outerHTML,
           html('ol', [
             html('li', { id: 'annotation:def:1', class: 'footnote' }, [
-              text('1'),
+              '1',
               html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
             html('li', { id: 'annotation:def:2', class: 'footnote' }, [
-              text('12345678901234567890'),
+              '12345678901234567890',
               html('sup', [html('a', { href: '#annotation:ref:2', rel: 'noopener' }, ' ~2')])
             ]),
           ]).outerHTML);
@@ -107,22 +107,22 @@ describe('Unit: util/footnote', () => {
           footnote.outerHTML,
           html('ol', [
             html('li', { id: 'annotation:def:1', class: 'footnote' }, [
-              text('1'),
+              '1',
               html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
             html('li', { id: 'annotation:def:2', class: 'footnote' }, [
-              text('2'),
+              '2',
               html('sup', [
                 html('a', { href: '#annotation:ref:2', rel: 'noopener' }, ' ~2'),
                 html('a', { href: '#annotation:ref:4', rel: 'noopener' }, ' ~4'),
               ]),
             ]),
             html('li', { id: 'annotation:def:3', class: 'footnote' }, [
-              text('3'),
+              '3',
               html('sup', [html('a', { href: '#annotation:ref:3', rel: 'noopener' }, ' ~3')])
             ]),
             html('li', { id: 'annotation:def:4', class: 'footnote' }, [
-              text('4'),
+              '4',
               html('sup', [html('a', { href: '#annotation:ref:5', rel: 'noopener' }, ' ~5')])
             ]),
           ]).outerHTML);
@@ -176,7 +176,7 @@ describe('Unit: util/footnote', () => {
           footnote.outerHTML,
           html('ol', [
             html('li', { id: 'reference:def:1', class: 'footnote' }, [
-              text('a b'),
+              'a b',
               html('sup', [html('a', { href: '#reference:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
           ]).outerHTML);
@@ -207,7 +207,7 @@ describe('Unit: util/footnote', () => {
           footnote.outerHTML,
           html('ol', [
             html('li', { id: 'reference:def:1', class: 'footnote' }, [
-              text('b'),
+              'b',
               html('sup', [
                 html('a', { href: '#reference:ref:1', rel: 'noopener' }, ' ~1'),
                 html('a', { href: '#reference:ref:2', rel: 'noopener', title: 'b' }, ' ~2'),

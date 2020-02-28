@@ -37,7 +37,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('<bdi>((<bdi>((a))</bdi>))</bdi>')), [['<bdi><sup class="annotation"><bdi>((a))</bdi></sup></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>[[<bdi>[[a]]</bdi>]]</bdi>')), [['<bdi><sup class="reference"><bdi>[[a]]</bdi></sup></bdi>'], '']);
       assert.deepStrictEqual(inspect(parser('*[*]')), [['*', '[', '*', ']'], '']);
-      assert.deepStrictEqual(inspect(parser('*<*>')), [['<em>&lt;</em>', '&gt;'], '']);
+      assert.deepStrictEqual(inspect(parser('*<*>')), [['<em>&lt;</em>', '>'], '']);
       assert.deepStrictEqual(inspect(parser('*a((b))*')), [['<em>a<sup class="annotation">b</sup></em>'], '']);
       assert.deepStrictEqual(inspect(parser('``a`')), [['``', 'a', '`'], '']);
       assert.deepStrictEqual(inspect(parser('[@a]')), [['[', '<a class="account" rel="noopener">@a</a>', ']'], '']);
@@ -77,8 +77,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[[[a]]')), [['[', '[', '<sup class="reference">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]]]')), [['<sup class="reference">[[a]]</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[(([a]{#}))]{#}')), [['<a href="#" rel="noopener">(([a]{#}))</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('<http://host>')), [['&lt;', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', '&gt;'], '']);
-      assert.deepStrictEqual(inspect(parser('<sup><sub>a</sub>')), [['&lt;', 'sup', '&gt;', '<sub>a</sub>'], '']);
+      assert.deepStrictEqual(inspect(parser('<http://host>')), [['<', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', '>'], '']);
+      assert.deepStrictEqual(inspect(parser('<sup><sub>a</sub>')), [['<', 'sup', '>', '<sub>a</sub>'], '']);
       assert.deepStrictEqual(inspect(parser('[~http://host')), [['[', '~', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~a@b')), [['[', '~', '<a class="email" href="mailto:a@b" rel="noopener">a@b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[~~a~~]')), [['[', '<del>a</del>', ']'], '']);

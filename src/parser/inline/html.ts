@@ -2,7 +2,7 @@ import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototype
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
 import { union, some, validate, creator, surround, match, memoize, context, lazy } from '../../combinator';
-import { startTight, isTight, trimEnd, defrag } from '../util';
+import { startTight, isTight, trimEnd, defrag, stringify } from '../util';
 import { str } from '../source';
 import { DeepImmutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';
@@ -26,14 +26,14 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
       surround(
         str(`<${tag}`), some(union([attribute])), str('>'), true,
         ([, as = []], rest) => [
-          [h(tag as 'span', makeAttrs(attributes[tag], as.map(t => t.data), [], 'html'))],
+          [h(tag as 'span', makeAttrs(attributes[tag], as, [], 'html'))],
           rest
         ]))),
   match(
     /^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/,
     memoize(([, tag]) => tag,
     tag =>
-      surround(surround(
+      surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
         startTight(
         context((() => {
@@ -70,7 +70,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     // Don't memoize this function because this key size is unlimited
     // and it makes a vulnerability of memory leaks.
     ([, tag]) =>
-      surround(surround(
+      surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
         startTight(
         some(union([inline]), `</${tag}>`)),
@@ -85,7 +85,7 @@ export const attribute: HTMLParser.TagParser.AttributeParser = creator(union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/),
 ]));
 
-function elem(tag: string, as: (HTMLElement | Text)[], bs: (HTMLElement | Text)[], cs: (HTMLElement | Text)[], context: MarkdownParser.Context): HTMLElement {
+function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
   let attrs: Record<string, string | undefined>;
   if (!tags.includes(tag)) {
     return invalid('Invalid HTML tag', as, bs, cs);
@@ -114,8 +114,8 @@ function elem(tag: string, as: (HTMLElement | Text)[], bs: (HTMLElement | Text)[
       break;
   }
   switch (true) {
-    case as[as.length - 1].textContent !== '>'
-      || 'data-invalid-syntax' in (attrs = makeAttrs(attributes[tag], as.slice(1, -1).map(a => a.textContent!), [], 'html')):
+    case stringify(as[as.length - 1]) !== '>'
+      || 'data-invalid-syntax' in (attrs = makeAttrs(attributes[tag], as.slice(1, -1).map(stringify), [], 'html')):
       return invalid('Invalid HTML attribute', as, bs, cs);
     case cs.length === 0:
       return invalid('Unclosed HTML tag', as, bs, cs);
@@ -123,7 +123,7 @@ function elem(tag: string, as: (HTMLElement | Text)[], bs: (HTMLElement | Text)[
       return defrag(h(tag as 'span', attrs!, bs));
   }
 }
-function invalid(message: string, as: Node[], bs: Node[], cs: Node[]): HTMLElement {
+function invalid(message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
   return defrag(h('span', {
     class: 'invalid',
     'data-invalid-syntax': 'html',

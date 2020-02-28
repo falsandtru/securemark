@@ -1,9 +1,10 @@
+import { isArray } from 'spica/alias';
 import { Parser, fmap } from '../combinator';
 import { htmlentity, comment } from './inline';
 import { define, apply } from 'typed-dom';
 import { pop } from 'spica/array';
 
-export function isTight(nodes: (HTMLElement | Text)[], start: number, end: number): boolean {
+export function isTight(nodes: (HTMLElement | string)[], start: number, end: number): boolean {
   if (end < 0) return isTight(nodes, start, nodes.length + end);
   if (start >= nodes.length) return true;
   switch (false) {
@@ -15,44 +16,40 @@ export function isTight(nodes: (HTMLElement | Text)[], start: number, end: numbe
       return true;
   }
   --end;
-  const data = 'data' in nodes[end]
-    ? (nodes[end] as Text).data
-    : '';
-  return data.length > 1
+  return typeof nodes[end] === 'string' && (nodes[end] as string).length > 1
     ? isVisible(nodes[end], 'end', 0) ||
       isVisible(nodes[end], 'end', 1)
     : isVisible(nodes[end], 'end') ||
       isVisible(nodes[end - 1], 'end');
 }
-function isVisible(node: HTMLElement | Text | undefined, dir: 'start' | 'end', offset = 0): boolean {
+function isVisible(node: HTMLElement | string | undefined, dir: 'start' | 'end', offset = 0): boolean {
   assert(offset >= 0);
   if (!node) return false;
-  if ('data' in node) {
-    const data = node.data;
-    const char = data[dir === 'start' ? 0 + offset : data.length - 1 - offset];
-    assert(char);
-    switch (char) {
-      case '':
-      case ' ':
-      case '\t':
-      case '\n':
-        return false;
-      default:
-        return char.trim() !== '';
-    }
-  }
-  else {
-    switch (node.tagName) {
-      case 'BR':
-      case 'WBR':
-        return false;
-      case 'SPAN':
-        return node.className !== 'linebreak';
-      case 'SUP':
-        return node.className !== 'comment';
-      default:
-        return true;
-    }
+  switch (typeof node) {
+    case 'string':
+      const char = node[dir === 'start' ? 0 + offset : node.length - 1 - offset];
+      assert(char);
+      switch (char) {
+        case '':
+        case ' ':
+        case '\t':
+        case '\n':
+          return false;
+        default:
+          return char.trim() !== '';
+      }
+    default:
+      switch (node.tagName) {
+        case 'BR':
+        case 'WBR':
+          return false;
+        case 'SPAN':
+          return node.className !== 'linebreak';
+        case 'SUP':
+          return node.className !== 'comment';
+        default:
+          return true;
+      }
   }
 }
 
@@ -95,11 +92,11 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
   }
 }
 
-export function trimEnd<T extends HTMLElement | Text>(nodes: T[]): T[];
-export function trimEnd(nodes: (HTMLElement | Text)[]): (HTMLElement | Text)[] {
+export function trimEnd<T extends HTMLElement | string>(nodes: T[]): T[];
+export function trimEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
   if (nodes.length === 0) return nodes;
   const node = nodes[nodes.length - 1];
-  return 'id' in node && node.tagName === 'BR'
+  return typeof node === 'object' && node.tagName === 'BR'
     ? pop(nodes)[0]
     : nodes;
 }
@@ -112,12 +109,16 @@ export function defrag<T extends Node>(node: T): T {
   return void node.normalize(), node;
 }
 
-export function stringify(nodes: (HTMLElement | Text)[]): string {
+export function stringify(node: HTMLElement | string): string;
+export function stringify(nodes: (HTMLElement | string)[]): string;
+export function stringify(nodes: HTMLElement | string | (HTMLElement | string)[]): string {
+  if (typeof nodes === 'string') return nodes;
+  if (!isArray(nodes)) return nodes.textContent!;
   let acc = '';
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
-    acc += 'data' in node
-      ? node.data
+    acc += typeof node === 'string'
+      ? node
       : node.textContent;
   }
   return acc;

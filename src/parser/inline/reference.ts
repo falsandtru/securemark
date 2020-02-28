@@ -1,6 +1,6 @@
 import { ReferenceParser } from '../inline';
 import { Result, subsequence, some, subline, focus, creator, surround, guard, context, lazy, bind } from '../../combinator';
-import { startTight, isTight, trimEnd, defrag } from '../util';
+import { startTight, isTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
@@ -19,13 +19,13 @@ export const reference: ReferenceParser = lazy(() => creator(subline(bind(surrou
   subsequence([alias, startTight(some(inline, ']]'))]))),
   ']]'),
   (ns, rest) =>
-    isTight(ns, 'id' in ns[0] && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
+    isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
       ? Result(
           defrag(html('sup',
             {
               class: 'reference',
-              'data-alias': 'id' in ns[0] && ns[0].tagName === 'ABBR'
-                ? ns.shift()!.textContent
+              'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
+                ? stringify(ns.shift()!)
                 : void 0
             },
             trimEnd(ns))),

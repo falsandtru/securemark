@@ -3,7 +3,7 @@ import { Ctx, sequence, creator, surround, bind } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { str } from '../source';
-import { html, text } from 'typed-dom';
+import { html } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
 export const ruby: RubyParser = creator(bind(
@@ -11,23 +11,23 @@ export const ruby: RubyParser = creator(bind(
     surround('[', str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), ']'),
     surround('(', str(/^(?:\\[^\n]|[^\)\n])+/), ')'),
   ]),
-  ([{ data: t }, { data: r }], rest, context) => {
+  ([t, r], rest, context) => {
     const texts = parse(t, context);
     const rubies = parse(r, context);
     if (!join(texts).trim() || !join(rubies).trim()) return;
     switch (true) {
       case rubies.length <= texts.length:
         return [[defrag(html('ruby', texts
-          .reduce<(HTMLElement | Text)[]>((acc, _, i) =>
-            push(acc, unshift([text(texts[i])],
+          .reduce<(HTMLElement | string)[]>((acc, _, i) =>
+            push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i].trim() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')] as typeof acc))
           , [])))], rest];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
         return [[defrag(html('ruby', [...texts[0]]
-          .reduce<(HTMLElement | Text)[]>((acc, _, i, texts) =>
-            push(acc, unshift([text(texts[i])],
+          .reduce<(HTMLElement | string)[]>((acc, _, i, texts) =>
+            push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i].trim() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')] as typeof acc))
@@ -35,7 +35,7 @@ export const ruby: RubyParser = creator(bind(
       default:
         return [[
           defrag(html('ruby', [
-            text(join(texts, ' ')),
+            join(texts, ' '),
             ...rubies.length === 0
               ? []
               : [
@@ -59,7 +59,7 @@ function parse(target: string, context: Ctx): string[] {
         acc[acc.length - 1] += target[++i];
         continue;
       case '&': {
-        const [[{ data = '&' }] = [{}], rest = target.slice(i + data.length)] = htmlentity(target.slice(i), context) || [];
+        const [[data = '&'] = [], rest = target.slice(i + data.length)] = htmlentity(target.slice(i), context) || [];
         acc[acc.length - 1] += data;
         i = target.length - rest.length - 1;
         continue;

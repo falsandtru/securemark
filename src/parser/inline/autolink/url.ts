@@ -1,6 +1,6 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, validate, rewrite, convert, surround, open, context, lazy } from '../../../combinator';
-import { unescsource, str, char } from '../../source';
+import { Parser, union, some, validate, rewrite, convert, surround, open, context, lazy } from '../../../combinator';
+import { unescsource, str } from '../../source';
 import { link } from '../link';
 
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
@@ -8,18 +8,18 @@ const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   validate(['http', 'ttp'], open(
     str(/^h?ttps?:\/\/(?=[^/?#\s])/),
-    some(union([bracket, some(unescsource, closer)])))),
+    some<Parser<string>>(union([bracket, some(unescsource, closer)])))),
   convert(
     source => `{ ${address(source)}${attribute(source)} }`,
     context({ syntax: { inline: { link: void 0 } } },
     union([link])))));
 
-export const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
-  surround('(', some(union([bracket, str(/^[^\s\)([{<"]+/)])), char(')'), true),
-  surround('[', some(union([bracket, str(/^[^\s\]([{<"]+/)])), char(']'), true),
-  surround('{', some(union([bracket, str(/^[^\s\}([{<"]+/)])), char('}'), true),
-  surround('<', some(union([bracket, str(/^[^\s\>([{<"]+/)])), char('>'), true),
-  surround('"', some(unescsource, /^[\s"]/), char('"'), true),
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
+  surround('(', some(union([bracket, str(/^[^\s\)([{<"]+/)])), ')', true),
+  surround('[', some(union([bracket, str(/^[^\s\]([{<"]+/)])), ']', true),
+  surround('{', some(union([bracket, str(/^[^\s\}([{<"]+/)])), '}', true),
+  surround('<', some(union([bracket, str(/^[^\s\>([{<"]+/)])), '>', true),
+  surround('"', str(/^[\s"]+/), '"', true),
 ]));
 
 export function address(source: string): string {

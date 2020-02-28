@@ -12,12 +12,12 @@ export const address: ParagraphParser.MentionParser.AddressParser = line(creator
       focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, convert(source => `{ ${addr(source)}${attr(source)} }`, link)),
     ]),
   ]),
-  ([{ data: flag }, link]: [Text, HTMLAnchorElement]) => [
+  ([sym, link]: [string, HTMLAnchorElement]) => [
     define(link,
       {
         class: 'address',
-        'data-level': `${flag.length}`,
+        'data-level': `${sym.length}`,
         href: null,
       },
-      `${flag}${link.textContent}`)
+      `${sym}${link.textContent}`)
   ])));

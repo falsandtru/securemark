@@ -8,7 +8,6 @@ import { account } from './autolink/account';
 import { hashtag } from './autolink/hashtag';
 import { hashref } from './autolink/hashref';
 import { str } from '../source';
-import { text } from 'typed-dom';
 
 export const autolink: AutolinkParser = fmap(
   guard(context => context.syntax?.inline?.autolink ?? true,
@@ -24,4 +23,4 @@ export const autolink: AutolinkParser = fmap(
     hashref,
     str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
   ])))),
-  ns => ns.length === 1 ? ns : [text(stringify(ns))]);
+  ns => ns.length === 1 ? ns : [stringify(ns)]);

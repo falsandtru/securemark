@@ -7,7 +7,7 @@ import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
-import { frag, html, define } from 'typed-dom';
+import { html, define } from 'typed-dom';
 import { DeepMutable } from 'spica/type';
 
 const { origin } = location;
@@ -41,14 +41,14 @@ export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], 
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
-  ([content, param]: [(HTMLElement | Text)[], Text[]], rest, context: DeepMutable<MarkdownParser.Context>) => {
-    assert(param.every(n => n instanceof Text));
+  ([content, param]: [(HTMLElement | string)[], string[]], rest, context: DeepMutable<MarkdownParser.Context>) => {
+    assert(param.every(s => typeof s === 'string'));
     if (!isTight(content, 0, content.length)) return;
     switch (true) {
       case content.length === 0:
         break;
       case content.length === 1
-        && 'id' in content[0]
+        && typeof content[0] === 'object'
         && content[0].tagName === 'A'
         && content[0].firstElementChild?.classList.contains('media')
         && !log.has(content[0].firstElementChild!):
@@ -58,11 +58,12 @@ export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], 
         assert(content[0].matches('.media'));
         break;
       case !context.insecure
-        && !!eval(some(autolink)(stringify(content), { ...context, insecure: true })).some(node => 'id' in node):
+        && !!eval(some(autolink)(stringify(content), { ...context, insecure: true }))
+            .some(node => typeof node === 'object' && 'id' in node):
         return;
     }
-    assert(!frag(content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
-    const [INSECURE_URI, ...params]: string[] = param.map(t => t.data);
+    assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
+    const [INSECURE_URI, ...params]: string[] = param;
     assert(INSECURE_URI === INSECURE_URI.trim());
     const el = defrag(html('a',
       {

@@ -12,5 +12,5 @@ export const mark: MarkParser = lazy(() => creator(surround(
   ([as, bs, cs], rest) =>
     isTight(bs, 0, bs.length)
       ? [[defrag(html('mark', trimEnd(bs)))], rest]
-      : [unshift(as, bs), cs[0].data + rest],
+      : [unshift(as, bs), cs[0] + rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));

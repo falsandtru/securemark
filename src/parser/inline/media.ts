@@ -1,12 +1,12 @@
 import { encodeURI } from 'spica/global';
 import { ObjectAssign } from 'spica/alias';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, validate, rewrite, creator, surround, open, guard, lazy, fmap, bind } from '../../combinator';
-import { dup, stringify } from '../util';
+import { union, inits, tails, some, validate, creator, surround, open, guard, lazy, fmap, bind } from '../../combinator';
+import { dup } from '../util';
 import { link, attributes, uri, attribute } from './link';
-import { escsource, str } from '../source';
+import { text, str, char } from '../source';
 import { makeAttrs } from './html';
-import { html, define, text } from 'typed-dom';
+import { html, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
 import { unshift, join } from 'spica/array';
 
@@ -18,15 +18,15 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
   '!',
   guard(context => (context.syntax?.inline?.link ?? true) && (context.syntax?.inline?.media ?? true),
   tails([
-    dup(surround(/^\[(?!\s)/, some(union([bracket, some(escsource, /^(?:\\?\n|[\]([{<"])/)]), ']'), ']', true)),
+    dup(surround(/^\[(?!\s)/, some(union([bracket, some(text, /^(?:\\?\n|[\]([{<"])/)]), ']'), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ]))),
-  (ts: Text[][]) =>
-    unshift([ts.length > 1 ? stringify(ts[0]) : ''], ts[ts.length - 1].map(t => t.data))),
+  (sss: string[][]) =>
+    unshift([sss.length > 1 ? join(sss[0]) : ''], sss[sss.length - 1])),
   ([text, INSECURE_URL, ...params]: string[], rest, context) => {
     assert(INSECURE_URL === INSECURE_URL.trim());
     if (text.length > 0 && text.slice(-2).trim() === '') return;
-    text = text.trim().replace(/\\(.?)/g, '$1');
+    text = text.trim();
     url.href = INSECURE_URL;
     const media = void 0
       || cache.get(url.href)?.cloneNode(true)
@@ -45,12 +45,10 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
       (`{ ${INSECURE_URL}${join(params)} }${rest}`, context);
   }))));
 
-const bracket: MediaParser.TextParser.BracketParser = lazy(() => rewrite(
-  union([
-    surround('(', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)])), ')', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('[', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\]([{<"\\])+/)])), ']', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('{', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\}([{<"\\])+/)])), '}', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('<', some(union([bracket, str(/^(?:\\[^\n]?|[^\n\>([{<"\\])+/)])), '>', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-    surround('"', str(/^(?:\\[^\n]?|[^\n([{<"\\])+/), '"', true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  ]),
-  source => [[text(source)], '']));
+const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
+  surround(char('('), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)])), char(')'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('['), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\]([{<"\\])+/)])), char(']'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('{'), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\}([{<"\\])+/)])), char('}'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('<'), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\>([{<"\\])+/)])), char('>'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('"'), str(/^(?:\\[^\n]?|[^\n([{<"\\])+/), char('"'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+]));

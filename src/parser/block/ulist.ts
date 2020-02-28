@@ -24,8 +24,8 @@ export const ulist_: UListParser = convert(
   source => source.replace(/^-(?=$|\n)/, `$& `),
   ulist);
 
-export function fillFirstLine(ns: (HTMLElement | Node)[]): Node[] {
-  return ns[0] && 'id' in ns[0] && ['UL', 'OL'].includes(ns[0].tagName)
+export function fillFirstLine(ns: (HTMLElement | string)[]): (HTMLElement | string)[] {
+  return typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName)
     ? unshift([html('br')], ns)
     : ns;
 }

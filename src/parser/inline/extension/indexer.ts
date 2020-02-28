@@ -13,4 +13,4 @@ export const indexer: ExtensionParser.IndexerParser = surround(
     [html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) })],
     rest
   ],
-  ([as, bs], rest) => [unshift<HTMLElement | Text>(as, bs), rest]);
+  ([as, bs], rest) => [unshift<HTMLElement | string>(as, bs), rest]);

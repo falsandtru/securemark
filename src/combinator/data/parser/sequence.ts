@@ -1,7 +1,7 @@
-import { Parser, SubParsers, eval, exec, check } from '../parser';
+import { Parser, Data, SubParsers, Context, SubData, eval, exec, check } from '../parser';
 import { push } from 'spica/array';
 
-export function sequence<P extends Parser<unknown>>(parsers: SubParsers<P>): P;
+export function sequence<P extends Parser<unknown>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : Parser<SubData<P>, SubParsers<P>, Context<P>>;
 export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
   return (source, context) => {

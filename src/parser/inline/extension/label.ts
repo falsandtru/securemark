@@ -12,7 +12,7 @@ export const label: ExtensionParser.LabelParser = creator(validate(['[$', '$'], 
     body,
   ]),
   ([text]) =>
-    [html('a', { class: 'label', 'data-label': text.data.slice(text.data[1] === '-' ? 0 : 1) }, [text])])));
+    [html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1) }, [text])])));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

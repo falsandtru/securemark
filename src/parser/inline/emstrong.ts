@@ -12,13 +12,13 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
   union([some(inline, '*')]),
   str(/^\*{1,3}/), false,
   ([as, bs, cs], rest, context) => {
-    if (!isTight(bs, 0, bs.length)) return [unshift(as, bs), cs[0].data + rest];
-    switch (cs[0].data) {
+    if (!isTight(bs, 0, bs.length)) return [unshift(as, bs), cs[0] + rest];
+    switch (cs[0]) {
       case '*':
         return fmap(
           strong,
           ms =>
-            'id' in ms[0]
+            typeof ms[0] === 'object'
               ? void ms[0].prepend(defrag(html('em', trimEnd(bs)))) || ms
               : push(unshift(as, bs), shift(ms)[1]))
           ('**' + rest, context) || [push(unshift(as, bs), cs), rest];
@@ -26,14 +26,13 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
         return fmap(
           emphasis,
           ms =>
-            'id' in ms[0]
+            typeof ms[0] === 'object'
               ? void ms[0].prepend(defrag(html('strong', trimEnd(bs)))) || ms
               : push(unshift(as, bs), shift(ms)[1]))
           ('*' + rest, context) || [push(unshift(as, bs), cs), rest];
       case '***':
         return [[html('em', [defrag(html('strong', trimEnd(bs)))])], rest];
-      default:
-        throw new Error('Unreachable');
     }
+    assert(false);
   },
   ([as, bs], rest) => [unshift(as, bs), rest])));

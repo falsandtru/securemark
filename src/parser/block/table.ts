@@ -3,7 +3,7 @@ import { TableParser } from '../block';
 import { union, sequence, some, block, line, focus, validate, surround, open, context, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { inline } from '../inline';
-import { html, text } from 'typed-dom';
+import { html } from 'typed-dom';
 import { push } from 'spica/array';
 
 import RowParser = TableParser.RowParser;
@@ -71,8 +71,8 @@ const data: CellParser.DataParser = surround(
 const alignment: CellParser.AlignmentParser = open(
   '|',
   union([
-    focus(/^:-+:/, () => [[text('center')], '']),
-    focus(/^:-+/, () => [[text('left')], '']),
-    focus(/^-+:/, () => [[text('right')], '']),
-    focus(/^-+/, () => [[text('')], '']),
+    focus(/^:-+:/, () => [['center'], '']),
+    focus(/^:-+/, () => [['left'], '']),
+    focus(/^-+:/, () => [['right'], '']),
+    focus(/^-+/, () => [[''], '']),
   ]));
