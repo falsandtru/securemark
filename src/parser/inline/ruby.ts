@@ -36,9 +36,14 @@ export const ruby: RubyParser = creator(bind(
         return [[
           defrag(html('ruby', [
             text(join(texts, ' ')),
-            html('rp', '('),
-            html('rt', join(rubies, ' ') || void 0),
-            html('rp', ')')]))
+            ...rubies.length === 0
+              ? []
+              : [
+                  html('rp', '('),
+                  html('rt', join(rubies, ' ')),
+                  html('rp', ')'),
+                ]
+          ]))
         ], rest];
     }
   }));
