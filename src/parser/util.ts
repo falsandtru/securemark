@@ -113,9 +113,14 @@ export function defrag<T extends Node>(node: T): T {
 }
 
 export function stringify(nodes: (HTMLElement | Text)[]): string {
-  return nodes.reduce((acc, node) =>
-    `${acc}${'data' in node ? node.data : node.textContent}`
-  , '');
+  let acc = '';
+  for (let i = 0; i < nodes.length; ++i) {
+    const node = nodes[i];
+    acc += 'data' in node
+      ? node.data
+      : node.textContent;
+  }
+  return acc;
 }
 
 export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T;
