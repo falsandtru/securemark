@@ -6,11 +6,12 @@ export function creator<P extends Parser<unknown>>(cost: number, parser: P): P;
 export function creator(cost: number | Parser<unknown>, parser?: Parser<unknown>): Parser<unknown> {
   if (typeof cost === 'function') return creator(1, cost);
   return (source, context: DeepMutable<Ctx>) => {
-    if (context.resource?.creation! < 0) throw new Error('Too many creations');
+    const { resource } = context;
+    if (resource && resource.creation < 0) throw new Error('Too many creations');
     const result = parser!(source, context);
-    if (result && context.resource) {
-      context.resource.creation -= cost;
-      assert(Object.getPrototypeOf(context.resource).creation % 10 === 0);
+    if (result && resource) {
+      resource.creation -= cost;
+      assert(Object.getPrototypeOf(resource).creation % 10 === 0);
     }
     return result;
   };
