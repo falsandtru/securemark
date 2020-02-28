@@ -25,6 +25,9 @@ export function text(source: HTMLElement): string {
 function identity(index: string): string {
   assert(!index.includes('\n'));
   return index
-    ? `index:${index.trim().replace(/\s+/g, '_')}`
+    ? `index:${index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`
     : '';
 }
+assert(identity('0'.repeat(100)).slice(6) === '0'.repeat(100));
+assert(identity('0'.repeat(101)).slice(6) === '0'.repeat(97) + '...');
+assert(identity('0'.repeat(200)).slice(6) === '0'.repeat(97) + '...');

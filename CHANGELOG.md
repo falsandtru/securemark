@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.147.4
+
+- Limit the max size of an id to 100.
+
 ## 0.147.3
 
 - Refactoring.
