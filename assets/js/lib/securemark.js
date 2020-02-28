@@ -2920,7 +2920,7 @@ require = function () {
             }
             const text = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, text)),
-                combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, combinator_1.fmap(combinator_1.some(autolink_1.autolink), ns => [util_1.defrag(typed_dom_1.html('pre', ns))])))
+                combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, combinator_1.fmap(combinator_1.some(autolink_1.autolink), ns => [typed_dom_1.html('pre', util_1.defrag(ns))])))
             ])), ns => [typed_dom_1.html('blockquote', ns)]));
             const source = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, source)),
@@ -2984,7 +2984,7 @@ require = function () {
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
-                    void util_1.defrag(typed_dom_1.define(el, combinator_1.eval(combinator_1.some(autolink_1.autolink)(el.textContent, context))));
+                    void typed_dom_1.define(el, util_1.defrag(combinator_1.eval(combinator_1.some(autolink_1.autolink)(el.textContent, context))));
                 }
                 if (path) {
                     void el.setAttribute('data-file', path);
@@ -3019,8 +3019,8 @@ require = function () {
             const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~(?=$|\s)/, combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ]))), true), ns => [util_1.defrag(typed_dom_1.html('dt', ns))])));
-            const desc = combinator_1.block(combinator_1.fmap(combinator_1.open(/^:(?=$|\s)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=$|\s)/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [util_1.defrag(typed_dom_1.html('dd', ns))]), false);
+            ]))), true), ns => [typed_dom_1.html('dt', util_1.defrag(ns))])));
+            const desc = combinator_1.block(combinator_1.fmap(combinator_1.open(/^:(?=$|\s)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=$|\s)/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('dd', util_1.defrag(ns))]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? array_1.push(es, [typed_dom_1.html('dd')]) : es;
             }
@@ -3223,7 +3223,7 @@ require = function () {
             ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attrs(label.getAttribute('data-label'), content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
-                    util_1.defrag(typed_dom_1.html('figcaption', caption))
+                    typed_dom_1.html('figcaption', util_1.defrag(caption))
                 ])]))));
             function attrs(label, content, caption) {
                 const group = label.split('-', 1)[0];
@@ -3285,7 +3285,7 @@ require = function () {
             exports.heading = combinator_1.block(combinator_1.focus(/^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?)*(?:$|\n)/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(source_1.str(/^#+/), combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ]))), true), ([sym, ...ns]) => [util_1.defrag(typed_dom_1.html(`h${ sym.length }`, ns))])))))));
+            ]))), true), ([sym, ...ns]) => [typed_dom_1.html(`h${ sym.length }`, util_1.defrag(ns))])))))));
         },
         {
             '../../combinator': 30,
@@ -3328,7 +3328,7 @@ require = function () {
                         olist_1.olist_,
                         exports.ilist_
                     ]))
-                ]), ns => [util_1.defrag(typed_dom_1.html('li', ulist_1.fillFirstLine(ns)))])]))), es => [typed_dom_1.html('ul', {
+                ]), ns => [typed_dom_1.html('li', util_1.defrag(ulist_1.fillFirstLine(ns)))])]))), es => [typed_dom_1.html('ul', {
                     class: 'invalid',
                     'data-invalid-syntax': 'list',
                     'data-invalid-message': 'Use - instead of + or *'
@@ -3386,10 +3386,10 @@ require = function () {
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ([index, , ...ns]) => [util_1.defrag(typed_dom_1.html('li', {
+                ]), ([index, , ...ns]) => [typed_dom_1.html('li', {
                         value: format(index),
                         'data-type': type(index)
-                    }, ulist_1.fillFirstLine(ns)))])])))), es => {
+                    }, util_1.defrag(ulist_1.fillFirstLine(ns)))])])))), es => {
                 const ty = es[0].getAttribute('data-type');
                 return [typed_dom_1.html('ol', {
                         type: ty,
@@ -3453,7 +3453,7 @@ require = function () {
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, '>'), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
-            ]))), ns => ns.length > 0 ? [util_1.defrag(typed_dom_1.html('p', util_1.trimEnd(ns)))].map(el => isVisible(el) ? el : typed_dom_1.define(el, {
+            ]))), ns => ns.length > 0 ? [typed_dom_1.html('p', util_1.defrag(util_1.trimEnd(ns)))].map(el => isVisible(el) ? el : typed_dom_1.define(el, {
                 class: 'invalid',
                 'data-invalid-syntax': 'paragraph',
                 'data-invalid-message': 'All paragraphs must have a visible content'
@@ -3529,7 +3529,7 @@ require = function () {
             exports.quotation = combinator_1.lazy(() => combinator_1.block(combinator_1.creator(combinator_1.fmap(combinator_1.union([
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+(?:$|\s)/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), combinator_1.some(autolink_1.autolink))),
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), combinator_1.some(autolink_1.autolink)))
-            ]), ns => [util_1.defrag(typed_dom_1.html('span', { class: 'quotation' }, ns))])), false));
+            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, util_1.defrag(ns))])), false));
         },
         {
             '../../../../combinator': 30,
@@ -3581,7 +3581,7 @@ require = function () {
                 }
             }
             const row = (parser, optional) => combinator_1.fmap(combinator_1.line(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?\s*$/, optional)), es => [typed_dom_1.html('tr', es)]);
-            const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [util_1.defrag(typed_dom_1.html('td', ns))]);
+            const cell = parser => combinator_1.fmap(combinator_1.union([parser]), ns => [typed_dom_1.html('td', util_1.defrag(ns))]);
             const data = combinator_1.surround(/^\|(?:\\?\s)*(?=\S)/, combinator_1.some(combinator_1.union([inline_1.inline]), /^(?:\\?\s)*(?=\||\\?$)/), /^[^|]*/, true);
             const alignment = combinator_1.open('|', combinator_1.union([
                 combinator_1.focus(/^:-+:/, () => [
@@ -3629,7 +3629,7 @@ require = function () {
                         olist_1.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [util_1.defrag(typed_dom_1.html('li', fillFirstLine(ns)))])])))), es => [typed_dom_1.html('ul', es)])));
+                ]), ns => [typed_dom_1.html('li', util_1.defrag(fillFirstLine(ns)))])])))), es => [typed_dom_1.html('ul', es)])));
             exports.ulist_ = combinator_1.convert(source => source.replace(/^-(?=$|\n)/, `$& `), exports.ulist);
             function fillFirstLine(ns) {
                 return typeof ns[0] === 'object' && [
@@ -3844,7 +3844,7 @@ require = function () {
                 },
                 state: void 0
             }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')])))), '))'), (ns, rest) => util_1.isTight(ns, 0, ns.length) ? [
-                [util_1.defrag(typed_dom_1.html('sup', { class: 'annotation' }, util_1.trimEnd(ns)))],
+                [typed_dom_1.html('sup', { class: 'annotation' }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : void 0)));
         },
@@ -4125,7 +4125,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.deletion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('~~'), combinator_1.union([combinator_1.some(inline_1.inline, '~~')]), source_1.str('~~'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('del', util_1.trimEnd(bs)))],
+                [typed_dom_1.html('del', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -4159,7 +4159,7 @@ require = function () {
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
             ])), source_1.char('*'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('em', util_1.trimEnd(bs)))],
+                [typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -4199,18 +4199,18 @@ require = function () {
                     ];
                 switch (cs[0]) {
                 case '*':
-                    return combinator_1.fmap(strong_1.strong, ms => typeof ms[0] === 'object' ? void ms[0].prepend(util_1.defrag(typed_dom_1.html('em', util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
+                    return combinator_1.fmap(strong_1.strong, ms => typeof ms[0] === 'object' ? void ms[0].prepend(typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
                 case '**':
-                    return combinator_1.fmap(emphasis_1.emphasis, ms => typeof ms[0] === 'object' ? void ms[0].prepend(util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
+                    return combinator_1.fmap(emphasis_1.emphasis, ms => typeof ms[0] === 'object' ? void ms[0].prepend(typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
                 case '***':
                     return [
-                        [typed_dom_1.html('em', [util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs)))])],
+                        [typed_dom_1.html('em', [typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))])],
                         rest
                     ];
                 }
@@ -4304,7 +4304,7 @@ require = function () {
                 source_1.char('|'),
                 combinator_1.some(inline_1.inline, ']')
             ]), source_1.char(']'), false, ([as, bs, cs], rest) => [
-                util_1.isTight(bs, 2, bs.length) ? [util_1.defrag(typed_dom_1.html('span', attrs(util_1.stringify(bs[0])), util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
+                util_1.isTight(bs, 2, bs.length) ? [typed_dom_1.html('span', attrs(util_1.stringify(bs[0])), util_1.defrag(util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
                 rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
@@ -4350,7 +4350,7 @@ require = function () {
                     }
                 }
             }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ']')]))), ']', false, ([, bs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('a', util_1.trimEnd(bs)))],
+                [typed_dom_1.html('a', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : void 0)), ([el]) => [typed_dom_1.define(el, {
                     id: null,
@@ -4490,11 +4490,11 @@ require = function () {
                 '[:',
                 '[^'
             ], combinator_1.surround(source_1.str(/^\[[:^]/), combinator_1.some(combinator_1.union([inline_1.inline]), ']'), source_1.char(']'), false, ([as, bs, cs], rest) => [
-                util_1.isTight(bs, 0, bs.length) ? [util_1.defrag(typed_dom_1.html('span', {
+                util_1.isTight(bs, 0, bs.length) ? [typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-message': 'Invalid flag'
-                    }, util_1.trimEnd(bs)))] : array_1.push(array_1.unshift(as, bs), cs),
+                    }, util_1.defrag(util_1.trimEnd(bs)))] : array_1.push(array_1.unshift(as, bs), cs),
                 rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
@@ -4609,15 +4609,15 @@ require = function () {
                 case cs.length === 0:
                     return invalid('Unclosed HTML tag', as, bs, cs);
                 default:
-                    return util_1.defrag(typed_dom_1.html(tag, attrs, bs));
+                    return typed_dom_1.html(tag, attrs, util_1.defrag(bs));
                 }
             }
             function invalid(message, as, bs, cs) {
-                return util_1.defrag(typed_dom_1.html('span', {
+                return typed_dom_1.html('span', {
                     class: 'invalid',
                     'data-invalid-syntax': 'html',
                     'data-invalid-message': message
-                }, array_1.push(array_1.unshift(as, bs), cs)));
+                }, util_1.defrag(array_1.push(array_1.unshift(as, bs), cs)));
             }
             const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)), new WeakMap());
             function makeAttrs(spec, params, classes, syntax) {
@@ -4681,7 +4681,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.insertion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('++'), combinator_1.union([combinator_1.some(inline_1.inline, '++')]), source_1.str('++'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('ins', util_1.trimEnd(bs)))],
+                [typed_dom_1.html('ins', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -4758,14 +4758,14 @@ require = function () {
                     content[0] = content[0].firstElementChild;
                     log.add(content[0]);
                     break;
-                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), Object.assign(Object.assign({}, context), { insecure: true }))).some(node => typeof node === 'object' && 'id' in node):
+                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), Object.assign(Object.assign({}, context), { insecure: true }))).some(node => typeof node === 'object'):
                     return;
                 }
                 const [INSECURE_URI, ...params] = param;
-                const el = util_1.defrag(typed_dom_1.html('a', {
+                const el = typed_dom_1.html('a', {
                     href: INSECURE_URI,
                     rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                }, content.length > 0 ? content = util_1.trimEnd(content) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, '')));
+                }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
                 if (!sanitize(el, INSECURE_URI))
                     return [
                         [el],
@@ -4839,7 +4839,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.mark = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('=='), combinator_1.union([combinator_1.some(inline_1.inline, '==')]), source_1.str('=='), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('mark', util_1.trimEnd(bs)))],
+                [typed_dom_1.html('mark', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -4999,10 +4999,10 @@ require = function () {
             }, combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']]'))
-            ]))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? combinator_1.Result(util_1.defrag(typed_dom_1.html('sup', {
+            ]))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? combinator_1.Result(typed_dom_1.html('sup', {
                 class: 'reference',
                 'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? util_1.stringify(ns.shift()) : void 0
-            }, util_1.trimEnd(ns))), rest) : void 0))));
+            }, util_1.defrag(util_1.trimEnd(ns))), rest) : void 0))));
             const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
                 ''
@@ -5036,7 +5036,7 @@ require = function () {
                 switch (true) {
                 case rubies.length <= texts.length:
                     return [
-                        [util_1.defrag(typed_dom_1.html('ruby', texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trim() !== '' ? [
+                        [typed_dom_1.html('ruby', util_1.defrag(texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trim() !== '' ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -5045,7 +5045,7 @@ require = function () {
                     ];
                 case texts.length === 1 && [...texts[0]].length >= rubies.length:
                     return [
-                        [util_1.defrag(typed_dom_1.html('ruby', [...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trim() !== '' ? [
+                        [typed_dom_1.html('ruby', util_1.defrag([...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trim() !== '' ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -5054,7 +5054,7 @@ require = function () {
                     ];
                 default:
                     return [
-                        [util_1.defrag(typed_dom_1.html('ruby', [
+                        [typed_dom_1.html('ruby', util_1.defrag([
                                 array_1.join(texts, ' '),
                                 ...rubies.length === 0 ? [] : [
                                     typed_dom_1.html('rp', '('),
@@ -5132,7 +5132,7 @@ require = function () {
                 emphasis_1.emphasis,
                 combinator_1.some(inline_1.inline, '*')
             ]), '**'), source_1.str('**'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
-                [util_1.defrag(typed_dom_1.html('strong', util_1.trimEnd(bs)))],
+                [typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
                 array_1.unshift(as, bs),
@@ -5694,8 +5694,19 @@ require = function () {
                 return combinator_1.fmap(parser, ns => [ns]);
             }
             exports.dup = dup;
-            function defrag(node) {
-                return void node.normalize(), node;
+            function defrag(nodes) {
+                const acc = [];
+                for (let i = 0; i < nodes.length; ++i) {
+                    const node = nodes[i];
+                    if (node === '')
+                        continue;
+                    if (acc.length === 0 || typeof node === 'object' || typeof nodes[i - 1] === 'object') {
+                        void acc.push(node);
+                    } else {
+                        acc[acc.length - 1] += node;
+                    }
+                }
+                return acc;
             }
             exports.defrag = defrag;
             function stringify(nodes) {
