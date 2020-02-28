@@ -1,5 +1,5 @@
 import { html } from 'typed-dom';
-import { push } from 'spica/array';
+import { push, join } from 'spica/array';
 
 const Tags = [...Array(6)].map((_, i) => `H${i + 1}`);
 
@@ -18,7 +18,7 @@ function parse(node: Tree, index: number[] = []): HTMLUListElement {
     const idx = push(index.slice(0), [i + 1]);
     return html('li',
       push<HTMLElement>(
-        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx.join('.') }, el.textContent!)],
+        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': join(idx, '.') }, el.textContent!)],
         cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }

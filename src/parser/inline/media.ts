@@ -8,7 +8,7 @@ import { escsource, str } from '../source';
 import { makeAttrs } from './html';
 import { html, define, text } from 'typed-dom';
 import { Cache } from 'spica/cache';
-import { unshift } from 'spica/array';
+import { unshift, join } from 'spica/array';
 
 const url = html('a');
 
@@ -42,7 +42,7 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
       link as MediaParser,
       ([el]: [HTMLAnchorElement]) =>
         [define(el, { target: '_blank' }, [define(media, { 'data-src': el.getAttribute('href') })])])
-      (`{ ${INSECURE_URL}${params.join('')} }${rest}`, context);
+      (`{ ${INSECURE_URL}${join(params)} }${rest}`, context);
   }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => rewrite(

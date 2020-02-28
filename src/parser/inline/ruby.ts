@@ -4,7 +4,7 @@ import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { str } from '../source';
 import { html, text } from 'typed-dom';
-import { unshift, push } from 'spica/array';
+import { unshift, push, join } from 'spica/array';
 
 export const ruby: RubyParser = creator(bind(
   sequence([
@@ -14,7 +14,7 @@ export const ruby: RubyParser = creator(bind(
   ([{ data: t }, { data: r }], rest, context) => {
     const texts = parse(t, context);
     const rubies = parse(r, context);
-    if (!texts.join('').trim() || !rubies.join('').trim()) return;
+    if (!join(texts).trim() || !join(rubies).trim()) return;
     switch (true) {
       case rubies.length <= texts.length:
         return [[defrag(html('ruby', texts
@@ -35,9 +35,9 @@ export const ruby: RubyParser = creator(bind(
       default:
         return [[
           defrag(html('ruby', [
-            text(texts.join(' ')),
+            text(join(texts, ' ')),
             html('rp', '('),
-            html('rt', rubies.join(' ') || void 0),
+            html('rt', join(rubies, ' ') || void 0),
             html('rp', ')')]))
         ], rest];
     }

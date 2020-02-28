@@ -7,7 +7,7 @@ import { str } from '../source';
 import { DeepImmutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';
 import { html as h } from 'typed-dom';
-import { unshift, push } from 'spica/array';
+import { unshift, push, join } from 'spica/array';
 
 const tags = ObjectFreeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
 const attributes = {
@@ -160,7 +160,7 @@ export function makeAttrs(
   invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
   if (invalid) {
     void classes.push('invalid');
-    attrs.class = classes.join(' ').trim();
+    attrs.class = join(classes, ' ').trim();
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-message'] = syntax === 'html'
       ? 'Invalid attribute'

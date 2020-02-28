@@ -5,6 +5,7 @@ import { rewrite } from '../constraint/scope';
 import { bind } from '../monad/bind';
 import { match, memoize } from './match';
 import { open } from './surround';
+import { join } from 'spica/array';
 
 export function indent<P extends Parser<unknown>>(parser: P): P;
 export function indent<T>(parser: Parser<T>): Parser<T> {
@@ -17,7 +18,7 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
         source => [[], source.slice(firstline(source).length)],
         open(indent, source => [[firstline(source, false)], ''])))))),
     (rs, rest, context) => {
-      const result = parser(rs.join('\n'), context);
+      const result = parser(join(rs, '\n'), context);
       return result && exec(result) === ''
         ? [eval(result), rest]
         : void 0;

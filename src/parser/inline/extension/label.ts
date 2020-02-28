@@ -2,6 +2,7 @@ import { ExtensionParser } from '../../inline';
 import { union, validate, creator, surround, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom';
+import { join } from 'spica/array';
 
 const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
 
@@ -47,5 +48,5 @@ function increment(number: string, position: number): string {
           ? 0
           : 1);
   }
-  return ms.join('.');
+  return join(ms, '.');
 }

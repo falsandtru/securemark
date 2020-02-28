@@ -4,6 +4,7 @@ import { text } from '../parser/inline/extension/indexee';
 import { MultiMap } from 'spica/multimap';
 import { memoize } from 'spica/memoize';
 import { frag, html, define } from 'typed-dom';
+import { join } from 'spica/array';
 
 export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
   yield* annotation(target, footnotes.annotation);
@@ -71,7 +72,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
             ? { title }
             : { class: ref.classList.contains('invalid')
                   ? void 0
-                  : [...ref.classList, 'invalid'].join(' '),
+                  : join([...ref.classList, 'invalid'], ' '),
                 'data-invalid-syntax': syntax,
                 'data-invalid-message': 'Missing a content',
               }

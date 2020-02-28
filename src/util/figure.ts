@@ -4,6 +4,7 @@ import { isFixed, isFormatted } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
+import { join } from 'spica/array';
 
 export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes?: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(
@@ -31,12 +32,14 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, foo
     let number = calculate(
       label,
       numbers.has(group) && !isFixed(label)
-        ? numbers.get(group)!.split('.')
-            .slice(
-              0,
-              isFormatted(label)
-                ? label.slice(label.lastIndexOf('-') + 1).split('.').length
-                : bases.length).join('.')
+        ? join(
+            numbers.get(group)!.split('.')
+              .slice(
+                0,
+                isFormatted(label)
+                  ? label.slice(label.lastIndexOf('-') + 1).split('.').length
+                  : bases.length),
+            '.')
         : base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.split('.').pop() === '0') {
@@ -47,18 +50,19 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, foo
           break;
         case number.startsWith('0.'):
           assert(number.endsWith('.0'));
-          number = bases.slice(0)
-            .reduce((ns, _, i, bs) => {
-              i === ns.length
-                ? bs.length = i
-                : ns[i] = +ns[i] > +bs[i]
-                  ? ns[i]
-                  : +ns[i] === 0
-                    ? bs[i]
-                    : `${+bs[i] + 1}`;
-              return ns;
-            }, number.split('.'))
-            .join('.');
+          number = join(
+            bases.slice(0)
+              .reduce((ns, _, i, bs) => {
+                i === ns.length
+                  ? bs.length = i
+                  : ns[i] = +ns[i] > +bs[i]
+                    ? ns[i]
+                    : +ns[i] === 0
+                      ? bs[i]
+                      : `${+bs[i] + 1}`;
+                return ns;
+              }, number.split('.')),
+            '.');
           break;
       }
       base = number;
@@ -89,7 +93,7 @@ function increment(bases: readonly string[], el: HTMLHeadingElement): string {
   const cursor = +el.tagName[1] - 1 || 1;
   assert(cursor > 0);
   return cursor < bases.length || bases.length === 1
-    ? [...bases.slice(0, cursor - 1), +bases[cursor - 1] + 1, '0'].join('.')
+    ? join([...bases.slice(0, cursor - 1), +bases[cursor - 1] + 1, '0'], '.')
     : '';
 }
 
