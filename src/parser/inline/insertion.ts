@@ -11,6 +11,6 @@ export const insertion: InsertionParser = lazy(() => creator(surround(
   str('++'), false,
   ([as, bs, cs], rest) =>
     isTight(bs, 0, bs.length)
-      ? [[defrag(html('ins', trimEnd(bs)))], rest]
+      ? [[html('ins', defrag(trimEnd(bs)))], rest]
       : [unshift(as, bs), cs[0] + rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));

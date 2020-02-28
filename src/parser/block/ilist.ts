@@ -14,7 +14,7 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
         line(open(/^[-+*](?:$|\s)/, trim(some(inline)), true)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
-      ns => [defrag(html('li', fillFirstLine(ns)))]),
+      ns => [html('li', defrag(fillFirstLine(ns)))]),
   ]))),
   es => [html('ul', { class: 'invalid', 'data-invalid-syntax': 'list', 'data-invalid-message': 'Use - instead of + or *' }, es)])));
 

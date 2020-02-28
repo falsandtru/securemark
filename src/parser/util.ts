@@ -105,8 +105,22 @@ export function dup<T, D extends Parser<unknown, any, C>[], C extends object>(pa
   return fmap(parser, ns => [ns]);
 }
 
-export function defrag<T extends Node>(node: T): T {
-  return void node.normalize(), node;
+export function defrag(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+  const acc: typeof nodes = [];
+  for (let i = 0; i < nodes.length; ++i) {
+    const node = nodes[i];
+    if (node === '') continue;
+    if (acc.length === 0 || typeof node === 'object' || typeof nodes[i - 1] === 'object') {
+      void acc.push(node);
+    }
+    else {
+      assert(acc.length > 0);
+      assert(typeof node === 'string');
+      assert(typeof nodes[i - 1] === 'string');
+      acc[acc.length - 1] += node;
+    }
+  }
+  return acc;
 }
 
 export function stringify(node: HTMLElement | string): string;

@@ -23,7 +23,7 @@ export const paragraph: ParagraphParser = block(fmap(
   ]))),
   ns =>
     ns.length > 0
-      ? [defrag(html('p', trimEnd(ns)))].map(el =>
+      ? [html('p', defrag(trimEnd(ns)))].map(el =>
           isVisible(el)
             ? el
             : define(el, {

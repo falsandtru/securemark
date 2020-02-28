@@ -20,7 +20,7 @@ export const olist: OListParser = lazy(() => block(fmap(validate(
         ])),
         indent(union([ulist_, olist_, ilist_]))
       ]),
-      ([index, , ...ns]: [string, ...(HTMLElement | string)[]]) => [defrag(html('li', { value: format(index), 'data-type': type(index) }, fillFirstLine(ns)))]),
+      ([index, , ...ns]: [string, ...(HTMLElement | string)[]]) => [html('li', { value: format(index), 'data-type': type(index) }, defrag(fillFirstLine(ns)))]),
   ])))),
   es => {
     const ty = es[0].getAttribute('data-type');

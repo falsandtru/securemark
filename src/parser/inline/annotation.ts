@@ -20,5 +20,5 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   '))'),
   (ns, rest) =>
     isTight(ns, 0, ns.length)
-      ? [[defrag(html('sup', { class: 'annotation' }, trimEnd(ns)))], rest]
+      ? [[html('sup', { class: 'annotation' }, defrag(trimEnd(ns)))], rest]
       : void 0)));

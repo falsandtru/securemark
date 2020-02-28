@@ -12,6 +12,6 @@ export const emphasis: EmphasisParser = lazy(() => creator(surround(
   char('*'), false,
   ([as, bs, cs], rest) =>
     isTight(bs, 0, bs.length)
-      ? [[defrag(html('em', trimEnd(bs)))], rest]
+      ? [[html('em', defrag(trimEnd(bs)))], rest]
       : [unshift(as, bs), cs[0] + rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));

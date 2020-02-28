@@ -16,7 +16,7 @@ export const ulist: UListParser = lazy(() => block(fmap(validate(
         line(open(/^-(?:$|\s)/, trim(some(inline)), true)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
-      ns => [defrag(html('li', fillFirstLine(ns)))]),
+      ns => [html('li', defrag(fillFirstLine(ns)))]),
   ])))),
   es => [html('ul', es)])));
 

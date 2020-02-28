@@ -21,14 +21,14 @@ export const reference: ReferenceParser = lazy(() => creator(subline(bind(surrou
   (ns, rest) =>
     isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
       ? Result(
-          defrag(html('sup',
+          html('sup',
             {
               class: 'reference',
               'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
                 ? stringify(ns.shift()!)
                 : void 0
             },
-            trimEnd(ns))),
+            defrag(trimEnd(ns))),
           rest)
       : void 0))));
 

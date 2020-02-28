@@ -17,7 +17,7 @@ export const ruby: RubyParser = creator(bind(
     if (!join(texts).trim() || !join(rubies).trim()) return;
     switch (true) {
       case rubies.length <= texts.length:
-        return [[defrag(html('ruby', texts
+        return [[html('ruby', defrag(texts
           .reduce<(HTMLElement | string)[]>((acc, _, i) =>
             push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i].trim() !== ''
@@ -25,7 +25,7 @@ export const ruby: RubyParser = creator(bind(
                 : [html('rt')] as typeof acc))
           , [])))], rest];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
-        return [[defrag(html('ruby', [...texts[0]]
+        return [[html('ruby', defrag([...texts[0]]
           .reduce<(HTMLElement | string)[]>((acc, _, i, texts) =>
             push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i].trim() !== ''
@@ -34,7 +34,7 @@ export const ruby: RubyParser = creator(bind(
           , [])))], rest];
       default:
         return [[
-          defrag(html('ruby', [
+          html('ruby', defrag([
             join(texts, ' '),
             ...rubies.length === 0
               ? []

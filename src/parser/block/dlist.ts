@@ -22,7 +22,7 @@ const term: DListParser.TermParser = line(indexee(fmap(
     /^~(?=$|\s)/,
     trim(some(union([indexer, inline]))),
     true),
-  ns => [defrag(html('dt', ns))])));
+  ns => [html('dt', defrag(ns))])));
 
 const desc: DListParser.DescriptionParser = block(fmap(
   open(
@@ -31,7 +31,7 @@ const desc: DListParser.DescriptionParser = block(fmap(
       some(anyline, /^[~:](?=$|\s)/),
       trim(some(union([inline])))),
     true),
-  ns => [defrag(html('dd', ns))]),
+  ns => [html('dd', defrag(ns))]),
   false);
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {

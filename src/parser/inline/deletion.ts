@@ -11,6 +11,6 @@ export const deletion: DeletionParser = lazy(() => creator(surround(
   str('~~'), false,
   ([as, bs, cs], rest) =>
     isTight(bs, 0, bs.length)
-      ? [[defrag(html('del', trimEnd(bs)))], rest]
+      ? [[html('del', defrag(trimEnd(bs)))], rest]
       : [unshift(as, bs), cs[0] + rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));

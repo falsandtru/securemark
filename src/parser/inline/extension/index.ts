@@ -18,7 +18,7 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(subline(fma
   ']', false,
   ([, bs], rest) =>
     isTight(bs, 0, bs.length)
-      ? [[defrag(html('a', trimEnd(bs)))], rest]
+      ? [[html('a', defrag(trimEnd(bs)))], rest]
       : void 0)),
   ([el]: [HTMLAnchorElement]) =>
     [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : void 0 }, el.childNodes)]))));

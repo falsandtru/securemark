@@ -61,7 +61,7 @@ const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, optional
 
 const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => fmap(
   union([parser]),
-  ns => [defrag(html('td', ns))]);
+  ns => [html('td', defrag(ns))]);
 
 const data: CellParser.DataParser = surround(
   /^\|(?:\\?\s)*(?=\S)/,

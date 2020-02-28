@@ -12,6 +12,6 @@ export const strong: StrongParser = lazy(() => creator(surround(
   str('**'), false,
   ([as, bs, cs], rest) =>
     isTight(bs, 0, bs.length)
-      ? [[defrag(html('strong', trimEnd(bs)))], rest]
+      ? [[html('strong', defrag(trimEnd(bs)))], rest]
       : [unshift(as, bs), cs[0] + rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));
