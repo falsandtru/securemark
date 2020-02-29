@@ -2084,19 +2084,15 @@ require = function () {
             const parser_1 = _dereq_('../../data/parser');
             const some_1 = _dereq_('../../data/parser/some');
             const line_1 = _dereq_('../constraint/line');
-            const scope_1 = _dereq_('../constraint/scope');
             const bind_1 = _dereq_('../monad/bind');
             const match_1 = _dereq_('./match');
             const surround_1 = _dereq_('./surround');
             const array_1 = _dereq_('spica/array');
             function indent(parser) {
-                return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, match_1.memoize(([, indent]) => indent, indent => some_1.some(line_1.line(scope_1.rewrite(source => [
-                    [],
-                    source.slice(line_1.firstline(source).length)
-                ], surround_1.open(indent, source => [
+                return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, match_1.memoize(([, indent]) => indent, indent => some_1.some(line_1.line(surround_1.open(indent, source => [
                     [line_1.firstline(source, false)],
                     ''
-                ])))))), (rs, rest, context) => {
+                ]))))), (rs, rest, context) => {
                     const result = parser(array_1.join(rs, '\n'), context);
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
@@ -2110,7 +2106,6 @@ require = function () {
             '../../data/parser': 47,
             '../../data/parser/some': 50,
             '../constraint/line': 33,
-            '../constraint/scope': 34,
             '../monad/bind': 45,
             './match': 40,
             './surround': 43,
