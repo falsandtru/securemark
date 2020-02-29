@@ -1,7 +1,6 @@
 import { Parser, eval, exec } from '../../data/parser';
 import { some } from '../../data/parser/some';
 import { line, firstline } from '../constraint/line';
-import { rewrite } from '../constraint/scope';
 import { bind } from '../monad/bind';
 import { match, memoize } from './match';
 import { open } from './surround';
@@ -14,9 +13,7 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
     /^(?=(([^\S\n])\2*))/,
     memoize(([, indent]) => indent,
     indent =>
-      some(line(rewrite(
-        source => [[], source.slice(firstline(source).length)],
-        open(indent, source => [[firstline(source, false)], ''])))))),
+      some(line(open(indent, source => [[firstline(source, false)], '']))))),
     (rs, rest, context) => {
       const result = parser(join(rs, '\n'), context);
       return result && exec(result) === ''
