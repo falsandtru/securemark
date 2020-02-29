@@ -32,7 +32,9 @@ const merge = template((prop, target, source) => {
   switch (prop) {
     case 'resource':
       assert(typeof source[prop] === 'object');
-      return target[prop] = target[prop] || ObjectCreate(source[prop]);
+      return prop in target
+        ? target[prop]
+        : target[prop] = ObjectCreate(source[prop]);
   }
   switch (type(source[prop])) {
     case 'Object':
