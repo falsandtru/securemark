@@ -41,8 +41,8 @@ export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], 
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
-  ([content, param]: [(HTMLElement | string)[], string[]], rest, context: DeepMutable<MarkdownParser.Context>) => {
-    assert(param.every(s => typeof s === 'string'));
+  ([content, params]: [(HTMLElement | string)[], string[]], rest, context: DeepMutable<MarkdownParser.Context>) => {
+    assert(params.every(s => typeof s === 'string'));
     if (!isTight(content, 0, content.length)) return;
     switch (true) {
       case content.length === 0:
@@ -63,7 +63,7 @@ export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], 
         return;
     }
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
-    const [INSECURE_URI, ...params]: string[] = param;
+    const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     const el = html('a',
       {

@@ -4,7 +4,7 @@ import { union, sequence, some, block, line, focus, validate, surround, open, co
 import { defrag } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
-import { push } from 'spica/array';
+import { shift, push } from 'spica/array';
 
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;
@@ -17,7 +17,8 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     row(cell(alignment), false),
     some(row(cell(data), true)),
   ]))),
-  ([head, alignment, ...rows]) => {
+  rows => {
+    const [[head, alignment]] = shift(rows, 2);
     assert(alignment.children.length > 0);
     void align(head, alignment, rows);
     return [html('table', [html('thead', [head]), html('tbody', rows)])];

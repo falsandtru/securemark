@@ -8,7 +8,7 @@ import { text, str, char } from '../source';
 import { makeAttrs } from './html';
 import { html, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
-import { unshift, join } from 'spica/array';
+import { shift, unshift, join } from 'spica/array';
 
 const url = html('a');
 
@@ -23,17 +23,17 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
   ]))),
   (sss: string[][]) =>
     unshift([sss.length > 1 ? join(sss[0]) : ''], sss[sss.length - 1])),
-  ([text, INSECURE_URL, ...params]: string[], rest, context) => {
+  (params: string[], rest, context) => {
+    const [text, INSECURE_URL] = shift(params, 2)[0];
     assert(INSECURE_URL === INSECURE_URL.trim());
     if (text.length > 0 && text.slice(-2).trim() === '') return;
-    text = text.trim();
     url.href = INSECURE_URL;
     const media = void 0
       || cache.get(url.href)?.cloneNode(true)
-      || html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text });
+      || html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text.trim() });
     if (cache.has(url.href) && media.hasAttribute('alt')) {
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
-      void define(media, { alt: text });
+      void define(media, { alt: text.trim() });
     }
     void define(media, ObjectAssign(
       makeAttrs(attributes, params, [...media.classList], 'media'),

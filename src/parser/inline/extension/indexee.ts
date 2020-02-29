@@ -10,7 +10,7 @@ export function text(source: HTMLElement): string {
   assert(!source.matches('.indexer'));
   assert(source.querySelectorAll('.indexer').length < 2);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
-  const indexer = [...source.children].find(el => el.classList.contains('indexer'));
+  const indexer = source.querySelector(':scope > .indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   for (const el of target.querySelectorAll('code[data-src], .math[data-src]')) {
