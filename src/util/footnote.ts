@@ -100,10 +100,10 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
     for (const def of defs.values()) {
       void ++count;
       while (children.length > defs.size) {
-        if (compare(children[count - 1], def)) continue I;
+        if (equal(children[count - 1], def)) continue I;
         yield footnote.removeChild(children[count - 1]) as HTMLLIElement;
       }
-      if (children.length >= count && compare(children[count - 1], def)) continue;
+      if (children.length >= count && equal(children[count - 1], def)) continue;
       yield footnote.insertBefore(def, children[count - 1] || null);
     }
     while (children.length > defs.size) {
@@ -113,7 +113,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
   }
 }
 
-function compare(a: Element, b: HTMLElement): boolean {
+function equal(a: Element, b: HTMLElement): boolean {
   return a.id === b.id
       && a.innerHTML === b.innerHTML;
 }
