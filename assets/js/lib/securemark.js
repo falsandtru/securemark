@@ -1153,13 +1153,11 @@ require = function () {
                             throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
                         if (factory !== defaultFactory) {
                             if (attrs)
-                                for (const k in attrs) {
-                                    if (!alias_1.hasOwnProperty(attrs, k))
+                                for (const name of alias_1.ObjectKeys(attrs)) {
+                                    const value = attrs[name];
+                                    if (typeof value !== 'function')
                                         continue;
-                                    const v = attrs[k];
-                                    if (typeof v !== 'function')
-                                        continue;
-                                    void el.removeEventListener(k, v);
+                                    void el.removeEventListener(name, value);
                                 }
                             void dom_1.define(el, attrs);
                         }
@@ -1288,9 +1286,7 @@ require = function () {
                 }
                 observe(children) {
                     const descs = {};
-                    for (const name in children) {
-                        if (!alias_1.hasOwnProperty(children, name))
-                            continue;
+                    for (const name of alias_1.ObjectKeys(children)) {
                         let child = children[name];
                         void throwErrorIfNotUsable(child);
                         void this.container.appendChild(child.element);
@@ -1323,7 +1319,7 @@ require = function () {
                     return alias_1.ObjectDefineProperties(children, descs);
                 }
                 scope(child) {
-                    if (child.element.nodeName !== 'STYLE')
+                    if (child.element.tagName !== 'STYLE')
                         return;
                     const syntax = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
                     const style = child.element;
@@ -1349,8 +1345,16 @@ require = function () {
                 get children() {
                     switch (this.type) {
                     case ElChildrenType.Text:
-                        this.children_ = this.children_.parentNode === this.container ? this.children_ : [...this.container.childNodes].find(node => node.nodeType === 3) || this.children_.cloneNode();
-                        return this.children_.textContent;
+                        if (this.children_.parentNode !== this.container) {
+                            this.children_ = void 0;
+                            for (const node of this.container.childNodes) {
+                                if ('wholeText' in node === false)
+                                    continue;
+                                this.children_ = node;
+                                break;
+                            }
+                        }
+                        return this.children_.data;
                     default:
                         return this.children_;
                     }
@@ -1366,9 +1370,9 @@ require = function () {
                             if (!this.isInitialization && children === this.children)
                                 return;
                             const targetChildren = this.children_;
-                            const oldText = targetChildren.textContent;
+                            const oldText = targetChildren.data;
                             const newText = children;
-                            targetChildren.textContent = newText;
+                            targetChildren.data = newText;
                             if (newText === oldText)
                                 return;
                             void this.element.dispatchEvent(new global_1.Event('change', {
@@ -1381,47 +1385,39 @@ require = function () {
                             const sourceChildren = children;
                             const targetChildren = [];
                             this.children_ = targetChildren;
-                            const log = new global_1.WeakSet();
+                            const nodeChildren = this.container.children;
                             for (let i = 0; i < sourceChildren.length; ++i) {
                                 const newChild = sourceChildren[i];
-                                if (log.has(newChild))
-                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                void log.add(newChild);
+                                const el = nodeChildren[i];
                                 if (newChild.element.parentNode !== this.container) {
                                     void throwErrorIfNotUsable(newChild);
                                 }
-                                if (newChild.element !== this.container.children[i]) {
+                                if (newChild.element !== el) {
                                     if (newChild.element.parentNode !== this.container) {
                                         void this.scope(newChild);
                                         void addedChildren.push(newChild);
                                     }
-                                    void this.container.insertBefore(newChild.element, this.container.children[i]);
+                                    void this.container.insertBefore(newChild.element, el);
                                     isChanged = true;
                                 }
                                 void targetChildren.push(newChild);
                             }
                             void alias_1.ObjectFreeze(targetChildren);
-                            for (let i = sourceChildren.length; i < this.container.children.length; ++i) {
-                                if (!proxies.has(this.container.children[i]))
+                            for (let i = nodeChildren.length; sourceChildren.length < i--;) {
+                                const el = nodeChildren[sourceChildren.length];
+                                if (!proxies.has(el))
                                     continue;
-                                void removedChildren.push(proxy(this.container.removeChild(this.container.children[i])));
+                                void removedChildren.push(proxy(this.container.removeChild(el)));
                                 isChanged = true;
-                                void --i;
                             }
                             break;
                         }
                     case ElChildrenType.Record: {
                             const sourceChildren = children;
                             const targetChildren = this.children_;
-                            const log = new global_1.WeakSet();
-                            for (const name in targetChildren) {
-                                if (!alias_1.hasOwnProperty(sourceChildren, name))
-                                    continue;
+                            for (const name of alias_1.ObjectKeys(targetChildren)) {
                                 const oldChild = targetChildren[name];
                                 const newChild = sourceChildren[name];
-                                if (log.has(newChild))
-                                    throw new Error(`TypedDOM: Typed DOM children can't repeatedly be used to the same object.`);
-                                void log.add(newChild);
                                 if (!this.isInitialization && newChild === oldChild)
                                     continue;
                                 if (newChild.element.parentNode !== this.container) {
@@ -1554,9 +1550,7 @@ require = function () {
                 if (typeof children === 'string')
                     return define(el, attrs, [children]);
                 if (attrs)
-                    for (const name in attrs) {
-                        if (!alias_1.hasOwnProperty(attrs, name))
-                            continue;
+                    for (const name of alias_1.ObjectKeys(attrs)) {
                         const value = attrs[name];
                         switch (typeof value) {
                         case 'string':
@@ -1584,63 +1578,60 @@ require = function () {
                         }
                     }
                 if (children) {
-                    const {childNodes} = el;
-                    if (childNodes.length === 0) {
+                    const targetNodes = el.childNodes;
+                    let targetLength = targetNodes.length;
+                    let count = 0;
+                    if (targetLength === 0) {
                         void el.append(...children);
                     } else if (alias_1.isArray(children)) {
-                        let cnt = 0;
                         I:
                             for (const child of children) {
                                 if (typeof child === 'object' && child.nodeType === 11) {
-                                    cnt += child.childNodes.length;
-                                    void el.insertBefore(child, el.childNodes[cnt - child.childNodes.length] || null);
+                                    const sourceNodes = child.childNodes;
+                                    const sourceLength = sourceNodes.length;
+                                    void el.insertBefore(child, targetNodes[count] || null);
+                                    count += sourceLength;
+                                    targetLength += sourceLength;
                                     continue;
                                 }
-                                void ++cnt;
-                                if (typeof child === 'object') {
-                                    while (el.childNodes.length > cnt) {
-                                        if (el.childNodes[cnt - 1] === child)
-                                            continue I;
-                                        void el.removeChild(el.childNodes[cnt - 1]);
-                                    }
-                                    if (childNodes.length <= cnt && child === childNodes[cnt - 1])
-                                        continue;
-                                    void el.insertBefore(child, childNodes[cnt - 1] || null);
-                                } else {
-                                    while (el.childNodes.length > cnt) {
-                                        if ('wholeText' in childNodes[cnt - 1] && child === childNodes[cnt - 1].data)
-                                            continue I;
-                                        void el.removeChild(el.childNodes[cnt - 1]);
-                                    }
-                                    if (childNodes.length <= cnt && 'wholeText' in childNodes[cnt - 1] && child === childNodes[cnt - 1].data)
-                                        continue;
-                                    void el.insertBefore(text(child), childNodes[cnt - 1] || null);
+                                void ++count;
+                                while (targetLength > count) {
+                                    const node = targetNodes[count - 1];
+                                    if (equal(node, child))
+                                        continue I;
+                                    void node.remove();
+                                    void --targetLength;
                                 }
+                                const node = targetNodes[count - 1] || null;
+                                if (node && equal(node, child))
+                                    continue;
+                                void el.insertBefore(typeof child === 'string' ? text(child) : child, node);
+                                void ++targetLength;
                             }
-                        while (el.childNodes.length > cnt) {
-                            void el.removeChild(el.childNodes[cnt]);
+                        while (count < targetLength) {
+                            void targetNodes[count].remove();
+                            void --targetLength;
                         }
                     } else {
-                        let cnt = 0;
                         for (const child of children) {
                             if (typeof child === 'object' && child.nodeType === 11) {
-                                cnt += child.childNodes.length;
-                                void el.insertBefore(child, el.childNodes[cnt - child.childNodes.length] || null);
+                                const sourceNodes = child.childNodes;
+                                const sourceLength = sourceNodes.length;
+                                void el.insertBefore(child, targetNodes[count] || null);
+                                count += sourceLength;
+                                targetLength += sourceLength;
                                 continue;
                             }
-                            void ++cnt;
-                            if (typeof child === 'object') {
-                                if (childNodes.length <= cnt && child === childNodes[cnt - 1])
-                                    continue;
-                                void el.insertBefore(child, childNodes[cnt - 1] || null);
-                            } else {
-                                if (childNodes.length <= cnt && 'wholeText' in childNodes[cnt - 1] && child === childNodes[cnt - 1].data)
-                                    continue;
-                                void el.insertBefore(text(child), childNodes[cnt - 1] || null);
-                            }
+                            void ++count;
+                            const node = targetNodes[count - 1] || null;
+                            if (node && equal(node, child))
+                                continue;
+                            void el.insertBefore(typeof child === 'string' ? text(child) : child, node);
+                            void ++targetLength;
                         }
-                        while (childNodes.length > cnt) {
-                            void el.removeChild(childNodes[cnt]);
+                        while (count < targetLength) {
+                            void targetNodes[count].remove();
+                            void --targetLength;
                         }
                     }
                 }
@@ -1649,6 +1640,9 @@ require = function () {
             exports.define = define;
             function isChildren(o) {
                 return !!(o === null || o === void 0 ? void 0 : o[global_1.Symbol.iterator]);
+            }
+            function equal(node, data) {
+                return typeof data === 'string' ? 'wholeText' in node && data === node.data : data === node;
             }
         },
         {
