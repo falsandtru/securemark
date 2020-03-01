@@ -1791,6 +1791,8 @@ require = function () {
             __exportStar(_dereq_('./combinator/control/constraint/contract'), exports);
             __exportStar(_dereq_('./combinator/control/constraint/context'), exports);
             __exportStar(_dereq_('./combinator/control/constraint/resource'), exports);
+            __exportStar(_dereq_('./combinator/control/monad/fmap'), exports);
+            __exportStar(_dereq_('./combinator/control/monad/bind'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/surround'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/match'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/convert'), exports);
@@ -1799,8 +1801,6 @@ require = function () {
             __exportStar(_dereq_('./combinator/control/manipulation/trim'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/lazy'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/recovery'), exports);
-            __exportStar(_dereq_('./combinator/control/monad/fmap'), exports);
-            __exportStar(_dereq_('./combinator/control/monad/bind'), exports);
         },
         {
             './combinator/control/constraint/block': 31,
@@ -3624,7 +3624,7 @@ require = function () {
                 row(cell(alignment), false),
                 combinator_1.some(row(cell(data), true))
             ]))), rows => {
-                const [[head, alignment]] = array_1.shift(rows, 2);
+                const [head, alignment] = array_1.shift(rows, 2)[0];
                 void align(head, alignment, rows);
                 return [typed_dom_1.html('table', [
                         typed_dom_1.html('thead', [head]),
