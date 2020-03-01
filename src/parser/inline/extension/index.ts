@@ -4,7 +4,7 @@ import { startTight, isTight, trimEnd, defrag } from '../../util';
 import { indexee } from './indexee';
 import { html, define } from 'typed-dom';
 
-export const index: ExtensionParser.IndexParser = lazy(() => creator(subline(fmap(indexee(surround(
+export const index: ExtensionParser.IndexParser = lazy(() => subline(creator(fmap(indexee(surround(
   '[#',
   context({ syntax: { inline: {
     link: false,

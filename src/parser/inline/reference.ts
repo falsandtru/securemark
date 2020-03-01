@@ -4,7 +4,7 @@ import { startTight, isTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => creator(subline(bind(surround(
+export const reference: ReferenceParser = lazy(() => subline(creator(bind(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   context({ syntax: { inline: {
