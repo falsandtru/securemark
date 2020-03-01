@@ -1,6 +1,6 @@
 import { Array } from 'spica/global';
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, focus, validate, context, surround, open, lazy, fmap } from '../../combinator';
+import { union, sequence, some, block, line, focus, validate, context, fmap, surround, open, lazy } from '../../combinator';
 import { defrag } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';

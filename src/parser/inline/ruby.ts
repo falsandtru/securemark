@@ -1,5 +1,5 @@
 import { RubyParser } from '../inline';
-import { Ctx, sequence, creator, surround, bind } from '../../combinator';
+import { Ctx, sequence, creator, bind, surround } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { str } from '../source';

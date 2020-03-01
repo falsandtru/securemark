@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { block, validate, fence, clear, fmap } from '../../../combinator';
+import { block, validate, fmap, fence, clear } from '../../../combinator';
 import { html } from 'typed-dom';
 
 const opener = /^(~{3,})(?!~)[^\n]*\n?/;

@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../../../block';
-import { union, sequence, line, focus, creator, convert, fmap } from '../../../../combinator';
+import { union, sequence, line, focus, creator, fmap, convert } from '../../../../combinator';
 import { link, address as addr, attribute as attr } from '../../../inline';
 import { str } from '../../../source';
 import { define } from 'typed-dom';

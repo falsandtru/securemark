@@ -1,5 +1,5 @@
 import { MathBlockParser } from '../block';
-import { block, validate, clear, fence, fmap } from '../../combinator';
+import { block, validate, fmap, clear, fence } from '../../combinator';
 import { html } from 'typed-dom';
 
 const opener = /^(\$\$)(?!\$)([^\n]*)\n?/;

@@ -1,5 +1,5 @@
 import { EmStrongParser, inline } from '../inline';
-import { union, some, creator, surround, lazy, fmap } from '../../combinator';
+import { union, some, creator, fmap, surround, lazy } from '../../combinator';
 import { isTight, trimEnd, defrag } from '../util';
 import { emphasis } from './emphasis';
 import { strong } from './strong';

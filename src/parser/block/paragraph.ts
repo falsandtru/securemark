@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../block';
-import { subsequence, some, block, rewrite, convert, trim, fmap } from '../../combinator';
+import { subsequence, some, block, rewrite, fmap, convert, trim } from '../../combinator';
 import { trimEnd, defrag } from '../util';
 import { mention } from './paragraph/mention';
 import { inline } from '../inline';

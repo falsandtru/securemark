@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { block, validate, creator, clear, fence, fmap, eval } from '../../../combinator';
+import { block, validate, creator, fmap, clear, fence, eval } from '../../../combinator';
 import { suppress } from '../../util';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';

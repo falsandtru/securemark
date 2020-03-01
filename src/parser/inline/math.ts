@@ -1,5 +1,5 @@
 import { MathParser } from '../inline';
-import { union, creator, surround, fmap } from '../../combinator';
+import { union, creator, fmap, surround } from '../../combinator';
 import { str } from '../source';
 import { html } from 'typed-dom';
 import { Cache } from 'spica/cache';

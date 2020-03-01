@@ -1,5 +1,5 @@
 import { BlockquoteParser } from '../block';
-import { union, some, block, validate, rewrite, creator, open, convert, lazy, fmap } from '../../combinator';
+import { union, some, block, validate, rewrite, creator, fmap, open, convert, lazy } from '../../combinator';
 import { defrag, suppress } from '../util';
 import { contentline } from '../source';
 import { autolink } from '../autolink';

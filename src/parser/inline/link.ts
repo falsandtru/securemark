@@ -2,7 +2,7 @@ import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, subline, validate, guard, context, creator, surround, match, memoize, lazy, fmap, bind, eval } from '../../combinator';
+import { union, inits, tails, some, subline, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
 import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str } from '../source';
 import { makeAttrs } from './html';

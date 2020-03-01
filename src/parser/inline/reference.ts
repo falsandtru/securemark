@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { Result, subsequence, some, subline, focus, guard, context, creator, surround, lazy, bind } from '../../combinator';
+import { Result, subsequence, some, subline, focus, guard, context, creator, bind, surround, lazy } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
