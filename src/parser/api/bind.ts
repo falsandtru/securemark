@@ -73,12 +73,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of figure(target, footnotes)) {
+    for (const el of footnote(target, footnotes)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of footnote(target, footnotes)) {
+    for (const el of figure(target, footnotes)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;

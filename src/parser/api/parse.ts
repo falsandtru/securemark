@@ -19,10 +19,10 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
       push(acc, eval(block(seg, opts.context || {})))
     , []));
   if (opts.test) return node;
-  void [...figure(node)];
   void [...footnote(node, opts.footnotes ?? {
     annotation: html('ol'),
     reference: html('ol'),
   })];
+  void [...figure(node)];
   return node;
 }
