@@ -1308,6 +1308,8 @@ require = function () {
                 observe(children) {
                     const descs = {};
                     for (const name of alias_1.ObjectKeys(children)) {
+                        if (name in {})
+                            continue;
                         let child = children[name];
                         void throwErrorIfNotUsable(child);
                         void this.container.appendChild(child.element);
@@ -1520,8 +1522,7 @@ require = function () {
             function frag(children) {
                 if (typeof children === 'string')
                     return frag([children]);
-                const node = caches.frag.cloneNode();
-                return defineChildren(node, children, true);
+                return defineChildren(caches.frag.cloneNode(), children, true);
             }
             exports.frag = frag;
             function shadow(el, children, opts) {
@@ -1548,8 +1549,7 @@ require = function () {
                 const cache = caches.elem(context);
                 const key = `${ ns }:${ tag }`;
                 const el = tag.includes('-') ? elem(context, ns, tag) : (cache[key] = cache[key] || elem(context, ns, tag)).cloneNode(true);
-                isChildren(attrs) ? defineChildren(el, attrs, true) : defineChildren(defineAttrs(el, attrs), children, true);
-                return el;
+                return isChildren(attrs) ? defineChildren(el, attrs, true) : defineChildren(defineAttrs(el, attrs), children, true);
             }
             exports.element = element;
             function elem(context, ns, tag) {
@@ -1607,40 +1607,20 @@ require = function () {
                 }
                 const targetNodes = clean ? [] : el.childNodes;
                 let targetLength = targetNodes.length;
-                let count = 0;
                 if (targetLength === 0) {
                     void el.append(...children);
-                } else if (alias_1.isArray(children)) {
-                    I:
-                        for (const child of children) {
-                            if (typeof child === 'object' && child.nodeType === 11) {
-                                const sourceNodes = child.childNodes;
-                                const sourceLength = sourceNodes.length;
-                                void el.insertBefore(child, targetNodes[count] || null);
-                                count += sourceLength;
-                                targetLength += sourceLength;
-                                continue;
-                            }
-                            void ++count;
-                            while (targetLength > count) {
-                                const node = targetNodes[count - 1];
-                                if (equal(node, child))
-                                    continue I;
-                                void node.remove();
-                                void --targetLength;
-                            }
-                            const node = targetNodes[count - 1] || null;
-                            if (node && equal(node, child))
-                                continue;
-                            void el.insertBefore(typeof child === 'string' ? text(child) : child, node);
-                            void ++targetLength;
+                    return el;
+                }
+                if (!alias_1.isArray(children))
+                    return defineChildren(el, [...children], clean);
+                let count = 0;
+                I:
+                    for (let i = 0; i < children.length; ++i) {
+                        if (count === targetLength) {
+                            void el.append(...children.slice(i));
+                            return el;
                         }
-                    while (count < targetLength) {
-                        void targetNodes[count].remove();
-                        void --targetLength;
-                    }
-                } else {
-                    for (const child of children) {
+                        const child = children[i];
                         if (typeof child === 'object' && child.nodeType === 11) {
                             const sourceNodes = child.childNodes;
                             const sourceLength = sourceNodes.length;
@@ -1650,16 +1630,26 @@ require = function () {
                             continue;
                         }
                         void ++count;
-                        const node = targetNodes[count - 1] || null;
-                        if (node && equal(node, child))
+                        while (targetLength > children.length) {
+                            const node = targetNodes[count - 1];
+                            if (equal(node, child))
+                                continue I;
+                            void node.remove();
+                            void --targetLength;
+                        }
+                        const node = targetNodes[count - 1];
+                        if (equal(node, child))
                             continue;
-                        void el.insertBefore(typeof child === 'string' ? text(child) : child, node);
-                        void ++targetLength;
+                        if (targetLength < children.length - i + count) {
+                            void el.insertBefore(typeof child === 'string' ? text(child) : child, node);
+                            void ++targetLength;
+                        } else {
+                            void el.replaceChild(typeof child === 'string' ? text(child) : child, node);
+                        }
                     }
-                    while (count < targetLength) {
-                        void targetNodes[count].remove();
-                        void --targetLength;
-                    }
+                while (count < targetLength) {
+                    void targetNodes[count].remove();
+                    void --targetLength;
                 }
                 return el;
             }
@@ -1667,7 +1657,7 @@ require = function () {
                 return !!(o === null || o === void 0 ? void 0 : o[global_1.Symbol.iterator]);
             }
             function equal(node, data) {
-                return typeof data === 'string' ? 'wholeText' in node && data === node.data : data === node;
+                return typeof data === 'string' ? 'wholeText' in node && node.data === data : node === data;
             }
         },
         {
@@ -6591,20 +6581,26 @@ require = function () {
                     }
                     count = 0;
                     const {children} = footnote;
+                    let length = children.length;
                     I:
                         for (const def of defs.values()) {
                             void ++count;
-                            while (children.length > defs.size) {
-                                if (equal(children[count - 1], def))
+                            while (length > defs.size) {
+                                const node = children[count - 1];
+                                if (equal(node, def))
                                     continue I;
-                                yield footnote.removeChild(children[count - 1]);
+                                yield footnote.removeChild(node);
+                                void --length;
                             }
-                            if (children.length >= count && equal(children[count - 1], def))
+                            const node = count <= length ? children[count - 1] : null;
+                            if (node && equal(node, def))
                                 continue;
-                            yield footnote.insertBefore(def, children[count - 1] || null);
+                            yield footnote.insertBefore(def, node);
+                            void ++length;
                         }
-                    while (children.length > defs.size) {
+                    while (length > defs.size) {
                         yield footnote.removeChild(children[defs.size]);
+                        void --length;
                     }
                     return;
                 };
