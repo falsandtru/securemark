@@ -1,10 +1,10 @@
 import { EscapeParser } from '../inline';
-import { union, creator } from '../../combinator';
+import { union } from '../../combinator';
 import { str } from '../source';
 
 const repeat = str(/^(.)\1*/);
 
-export const escape: EscapeParser = creator(union([(source, context) => {
+export const escape: EscapeParser = union([(source, context) => {
   if (source.length < 3) return;
   switch (source[0]) {
     case '*':
@@ -26,4 +26,4 @@ export const escape: EscapeParser = creator(union([(source, context) => {
     default:
       return;
   }
-}]));
+}]);

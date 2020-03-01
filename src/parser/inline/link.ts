@@ -82,14 +82,16 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
     return [[el], rest];
   })))));
 
-export const uri: LinkParser.ParamParser.UriParser = creator(match(
-  /^ ?(?! )/,
-  memoize(([delim]) => delim,
-  delim => union([str(delim ? /^\S+/ : /^[^\s{}]+/)]))));
+export const uri: LinkParser.ParamParser.UriParser = union([
+  match(
+    /^ ?(?! )/,
+    memoize(([delim]) => delim,
+    delim => str(delim ? /^\S+/ : /^[^\s{}]+/)))
+]);
 
-export const attribute: LinkParser.ParamParser.AttributeParser = creator(union([
+export const attribute: LinkParser.ParamParser.AttributeParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
-]));
+]);
 
 function sanitize(el: HTMLAnchorElement, uri: string): boolean {
   let message: string;

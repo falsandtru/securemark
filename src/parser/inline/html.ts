@@ -81,9 +81,9 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
             : void 0)),
 ]))));
 
-export const attribute: HTMLParser.TagParser.AttributeParser = creator(union([
+export const attribute: HTMLParser.TagParser.AttributeParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/),
-]));
+]);
 
 function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
   let attrs: Record<string, string | undefined>;
