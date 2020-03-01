@@ -20,13 +20,13 @@ export function localize(block: BlockParser): BlockParser {
 }
 
 function check(el: Element): boolean {
-  const char = endingChar(el.previousSibling);
+  const char = lastChar(el.previousSibling);
   if (!char) return false;
   assert([...char].length === 1);
   return japanese(char);
 }
 
-function endingChar(node: Node | null | HTMLElement): string {
+function lastChar(node: Node | null | HTMLElement): string {
   while (node) {
     if ('id' in node && node.classList.contains('media')) return '';
     const str = text(node);
