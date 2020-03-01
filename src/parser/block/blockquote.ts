@@ -1,5 +1,5 @@
 import { BlockquoteParser } from '../block';
-import { union, some, block, validate, rewrite, open, convert, lazy, fmap } from '../../combinator';
+import { union, some, block, validate, rewrite, creator, open, convert, lazy, fmap } from '../../combinator';
 import { defrag, suppress } from '../util';
 import { contentline } from '../source';
 import { autolink } from '../autolink';
@@ -10,10 +10,10 @@ export const segment: BlockquoteParser.SegmentParser = block(validate(['!', '>']
   validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, some(contentline)),
 ])));
 
-export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
+export const blockquote: BlockquoteParser = lazy(() => block(creator(10, rewrite(segment, union([
   open(/^(?=>)/, text),
   open(/^!(?=>)/, source),
-]))));
+])))));
 
 const opener = /^(?=>>+(?:$|\s))/;
 

@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { block, validate, clear, fence, fmap, eval } from '../../../combinator';
+import { block, validate, creator, clear, fence, fmap, eval } from '../../../combinator';
 import { suppress } from '../../util';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
@@ -13,7 +13,7 @@ export const segment: ExtensionParser.ExampleParser.SegmentParser = block(valida
 export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 100, false))), false);
 
-export const example: ExtensionParser.ExampleParser = block(validate('~~~', fmap(
+export const example: ExtensionParser.ExampleParser = block(creator(10, validate('~~~', fmap(
   fence(opener, 100, true),
   // Bug: Remove the annotation.
   ([body, closer, opener, , type, param]: string[], _, context) => {
@@ -52,4 +52,4 @@ export const example: ExtensionParser.ExampleParser = block(validate('~~~', fmap
           'data-invalid-message': `Invalid example type`,
         }, `${opener}${body}${closer}`)];
     }
-  })));
+  }))));
