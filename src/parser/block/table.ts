@@ -18,7 +18,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     some(row(cell(data), true)),
   ]))),
   rows => {
-    const [[head, alignment]] = shift(rows, 2);
+    const [head, alignment] = shift(rows, 2)[0];
     assert(alignment.children.length > 0);
     void align(head, alignment, rows);
     return [html('table', [html('thead', [head]), html('tbody', rows)])];
