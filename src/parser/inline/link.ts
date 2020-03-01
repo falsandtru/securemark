@@ -18,7 +18,7 @@ export const attributes = {
 } as const;
 void ObjectSetPrototypeOf(attributes, null);
 
-export const link: LinkParser = lazy(() => creator(subline(validate(['[', '{'], bind(fmap(
+export const link: LinkParser = lazy(() => creator(10, subline(validate(['[', '{'], bind(fmap(
   guard(context => context.syntax?.inline?.link ?? true,
   tails([
     dup(union([
