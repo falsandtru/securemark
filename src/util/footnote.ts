@@ -101,12 +101,16 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
     for (const def of defs.values()) {
       void ++count;
       while (length > defs.size) {
-        if (equal(children[count - 1], def)) continue I;
-        yield footnote.removeChild(children[count - 1]) as HTMLLIElement;
+        const node = children[count - 1];
+        if (equal(node, def)) continue I;
+        yield footnote.removeChild(node) as HTMLLIElement;
         void --length;
       }
-      if (count <= length && equal(children[count - 1], def)) continue;
-      yield footnote.insertBefore(def, children[count - 1] || null);
+      const node = count <= length
+        ? children[count - 1]
+        : null;
+      if (node && equal(node, def)) continue;
+      yield footnote.insertBefore(def, node);
       void ++length;
     }
     while (length > defs.size) {
