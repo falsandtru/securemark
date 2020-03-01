@@ -1,7 +1,7 @@
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
-import { union, some, validate, creator, surround, match, memoize, context, lazy } from '../../combinator';
+import { union, some, validate, context, creator, surround, match, memoize, lazy } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag, stringify } from '../util';
 import { str } from '../source';
 import { DeepImmutable } from 'spica/type';

@@ -1,5 +1,5 @@
 import { AnnotationParser } from '../inline';
-import { union, some, creator, surround, guard, context, lazy, bind } from '../../combinator';
+import { union, some, guard, context, creator, surround, lazy, bind } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';

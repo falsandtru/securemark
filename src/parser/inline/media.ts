@@ -1,7 +1,7 @@
 import { encodeURI } from 'spica/global';
 import { ObjectAssign } from 'spica/alias';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, validate, creator, surround, open, guard, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, validate, guard, creator, surround, open, lazy, fmap, bind } from '../../combinator';
 import { dup } from '../util';
 import { link, attributes, uri, attribute } from './link';
 import { text, str, char } from '../source';

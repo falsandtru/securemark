@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { Parser, union, some, validate, rewrite, convert, surround, open, context, lazy } from '../../../combinator';
+import { Parser, union, some, validate, rewrite, context, convert, surround, open, lazy } from '../../../combinator';
 import { unescsource, str } from '../../source';
 import { link } from '../link';
 

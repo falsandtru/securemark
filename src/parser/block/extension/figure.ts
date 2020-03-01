@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, close, clear, match, memoize, convert, trim, context, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, context, close, clear, match, memoize, convert, trim, fmap } from '../../../combinator';
 import { defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label } from '../../inline/extension/label';
