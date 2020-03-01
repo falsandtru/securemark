@@ -96,18 +96,22 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
     }
     count = 0;
     const { children } = footnote;
+    let length = children.length;
     I:
     for (const def of defs.values()) {
       void ++count;
-      while (children.length > defs.size) {
+      while (length > defs.size) {
         if (equal(children[count - 1], def)) continue I;
         yield footnote.removeChild(children[count - 1]) as HTMLLIElement;
+        void --length;
       }
-      if (children.length >= count && equal(children[count - 1], def)) continue;
+      if (count <= length && equal(children[count - 1], def)) continue;
       yield footnote.insertBefore(def, children[count - 1] || null);
+      void ++length;
     }
-    while (children.length > defs.size) {
+    while (length > defs.size) {
       yield footnote.removeChild(children[defs.size]) as HTMLLIElement;
+      void --length;
     }
     return;
   }
