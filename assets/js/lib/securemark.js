@@ -1789,14 +1789,14 @@ require = function () {
             __exportStar(_dereq_('./combinator/control/constraint/line'), exports);
             __exportStar(_dereq_('./combinator/control/constraint/scope'), exports);
             __exportStar(_dereq_('./combinator/control/constraint/contract'), exports);
-            __exportStar(_dereq_('./combinator/control/manipulation/resource'), exports);
+            __exportStar(_dereq_('./combinator/control/constraint/context'), exports);
+            __exportStar(_dereq_('./combinator/control/constraint/resource'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/surround'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/match'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/convert'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/indent'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/fence'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/trim'), exports);
-            __exportStar(_dereq_('./combinator/control/manipulation/context'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/lazy'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/recovery'), exports);
             __exportStar(_dereq_('./combinator/control/monad/fmap'), exports);
@@ -1804,17 +1804,17 @@ require = function () {
         },
         {
             './combinator/control/constraint/block': 31,
-            './combinator/control/constraint/contract': 32,
-            './combinator/control/constraint/line': 33,
-            './combinator/control/constraint/scope': 34,
-            './combinator/control/manipulation/context': 35,
-            './combinator/control/manipulation/convert': 36,
-            './combinator/control/manipulation/fence': 37,
-            './combinator/control/manipulation/indent': 38,
-            './combinator/control/manipulation/lazy': 39,
-            './combinator/control/manipulation/match': 40,
-            './combinator/control/manipulation/recovery': 41,
-            './combinator/control/manipulation/resource': 42,
+            './combinator/control/constraint/context': 32,
+            './combinator/control/constraint/contract': 33,
+            './combinator/control/constraint/line': 34,
+            './combinator/control/constraint/resource': 35,
+            './combinator/control/constraint/scope': 36,
+            './combinator/control/manipulation/convert': 37,
+            './combinator/control/manipulation/fence': 38,
+            './combinator/control/manipulation/indent': 39,
+            './combinator/control/manipulation/lazy': 40,
+            './combinator/control/manipulation/match': 41,
+            './combinator/control/manipulation/recovery': 42,
             './combinator/control/manipulation/surround': 43,
             './combinator/control/manipulation/trim': 44,
             './combinator/control/monad/bind': 45,
@@ -1852,10 +1852,60 @@ require = function () {
         },
         {
             '../../data/parser': 47,
-            './line': 33
+            './line': 34
         }
     ],
     32: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            exports.context = exports.update = exports.guard = void 0;
+            const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
+            const assign_1 = _dereq_('spica/assign');
+            const type_1 = _dereq_('spica/type');
+            const memoize_1 = _dereq_('spica/memoize');
+            function guard(f, parser) {
+                return (source, context) => f(context) ? parser(source, context) : void 0;
+            }
+            exports.guard = guard;
+            function update(base, parser) {
+                return (source, context) => parser(source, merge(alias_1.ObjectCreate(context), base));
+            }
+            exports.update = update;
+            function context(base, parser) {
+                const merge_ = memoize_1.memoize(context => merge(alias_1.ObjectCreate(context), base), new global_1.WeakMap());
+                return (source, context) => parser(source, merge_(context));
+            }
+            exports.context = context;
+            const merge = assign_1.template((prop, target, source) => {
+                switch (prop) {
+                case 'resource':
+                    return prop in target ? target[prop] : target[prop] = alias_1.ObjectCreate(source[prop]);
+                }
+                switch (type_1.type(source[prop])) {
+                case 'Object':
+                    switch (type_1.type(target[prop])) {
+                    case 'Object':
+                        return target[prop] = isOwnProperty(target, prop) ? merge(target[prop], source[prop]) : merge(alias_1.ObjectCreate(target[prop]), source[prop]);
+                    default:
+                        return target[prop] = alias_1.ObjectCreate(source[prop]);
+                    }
+                default:
+                    return target[prop] = source[prop];
+                }
+            });
+            const isOwnProperty = '__proto__' in {} ? (o, p) => !('__proto__' in o) || o[p] !== o['__proto__'][p] : alias_1.hasOwnProperty;
+        },
+        {
+            'spica/alias': 5,
+            'spica/assign': 7,
+            'spica/global': 12,
+            'spica/memoize': 13,
+            'spica/type': 18
+        }
+    ],
+    33: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1891,7 +1941,7 @@ require = function () {
             'spica/alias': 5
         }
     ],
-    33: [
+    34: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1942,7 +1992,30 @@ require = function () {
         },
         { '../../data/parser': 47 }
     ],
-    34: [
+    35: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            exports.creator = void 0;
+            function creator(cost, parser) {
+                if (typeof cost === 'function')
+                    return creator(1, cost);
+                return (source, context) => {
+                    const {resource} = context;
+                    if (resource && resource.creation < 0)
+                        throw new Error('Too many creations');
+                    const result = parser(source, context);
+                    if (result && resource) {
+                        resource.creation -= cost;
+                    }
+                    return result;
+                };
+            }
+            exports.creator = creator;
+        },
+        {}
+    ],
+    36: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1990,57 +2063,7 @@ require = function () {
         },
         { '../../data/parser': 47 }
     ],
-    35: [
-        function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            exports.context = exports.update = exports.guard = void 0;
-            const global_1 = _dereq_('spica/global');
-            const alias_1 = _dereq_('spica/alias');
-            const assign_1 = _dereq_('spica/assign');
-            const type_1 = _dereq_('spica/type');
-            const memoize_1 = _dereq_('spica/memoize');
-            function guard(f, parser) {
-                return (source, context) => f(context) ? parser(source, context) : void 0;
-            }
-            exports.guard = guard;
-            function update(base, parser) {
-                return (source, context) => parser(source, merge(alias_1.ObjectCreate(context), base));
-            }
-            exports.update = update;
-            function context(base, parser) {
-                const merge_ = memoize_1.memoize(context => merge(alias_1.ObjectCreate(context), base), new global_1.WeakMap());
-                return (source, context) => parser(source, merge_(context));
-            }
-            exports.context = context;
-            const merge = assign_1.template((prop, target, source) => {
-                switch (prop) {
-                case 'resource':
-                    return prop in target ? target[prop] : target[prop] = alias_1.ObjectCreate(source[prop]);
-                }
-                switch (type_1.type(source[prop])) {
-                case 'Object':
-                    switch (type_1.type(target[prop])) {
-                    case 'Object':
-                        return target[prop] = isOwnProperty(target, prop) ? merge(target[prop], source[prop]) : merge(alias_1.ObjectCreate(target[prop]), source[prop]);
-                    default:
-                        return target[prop] = alias_1.ObjectCreate(source[prop]);
-                    }
-                default:
-                    return target[prop] = source[prop];
-                }
-            });
-            const isOwnProperty = '__proto__' in {} ? (o, p) => !('__proto__' in o) || o[p] !== o['__proto__'][p] : alias_1.hasOwnProperty;
-        },
-        {
-            'spica/alias': 5,
-            'spica/assign': 7,
-            'spica/global': 12,
-            'spica/memoize': 13,
-            'spica/type': 18
-        }
-    ],
-    36: [
+    37: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2060,7 +2083,7 @@ require = function () {
         },
         {}
     ],
-    37: [
+    38: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2107,11 +2130,11 @@ require = function () {
             exports.fence = fence;
         },
         {
-            '../constraint/line': 33,
+            '../constraint/line': 34,
             'spica/array': 6
         }
     ],
-    38: [
+    39: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2140,14 +2163,14 @@ require = function () {
         {
             '../../data/parser': 47,
             '../../data/parser/some': 50,
-            '../constraint/line': 33,
+            '../constraint/line': 34,
             '../monad/bind': 45,
-            './match': 40,
+            './match': 41,
             './surround': 43,
             'spica/array': 6
         }
     ],
-    39: [
+    40: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2160,7 +2183,7 @@ require = function () {
         },
         {}
     ],
-    40: [
+    41: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2196,7 +2219,7 @@ require = function () {
             'spica/memoize': 13
         }
     ],
-    41: [
+    42: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2211,29 +2234,6 @@ require = function () {
                 };
             }
             exports.recover = recover;
-        },
-        {}
-    ],
-    42: [
-        function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            exports.creator = void 0;
-            function creator(cost, parser) {
-                if (typeof cost === 'function')
-                    return creator(1, cost);
-                return (source, context) => {
-                    const {resource} = context;
-                    if (resource && resource.creation < 0)
-                        throw new Error('Too many creations');
-                    const result = parser(source, context);
-                    if (result && resource) {
-                        resource.creation -= cost;
-                    }
-                    return result;
-                };
-            }
-            exports.creator = creator;
         },
         {}
     ],
@@ -2370,7 +2370,7 @@ require = function () {
             }
             exports.trim = trim;
         },
-        { './convert': 36 }
+        { './convert': 37 }
     ],
     45: [
         function (_dereq_, module, exports) {
@@ -2755,12 +2755,12 @@ require = function () {
                         if (rev !== revision)
                             return yield;
                     }
-                    for (const el of figure_1.figure(target, footnotes)) {
+                    for (const el of footnote_1.footnote(target, footnotes)) {
                         yield el;
                         if (rev !== revision)
                             return yield;
                     }
-                    for (const el of footnote_1.footnote(target, footnotes)) {
+                    for (const el of figure_1.figure(target, footnotes)) {
                         yield el;
                         if (rev !== revision)
                             return yield;
@@ -2844,11 +2844,11 @@ require = function () {
                 const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => array_1.push(acc, combinator_1.eval(block_1.block(seg, opts.context || {}))), []));
                 if (opts.test)
                     return node;
-                void [...figure_1.figure(node)];
                 void [...footnote_1.footnote(node, (_a = opts.footnotes) !== null && _a !== void 0 ? _a : {
                         annotation: typed_dom_1.html('ol'),
                         reference: typed_dom_1.html('ol')
                     })];
+                void [...figure_1.figure(node)];
                 return node;
             }
             exports.parse = parse;
@@ -2958,10 +2958,10 @@ require = function () {
                 '!',
                 '>'
             ], combinator_1.union([combinator_1.validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline))])));
-            exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
+            exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.creator(10, combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.open(/^(?=>)/, text),
                 combinator_1.open(/^!(?=>)/, source)
-            ]))));
+            ])))));
             const opener = /^(?=>>+(?:$|\s))/;
             const indent = combinator_1.block(combinator_1.open(opener, combinator_1.some(source_1.contentline, /^>(?:$|\s)/)), false);
             function unindent(source) {
@@ -3134,7 +3134,7 @@ require = function () {
             const opener = /^(~{3,})(?!~)example\/(\S+)([^\n]*)\n?/;
             exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, true))));
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
-            exports.example = combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, , type, param], _, context) => {
+            exports.example = combinator_1.block(combinator_1.creator(10, combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, , type, param], _, context) => {
                 if (!closer || param.trim() !== '')
                     return [typed_dom_1.html('pre', {
                             class: 'example notranslate invalid',
@@ -3177,7 +3177,7 @@ require = function () {
                             'data-invalid-message': `Invalid example type`
                         }, `${ opener }${ body }${ closer }`)];
                 }
-            })));
+            }))));
         },
         {
             '../../../combinator': 30,
@@ -4325,7 +4325,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const repeat = source_1.str(/^(.)\1*/);
-            exports.escape = combinator_1.creator(combinator_1.union([(source, context) => {
+            exports.escape = combinator_1.union([(source, context) => {
                     if (source.length < 3)
                         return;
                     switch (source[0]) {
@@ -4340,7 +4340,7 @@ require = function () {
                     default:
                         return;
                     }
-                }]));
+                }]);
         },
         {
             '../../combinator': 30,
@@ -4429,7 +4429,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const indexee_1 = _dereq_('./indexee');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.creator(combinator_1.subline(combinator_1.fmap(indexee_1.indexee(combinator_1.surround('[#', combinator_1.context({
+            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(combinator_1.fmap(indexee_1.indexee(combinator_1.surround('[#', combinator_1.context({
                 syntax: {
                     inline: {
                         link: false,
@@ -4669,7 +4669,7 @@ require = function () {
                     rest
                 ] : void 0))
             ]))));
-            exports.attribute = combinator_1.creator(combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]));
+            exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]);
             function elem(tag, as, bs, cs, context) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
                 let attrs;
@@ -4816,7 +4816,7 @@ require = function () {
             const log = new WeakSet();
             exports.attributes = { nofollow: [void 0] };
             void alias_1.ObjectSetPrototypeOf(exports.attributes, null);
-            exports.link = combinator_1.lazy(() => combinator_1.creator(combinator_1.subline(combinator_1.validate([
+            exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(10, combinator_1.validate([
                 '[',
                 '{'
             ], combinator_1.bind(combinator_1.fmap(combinator_1.guard(context => {
@@ -4876,8 +4876,8 @@ require = function () {
                     rest
                 ];
             })))));
-            exports.uri = combinator_1.creator(combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => combinator_1.union([source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)]))));
-            exports.attribute = combinator_1.creator(combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]));
+            exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
+            exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
             function sanitize(el, uri) {
                 let message;
                 switch (el.protocol) {
@@ -5086,7 +5086,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.subline(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
+            exports.reference = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.context({
@@ -5300,12 +5300,12 @@ require = function () {
             }
             exports.localize = localize;
             function check(el) {
-                const char = endingChar(el.previousSibling);
+                const char = lastChar(el.previousSibling);
                 if (!char)
                     return false;
                 return ja_1.japanese(char);
             }
-            function endingChar(node) {
+            function lastChar(node) {
                 while (node) {
                     if ('id' in node && node.classList.contains('media'))
                         return '';
