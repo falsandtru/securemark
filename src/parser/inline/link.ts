@@ -1,6 +1,5 @@
 import { location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
-import { MarkdownParser } from '../../../markdown';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, subline, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
 import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
@@ -8,7 +7,6 @@ import { str } from '../source';
 import { makeAttrs } from './html';
 import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
-import { DeepMutable } from 'spica/type';
 
 const { origin } = location;
 const log = new WeakSet<Element>();
@@ -41,7 +39,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ])),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
-  ([content, params]: [(HTMLElement | string)[], string[]], rest, context: DeepMutable<MarkdownParser.Context>) => {
+  ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
     assert(params.every(s => typeof s === 'string'));
     if (!isTight(content, 0, content.length)) return;
     switch (true) {
