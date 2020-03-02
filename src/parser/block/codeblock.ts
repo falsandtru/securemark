@@ -17,7 +17,7 @@ export const segment_: CodeBlockParser.SegmentParser = block(validate('```',
 
 export const codeblock: CodeBlockParser = block(validate('```', fmap(
   fence(opener, 300, true),
-  // Bug: Remove the annotation.
+  // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, , lang, param]: string[], _, context) => {
     [lang, param] = language.test(lang)
       ? [lang, param]

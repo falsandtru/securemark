@@ -12,7 +12,7 @@ export const segment_: MathBlockParser.SegmentParser = block(validate('$$',
 
 export const mathblock: MathBlockParser = block(validate('$$', fmap(
   fence(opener, 100, true),
-  // Bug: Remove the annotation.
+  // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, , param]: string[]) =>
     closer && param.trim() === ''
       ? [html('div', { class: `math notranslate` }, `$$\n${body}$$`)]

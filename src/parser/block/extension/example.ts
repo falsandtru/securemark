@@ -15,7 +15,7 @@ export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(valid
 
 export const example: ExtensionParser.ExampleParser = block(creator(10, validate('~~~', fmap(
   fence(opener, 100, true),
-  // Bug: Remove the annotation.
+  // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, , type, param]: string[], _, context) => {
     if (!closer || param.trim() !== '') return [html('pre', {
       class: 'example notranslate invalid',
