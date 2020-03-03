@@ -81,6 +81,13 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(segment('!> ```\n\n\n```'), ['!> ```\n', '\n\n', '```']);
     });
 
+    it('heading', () => {
+      assert.deepStrictEqual(segment('# a\n\n# b\n'), ['# a\n', '\n', '# b\n']);
+      assert.deepStrictEqual(segment('# a\n# b\n'), ['# a\n', '# b\n']);
+      assert.deepStrictEqual(segment('# a\n# b'), ['# a\n', '# b']);
+      assert.deepStrictEqual(segment('# a\n # b'), ['# a\n # b']);
+    });
+
   });
 
 });

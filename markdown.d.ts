@@ -33,6 +33,7 @@ export namespace MarkdownParser {
   export interface SegmentParser extends
     Markdown<'segment'>,
     Parser<string, [
+      BlockParser.HeadingParser.SegmentParser,
       BlockParser.CodeBlockParser.SegmentParser,
       BlockParser.MathBlockParser.SegmentParser,
       BlockParser.ExtensionParser.SegmentParser,
@@ -69,11 +70,17 @@ export namespace MarkdownParser {
     }
     export interface HeadingParser extends
       // # Title
-      Block<'header'>,
+      Block<'heading'>,
       Parser<HTMLHeadingElement, [
         InlineParser.ExtensionParser.IndexerParser,
         InlineParser,
       ], Context> {
+    }
+    export namespace HeadingParser {
+      export interface SegmentParser extends
+        Block<'heading/segment'>,
+        Parser<string, [], Context> {
+      }
     }
     export interface UListParser extends
       // - item

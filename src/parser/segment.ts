@@ -1,5 +1,6 @@
 import { MarkdownParser } from '../../markdown';
 import { union, some, eval, exec } from '../combinator';
+import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
@@ -10,6 +11,7 @@ import { push } from 'spica/array';
 import SegmentParser = MarkdownParser.SegmentParser;
 
 const parser: SegmentParser = union([
+  heading,
   codeblock,
   mathblock,
   extension,
