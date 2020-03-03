@@ -1,5 +1,4 @@
-import { Parser, Ctx, eval, exec, check } from '../../data/parser';
-import { DeepMutable } from 'spica/type';
+import { Parser, eval, exec, check } from '../../data/parser';
 
 export function line<P extends Parser<unknown>>(parser: P, allowTrailingWhitespace?: boolean): P;
 export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allowTrailingWhitespace = true): Parser<T, D> {
@@ -20,7 +19,7 @@ export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allow
 export function subline<P extends Parser<unknown>>(parser: P): P;
 export function subline<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): Parser<T, D> {
   assert(parser);
-  return (source, context: DeepMutable<Ctx>) => {
+  return (source, context) => {
     if (source === '') return;
     const result = parser(source, context);
     assert(check(source, result));
