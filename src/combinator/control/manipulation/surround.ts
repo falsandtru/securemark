@@ -1,4 +1,4 @@
-import { Parser, Result, Ctx, Data, SubParsers, Context, SubData, IntermediateParser, eval, exec } from '../../data/parser';
+import { Parser, Result, Ctx, Data, SubParsers, Context, SubData, IntermediateParser, eval, exec, check } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { unshift, push } from 'spica/array';
 
@@ -42,20 +42,20 @@ export function surround<T, D extends Parser<unknown>[]>(
   return (lmr_, context) => {
     if (lmr_ === '') return;
     const res1 = opener(lmr_, context);
+    assert(check(lmr_, res1, false));
     if (!res1) return;
     const rl = eval(res1);
     const mr_ = exec(res1);
-    assert(lmr_.endsWith(mr_));
     const res2 = mr_ !== '' ? parser(mr_, context) : void 0;
+    assert(check(mr_, res2));
     const rm = eval(res2);
     const r_ = exec(res2, mr_);
-    assert(mr_.endsWith(r_));
-    if (!res2 && !optional) return;
+    if (!rm && !optional) return;
     const res3 = closer(r_, context);
+    assert(check(r_, res3, false));
     const rr = eval(res3);
     const rest = exec(res3, r_);
     if (rest.length === lmr_.length) return;
-    assert(r_.endsWith(rest));
     return rr
       ? f
         ? f([rl, rm!, rr], rest, context)
