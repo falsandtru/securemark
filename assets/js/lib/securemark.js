@@ -5100,17 +5100,12 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const htmlentity_1 = _dereq_('./htmlentity');
-            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.ruby = combinator_1.creator(combinator_1.bind(combinator_1.sequence([
-                combinator_1.surround('[', source_1.str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), ']'),
-                combinator_1.surround('(', source_1.str(/^(?:\\[^\n]|[^\)\n])+/), ')')
-            ]), ([t, r], rest, context) => {
-                const texts = parse(t, context);
-                const rubies = parse(r, context);
-                if (!array_1.join(texts).trim() || !array_1.join(rubies).trim())
-                    return;
+            exports.ruby = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.sequence([
+                combinator_1.surround('[', combinator_1.focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/, text), ']'),
+                combinator_1.surround('(', combinator_1.focus(/^(?:\\[^\n]|[^\)\n])+/, text), ')')
+            ]), ([texts, rubies], rest) => {
                 switch (true) {
                 case rubies.length <= texts.length:
                     return [
@@ -5140,34 +5135,42 @@ require = function () {
                         rest
                     ];
                 }
-            }));
-            function parse(target, context) {
+            })));
+            const text = combinator_1.creator((source, context) => {
                 const acc = [''];
-                for (let i = 0; i < target.length; ++i) {
-                    switch (target[i].trim()) {
+                let printable = false;
+                for (let i = 0; i < source.length; ++i) {
+                    switch (source[i].trim()) {
                     case '':
                         void acc.push('');
                         continue;
                     case '\\':
-                        acc[acc.length - 1] += target[++i];
+                        acc[acc.length - 1] += source[++i];
+                        printable = printable || !!source[i].trim();
                         continue;
                     case '&': {
-                            const [[data = '&'] = [], rest = target.slice(i + data.length)] = htmlentity_1.htmlentity(target.slice(i), context) || [];
-                            acc[acc.length - 1] += data;
-                            i = target.length - rest.length - 1;
+                            const result = htmlentity_1.htmlentity(source.slice(i), context);
+                            const str = combinator_1.eval(result, [])[0] || source[i];
+                            const rest = combinator_1.exec(result, source.slice(i + str.length));
+                            acc[acc.length - 1] += str;
+                            printable = printable || !!str.trim();
+                            i = source.length - rest.length - 1;
                             continue;
                         }
                     default:
-                        acc[acc.length - 1] += target[i];
+                        acc[acc.length - 1] += source[i];
+                        printable = printable || !!source[i];
                         continue;
                     }
                 }
-                return acc;
-            }
+                return printable ? [
+                    [acc],
+                    ''
+                ] : void 0;
+            });
         },
         {
             '../../combinator': 30,
-            '../source': 119,
             '../util': 127,
             './htmlentity': 105,
             'spica/array': 6,
