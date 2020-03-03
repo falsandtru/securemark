@@ -1,6 +1,6 @@
 export interface Ctx {
   readonly resource?: {
-    readonly creation: number;
+    creation: number;
   };
 }
 
