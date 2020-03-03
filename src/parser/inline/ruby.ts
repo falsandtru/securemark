@@ -1,20 +1,16 @@
 import { RubyParser } from '../inline';
-import { Ctx, sequence, creator, bind, surround } from '../../combinator';
+import { sequence, creator, focus, bind, surround, lazy, eval, exec } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
-import { str } from '../source';
 import { html } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
-export const ruby: RubyParser = creator(bind(
+export const ruby: RubyParser = lazy(() => creator(bind(
   sequence([
-    surround('[', str(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/), ']'),
-    surround('(', str(/^(?:\\[^\n]|[^\)\n])+/), ')'),
+    surround('[', focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/, text), ']'),
+    surround('(', focus(/^(?:\\[^\n]|[^\)\n])+/, text), ')'),
   ]),
-  ([t, r], rest, context) => {
-    const texts = parse(t, context);
-    const rubies = parse(r, context);
-    if (!join(texts).trim() || !join(rubies).trim()) return;
+  ([texts, rubies], rest) => {
     switch (true) {
       case rubies.length <= texts.length:
         return [[html('ruby', defrag(texts
@@ -45,28 +41,37 @@ export const ruby: RubyParser = creator(bind(
                 ])))
         ], rest];
     }
-  }));
+  })));
 
-function parse(target: string, context: Ctx): string[] {
-  const acc: string[] = [''];
-  for (let i = 0; i < target.length; ++i) {
-    switch (target[i].trim()) {
+const text: RubyParser.TextParser = creator((source, context) => {
+  const acc = [''];
+  let printable = false;
+  for (let i = 0; i < source.length; ++i) {
+    switch (source[i].trim()) {
       case '':
         void acc.push('');
         continue;
       case '\\':
-        acc[acc.length - 1] += target[++i];
+        acc[acc.length - 1] += source[++i];
+        printable = printable || !!source[i].trim();
         continue;
       case '&': {
-        const [[data = '&'] = [], rest = target.slice(i + data.length)] = htmlentity(target.slice(i), context) || [];
-        acc[acc.length - 1] += data;
-        i = target.length - rest.length - 1;
+        const result = htmlentity(source.slice(i), context);
+        const str = eval(result, [])[0] || source[i];
+        const rest = exec(result, source.slice(i + str.length));
+        acc[acc.length - 1] += str;
+        printable = printable || !!str.trim();
+        i = source.length - rest.length - 1;
         continue;
       }
       default:
-        acc[acc.length - 1] += target[i];
+        acc[acc.length - 1] += source[i];
+        printable = printable || !!source[i];
         continue;
     }
   }
-  return acc;
-}
+  assert(printable === !!acc.join('').trim());
+  return printable
+    ? [[acc], '']
+    : void 0;
+});
