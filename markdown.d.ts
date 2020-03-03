@@ -32,7 +32,7 @@ export namespace MarkdownParser {
   }
   export interface SegmentParser extends
     Markdown<'segment'>,
-    Parser<never, [
+    Parser<string, [
       BlockParser.CodeBlockParser.SegmentParser,
       BlockParser.MathBlockParser.SegmentParser,
       BlockParser.ExtensionParser.SegmentParser,
