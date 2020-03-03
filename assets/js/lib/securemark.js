@@ -2257,7 +2257,7 @@ require = function () {
                     const res2 = mr_ !== '' ? parser(mr_, context) : void 0;
                     const rm = parser_1.eval(res2);
                     const r_ = parser_1.exec(res2, mr_);
-                    if (!res2 && !optional)
+                    if (!rm && !optional)
                         return;
                     const res3 = closer(r_, context);
                     const rr = parser_1.eval(res3);
@@ -2269,7 +2269,7 @@ require = function () {
                         rm,
                         rr
                     ], rest, context) : [
-                        rm ? array_1.push(array_1.unshift(rl, rm), rr) : array_1.push(rl, rr),
+                        array_1.push(array_1.unshift(rl, rm || []), rr),
                         rest
                     ] : g ? g([
                         rl,
