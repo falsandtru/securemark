@@ -16,7 +16,7 @@ interface Options extends Partial<ParserSettings> {
 export function parse(source: string, opts: Options = {}): DocumentFragment {
   const node = frag(segment(normalize(source))
     .reduce((acc, seg) =>
-      push(acc, eval(block(seg, opts.context || {})))
+      push(acc, eval(block(seg, opts.context || {}), []))
     , []));
   if (opts.test) return node;
   void [...footnote(node, opts.footnotes ?? {

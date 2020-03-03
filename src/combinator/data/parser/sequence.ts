@@ -12,6 +12,7 @@ export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
       const result = parsers[i](rest, context);
       assert(check(rest, result));
       if (!result) return;
+      assert(result);
       data = data
         ? push(data, eval(result))
         : eval(result);

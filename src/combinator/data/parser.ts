@@ -22,7 +22,10 @@ type ExtractData<D extends Parser<unknown>[]> = ExtractParser<D> extends infer T
 type ExtractParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
 export { eval_ as eval };
-function eval_<R>(result: Result<R>, default_: R[] = []): R[] {
+function eval_<R>(result: NonNullable<Result<R>>, default_?: unknown): R[];
+function eval_<R>(result: Result<R>, default_: R[]): R[];
+function eval_<R>(result: Result<R>, default_?: undefined): R[] | undefined;
+function eval_<R>(result: Result<R>, default_?: R[]): R[] | undefined {
   return result
     ? result[0]
     : default_;

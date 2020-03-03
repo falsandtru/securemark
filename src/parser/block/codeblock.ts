@@ -23,7 +23,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       ? [lang, param]
       : ['', lang + param];
     param = param.trim();
-    const path = join(eval(some(escsource, /^\s/)(param, context)));
+    const path = join(eval(some(escsource, /^\s/)(param, context), []));
     if (!closer || param !== path) return [html('pre', {
       class: `notranslate invalid`,
       'data-invalid-syntax': 'codeblock',
@@ -44,7 +44,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       void el.setAttribute('data-lang', lang);
     }
     else {
-      void define(el, defrag(eval(some(autolink)(el.textContent!, context))));
+      void define(el, defrag(eval(some(autolink)(el.textContent!, context), [])));
     }
     if (path) {
       void el.setAttribute('data-file', path);
