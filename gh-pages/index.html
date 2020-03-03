@@ -158,12 +158,17 @@
   del code {
     background: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
-  .invalid {
-    color: red;
-    font-style: italic;
-  }
   .invalid:before {
-    content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message) ": ";
+    display: block;
+    margin-bottom: 1em;
+    content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message);
+    font-style: italic;
+    font-weight: bold;
+    color: orange;
+  }
+  .invalid[data-invalid-type="closer"]:before {
+    content: attr(data-invalid-message);
+    color: gray;
   }
 </style>
 

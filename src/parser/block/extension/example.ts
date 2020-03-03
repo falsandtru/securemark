@@ -16,11 +16,12 @@ export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(valid
 export const example: ExtensionParser.ExampleParser = block(creator(10, validate('~~~', fmap(
   fence(opener, 100, true),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, , type, param]: string[], _, context) => {
+  ([body, closer, opener, delim, type, param]: string[], _, context) => {
     if (!closer || param.trim() !== '') return [html('pre', {
-      class: 'example notranslate invalid',
+      class: `example notranslate invalid`,
       'data-invalid-syntax': 'example',
-      'data-invalid-message': `Invalid ${closer ? 'parameter' : 'content'}`,
+      'data-invalid-type': closer ? 'parameter' : 'closer',
+      'data-invalid-message': closer ? 'Invalid parameter' : `Missing closing delimiter ${delim}`,
     }, `${opener}${body}${closer}`)];
     switch (type) {
       case 'markdown': {

@@ -10,4 +10,4 @@ export const segment: ExtensionParser.PlaceholderParser.SegmentParser = block(va
 export const placeholder: ExtensionParser.PlaceholderParser = block(validate('~~~', fmap(
   fence(opener, 300, true),
   ([body, closer, opener]) =>
-    [html('pre', { class: 'notranslate invalid', 'data-invalid-syntax': 'extension', 'data-invalid-message': 'Invalid syntax' }, `${opener}${body}${closer}`)])));
+    [html('pre', { class: 'notranslate invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax', 'data-invalid-message': 'Invalid syntax' }, `${opener}${body}${closer}`)])));

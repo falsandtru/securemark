@@ -11,6 +11,7 @@ export function inspect(r: Result<HTMLElement | string>, until: number | string 
           [n, ...apply(n, '.invalid')].forEach(el =>
             define(el, {
               'data-invalid-syntax': null,
+              'data-invalid-type': null,
               'data-invalid-message': null,
             }));
           until = typeof until === 'number'

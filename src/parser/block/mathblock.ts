@@ -13,11 +13,12 @@ export const segment_: MathBlockParser.SegmentParser = block(validate('$$',
 export const mathblock: MathBlockParser = block(validate('$$', fmap(
   fence(opener, 100, true),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, , param]: string[]) =>
+  ([body, closer, opener, delim, param]: string[]) =>
     closer && param.trim() === ''
       ? [html('div', { class: `math notranslate` }, `$$\n${body}$$`)]
       : [html('pre', {
-          class: 'math notranslate invalid',
-          'data-invalid-syntax': 'math',
-          'data-invalid-message': `Invalid ${closer ? 'parameter' : 'content'}`,
+          class: `math notranslate invalid`,
+          'data-invalid-syntax': 'mathblock',
+          'data-invalid-type': closer ? 'parameter' : 'closer',
+          'data-invalid-message': closer ? 'Invalid parameter' : `Missing closing delimiter ${delim}`,
         }, `${opener}${body}${closer}`)])));

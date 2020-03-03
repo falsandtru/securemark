@@ -82,6 +82,7 @@ function attrs(label: string, content: HTMLElement, caption: readonly HTMLElemen
     style: rebase && 'display: none;',
     class: invalid && 'invalid',
     'data-invalid-syntax': invalid && 'figure',
+    'data-invalid-type': invalid && 'content',
     'data-invalid-message': invalid && 'A figure labeled to define a formula number can contain only a math formula and no caption',
   };
 }

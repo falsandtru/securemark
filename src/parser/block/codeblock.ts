@@ -18,16 +18,17 @@ export const segment_: CodeBlockParser.SegmentParser = block(validate('```',
 export const codeblock: CodeBlockParser = block(validate('```', fmap(
   fence(opener, 300, true),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, , lang, param]: string[], _, context) => {
+  ([body, closer, opener, delim, lang, param]: string[], _, context) => {
     [lang, param] = language.test(lang)
       ? [lang, param]
       : ['', lang + param];
     param = param.trim();
     const path = join(eval(some(escsource, /^\s/)(param, context)));
     if (!closer || param !== path) return [html('pre', {
-      class: 'notranslate invalid',
+      class: `notranslate invalid`,
       'data-invalid-syntax': 'codeblock',
-      'data-invalid-message': `Invalid ${closer ? 'parameter' : 'content'}`,
+      'data-invalid-type': closer ? 'parameter' : 'closer',
+      'data-invalid-message': closer ? 'Invalid parameter' : `Missing closing delimiter ${delim}`,
     }, `${opener}${body}${closer}`)];
     const file = path.split('/').pop() || '';
     const ext = file && file.includes('.') && file[0] !== '.'

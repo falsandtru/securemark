@@ -16,7 +16,7 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
       ]),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
   ]))),
-  es => [html('ul', { class: 'invalid', 'data-invalid-syntax': 'list', 'data-invalid-message': 'Use - instead of + or *' }, es)])));
+  es => [html('ul', { class: 'invalid', 'data-invalid-syntax': 'list', 'data-invalid-type': 'syntax', 'data-invalid-message': 'Use - instead of + or *' }, es)])));
 
 export const ilist_: IListParser = convert(
   source => source.replace(/^[-+*](?=$|\n)/, `$& `),

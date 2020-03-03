@@ -92,6 +92,7 @@ export const attribute: LinkParser.ParamParser.AttributeParser = union([
 ]);
 
 function sanitize(el: HTMLAnchorElement, uri: string): boolean {
+  let type: string;
   let message: string;
   switch (el.protocol) {
     case 'http:':
@@ -99,19 +100,23 @@ function sanitize(el: HTMLAnchorElement, uri: string): boolean {
       const { host } = el;
       host && el.origin !== origin && void el.setAttribute('target', '_blank');
       if (host) return true;
+      type = 'parameter';
       message = 'Invalid host';
       break;
     }
     case 'tel:':
       if (`tel:${el.textContent!.replace(/-(?=[0-9])/g, '')}` === uri) return true;
+      type = 'content';
       message = 'Invalid phone number';
       break;
     default:
+      type = 'parameter';
       message = 'Invalid protocol';
   }
   void define(el, {
     class: 'invalid',
     'data-invalid-syntax': 'link',
+    'data-invalid-type': type,
     'data-invalid-message': message,
     href: null,
     rel: null,

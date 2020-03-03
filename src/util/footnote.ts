@@ -57,6 +57,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
           void define(ref, {
             title,
             'data-invalid-syntax': null,
+            'data-invalid-type': null,
             'data-invalid-message': null,
           });
         }
@@ -74,7 +75,8 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
                   ? void 0
                   : join([...ref.classList, 'invalid'], ' '),
                 'data-invalid-syntax': syntax,
-                'data-invalid-message': 'Missing a content',
+                'data-invalid-type': 'content',
+                'data-invalid-message': 'Missing content',
               }
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
