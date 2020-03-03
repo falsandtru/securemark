@@ -44,29 +44,45 @@ export const ruby: RubyParser = lazy(() => creator(bind(
   })));
 
 const text: RubyParser.TextParser = creator((source, context) => {
+  const next = /[\s\\&]/;
   const acc = [''];
   let printable = false;
-  for (let i = 0; i < source.length; ++i) {
-    switch (source[i].trim()) {
-      case '':
-        void acc.push('');
+  while (source !== '') {
+    assert(source[0] !== '\n');
+    const i = source.search(next);
+    switch (i) {
+      case -1:
+        acc[acc.length - 1] += source;
+        printable = printable || !!source.trim();
+        source = '';
         continue;
-      case '\\':
-        acc[acc.length - 1] += source[++i];
-        printable = printable || !!source[i].trim();
-        continue;
-      case '&': {
-        const result = htmlentity(source.slice(i), context);
-        const str = eval(result, [])[0] || source[i];
-        const rest = exec(result, source.slice(i + str.length));
-        acc[acc.length - 1] += str;
-        printable = printable || !!str.trim();
-        i = source.length - rest.length - 1;
-        continue;
-      }
+      case 0:
+        switch (source[0]) {
+          case '\\':
+            acc[acc.length - 1] += source[i + 1] || '';
+            printable = printable || !!source[i + 1]?.trim();
+            source = source.slice(2);
+            continue;
+          case '&': {
+            const result = htmlentity(source, context);
+            const str = eval(result, [])[0] || source[0];
+            acc[acc.length - 1] += str;
+            printable = printable || !!str.trim();
+            source = exec(result, source.slice(str.length));
+            continue;
+          }
+          default:
+            source[0].trim()
+              ? acc[acc.length - 1] += source[0]
+              : void acc.push('');
+            printable = printable || !!source[0].trim();
+            source = source.slice(1);
+            continue;
+        }
       default:
-        acc[acc.length - 1] += source[i];
-        printable = printable || !!source[i];
+        acc[acc.length - 1] += source.slice(0, i);
+        printable = printable || !!source.slice(0, i).trim();
+        source = source.slice(i);
         continue;
     }
   }
