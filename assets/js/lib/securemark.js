@@ -2232,6 +2232,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.clear = exports.close = exports.open = exports.surround = void 0;
+            const parser_1 = _dereq_('../../data/parser');
             const fmap_1 = _dereq_('../monad/fmap');
             const array_1 = _dereq_('spica/array');
             function surround(opener, parser, closer, optional = false, f, g) {
@@ -2248,13 +2249,19 @@ require = function () {
                 return (lmr_, context) => {
                     if (lmr_ === '')
                         return;
-                    const [rl = [], mr_] = opener(lmr_, context) || [];
-                    if (mr_ === void 0)
+                    const res1 = opener(lmr_, context);
+                    if (!res1)
                         return;
-                    const [rm, r_ = mr_] = mr_ !== '' && parser(mr_, context) || [];
-                    if (!optional && r_.length === mr_.length)
+                    const rl = parser_1.eval(res1);
+                    const mr_ = parser_1.exec(res1);
+                    const res2 = mr_ !== '' ? parser(mr_, context) : void 0;
+                    const rm = parser_1.eval(res2);
+                    const r_ = parser_1.exec(res2, mr_);
+                    if (!res2 && !optional)
                         return;
-                    const [rr, rest = r_] = closer(r_, context) || [];
+                    const res3 = closer(r_, context);
+                    const rr = parser_1.eval(res3);
+                    const rest = parser_1.exec(res3, r_);
                     if (rest.length === lmr_.length)
                         return;
                     return rr ? f ? f([
@@ -2289,54 +2296,11 @@ require = function () {
                 }
             }
             function open(opener, parser, optional = false) {
-                if (typeof opener === 'string')
-                    return open(match(opener), parser, optional);
-                if (typeof opener === 'object')
-                    return open(match(opener), parser, optional);
-                return (source, context) => {
-                    if (source === '')
-                        return;
-                    const [rl = [], mr_] = opener(source, context) || [];
-                    if (mr_ === void 0)
-                        return;
-                    const [rm = [], r_] = mr_ !== '' && parser(mr_, context) || [];
-                    if (r_ === void 0)
-                        return optional && mr_.length < source.length ? [
-                            rl,
-                            mr_
-                        ] : void 0;
-                    void array_1.unshift(rl, rm);
-                    return r_.length < source.length ? [
-                        rm,
-                        r_
-                    ] : void 0;
-                };
+                return surround(opener, parser, '', optional);
             }
             exports.open = open;
-            function close(parser, closer, optional = false, f, g) {
-                if (typeof closer === 'string')
-                    return close(parser, match(closer), optional, f, g);
-                if (typeof closer === 'object')
-                    return close(parser, match(closer), optional, f, g);
-                if (typeof optional === 'function')
-                    return close(parser, closer, void 0, optional, f);
-                return (source, context) => {
-                    if (source === '')
-                        return;
-                    const [rm = [], r_ = source] = parser(source, context) || [];
-                    if (!optional && r_.length === source.length)
-                        return;
-                    const [rr = [], rest] = r_ !== '' && closer(r_, context) || [];
-                    if (rest === void 0)
-                        return g ? g(rm, r_, context) : void 0;
-                    if (rest.length === source.length)
-                        return;
-                    void array_1.push(rm, rr);
-                    return f ? f(rm, rest, context) : [
-                        rm,
-                        rest
-                    ];
-                };
+            function close(parser, closer, optional = false) {
+                return surround('', parser, closer, optional);
             }
             exports.close = close;
             function clear(parser) {
@@ -2345,6 +2309,7 @@ require = function () {
             exports.clear = clear;
         },
         {
+            '../../data/parser': 47,
             '../monad/fmap': 46,
             'spica/array': 6
         }
@@ -2413,7 +2378,7 @@ require = function () {
                 ];
             }
             exports.Result = Result;
-            function eval_(result, default_ = []) {
+            function eval_(result, default_) {
                 return result ? result[0] : default_;
             }
             exports.eval = eval_;
@@ -2707,7 +2672,7 @@ require = function () {
                     let index = head;
                     for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
-                        const es = combinator_1.eval(block_1.block(seg, {}));
+                        const es = combinator_1.eval(block_1.block(seg, {}), []);
                         void pairs.splice(index, 0, [
                             seg,
                             es
@@ -2831,7 +2796,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function parse(source, opts = {}) {
                 var _a;
-                const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => array_1.push(acc, combinator_1.eval(block_1.block(seg, opts.context || {}))), []));
+                const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => array_1.push(acc, combinator_1.eval(block_1.block(seg, opts.context || {}), [])), []));
                 if (opts.test)
                     return node;
                 void [...footnote_1.footnote(node, (_a = opts.footnotes) !== null && _a !== void 0 ? _a : {
@@ -3008,7 +2973,7 @@ require = function () {
                     lang + param
                 ];
                 param = param.trim();
-                const path = array_1.join(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, context)));
+                const path = array_1.join(combinator_1.eval(combinator_1.some(source_1.escsource, /^\s/)(param, context), []));
                 if (!closer || param !== path)
                     return [typed_dom_1.html('pre', {
                             class: `notranslate invalid`,
@@ -3025,7 +2990,7 @@ require = function () {
                     void el.classList.add(`language-${ lang }`);
                     void el.setAttribute('data-lang', lang);
                 } else {
-                    void typed_dom_1.define(el, util_1.defrag(combinator_1.eval(combinator_1.some(autolink_1.autolink)(el.textContent, context))));
+                    void typed_dom_1.define(el, util_1.defrag(combinator_1.eval(combinator_1.some(autolink_1.autolink)(el.textContent, context), [])));
                 }
                 if (path) {
                     void el.setAttribute('data-file', path);
@@ -3160,7 +3125,7 @@ require = function () {
                             'data-type': 'math'
                         }, [
                             typed_dom_1.html('pre', body.slice(0, -1)),
-                            combinator_1.eval(mathblock_1.mathblock(`$$\n${ body }$$`, context))[0]
+                            combinator_1.eval(mathblock_1.mathblock(`$$\n${ body }$$`, context), [])[0]
                         ])];
                 default:
                     return [typed_dom_1.html('pre', {
@@ -3327,14 +3292,18 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.heading = void 0;
+            exports.heading = exports.segment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.heading = combinator_1.block(combinator_1.focus(/^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?:[^\S\n][^\n]*)?)*(?:$|\n)/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(source_1.str(/^#+/), combinator_1.trim(combinator_1.some(combinator_1.union([
+            exports.segment = combinator_1.block(combinator_1.validate('#', combinator_1.focus(/^#{1,6}[^\S\n][^\n]*(?:\n#{1,6}(?!\S)[^\n]*)*(?:$|\n)/, combinator_1.some(combinator_1.line(source => [
+                [source],
+                ''
+            ])))));
+            exports.heading = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(source_1.str(/^#+/), combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
             ]))), true), ns => [typed_dom_1.html(`h${ ns[0].length }`, util_1.defrag(array_1.shift(ns)[1]))])))))));
@@ -4857,7 +4826,7 @@ require = function () {
                     content[0] = content[0].firstElementChild;
                     log.add(content[0]);
                     break;
-                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), Object.assign(Object.assign({}, context), { insecure: true }))).some(node => typeof node === 'object'):
+                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), Object.assign(Object.assign({}, context), { insecure: true })), []).some(node => typeof node === 'object'):
                     return;
                 }
                 const INSECURE_URI = params.shift();
@@ -5372,12 +5341,15 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.segment = void 0;
             const combinator_1 = _dereq_('../combinator');
+            const heading_1 = _dereq_('./block/heading');
             const codeblock_1 = _dereq_('./block/codeblock');
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
             const normalize_1 = _dereq_('./api/normalize');
+            const array_1 = _dereq_('spica/array');
             const parser = combinator_1.union([
+                heading_1.segment,
                 codeblock_1.segment,
                 mathblock_1.segment,
                 extension_1.segment,
@@ -5389,8 +5361,10 @@ require = function () {
                     return ['# ***Too large input over 1,000,000 characters***'];
                 const segments = [];
                 while (source !== '') {
-                    const rest = combinator_1.exec(parser(source, {}));
-                    void segments.push(source.length - rest.length > 10 * 1000 ? '# ***Too large block over 10,000 characters***' : source.slice(0, source.length - rest.length));
+                    const r = parser(source, {});
+                    const segs = combinator_1.eval(r, []);
+                    const rest = combinator_1.exec(r);
+                    source.length - rest.length > 10 * 1000 ? segments.push('# ***Too large block over 10,000 characters***') : segs.length === 0 ? segments.push(source.slice(0, source.length - rest.length)) : array_1.push(segments, segs);
                     source = rest;
                 }
                 return segments;
@@ -5402,8 +5376,10 @@ require = function () {
             './api/normalize': 58,
             './block/codeblock': 63,
             './block/extension': 65,
+            './block/heading': 70,
             './block/mathblock': 73,
-            './source': 119
+            './source': 119,
+            'spica/array': 6
         }
     ],
     119: [
