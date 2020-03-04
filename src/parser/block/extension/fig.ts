@@ -25,8 +25,8 @@ export const segment: FigParser.SegmentParser = block(
 
 export const fig: FigureParser = block(rewrite(segment, convert(
   source => {
-    const bracket = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || [])
-      .reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
-    return `${bracket}figure ${source}\n\n${bracket}`;
+    const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || [])
+      .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
+    return `${fence}figure ${source}\n\n${fence}`;
   },
   figure)));
