@@ -41,7 +41,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
   ]))),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
   ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
-    assert(params.every(s => typeof s === 'string'));
+    assert(params.every(p => typeof p === 'string'));
     if (!isTight(content, 0, content.length)) return;
     switch (true) {
       case content.length === 0:
