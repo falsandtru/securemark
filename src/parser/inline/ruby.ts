@@ -1,16 +1,15 @@
 import { RubyParser } from '../inline';
-import { sequence, focus, validate, creator, bind, surround, lazy, eval, exec } from '../../combinator';
+import { sequence, focus, creator, bind, surround, lazy, eval, exec } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { html } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => creator(validate('[', bind(
-  validate(/^\[(?!\\?\s)(?:\\[^\n]|[^\]\n])+\]\((?:\\[^\n]|[^\)\n])+\)/,
+export const ruby: RubyParser = lazy(() => creator(bind(
   sequence([
-    surround('[', focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/, text), ']'),
-    surround('(', focus(/^(?:\\[^\n]|[^\)\n])+/, text), ')'),
-  ])),
+    surround('[', focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+(?=]\()/, text), ']'),
+    surround('(', focus(/^(?:\\[^\n]|[^\)\n])+(?=\))/, text), ')'),
+  ]),
   ([texts, rubies], rest) => {
     switch (true) {
       case rubies.length <= texts.length:
@@ -42,7 +41,7 @@ export const ruby: RubyParser = lazy(() => creator(validate('[', bind(
                 ])))
         ], rest];
     }
-  }))));
+  })));
 
 const text: RubyParser.TextParser = creator((source, context) => {
   const { resource } = context;
