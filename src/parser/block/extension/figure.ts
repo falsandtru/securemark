@@ -1,3 +1,4 @@
+import { RegExp } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, sequence, inits, some, block, line, rewrite, context, fmap, close, clear, match, memoize, convert, trim } from '../../../combinator';
 import { defrag } from '../../util';
