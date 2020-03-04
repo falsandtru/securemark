@@ -8,7 +8,7 @@ import { text, str, char } from '../source';
 import { makeAttrs } from './html';
 import { html, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
-import { shift, unshift, join } from 'spica/array';
+import { unshift, join } from 'spica/array';
 
 const url = html('a');
 
@@ -22,10 +22,9 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
     dup(surround(/^\[(?!\s)/, some(union([bracket, some(text, /^(?:\\?\n|[\]([{<"])/)]), ']'), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ])))),
-  (sss: string[][]) =>
-    unshift([sss.length > 1 ? join(sss[0]) : ''], sss[sss.length - 1])),
-  (params: string[], rest, context) => {
-    const [text, INSECURE_URL] = shift(params, 2)[0];
+  ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
+  ([[text], params], rest, context) => {
+    const INSECURE_URL = params.shift()!;
     assert(INSECURE_URL === INSECURE_URL.trim());
     if (text.length > 0 && text.slice(-2).trim() === '') return;
     url.href = INSECURE_URL;

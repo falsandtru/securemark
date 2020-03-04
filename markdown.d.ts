@@ -611,7 +611,7 @@ export namespace MarkdownParser {
     export namespace MediaParser {
       export interface TextParser extends
         Inline<'media/text'>,
-        Parser<(HTMLElement | string)[], [
+        Parser<string[], [
           TextParser.BracketParser,
           SourceParser.TextParser,
         ], Context> {
