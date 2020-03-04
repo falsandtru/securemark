@@ -618,7 +618,7 @@ export namespace MarkdownParser {
       }
       export namespace TextParser {
         export interface BracketParser extends
-          Inline<'url/bracket'>,
+          Inline<'media/text/bracket'>,
           Parser<string, [
             Parser<string, [
               BracketParser,
