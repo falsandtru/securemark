@@ -39,8 +39,8 @@ describe('Unit: parser/inline/link', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
-      assert.deepStrictEqual(inspect(parser('[]')), undefined);
       assert.deepStrictEqual(inspect(parser('{}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{ }')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{  }')), undefined);
