@@ -651,7 +651,7 @@ export namespace MarkdownParser {
     export interface HTMLParser extends
       // <small>abc</small>
       Inline<'html'>,
-      Parser<HTMLElement, [
+      Parser<HTMLElement | string, [
         HTMLParser.OpenTagParser,
         HTMLParser.TagParser,
         HTMLParser.TagParser,
@@ -666,7 +666,7 @@ export namespace MarkdownParser {
       }
       export interface TagParser extends
         Inline<'html/tag'>,
-        Parser<HTMLElement, [
+        Parser<HTMLElement | string, [
           InlineParser,
         ], Context> {
       }

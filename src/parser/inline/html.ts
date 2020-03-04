@@ -78,6 +78,12 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         ([as, bs, cs], rest) =>
           isTight(bs, 0, bs.length)
             ? [[elem(tag, as, trimEnd(bs), cs, {})], rest]
+            : as.length === 1
+              ? [push(unshift(as, bs), cs), rest]
+              : void 0,
+        ([as, bs], rest) =>
+          as.length === 1
+            ? [unshift(as, bs), rest]
             : void 0)),
 ]))));
 
