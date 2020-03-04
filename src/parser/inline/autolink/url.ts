@@ -1,5 +1,5 @@
 import { AutolinkParser } from '../../inline';
-import { Parser, union, some, validate, rewrite, context, convert, surround, open, lazy } from '../../../combinator';
+import { Parser, union, some, validate, rewrite, context, creator, convert, surround, open, lazy } from '../../../combinator';
 import { unescsource, str } from '../../source';
 import { link } from '../link';
 
@@ -14,13 +14,13 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     context({ syntax: { inline: { link: void 0 } } },
     union([link])))));
 
-const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => union([
+const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(union([
   surround('(', some(union([bracket, str(/^[^\s\)([{<"]+/)])), ')', true),
   surround('[', some(union([bracket, str(/^[^\s\]([{<"]+/)])), ']', true),
   surround('{', some(union([bracket, str(/^[^\s\}([{<"]+/)])), '}', true),
   surround('<', some(union([bracket, str(/^[^\s\>([{<"]+/)])), '>', true),
   surround('"', str(/^[\s"]+/), '"', true),
-]));
+])));
 
 export function address(source: string): string {
   return source.slice(0, 3) === 'ttp'
