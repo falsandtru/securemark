@@ -5112,10 +5112,10 @@ require = function () {
             const htmlentity_1 = _dereq_('./htmlentity');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.ruby = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('[', combinator_1.bind(combinator_1.validate(/^\[(?!\\?\s)(?:\\[^\n]|[^\]\n])+\]\((?:\\[^\n]|[^\)\n])+\)/, combinator_1.sequence([
-                combinator_1.surround('[', combinator_1.focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+/, text), ']'),
-                combinator_1.surround('(', combinator_1.focus(/^(?:\\[^\n]|[^\)\n])+/, text), ')')
-            ])), ([texts, rubies], rest) => {
+            exports.ruby = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.sequence([
+                combinator_1.surround('[', combinator_1.focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+(?=]\()/, text), ']'),
+                combinator_1.surround('(', combinator_1.focus(/^(?:\\[^\n]|[^\)\n])+(?=\))/, text), ')')
+            ]), ([texts, rubies], rest) => {
                 switch (true) {
                 case rubies.length <= texts.length:
                     return [
@@ -5145,7 +5145,7 @@ require = function () {
                         rest
                     ];
                 }
-            }))));
+            })));
             const text = combinator_1.creator((source, context) => {
                 var _a;
                 const {resource} = context;
