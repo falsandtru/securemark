@@ -1,3 +1,4 @@
+import { RegExp } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
@@ -33,6 +34,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     /^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/,
     memoize(([, tag]) => tag,
     tag =>
+      validate(new RegExp(`^<${tag}[^\\n>]*>\\S[\\s\\S]*?</${tag}>`),
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
         startTight(
@@ -64,7 +66,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         ([as, bs, cs], rest, context) =>
           isTight(bs, 0, bs.length)
             ? [[elem(tag, as, trimEnd(bs), cs, context)], rest]
-            : void 0))),
+            : void 0)))),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
     // Don't memoize this function because this key size is unlimited

@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { Result, subsequence, some, subline, focus, guard, context, creator, bind, surround, lazy } from '../../combinator';
+import { Result, subsequence, some, subline, focus, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
@@ -7,6 +7,7 @@ import { html } from 'typed-dom';
 export const reference: ReferenceParser = lazy(() => subline(creator(bind(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
+  validate(/^\S[^\n]*\]\]/,
   context({ syntax: { inline: {
     annotation: false,
     reference: false,
@@ -16,7 +17,7 @@ export const reference: ReferenceParser = lazy(() => subline(creator(bind(surrou
     //link: true,
     //autolink: true,
   }}, state: void 0 },
-  subsequence([alias, startTight(some(inline, ']]'))]))),
+  subsequence([alias, startTight(some(inline, ']]'))])))),
   ']]'),
   (ns, rest) =>
     isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)

@@ -18,6 +18,7 @@ void ObjectSetPrototypeOf(attributes, null);
 
 export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{'], bind(fmap(
   guard(context => context.syntax?.inline?.link ?? true,
+  validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   tails([
     dup(union([
       surround('[', media, ']'),
@@ -37,7 +38,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
         true),
     ])),
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
-  ])),
+  ]))),
   nss => nss.length === 1 ? [[], nss[0]] : nss),
   ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
     assert(params.every(s => typeof s === 'string'));

@@ -17,10 +17,11 @@ export const cache = new Cache<string, HTMLElement>(10);
 export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind(fmap(open(
   '!',
   guard(context => (context.syntax?.inline?.link ?? true) && (context.syntax?.inline?.media ?? true),
+  validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   tails([
     dup(surround(/^\[(?!\s)/, some(union([bracket, some(text, /^(?:\\?\n|[\]([{<"])/)]), ']'), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
-  ]))),
+  ])))),
   (sss: string[][]) =>
     unshift([sss.length > 1 ? join(sss[0]) : ''], sss[sss.length - 1])),
   (params: string[], rest, context) => {
