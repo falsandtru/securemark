@@ -3168,8 +3168,8 @@ require = function () {
                 ])
             ]));
             exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.convert(source => {
-                const bracket = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || []).reduce((max, bracket) => bracket > max ? bracket : max, '~~') + '~';
-                return `${ bracket }figure ${ source }\n\n${ bracket }`;
+                const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
+                return `${ fence }figure ${ source }\n\n${ fence }`;
             }, figure_1.figure)));
         },
         {
@@ -4061,7 +4061,7 @@ require = function () {
                 bracket,
                 combinator_1.some(source_1.unescsource, closer)
             ])))), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
-            const bracket = combinator_1.lazy(() => combinator_1.union([
+            const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.str(/^[^\s\)([{<"]+/)
@@ -4079,7 +4079,7 @@ require = function () {
                     source_1.str(/^[^\s\>([{<"]+/)
                 ])), '>', true),
                 combinator_1.surround('"', source_1.str(/^[\s"]+/), '"', true)
-            ]));
+            ])));
             function address(source) {
                 return source.slice(0, 3) === 'ttp' ? `h${ source }` : source;
             }
@@ -5013,7 +5013,7 @@ require = function () {
                 void typed_dom_1.define(media, alias_1.ObjectAssign(html_1.makeAttrs(link_1.attributes, params, [...media.classList], 'media'), { nofollow: void 0 }));
                 return combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [typed_dom_1.define(media, { 'data-src': el.getAttribute('href') })])])(`{ ${ INSECURE_URL }${ array_1.join(params) } }${ rest }`, context);
             }))));
-            const bracket = combinator_1.lazy(() => combinator_1.union([
+            const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround(source_1.char('('), combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)
@@ -5046,7 +5046,7 @@ require = function () {
                     array_1.unshift(as, bs),
                     rest
                 ])
-            ]));
+            ])));
         },
         {
             '../../combinator': 30,
