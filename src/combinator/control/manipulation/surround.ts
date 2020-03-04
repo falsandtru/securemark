@@ -30,13 +30,11 @@ export function surround<T, D extends Parser<unknown>[]>(
   switch (typeof opener) {
     case 'string':
     case 'object':
-      // @ts-ignore
       return surround(match(opener), parser, closer, optional, f, g);
   }
   switch (typeof closer) {
     case 'string':
     case 'object':
-      // @ts-ignore
       return surround(opener, parser, match(closer), optional, f, g);
   }
   return (lmr_, context) => {
