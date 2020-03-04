@@ -22,12 +22,10 @@ describe('Unit: renderer/render', () => {
     it('media', () => {
       // image
       assert(render(parse('!https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg').querySelector('p')!).querySelector('img')!.matches('p > a > img'));
-      assert(render(parse('![]{https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg}').querySelector('p')!).querySelector('img')!.matches('p > a > img'));
-      assert(render(parse('[![]{https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg}]{#}').querySelector('p')!).querySelector('img')!.matches('p > a > img'));
+      assert(render(parse('[!{https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg}]{#}').querySelector('p')!).querySelector('img')!.matches('p > a > img'));
       // other
       assert(render(parse('!http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf').querySelector('p')!).querySelector('.media')!.matches('p > .media'));
-      assert(render(parse('![]{http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf}').querySelector('p')!).querySelector('.media')!.matches('p > .media'));
-      assert(render(parse('[![]{http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf}]{#}').querySelector('p')!).querySelector('.media')!.matches('p > .media'));
+      assert(render(parse('[!{http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf}]{#}').querySelector('p')!).querySelector('.media')!.matches('p > .media'));
       // all
       assert(render(parse([
         '!https://youtu.be/xRF7WIZV4lA',
