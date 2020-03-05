@@ -28,10 +28,11 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
     assert(INSECURE_URL === INSECURE_URL.trim());
     if (text.length > 0 && text.slice(-2).trim() === '') return;
     url.href = INSECURE_URL;
-    const media = void 0
-      || cache.get(url.href)?.cloneNode(true)
-      || html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text.trim() });
-    if (cache.has(url.href) && media.hasAttribute('alt')) {
+    const key = url.href;
+    const media = cache.has(key)
+      ? cache.get(key)!.cloneNode(true)
+      : html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text.trim() });
+    if (cache.has(key) && media.hasAttribute('alt')) {
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
       void define(media, { alt: text.trim() });
     }
