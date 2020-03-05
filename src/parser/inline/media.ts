@@ -24,14 +24,14 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
   ])))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
   ([[text], params], rest, context) => {
-    const INSECURE_URL = params.shift()!;
-    assert(INSECURE_URL === INSECURE_URL.trim());
+    const INSECURE_URI = params.shift()!;
+    assert(INSECURE_URI === INSECURE_URI.trim());
     if (text.length > 0 && text.slice(-2).trim() === '') return;
-    url.href = INSECURE_URL;
+    url.href = INSECURE_URI;
     const key = url.href;
     const media = cache.has(key)
       ? cache.get(key)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': INSECURE_URL.replace(/\s+/g, encodeURI), alt: text.trim() });
+      : html('img', { class: 'media', 'data-src': INSECURE_URI.replace(/\s+/g, encodeURI), alt: text.trim() });
     if (cache.has(key) && media.hasAttribute('alt')) {
       assert(['IMG', 'AUDIO', 'VIDEO'].includes(media.tagName));
       void define(media, { alt: text.trim() });
@@ -43,7 +43,7 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
       link as MediaParser,
       ([el]: [HTMLAnchorElement]) =>
         [define(el, { target: '_blank' }, [define(media, { 'data-src': el.getAttribute('href') })])])
-      (`{ ${INSECURE_URL}${join(params)} }${rest}`, context);
+      (`{ ${INSECURE_URI}${join(params)} }${rest}`, context);
   }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
