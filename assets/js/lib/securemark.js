@@ -92,13 +92,7 @@ require = function () {
             exports.join = exports.push = exports.pop = exports.unshift = exports.shift = exports.indexOf = void 0;
             const alias_1 = _dereq_('./alias');
             function indexOf(as, a) {
-                const isNaN = a !== a;
-                for (let i = 0; i < as.length; ++i) {
-                    const ai = as[i];
-                    if (isNaN ? ai !== ai : ai === a)
-                        return i;
-                }
-                return -1;
+                return a === a ? as.indexOf(a) : as.findIndex(a => a !== a);
             }
             exports.indexOf = indexOf;
             function shift(as, count) {
@@ -4822,10 +4816,13 @@ require = function () {
                     exports.uri,
                     combinator_1.some(exports.attribute)
                 ]), /^ ?}/))
-            ]))), nss => nss.length === 1 ? [
+            ]))), ([as, bs]) => bs ? [
+                as,
+                bs
+            ] : [
                 [],
-                nss[0]
-            ] : nss), ([content, params], rest, context) => {
+                as
+            ]), ([content, params], rest, context) => {
                 var _a;
                 if (!util_1.isTight(content, 0, content.length))
                     return;
@@ -4996,22 +4993,28 @@ require = function () {
                     link_1.uri,
                     combinator_1.some(link_1.attribute)
                 ]), /^ ?}/))
-            ])))), sss => array_1.unshift([sss.length > 1 ? array_1.join(sss[0]) : ''], sss[sss.length - 1])), (params, rest, context) => {
-                var _a;
-                const [text, INSECURE_URL] = array_1.shift(params, 2)[0];
+            ])))), ([as, bs]) => bs ? [
+                [array_1.join(as)],
+                bs
+            ] : [
+                [''],
+                as
+            ]), ([[text], params], rest, context) => {
+                const INSECURE_URI = params.shift();
                 if (text.length > 0 && text.slice(-2).trim() === '')
                     return;
-                url.href = INSECURE_URL;
-                const media = void 0 || ((_a = exports.cache.get(url.href)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || typed_dom_1.html('img', {
+                url.href = INSECURE_URI;
+                const key = url.href;
+                const media = exports.cache.has(key) ? exports.cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
-                    'data-src': INSECURE_URL.replace(/\s+/g, global_1.encodeURI),
+                    'data-src': INSECURE_URI.replace(/\s+/g, global_1.encodeURI),
                     alt: text.trim()
                 });
-                if (exports.cache.has(url.href) && media.hasAttribute('alt')) {
+                if (exports.cache.has(key) && media.hasAttribute('alt')) {
                     void typed_dom_1.define(media, { alt: text.trim() });
                 }
                 void typed_dom_1.define(media, alias_1.ObjectAssign(html_1.makeAttrs(link_1.attributes, params, [...media.classList], 'media'), { nofollow: void 0 }));
-                return combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [typed_dom_1.define(media, { 'data-src': el.getAttribute('href') })])])(`{ ${ INSECURE_URL }${ array_1.join(params) } }${ rest }`, context);
+                return combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [typed_dom_1.define(media, { 'data-src': el.getAttribute('href') })])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context);
             }))));
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround(source_1.char('('), combinator_1.some(combinator_1.union([
