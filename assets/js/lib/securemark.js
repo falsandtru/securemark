@@ -109,7 +109,7 @@ require = function () {
             exports.shift = shift;
             function unshift(as, bs) {
                 if (alias_1.isArray(as)) {
-                    for (let i = as.length; i--;) {
+                    for (let i = as.length - 1; i >= 0; --i) {
                         bs.unshift(as[i]);
                     }
                 } else {
@@ -521,12 +521,22 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.memoize = void 0;
+            const global_1 = _dereq_('./global');
             function memoize(f, memory = new Map()) {
-                return a => memory.has(a) ? memory.get(a) : void memory.set(a, f(a)) || memory.get(a);
+                let nullable = false;
+                return a => {
+                    let z = memory.get(a);
+                    if (z !== global_1.undefined || nullable && memory.has(a))
+                        return z;
+                    z = f(a);
+                    nullable = nullable || z === global_1.undefined;
+                    memory.set(a, z);
+                    return z;
+                };
             }
             exports.memoize = memoize;
         },
-        {}
+        { './global': 12 }
     ],
     14: [
         function (_dereq_, module, exports) {
