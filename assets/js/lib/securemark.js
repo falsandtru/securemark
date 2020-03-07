@@ -6425,7 +6425,7 @@ require = function () {
                 return el => {
                     var _a;
                     const node = memory.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
-                    return memory.has(node) ? memory.get(node) : memory.set(node, el.closest(bound) === context).get(node);
+                    return memory.get(node) || memory.set(node, el.closest(bound) === context).get(node);
                 };
             }
             exports.context = context;
@@ -6564,7 +6564,7 @@ require = function () {
                         const content = contentify(ref);
                         const refIndex = count;
                         const refId = ref.id || `${ syntax }:ref:${ count }`;
-                        const def = defs.has(identifier) ? defs.get(identifier) : defs.set(identifier, typed_dom_1.html('li', {
+                        const def = void 0 || defs.get(identifier) || defs.set(identifier, typed_dom_1.html('li', {
                             id: `${ syntax }:def:${ defs.size + 1 }`,
                             class: 'footnote'
                         }, [
