@@ -11,8 +11,7 @@ export function context(
     const node = memory.has(el.parentNode!)
       ? el.parentNode!
       : el.parentNode!.parentNode!;
-    return memory.has(node)
-      ? memory.get(node)!
-      : memory.set(node, el.closest(bound) === context).get(node)!;
+    return memory.get(node)
+        || memory.set(node, el.closest(bound) === context).get(node)!;
   };
 }

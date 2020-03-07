@@ -42,9 +42,9 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
       const content = contentify(ref);
       const refIndex = count;
       const refId = ref.id || `${syntax}:ref:${count}`;
-      const def = defs.has(identifier)
-        ? defs.get(identifier)!
-        : defs.set(identifier, html('li',
+      const def = void 0
+        || defs.get(identifier)
+        || defs.set(identifier, html('li',
             { id: `${syntax}:def:${defs.size + 1}`, class: 'footnote' },
             [content.cloneNode(true), html('sup', [])]))
             .get(identifier)!;
