@@ -3889,7 +3889,7 @@ require = function () {
                     }
                 },
                 state: void 0
-            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '))')]))))), '))'), (ns, rest) => util_1.isTight(ns, 0, ns.length) ? [
+            }, util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, ')')]))))), '))'), (ns, rest) => util_1.isTight(ns, 0, ns.length) ? [
                 [typed_dom_1.html('sup', { class: 'annotation' }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : void 0)));
@@ -5098,7 +5098,7 @@ require = function () {
                 state: void 0
             }, combinator_1.subsequence([
                 alias,
-                util_1.startTight(combinator_1.some(inline_1.inline, ']]'))
+                util_1.startTight(combinator_1.some(inline_1.inline, ']'))
             ])))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? combinator_1.Result(typed_dom_1.html('sup', {
                 class: 'reference',
                 'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? util_1.stringify(ns.shift()) : void 0
@@ -5279,7 +5279,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, '}}'), '}}', true), source => [
+            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, '}'), '}}', true), source => [
                 [typed_dom_1.html('span', { class: 'template' }, source)],
                 ''
             ])));
