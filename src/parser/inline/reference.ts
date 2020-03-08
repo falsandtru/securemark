@@ -17,7 +17,7 @@ export const reference: ReferenceParser = lazy(() => subline(creator(bind(surrou
     //link: true,
     //autolink: true,
   }}, state: void 0 },
-  subsequence([alias, startTight(some(inline, ']]'))])))),
+  subsequence([alias, startTight(some(inline, ']'))])))),
   ']]'),
   (ns, rest) =>
     isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
