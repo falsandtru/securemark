@@ -30,17 +30,18 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
       push(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
     , []);
   void apply(head, as.slice(0, 2));
-  for (const row of rows) {
-    void apply(row, as);
+  for (let i = 0, len = rows.length; i < len; ++i) {
+    void apply(rows[i], as);
   }
   return;
 
   function apply(row: HTMLElement, aligns: string[]): void {
     const cols = row.children;
-    void extend(aligns, cols.length);
-    assert(cols.length <= aligns.length);
+    const len = cols.length;
+    void extend(aligns, len);
+    assert(len <= aligns.length);
     assert(aligns.every(align => ['left', 'center', 'right', ''].includes(align)));
-    for (let i = 0; i < cols.length; ++i) {
+    for (let i = 0; i < len; ++i) {
       if (!aligns[i]) continue;
       void cols[i].setAttribute('style', `text-align: ${aligns[i]};`);
     }

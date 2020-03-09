@@ -13,10 +13,12 @@ export function text(source: HTMLElement): string {
   const indexer = source.querySelector(':scope > .indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
-  for (const el of target.querySelectorAll('code[data-src], .math[data-src]')) {
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
+    const el = es[i];
     void define(el, el.getAttribute('data-src')!);
   }
-  for (const el of target.querySelectorAll('rt, rp, .annotation, .reference')) {
+  for (let es = target.querySelectorAll('rt, rp, .annotation, .reference'), i = 0, len = es.length; i < len; ++i) {
+    const el = es[i];
     void el.remove();
   }
   return target.textContent!.trim();

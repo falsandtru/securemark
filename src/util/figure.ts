@@ -17,8 +17,8 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, foo
   const numbers = new Map<string, string>();
   let base = '0';
   let bases: readonly string[] = base.split('.');
-  for (let i = 0, { children } = target, len = children.length; i < len; ++i) {
-    const def = children[i];
+  for (let defs = target.children, i = 0, len = defs.length; i < len; ++i) {
+    const def = defs[i];
     if (!['FIGURE', 'H1', 'H2', 'H3'].includes(def.tagName)) continue;
     if (base === '0' && def.tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);

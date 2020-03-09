@@ -51,8 +51,9 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
         if (rev !== revision) return yield;
       }
     }
-    for (const [, es] of pairs.splice(index, pairs.length - sourceSegments.length)) {
+    for (let refuse = pairs.splice(index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
       assert(rev === revision);
+      const es = refuse[i][1];
       if (es.length === 0) continue;
       void push(dels, es);
     }

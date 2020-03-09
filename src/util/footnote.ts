@@ -30,7 +30,8 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
     const refs = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     let count = 0;
-    for (const ref of target.querySelectorAll<HTMLElement>(`.${syntax}`)) {
+    for (let es = target.querySelectorAll<HTMLElement>(`.${syntax}`), i = 0, len = es.length; i < len; ++i) {
+      const ref = es[i];
       if (!check(ref)) continue;
       void ++count;
       const identifier = identify(ref);
@@ -49,7 +50,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
             [content.cloneNode(true), html('sup', [])]))
             .get(identifier)!;
       assert(def.lastChild);
-      if (title && def.childNodes.length === 1 && content.childNodes.length > 0) {
+      if (title && content.firstChild && def.childNodes.length === 1) {
         void def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
         for (const ref of refs.take(identifier, Infinity)) {
@@ -90,7 +91,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
           {
             href: `#${refId}`,
             rel: 'noopener',
-            title: content.childNodes.length > 0 && ref.hasAttribute('data-alias')
+            title: content.firstChild && ref.hasAttribute('data-alias')
               ? title
               : void 0,
           },

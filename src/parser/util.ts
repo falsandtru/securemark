@@ -147,16 +147,16 @@ export function suppress(target: HTMLOListElement | DocumentFragment): HTMLOList
     assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
     void apply(target, '.footnote > sup:last-child > a', { href: null });
   }
-  for (let i = 0, { children } = target, len = children.length; i < len; ++i) {
-    const child = children[i];
-    switch (child.tagName) {
+  for (let es = target.children, i = 0, len = es.length; i < len; ++i) {
+    const el = es[i];
+    switch (el.tagName) {
       case 'DL':
-        assert.deepStrictEqual([...child.querySelectorAll('dt')], [...child.querySelectorAll(':scope > dt')]);
-        assert.deepStrictEqual([...child.querySelectorAll(':scope > dt')], [...child.querySelectorAll(':scope > dt[id]')]);
-        void apply(child, 'dt', { id: null });
+        assert.deepStrictEqual([...el.querySelectorAll('dt')], [...el.querySelectorAll(':scope > dt')]);
+        assert.deepStrictEqual([...el.querySelectorAll(':scope > dt')], [...el.querySelectorAll(':scope > dt[id]')]);
+        void apply(el, 'dt', { id: null });
         continue;
       default:
-        child.id && void define(child, { id: null });
+        el.id && void define(el, { id: null });
         continue;
     }
   }
