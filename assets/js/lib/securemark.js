@@ -550,14 +550,22 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.uncurry = exports.curry = void 0;
             const global_1 = _dereq_('./global');
-            exports.curry = f => apply(f);
-            function apply(f, ...xs) {
+            const array_1 = _dereq_('./array');
+            exports.curry = f => curry_(f, f.length);
+            function curry_(f, len, ...xs) {
                 let g;
-                return xs.length < f.length ? (y, ...ys) => apply(g = g || f.bind(global_1.undefined, ...xs), y, ...ys) : f(...xs);
+                return xs.length < len ? (...ys) => curry_(g = g || xs.length && f.bind(global_1.undefined, ...xs) || f, len - xs.length, ...ys) : f(...xs);
             }
-            exports.uncurry = f => (...xs) => f.length === 0 ? f(...xs) : xs.reduce((f, x) => f(x), f);
+            exports.uncurry = f => uncurry_(f);
+            function uncurry_(f) {
+                const len = f.length;
+                return (...xs) => len === 0 || xs.length <= len ? f(...xs) : uncurry_(f(...array_1.shift(xs, len)[0]))(...xs);
+            }
         },
-        { './global': 12 }
+        {
+            './array': 6,
+            './global': 12
+        }
     ],
     11: [
         function (_dereq_, module, exports) {
@@ -566,7 +574,7 @@ require = function () {
             exports.flip = void 0;
             const curry_1 = _dereq_('./curry');
             function flip(f) {
-                return curry_1.curry((b, a) => f.length > 1 ? f(a, b) : f(a)(b));
+                return f.length > 1 ? curry_1.curry((b, a) => f(a, b)) : curry_1.curry((b, a) => f(a)(b));
             }
             exports.flip = flip;
         },
