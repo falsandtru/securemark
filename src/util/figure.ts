@@ -77,7 +77,7 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, foo
     assert(!void def.setAttribute('data-number', number));
     const figid = isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     void def.setAttribute('id', `label:${figid}`);
-    const figindex = group === '$' ? `(${number})` : `${capitalize(group)}. ${number}`;
+    const figindex = group === '$' ? `(${number})` : `${capitalize(group)} ${number}`;
     void define(
       def.querySelector(':scope > .figindex')!,
       group === '$' ? figindex : `${figindex}. `);

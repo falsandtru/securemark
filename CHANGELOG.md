@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.150.0
+
+- Change the format of figure numbers.
+
 ## 0.149.1
 
 - Fix media, template, and url parsers to correctly parse contained text.
