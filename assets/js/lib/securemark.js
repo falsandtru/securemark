@@ -5338,17 +5338,56 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.template = void 0;
-            const inline_1 = _dereq_('../inline');
             const combinator_1 = _dereq_('../../combinator');
+            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(inline_1.inline, '}'), '}}', true), source => [
+            const array_1 = _dereq_('spica/array');
+            exports.template = combinator_1.lazy(() => combinator_1.creator(combinator_1.rewrite(combinator_1.surround('{{', combinator_1.some(combinator_1.union([
+                bracket,
+                source_1.escsource
+            ]), '}'), '}}', true), source => [
                 [typed_dom_1.html('span', { class: 'template' }, source)],
                 ''
+            ])));
+            const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
+                combinator_1.surround(source_1.char('('), combinator_1.some(combinator_1.union([
+                    bracket,
+                    source_1.str(/^(?:\\[^\s\S]?|[^\)([{<"\\])+/)
+                ])), source_1.char(')'), true, void 0, ([as, bs = []], rest) => [
+                    array_1.unshift(as, bs),
+                    rest
+                ]),
+                combinator_1.surround(source_1.char('['), combinator_1.some(combinator_1.union([
+                    bracket,
+                    source_1.str(/^(?:\\[^\s\S]?|[^\]([{<"\\])+/)
+                ])), source_1.char(']'), true, void 0, ([as, bs = []], rest) => [
+                    array_1.unshift(as, bs),
+                    rest
+                ]),
+                combinator_1.surround(source_1.char('{'), combinator_1.some(combinator_1.union([
+                    bracket,
+                    source_1.str(/^(?:\\[^\s\S]?|[^\}([{<"\\])+/)
+                ])), source_1.char('}'), true, void 0, ([as, bs = []], rest) => [
+                    array_1.unshift(as, bs),
+                    rest
+                ]),
+                combinator_1.surround(source_1.char('<'), combinator_1.some(combinator_1.union([
+                    bracket,
+                    source_1.str(/^(?:\\[^\s\S]?|[^\>([{<"\\])+/)
+                ])), source_1.char('>'), true, void 0, ([as, bs = []], rest) => [
+                    array_1.unshift(as, bs),
+                    rest
+                ]),
+                combinator_1.surround(source_1.char('"'), source_1.str(/^(?:\\[^\n]?|[^\n"])+/), source_1.char('"'), true, void 0, ([as, bs = []], rest) => [
+                    array_1.unshift(as, bs),
+                    rest
+                ])
             ])));
         },
         {
             '../../combinator': 28,
-            '../inline': 79,
+            '../source': 117,
+            'spica/array': 6,
             'typed-dom': 21
         }
     ],
