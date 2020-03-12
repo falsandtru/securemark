@@ -2769,7 +2769,7 @@ require = function () {
                                 return yield;
                         }
                     }
-                    for (let refuse = pairs.splice(index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
+                    for (let refuse = array_1.splice(pairs, index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
                         const es = refuse[i][1];
                         if (es.length === 0)
                             continue;
@@ -3617,7 +3617,7 @@ require = function () {
                 source_1.str(/^>+(?!>)(?=\S+\s*$)/),
                 combinator_1.union([
                     combinator_1.focus(/^[A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*(?=\s*$)/, combinator_1.convert(source => `{ ${ source } }`, inline_1.link)),
-                    combinator_1.focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, combinator_1.convert(source => `{ ${ inline_1.address(source) }${ inline_1.attribute(source) } }`, inline_1.link))
+                    combinator_1.focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, combinator_1.convert(inline_1.url2link, inline_1.link))
                 ])
             ]), ([sym, link]) => [typed_dom_1.define(link, {
                     class: 'address',
@@ -3872,16 +3872,10 @@ require = function () {
                     return url_1.url;
                 }
             });
-            Object.defineProperty(exports, 'address', {
+            Object.defineProperty(exports, 'url2link', {
                 enumerable: true,
                 get: function () {
-                    return url_1.address;
-                }
-            });
-            Object.defineProperty(exports, 'attribute', {
-                enumerable: true,
-                get: function () {
-                    return url_1.attribute;
+                    return url_1.url2link;
                 }
             });
             var indexer_1 = _dereq_('./inline/extension/indexer');
@@ -4129,7 +4123,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.attribute = exports.address = exports.url = void 0;
+            exports.url2link = exports.url = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
@@ -4140,7 +4134,7 @@ require = function () {
             ], combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.some(combinator_1.union([
                 bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ])))), combinator_1.convert(source => `{ ${ address(source) }${ attribute(source) } }`, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
+            ])))), combinator_1.convert(url2link, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
@@ -4160,14 +4154,10 @@ require = function () {
                 ]), /^[\s\>]/), '>', true),
                 combinator_1.surround('"', combinator_1.some(source_1.unescsource, /^[\s"]+/), '"', true)
             ])));
-            function address(source) {
-                return source.slice(0, 3) === 'ttp' ? `h${ source }` : source;
+            function url2link(source) {
+                return source.slice(0, 3) === 'ttp' ? `{ h${ source } nofollow }` : `{ ${ source } }`;
             }
-            exports.address = address;
-            function attribute(source) {
-                return source.slice(0, 3) === 'ttp' ? ' nofollow' : '';
-            }
-            exports.attribute = attribute;
+            exports.url2link = url2link;
         },
         {
             '../../../combinator': 28,
@@ -5298,7 +5288,7 @@ require = function () {
             exports.shortmedia = combinator_1.rewrite(combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
-            }, combinator_1.open('!', url_1.url)), combinator_1.convert(source => `!{ ${ url_1.address(source.slice(1)) }${ url_1.attribute(source.slice(1)) } }`, combinator_1.union([media_1.media])));
+            }, combinator_1.open('!', url_1.url)), combinator_1.convert(source => `!${ url_1.url2link(source.slice(1)) }`, combinator_1.union([media_1.media])));
         },
         {
             '../../combinator': 28,
