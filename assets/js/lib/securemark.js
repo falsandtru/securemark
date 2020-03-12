@@ -6605,7 +6605,7 @@ require = function () {
                     void numbers.set(group, number);
                     const figid = inline_1.isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
                     void def.setAttribute('id', `label:${ figid }`);
-                    const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }. ${ number }`;
+                    const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) } ${ number }`;
                     void typed_dom_1.define(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.take(figid, global_1.Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
                         if (ref.hash.slice(1) === def.id && ref.textContent === figindex)
