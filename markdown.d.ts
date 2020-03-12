@@ -479,9 +479,33 @@ export namespace MarkdownParser {
       // {{abc}}
       Inline<'template'>,
       Parser<HTMLSpanElement, [
-        SourceParser.CharParser,
-        InlineParser,
+        TemplateParser.BracketParser,
+        SourceParser.EscapableSourceParser,
       ], Context> {
+    }
+    export namespace TemplateParser {
+      export interface BracketParser extends
+        Inline<'template/bracket'>,
+        Parser<string, [
+          Parser<string, [
+            BracketParser,
+            SourceParser.StrParser,
+          ], Context>,
+          Parser<string, [
+            BracketParser,
+            SourceParser.StrParser,
+          ], Context>,
+          Parser<string, [
+            BracketParser,
+            SourceParser.StrParser,
+          ], Context>,
+          Parser<string, [
+            BracketParser,
+            SourceParser.StrParser,
+          ], Context>,
+          SourceParser.StrParser,
+        ], Context> {
+      }
     }
     export interface ExtensionParser extends
       // [#abc]

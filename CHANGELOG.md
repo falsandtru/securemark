@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.149.0
+
+- Change template parser not to parse contained text as Markdown.
+
 ## 0.148.8
 
 - Refactoring.
