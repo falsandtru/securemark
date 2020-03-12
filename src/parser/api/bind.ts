@@ -5,7 +5,7 @@ import { block } from '../block';
 import { normalize } from './normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
-import { push } from 'spica/array';
+import { push, splice } from 'spica/array';
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { footnotes }: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
@@ -51,7 +51,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
         if (rev !== revision) return yield;
       }
     }
-    for (let refuse = pairs.splice(index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
+    for (let refuse = splice(pairs, index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
       assert(rev === revision);
       const es = refuse[i][1];
       if (es.length === 0) continue;
