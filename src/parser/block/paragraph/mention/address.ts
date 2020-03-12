@@ -1,6 +1,6 @@
 import { ParagraphParser } from '../../../block';
 import { union, sequence, line, focus, creator, fmap, convert } from '../../../../combinator';
-import { link, address as addr, attribute as attr } from '../../../inline';
+import { link, url2link } from '../../../inline';
 import { str } from '../../../source';
 import { define } from 'typed-dom';
 
@@ -9,7 +9,7 @@ export const address: ParagraphParser.MentionParser.AddressParser = line(creator
     str(/^>+(?!>)(?=\S+\s*$)/),
     union([
       focus(/^[A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*(?=\s*$)/, convert(source => `{ ${source} }`, link)),
-      focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, convert(source => `{ ${addr(source)}${attr(source)} }`, link)),
+      focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, convert(url2link, link)),
     ]),
   ]),
   ([sym, link]: [string, HTMLAnchorElement]) => [

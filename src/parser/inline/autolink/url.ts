@@ -10,7 +10,7 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     str(/^h?ttps?:\/\/(?=[^/?#\s])/),
     some(union([bracket, some(unescsource, closer)])))),
   convert(
-    source => `{ ${address(source)}${attribute(source)} }`,
+    url2link,
     context({ syntax: { inline: { link: void 0 } } },
     union([link])))));
 
@@ -22,14 +22,8 @@ const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(union
   surround('"', some(unescsource, /^[\s"]+/), '"', true),
 ])));
 
-export function address(source: string): string {
+export function url2link(source: string): string {
   return source.slice(0, 3) === 'ttp'
-    ? `h${source}`
-    : source;
-}
-
-export function attribute(source: string): string {
-  return source.slice(0, 3) === 'ttp'
-    ? ' nofollow'
-    : '';
+    ? `{ h${source} nofollow }`
+    : `{ ${source} }`;
 }

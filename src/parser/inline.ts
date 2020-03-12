@@ -80,7 +80,7 @@ export { link } from './inline/link';
 export { media } from './inline/media';
 export { shortmedia } from './inline/shortmedia';
 export { autolink } from './inline/autolink';
-export { url, address, attribute } from './inline/autolink/url';
+export { url, url2link } from './inline/autolink/url';
 export { indexer } from './inline/extension/indexer';
 export { indexee } from './inline/extension/indexee';
 export { isFixed, isFormatted } from './inline/extension/label';
