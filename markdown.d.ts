@@ -489,21 +489,17 @@ export namespace MarkdownParser {
         Parser<string, [
           Parser<string, [
             BracketParser,
-            SourceParser.StrParser,
+            SourceParser.EscapableSourceParser,
           ], Context>,
           Parser<string, [
             BracketParser,
-            SourceParser.StrParser,
+            SourceParser.EscapableSourceParser,
           ], Context>,
           Parser<string, [
             BracketParser,
-            SourceParser.StrParser,
+            SourceParser.EscapableSourceParser,
           ], Context>,
-          Parser<string, [
-            BracketParser,
-            SourceParser.StrParser,
-          ], Context>,
-          SourceParser.StrParser,
+          SourceParser.EscapableSourceParser,
         ], Context> {
       }
     }
@@ -643,24 +639,20 @@ export namespace MarkdownParser {
       export namespace TextParser {
         export interface BracketParser extends
           Inline<'media/text/bracket'>,
-          Parser<string, [
-            Parser<string, [
+          Parser<HTMLElement | string, [
+            Parser<HTMLElement | string, [
               BracketParser,
-              SourceParser.StrParser,
+              SourceParser.TextParser,
             ], Context>,
-            Parser<string, [
+            Parser<HTMLElement | string, [
               BracketParser,
-              SourceParser.StrParser,
+              SourceParser.TextParser,
             ], Context>,
-            Parser<string, [
+            Parser<HTMLElement | string, [
               BracketParser,
-              SourceParser.StrParser,
+              SourceParser.TextParser,
             ], Context>,
-            Parser<string, [
-              BracketParser,
-              SourceParser.StrParser,
-            ], Context>,
-            SourceParser.StrParser,
+            SourceParser.TextParser,
           ], Context> {
         }
       }
@@ -809,21 +801,21 @@ export namespace MarkdownParser {
           Parser<string, [
             Parser<string, [
               BracketParser,
-              SourceParser.StrParser,
+              SourceParser.UnescapableSourceParser,
             ], Context>,
             Parser<string, [
               BracketParser,
-              SourceParser.StrParser,
+              SourceParser.UnescapableSourceParser,
             ], Context>,
             Parser<string, [
               BracketParser,
-              SourceParser.StrParser,
+              SourceParser.UnescapableSourceParser,
             ], Context>,
             Parser<string, [
               BracketParser,
-              SourceParser.StrParser,
+              SourceParser.UnescapableSourceParser,
             ], Context>,
-            SourceParser.StrParser,
+            SourceParser.UnescapableSourceParser,
           ], Context> {
         }
       }

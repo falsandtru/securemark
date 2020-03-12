@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.149.1
+
+- Fix media, template, and url parsers to correctly parse contained text.
+
 ## 0.149.0
 
 - Change template parser not to parse contained text as Markdown.

@@ -4,7 +4,7 @@ import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, fmap, bind, surround, open, lazy } from '../../combinator';
 import { dup } from '../util';
 import { link, attributes, uri, attribute } from './link';
-import { text, str, char } from '../source';
+import { text, char } from '../source';
 import { makeAttrs } from './html';
 import { html, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
@@ -19,7 +19,7 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
   guard(context => (context.syntax?.inline?.link ?? true) && (context.syntax?.inline?.media ?? true),
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   tails([
-    dup(surround(/^\[(?!\s)/, some(union([bracket, some(text, /^(?:\\?\n|[\]([{<"])/)]), ']'), ']', true)),
+    dup(surround(/^\[(?!\s)/, some(union([bracket, text]), /^(?:\\?\n|\])/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
   ])))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
@@ -47,9 +47,8 @@ export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind
   }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
-  surround(char('('), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)])), char(')'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('['), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\]([{<"\\])+/)])), char(']'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('{'), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\}([{<"\\])+/)])), char('}'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('<'), some(union([bracket, str(/^(?:\\[^\n]?|[^\n\>([{<"\\])+/)])), char('>'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('"'), str(/^(?:\\[^\n]?|[^\n"])+/), char('"'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('('), some(union([bracket, text]), /^(?:\\?\n|\))/), char(')'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('['), some(union([bracket, text]), /^(?:\\?\n|\])/), char(']'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('{'), some(union([bracket, text]), /^(?:\\?\n|\})/), char('}'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('"'), some(text, /^(?:\\?\n|")/), char('"'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ])));
