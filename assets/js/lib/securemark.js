@@ -4144,21 +4144,21 @@ require = function () {
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^[^\s\)([{<"]+/)
-                ])), ')', true),
+                    source_1.unescsource
+                ]), /^[\s\)]/), ')', true),
                 combinator_1.surround('[', combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^[^\s\]([{<"]+/)
-                ])), ']', true),
+                    source_1.unescsource
+                ]), /^[\s\]]/), ']', true),
                 combinator_1.surround('{', combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^[^\s\}([{<"]+/)
-                ])), '}', true),
+                    source_1.unescsource
+                ]), /^[\s\}]/), '}', true),
                 combinator_1.surround('<', combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^[^\s\>([{<"]+/)
-                ])), '>', true),
-                combinator_1.surround('"', source_1.str(/^[\s"]+/), '"', true)
+                    source_1.unescsource
+                ]), /^[\s\>]/), '>', true),
+                combinator_1.surround('"', combinator_1.some(source_1.unescsource, /^[\s"]+/), '"', true)
             ])));
             function address(source) {
                 return source.slice(0, 3) === 'ttp' ? `h${ source }` : source;
@@ -5075,8 +5075,8 @@ require = function () {
             }, combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.tails([
                 util_1.dup(combinator_1.surround(/^\[(?!\s)/, combinator_1.some(combinator_1.union([
                     bracket,
-                    combinator_1.some(source_1.text, /^(?:\\?\n|[\]([{<"])/)
-                ]), ']'), ']', true)),
+                    source_1.text
+                ]), /^(?:\\?\n|\])/), ']', true)),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(link_1.attribute)
@@ -5107,33 +5107,26 @@ require = function () {
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround(source_1.char('('), combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^(?:\\[^\n]?|[^\n\)([{<"\\])+/)
-                ])), source_1.char(')'), true, void 0, ([as, bs = []], rest) => [
+                    source_1.text
+                ]), /^(?:\\?\n|\))/), source_1.char(')'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround(source_1.char('['), combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^(?:\\[^\n]?|[^\n\]([{<"\\])+/)
-                ])), source_1.char(']'), true, void 0, ([as, bs = []], rest) => [
+                    source_1.text
+                ]), /^(?:\\?\n|\])/), source_1.char(']'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround(source_1.char('{'), combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^(?:\\[^\n]?|[^\n\}([{<"\\])+/)
-                ])), source_1.char('}'), true, void 0, ([as, bs = []], rest) => [
+                    source_1.text
+                ]), /^(?:\\?\n|\})/), source_1.char('}'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround(source_1.char('<'), combinator_1.some(combinator_1.union([
-                    bracket,
-                    source_1.str(/^(?:\\[^\n]?|[^\n\>([{<"\\])+/)
-                ])), source_1.char('>'), true, void 0, ([as, bs = []], rest) => [
-                    array_1.unshift(as, bs),
-                    rest
-                ]),
-                combinator_1.surround(source_1.char('"'), source_1.str(/^(?:\\[^\n]?|[^\n"])+/), source_1.char('"'), true, void 0, ([as, bs = []], rest) => [
+                combinator_1.surround(source_1.char('"'), combinator_1.some(source_1.text, /^(?:\\?\n|")/), source_1.char('"'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
@@ -5368,33 +5361,26 @@ require = function () {
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround(source_1.char('('), combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^(?:\\[^\s\S]?|[^\)([{<"\\])+/)
-                ])), source_1.char(')'), true, void 0, ([as, bs = []], rest) => [
+                    source_1.escsource
+                ]), ')'), source_1.char(')'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround(source_1.char('['), combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^(?:\\[^\s\S]?|[^\]([{<"\\])+/)
-                ])), source_1.char(']'), true, void 0, ([as, bs = []], rest) => [
+                    source_1.escsource
+                ]), ']'), source_1.char(']'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround(source_1.char('{'), combinator_1.some(combinator_1.union([
                     bracket,
-                    source_1.str(/^(?:\\[^\s\S]?|[^\}([{<"\\])+/)
-                ])), source_1.char('}'), true, void 0, ([as, bs = []], rest) => [
+                    source_1.escsource
+                ]), '}'), source_1.char('}'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround(source_1.char('<'), combinator_1.some(combinator_1.union([
-                    bracket,
-                    source_1.str(/^(?:\\[^\s\S]?|[^\>([{<"\\])+/)
-                ])), source_1.char('>'), true, void 0, ([as, bs = []], rest) => [
-                    array_1.unshift(as, bs),
-                    rest
-                ]),
-                combinator_1.surround(source_1.char('"'), source_1.str(/^(?:\\[^\n]?|[^\n"])+/), source_1.char('"'), true, void 0, ([as, bs = []], rest) => [
+                combinator_1.surround(source_1.char('"'), combinator_1.some(source_1.escsource, /^(?:\\?\n|")/), source_1.char('"'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
