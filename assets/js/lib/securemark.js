@@ -5117,7 +5117,7 @@ require = function () {
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround(source_1.char('"'), source_1.str(/^(?:\\[^\n]?|[^\n([{<"\\])+/), source_1.char('"'), true, void 0, ([as, bs = []], rest) => [
+                combinator_1.surround(source_1.char('"'), source_1.str(/^(?:\\[^\n]?|[^\n"])+/), source_1.char('"'), true, void 0, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
