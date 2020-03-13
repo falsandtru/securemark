@@ -5211,7 +5211,7 @@ require = function () {
                     ];
                 default:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag(array_1.unshift([array_1.join(texts, ' ')], rubies.length === 0 ? [] : [
+                        [typed_dom_1.html('ruby', util_1.defrag(array_1.unshift([array_1.join(texts, ' ')], [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', array_1.join(rubies, ' ')),
                                 typed_dom_1.html('rp', ')')
