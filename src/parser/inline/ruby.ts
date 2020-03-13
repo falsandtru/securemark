@@ -29,16 +29,10 @@ export const ruby: RubyParser = lazy(() => creator(bind(
                 : [html('rt')] as typeof acc))
           , [])))], rest];
       default:
-        return [[
-          html('ruby', defrag(unshift<HTMLElement | string>(
-            [join(texts, ' ')],
-            rubies.length === 0
-              ? []
-              : [
-                  html('rp', '('),
-                  html('rt', join(rubies, ' ')),
-                  html('rp', ')'),
-                ])))
+        assert(rubies.length > 0);
+        return [[html('ruby', defrag(unshift<HTMLElement | string>(
+          [join(texts, ' ')],
+          [html('rp', '('), html('rt', join(rubies, ' ')), html('rp', ')')])))
         ], rest];
     }
   })));
