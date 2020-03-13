@@ -4154,8 +4154,8 @@ require = function () {
                 ]), /^[\s\>]/), '>', true),
                 combinator_1.surround('"', combinator_1.some(source_1.unescsource, /^[\s"]+/), '"', true)
             ])));
-            function url2link(source) {
-                return source.slice(0, 3) === 'ttp' ? `{ h${ source } nofollow }` : `{ ${ source } }`;
+            function url2link(url) {
+                return url[0] === 'h' ? `{ ${ url } }` : `{ h${ url } nofollow }`;
             }
             exports.url2link = url2link;
         },
