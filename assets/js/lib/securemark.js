@@ -664,13 +664,6 @@ require = function () {
             const global_1 = _dereq_('./global');
             const alias_1 = _dereq_('./alias');
             const array_1 = _dereq_('./array');
-            var State;
-            (function (State) {
-                State[State['pending'] = 0] = 'pending';
-                State[State['resolved'] = 1] = 'resolved';
-                State[State['fulfilled'] = 2] = 'fulfilled';
-                State[State['rejected'] = 3] = 'rejected';
-            }(State || (State = {})));
             class Internal {
                 constructor() {
                     this.status = { state: 0 };
@@ -1098,12 +1091,6 @@ require = function () {
                 }
             });
             var dom_1 = _dereq_('./src/util/dom');
-            Object.defineProperty(exports, 'NS', {
-                enumerable: true,
-                get: function () {
-                    return dom_1.NS;
-                }
-            });
             Object.defineProperty(exports, 'shadow', {
                 enumerable: true,
                 get: function () {
@@ -1291,13 +1278,6 @@ require = function () {
             const identity_1 = _dereq_('./identity');
             const dom_1 = _dereq_('../util/dom');
             const array_1 = _dereq_('spica/array');
-            var ElChildrenType;
-            (function (ElChildrenType) {
-                ElChildrenType[ElChildrenType['Void'] = 0] = 'Void';
-                ElChildrenType[ElChildrenType['Text'] = 1] = 'Text';
-                ElChildrenType[ElChildrenType['Array'] = 2] = 'Array';
-                ElChildrenType[ElChildrenType['Record'] = 3] = 'Record';
-            }(ElChildrenType || (ElChildrenType = {})));
             const proxies = new global_1.WeakMap();
             function proxy(el) {
                 const proxy = proxies.get(el);
@@ -1586,15 +1566,10 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = exports.NS = void 0;
+            exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const memoize_1 = _dereq_('spica/memoize');
-            var NS;
-            (function (NS) {
-                NS['HTML'] = 'HTML';
-                NS['SVG'] = 'SVG';
-            }(NS = exports.NS || (exports.NS = {})));
             var caches;
             (function (caches) {
                 caches.shadows = new WeakMap();
