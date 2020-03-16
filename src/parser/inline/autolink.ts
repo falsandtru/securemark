@@ -15,12 +15,15 @@ export const autolink: AutolinkParser = fmap(
   some(union([
     url,
     email,
+    // Escape unmatched email-like strings.
     str(/^[A-Za-z0-9]+(?:[.+_-][A-Za-z0-9]+)*(?:@(?:[A-Za-z0-9]+(?:[.-][A-Za-z0-9]+)*)?)+/),
+    // Escape repeated symbols.
     str(/^[@#]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
     channel,
     account,
+    // Escape invalid leading characters.
+    str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
     hashtag,
     hashref,
-    str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);
