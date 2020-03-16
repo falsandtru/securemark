@@ -1,5 +1,5 @@
 export interface Ctx {
-  readonly resource?: {
+  readonly resources?: {
     creation: number;
   };
 }

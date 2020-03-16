@@ -6,12 +6,12 @@ export function creator(cost: number | Parser<unknown>, parser?: Parser<unknown>
   if (typeof cost === 'function') return creator(1, cost);
   assert(cost > 0);
   return (source, context) => {
-    const { resource } = context;
-    if (resource && resource.creation < 0) throw new Error('Too many creations');
+    const { resources } = context;
+    if (resources && resources.creation < 0) throw new Error('Too many creations');
     const result = parser!(source, context);
-    if (result && resource) {
-      resource.creation -= cost;
-      assert(Object.getPrototypeOf(resource).creation % 10 === 0);
+    if (result && resources) {
+      resources.creation -= cost;
+      assert(Object.getPrototypeOf(resources).creation % 10 === 0);
     }
     return result;
   };

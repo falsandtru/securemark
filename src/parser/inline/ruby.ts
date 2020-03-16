@@ -38,13 +38,13 @@ export const ruby: RubyParser = lazy(() => creator(bind(
   })));
 
 const text: RubyParser.TextParser = creator((source, context) => {
-  const { resource } = context;
+  const { resources } = context;
   const next = /[\s\\&]/;
   const acc = [''];
   let printable = false;
   while (source !== '') {
     assert(source[0] !== '\n');
-    resource && void --resource.creation;
+    resources && void --resources.creation;
     const i = source.search(next);
     switch (i) {
       case -1:

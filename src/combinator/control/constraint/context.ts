@@ -30,7 +30,7 @@ export function context<T extends unknown, D extends Parser<unknown, any, C>[], 
 
 const merge = template((prop, target, source) => {
   switch (prop) {
-    case 'resource':
+    case 'resources':
       assert(typeof source[prop] === 'object');
       return prop in target
         ? target[prop]
