@@ -1104,16 +1104,16 @@ require = function () {
                     return dom_1.NS;
                 }
             });
-            Object.defineProperty(exports, 'frag', {
-                enumerable: true,
-                get: function () {
-                    return dom_1.frag;
-                }
-            });
             Object.defineProperty(exports, 'shadow', {
                 enumerable: true,
                 get: function () {
                     return dom_1.shadow;
+                }
+            });
+            Object.defineProperty(exports, 'frag', {
+                enumerable: true,
+                get: function () {
+                    return dom_1.frag;
                 }
             });
             Object.defineProperty(exports, 'html', {
@@ -1293,10 +1293,10 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             var ElChildrenType;
             (function (ElChildrenType) {
-                ElChildrenType.Void = 'void';
-                ElChildrenType.Text = 'text';
-                ElChildrenType.Array = 'array';
-                ElChildrenType.Record = 'record';
+                ElChildrenType[ElChildrenType['Void'] = 0] = 'Void';
+                ElChildrenType[ElChildrenType['Text'] = 1] = 'Text';
+                ElChildrenType[ElChildrenType['Array'] = 2] = 'Array';
+                ElChildrenType[ElChildrenType['Record'] = 3] = 'Record';
             }(ElChildrenType || (ElChildrenType = {})));
             const proxies = new global_1.WeakMap();
             function proxy(el) {
@@ -1315,19 +1315,19 @@ require = function () {
                     this.id_ = '';
                     this.query_ = '';
                     this.isPartialUpdate = false;
-                    this.isInitialization = true;
+                    this.isInit = true;
                     switch (true) {
                     case children_ === global_1.undefined:
-                        this.type = ElChildrenType.Void;
+                        this.type = 0;
                         break;
                     case typeof children_ === 'string':
-                        this.type = ElChildrenType.Text;
+                        this.type = 1;
                         break;
                     case alias_1.isArray(children_):
-                        this.type = ElChildrenType.Array;
+                        this.type = 2;
                         break;
                     case children_ && typeof children_ === 'object':
-                        this.type = ElChildrenType.Record;
+                        this.type = 3;
                         break;
                     default:
                         throw new Error(`TypedDOM: Invalid type children.`);
@@ -1335,26 +1335,26 @@ require = function () {
                     throwErrorIfNotUsable(this);
                     proxies.set(this.element, this);
                     switch (this.type) {
-                    case ElChildrenType.Void:
-                        this.isInitialization = false;
+                    case 0:
+                        this.isInit = false;
                         return;
-                    case ElChildrenType.Text:
+                    case 1:
                         dom_1.define(this.container, []);
                         this.children_ = this.container.appendChild(dom_1.text(''));
                         this.children = children_;
-                        this.isInitialization = false;
+                        this.isInit = false;
                         return;
-                    case ElChildrenType.Array:
+                    case 2:
                         dom_1.define(this.container, []);
                         this.children_ = [];
                         this.children = children_;
-                        this.isInitialization = false;
+                        this.isInit = false;
                         return;
-                    case ElChildrenType.Record:
+                    case 3:
                         dom_1.define(this.container, []);
                         this.children_ = this.observe(Object.assign({}, children_));
                         this.children = children_;
-                        this.isInitialization = false;
+                        this.isInit = false;
                         return;
                     default:
                         throw new Error(`TypedDOM: Unreachable code.`);
@@ -1420,14 +1420,18 @@ require = function () {
                 }
                 scope(child) {
                     const style = child.element;
-                    if (style.tagName !== 'STYLE')
+                    switch (false) {
+                    case 'type' in style:
+                    case 'media' in style:
+                    case style.tagName === 'STYLE':
                         return;
+                    }
                     const target = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
                     const html = style.innerHTML;
                     if (html.search(target) === -1)
                         return;
                     const query = this.query;
-                    if (query.includes('<'))
+                    if (!/^[:#.][\w-]+$/.test(query))
                         return;
                     style.innerHTML = html.replace(target, (_, frag, space) => `${ frag }${ space }${ query }`);
                     if (!style.firstElementChild)
@@ -1438,7 +1442,7 @@ require = function () {
                 }
                 get children() {
                     switch (this.type) {
-                    case ElChildrenType.Text:
+                    case 1:
                         if (this.children_.parentNode !== this.container) {
                             this.children_ = global_1.undefined;
                             for (let ns = this.container.childNodes, i = 0, len = ns.length; i < len; ++i) {
@@ -1459,10 +1463,10 @@ require = function () {
                     const addedChildren = [];
                     let isChanged = false;
                     switch (this.type) {
-                    case ElChildrenType.Void:
+                    case 0:
                         return;
-                    case ElChildrenType.Text: {
-                            if (!this.isInitialization && children === this.children)
+                    case 1: {
+                            if (!this.isInit && children === this.children)
                                 return;
                             const targetChildren = this.children_;
                             const oldText = targetChildren.data;
@@ -1476,7 +1480,7 @@ require = function () {
                             }));
                             return;
                         }
-                    case ElChildrenType.Array: {
+                    case 2: {
                             const sourceChildren = children;
                             const targetChildren = [];
                             this.children_ = targetChildren;
@@ -1497,7 +1501,6 @@ require = function () {
                                 }
                                 targetChildren.push(newChild);
                             }
-                            alias_1.ObjectFreeze(targetChildren);
                             for (let i = nodeChildren.length; sourceChildren.length < i--;) {
                                 const el = nodeChildren[sourceChildren.length];
                                 if (!proxies.has(el))
@@ -1507,21 +1510,21 @@ require = function () {
                             }
                             break;
                         }
-                    case ElChildrenType.Record: {
+                    case 3: {
                             const sourceChildren = children;
                             const targetChildren = this.children_;
                             for (const name of alias_1.ObjectKeys(targetChildren)) {
                                 const oldChild = targetChildren[name];
                                 const newChild = sourceChildren[name];
-                                if (!this.isInitialization && newChild === oldChild)
+                                if (!this.isInit && newChild === oldChild)
                                     continue;
                                 if (newChild.element.parentNode !== this.container) {
                                     throwErrorIfNotUsable(newChild);
                                 }
-                                if (this.isInitialization || newChild !== oldChild && newChild.element.parentNode !== oldChild.element.parentNode) {
+                                if (this.isInit || newChild !== oldChild && newChild.element.parentNode !== oldChild.element.parentNode) {
                                     this.scope(newChild);
                                     addedChildren.push(newChild);
-                                    if (!this.isInitialization) {
+                                    if (!this.isInit) {
                                         let i = 0;
                                         i = removedChildren.lastIndexOf(newChild);
                                         i > -1 && array_1.splice(removedChildren, i, 1);
@@ -1538,17 +1541,23 @@ require = function () {
                             break;
                         }
                     }
-                    for (const child of removedChildren) {
-                        child.element.dispatchEvent(new global_1.Event('disconnect', {
+                    if (removedChildren.length) {
+                        const ev = new global_1.Event('disconnect', {
                             bubbles: false,
                             cancelable: true
-                        }));
+                        });
+                        for (const {element} of removedChildren) {
+                            element.dispatchEvent(ev);
+                        }
                     }
-                    for (const child of addedChildren) {
-                        child.element.dispatchEvent(new global_1.Event('connect', {
+                    if (addedChildren.length) {
+                        const ev = new global_1.Event('connect', {
                             bubbles: false,
                             cancelable: true
-                        }));
+                        });
+                        for (const {element} of addedChildren) {
+                            element.dispatchEvent(ev);
+                        }
                     }
                     if (isChanged) {
                         this.element.dispatchEvent(new global_1.Event('change', {
@@ -1562,7 +1571,7 @@ require = function () {
             function throwErrorIfNotUsable({element}) {
                 if (!element.parentElement || !proxies.has(element.parentElement))
                     return;
-                throw new Error(`TypedDOM: Typed DOM children can't be used to another typed DOM.`);
+                throw new Error(`TypedDOM: Typed DOM children must not be used to another typed DOM.`);
             }
         },
         {
@@ -1577,35 +1586,33 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.define = exports.element = exports.text = exports.svg = exports.html = exports.shadow = exports.frag = exports.NS = void 0;
+            exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = exports.NS = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const memoize_1 = _dereq_('spica/memoize');
-            const curry_1 = _dereq_('spica/curry');
             var NS;
             (function (NS) {
                 NS['HTML'] = 'HTML';
                 NS['SVG'] = 'SVG';
             }(NS = exports.NS || (exports.NS = {})));
-            const shadows = new WeakMap();
             var caches;
             (function (caches) {
+                caches.shadows = new WeakMap();
                 caches.fragment = global_1.document.createDocumentFragment();
-                caches.element = memoize_1.memoize(context => memoize_1.memoize(curry_1.uncurry(curry_1.curry(elem)(context)), (ns, tag) => `${ ns }:${ tag }`), new WeakMap());
             }(caches || (caches = {})));
-            function frag(children) {
-                return defineChildren(caches.fragment.cloneNode(), children);
-            }
-            exports.frag = frag;
             function shadow(el, children, opts) {
                 if (typeof el === 'string')
                     return shadow(exports.html(el), children, opts);
                 if (children && !isChildren(children))
                     return shadow(el, global_1.undefined, children);
-                const root = opts === global_1.undefined ? el.shadowRoot || shadows.get(el) : opts.mode === 'open' ? el.shadowRoot || global_1.undefined : shadows.get(el);
-                return defineChildren(!opts || opts.mode === 'open' ? root || el.attachShadow(opts || { mode: 'open' }) : root || shadows.set(el, el.attachShadow(opts)).get(el), !root && children == global_1.undefined ? el.childNodes : children);
+                const root = opts === global_1.undefined ? el.shadowRoot || caches.shadows.get(el) : opts.mode === 'open' ? el.shadowRoot || global_1.undefined : caches.shadows.get(el);
+                return defineChildren(!opts || opts.mode === 'open' ? root || el.attachShadow(opts || { mode: 'open' }) : root || caches.shadows.set(el, el.attachShadow(opts)).get(el), !root && children == global_1.undefined ? el.childNodes : children);
             }
             exports.shadow = shadow;
+            function frag(children) {
+                return defineChildren(caches.fragment.cloneNode(true), children);
+            }
+            exports.frag = frag;
             exports.html = element(global_1.document, 'HTML');
             exports.svg = element(global_1.document, 'SVG');
             function text(source) {
@@ -1613,9 +1620,10 @@ require = function () {
             }
             exports.text = text;
             function element(context, ns) {
+                const cache = memoize_1.memoize(elem, (_, ns, tag) => `${ ns }:${ tag }`);
                 return element;
                 function element(tag, attrs, children) {
-                    const el = tag.includes('-') ? elem(context, ns, tag) : caches.element(context)(ns, tag).cloneNode(true);
+                    const el = tag.includes('-') ? elem(context, ns, tag) : cache(context, ns, tag).cloneNode(true);
                     return isChildren(attrs) ? defineChildren(el, attrs) : defineChildren(defineAttrs(el, attrs), children);
                 }
             }
@@ -1736,7 +1744,6 @@ require = function () {
         },
         {
             'spica/alias': 5,
-            'spica/curry': 10,
             'spica/global': 12,
             'spica/memoize': 13
         }
@@ -1948,7 +1955,7 @@ require = function () {
             exports.context = context;
             const merge = assign_1.template((prop, target, source) => {
                 switch (prop) {
-                case 'resource':
+                case 'resources':
                     return prop in target ? target[prop] : target[prop] = alias_1.ObjectCreate(source[prop]);
                 }
                 switch (type_1.type(source[prop])) {
@@ -2069,12 +2076,12 @@ require = function () {
                 if (typeof cost === 'function')
                     return creator(1, cost);
                 return (source, context) => {
-                    const {resource} = context;
-                    if (resource && resource.creation < 0)
+                    const {resources} = context;
+                    if (resources && resources.creation < 0)
                         throw new Error('Too many creations');
                     const result = parser(source, context);
-                    if (result && resource) {
-                        resource.creation -= cost;
+                    if (result && resources) {
+                        resources.creation -= cost;
                     }
                     return result;
                 };
@@ -2939,7 +2946,7 @@ require = function () {
             const paragraph_1 = _dereq_('./block/paragraph');
             const locale_1 = _dereq_('./locale');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.block = combinator_1.recover(locale_1.localize(combinator_1.update({ resource: { creation: 100 * 1000 } }, combinator_1.union([
+            exports.block = combinator_1.recover(locale_1.localize(combinator_1.update({ resources: { creation: 100 * 1000 } }, combinator_1.union([
                 line_1.emptyline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -3995,9 +4002,9 @@ require = function () {
                 source_1.str(/^[@#]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
                 channel_1.channel,
                 account_1.account,
+                source_1.str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
                 hashtag_1.hashtag,
-                hashref_1.hashref,
-                source_1.str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/)
+                hashref_1.hashref
             ])))), ns => ns.length === 1 ? ns : [util_1.stringify(ns)]);
         },
         {
@@ -4223,13 +4230,13 @@ require = function () {
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)(\s+\1>)?/, ([whole, , title, last]) => (rest, {resource}) => last ? [
+            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)(\s+\1>)?/, ([whole, , title, last]) => (rest, {resources}) => last ? [
                 [typed_dom_1.html('sup', {
                         class: 'comment',
                         title
                     })],
                 rest
-            ] : resource && void (resource.creation -= whole.match(/<#+\s/g).length))));
+            ] : resources && void (resources.creation -= whole.match(/<#+\s/g).length))));
         },
         {
             '../../combinator': 28,
@@ -5222,12 +5229,12 @@ require = function () {
             })));
             const text = combinator_1.creator((source, context) => {
                 var _a;
-                const {resource} = context;
+                const {resources} = context;
                 const next = /[\s\\&]/;
                 const acc = [''];
                 let printable = false;
                 while (source !== '') {
-                    resource && void --resource.creation;
+                    resources && void --resources.creation;
                     const i = source.search(next);
                     switch (i) {
                     case -1:
