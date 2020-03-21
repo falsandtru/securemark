@@ -76,6 +76,7 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('[[[a]]')), [['[', '<sup class="reference">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]')), [['[', '[', '<sup class="reference">a</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]]]')), [['<sup class="reference">[[a]]</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[[]{a}]]')), [['<sup class="reference"><a href="a" rel="noopener">a</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[(([a]{#}))]{#}')), [['<a href="#" rel="noopener">(([a]{#}))</a>'], '']);
       assert.deepStrictEqual(inspect(parser('<http://host>')), [['<', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', '>'], '']);
       assert.deepStrictEqual(inspect(parser('<sup><sub>a</sub>')), [['<', 'sup', '>', '<sub>a</sub>'], '']);
