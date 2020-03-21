@@ -2,6 +2,7 @@
 
 ## 0.151.0
 
+- Extend account syntax to be possible to clarify the namespace.
 - Change reference syntax to enable extension syntax.
 
 ## 0.150.0

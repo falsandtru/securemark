@@ -35,6 +35,8 @@ describe('Unit: parser/inline/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser('@a--b')), [['<a class="account" rel="noopener">@a</a>'], '--b']);
       assert.deepStrictEqual(inspect(parser('@http://host')), [['<a class="account" rel="noopener">@http</a>'], '://host']);
       assert.deepStrictEqual(inspect(parser('@ttp://host')), [['<a class="account" rel="noopener">@ttp</a>'], '://host']);
+      assert.deepStrictEqual(inspect(parser('@domain.com/a')), [['<a class="account" rel="noopener" data-ns="domain.com">@domain.com/a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@domain.co.jp/a')), [['<a class="account" rel="noopener" data-ns="domain.co.jp">@domain.co.jp/a</a>'], '']);
     });
 
   });
