@@ -11,9 +11,9 @@ export const reference: ReferenceParser = lazy(() => subline(creator(bind(surrou
   context({ syntax: { inline: {
     annotation: false,
     reference: false,
-    extension: false,
     media: false,
     // Redundant
+    //extension: true,
     //link: true,
     //autolink: true,
   }}, state: void 0 },

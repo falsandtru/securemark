@@ -11,6 +11,7 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, foo
     [
       ...target.querySelectorAll<HTMLAnchorElement>('a.label'),
       ...footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label') || [],
+      ...footnotes?.reference.querySelectorAll<HTMLAnchorElement>('a.label') || [],
     ]
       .filter(context(target))
       .map(el => [el.getAttribute('data-label')!, el]));

@@ -11,9 +11,9 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   context({ syntax: { inline: {
     annotation: false,
     reference: false,
-    extension: true,
     media: false,
     // Redundant
+    //extension: true,
     //link: true,
     //autolink: true,
   }}, state: void 0 },

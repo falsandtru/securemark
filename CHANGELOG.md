@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.151.0
+
+- Change reference syntax to enable extension syntax.
+
 ## 0.150.0
 
 - Change the format of figure numbers.
