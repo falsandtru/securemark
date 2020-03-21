@@ -18,7 +18,7 @@ export const autolink: AutolinkParser = fmap(
     // Escape unmatched email-like strings.
     str(/^[A-Za-z0-9]+(?:[.+_-][A-Za-z0-9]+)*(?:@(?:[A-Za-z0-9]+(?:[.-][A-Za-z0-9]+)*)?)+/),
     // Escape repeated symbols.
-    str(/^[@#]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
+    str(/^[@#]+(?![A-Za-z0-9]|[^\x00-\x7F\s])/),
     channel,
     account,
     // Escape invalid leading characters.
