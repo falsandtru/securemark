@@ -3,6 +3,7 @@
 ## 0.151.0
 
 - Change heading syntax to disable link, autolink, and extension syntax.
+- Change dlist syntax to disable link, autolink, and extension syntax.
 - Extend account syntax to be possible to clarify the namespace.
 - Change hashtag syntax to disallow strings starting with a number.
 - Change reference syntax to enable extension syntax.

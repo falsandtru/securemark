@@ -20,7 +20,13 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
 const term: DListParser.TermParser = line(indexee(fmap(
   open(
     /^~(?=$|\s)/,
-    trim(some(union([indexer, inline]))),
+    context({ syntax: { inline: {
+      link: false,
+      media: false,
+      autolink: false,
+      extension: false,
+    }}},
+    trim(some(union([indexer, inline])))),
     true),
   ns => [html('dt', defrag(ns))])));
 

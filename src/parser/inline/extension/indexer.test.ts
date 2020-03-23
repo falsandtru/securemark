@@ -14,7 +14,7 @@ describe('Unit: parser/inline/extension/indexer', () => {
       assert.deepStrictEqual(inspect(parser(' #a')), undefined);
       assert.deepStrictEqual(inspect(parser(' [#]')), undefined);
       assert.deepStrictEqual(inspect(parser(' [#]]')), undefined);
-      assert.deepStrictEqual(inspect(parser(' [#a]]')), [[' ', '<a class="index" href="#index:a">a</a>'], ']']);
+      assert.deepStrictEqual(inspect(parser(' [#a]]')), undefined);
     });
 
     it('valid', () => {
