@@ -3084,10 +3084,19 @@ require = function () {
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ]))))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~(?=$|\s)/, combinator_1.trim(combinator_1.some(combinator_1.union([
+            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~(?=$|\s)/, combinator_1.context({
+                syntax: {
+                    inline: {
+                        link: false,
+                        media: false,
+                        autolink: false,
+                        extension: false
+                    }
+                }
+            }, combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ]))), true), ns => [typed_dom_1.html('dt', util_1.defrag(ns))])));
+            ])))), true), ns => [typed_dom_1.html('dt', util_1.defrag(ns))])));
             const desc = combinator_1.block(combinator_1.fmap(combinator_1.open(/^:(?=$|\s)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=$|\s)/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('dd', util_1.defrag(ns))]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? array_1.push(es, [typed_dom_1.html('dd')]) : es;
@@ -3366,7 +3375,16 @@ require = function () {
                 [source],
                 ''
             ])))));
-            exports.heading = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(source_1.str(/^#+/), combinator_1.trim(combinator_1.some(combinator_1.union([
+            exports.heading = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.context({
+                syntax: {
+                    inline: {
+                        link: false,
+                        media: false,
+                        autolink: false,
+                        extension: false
+                    }
+                }
+            }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(source_1.str(/^#+/), combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
             ]))), true), ns => [typed_dom_1.html(`h${ ns[0].length }`, util_1.defrag(array_1.shift(ns)[1]))])))))));
@@ -4526,23 +4544,18 @@ require = function () {
             const index_1 = _dereq_('./index');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            const array_1 = _dereq_('spica/array');
-            exports.indexer = combinator_1.surround(source_1.str(/^\s+(?=\[#[^\s\]])/), combinator_1.union([index_1.index]), /^\s*$/, false, ([, [el]], rest) => [
+            exports.indexer = combinator_1.creator(combinator_1.surround(source_1.str(/^\s+(?=\[#[^\s\]])/), combinator_1.union([index_1.index]), /^\s*$/, false, ([, [el]], rest) => [
                 [typed_dom_1.html('span', {
                         class: 'indexer',
                         'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
                     })],
                 rest
-            ], ([as, bs], rest) => [
-                array_1.unshift(as, bs),
-                rest
-            ]);
+            ]));
         },
         {
             '../../../combinator': 28,
             '../../source': 117,
             './index': 97,
-            'spica/array': 6,
             'typed-dom': 21
         }
     ],
