@@ -3087,10 +3087,12 @@ require = function () {
             const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~(?=$|\s)/, combinator_1.context({
                 syntax: {
                     inline: {
+                        annotation: false,
+                        reference: false,
+                        extension: false,
                         link: false,
                         media: false,
-                        autolink: false,
-                        extension: false
+                        autolink: false
                     }
                 }
             }, combinator_1.trim(combinator_1.some(combinator_1.union([
@@ -3378,10 +3380,12 @@ require = function () {
             exports.heading = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.context({
                 syntax: {
                     inline: {
+                        annotation: false,
+                        reference: false,
+                        extension: false,
                         link: false,
                         media: false,
-                        autolink: false,
-                        extension: false
+                        autolink: false
                     }
                 }
             }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(source_1.str(/^#+/), combinator_1.trim(combinator_1.some(combinator_1.union([
@@ -3642,10 +3646,10 @@ require = function () {
             const source_1 = _dereq_('../../../source');
             const autolink_1 = _dereq_('../../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.quotation = combinator_1.lazy(() => combinator_1.block(combinator_1.creator(combinator_1.fmap(combinator_1.union([
+            exports.quotation = combinator_1.block(combinator_1.creator(combinator_1.fmap(combinator_1.union([
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+(?:$|\s)/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), combinator_1.some(autolink_1.autolink))),
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), combinator_1.some(autolink_1.autolink)))
-            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, util_1.defrag(ns))])), false));
+            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, util_1.defrag(ns))])), false);
         },
         {
             '../../../../combinator': 28,
@@ -4519,7 +4523,7 @@ require = function () {
                     const el = es[i];
                     void typed_dom_1.define(el, el.getAttribute('data-src'));
                 }
-                for (let es = target.querySelectorAll('rt, rp, .annotation, .reference'), i = 0, len = es.length; i < len; ++i) {
+                for (let es = target.querySelectorAll('rt, rp'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     void el.remove();
                 }
