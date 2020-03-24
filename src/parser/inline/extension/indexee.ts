@@ -8,6 +8,7 @@ export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
 
 export function text(source: HTMLElement): string {
   assert(!source.matches('.indexer'));
+  assert(!source.querySelector('.annotation, .reference'));
   assert(source.querySelectorAll('.indexer').length < 2);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
   const indexer = source.querySelector(':scope > .indexer');
@@ -17,7 +18,7 @@ export function text(source: HTMLElement): string {
     const el = es[i];
     void define(el, el.getAttribute('data-src')!);
   }
-  for (let es = target.querySelectorAll('rt, rp, .annotation, .reference'), i = 0, len = es.length; i < len; ++i) {
+  for (let es = target.querySelectorAll('rt, rp'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     void el.remove();
   }

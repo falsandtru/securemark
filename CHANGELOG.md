@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.151.1
+
+- Fix heading and dlist syntax to disable annotation and reference syntax.
+
 ## 0.151.0
 
 - Change heading syntax to disable link, autolink, and extension syntax.

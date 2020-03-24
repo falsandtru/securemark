@@ -12,10 +12,12 @@ export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
 
 export const heading: HeadingParser = block(rewrite(segment,
   context({ syntax: { inline: {
+    annotation: false,
+    reference: false,
+    extension: false,
     link: false,
     media: false,
     autolink: false,
-    extension: false,
   }}},
   some(line(indexee(fmap(open(
     str(/^#+/),

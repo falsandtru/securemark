@@ -33,8 +33,8 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# @a')), [['<h1 id="index:@a">@a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# http://host')), [['<h1 id="index:http://host">http://host</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# !http://host')), [['<h1 id="index:!http://host">!http://host</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a((b))')), [['<h1 id="index:a">a<sup class="annotation">b</sup></h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a[[b]]')), [['<h1 id="index:a">a<sup class="reference">b</sup></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a((b))')), [['<h1 id="index:a((b))">a((b))</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a[[b]]')), [['<h1 id="index:a[[b]]">a[[b]]</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# <# a #>')), [['<h1><sup class="comment" title="a"></sup></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('###### a')), [['<h6 id="index:a">a</h6>'], '']);
       assert.deepStrictEqual(inspect(parser('# \n##')), [['<h1></h1>', '<h2></h2>'], '']);

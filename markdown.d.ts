@@ -13,11 +13,11 @@ export namespace MarkdownParser {
   export interface Context extends Ctx {
     readonly syntax?: {
       readonly inline?: {
-        readonly link?: boolean;
-        readonly media?: boolean;
         readonly annotation?: boolean;
         readonly reference?: boolean;
         readonly extension?: boolean;
+        readonly link?: boolean;
+        readonly media?: boolean;
         readonly autolink?: boolean;
       };
     };

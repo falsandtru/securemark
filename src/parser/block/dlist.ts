@@ -21,10 +21,12 @@ const term: DListParser.TermParser = line(indexee(fmap(
   open(
     /^~(?=$|\s)/,
     context({ syntax: { inline: {
+      annotation: false,
+      reference: false,
+      extension: false,
       link: false,
       media: false,
       autolink: false,
-      extension: false,
     }}},
     trim(some(union([indexer, inline])))),
     true),
