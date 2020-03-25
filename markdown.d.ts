@@ -65,7 +65,7 @@ export namespace MarkdownParser {
       // ---
       Block<'horizontalrule'>,
       Parser<HTMLHRElement, [
-        SourceParser.ContentLineParser,
+        SourceParser.StrParser,
       ], Context> {
     }
     export interface HeadingParser extends
