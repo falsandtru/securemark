@@ -8,7 +8,7 @@ import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
-  /^-(?:[^\S\n]|\n[^\S\n]*\S)/,
+  /^-(?=[^\S\n]|\n[^\S\n]*\S)/,
   context({ syntax: { inline: { media: false } } },
   some(union([
     fmap(

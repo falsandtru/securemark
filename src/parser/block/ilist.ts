@@ -7,7 +7,7 @@ import { inline } from '../inline';
 import { html } from 'typed-dom';
 
 export const ilist: IListParser = lazy(() => block(fmap(validate(
-  /^[-+*](?:[^\S\n]|\n[^\S\n]*\S)/,
+  /^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/,
   some(union([
     fmap(
       inits([
