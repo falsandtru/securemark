@@ -3081,11 +3081,11 @@ require = function () {
             const paragraph_1 = _dereq_('./paragraph');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~(?=$|\s)/, combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.inits([
+            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~(?=[^\S\n])/, combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.inits([
                 combinator_1.some(term),
                 combinator_1.some(desc)
             ]))))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~(?=$|\s)/, combinator_1.context({
+            const term = combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~(?=[^\S\n])/, combinator_1.context({
                 syntax: {
                     inline: {
                         annotation: false,
@@ -3100,7 +3100,7 @@ require = function () {
                 inline_1.indexer,
                 inline_1.inline
             ])))), true), ns => [typed_dom_1.html('dt', util_1.defrag(ns))])));
-            const desc = combinator_1.block(combinator_1.fmap(combinator_1.open(/^:(?=$|\s)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=$|\s)/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('dd', util_1.defrag(ns))]), false);
+            const desc = combinator_1.block(combinator_1.fmap(combinator_1.open(/^:(?=[^\S\n])|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:](?=[^\S\n])/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('dd', util_1.defrag(ns))]), false);
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? array_1.push(es, [typed_dom_1.html('dd')]) : es;
             }
@@ -3431,7 +3431,7 @@ require = function () {
             const olist_1 = _dereq_('./olist');
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^[-+*](?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.ilist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.open(/^[-+*](?:$|\s)/, combinator_1.trim(combinator_1.some(inline_1.inline)), true)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist_,
@@ -3747,7 +3747,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?:[^\S\n]|\n[^\S\n]*\S)/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.open(/^-(?:$|\s)/, combinator_1.trim(combinator_1.some(inline_1.inline)), true)),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist_,
