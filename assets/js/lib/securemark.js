@@ -3487,13 +3487,14 @@ require = function () {
             const ulist_1 = _dereq_('./ulist');
             const ilist_1 = _dereq_('./ilist');
             const inline_1 = _dereq_('../inline');
-            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?:[^\S\n]|\n[^\S\n]*\S))/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=[^\S\n]|\n[^\S\n]*\S))/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.inits([
-                        source_1.str(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?=\.\s|\.?(?=$|\n))/),
-                        source_1.str(/^\.?\s*/),
+                        combinator_1.focus(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?![^.\n])\.?(?:$|\s)/, source => [
+                            [source.split('.')[0]],
+                            ''
+                        ]),
                         combinator_1.trim(combinator_1.some(inline_1.inline))
                     ])),
                     combinator_1.indent(combinator_1.union([
@@ -3504,7 +3505,7 @@ require = function () {
                 ]), ns => [typed_dom_1.html('li', {
                         value: format(ns[0]),
                         'data-type': type(ns[0])
-                    }, util_1.defrag(ulist_1.fillFirstLine(array_1.shift(ns, 2)[1])))])])))), es => {
+                    }, util_1.defrag(ulist_1.fillFirstLine(array_1.shift(ns)[1])))])])))), es => {
                 const ty = es[0].getAttribute('data-type');
                 return [typed_dom_1.html('ol', {
                         type: ty,
@@ -3543,7 +3544,6 @@ require = function () {
         {
             '../../combinator': 28,
             '../inline': 79,
-            '../source': 117,
             '../util': 125,
             './ilist': 70,
             './ulist': 78,
