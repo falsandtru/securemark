@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.151.2
+
+- Refactoring.
+
 ## 0.151.1
 
 - Fix heading and dlist syntax to disable annotation and reference syntax.
