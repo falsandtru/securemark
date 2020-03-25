@@ -1920,32 +1920,33 @@ require = function () {
             }
             exports.guard = guard;
             function update(base, parser) {
-                return (source, context) => parser(source, merge(alias_1.ObjectCreate(context), base));
+                return (source, context) => parser(source, inherit(alias_1.ObjectCreate(context), base));
             }
             exports.update = update;
             function context(base, parser) {
-                const merge_ = memoize_1.memoize(context => merge(alias_1.ObjectCreate(context), base), new global_1.WeakMap());
-                return (source, context) => parser(source, merge_(context));
+                const inherit_ = memoize_1.memoize(context => inherit(alias_1.ObjectCreate(context), base), new global_1.WeakMap());
+                return (source, context) => parser(source, inherit_(context));
             }
             exports.context = context;
-            const merge = assign_1.template((prop, target, source) => {
+            const inherit = assign_1.template((prop, target, source) => {
                 switch (prop) {
                 case 'resources':
-                    return prop in target ? target[prop] : target[prop] = alias_1.ObjectCreate(source[prop]);
+                    if (prop in target)
+                        return;
+                    return target[prop] = alias_1.ObjectCreate(source[prop]);
                 }
                 switch (type_1.type(source[prop])) {
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[prop] = isOwnProperty(target, prop) ? merge(target[prop], source[prop]) : merge(alias_1.ObjectCreate(target[prop]), source[prop]);
+                        return target[prop] = inherit(alias_1.ObjectCreate(target[prop]), source[prop]);
                     default:
                         return target[prop] = alias_1.ObjectCreate(source[prop]);
                     }
                 default:
-                    return target[prop] = source[prop];
+                    return target[prop] = type_1.isPrimitive(source[prop]) ? source[prop] : alias_1.ObjectCreate(source[prop]);
                 }
             });
-            const isOwnProperty = '__proto__' in {} ? (o, p) => !('__proto__' in o) || o[p] !== o['__proto__'][p] : alias_1.hasOwnProperty;
         },
         {
             'spica/alias': 5,
