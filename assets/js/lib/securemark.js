@@ -936,7 +936,7 @@ require = function () {
             });
             class URL {
                 constructor(url, base = global_1.location.href) {
-                    this.url = format_1.newURL(url, base);
+                    this.url = new format_1.ReadonlyURL(url, base);
                 }
                 get reference() {
                     var _a;
@@ -995,8 +995,9 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.newURL = exports._encode = exports.standardize = void 0;
+            exports.ReadonlyURL = exports._encode = exports.standardize = void 0;
             const global_1 = _dereq_('../../global');
+            const alias_1 = _dereq_('../../alias');
             const memoize_1 = _dereq_('../../memoize');
             const cache_1 = _dereq_('../../cache');
             const flip_1 = _dereq_('../../flip');
@@ -1013,14 +1014,24 @@ require = function () {
             }
             exports._encode = encode;
             function normalize(url, base) {
-                return exports.newURL(url, base).href;
+                return new ReadonlyURL(url, base).href;
             }
-            exports.newURL = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => new global_1.global.URL(formatURLForEdge(url, base), base), new cache_1.Cache(100)), new cache_1.Cache(100))));
+            let ReadonlyURL = (() => {
+                class ReadonlyURL {
+                    constructor(url, base) {
+                        return ReadonlyURL.new(url, base);
+                    }
+                }
+                ReadonlyURL.new = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => alias_1.ObjectFreeze(new global_1.global.URL(formatURLForEdge(url, base), base)), new cache_1.Cache(100)), new cache_1.Cache(100))));
+                return ReadonlyURL;
+            })();
+            exports.ReadonlyURL = ReadonlyURL;
             function formatURLForEdge(url, base) {
                 return url.trim() || base;
             }
         },
         {
+            '../../alias': 5,
             '../../cache': 8,
             '../../curry': 10,
             '../../flip': 11,
