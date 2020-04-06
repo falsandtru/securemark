@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.151.4
+
+- Enable esModuleInterop option.
+
 ## 0.151.3
 
 - Fix dlist parser to require whitespace after the start symbols.
