@@ -74,8 +74,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
-        startTight(
-        some(union([inline]), `</${tag}>`)),
+        startTight(some(union([inline]), `</${tag}>`)),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
           isTight(bs, 0, bs.length)

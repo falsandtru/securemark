@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.153.0
+
+- Change parser algorithm to backtrack with inner leading whitespace.
+
 ## 0.152.0
 
 - Update compile target to ES2018.

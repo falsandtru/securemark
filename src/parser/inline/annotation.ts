@@ -8,6 +8,7 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   '((',
   guard(context => context.syntax?.inline?.annotation ?? true,
   validate(/^\S[\s\S]*\)\)/,
+  startTight(
   context({ syntax: { inline: {
     annotation: false,
     reference: false,
@@ -17,7 +18,7 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
     //link: true,
     //autolink: true,
   }}, state: void 0 },
-  startTight(union([some(inline, ')')]))))),
+  union([some(inline, ')')]))))),
   '))'),
   (ns, rest) =>
     isTight(ns, 0, ns.length)

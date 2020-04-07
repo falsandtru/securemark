@@ -25,6 +25,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
       surround('[', shortmedia, ']'),
       surround(
         '[',
+        startTight(
         context({ syntax: { inline: {
           link: false,
           media: false,
@@ -33,7 +34,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
           extension: false,
           autolink: false,
         }}},
-        startTight(some(inline, /^\\?\n|^]/))),
+        some(inline, /^\\?\n|^]/))),
         ']',
         true),
     ])),

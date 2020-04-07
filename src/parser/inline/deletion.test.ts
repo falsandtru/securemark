@@ -12,13 +12,13 @@ describe('Unit: parser/inline/deletion', () => {
       assert.deepStrictEqual(inspect(parser('~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~a')), [['~~', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('~~a~')), [['~~', 'a', '~'], '']);
-      assert.deepStrictEqual(inspect(parser('~~ ~~')), [['~~', ' '], '~~']);
-      assert.deepStrictEqual(inspect(parser('~~ a~~')), [['~~', ' ', 'a'], '~~']);
-      assert.deepStrictEqual(inspect(parser('~~ a ~~')), [['~~', ' ', 'a', ' '], '~~']);
-      assert.deepStrictEqual(inspect(parser('~~\na~~')), [['~~', '<br>', 'a'], '~~']);
-      assert.deepStrictEqual(inspect(parser('~~\\\na~~')), [['~~', '<span class="linebreak"> </span>', 'a'], '~~']);
-      assert.deepStrictEqual(inspect(parser('~~<wbr>a~~')), [['~~', '<wbr>', 'a'], '~~']);
-      assert.deepStrictEqual(inspect(parser('~~<# a #>b~~')), [['~~', '<sup class="comment" title="a"></sup>', 'b'], '~~']);
+      assert.deepStrictEqual(inspect(parser('~~ ~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~ a~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~ a ~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~\na~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~\\\na~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~<wbr>a~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~<# a #>b~~')), undefined);
     });
 
     it('basic', () => {

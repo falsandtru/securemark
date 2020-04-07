@@ -7,6 +7,7 @@ import { html, define } from 'typed-dom';
 export const index: ExtensionParser.IndexParser = lazy(() => subline(creator(fmap(indexee(surround(
   '[#',
   validate(/^[^\n\]]+\]/,
+  startTight(
   context({ syntax: { inline: {
     link: false,
     media: false,
@@ -15,7 +16,7 @@ export const index: ExtensionParser.IndexParser = lazy(() => subline(creator(fma
     extension: false,
     autolink: false,
   }}},
-  startTight(union([some(inline, ']')])))),
+  union([some(inline, ']')])))),
   ']', false,
   ([, bs], rest) =>
     isTight(bs, 0, bs.length)
