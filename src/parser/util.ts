@@ -7,10 +7,11 @@ import { pop } from 'spica/array';
 export function isTight(nodes: (HTMLElement | string)[], start: number, end: number): boolean {
   if (end < 0) return isTight(nodes, start, nodes.length + end);
   if (start >= nodes.length) return true;
+  assert(isVisible(nodes[start], 'start'));
   switch (false) {
     case start < nodes.length:
     case end <= nodes.length:
-    case isVisible(nodes[start], 'start'):
+    //case isVisible(nodes[start], 'start'):
       return false;
     case end > start:
       return true;

@@ -10,12 +10,11 @@ import DataParser = ExtensionParser.DataParser;
 
 export const data: DataParser = lazy(() => creator(surround(
   str('[~'),
-  startTight(
   inits([
     str(/^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?(?=[|\]])/),
     char('|'),
-    some(inline, ']'),
-  ])),
+    startTight(some(inline, ']')),
+  ]),
   char(']'), false,
   ([as, bs, cs], rest) => [
     isTight(bs, 2, bs.length)
