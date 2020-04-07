@@ -1389,7 +1389,7 @@ require = function () {
                         return;
                     case 3:
                         dom_1.define(this.container, []);
-                        this.children_ = this.observe(Object.assign({}, children_));
+                        this.children_ = this.observe({ ...children_ });
                         this.children = children_;
                         this.isInit = false;
                         return;
@@ -1448,7 +1448,10 @@ require = function () {
                                         this.container.removeChild(oldChild.element);
                                     }
                                 } else {
-                                    this.children = Object.assign(Object.assign({}, this.children_), { [name]: newChild });
+                                    this.children = {
+                                        ...this.children_,
+                                        [name]: newChild
+                                    };
                                 }
                             }
                         };
@@ -1794,7 +1797,13 @@ require = function () {
             }
             exports.listen = listen;
             function once(target, a, b, c = false, d = {}) {
-                return typeof b === 'string' ? delegate(target, a, b, c, Object.assign(Object.assign({}, typeof d === 'boolean' ? { capture: d } : d), { once: true })) : bind(target, a, b, Object.assign(Object.assign({}, typeof c === 'boolean' ? { capture: c } : c), { once: true }));
+                return typeof b === 'string' ? delegate(target, a, b, c, {
+                    ...typeof d === 'boolean' ? { capture: d } : d,
+                    once: true
+                }) : bind(target, a, b, {
+                    ...typeof c === 'boolean' ? { capture: c } : c,
+                    once: true
+                });
             }
             exports.once = once;
             function wait(target, a, b = false, c = {}) {
@@ -1808,7 +1817,10 @@ require = function () {
                     unbind();
                     const cx = ev.target.shadowRoot ? (_a = ev.composedPath()[0]) === null || _a === void 0 ? void 0 : _a.closest(selector) : (_b = ev.target) === null || _b === void 0 ? void 0 : _b.closest(selector);
                     return cx ? unbind = once(cx, type, listener, option) : global_1.undefined, ev.returnValue;
-                }, Object.assign(Object.assign({}, option), { capture: true }));
+                }, {
+                    ...option,
+                    capture: true
+                });
             }
             exports.delegate = delegate;
             function bind(target, type, listener, option = false) {
@@ -4972,7 +4984,10 @@ require = function () {
                     content[0] = content[0].firstElementChild;
                     log.add(content[0]);
                     break;
-                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), Object.assign(Object.assign({}, context), { insecure: true })), []).some(node => typeof node === 'object'):
+                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), {
+                        ...context,
+                        insecure: true
+                    }), []).some(node => typeof node === 'object'):
                     return;
                 }
                 const INSECURE_URI = params.shift();
@@ -6070,11 +6085,12 @@ require = function () {
             const url_1 = _dereq_('spica/url');
             const {origin} = global_1.location;
             function render(target, opts = {}) {
-                opts = Object.assign({
+                opts = {
                     code: code_1.code,
                     math: math_1.math,
-                    media: {}
-                }, opts);
+                    media: {},
+                    ...opts
+                };
                 try {
                     switch (true) {
                     case target.classList.contains('invalid'):
@@ -6217,7 +6233,7 @@ require = function () {
             const {origin} = global_1.location;
             function media(target, opts) {
                 var _a, _b, _c, _d, _e, _f, _g, _h, _j;
-                opts = Object.assign({
+                opts = {
                     twitter: twitter_1.twitter,
                     youtube: youtube_1.youtube,
                     gist: gist_1.gist,
@@ -6225,8 +6241,9 @@ require = function () {
                     pdf: pdf_1.pdf,
                     video: video_1.video,
                     audio: audio_1.audio,
-                    image: image_1.image
-                }, opts);
+                    image: image_1.image,
+                    ...opts
+                };
                 const url = new URL(target.getAttribute('data-src'), origin);
                 const alt = target.getAttribute('alt') || '';
                 (_a = opts.video) === null || _a === void 0 ? void 0 : _a.call(opts, url, alt);
@@ -6785,15 +6802,18 @@ require = function () {
                         const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1);
                         const defId = def.id;
                         const refChild = ref.firstChild;
-                        yield typed_dom_1.define(ref, Object.assign({ id: refId }, title ? { title } : {
-                            class: ref.classList.contains('invalid') ? void 0 : array_1.join([
-                                ...ref.classList,
-                                'invalid'
-                            ], ' '),
-                            'data-invalid-syntax': syntax,
-                            'data-invalid-type': 'content',
-                            'data-invalid-message': 'Missing content'
-                        }), ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && refChild.textContent === marker(defIndex) ? void 0 : [typed_dom_1.html('a', {
+                        yield typed_dom_1.define(ref, {
+                            id: refId,
+                            ...title ? { title } : {
+                                class: ref.classList.contains('invalid') ? void 0 : array_1.join([
+                                    ...ref.classList,
+                                    'invalid'
+                                ], ' '),
+                                'data-invalid-syntax': syntax,
+                                'data-invalid-type': 'content',
+                                'data-invalid-message': 'Missing content'
+                            }
+                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && refChild.textContent === marker(defIndex) ? void 0 : [typed_dom_1.html('a', {
                                 href: `#${ defId }`,
                                 rel: 'noopener'
                             }, marker(defIndex))]).firstChild;
