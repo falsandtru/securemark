@@ -4505,11 +4505,11 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.data = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('[~'), util_1.startTight(combinator_1.inits([
+            exports.data = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('[~'), combinator_1.inits([
                 source_1.str(/^[a-z]+(?:-[a-z0-9]+)*(?:=[a-z0-9]+(?:-[a-z0-9]+)*)?(?=[|\]])/),
                 source_1.char('|'),
-                combinator_1.some(inline_1.inline, ']')
-            ])), source_1.char(']'), false, ([as, bs, cs], rest) => [
+                util_1.startTight(combinator_1.some(inline_1.inline, ']'))
+            ]), source_1.char(']'), false, ([as, bs, cs], rest) => [
                 util_1.isTight(bs, 2, bs.length) ? [typed_dom_1.html('span', attrs(util_1.stringify(bs[0])), util_1.defrag(util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
                 rest
             ], ([as, bs], rest) => [
@@ -5921,7 +5921,6 @@ require = function () {
                 switch (false) {
                 case start < nodes.length:
                 case end <= nodes.length:
-                case isVisible(nodes[start], 'start'):
                     return false;
                 case end > start:
                     return true;
