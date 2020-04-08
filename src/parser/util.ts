@@ -1,5 +1,5 @@
 import { isArray } from 'spica/alias';
-import { Parser, fmap } from '../combinator';
+import { Parser, fmap, eval } from '../combinator';
 import { htmlentity, comment } from './inline';
 import { define, apply } from 'typed-dom';
 import { pop } from 'spica/array';
@@ -68,7 +68,7 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
         switch (true) {
           case source.length > 2
             && source[1] !== ' '
-            && !!htmlentity(source, context):
+            && eval(htmlentity(source, context))?.[0].trim() == '':
             return;
         }
         break;
