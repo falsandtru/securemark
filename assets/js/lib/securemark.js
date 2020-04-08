@@ -5960,7 +5960,7 @@ require = function () {
             }
             function startTight(parser) {
                 return (source, context) => {
-                    var _a;
+                    var _a, _b;
                     if (source === '')
                         return;
                     switch (source[0]) {
@@ -5971,7 +5971,7 @@ require = function () {
                         return;
                     case '&':
                         switch (true) {
-                        case source.length > 2 && source[1] !== ' ' && !!inline_1.htmlentity(source, context):
+                        case source.length > 2 && source[1] !== ' ' && ((_a = combinator_1.eval(inline_1.htmlentity(source, context))) === null || _a === void 0 ? void 0 : _a[0].trim()) == '':
                             return;
                         }
                         break;
@@ -5984,7 +5984,7 @@ require = function () {
                         }
                         break;
                     }
-                    return ((_a = source[0] === '\\' ? source[1] : source[0]) === null || _a === void 0 ? void 0 : _a.trim()) ? parser(source, context) : void 0;
+                    return ((_b = source[0] === '\\' ? source[1] : source[0]) === null || _b === void 0 ? void 0 : _b.trim()) ? parser(source, context) : void 0;
                 };
             }
             exports.startTight = startTight;
