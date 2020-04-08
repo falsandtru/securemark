@@ -1880,12 +1880,6 @@ require = function () {
             };
             Object.defineProperty(exports, '__esModule', { value: true });
             var parser_1 = _dereq_('./combinator/data/parser');
-            Object.defineProperty(exports, 'Result', {
-                enumerable: true,
-                get: function () {
-                    return parser_1.Result;
-                }
-            });
             Object.defineProperty(exports, 'eval', {
                 enumerable: true,
                 get: function () {
@@ -2500,14 +2494,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.check = exports.exec = exports.eval = exports.Result = void 0;
-            function Result(data, rest) {
-                return [
-                    [data],
-                    rest
-                ];
-            }
-            exports.Result = Result;
+            exports.check = exports.exec = exports.eval = void 0;
             function eval_(result, default_) {
                 return result ? result[0] : default_;
             }
@@ -4402,12 +4389,12 @@ require = function () {
                     ];
                 switch (cs[0]) {
                 case '*':
-                    return combinator_1.fmap(strong_1.strong, ms => typeof ms[0] === 'object' ? void ms[0].prepend(typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
+                    return combinator_1.fmap(strong_1.strong, ms => typeof ms[0] === 'object' ? (ms[0].prepend(typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))), ms) : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
                 case '**':
-                    return combinator_1.fmap(emphasis_1.emphasis, ms => typeof ms[0] === 'object' ? void ms[0].prepend(typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))) || ms : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
+                    return combinator_1.fmap(emphasis_1.emphasis, ms => typeof ms[0] === 'object' ? (ms[0].prepend(typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))), ms) : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
                         array_1.push(array_1.unshift(as, bs), cs),
                         rest
                     ];
@@ -5235,14 +5222,20 @@ require = function () {
             }, combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']'))
-            ]))))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? combinator_1.Result(typed_dom_1.html('sup', {
-                class: 'reference',
-                'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? util_1.stringify(ns.shift()) : void 0
-            }, util_1.defrag(util_1.trimEnd(ns))), rest) : void 0))));
+            ]))))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? [
+                [typed_dom_1.html('sup', {
+                        class: 'reference',
+                        ...attrs(ns)
+                    }, util_1.defrag(util_1.trimEnd(ns)))],
+                rest
+            ] : void 0))));
             const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
                 ''
             ]));
+            function attrs(ns) {
+                return { 'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? util_1.stringify(ns.shift()) : void 0 };
+            }
         },
         {
             '../../combinator': 28,
