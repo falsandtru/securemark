@@ -19,7 +19,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
           strong,
           ms =>
             typeof ms[0] === 'object'
-              ? void ms[0].prepend(html('em', defrag(trimEnd(bs)))) || ms
+              ? (ms[0].prepend(html('em', defrag(trimEnd(bs)))), ms)
               : push(unshift(as, bs), shift(ms)[1]))
           ('**' + rest, context) || [push(unshift(as, bs), cs), rest];
       case '**':
@@ -27,7 +27,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
           emphasis,
           ms =>
             typeof ms[0] === 'object'
-              ? void ms[0].prepend(html('strong', defrag(trimEnd(bs)))) || ms
+              ? (ms[0].prepend(html('strong', defrag(trimEnd(bs)))), ms)
               : push(unshift(as, bs), shift(ms)[1]))
           ('*' + rest, context) || [push(unshift(as, bs), cs), rest];
       case '***':
