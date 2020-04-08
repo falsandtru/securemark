@@ -10,9 +10,6 @@ export type Result<R, D extends Parser<unknown, any, C>[] = any, C extends Ctx =
   = readonly [R[], string]
   | readonly [R[], string, C, D]
   | undefined;
-export function Result<T, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>(data: T, rest: string): Result<T, D, C> {
-  return [[data], rest];
-}
 export type Data<P extends Parser<unknown>> = P extends Parser<infer R> ? R : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, infer D> ? D : never;
 export type Context<P extends Parser<unknown>> = P extends Parser<unknown, any, infer C> ? C : never;

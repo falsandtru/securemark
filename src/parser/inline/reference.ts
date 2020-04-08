@@ -1,5 +1,5 @@
 import { ReferenceParser } from '../inline';
-import { Result, subsequence, some, subline, focus, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
+import { subsequence, some, subline, focus, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
 import { startTight, isTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
@@ -22,18 +22,17 @@ export const reference: ReferenceParser = lazy(() => subline(creator(bind(surrou
   ']]'),
   (ns, rest) =>
     isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
-      ? Result(
-          html('sup',
-            {
-              class: 'reference',
-              'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
-                ? stringify(ns.shift()!)
-                : void 0
-            },
-            defrag(trimEnd(ns))),
-          rest)
+      ? [[html('sup', { class: 'reference', ...attrs(ns) }, defrag(trimEnd(ns)))], rest]
       : void 0))));
 
 const alias: ReferenceParser.AliasParser = creator(focus(
   /^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/,
   source => [[html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))], '']));
+
+function attrs(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
+  return {
+    'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
+      ? stringify(ns.shift()!)
+      : void 0
+  };
+}
