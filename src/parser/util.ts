@@ -4,7 +4,7 @@ import { htmlentity, comment } from './inline';
 import { define, apply } from 'typed-dom';
 import { pop } from 'spica/array';
 
-export function isTight(nodes: (HTMLElement | string)[], start: number, end: number): boolean {
+export function isTight(nodes: readonly (HTMLElement | string)[], start: number, end: number): boolean {
   if (end < 0) return isTight(nodes, start, nodes.length + end);
   if (start >= nodes.length) return true;
   assert(isVisible(nodes[start], 'start'));
@@ -106,8 +106,8 @@ export function dup<T, D extends Parser<unknown, any, C>[], C extends object>(pa
   return fmap(parser, ns => [ns]);
 }
 
-export function defrag(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  const acc: typeof nodes = [];
+export function defrag(nodes: readonly (HTMLElement | string)[]): (HTMLElement | string)[] {
+  const acc: (HTMLElement | string)[] = [];
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
     if (node === '') continue;
@@ -125,8 +125,8 @@ export function defrag(nodes: (HTMLElement | string)[]): (HTMLElement | string)[
 }
 
 export function stringify(node: HTMLElement | string): string;
-export function stringify(nodes: (HTMLElement | string)[]): string;
-export function stringify(nodes: HTMLElement | string | (HTMLElement | string)[]): string {
+export function stringify(nodes: readonly (HTMLElement | string)[]): string;
+export function stringify(nodes: HTMLElement | string | readonly (HTMLElement | string)[]): string {
   if (typeof nodes === 'string') return nodes;
   if (!isArray(nodes)) return nodes.textContent!;
   let acc = '';
