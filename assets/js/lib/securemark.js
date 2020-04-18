@@ -638,7 +638,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (!exports.hasOwnProperty(p))
+                    if (p !== 'default' && !exports.hasOwnProperty(p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1875,7 +1875,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (!exports.hasOwnProperty(p))
+                    if (p !== 'default' && !exports.hasOwnProperty(p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2709,7 +2709,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (!exports.hasOwnProperty(p))
+                    if (p !== 'default' && !exports.hasOwnProperty(p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -4055,6 +4055,7 @@ require = function () {
                 source_1.str(/^[@#]+(?![A-Za-z0-9]|[^\x00-\x7F\s])/),
                 channel_1.channel,
                 account_1.account,
+                source_1.str(/^@[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/),
                 source_1.str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
                 hashtag_1.hashtag,
                 hashref_1.hashref,
@@ -4080,7 +4081,7 @@ require = function () {
             exports.account = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:(?![^/]*?--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9]{1,63}){1,2}\/)?[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/, source => [
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:(?![^/]*?--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9]{1,63}){1,2}\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, source => [
                 [typed_dom_1.html('a', {
                         class: 'account',
                         rel: 'noopener',
@@ -6948,7 +6949,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (!exports.hasOwnProperty(p))
+                    if (p !== 'default' && !exports.hasOwnProperty(p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });
