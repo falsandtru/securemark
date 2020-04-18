@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.154.0
+
+- Change account parser to disallow account names starting with a number.
+
 ## 0.153.0
 
 - Change parser algorithm to backtrack with inner leading whitespace.

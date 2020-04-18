@@ -13,6 +13,7 @@ describe('Unit: parser/inline/autolink/account', () => {
       assert.deepStrictEqual(inspect(parser('@_')), [['@'], '_']);
       assert.deepStrictEqual(inspect(parser('@-')), [['@'], '-']);
       assert.deepStrictEqual(inspect(parser('@.')), [['@'], '.']);
+      assert.deepStrictEqual(inspect(parser('@0')), [['@0'], '']);
       assert.deepStrictEqual(inspect(parser('@a@')), [['@a@'], '']);
       assert.deepStrictEqual(inspect(parser('@a@b')), [['@a@b'], '']);
       assert.deepStrictEqual(inspect(parser('@a@b@c')), [['@a@b@c'], '']);
@@ -25,7 +26,6 @@ describe('Unit: parser/inline/autolink/account', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('@0')), [['<a class="account" rel="noopener">@0</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a')), [['<a class="account" rel="noopener">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@A')), [['<a class="account" rel="noopener">@A</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a_b')), [['<a class="account" rel="noopener">@a</a>'], '_b']);

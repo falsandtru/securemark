@@ -21,6 +21,8 @@ export const autolink: AutolinkParser = fmap(
     str(/^[@#]+(?![A-Za-z0-9]|[^\x00-\x7F\s])/),
     channel,
     account,
+    // Escape unmatched account-like strings.
+    str(/^@[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/),
     // Escape invalid leading characters.
     str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
     hashtag,
