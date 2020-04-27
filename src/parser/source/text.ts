@@ -3,7 +3,7 @@ import { creator } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom';
 
-export const separator = /\s|(?=[^A-Za-z0-9\s])[\x00-\x7F]|[A-Za-z0-9][A-Za-z0-9.+_-]*@[A-Za-z0-9]|\S#/;
+export const separator = /[\s（）]|(?=[^A-Za-z0-9\s])[\x00-\x7F]|[A-Za-z0-9][A-Za-z0-9.+_-]*@[A-Za-z0-9]|\S#/;
 const next = /[\S\n]|$/;
 const repeat = str(/^(.)\1*/);
 

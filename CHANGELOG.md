@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.154.1
+
+- Improve url parser to finish parsing with two-byte parenthesis.
+
 ## 0.154.0
 
 - Change account parser to disallow account names starting with a number.
