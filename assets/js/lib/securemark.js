@@ -4914,7 +4914,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.attribute = exports.uri = exports.link = exports.attributes = void 0;
+            exports.sanitize = exports.attribute = exports.uri = exports.link = exports.attributes = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const inline_1 = _dereq_('../inline');
@@ -4934,7 +4934,7 @@ require = function () {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.tails([
-                util_1.dup(combinator_1.union([
+                combinator_1.context({ syntax: { inline: { link: false } } }, util_1.dup(combinator_1.union([
                     combinator_1.surround('[', inline_1.media, ']'),
                     combinator_1.surround('[', inline_1.shortmedia, ']'),
                     combinator_1.surround('[', util_1.startTight(combinator_1.context({
@@ -4949,7 +4949,7 @@ require = function () {
                             }
                         }
                     }, combinator_1.some(inline_1.inline, /^\\?\n|^]/))), ']', true)
-                ])),
+                ]))),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     exports.uri,
                     combinator_1.some(exports.attribute)
@@ -4961,24 +4961,16 @@ require = function () {
                 [],
                 as
             ]), ([content, params], rest, context) => {
-                var _a;
                 if (!util_1.isTight(content, 0, content.length))
                     return;
-                switch (true) {
-                case content.length === 0:
-                    break;
-                case content.length === 1 && typeof content[0] === 'object' && content[0].tagName === 'A' && ((_a = content[0].firstElementChild) === null || _a === void 0 ? void 0 : _a.classList.contains('media')):
-                    content[0] = content[0].firstElementChild;
-                    break;
-                case !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'):
+                if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
                     return;
-                }
                 const INSECURE_URI = params.shift();
                 const el = typed_dom_1.html('a', {
                     href: INSECURE_URI,
                     rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
-                if (!sanitize(el, INSECURE_URI))
+                if (!sanitize(el, el, INSECURE_URI))
                     return [
                         [el],
                         rest
@@ -4991,22 +4983,22 @@ require = function () {
             })))));
             exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
             exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
-            function sanitize(el, uri) {
+            function sanitize(uri, target, source) {
                 let type;
                 let message;
-                switch (el.protocol) {
+                switch (uri.protocol) {
                 case 'http:':
                 case 'https:': {
-                        const {host} = el;
-                        host && el.origin !== origin && void el.setAttribute('target', '_blank');
+                        const {host} = uri;
+                        host && uri.origin !== origin && target.tagName === 'A' && void target.setAttribute('target', '_blank');
                         if (host)
                             return true;
                         type = 'parameter';
                         message = 'Invalid host';
                         break;
                     }
-                case 'tel:':
-                    if (`tel:${ el.textContent.replace(/-(?=[0-9])/g, '') }` === uri)
+                case target.tagName === 'A' && 'tel:':
+                    if (`tel:${ uri.textContent.replace(/-(?=[0-9])/g, '') }` === source)
                         return true;
                     type = 'content';
                     message = 'Invalid phone number';
@@ -5015,16 +5007,19 @@ require = function () {
                     type = 'parameter';
                     message = 'Invalid protocol';
                 }
-                void typed_dom_1.define(el, {
-                    class: 'invalid',
+                void target.classList.toggle('invalid', true);
+                void typed_dom_1.define(target, {
                     'data-invalid-syntax': 'link',
                     'data-invalid-type': type,
                     'data-invalid-message': message,
-                    href: null,
-                    rel: null
+                    ...target.tagName === 'A' ? {
+                        href: null,
+                        rel: null
+                    } : { 'data-src': null }
                 });
                 return false;
             }
+            exports.sanitize = sanitize;
             function decode(uri) {
                 try {
                     uri = global_1.decodeURI(uri);
@@ -5103,8 +5098,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.media = exports.cache = void 0;
-            const global_1 = _dereq_('spica/global');
-            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const link_1 = _dereq_('./link');
@@ -5119,8 +5112,8 @@ require = function () {
                 '![',
                 '!{'
             ], combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.guard(context => {
-                var _a, _b, _c, _d, _e, _f;
-                return ((_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true) && ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.media) !== null && _f !== void 0 ? _f : true);
+                var _a, _b, _c;
+                return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.tails([
                 util_1.dup(combinator_1.surround(/^\[(?!\s)/, combinator_1.some(combinator_1.union([
                     bracket,
@@ -5137,6 +5130,7 @@ require = function () {
                 [''],
                 as
             ]), ([[text], params], rest, context) => {
+                var _a, _b, _c;
                 const INSECURE_URI = params.shift();
                 if (text.length > 0 && text.slice(-2).trim() === '')
                     return;
@@ -5144,14 +5138,26 @@ require = function () {
                 const key = url.href;
                 const media = exports.cache.has(key) ? exports.cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
-                    'data-src': INSECURE_URI.replace(/\s+/g, global_1.encodeURI),
+                    'data-src': INSECURE_URI,
                     alt: text.trim()
                 });
-                if (exports.cache.has(key) && media.hasAttribute('alt')) {
-                    void typed_dom_1.define(media, { alt: text.trim() });
+                if (exports.cache.has(key)) {
+                    media.hasAttribute('alt') && void media.setAttribute('alt', text.trim());
+                } else {
+                    if (!link_1.sanitize(url, media, INSECURE_URI))
+                        return [
+                            [media],
+                            rest
+                        ];
                 }
-                void typed_dom_1.define(media, alias_1.ObjectAssign(html_1.makeAttrs(link_1.attributes, params, [...media.classList], 'media'), { nofollow: void 0 }));
-                return combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [typed_dom_1.define(media, { 'data-src': el.getAttribute('href') })])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context);
+                void typed_dom_1.define(media, {
+                    ...html_1.makeAttrs(link_1.attributes, params, [...media.classList], 'media'),
+                    nofollow: void 0
+                });
+                return ((_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true) && media.tagName === 'IMG' ? combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [media])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context) : [
+                    [media],
+                    rest
+                ];
             }))));
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround(source_1.char('('), combinator_1.some(combinator_1.union([
@@ -5187,10 +5193,8 @@ require = function () {
             '../util': 125,
             './html': 102,
             './link': 105,
-            'spica/alias': 5,
             'spica/array': 6,
             'spica/cache': 8,
-            'spica/global': 12,
             'typed-dom': 21
         }
     ],
