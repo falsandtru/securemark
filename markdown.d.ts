@@ -28,7 +28,6 @@ export namespace MarkdownParser {
         readonly small?: boolean;
       };
     };
-    readonly insecure?: boolean;
   }
   export interface SegmentParser extends
     Markdown<'segment'>,

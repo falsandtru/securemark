@@ -57,8 +57,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
         log.add(content[0]);
         assert(content[0].matches('.media'));
         break;
-      case !context.insecure
-        && !!eval(some(autolink)(stringify(content), { ...context, insecure: true }), [])
+      case !!eval(some(autolink)(stringify(content), context), [])
             .some(node => typeof node === 'object'):
         return;
     }
