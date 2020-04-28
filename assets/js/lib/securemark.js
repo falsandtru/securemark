@@ -4197,11 +4197,12 @@ require = function () {
             exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.validate([
                 'http',
                 'ttp'
-            ], combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.some(combinator_1.union([
+            ], combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.focus(/^[\x00-\x7F]+/, combinator_1.some(combinator_1.union([
                 bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ])))), combinator_1.convert(url2link, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
+            ]))))), combinator_1.convert(url2link, combinator_1.context({ syntax: { inline: { link: void 0 } } }, combinator_1.union([link_1.link])))));
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
+                combinator_1.surround('"', combinator_1.some(source_1.unescsource, /^[\s"]+/), '"', true),
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.unescsource
@@ -4217,8 +4218,7 @@ require = function () {
                 combinator_1.surround('<', combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.unescsource
-                ]), /^[\s\>]/), '>', true),
-                combinator_1.surround('"', combinator_1.some(source_1.unescsource, /^[\s"]+/), '"', true)
+                ]), /^[\s\>]/), '>', true)
             ])));
             function url2link(url) {
                 return url[0] === 'h' ? `{ ${ url } }` : `{ h${ url } nofollow }`;
@@ -5791,11 +5791,12 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.text = exports.separator = void 0;
+            exports.text = exports.alphanumeric = exports.separator = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const str_1 = _dereq_('./str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.separator = /\s|(?=[^A-Za-z0-9\s])[\x00-\x7F]|[A-Za-z0-9][A-Za-z0-9.+_-]*@[A-Za-z0-9]|\S#/;
+            exports.separator = /\s|[\x00-\x7F]|\S#/;
+            exports.alphanumeric = /^[A-Za-z0-9]+/;
             const next = /[\S\n]|$/;
             const repeat = str_1.str(/^(.)\1*/);
             exports.text = combinator_1.creator(source => {
@@ -5834,12 +5835,22 @@ require = function () {
                             source.slice(1)
                         ];
                     case '*':
+                    case '+':
+                    case '~':
+                    case '=':
                         return source[1] === source[0] ? repeat(source, {}) : [
                             [source[0]],
                             source.slice(1)
                         ];
                     default:
-                        const i = source[0].trim() === '' ? source.search(next) : 0;
+                        const b = source[0].trim() === '';
+                        const i = b ? source.search(next) : 0;
+                        const r = !b && source.match(exports.alphanumeric);
+                        if (r)
+                            return [
+                                [r[0]],
+                                source.slice(r[0].length)
+                            ];
                         return i === source.length || source[i] === '\n' || source[i] === '\\' && source[i + 1] === '\n' ? [
                             [],
                             source.slice(i)
@@ -5880,6 +5891,12 @@ require = function () {
                         ''
                     ];
                 case 0:
+                    const r = source.match(text_1.alphanumeric);
+                    if (r)
+                        return [
+                            [r[0]],
+                            source.slice(r[0].length)
+                        ];
                     return [
                         [source.slice(0, 1)],
                         source.slice(1)
