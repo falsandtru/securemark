@@ -9,7 +9,6 @@ import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
 
 const { origin } = location;
-const log = new WeakSet<Element>();
 
 export const attributes = {
   nofollow: [void 0],
@@ -50,11 +49,8 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
       case content.length === 1
         && typeof content[0] === 'object'
         && content[0].tagName === 'A'
-        && content[0].firstElementChild?.classList.contains('media')
-        && !log.has(content[0].firstElementChild!):
+        && content[0].firstElementChild?.classList.contains('media'):
         content[0] = (content[0] as HTMLElement).firstElementChild as HTMLElement;
-        assert(!log.has(content[0]));
-        log.add(content[0]);
         assert(content[0].matches('.media'));
         break;
       case !!eval(some(autolink)(stringify(content), context), [])
