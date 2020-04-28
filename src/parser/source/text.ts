@@ -27,6 +27,9 @@ export const text: TextParser = creator(source => {
         case '\n':
           return [[html('br')], source.slice(1)];
         case '*':
+        case '+':
+        case '~':
+        case '=':
           return source[1] === source[0]
             ? repeat(source, {})
             : [[source[0]], source.slice(1)];
