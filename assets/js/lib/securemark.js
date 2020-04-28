@@ -836,8 +836,7 @@ require = function () {
                         } catch (reason) {
                             return reject(reason);
                         }
-                    }
-                    if (status.state !== 3) {
+                    default:
                         fulfillReactions.push(value => {
                             try {
                                 onfulfilled ? resolve(onfulfilled(value)) : resolve(value);
@@ -845,8 +844,6 @@ require = function () {
                                 reject(reason);
                             }
                         });
-                    }
-                    if (status.state !== 2) {
                         rejectReactions.push(reason => {
                             try {
                                 onrejected ? resolve(onrejected(reason)) : reject(reason);
@@ -854,8 +851,8 @@ require = function () {
                                 reject(reason);
                             }
                         });
+                        return this.resume();
                     }
-                    this.resume();
                 }
                 resume() {
                     if (!this.reactable)
