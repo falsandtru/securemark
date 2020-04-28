@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.154.1
+## 0.155.0
 
-- Improve url parser to finish parsing with two-byte parenthesis.
+- Change url parser to allow only ASCII characters.
 
 ## 0.154.0
 

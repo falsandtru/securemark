@@ -1,14 +1,14 @@
 import { AutolinkParser } from '../../inline';
-import { union, some, validate, rewrite, context, creator, convert, surround, open, lazy } from '../../../combinator';
+import { union, some, validate, focus, rewrite, context, creator, convert, surround, open, lazy } from '../../../combinator';
 import { unescsource, str } from '../../source';
 import { link } from '../link';
 
-const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>（）]|\\?(?:$|\s))/;
+const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   validate(['http', 'ttp'], open(
     str(/^h?ttps?:\/\/(?=[^/?#\s])/),
-    some(union([bracket, some(unescsource, closer)])))),
+    focus(/^[\x00-\x7F]+/, some(union([bracket, some(unescsource, closer)]))))),
   convert(
     url2link,
     context({ syntax: { inline: { link: void 0 } } },

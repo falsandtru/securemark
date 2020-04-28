@@ -15,7 +15,6 @@ export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, pa
     const result = parser(src, context);
     assert(check(src, result));
     if (!result) return;
-    assert(exec(result)==='');
     return exec(result).length < src.length
       ? [eval(result), exec(result) + source.slice(src.length)]
       : void 0;
