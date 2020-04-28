@@ -4925,7 +4925,6 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
             const {origin} = global_1.location;
-            const log = new WeakSet();
             exports.attributes = { nofollow: [void 0] };
             void alias_1.ObjectSetPrototypeOf(exports.attributes, null);
             exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(10, combinator_1.validate([
@@ -4968,9 +4967,8 @@ require = function () {
                 switch (true) {
                 case content.length === 0:
                     break;
-                case content.length === 1 && typeof content[0] === 'object' && content[0].tagName === 'A' && ((_a = content[0].firstElementChild) === null || _a === void 0 ? void 0 : _a.classList.contains('media')) && !log.has(content[0].firstElementChild):
+                case content.length === 1 && typeof content[0] === 'object' && content[0].tagName === 'A' && ((_a = content[0].firstElementChild) === null || _a === void 0 ? void 0 : _a.classList.contains('media')):
                     content[0] = content[0].firstElementChild;
-                    log.add(content[0]);
                     break;
                 case !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'):
                     return;
