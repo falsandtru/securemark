@@ -4972,10 +4972,7 @@ require = function () {
                     content[0] = content[0].firstElementChild;
                     log.add(content[0]);
                     break;
-                case !context.insecure && !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), {
-                        ...context,
-                        insecure: true
-                    }), []).some(node => typeof node === 'object'):
+                case !!combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'):
                     return;
                 }
                 const INSECURE_URI = params.shift();
