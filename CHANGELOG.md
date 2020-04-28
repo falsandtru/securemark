@@ -2,6 +2,7 @@
 
 ## 0.155.0
 
+- Improve autolink syntax detection.
 - Change url parser to allow only ASCII characters.
 
 ## 0.154.0

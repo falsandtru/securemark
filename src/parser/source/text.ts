@@ -3,7 +3,8 @@ import { creator } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom';
 
-export const separator = /\s|(?=[^A-Za-z0-9\s])[\x00-\x7F]|[A-Za-z0-9][A-Za-z0-9.+_-]*@[A-Za-z0-9]|\S#/;
+export const separator = /\s|[\x00-\x7F]|\S#/;
+export const alphanumeric = /^[A-Za-z0-9]+/;
 const next = /[\S\n]|$/;
 const repeat = str(/^(.)\1*/);
 
@@ -34,9 +35,12 @@ export const text: TextParser = creator(source => {
             ? repeat(source, {})
             : [[source[0]], source.slice(1)];
         default:
-          const i = source[0].trim() === '' ? source.search(next) : 0;
+          const b = source[0].trim() === '';
+          const i = b ? source.search(next) : 0;
           assert(i !== -1);
           assert(!['\\', '\n'].includes(source[0]));
+          const r = !b && source.match(alphanumeric);
+          if (r) return [[r[0]], source.slice(r[0].length)];
           return i === source.length
               || source[i] === '\n'
               || source[i] === '\\' && source[i + 1] === '\n'
