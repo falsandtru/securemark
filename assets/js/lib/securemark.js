@@ -4530,7 +4530,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const indexee_1 = _dereq_('./indexee');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.index = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(combinator_1.fmap(indexee_1.indexee(combinator_1.surround('[#', combinator_1.validate(/^[^\n\]]+\]/, util_1.startTight(combinator_1.context({
+            exports.index = combinator_1.lazy(() => combinator_1.creator(combinator_1.fmap(indexee_1.indexee(combinator_1.surround('[#', combinator_1.validate(/^[^\n\]]+\]/, util_1.startTight(combinator_1.context({
                 syntax: {
                     inline: {
                         link: false,
@@ -4541,14 +4541,14 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, combinator_1.union([combinator_1.some(inline_1.inline, ']')])))), ']', false, ([, bs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            }, combinator_1.subline(combinator_1.union([combinator_1.some(inline_1.inline, ']')]))))), ']', false, ([, bs], rest) => util_1.isTight(bs, 0, bs.length) ? [
                 [typed_dom_1.html('a', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : void 0)), ([el]) => [typed_dom_1.define(el, {
                     id: null,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : void 0
-                }, el.childNodes)]))));
+                }, el.childNodes)])));
         },
         {
             '../../../combinator': 28,
@@ -4924,7 +4924,7 @@ require = function () {
             const {origin} = global_1.location;
             exports.attributes = { nofollow: [void 0] };
             void alias_1.ObjectSetPrototypeOf(exports.attributes, null);
-            exports.link = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(10, combinator_1.validate([
+            exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.validate([
                 '[',
                 '{'
             ], combinator_1.bind(combinator_1.fmap(combinator_1.guard(context => {
@@ -4945,7 +4945,7 @@ require = function () {
                                 autolink: false
                             }
                         }
-                    }, combinator_1.some(inline_1.inline, /^\\?\n|^]/))), ']', true)
+                    }, combinator_1.subline(combinator_1.some(inline_1.inline, ']')))), ']', true)
                 ]))),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     exports.uri,
@@ -4977,7 +4977,7 @@ require = function () {
                     [el],
                     rest
                 ];
-            })))));
+            }))));
             exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
             exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
             function sanitize(uri, target, source) {
@@ -5105,7 +5105,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const url = typed_dom_1.html('a');
             exports.cache = new cache_1.Cache(10);
-            exports.media = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate([
+            exports.media = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.validate([
                 '![',
                 '!{'
             ], combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.guard(context => {
@@ -5128,9 +5128,9 @@ require = function () {
                 as
             ]), ([[text], params], rest, context) => {
                 var _a, _b, _c;
-                const INSECURE_URI = params.shift();
                 if (text.length > 0 && text.slice(-2).trim() === '')
                     return;
+                const INSECURE_URI = params.shift();
                 url.href = INSECURE_URI;
                 const key = url.href;
                 const media = exports.cache.has(key) ? exports.cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
@@ -5204,7 +5204,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.reference = combinator_1.lazy(() => combinator_1.subline(combinator_1.creator(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
+            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.validate(/^\S[^\n]*\]\]/, util_1.startTight(combinator_1.context({
@@ -5216,16 +5216,16 @@ require = function () {
                     }
                 },
                 state: void 0
-            }, combinator_1.subsequence([
+            }, combinator_1.subline(combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']'))
-            ]))))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? [
+            ])))))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? [
                 [typed_dom_1.html('sup', {
                         class: 'reference',
                         ...attrs(ns)
                     }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
-            ] : void 0))));
+            ] : void 0)));
             const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
                 ''
