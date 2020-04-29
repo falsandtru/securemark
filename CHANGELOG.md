@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.155.1
+
+- Refactoring.
+
 ## 0.155.0
 
 - Improve autolink syntax detection.
