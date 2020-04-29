@@ -4,7 +4,7 @@ import { startTight, isTight, trimEnd, defrag } from '../../util';
 import { indexee } from './indexee';
 import { html, define } from 'typed-dom';
 
-export const index: ExtensionParser.IndexParser = lazy(() => subline(creator(fmap(indexee(surround(
+export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexee(surround(
   '[#',
   validate(/^[^\n\]]+\]/,
   startTight(
@@ -16,11 +16,11 @@ export const index: ExtensionParser.IndexParser = lazy(() => subline(creator(fma
     extension: false,
     autolink: false,
   }}},
-  union([some(inline, ']')])))),
+  subline(union([some(inline, ']')]))))),
   ']', false,
   ([, bs], rest) =>
     isTight(bs, 0, bs.length)
       ? [[html('a', defrag(trimEnd(bs)))], rest]
       : void 0)),
   ([el]: [HTMLAnchorElement]) =>
-    [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : void 0 }, el.childNodes)]))));
+    [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : void 0 }, el.childNodes)])));

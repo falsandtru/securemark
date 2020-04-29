@@ -15,7 +15,7 @@ export const attributes = {
 } as const;
 void ObjectSetPrototypeOf(attributes, null);
 
-export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{'], bind(fmap(
+export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind(fmap(
   guard(context => context.syntax?.inline?.link ?? true,
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   tails([
@@ -36,7 +36,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
           extension: false,
           autolink: false,
         }}},
-        some(inline, /^\\?\n|^]/))),
+        subline(some(inline, ']')))),
         ']',
         true),
     ]))),
@@ -66,7 +66,7 @@ export const link: LinkParser = lazy(() => subline(creator(10, validate(['[', '{
       makeAttrs(attributes, params, [...el.classList], 'link'),
       { nofollow: void 0 }));
     return [[el], rest];
-  })))));
+  }))));
 
 export const uri: LinkParser.ParamParser.UriParser = union([
   match(
