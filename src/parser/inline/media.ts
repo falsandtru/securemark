@@ -22,10 +22,10 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
   ])))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
   ([[text], params], rest, context) => {
+    if (text.length > 0 && text.slice(-2).trim() === '') return;
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    if (text.length > 0 && text.slice(-2).trim() === '') return;
     url.href = INSECURE_URI;
     const key = url.href;
     const media = cache.has(key)
