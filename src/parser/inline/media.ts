@@ -12,7 +12,7 @@ const url = html('a');
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = lazy(() => creator(validate(['![', '!{'], bind(fmap(open(
+export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], bind(fmap(open(
   '!',
   guard(context => context.syntax?.inline?.media ?? true,
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
