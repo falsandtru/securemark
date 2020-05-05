@@ -28,24 +28,24 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
     assert(!INSECURE_URI.match(/\s/));
     url.href = INSECURE_URI;
     const key = url.href;
-    const media = cache.has(key)
+    const el = cache.has(key)
       ? cache.get(key)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': INSECURE_URI, alt: text.trim() });
     if (cache.has(key)) {
-      media.hasAttribute('alt') && void media.setAttribute('alt', text.trim());
+      el.hasAttribute('alt') && void el.setAttribute('alt', text.trim());
     }
     else {
-      if (!sanitize(url, media, INSECURE_URI)) return [[media], rest];
+      if (!sanitize(url, el, INSECURE_URI)) return [[el], rest];
     }
-    void define(media, {
-      ...attributes('media', optspec, options, [...media.classList]),
+    void define(el, {
+      ...attributes('media', optspec, options, [...el.classList]),
       nofollow: void 0,
     });
     return (context.syntax?.inline?.link ?? true)
-        && media.tagName === 'IMG'
-      ? fmap(link as MediaParser, ([el]) => [define(el, { target: '_blank' }, [media])])
+        && el.tagName === 'IMG'
+      ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])
           (`{ ${INSECURE_URI}${join(options)} }${rest}`, context)
-      : [[media], rest];
+      : [[el], rest];
   }))));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
