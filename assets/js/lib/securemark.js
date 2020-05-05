@@ -6292,7 +6292,7 @@ require = function () {
             const image_1 = _dereq_('./media/image');
             const {origin} = global_1.location;
             function media(target, opts) {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+                var _a, _b, _c, _d, _e, _f, _g, _h;
                 opts = {
                     twitter: twitter_1.twitter,
                     youtube: youtube_1.youtube,
@@ -6306,8 +6306,7 @@ require = function () {
                 };
                 const url = new URL(target.getAttribute('data-src'), origin);
                 const alt = target.getAttribute('alt') || '';
-                (_a = opts.video) === null || _a === void 0 ? void 0 : _a.call(opts, url, alt);
-                return ((_b = opts.twitter) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.youtube) === null || _c === void 0 ? void 0 : _c.call(opts, url)) || ((_d = opts.gist) === null || _d === void 0 ? void 0 : _d.call(opts, url)) || ((_e = opts.slideshare) === null || _e === void 0 ? void 0 : _e.call(opts, url)) || ((_f = opts.pdf) === null || _f === void 0 ? void 0 : _f.call(opts, url)) || ((_g = opts.video) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt)) || ((_h = opts.audio) === null || _h === void 0 ? void 0 : _h.call(opts, url, alt)) || ((_j = opts.image) === null || _j === void 0 ? void 0 : _j.call(opts, url, alt));
+                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.gist) === null || _c === void 0 ? void 0 : _c.call(opts, url)) || ((_d = opts.slideshare) === null || _d === void 0 ? void 0 : _d.call(opts, url)) || ((_e = opts.pdf) === null || _e === void 0 ? void 0 : _e.call(opts, url)) || ((_f = opts.video) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt)) || ((_g = opts.audio) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt)) || ((_h = opts.image) === null || _h === void 0 ? void 0 : _h.call(opts, url, alt));
             }
             exports.media = media;
         },
