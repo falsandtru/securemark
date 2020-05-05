@@ -11,13 +11,13 @@ import { html as h } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
 const tags = ObjectFreeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
-const attributes = {
+const attrspec = {
   bdo: {
     dir: ObjectFreeze(['ltr', 'rtl'] as const),
   },
 } as const;
-void ObjectSetPrototypeOf(attributes, null);
-void ObjectValues(attributes).forEach(o => void ObjectSetPrototypeOf(o, null));
+void ObjectSetPrototypeOf(attrspec, null);
+void ObjectValues(attrspec).forEach(o => void ObjectSetPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => creator(validate('<', union([
   match(
@@ -27,7 +27,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
       surround(
         str(`<${tag}`), some(union([attribute])), str('>'), true,
         ([, as = []], rest) => [
-          [h(tag as 'span', makeAttrs(attributes[tag], as, [], 'html'))],
+          [h(tag as 'span', attributes('html', attrspec[tag], as, []))],
           rest
         ]))),
   match(
@@ -93,7 +93,6 @@ export const attribute: HTMLParser.TagParser.AttributeParser = union([
 ]);
 
 function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
-  let attrs: Record<string, string | undefined>;
   if (!tags.includes(tag)) {
     return invalid('tag', 'Invalid HTML tag', as, bs, cs);
   }
@@ -120,14 +119,15 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
       }
       break;
   }
+  let attrs: Record<string, string | undefined> | undefined;
   switch (true) {
     case stringify(as[as.length - 1]) !== '>'
-      || 'data-invalid-syntax' in (attrs = makeAttrs(attributes[tag], as.slice(1, -1).map(stringify), [], 'html')):
+      || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(stringify), [])):
       return invalid('attribute', 'Invalid HTML attribute', as, bs, cs);
     case cs.length === 0:
       return invalid('closer', 'Missing closing HTML tag', as, bs, cs);
     default:
-      return h(tag as 'span', attrs!, defrag(bs));
+      return h(tag as 'span', attrs, defrag(bs));
   }
 }
 function invalid(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
@@ -144,19 +144,23 @@ const requiredAttributes = memo(
     ObjectEntries(spec).filter(([, v]) => isFrozen(v)),
   new WeakMap());
 
-export function makeAttrs(
+export function attributes(
+  syntax: string,
   spec: DeepImmutable<Record<string, Array<string | undefined>>> | undefined,
   params: string[],
   classes: string[],
-  syntax: string,
 ): Record<string, string | undefined> {
-  let invalid = classes.includes('invalid');
+  assert(spec instanceof Object === false);
+  assert(params.every(param => param.match(/^ \w+(=".*?")?$/)));
+  assert(!classes.includes('invalid'));
+  let invalid = false;
   const attrs = params
     .reduce<Record<string, string>>((attrs, param) => {
+      assert(attrs instanceof Object === false);
       assert(param[0] === ' ');
       param = param.slice(1);
       const key = param.split('=', 1)[0];
-      const val = param.includes('=')
+      const val = param !== key
         ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
         : void 0;
       invalid = invalid || !spec || key in attrs;

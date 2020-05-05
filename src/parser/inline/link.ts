@@ -4,16 +4,16 @@ import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, subline, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
 import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str } from '../source';
-import { makeAttrs } from './html';
+import { attributes } from './html';
 import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
 
 const { origin } = location;
 
-export const attributes = {
+export const optspec = {
   nofollow: [void 0],
 } as const;
-void ObjectSetPrototypeOf(attributes, null);
+void ObjectSetPrototypeOf(optspec, null);
 
 export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind(fmap(
   guard(context => context.syntax?.inline?.link ?? true,
@@ -40,42 +40,42 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind
         ']',
         true),
     ]))),
-    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
+    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ]))),
   ([as, bs]) => bs ? [as, bs] : [[], as]),
-  ([content, params]: [(HTMLElement | string)[], string[]], rest, context) => {
-    assert(params.every(p => typeof p === 'string'));
+  ([content, options]: [(HTMLElement | string)[], string[]], rest, context) => {
+    assert(options.every(p => typeof p === 'string'));
     if (!isTight(content, 0, content.length)) return;
     if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
-    const INSECURE_URI = params.shift()!;
+    const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const el = html('a',
       {
         href: INSECURE_URI,
-        rel: `noopener${params.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
+        rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
         ? content = defrag(trimEnd(content))
         : decode(INSECURE_URI || '.')
-            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h')
+            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h')
             .replace(/^tel:/, ''));
     if (!sanitize(el, el, INSECURE_URI)) return [[el], rest];
     void define(el, ObjectAssign(
-      makeAttrs(attributes, params, [...el.classList], 'link'),
+      attributes('link', optspec, options, [...el.classList]),
       { nofollow: void 0 }));
     return [[el], rest];
   }))));
 
-export const uri: LinkParser.ParamParser.UriParser = union([
+export const uri: LinkParser.ParameterParser.UriParser = union([
   match(
     /^ ?(?! )/,
     memoize(([delim]) => delim,
     delim => str(delim ? /^\S+/ : /^[^\s{}]+/)))
 ]);
 
-export const attribute: LinkParser.ParamParser.AttributeParser = union([
+export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 

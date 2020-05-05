@@ -583,7 +583,7 @@ export namespace MarkdownParser {
       Inline<'link'>,
       Parser<HTMLElement, [
         LinkParser.ContentParser,
-        LinkParser.ParamParser,
+        LinkParser.ParameterParser,
       ], Context> {
     }
     export namespace LinkParser {
@@ -595,22 +595,22 @@ export namespace MarkdownParser {
           InlineParser,
         ], Context> {
       }
-      export interface ParamParser extends
-        Inline<'link/param'>,
+      export interface ParameterParser extends
+        Inline<'link/parameter'>,
         Parser<string[], [
-          LinkParser.ParamParser.UriParser,
-          LinkParser.ParamParser.AttributeParser,
+          LinkParser.ParameterParser.UriParser,
+          LinkParser.ParameterParser.OptionParser,
         ], Context> {
       }
-      export namespace ParamParser {
+      export namespace ParameterParser {
         export interface UriParser extends
-          Inline<'link/param/uri'>,
+          Inline<'link/parameter/uri'>,
           Parser<string, [
             SourceParser.StrParser,
           ], Context> {
         }
-        export interface AttributeParser extends
-          Inline<'link/param/attribute'>,
+        export interface OptionParser extends
+          Inline<'link/parameter/option'>,
           Parser<string, [
             SourceParser.StrParser,
           ], Context> {
@@ -623,7 +623,7 @@ export namespace MarkdownParser {
       Inline<'media'>,
       Parser<HTMLElement, [
         MediaParser.TextParser,
-        MediaParser.ParamParser,
+        MediaParser.ParameterParser,
       ], Context> {
     }
     export namespace MediaParser {
@@ -654,11 +654,11 @@ export namespace MarkdownParser {
           ], Context> {
         }
       }
-      export interface ParamParser extends
-        Inline<'media/param'>,
+      export interface ParameterParser extends
+        Inline<'media/parameter'>,
         Parser<string[], [
-          LinkParser.ParamParser.UriParser,
-          LinkParser.ParamParser.AttributeParser,
+          LinkParser.ParameterParser.UriParser,
+          LinkParser.ParameterParser.OptionParser,
         ], Context> {
       }
     }

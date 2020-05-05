@@ -63,7 +63,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
   ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
     html('figure',
-      attrs(label.getAttribute('data-label')!, content, caption),
+      attributes(label.getAttribute('data-label')!, content, caption),
       [
         html('div', { class: 'figcontent' }, [content]),
         html('span', { class: 'figindex' }),
@@ -71,7 +71,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
       ])
   ]))));
 
-function attrs(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
+function attributes(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
   const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || void 0;
   const invalid = group !== '$' || rebase

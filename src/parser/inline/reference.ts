@@ -22,14 +22,14 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
   ']]'),
   (ns, rest) =>
     isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length)
-      ? [[html('sup', { class: 'reference', ...attrs(ns) }, defrag(trimEnd(ns)))], rest]
+      ? [[html('sup', { class: 'reference', ...attributes(ns) }, defrag(trimEnd(ns)))], rest]
       : void 0)));
 
 const alias: ReferenceParser.AliasParser = creator(focus(
   /^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/,
   source => [[html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))], '']));
 
-function attrs(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
+function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   return {
     'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
       ? stringify(ns.shift()!)

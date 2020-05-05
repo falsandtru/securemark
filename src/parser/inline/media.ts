@@ -1,9 +1,9 @@
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, fmap, bind, surround, open, lazy } from '../../combinator';
 import { dup } from '../util';
-import { link, attributes, uri, attribute, sanitize } from './link';
+import { link, optspec, uri, option, sanitize } from './link';
 import { text, char } from '../source';
-import { makeAttrs } from './html';
+import { attributes } from './html';
 import { html, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
 import { unshift, join } from 'spica/array';
@@ -18,12 +18,12 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   tails([
     dup(surround(/^\[(?!\s)/, some(union([bracket, text]), /^(?:\\?\n|\])/), ']', true)),
-    dup(surround(/^{(?![{}])/, inits([uri, some(attribute)]), /^ ?}/)),
+    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ])))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
-  ([[text], params], rest, context) => {
+  ([[text], options], rest, context) => {
     if (text.length > 0 && text.slice(-2).trim() === '') return;
-    const INSECURE_URI = params.shift()!;
+    const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     url.href = INSECURE_URI;
@@ -38,13 +38,13 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
       if (!sanitize(url, media, INSECURE_URI)) return [[media], rest];
     }
     void define(media, {
-      ...makeAttrs(attributes, params, [...media.classList], 'media'),
+      ...attributes('media', optspec, options, [...media.classList]),
       nofollow: void 0,
     });
     return (context.syntax?.inline?.link ?? true)
         && media.tagName === 'IMG'
       ? fmap(link as MediaParser, ([el]) => [define(el, { target: '_blank' }, [media])])
-          (`{ ${INSECURE_URI}${join(params)} }${rest}`, context)
+          (`{ ${INSECURE_URI}${join(options)} }${rest}`, context)
       : [[media], rest];
   }))));
 

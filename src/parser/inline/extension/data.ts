@@ -18,13 +18,13 @@ export const data: DataParser = lazy(() => creator(surround(
   char(']'), false,
   ([as, bs, cs], rest) => [
     isTight(bs, 2, bs.length)
-      ? [html('span', attrs(stringify(bs[0])), defrag(trimEnd(bs.slice(2))))]
+      ? [html('span', attributes(stringify(bs[0])), defrag(trimEnd(bs.slice(2))))]
       : push(unshift(as, bs), cs),
     rest
   ],
   ([as, bs], rest) => [unshift(as, bs), rest])));
 
-function attrs(data: string): DeepImmutable<Record<string, string>> {
+function attributes(data: string): DeepImmutable<Record<string, string>> {
   assert(data !== '');
   const name = data.split('=', 1)[0];
   const value = data.slice(name.length + 1);
