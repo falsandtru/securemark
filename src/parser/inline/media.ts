@@ -28,21 +28,22 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
     assert(!INSECURE_URI.match(/\s/));
     url.href = INSECURE_URI;
     const key = url.href;
-    const el = cache.has(key)
+    const cached = cache.has(key);
+    const el = cached
       ? cache.get(key)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': INSECURE_URI, alt: text.trim() });
-    if (cache.has(key)) {
+    if (cached) {
       el.hasAttribute('alt') && void el.setAttribute('alt', text.trim());
     }
     else {
       if (!sanitize(url, el, INSECURE_URI)) return [[el], rest];
     }
     void define(el, {
-      ...attributes('media', optspec, options, [...el.classList]),
+      ...attributes('media', optspec, options, cached ? [...el.classList] : ['media']),
       nofollow: void 0,
     });
     return (context.syntax?.inline?.link ?? true)
-        && el.tagName === 'IMG'
+        && (!cached || el.tagName === 'IMG')
       ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])
           (`{ ${INSECURE_URI}${join(options)} }${rest}`, context)
       : [[el], rest];

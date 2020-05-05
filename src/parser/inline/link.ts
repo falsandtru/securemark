@@ -62,8 +62,9 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h')
             .replace(/^tel:/, ''));
     if (!sanitize(el, el, INSECURE_URI)) return [[el], rest];
+    assert(el.classList.length === 0);
     void define(el, ObjectAssign(
-      attributes('link', optspec, options, [...el.classList]),
+      attributes('link', optspec, options, []),
       { nofollow: void 0 }));
     return [[el], rest];
   }))));
