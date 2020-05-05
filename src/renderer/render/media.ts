@@ -16,7 +16,6 @@ export function media(target: HTMLImageElement, opts: NonNullable<RenderingOptio
   opts = { twitter, youtube, gist, slideshare, pdf, video, audio, image, ...opts };
   const url = new URL(target.getAttribute('data-src')!, origin);
   const alt = target.getAttribute('alt') || '';
-  opts.video?.(url, alt)
   return opts.twitter?.(url)
       || opts.youtube?.(url)
       || opts.gist?.(url)
