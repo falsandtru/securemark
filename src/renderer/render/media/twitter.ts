@@ -1,7 +1,7 @@
 import { window, document } from 'spica/global';
 import { parse } from '../../../parser';
 import { sanitize } from 'dompurify';
-import { HTML, html as h, define } from 'typed-dom';
+import { HTML, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
 
 declare global {
@@ -28,8 +28,8 @@ export function twitter(url: URL): HTMLElement | undefined {
     window.twttr?.widgets.load(el);
     return el;
   }
-  return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (f, tag) => {
-    const outer = f(tag);
+  return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (h, tag) => {
+    const outer = h(tag);
     void $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}&omit_script=true`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,

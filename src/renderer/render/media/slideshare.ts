@@ -11,8 +11,8 @@ export function slideshare(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
-  return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (f, tag) => {
-    const outer = f(tag);
+  return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (h, tag) => {
+    const outer = h(tag);
     void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${url.href}&format=json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
