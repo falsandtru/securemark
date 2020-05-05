@@ -697,11 +697,11 @@ require = function () {
                                 const {status} = value[internal];
                                 switch (status.state) {
                                 case 2:
-                                    results[i] = status.result;
+                                    results[i] = status.value;
                                     ++count;
                                     continue;
                                 case 3:
-                                    reject(status.result);
+                                    reject(status.reason);
                                     i = values.length;
                                     continue;
                                 }
@@ -730,9 +730,9 @@ require = function () {
                                 const {status} = value[internal];
                                 switch (status.state) {
                                 case 2:
-                                    return resolve(status.result);
+                                    return resolve(status.value);
                                 case 3:
-                                    return reject(status.result);
+                                    return reject(status.reason);
                                 }
                             }
                         }
@@ -749,6 +749,59 @@ require = function () {
                             if (done)
                                 return;
                         }
+                    });
+                }
+                static allSettled(vs) {
+                    return new AtomicPromise(resolve => {
+                        const values = alias_1.isArray(vs) ? vs : [...vs];
+                        const results = global_1.Array(values.length);
+                        let count = 0;
+                        for (let i = 0; i < values.length; ++i) {
+                            const value = values[i];
+                            if (!isPromiseLike(value)) {
+                                results[i] = {
+                                    status: 'fulfilled',
+                                    value: value
+                                };
+                                ++count;
+                                continue;
+                            }
+                            if (isAtomicPromiseLike(value)) {
+                                const {status} = value[internal];
+                                switch (status.state) {
+                                case 2:
+                                    results[i] = {
+                                        status: 'fulfilled',
+                                        value: status.value
+                                    };
+                                    ++count;
+                                    continue;
+                                case 3:
+                                    results[i] = {
+                                        status: 'rejected',
+                                        reason: status.reason
+                                    };
+                                    ++count;
+                                    continue;
+                                }
+                            }
+                            value.then(value => {
+                                results[i] = {
+                                    status: 'fulfilled',
+                                    value: value
+                                };
+                                ++count;
+                                count === values.length && resolve(results);
+                            }, reason => {
+                                results[i] = {
+                                    status: 'rejected',
+                                    reason
+                                };
+                                ++count;
+                                count === values.length && resolve(results);
+                            });
+                        }
+                        count === values.length && resolve(results);
                     });
                 }
                 static resolve(value) {
@@ -786,24 +839,24 @@ require = function () {
                     if (!isPromiseLike(value)) {
                         this.status = {
                             state: 2,
-                            result: value
+                            value: value
                         };
                         return this.resume();
                     }
                     this.status = {
                         state: 1,
-                        result: value
+                        promise: value
                     };
                     return void value.then(value => {
                         this.status = {
                             state: 2,
-                            result: value
+                            value: value
                         };
                         this.resume();
                     }, reason => {
                         this.status = {
                             state: 3,
-                            result: reason
+                            reason: reason
                         };
                         this.resume();
                     });
@@ -813,7 +866,7 @@ require = function () {
                         return;
                     this.status = {
                         state: 3,
-                        result: reason
+                        reason: reason
                     };
                     return this.resume();
                 }
@@ -824,7 +877,7 @@ require = function () {
                         if (fulfillReactions.length > 0)
                             break;
                         try {
-                            return onfulfilled ? resolve(onfulfilled(status.result)) : resolve(status.result);
+                            return onfulfilled ? resolve(onfulfilled(status.value)) : resolve(status.value);
                         } catch (reason) {
                             return reject(reason);
                         }
@@ -832,7 +885,7 @@ require = function () {
                         if (rejectReactions.length > 0)
                             break;
                         try {
-                            return onrejected ? resolve(onrejected(status.result)) : reject(status.result);
+                            return onrejected ? resolve(onrejected(status.reason)) : reject(status.reason);
                         } catch (reason) {
                             return reject(reason);
                         }
@@ -869,7 +922,7 @@ require = function () {
                         if (fulfillReactions.length === 0)
                             return;
                         this.isHandled = true;
-                        this.react(fulfillReactions, status.result);
+                        this.react(fulfillReactions, status.value);
                         return;
                     case 3:
                         if (this.isHandled && fulfillReactions.length > 0) {
@@ -878,19 +931,19 @@ require = function () {
                         if (rejectReactions.length === 0)
                             return;
                         this.isHandled = true;
-                        this.react(rejectReactions, status.result);
+                        this.react(rejectReactions, status.reason);
                         return;
                     }
                 }
-                react(reactions, result) {
+                react(reactions, param) {
                     this.reactable = false;
                     if (reactions.length < 5) {
                         while (reactions.length > 0) {
-                            reactions.shift()(result);
+                            reactions.shift()(param);
                         }
                     } else {
                         for (let i = 0; i < reactions.length; ++i) {
-                            reactions[i](result);
+                            reactions[i](param);
                         }
                         array_1.splice(reactions, 0);
                     }
@@ -3359,12 +3412,12 @@ require = function () {
                     source_1.emptyline,
                     combinator_1.block(combinator_1.convert(source => source.replace(paragraph_1.blankline, ''), combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.trim(combinator_1.some(inline_1.inline)))))
                 ])
-            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attrs(label.getAttribute('data-label'), content, caption), [
+            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attributes(label.getAttribute('data-label'), content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
                     typed_dom_1.html('figcaption', util_1.defrag(caption))
                 ])]))));
-            function attrs(label, content, caption) {
+            function attributes(label, content, caption) {
                 const group = label.split('-', 1)[0];
                 const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || void 0;
                 const invalid = group !== '$' || rebase ? void 0 : !content.classList.contains('math') || caption.length > 0 || void 0;
@@ -4495,13 +4548,13 @@ require = function () {
                 source_1.char('|'),
                 util_1.startTight(combinator_1.some(inline_1.inline, ']'))
             ]), source_1.char(']'), false, ([as, bs, cs], rest) => [
-                util_1.isTight(bs, 2, bs.length) ? [typed_dom_1.html('span', attrs(util_1.stringify(bs[0])), util_1.defrag(util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
+                util_1.isTight(bs, 2, bs.length) ? [typed_dom_1.html('span', attributes(util_1.stringify(bs[0])), util_1.defrag(util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
                 rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
                 rest
             ])));
-            function attrs(data) {
+            function attributes(data) {
                 const name = data.split('=', 1)[0];
                 const value = data.slice(name.length + 1);
                 return {
@@ -4708,7 +4761,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.makeAttrs = exports.attribute = exports.html = void 0;
+            exports.attributes = exports.attribute = exports.html = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const inline_1 = _dereq_('../inline');
@@ -4725,7 +4778,7 @@ require = function () {
                 'bdo',
                 'bdi'
             ]);
-            const attributes = {
+            const attrspec = {
                 bdo: {
                     dir: alias_1.ObjectFreeze([
                         'ltr',
@@ -4733,11 +4786,11 @@ require = function () {
                     ])
                 }
             };
-            void alias_1.ObjectSetPrototypeOf(attributes, null);
-            void alias_1.ObjectValues(attributes).forEach(o => void alias_1.ObjectSetPrototypeOf(o, null));
+            void alias_1.ObjectSetPrototypeOf(attrspec, null);
+            void alias_1.ObjectValues(attrspec).forEach(o => void alias_1.ObjectSetPrototypeOf(o, null));
             exports.html = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('<', combinator_1.union([
                 combinator_1.match(/^(?=<(wbr)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), source_1.str('>'), true, ([, as = []], rest) => [
-                    [typed_dom_1.html(tag, makeAttrs(attributes[tag], as, [], 'html'))],
+                    [typed_dom_1.html(tag, attributes('html', attrspec[tag], as, []))],
                     rest
                 ]))),
                 combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.validate(new global_1.RegExp(`^<${ tag }[^\\n>]*>\\S[\\s\\S]*?</${ tag }>`), combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
@@ -4778,7 +4831,6 @@ require = function () {
             exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]);
             function elem(tag, as, bs, cs, context) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
-                let attrs;
                 if (!tags.includes(tag)) {
                     return invalid('tag', 'Invalid HTML tag', as, bs, cs);
                 }
@@ -4805,8 +4857,9 @@ require = function () {
                     }
                     break;
                 }
+                let attrs;
                 switch (true) {
-                case util_1.stringify(as[as.length - 1]) !== '>' || 'data-invalid-syntax' in (attrs = makeAttrs(attributes[tag], as.slice(1, -1).map(util_1.stringify), [], 'html')):
+                case util_1.stringify(as[as.length - 1]) !== '>' || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(util_1.stringify), [])):
                     return invalid('attribute', 'Invalid HTML attribute', as, bs, cs);
                 case cs.length === 0:
                     return invalid('closer', 'Missing closing HTML tag', as, bs, cs);
@@ -4823,13 +4876,13 @@ require = function () {
                 }, util_1.defrag(array_1.push(array_1.unshift(as, bs), cs)));
             }
             const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)), new WeakMap());
-            function makeAttrs(spec, params, classes, syntax) {
-                let invalid = classes.includes('invalid');
+            function attributes(syntax, spec, params, classes) {
+                let invalid = false;
                 const attrs = params.reduce((attrs, param) => {
                     var _a;
                     param = param.slice(1);
                     const key = param.split('=', 1)[0];
-                    const val = param.includes('=') ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1') : void 0;
+                    const val = param !== key ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1') : void 0;
                     invalid = invalid || !spec || key in attrs;
                     ((_a = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _a === void 0 ? void 0 : _a.includes(val)) ? attrs[key] = val || '' : invalid = invalid || !!spec;
                     return attrs;
@@ -4844,7 +4897,7 @@ require = function () {
                 }
                 return attrs;
             }
-            exports.makeAttrs = makeAttrs;
+            exports.attributes = attributes;
         },
         {
             '../../combinator': 28,
@@ -4911,7 +4964,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.sanitize = exports.attribute = exports.uri = exports.link = exports.attributes = void 0;
+            exports.sanitize = exports.option = exports.uri = exports.link = exports.optspec = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const inline_1 = _dereq_('../inline');
@@ -4922,8 +4975,8 @@ require = function () {
             const autolink_1 = _dereq_('../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
             const {origin} = global_1.location;
-            exports.attributes = { nofollow: [void 0] };
-            void alias_1.ObjectSetPrototypeOf(exports.attributes, null);
+            exports.optspec = { nofollow: [void 0] };
+            void alias_1.ObjectSetPrototypeOf(exports.optspec, null);
             exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.validate([
                 '[',
                 '{'
@@ -4949,7 +5002,7 @@ require = function () {
                 ]))),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     exports.uri,
-                    combinator_1.some(exports.attribute)
+                    combinator_1.some(exports.option)
                 ]), /^ ?}/))
             ]))), ([as, bs]) => bs ? [
                 as,
@@ -4957,29 +5010,29 @@ require = function () {
             ] : [
                 [],
                 as
-            ]), ([content, params], rest, context) => {
+            ]), ([content, options], rest, context) => {
                 if (!util_1.isTight(content, 0, content.length))
                     return;
                 if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
                     return;
-                const INSECURE_URI = params.shift();
+                const INSECURE_URI = options.shift();
                 const el = typed_dom_1.html('a', {
                     href: INSECURE_URI,
-                    rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, params.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
+                    rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
+                }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
                 if (!sanitize(el, el, INSECURE_URI))
                     return [
                         [el],
                         rest
                     ];
-                void typed_dom_1.define(el, alias_1.ObjectAssign(html_1.makeAttrs(exports.attributes, params, [...el.classList], 'link'), { nofollow: void 0 }));
+                void typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, options, []), { nofollow: void 0 }));
                 return [
                     [el],
                     rest
                 ];
             }))));
             exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
-            exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
+            exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
             function sanitize(uri, target, source) {
                 let type;
                 let message;
@@ -5118,7 +5171,7 @@ require = function () {
                 ]), /^(?:\\?\n|\])/), ']', true)),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     link_1.uri,
-                    combinator_1.some(link_1.attribute)
+                    combinator_1.some(link_1.option)
                 ]), /^ ?}/))
             ])))), ([as, bs]) => bs ? [
                 [array_1.join(as)],
@@ -5126,33 +5179,34 @@ require = function () {
             ] : [
                 [''],
                 as
-            ]), ([[text], params], rest, context) => {
+            ]), ([[text], options], rest, context) => {
                 var _a, _b, _c;
                 if (text.length > 0 && text.slice(-2).trim() === '')
                     return;
-                const INSECURE_URI = params.shift();
+                const INSECURE_URI = options.shift();
                 url.href = INSECURE_URI;
                 const key = url.href;
-                const media = exports.cache.has(key) ? exports.cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
+                const cached = exports.cache.has(key);
+                const el = cached ? exports.cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': INSECURE_URI,
                     alt: text.trim()
                 });
-                if (exports.cache.has(key)) {
-                    media.hasAttribute('alt') && void media.setAttribute('alt', text.trim());
+                if (cached) {
+                    el.hasAttribute('alt') && void el.setAttribute('alt', text.trim());
                 } else {
-                    if (!link_1.sanitize(url, media, INSECURE_URI))
+                    if (!link_1.sanitize(url, el, INSECURE_URI))
                         return [
-                            [media],
+                            [el],
                             rest
                         ];
                 }
-                void typed_dom_1.define(media, {
-                    ...html_1.makeAttrs(link_1.attributes, params, [...media.classList], 'media'),
+                void typed_dom_1.define(el, {
+                    ...html_1.attributes('media', link_1.optspec, options, cached ? [...el.classList] : ['media']),
                     nofollow: void 0
                 });
-                return ((_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true) && media.tagName === 'IMG' ? combinator_1.fmap(link_1.link, ([el]) => [typed_dom_1.define(el, { target: '_blank' }, [media])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context) : [
-                    [media],
+                return ((_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(options) } }${ rest }`, context) : [
+                    [el],
                     rest
                 ];
             }))));
@@ -5222,7 +5276,7 @@ require = function () {
             ])))))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? [
                 [typed_dom_1.html('sup', {
                         class: 'reference',
-                        ...attrs(ns)
+                        ...attributes(ns)
                     }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : void 0)));
@@ -5230,7 +5284,7 @@ require = function () {
                 [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
                 ''
             ]));
-            function attrs(ns) {
+            function attributes(ns) {
                 return { 'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? util_1.stringify(ns.shift()) : void 0 };
             }
         },
