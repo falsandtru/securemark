@@ -2,7 +2,7 @@ import { document } from 'spica/global';
 import { parse } from '../../../parser';
 import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
-import { HTML, html, define } from 'typed-dom';
+import { HTML, define } from 'typed-dom';
 
 const origins = new Set([
   'https://gist.github.com',
@@ -12,8 +12,8 @@ export function gist(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
   if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
-  return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (h, tag) => {
-    const outer = h(tag);
+  return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (html, tag) => {
+    const outer = html(tag);
     void $.ajax(`${url.href}.json`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
