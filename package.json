@@ -65,7 +65,7 @@
     "semver": "^7.3.2",
     "spica": "0.0.374",
     "tsify": "^4.0.1",
-    "typed-dom": "0.0.192",
+    "typed-dom": "0.0.193",
     "typescript": "4.0.0-dev.20200505",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
