@@ -18,37 +18,37 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
 
 export interface ParserSettings {
-  footnotes: {
-    annotation: HTMLOListElement;
-    reference: HTMLOListElement;
+  readonly footnotes: {
+    readonly annotation: HTMLOListElement;
+    readonly reference: HTMLOListElement;
   };
 }
 
 export interface RenderingOptions {
-  code?: (target: HTMLElement) => void;
-  math?: (target: HTMLElement) => void;
-  media?: {
-    twitter?: (url: URL) => HTMLElement | undefined;
-    youtube?: (url: URL) => HTMLElement | undefined;
-    gist?: (url: URL) => HTMLElement | undefined;
-    slideshare?: (url: URL) => HTMLElement | undefined;
-    pdf?: (url: URL) => HTMLElement | undefined;
-    video?: (url: URL, alt: string) => HTMLVideoElement | undefined;
-    audio?: (url: URL, alt: string) => HTMLAudioElement | undefined;
-    image?: (url: URL, alt: string) => HTMLImageElement;
+  readonly code?: (target: HTMLElement) => void;
+  readonly math?: (target: HTMLElement) => void;
+  readonly media?: {
+    readonly twitter?: (url: URL) => HTMLElement | undefined;
+    readonly youtube?: (url: URL) => HTMLElement | undefined;
+    readonly gist?: (url: URL) => HTMLElement | undefined;
+    readonly slideshare?: (url: URL) => HTMLElement | undefined;
+    readonly pdf?: (url: URL) => HTMLElement | undefined;
+    readonly video?: (url: URL, alt: string) => HTMLVideoElement | undefined;
+    readonly audio?: (url: URL, alt: string) => HTMLAudioElement | undefined;
+    readonly image?: (url: URL, alt: string) => HTMLImageElement;
   };
 }
 
 export interface Info {
-  hashtag: HTMLAnchorElement[];
-  hashref: HTMLAnchorElement[];
-  channel: HTMLAnchorElement[];
-  account: HTMLAnchorElement[];
-  mention: HTMLAnchorElement[];
-  url: HTMLAnchorElement[];
-  tel: HTMLAnchorElement[];
-  email: HTMLAnchorElement[];
-  media: HTMLElement[];
+  readonly hashtag: HTMLAnchorElement[];
+  readonly hashref: HTMLAnchorElement[];
+  readonly channel: HTMLAnchorElement[];
+  readonly account: HTMLAnchorElement[];
+  readonly mention: HTMLAnchorElement[];
+  readonly url: HTMLAnchorElement[];
+  readonly tel: HTMLAnchorElement[];
+  readonly email: HTMLAnchorElement[];
+  readonly media: HTMLElement[];
 }
 
 import { Cache } from 'spica/cache';
