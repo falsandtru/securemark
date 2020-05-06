@@ -23,7 +23,7 @@ const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(union
 ])));
 
 export function url2link(url: string): string {
-  assert(url.match(/^h?ttps?:/));
+  assert(url.match(/^h?ttps?:\S+$/));
   return url[0] === 'h'
     ? `{ ${url} }`
     : `{ h${url} nofollow }`;
