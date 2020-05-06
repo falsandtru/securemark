@@ -1706,11 +1706,10 @@ require = function () {
             exports.text = text;
             function element(context, ns) {
                 const cache = memoize_1.memoize(elem, (_, ns, tag) => `${ ns }:${ tag }`);
-                return element;
-                function element(tag, attrs, children) {
+                return (tag, attrs, children) => {
                     const el = tag.includes('-') ? elem(context, ns, tag) : cache(context, ns, tag).cloneNode(true);
                     return isChildren(attrs) ? defineChildren(el, attrs) : defineChildren(defineAttrs(el, attrs), children);
-                }
+                };
             }
             exports.element = element;
             function elem(context, ns, tag) {
@@ -6375,8 +6374,8 @@ require = function () {
                     return typed_dom_1.HTML.div({
                         class: 'media',
                         style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
-                        const outer = f(tag);
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
+                        const outer = h(tag);
                         void $.ajax(`${ url.href }.json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
@@ -6492,8 +6491,8 @@ require = function () {
                     return typed_dom_1.HTML.div({
                         class: 'media',
                         style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
-                        const outer = f(tag);
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
+                        const outer = h(tag);
                         void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
@@ -6550,8 +6549,8 @@ require = function () {
                     return typed_dom_1.HTML.div({
                         class: 'media',
                         style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (f, tag) => {
-                        const outer = f(tag);
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
+                        const outer = h(tag);
                         void $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
@@ -6564,7 +6563,7 @@ require = function () {
                                 const id = 'twitter-wjs';
                                 if (global_1.document.getElementById(id))
                                     return;
-                                void global_1.document.body.appendChild(typed_dom_1.html('script', {
+                                void global_1.document.body.appendChild(h('script', {
                                     id,
                                     src: 'https://platform.twitter.com/widgets.js'
                                 }));
