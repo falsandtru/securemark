@@ -1165,7 +1165,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             _dereq_('spica/global');
-            var builder_1 = _dereq_('./src/dom/builder');
+            var builder_1 = _dereq_('./src/builder');
             Object.defineProperty(exports, 'Shadow', {
                 enumerable: true,
                 get: function () {
@@ -1190,7 +1190,7 @@ require = function () {
                     return builder_1.API;
                 }
             });
-            var proxy_1 = _dereq_('./src/dom/proxy');
+            var proxy_1 = _dereq_('./src/proxy');
             Object.defineProperty(exports, 'proxy', {
                 enumerable: true,
                 get: function () {
@@ -1286,8 +1286,8 @@ require = function () {
             });
         },
         {
-            './src/dom/builder': 22,
-            './src/dom/proxy': 24,
+            './src/builder': 22,
+            './src/proxy': 24,
             './src/util/dom': 25,
             './src/util/listener': 26,
             './src/util/query': 27,
@@ -1302,7 +1302,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const proxy_1 = _dereq_('./proxy');
-            const dom_1 = _dereq_('../util/dom');
+            const dom_1 = _dereq_('./util/dom');
             function API(baseFactory, formatter = el => el) {
                 return new Proxy(() => global_1.undefined, handle(baseFactory, formatter));
             }
@@ -1354,8 +1354,8 @@ require = function () {
             }
         },
         {
-            '../util/dom': 25,
             './proxy': 24,
+            './util/dom': 25,
             'spica/alias': 5,
             'spica/global': 12
         }
@@ -1383,7 +1383,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const identity_1 = _dereq_('./identity');
-            const dom_1 = _dereq_('../util/dom');
+            const dom_1 = _dereq_('./util/dom');
             const array_1 = _dereq_('spica/array');
             const proxies = new global_1.WeakMap();
             function proxy(el) {
@@ -1665,8 +1665,8 @@ require = function () {
             }
         },
         {
-            '../util/dom': 25,
             './identity': 23,
+            './util/dom': 25,
             'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 12
@@ -6374,8 +6374,8 @@ require = function () {
                     return typed_dom_1.HTML.div({
                         class: 'media',
                         style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
-                        const outer = h(tag);
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (html, tag) => {
+                        const outer = html(tag);
                         void $.ajax(`${ url.href }.json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
@@ -6385,11 +6385,11 @@ require = function () {
                                     return;
                                 outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                 const gist = outer.querySelector('.gist');
-                                void gist.insertBefore(typed_dom_1.html('div', { class: 'gist-description' }, [typed_dom_1.HTML.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
+                                void gist.insertBefore(html('div', { class: 'gist-description' }, [typed_dom_1.HTML.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
                                 void media_1.cache.set(url.href, outer.cloneNode(true));
                                 if (global_1.document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                     return;
-                                void global_1.document.head.appendChild(typed_dom_1.html('link', {
+                                void global_1.document.head.appendChild(html('link', {
                                     rel: 'stylesheet',
                                     href: stylesheet,
                                     crossorigin: 'anonymous'
@@ -6491,8 +6491,8 @@ require = function () {
                     return typed_dom_1.HTML.div({
                         class: 'media',
                         style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
-                        const outer = h(tag);
+                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (html, tag) => {
+                        const outer = html(tag);
                         void $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
                             dataType: 'jsonp',
                             timeout: 10 * 1000,
