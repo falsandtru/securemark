@@ -23,6 +23,7 @@ describe('Unit: parser/inline/autolink/channel', () => {
       assert.deepStrictEqual(inspect(parser('@a')), [['<a class="account" rel="noopener">@a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" rel="noopener">@a#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('@a#b#c')), [['<a class="channel" rel="noopener">@a#b#c</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@domain.com/a#b')), [['<a class="channel" rel="noopener" data-ns="domain.com">@domain.com/a#b</a>'], '']);
     });
 
   });
