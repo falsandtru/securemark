@@ -59,6 +59,12 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
+    it('domain', () => {
+      assert.deepStrictEqual(
+        [...parse('@a', { domain: 'localhost' }).children].map(el => el.outerHTML),
+        ['<p><a class="account" href="https://localhost/@a" rel="noopener">@a</a></p>']);
+    });
+
 /*
     it('stress bracket', function () {
       assert.deepStrictEqual(

@@ -11,6 +11,7 @@ export interface MarkdownParser extends
 }
 export namespace MarkdownParser {
   export interface Context extends Ctx {
+    readonly domain?: string;
     readonly syntax?: {
       readonly inline?: {
         readonly annotation?: boolean;

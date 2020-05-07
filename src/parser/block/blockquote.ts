@@ -43,6 +43,6 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
       convert(unindent, source)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, (source, context) => [[suppress(parse(source, { context, footnotes: { annotation: html('ol'), reference: html('ol') } }))], ''])),
+      convert(unindent, (source, context) => [[suppress(parse(source, { ...context, footnotes: { annotation: html('ol'), reference: html('ol') } }))], ''])),
   ])),
   ns => [html('blockquote', ns)]));

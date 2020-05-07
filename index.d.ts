@@ -5,19 +5,20 @@
 * @author falsandtru https://github.com/falsandtru/securemark
 */
 
-export function parse(source: string, opts?: Partial<ParserSettings>): DocumentFragment;
+export function parse(source: string, options?: Partial<ParserSettings>): DocumentFragment;
 // The `bind` function yields the elements below.
 //   1. Added or removed child elements of the target container element.
 //   2. Added or changed figure links.
 //   3. All footnote links.
 //   4. Added or removed child elements of the footnote elements.
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, stgs: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined>;
-export function render(target: HTMLElement, opts?: RenderingOptions): void;
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined>;
+export function render(target: HTMLElement, options?: RenderingOptions): void;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
 
 export interface ParserSettings {
+  readonly domain?: string;
   readonly footnotes: {
     readonly annotation: HTMLOListElement;
     readonly reference: HTMLOListElement;

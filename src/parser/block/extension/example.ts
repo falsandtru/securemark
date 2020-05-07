@@ -28,7 +28,7 @@ export const example: ExtensionParser.ExampleParser = block(creator(10, validate
         const annotation = html('ol');
         const reference = html('ol');
         const view = parse(body.slice(0, -1), {
-          context,
+          ...context,
           footnotes: {
             annotation,
             reference,

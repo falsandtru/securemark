@@ -7,7 +7,7 @@ import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { push, splice } from 'spica/array';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { footnotes }: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   const adds: [HTMLElement, Node | null][] = [];
@@ -36,7 +36,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = eval(block(seg, {}), []);
+      const es = eval(block(seg, settings), []);
       void pairs.splice(index, 0, [seg, es]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
@@ -74,12 +74,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, { foot
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of footnote(target, footnotes)) {
+    for (const el of footnote(target, settings.footnotes)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of figure(target, footnotes)) {
+    for (const el of figure(target, settings.footnotes)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;

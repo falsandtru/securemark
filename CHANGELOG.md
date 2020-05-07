@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.156.0
+
+- Enhance account parser to define href attribute.
+
 ## 0.155.2
 
 - Refactoring.
