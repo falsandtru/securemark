@@ -3,6 +3,7 @@
 ## 0.156.0
 
 - Enhance account parser to define href attribute.
+- Enhance channel parser to define href attribute.
 
 ## 0.155.2
 

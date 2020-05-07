@@ -20,9 +20,9 @@ describe('Unit: parser/inline/autolink/channel', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" rel="noopener">@a#b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@a#b#c')), [['<a class="channel" rel="noopener">@a#b#c</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('@domain.com/a#b')), [['<a class="channel" rel="noopener" data-ns="domain.com">@domain.com/a#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" href="/@a?ch=b" rel="noopener">@a#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b#c')), [['<a class="channel" href="/@a?ch=b+c" rel="noopener">@a#b#c</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@domain.com/a#b')), [['<a class="channel" href="https://domain.com/@a?ch=b" rel="noopener">@domain.com/a#b</a>'], '']);
     });
 
   });

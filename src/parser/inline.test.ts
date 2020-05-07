@@ -127,9 +127,9 @@ describe('Unit: parser/inline', () => {
     });
 
     it('channel', () => {
-      assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" rel="noopener">@a#b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('_@a#b')), [['_', '<a class="channel" rel="noopener">@a#b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser(' @a#b')), [[' ', '<a class="channel" rel="noopener">@a#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('@a#b')), [['<a class="channel" href="/@a?ch=b" rel="noopener">@a#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('_@a#b')), [['_', '<a class="channel" href="/@a?ch=b" rel="noopener">@a#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser(' @a#b')), [[' ', '<a class="channel" href="/@a?ch=b" rel="noopener">@a#b</a>'], '']);
     });
 
     it('account', () => {
