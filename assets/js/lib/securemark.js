@@ -4107,8 +4107,7 @@ require = function () {
                 source_1.str(/^@[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/),
                 source_1.str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
                 hashtag_1.hashtag,
-                hashref_1.hashref,
-                source_1.str(/^#[0-9]+(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/)
+                hashref_1.hashref
             ])))), ns => ns.length === 1 ? ns : [util_1.stringify(ns)]);
         },
         {
@@ -4210,7 +4209,7 @@ require = function () {
             exports.hashref = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![A-Za-z]|[^\x00-\x7F\s])/, ref => [
+            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![A-Za-z0-9]|[^\x00-\x7F\s])/, ref => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
                         rel: 'noopener'
@@ -4230,7 +4229,7 @@ require = function () {
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {domain}) => {
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z0-9]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {domain}) => {
                 const url = domain ? `https://${ domain }/hashtag/${ tag.slice(1) }` : `/hashtag/${ tag.slice(1) }`;
                 return [
                     [typed_dom_1.html('a', {
