@@ -5,6 +5,7 @@
 - Enhance account parser to define href attribute.
 - Enhance channel parser to define href attribute.
 - Enhance hashtag parser to define href attribute.
+- Extend hashtag syntax to be possible to start with a number.
 
 ## 0.155.2
 
