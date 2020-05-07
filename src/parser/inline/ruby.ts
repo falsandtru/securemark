@@ -31,8 +31,8 @@ export const ruby: RubyParser = lazy(() => creator(bind(
       default:
         assert(rubies.length > 0);
         return [[html('ruby', defrag(unshift<HTMLElement | string>(
-          [join(texts, ' ')],
-          [html('rp', '('), html('rt', join(rubies, ' ')), html('rp', ')')])))
+          [join(texts, ' ').trim()],
+          [html('rp', '('), html('rt', join(rubies, ' ').trim()), html('rp', ')')])))
         ], rest];
     }
   })));
