@@ -2810,7 +2810,7 @@ require = function () {
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
             const array_1 = _dereq_('spica/array');
-            function bind(target, {footnotes}) {
+            function bind(target, settings) {
                 const pairs = [];
                 const adds = [];
                 const dels = [];
@@ -2838,7 +2838,7 @@ require = function () {
                     let index = head;
                     for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
-                        const es = combinator_1.eval(block_1.block(seg, {}), []);
+                        const es = combinator_1.eval(block_1.block(seg, settings), []);
                         void pairs.splice(index, 0, [
                             seg,
                             es
@@ -2877,12 +2877,12 @@ require = function () {
                         if (rev !== revision)
                             return yield;
                     }
-                    for (const el of footnote_1.footnote(target, footnotes)) {
+                    for (const el of footnote_1.footnote(target, settings.footnotes)) {
                         yield el;
                         if (rev !== revision)
                             return yield;
                     }
-                    for (const el of figure_1.figure(target, footnotes)) {
+                    for (const el of figure_1.figure(target, settings.footnotes)) {
                         yield el;
                         if (rev !== revision)
                             return yield;
@@ -2963,7 +2963,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function parse(source, opts = {}) {
                 var _a;
-                const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => array_1.push(acc, combinator_1.eval(block_1.block(seg, opts.context || {}), [])), []));
+                const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => array_1.push(acc, combinator_1.eval(block_1.block(seg, opts), [])), []));
                 if (opts.test)
                     return node;
                 void [...footnote_1.footnote(node, (_a = opts.footnotes) !== null && _a !== void 0 ? _a : {
@@ -3097,7 +3097,7 @@ require = function () {
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, source)),
                 combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, context) => [
                     [util_1.suppress(parse_1.parse(source, {
-                            context,
+                            ...context,
                             footnotes: {
                                 annotation: typed_dom_1.html('ol'),
                                 reference: typed_dom_1.html('ol')
@@ -3281,7 +3281,7 @@ require = function () {
                         const annotation = typed_dom_1.html('ol');
                         const reference = typed_dom_1.html('ol');
                         const view = parse_1.parse(body.slice(0, -1), {
-                            context,
+                            ...context,
                             footnotes: {
                                 annotation,
                                 reference
@@ -4130,14 +4130,18 @@ require = function () {
             exports.account = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:(?![^/]*?--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9]{1,63}){1,2}\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, source => [
-                [typed_dom_1.html('a', {
-                        class: 'account',
-                        rel: 'noopener',
-                        'data-ns': namespace(source)
-                    }, source)],
-                ''
-            ])));
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:(?![a-z0-9.-]{0,200}?--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9]{1,63}){1,2}\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, (source, {domain}) => {
+                domain = namespace(source) || domain;
+                const url = domain ? `https://${ domain }/@${ source.split(/[/@]/).pop() }` : `/${ source }`;
+                return [
+                    [typed_dom_1.html('a', {
+                            class: 'account',
+                            href: url,
+                            rel: 'noopener'
+                        }, source)],
+                    ''
+                ];
+            })));
             function namespace(source) {
                 return source.includes('/') ? source.slice(1, source.indexOf('/')) : void 0;
             }
@@ -4157,13 +4161,18 @@ require = function () {
             const account_1 = _dereq_('./account');
             const hashtag_1 = _dereq_('./hashtag');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.channel = combinator_1.validate('@', combinator_1.fmap(combinator_1.inits([
+            exports.channel = combinator_1.validate('@', combinator_1.fmap(combinator_1.sequence([
                 account_1.account,
                 combinator_1.some(hashtag_1.hashtag)
-            ]), ns => ns.length > 1 ? [typed_dom_1.html('a', {
-                    class: 'channel',
-                    rel: 'noopener'
-                }, util_1.stringify(ns))] : ns));
+            ]), es => {
+                const source = util_1.stringify(es);
+                const el = es[0];
+                const url = `${ el.getAttribute('href') }?ch=${ source.slice(source.indexOf('#') + 1).replace(/#/g, '+') }`;
+                return [typed_dom_1.define(el, {
+                        class: 'channel',
+                        href: url
+                    }, source)];
+            }));
         },
         {
             '../../../combinator': 28,
@@ -4221,13 +4230,17 @@ require = function () {
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9])(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, tag => [
-                [typed_dom_1.html('a', {
-                        class: 'hashtag',
-                        rel: 'noopener'
-                    }, tag)],
-                ''
-            ])));
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9])(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {domain}) => {
+                const url = domain ? `https://${ domain }/hashtag/${ tag.slice(1) }` : `/hashtag/${ tag.slice(1) }`;
+                return [
+                    [typed_dom_1.html('a', {
+                            class: 'hashtag',
+                            href: url,
+                            rel: 'noopener'
+                        }, tag)],
+                    ''
+                ];
+            })));
         },
         {
             '../../../combinator': 28,
@@ -5329,9 +5342,9 @@ require = function () {
                     ];
                 default:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag(array_1.unshift([array_1.join(texts, ' ')], [
+                        [typed_dom_1.html('ruby', util_1.defrag(array_1.unshift([array_1.join(texts, ' ').trim()], [
                                 typed_dom_1.html('rp', '('),
-                                typed_dom_1.html('rt', array_1.join(rubies, ' ')),
+                                typed_dom_1.html('rt', array_1.join(rubies, ' ').trim()),
                                 typed_dom_1.html('rp', ')')
                             ])))],
                         rest
