@@ -37,13 +37,13 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('#a')), [['<a class="hashtag" rel="noopener">#a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('#a ')), [['<a class="hashtag" rel="noopener">#a</a>'], ' ']);
-      assert.deepStrictEqual(inspect(parser('#a\n')), [['<a class="hashtag" rel="noopener">#a</a>'], '\n']);
-      assert.deepStrictEqual(inspect(parser('#a\\')), [['<a class="hashtag" rel="noopener">#a</a>'], '\\']);
-      assert.deepStrictEqual(inspect(parser('#a\\ ')), [['<a class="hashtag" rel="noopener">#a</a>'], '\\ ']);
-      assert.deepStrictEqual(inspect(parser('#a\\\n')), [['<a class="hashtag" rel="noopener">#a</a>'], '\\\n']);
-      assert.deepStrictEqual(inspect(parser('#あ')), [['<a class="hashtag" rel="noopener">#あ</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#a')), [['<a class="hashtag" href="/hashtag/a" rel="noopener">#a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#a ')), [['<a class="hashtag" href="/hashtag/a" rel="noopener">#a</a>'], ' ']);
+      assert.deepStrictEqual(inspect(parser('#a\n')), [['<a class="hashtag" href="/hashtag/a" rel="noopener">#a</a>'], '\n']);
+      assert.deepStrictEqual(inspect(parser('#a\\')), [['<a class="hashtag" href="/hashtag/a" rel="noopener">#a</a>'], '\\']);
+      assert.deepStrictEqual(inspect(parser('#a\\ ')), [['<a class="hashtag" href="/hashtag/a" rel="noopener">#a</a>'], '\\ ']);
+      assert.deepStrictEqual(inspect(parser('#a\\\n')), [['<a class="hashtag" href="/hashtag/a" rel="noopener">#a</a>'], '\\\n']);
+      assert.deepStrictEqual(inspect(parser('#あ')), [['<a class="hashtag" href="/hashtag/あ" rel="noopener">#あ</a>'], '']);
     });
 
   });
