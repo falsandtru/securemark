@@ -4230,7 +4230,7 @@ require = function () {
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9])(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {domain}) => {
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {domain}) => {
                 const url = domain ? `https://${ domain }/hashtag/${ tag.slice(1) }` : `/hashtag/${ tag.slice(1) }`;
                 return [
                     [typed_dom_1.html('a', {
