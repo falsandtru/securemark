@@ -44,6 +44,7 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#あ')), [['<a class="hashtag" href="/hashtag/あ" rel="noopener">#あ</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#1a')), [['<a class="hashtag" href="/hashtag/1a" rel="noopener">#1a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#1あ')), [['<a class="hashtag" href="/hashtag/1あ" rel="noopener">#1あ</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#12a')), [['<a class="hashtag" href="/hashtag/12a" rel="noopener">#12a</a>'], '']);
     });
 
   });
