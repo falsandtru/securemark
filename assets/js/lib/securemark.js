@@ -4350,10 +4350,10 @@ require = function () {
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.match(/^<(#+)\s+(\S+(?:\s+(?!\1)\S+)*)(\s+\1>)?/, ([whole, , title, closer]) => (rest, {resources}) => closer ? [
+            exports.comment = combinator_1.creator(combinator_1.validate('<#', combinator_1.match(/^<(#+)\s+((?:(?!\1>)\S+\s+)+)(\1>)?/, ([whole, , title, closer]) => (rest, {resources}) => closer ? [
                 [typed_dom_1.html('sup', {
                         class: 'comment',
-                        title
+                        title: title.trim()
                     })],
                 rest
             ] : resources && void (resources.creation -= whole.match(/<#+\s/g).length))));
