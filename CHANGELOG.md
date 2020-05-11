@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.157.0
+
+- Change hashtag parser to refer to `/hashtags/:hashtag`.
+
 ## 0.156.1
 
 - Fix comment parser.
