@@ -32,6 +32,7 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
     let count = 0;
     for (let es = target.querySelectorAll<HTMLElement>(`.${syntax}`), i = 0, len = es.length; i < len; ++i) {
       const ref = es[i];
+      assert(ref.matches('sup'));
       if (!check(ref)) continue;
       void ++count;
       const identifier = identify(ref);

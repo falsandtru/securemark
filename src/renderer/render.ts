@@ -10,6 +10,10 @@ const { origin } = location;
 export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   opts = { code, math, media: {}, ...opts };
   try {
+    if (target.tagName === 'LI') {
+      opts.math && target.querySelectorAll('.math').forEach(el => void opts.math?.(el as HTMLElement));
+      return;
+    }
     switch (true) {
       case target.classList.contains('invalid'):
         return;
