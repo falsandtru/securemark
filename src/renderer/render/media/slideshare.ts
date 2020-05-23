@@ -9,6 +9,7 @@ const origins = new Set([
 
 export function slideshare(url: URL): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
+  if (url.pathname.split('/').pop()!.includes('.')) return;
   if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/)) return;
   if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
   return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (html, tag) => {
