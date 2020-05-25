@@ -8,6 +8,7 @@ import { footnote } from '../../util/footnote';
 import { push, splice } from 'spica/array';
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
+  settings = { ...settings, id: '' };
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   const adds: [HTMLElement, Node | null][] = [];
@@ -74,12 +75,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of footnote(target, settings.footnotes)) {
+    for (const el of footnote(target, settings.footnotes, settings)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;
     }
-    for (const el of figure(target, settings.footnotes)) {
+    for (const el of figure(target, settings.footnotes, settings)) {
       assert(rev === revision);
       yield el;
       if (rev !== revision) return yield;

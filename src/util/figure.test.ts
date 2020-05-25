@@ -232,6 +232,22 @@ describe('Unit: util/figure', () => {
       }
     });
 
+    it('id', () => {
+      const target = parse([
+        '$fig-a\n> ',
+        '$fig-a',
+      ].join('\n\n'));
+      for (let i = 0; i < 2; ++i) {
+        [...figure(target, undefined, { id: '0' })];
+        assert.deepStrictEqual(
+          [...target.children].map(el => el.outerHTML),
+          [
+            '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:0:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
+            '<p><a class="label" data-label="fig-a" href="#label:0:fig-a">Fig 1</a></p>',
+          ]);
+      }
+    });
+
   });
 
 });

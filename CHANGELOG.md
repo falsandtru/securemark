@@ -2,6 +2,7 @@
 
 ## 0.157.0
 
+- Add id option.
 - Change hashtag parser to refer to `/hashtags/:hashtag`.
 
 ## 0.156.1

@@ -19,6 +19,7 @@ export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound
 
 export interface ParserSettings {
   readonly domain?: string;
+  readonly id?: string;
   readonly footnotes: {
     readonly annotation: HTMLOListElement;
     readonly reference: HTMLOListElement;

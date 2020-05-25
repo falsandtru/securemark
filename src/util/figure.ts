@@ -6,7 +6,13 @@ import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 import { push, join } from 'spica/array';
 
-export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes?: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement, undefined, undefined> {
+export function* figure(
+  target: DocumentFragment | HTMLElement | ShadowRoot,
+  footnotes?: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
+  opts: Readonly<{
+    id?: string;
+  }> = {},
+): Generator<HTMLAnchorElement, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(
     [
       ...target.querySelectorAll<HTMLAnchorElement>('a.label'),
@@ -77,7 +83,7 @@ export function* figure(target: DocumentFragment | HTMLElement | ShadowRoot, foo
     void numbers.set(group, number);
     assert(!void def.setAttribute('data-number', number));
     const figid = isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
-    void def.setAttribute('id', `label:${figid}`);
+    void def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${figid}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)} ${number}`;
     void define(
       def.querySelector(':scope > .figindex')!,

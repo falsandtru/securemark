@@ -21,7 +21,7 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
   void [...footnote(node, opts.footnotes ?? {
     annotation: html('ol'),
     reference: html('ol'),
-  })];
-  void [...figure(node)];
+  }, opts)];
+  void [...figure(node, opts.footnotes, opts)];
   return node;
 }

@@ -6,9 +6,15 @@ import { memoize } from 'spica/memoize';
 import { frag, html, define } from 'typed-dom';
 import { join } from 'spica/array';
 
-export function* footnote(target: DocumentFragment | HTMLElement | ShadowRoot, footnotes: { annotation: HTMLOListElement; reference: HTMLOListElement; }): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
-  yield* annotation(target, footnotes.annotation);
-  yield* reference(target, footnotes.reference);
+export function* footnote(
+  target: DocumentFragment | HTMLElement | ShadowRoot,
+  footnotes: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
+  opts: Readonly<{
+    id?: string;
+  }> = {},
+): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+  yield* annotation(target, footnotes.annotation, opts);
+  yield* reference(target, footnotes.reference, opts);
   return;
 }
 
@@ -19,12 +25,15 @@ const identify = memoize<HTMLElement, string>(
   ref => ref.getAttribute('data-alias') || ref.innerHTML,
   new WeakMap());
 
-function build(syntax: string, marker: (index: number) => string): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+function build(
+  syntax: string,
+  marker: (index: number) => string,
+): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
   assert(syntax.match(/^[a-z]+$/));
   const contentify = memoize<HTMLElement, DocumentFragment>(
     ref => frag(ref.childNodes),
     new WeakMap());
-  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
     const refs = new MultiMap<string, HTMLElement>();
@@ -43,11 +52,11 @@ function build(syntax: string, marker: (index: number) => string): (target: Docu
       !title && void refs.set(identifier, ref);
       const content = contentify(ref);
       const refIndex = count;
-      const refId = ref.id || `${syntax}:ref:${count}`;
+      const refId = ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}`;
       const def = void 0
         || defs.get(identifier)
         || defs.set(identifier, html('li',
-            { id: `${syntax}:def:${defs.size + 1}`, class: 'footnote' },
+            { id: `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}`, class: 'footnote' },
             [content.cloneNode(true), html('sup', [])]))
             .get(identifier)!;
       assert(def.lastChild);
