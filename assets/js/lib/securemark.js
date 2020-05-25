@@ -379,11 +379,9 @@ require = function () {
                         ].every(k => this.store.has(k)))
                         throw new Error(`Spica: Cache: Keys of stats and entries is not matched.`);
                 }
-                put(key, value, log = true) {
+                put(key, value) {
                     !this.nullish && value === global_1.undefined ? this.nullish = true : global_1.undefined;
                     const hit = this.store.has(key);
-                    if (!log && hit)
-                        return this.store.set(key, value), true;
                     if (hit && this.access(key))
                         return this.store.set(key, value), true;
                     const {LRU, LFU} = this.stats;
@@ -403,14 +401,12 @@ require = function () {
                     }
                     return false;
                 }
-                set(key, value, log) {
-                    this.put(key, value, log);
+                set(key, value) {
+                    this.put(key, value);
                     return value;
                 }
-                get(key, log = true) {
+                get(key) {
                     const val = this.store.get(key);
-                    if (!log)
-                        return val;
                     const hit = val !== global_1.undefined || this.nullish && this.store.has(key);
                     return hit && this.access(key) ? val : global_1.undefined;
                 }
@@ -1112,16 +1108,13 @@ require = function () {
             function normalize(url, base) {
                 return new ReadonlyURL(url, base).href;
             }
-            let ReadonlyURL = (() => {
-                class ReadonlyURL {
-                    constructor(url, base) {
-                        return ReadonlyURL.new(url, base);
-                    }
+            class ReadonlyURL {
+                constructor(url, base) {
+                    return ReadonlyURL.new(url, base);
                 }
-                ReadonlyURL.new = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => alias_1.ObjectFreeze(new global_1.global.URL(formatURLForEdge(url, base), base)), new cache_1.Cache(100)), new cache_1.Cache(100))));
-                return ReadonlyURL;
-            })();
+            }
             exports.ReadonlyURL = ReadonlyURL;
+            ReadonlyURL.new = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => alias_1.ObjectFreeze(new global_1.global.URL(formatURLForEdge(url, base), base)), new cache_1.Cache(100)), new cache_1.Cache(100))));
             function formatURLForEdge(url, base) {
                 return url.trim() || base;
             }
@@ -2811,6 +2804,10 @@ require = function () {
             const footnote_1 = _dereq_('../../util/footnote');
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
+                settings = {
+                    ...settings,
+                    id: ''
+                };
                 const pairs = [];
                 const adds = [];
                 const dels = [];
@@ -2877,12 +2874,12 @@ require = function () {
                         if (rev !== revision)
                             return yield;
                     }
-                    for (const el of footnote_1.footnote(target, settings.footnotes)) {
+                    for (const el of footnote_1.footnote(target, settings.footnotes, settings)) {
                         yield el;
                         if (rev !== revision)
                             return yield;
                     }
-                    for (const el of figure_1.figure(target, settings.footnotes)) {
+                    for (const el of figure_1.figure(target, settings.footnotes, settings)) {
                         yield el;
                         if (rev !== revision)
                             return yield;
@@ -2962,15 +2959,11 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function parse(source, opts = {}) {
-                var _a;
                 const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg) => array_1.push(acc, combinator_1.eval(block_1.block(seg, opts), [])), []));
                 if (opts.test)
                     return node;
-                void [...footnote_1.footnote(node, (_a = opts.footnotes) !== null && _a !== void 0 ? _a : {
-                        annotation: typed_dom_1.html('ol'),
-                        reference: typed_dom_1.html('ol')
-                    })];
-                void [...figure_1.figure(node)];
+                void [...footnote_1.footnote(node, opts.footnotes, opts)];
+                void [...figure_1.figure(node, opts.footnotes, opts)];
                 return node;
             }
             exports.parse = parse;
@@ -4230,7 +4223,7 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z0-9]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {domain}) => {
-                const url = domain ? `https://${ domain }/hashtag/${ tag.slice(1) }` : `/hashtag/${ tag.slice(1) }`;
+                const url = domain ? `https://${ domain }/hashtags/${ tag.slice(1) }` : `/hashtags/${ tag.slice(1) }`;
                 return [
                     [typed_dom_1.html('a', {
                             class: 'hashtag',
@@ -6163,6 +6156,13 @@ require = function () {
                     ...opts
                 };
                 try {
+                    if (target.tagName === 'LI') {
+                        opts.math && target.querySelectorAll('.math').forEach(el => {
+                            var _a;
+                            return void ((_a = opts.math) === null || _a === void 0 ? void 0 : _a.call(opts, el));
+                        });
+                        return;
+                    }
                     switch (true) {
                     case target.classList.contains('invalid'):
                         return;
@@ -6379,6 +6379,8 @@ require = function () {
                 function gist(url) {
                     if (!origins.has(url.origin))
                         return;
+                    if (url.pathname.split('/').pop().includes('.'))
+                        return;
                     if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/))
                         return;
                     if (media_1.cache.has(url.href))
@@ -6496,6 +6498,8 @@ require = function () {
                 function slideshare(url) {
                     if (!origins.has(url.origin))
                         return;
+                    if (url.pathname.split('/').pop().includes('.'))
+                        return;
                     if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/))
                         return;
                     if (media_1.cache.has(url.href))
@@ -6550,6 +6554,8 @@ require = function () {
                 function twitter(url) {
                     var _a;
                     if (!origins.has(url.origin))
+                        return;
+                    if (url.pathname.split('/').pop().includes('.'))
                         return;
                     if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                         return;
@@ -6643,6 +6649,8 @@ require = function () {
             function youtube(url) {
                 if (!origins.has(url.origin))
                     return;
+                if (url.pathname.split('/').pop().includes('.'))
+                    return;
                 if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/))
                     return;
                 if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w-]+$/))
@@ -6728,7 +6736,7 @@ require = function () {
             const multimap_1 = _dereq_('spica/multimap');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            function* figure(target, footnotes) {
+            function* figure(target, footnotes, opts = {}) {
                 const refs = new multimap_1.MultiMap([
                     ...target.querySelectorAll('a.label'),
                     ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label')) || [],
@@ -6775,7 +6783,7 @@ require = function () {
                     }
                     void numbers.set(group, number);
                     const figid = inline_1.isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
-                    void def.setAttribute('id', `label:${ figid }`);
+                    void def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) } ${ number }`;
                     void typed_dom_1.define(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.take(figid, global_1.Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
@@ -6820,9 +6828,11 @@ require = function () {
             const memoize_1 = _dereq_('spica/memoize');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            function* footnote(target, footnotes) {
-                yield* exports.annotation(target, footnotes.annotation);
-                yield* exports.reference(target, footnotes.reference);
+            function* footnote(target, footnotes, opts = {}) {
+                if (!footnotes)
+                    return;
+                yield* exports.annotation(target, footnotes.annotation, opts);
+                yield* exports.reference(target, footnotes.reference, opts);
                 return;
             }
             exports.footnote = footnote;
@@ -6831,7 +6841,7 @@ require = function () {
             const identify = memoize_1.memoize(ref => ref.getAttribute('data-alias') || ref.innerHTML, new WeakMap());
             function build(syntax, marker) {
                 const contentify = memoize_1.memoize(ref => typed_dom_1.frag(ref.childNodes), new WeakMap());
-                return function* (target, footnote) {
+                return function* (target, footnote, opts = {}) {
                     var _a;
                     const check = context_1.context(target);
                     const defs = new Map();
@@ -6849,9 +6859,9 @@ require = function () {
                         !title && void refs.set(identifier, ref);
                         const content = contentify(ref);
                         const refIndex = count;
-                        const refId = ref.id || `${ syntax }:ref:${ count }`;
+                        const refId = ref.id || `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }ref:${ count }`;
                         const def = void 0 || defs.get(identifier) || defs.set(identifier, typed_dom_1.html('li', {
-                            id: `${ syntax }:def:${ defs.size + 1 }`,
+                            id: `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }def:${ defs.size + 1 }`,
                             class: 'footnote'
                         }, [
                             content.cloneNode(true),
