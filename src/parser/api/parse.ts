@@ -5,7 +5,7 @@ import { segment } from '../segment';
 import { normalize } from './normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
-import { frag, html } from 'typed-dom';
+import { frag } from 'typed-dom';
 import { push } from 'spica/array';
 
 interface Options extends Partial<ParserSettings> {
@@ -18,10 +18,7 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
       push(acc, eval(block(seg, opts), []))
     , []));
   if (opts.test) return node;
-  void [...footnote(node, opts.footnotes ?? {
-    annotation: html('ol'),
-    reference: html('ol'),
-  }, opts)];
+  void [...footnote(node, opts.footnotes, opts)];
   void [...figure(node, opts.footnotes, opts)];
   return node;
 }

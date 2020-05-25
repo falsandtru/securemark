@@ -8,11 +8,12 @@ import { join } from 'spica/array';
 
 export function* footnote(
   target: DocumentFragment | HTMLElement | ShadowRoot,
-  footnotes: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
+  footnotes?: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
   opts: Readonly<{
     id?: string;
   }> = {},
 ): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+  if (!footnotes) return;
   yield* annotation(target, footnotes.annotation, opts);
   yield* reference(target, footnotes.reference, opts);
   return;
