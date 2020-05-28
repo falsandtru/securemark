@@ -2,6 +2,7 @@
 
 ## 0.158.0
 
+- Enhance address parser to define href attribute.
 - Fix address syntax not to have directories.
 
 ## 0.157.0

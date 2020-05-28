@@ -8,7 +8,7 @@ export const address: ParagraphParser.MentionParser.AddressParser = creator(line
   sequence([
     str(/^>+(?!>)(?=\S+\s*$)/),
     union([
-      focus(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?=\s*$)/, convert(source => `{ ${source} }`, link)),
+      focus(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?=\s*$)/, convert(source => `[${source}]{ ?log=${source} }`, link)),
       focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, convert(url2link, link)),
     ]),
   ]),
@@ -17,7 +17,6 @@ export const address: ParagraphParser.MentionParser.AddressParser = creator(line
       {
         class: 'address',
         'data-level': `${sym.length}`,
-        href: null,
       },
       `${sym}${link.textContent}`)
   ])));
