@@ -4,7 +4,7 @@ import { link, url2link } from '../../../inline';
 import { str } from '../../../source';
 import { define } from 'typed-dom';
 
-export const address: ParagraphParser.MentionParser.AddressParser = line(creator(fmap(
+export const address: ParagraphParser.MentionParser.AddressParser = creator(line(fmap(
   sequence([
     str(/^>+(?!>)(?=\S+\s*$)/),
     union([

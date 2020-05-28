@@ -5,7 +5,7 @@ import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
 import { html } from 'typed-dom';
 
-export const quotation: ParagraphParser.MentionParser.QuotationParser = block(creator(fmap(
+export const quotation: ParagraphParser.MentionParser.QuotationParser = creator(block(fmap(
   union([
     rewrite(
       some(validate(/^>+(?:$|\s)/, contentline)),
@@ -14,5 +14,5 @@ export const quotation: ParagraphParser.MentionParser.QuotationParser = block(cr
       some(validate(/^>+/, contentline)),
       convert(source => source.replace(/\n$/, ''), some(autolink))),
   ]),
-  ns => [html('span', { class: 'quotation' }, defrag(ns))])),
-  false);
+  ns => [html('span', { class: 'quotation' }, defrag(ns))]),
+  false));

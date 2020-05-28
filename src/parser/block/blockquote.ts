@@ -10,7 +10,7 @@ export const segment: BlockquoteParser.SegmentParser = block(validate(['!', '>']
   validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, some(contentline)),
 ])));
 
-export const blockquote: BlockquoteParser = lazy(() => block(creator(10, rewrite(segment, union([
+export const blockquote: BlockquoteParser = lazy(() => creator(10, block(rewrite(segment, union([
   open(/^(?=>)/, text),
   open(/^!(?=>)/, source),
 ])))));
