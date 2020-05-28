@@ -8,7 +8,7 @@ export const address: ParagraphParser.MentionParser.AddressParser = line(creator
   sequence([
     str(/^>+(?!>)(?=\S+\s*$)/),
     union([
-      focus(/^[A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*(?=\s*$)/, convert(source => `{ ${source} }`, link)),
+      focus(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?=\s*$)/, convert(source => `{ ${source} }`, link)),
       focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, convert(url2link, link)),
     ]),
   ]),

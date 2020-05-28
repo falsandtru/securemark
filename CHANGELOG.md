@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.158.0
+
+- Fix address syntax not to have directories.
+
 ## 0.157.0
 
 - Add id option.
