@@ -5285,7 +5285,7 @@ require = function () {
                 rest
             ] : void 0)));
             const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
-                [typed_dom_1.html('abbr', source.slice(1, ~(~source.lastIndexOf('|') || ~source.length)))],
+                [typed_dom_1.html('abbr', source.split('|', 1)[0].slice(1))],
                 ''
             ]));
             function attributes(ns) {
