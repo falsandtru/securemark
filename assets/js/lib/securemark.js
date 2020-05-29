@@ -3073,7 +3073,7 @@ require = function () {
                 '!',
                 '>'
             ], combinator_1.union([combinator_1.validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline))])));
-            exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.creator(10, combinator_1.rewrite(exports.segment, combinator_1.union([
+            exports.blockquote = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.open(/^(?=>)/, text),
                 combinator_1.open(/^!(?=>)/, source)
             ])))));
@@ -3261,7 +3261,7 @@ require = function () {
             const opener = /^(~{3,})(?!~)example\/(\S+)([^\n]*)\n?/;
             exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, true))));
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
-            exports.example = combinator_1.block(combinator_1.creator(10, combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, type, param], _, context) => {
+            exports.example = combinator_1.creator(10, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, type, param], _, context) => {
                 if (!closer || param.trim() !== '')
                     return [typed_dom_1.html('pre', {
                             class: `example notranslate invalid`,
@@ -3716,16 +3716,15 @@ require = function () {
             const inline_1 = _dereq_('../../../inline');
             const source_1 = _dereq_('../../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.line(combinator_1.creator(combinator_1.fmap(combinator_1.sequence([
+            exports.address = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.sequence([
                 source_1.str(/^>+(?!>)(?=\S+\s*$)/),
                 combinator_1.union([
-                    combinator_1.focus(/^[A-Za-z0-9]+(?:[/-][A-Za-z0-9]+)*(?=\s*$)/, combinator_1.convert(source => `{ ${ source } }`, inline_1.link)),
+                    combinator_1.focus(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?=\s*$)/, combinator_1.convert(source => `[${ source }]{ ?log=${ source } }`, inline_1.link)),
                     combinator_1.focus(/^h?ttps?:\/\/[^/?#\s]\S*(?=\s*$)/, combinator_1.convert(inline_1.url2link, inline_1.link))
                 ])
             ]), ([sym, link]) => [typed_dom_1.define(link, {
                     class: 'address',
-                    'data-level': `${ sym.length }`,
-                    href: null
+                    'data-level': `${ sym.length }`
                 }, `${ sym }${ link.textContent }`)])));
         },
         {
@@ -3745,10 +3744,10 @@ require = function () {
             const source_1 = _dereq_('../../../source');
             const autolink_1 = _dereq_('../../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.quotation = combinator_1.block(combinator_1.creator(combinator_1.fmap(combinator_1.union([
+            exports.quotation = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.union([
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+(?:$|\s)/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), combinator_1.some(autolink_1.autolink))),
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), combinator_1.some(autolink_1.autolink)))
-            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, util_1.defrag(ns))])), false);
+            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, util_1.defrag(ns))]), false));
         },
         {
             '../../../../combinator': 28,
