@@ -1,5 +1,5 @@
 import { Result, eval, exec } from './combinator';
-import { html, define, apply } from 'typed-dom';
+import { html, define } from 'typed-dom';
 
 export function inspect(r: Result<HTMLElement | string>, until: number | string = Infinity): [string[], string] | undefined {
   return r
@@ -8,7 +8,7 @@ export function inspect(r: Result<HTMLElement | string>, until: number | string 
           if (typeof n === 'string') return n;
           const m = html('div');
           n = n.cloneNode(true);
-          [n, ...apply(n, '.invalid')].forEach(el =>
+          [n, ...n.querySelectorAll('.invalid')].forEach(el =>
             define(el, {
               'data-invalid-syntax': null,
               'data-invalid-type': null,
