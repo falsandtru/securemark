@@ -124,6 +124,7 @@ function build(
         ? children[count - 1]
         : null;
       if (node && equal(node, def)) continue;
+      assert(def.parentNode !== footnote);
       yield footnote.insertBefore(def, node);
       void ++length;
     }
