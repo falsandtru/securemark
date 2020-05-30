@@ -39,21 +39,21 @@ function lastChar(node: Node | null | HTMLElement): string {
 function text(node: Node | Text | HTMLElement): string {
   switch ('id' in node && node.tagName) {
     case 'RUBY':
-      for (let i = node.childNodes.length; i--;) {
-        const child = node.childNodes[i] as Node | Text | HTMLElement;
+      for (let ns = node.childNodes, i = ns.length; i--;) {
+        const child = ns[i] as Node | Text | HTMLElement;
         switch ('id' in child && child.tagName) {
           case 'RT':
           case 'RP':
             break;
           default:
-            return 'data' in child
+            return 'wholeText' in child
               ? child.data
               : child.textContent!;
         }
       }
       return '';
     default:
-      return 'data' in node
+      return 'wholeText' in node
         ? node.data
         : node.textContent!;
   }
