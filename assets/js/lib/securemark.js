@@ -1110,11 +1110,19 @@ require = function () {
             }
             class ReadonlyURL {
                 constructor(url, base) {
-                    return ReadonlyURL.new(url, base);
+                    return ReadonlyURL.freezable ? alias_1.ObjectFreeze(ReadonlyURL.new(url, base)) : ReadonlyURL.new(url, base);
                 }
             }
             exports.ReadonlyURL = ReadonlyURL;
-            ReadonlyURL.new = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => alias_1.ObjectFreeze(new global_1.global.URL(formatURLForEdge(url, base), base)), new cache_1.Cache(100)), new cache_1.Cache(100))));
+            ReadonlyURL.freezable = (() => {
+                try {
+                    alias_1.ObjectFreeze(new global_1.global.URL(global_1.location.href));
+                    return true;
+                } catch (_a) {
+                    return false;
+                }
+            })();
+            ReadonlyURL.new = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => new global_1.global.URL(formatURLForEdge(url, base), base), new cache_1.Cache(100)), new cache_1.Cache(100))));
             function formatURLForEdge(url, base) {
                 return url.trim() || base;
             }
@@ -1783,9 +1791,9 @@ require = function () {
                         const newChild = children[i];
                         if (typeof newChild === 'object' && newChild.nodeType === 11) {
                             const sourceLength = newChild.childNodes.length;
+                            targetLength += newChild !== node ? sourceLength : 0;
                             node.insertBefore(newChild, targetNodes[count] || null);
                             count += sourceLength;
-                            targetLength += sourceLength;
                             continue;
                         }
                         ++count;
@@ -1800,8 +1808,8 @@ require = function () {
                         if (equal(oldChild, newChild))
                             continue;
                         if (targetLength < children.length - i + count) {
+                            targetLength += typeof newChild === 'string' || newChild.parentNode !== node ? 1 : 0;
                             node.insertBefore(typeof newChild === 'string' ? text(newChild) : newChild, oldChild);
-                            ++targetLength;
                         } else {
                             node.replaceChild(typeof newChild === 'string' ? text(newChild) : newChild, oldChild);
                         }
