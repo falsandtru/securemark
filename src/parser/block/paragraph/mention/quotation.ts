@@ -17,14 +17,14 @@ export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() 
   ns => [html('span', { class: 'quotation' }, ns)]),
   false)));
 
-const text: ParagraphParser.MentionParser.QuotationParser.TextParser = creator((source, context) => {
+const text: ParagraphParser.MentionParser.QuotationParser.TextParser = (source, context) => {
   const lines = source.match(/^.*\n?/mg)!;
   assert(lines);
   const flags = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg)!;
   assert(flags);
   assert(flags.length > 0);
   const block = lines.reduce((block, line, row) => block + line.slice(flags[row].length), '');
-  const ns: (string | Node)[] = eval(autolinkblock(block, context), []);
+  const ns = eval(autolinkblock(block, context), []);
   void ns.unshift(flags.shift()!);
   for (let i = 0; i < ns.length; ++i) {
     const child = ns[i] as string | Text | Element;
@@ -42,11 +42,12 @@ const text: ParagraphParser.MentionParser.QuotationParser.TextParser = creator((
     }
     if (child.classList.contains('quotation')) {
       context.resources && void (context.resources.creation -= child.childNodes.length);
-      void ns.splice(i, 1, ...child.childNodes);
+      void ns.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
       void --i;
       continue;
     }
   }
+  assert(ns.every(n => typeof n === 'string' || n instanceof HTMLElement));
   assert(flags.length === 0);
-  return [defrag(ns as (string | HTMLElement)[]), ''];
-});
+  return [defrag(ns), ''];
+};

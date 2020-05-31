@@ -107,6 +107,7 @@ export function dup<T, D extends Parser<unknown, any, C>[], C extends object>(pa
 }
 
 export function defrag(nodes: readonly (HTMLElement | string)[]): (HTMLElement | string)[] {
+  assert(nodes.every(n => typeof n === 'string' || n instanceof HTMLElement));
   const acc: (HTMLElement | string)[] = [];
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
