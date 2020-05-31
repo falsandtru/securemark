@@ -223,7 +223,7 @@ export namespace MarkdownParser {
         Block<'blockquote/text'>,
         Parser<HTMLQuoteElement, [
           TextParser,
-          AutolinkParser,
+          AutolinkblockParser,
         ], Context> {
       }
       export interface SourceParser extends
@@ -401,9 +401,17 @@ export namespace MarkdownParser {
           // > text
           Block<'paragraph/mention/quotation'>,
           Parser<HTMLSpanElement, [
-            AutolinkParser,
-            AutolinkParser,
+            QuotationParser.TextParser,
+            QuotationParser.TextParser,
           ], Context> {
+        }
+        export namespace QuotationParser {
+          export interface TextParser extends
+            Block<'paragraph/mention/quotation/text'>,
+            Parser<string | HTMLElement, [
+              AutolinkblockParser,
+            ], Context> {
+          }
         }
       }
     }
@@ -874,6 +882,13 @@ export namespace MarkdownParser {
       InlineParser.AutolinkParser,
       SourceParser.LinebreakParser,
       SourceParser.UnescapableSourceParser,
+    ], Context> {
+  }
+  export interface AutolinkblockParser extends
+    Markdown<'autolinkblock'>,
+    Parser<HTMLElement | string, [
+      BlockParser.ParagraphParser.MentionParser,
+      AutolinkParser,
     ], Context> {
   }
   export namespace SourceParser {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.159.0
+
+- Enhance blockquote and quotation parsers to parse mentions.
+
 ## 0.158.0
 
 - Enhance address parser to define href attribute.

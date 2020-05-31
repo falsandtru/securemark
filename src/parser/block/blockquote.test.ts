@@ -26,13 +26,13 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('> a\nb')), [['<blockquote><pre>a<br>b</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n b ')), [['<blockquote><pre>a<br> b </pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>')), [['<blockquote><pre>a<br></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('> a\n>b')), [['<blockquote><pre>a<br>&gt;b</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('> a\n>b')), [['<blockquote><pre>a<br><a href="?log=b" rel="noopener" class="address" data-level="1">&gt;b</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n> b ')), [['<blockquote><pre>a<br>b </pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>\n')), [['<blockquote><pre>a<br></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>\nb')), [['<blockquote><pre>a<br><br>b</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>\n b ')), [['<blockquote><pre>a<br><br> b </pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>\n>')), [['<blockquote><pre>a<br><br></pre></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('> a\n>\n>b')), [['<blockquote><pre>a<br><br>&gt;b</pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('> a\n>\n>b')), [['<blockquote><pre>a<br><br><a href="?log=b" rel="noopener" class="address" data-level="1">&gt;b</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\n>\n> b ')), [['<blockquote><pre>a<br><br>b </pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> a\\\nb')), [['<blockquote><pre>a\\<br>b</pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('>  a ')), [['<blockquote><pre> a </pre></blockquote>'], '']);
@@ -45,6 +45,8 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('> !http://host')), [['<blockquote><pre>!<a href="http://host" rel="noopener" target="_blank">http://host</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> #a')), [['<blockquote><pre><a class="hashtag" href="/hashtags/a" rel="noopener">#a</a></pre></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('> @a#b')), [['<blockquote><pre><a class="channel" href="/@a?ch=b" rel="noopener">@a#b</a></pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('> >a\n> > b')), [['<blockquote><pre><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br><span class="quotation">&gt; b</span></pre></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('> >a\n> > b\n> c')), [['<blockquote><pre><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br><span class="quotation">&gt; b</span><br>c</pre></blockquote>'], '']);
     });
 
     it('nest', () => {
