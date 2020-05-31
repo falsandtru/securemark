@@ -3788,7 +3788,7 @@ require = function () {
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+(?:$|\s)/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), text)),
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), text))
             ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)]), false)));
-            const text = combinator_1.creator((source, context) => {
+            const text = (source, context) => {
                 const lines = source.match(/^.*\n?/mg);
                 const flags = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg);
                 const block = lines.reduce((block, line, row) => block + line.slice(flags[row].length), '');
@@ -3818,7 +3818,7 @@ require = function () {
                     util_1.defrag(ns),
                     ''
                 ];
-            });
+            };
         },
         {
             '../../../../combinator': 28,
