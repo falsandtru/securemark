@@ -12,7 +12,10 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
   convert(source => source.replace(blankline, ''),
   context({ syntax: { inline: { media: false } } },
   some(inits([
-    some(term),
+    context({ syntax: { inline: {
+      label: false,
+    }}},
+    some(term)),
     some(desc),
   ]))))),
   es => [html('dl', fillTrailingDescription(es))])));
@@ -20,15 +23,7 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
 const term: DListParser.TermParser = line(indexee(fmap(
   open(
     /^~(?=[^\S\n])/,
-    context({ syntax: { inline: {
-      annotation: false,
-      reference: false,
-      extension: false,
-      link: false,
-      media: false,
-      autolink: false,
-    }}},
-    trim(some(union([indexer, inline])))),
+    trim(some(union([indexer, inline]))),
     true),
   ns => [html('dt', defrag(ns))])));
 

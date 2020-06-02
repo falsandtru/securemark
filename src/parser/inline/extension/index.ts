@@ -1,22 +1,24 @@
 import { ExtensionParser, inline } from '../../inline';
-import { union, some, subline, validate, context, creator, fmap, surround, lazy } from '../../../combinator';
+import { union, some, subline, validate, guard, context, creator, fmap, surround, lazy } from '../../../combinator';
 import { startTight, isTight, trimEnd, defrag } from '../../util';
 import { indexee } from './indexee';
 import { html, define } from 'typed-dom';
 
 export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexee(surround(
   '[#',
+  guard(context => context.syntax?.inline?.index ?? true,
   validate(/^[^\n\]]+\]/,
   startTight(
   context({ syntax: { inline: {
-    link: false,
-    media: false,
     annotation: false,
     reference: false,
-    extension: false,
+    index: false,
+    label: false,
+    link: false,
+    media: false,
     autolink: false,
   }}},
-  subline(union([some(inline, ']')]))))),
+  subline(union([some(inline, ']')])))))),
   ']', false,
   ([, bs], rest) =>
     isTight(bs, 0, bs.length)

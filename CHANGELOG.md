@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.160.0
+
+- Change heading and dlist syntax to enable annotation, reference, index, link, and autolink syntax.
+
 ## 0.159.0
 
 - Enhance blockquote and quotation parsers to parse mentions.

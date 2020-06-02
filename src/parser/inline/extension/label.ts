@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { union, validate, creator, fmap, surround } from '../../../combinator';
+import { union, validate, guard, creator, fmap, surround } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom';
 import { join } from 'spica/array';
@@ -7,10 +7,11 @@ import { join } from 'spica/array';
 const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
 
 export const label: ExtensionParser.LabelParser = creator(validate(['[$', '$'], fmap(
+  guard(context => context.syntax?.inline?.label ?? true,
   union([
     surround('[', body, ']'),
     body,
-  ]),
+  ])),
   ([text]) =>
     [html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1) }, [text])])));
 

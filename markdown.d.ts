@@ -16,7 +16,8 @@ export namespace MarkdownParser {
       readonly inline?: {
         readonly annotation?: boolean;
         readonly reference?: boolean;
-        readonly extension?: boolean;
+        readonly index?: boolean;
+        readonly label?: boolean;
         readonly link?: boolean;
         readonly media?: boolean;
         readonly autolink?: boolean;

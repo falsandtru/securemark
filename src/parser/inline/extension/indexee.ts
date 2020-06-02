@@ -8,19 +8,16 @@ export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
 
 export function text(source: HTMLElement): string {
   assert(!source.matches('.indexer'));
-  assert(!source.querySelector('.annotation, .reference'));
   assert(source.querySelectorAll('.indexer').length < 2);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
   const indexer = source.querySelector(':scope > .indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-    void define(el, el.getAttribute('data-src')!);
+    void define(es[i], es[i].getAttribute('data-src')!);
   }
-  for (let es = target.querySelectorAll('rt, rp'), i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-    void el.remove();
+  for (let es = target.querySelectorAll('.annotation, .reference, rt, rp'), i = 0, len = es.length; i < len; ++i) {
+    void es[i].remove();
   }
   return target.textContent!.trim();
 }

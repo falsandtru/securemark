@@ -29,11 +29,12 @@ export const link: LinkParser = lazy(() => creator(10, validate(['[', '{'], bind
         '[',
         startTight(
         context({ syntax: { inline: {
-          link: false,
-          media: false,
           annotation: false,
           reference: false,
-          extension: false,
+          index: false,
+          label: false,
+          link: false,
+          media: false,
           autolink: false,
         }}},
         subline(some(inline, ']')))),
