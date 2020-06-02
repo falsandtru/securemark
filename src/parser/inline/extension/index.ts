@@ -6,8 +6,8 @@ import { html, define } from 'typed-dom';
 
 export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexee(surround(
   '[#',
-  guard(context => context.syntax?.inline?.index ?? true,
   validate(/^[^\n\]]+\]/,
+  guard(context => context.syntax?.inline?.index ?? true,
   startTight(
   context({ syntax: { inline: {
     annotation: false,

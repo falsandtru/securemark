@@ -6,14 +6,15 @@ import { join } from 'spica/array';
 
 const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
 
-export const label: ExtensionParser.LabelParser = creator(validate(['[$', '$'], fmap(
+export const label: ExtensionParser.LabelParser = creator(fmap(
+  validate(['[$', '$'],
   guard(context => context.syntax?.inline?.label ?? true,
   union([
     surround('[', body, ']'),
     body,
-  ])),
+  ]))),
   ([text]) =>
-    [html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1) }, [text])])));
+    [html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1) }, [text])]));
 
 export function number(label: string, base: string): string {
   return isFixed(label)

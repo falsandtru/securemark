@@ -6,8 +6,8 @@ import { html } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => creator(bind(surround(
   '[[',
-  guard(context => context.syntax?.inline?.reference ?? true,
   validate(/^\S[^\n]*\]\]/,
+  guard(context => context.syntax?.inline?.reference ?? true,
   startTight(
   context({ syntax: { inline: {
     annotation: false,

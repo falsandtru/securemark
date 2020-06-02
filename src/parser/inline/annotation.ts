@@ -6,8 +6,8 @@ import { html } from 'typed-dom';
 
 export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   '((',
-  guard(context => context.syntax?.inline?.annotation ?? true,
   validate(/^\S[\s\S]*\)\)/,
+  guard(context => context.syntax?.inline?.annotation ?? true,
   startTight(
   context({ syntax: { inline: {
     annotation: false,

@@ -12,14 +12,15 @@ const url = html('a');
 
 export const cache = new Cache<string, HTMLElement>(10);
 
-export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], bind(fmap(open(
+export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   '!',
-  guard(context => context.syntax?.inline?.media ?? true,
+  validate(['[', '{'],
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
+  guard(context => context.syntax?.inline?.media ?? true,
   tails([
     dup(surround(/^\[(?!\s)/, some(union([bracket, text]), /^(?:\\?\n|\])/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
-  ])))),
+  ]))))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
   ([[text], options], rest, context) => {
     if (text.length > 0 && text.slice(-2).trim() === '') return;
@@ -47,7 +48,7 @@ export const media: MediaParser = lazy(() => creator(10, validate(['![', '!{'], 
       ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])
           (`{ ${INSECURE_URI}${join(options)} }${rest}`, context)
       : [[el], rest];
-  }))));
+  })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
   surround(char('('), some(union([bracket, text]), /^(?:\\?\n|\))/), char(')'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),

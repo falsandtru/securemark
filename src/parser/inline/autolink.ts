@@ -10,8 +10,8 @@ import { hashref } from './autolink/hashref';
 import { str } from '../source';
 
 export const autolink: AutolinkParser = fmap(
-  guard(context => context.syntax?.inline?.autolink ?? true,
   validate(/^[@#A-Za-z0-9]|^[^\x00-\x7F\s]#/,
+  guard(context => context.syntax?.inline?.autolink ?? true,
   some(union([
     url,
     email,
