@@ -87,4 +87,4 @@ https://falsandtru.github.io/securemark/
 
 ## License
 
-Currently unlicensed but free to use this product only for private usage under the Mozilla Public License 2.0 and the Apache License 2.0.
+Currently unlicensed but free to use this product only for private or offline usage under the Mozilla Public License 2.0 and the Apache License 2.0.
