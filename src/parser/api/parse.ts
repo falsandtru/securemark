@@ -2,7 +2,7 @@ import { ParserSettings } from '../../..';
 import { eval } from '../../combinator';
 import { block } from '../block';
 import { segment } from '../segment';
-import { normalize } from './normalize';
+import { normalize } from '../normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { frag } from 'typed-dom';

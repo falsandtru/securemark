@@ -5,7 +5,7 @@ import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
 import { contentline, emptyline } from './source';
-import { normalize } from './api/normalize';
+import { normalize } from './normalize';
 import { push } from 'spica/array';
 
 import SegmentParser = MarkdownParser.SegmentParser;
