@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.161.0
+
+- Change domain option to origin.
+
 ## 0.160.0
 
 - Change heading and dlist syntax to enable annotation, reference, index, link, and autolink syntax.

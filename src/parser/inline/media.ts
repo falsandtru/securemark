@@ -37,7 +37,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
       el.hasAttribute('alt') && void el.setAttribute('alt', text.trim());
     }
     else {
-      if (!sanitize(url, el, INSECURE_URI)) return [[el], rest];
+      if (!sanitize(url, el, INSECURE_URI, context.origin)) return [[el], rest];
     }
     void define(el, {
       ...attributes('media', optspec, options, cached ? [...el.classList] : ['media']),

@@ -59,9 +59,9 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
-    it('domain', () => {
+    it('origin', () => {
       assert.deepStrictEqual(
-        [...parse('@a', { domain: 'localhost' }).children].map(el => el.outerHTML),
+        [...parse('@a', { origin: 'https://localhost' }).children].map(el => el.outerHTML),
         ['<p><a class="account" href="https://localhost/@a" rel="noopener">@a</a></p>']);
     });
 

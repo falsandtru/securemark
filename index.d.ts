@@ -18,7 +18,9 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
 
 export interface ParserSettings {
-  readonly domain?: string;
+  // For servers.
+  readonly origin?: string;
+  // For comments and timelines.
   readonly id?: string;
   readonly footnotes: {
     readonly annotation: HTMLOListElement;
