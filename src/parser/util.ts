@@ -20,7 +20,7 @@ export function isTight(nodes: readonly (HTMLElement | string)[], start: number,
   return typeof nodes[end] === 'string' && (nodes[end] as string).length > 1
     ? isVisible(nodes[end], 'end', 0) ||
       isVisible(nodes[end], 'end', 1)
-    : isVisible(nodes[end], 'end') ||
+    : isVisible(nodes[end], 'end') || end === 0 ||
       isVisible(nodes[end - 1], 'end');
 }
 function isVisible(node: HTMLElement | string | undefined, dir: 'start' | 'end', offset = 0): boolean {
