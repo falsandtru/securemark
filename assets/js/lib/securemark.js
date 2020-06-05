@@ -4109,7 +4109,7 @@ require = function () {
                     }
                 },
                 state: void 0
-            }, combinator_1.union([combinator_1.some(inline_1.inline, ')')]))))), '))'), (ns, rest) => util_1.isTight(ns, 0, ns.length) ? [
+            }, combinator_1.union([combinator_1.some(inline_1.inline, ')')]))))), '))'), (ns, rest) => util_1.isEndTight(ns) ? [
                 [typed_dom_1.html('sup', { class: 'annotation' }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : void 0)));
@@ -4412,7 +4412,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.deletion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('~~'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '~~')])), source_1.str('~~'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            exports.deletion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('~~'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '~~')])), source_1.str('~~'), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                 [typed_dom_1.html('del', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
@@ -4447,7 +4447,7 @@ require = function () {
             exports.emphasis = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.char('*'), util_1.startTight(combinator_1.some(combinator_1.union([
                 strong_1.strong,
                 combinator_1.some(inline_1.inline, '*')
-            ]))), source_1.char('*'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            ]))), source_1.char('*'), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                 [typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
@@ -4482,7 +4482,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.emstrong = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('***'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '*')])), source_1.str(/^\*{1,3}/), false, ([as, bs, cs], rest, context) => {
-                if (!util_1.isTight(bs, 0, bs.length))
+                if (!util_1.isEndTight(bs))
                     return [
                         array_1.unshift(as, bs),
                         cs[0] + rest
@@ -4594,7 +4594,7 @@ require = function () {
                 source_1.char('|'),
                 util_1.startTight(combinator_1.some(inline_1.inline, ']'))
             ]), source_1.char(']'), false, ([as, bs, cs], rest) => [
-                util_1.isTight(bs, 2, bs.length) ? [typed_dom_1.html('span', attributes(util_1.stringify(bs[0])), util_1.defrag(util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
+                util_1.isEndTight(bs) ? [typed_dom_1.html('span', attributes(util_1.stringify(bs[0])), util_1.defrag(util_1.trimEnd(bs.slice(2))))] : array_1.push(array_1.unshift(as, bs), cs),
                 rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
@@ -4644,7 +4644,7 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, combinator_1.subline(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))))), ']', false, ([, bs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            }, combinator_1.subline(combinator_1.union([combinator_1.some(inline_1.inline, ']')])))))), ']', false, ([, bs], rest) => util_1.isEndTight(bs) ? [
                 [typed_dom_1.html('a', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : void 0)), ([el]) => [typed_dom_1.define(el, {
@@ -4784,7 +4784,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str(/^\[[:^]/), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), source_1.char(']'), false, ([as, bs, cs], rest) => [
-                util_1.isTight(bs, 0, bs.length) ? [typed_dom_1.html('span', {
+                util_1.isEndTight(bs) ? [typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
                         'data-invalid-type': 'syntax',
@@ -4861,11 +4861,11 @@ require = function () {
                     default:
                         return { state: { in: { small: true } } };
                     }
-                })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest, context) => util_1.isTight(bs, 0, bs.length) ? [
+                })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest, context) => util_1.isEndTight(bs) ? [
                     [elem(tag, as, util_1.trimEnd(bs), cs, context)],
                     rest
                 ] : void 0)))),
-                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                     [elem(tag, as, util_1.trimEnd(bs), cs, {})],
                     rest
                 ] : as.length === 1 ? [
@@ -4988,7 +4988,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.insertion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('++'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '++')])), source_1.str('++'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            exports.insertion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('++'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '++')])), source_1.str('++'), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                 [typed_dom_1.html('ins', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
@@ -5059,7 +5059,7 @@ require = function () {
                 [],
                 as
             ]), ([content, options], rest, context) => {
-                if (!util_1.isTight(content, 0, content.length))
+                if (!util_1.isEndTight(content))
                     return;
                 if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
                     return;
@@ -5150,7 +5150,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.mark = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('=='), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '==')])), source_1.str('=='), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            exports.mark = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('=='), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '==')])), source_1.str('=='), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                 [typed_dom_1.html('mark', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
@@ -5322,7 +5322,7 @@ require = function () {
             }, combinator_1.subline(combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']'))
-            ])))))), ']]'), (ns, rest) => util_1.isTight(ns, typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? 1 : 0, ns.length) ? [
+            ])))))), ']]'), (ns, rest) => util_1.isEndTight(ns) ? [
                 [typed_dom_1.html('sup', {
                         class: 'reference',
                         ...attributes(ns)
@@ -5479,7 +5479,7 @@ require = function () {
             exports.strong = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('**'), util_1.startTight(combinator_1.some(combinator_1.union([
                 emphasis_1.emphasis,
                 combinator_1.some(inline_1.inline, '*')
-            ]), '**')), source_1.str('**'), false, ([as, bs, cs], rest) => util_1.isTight(bs, 0, bs.length) ? [
+            ]), '**')), source_1.str('**'), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                 [typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : [
@@ -6039,28 +6039,19 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.suppress = exports.stringify = exports.defrag = exports.dup = exports.trimEnd = exports.startTight = exports.isTight = void 0;
+            exports.suppress = exports.stringify = exports.defrag = exports.dup = exports.trimEnd = exports.startTight = exports.isEndTight = void 0;
             const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../combinator');
             const inline_1 = _dereq_('./inline');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            function isTight(nodes, start, end) {
-                if (end < 0)
-                    return isTight(nodes, start, nodes.length + end);
-                if (start >= nodes.length)
+            function isEndTight(nodes) {
+                if (nodes.length === 0)
                     return true;
-                switch (false) {
-                case start < nodes.length:
-                case end <= nodes.length:
-                    return false;
-                case end > start:
-                    return true;
-                }
-                --end;
-                return typeof nodes[end] === 'string' && nodes[end].length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || isVisible(nodes[end - 1], 'end');
+                const end = nodes.length - 1;
+                return typeof nodes[end] === 'string' && nodes[end].length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || end === 0 || isVisible(nodes[end - 1], 'end');
             }
-            exports.isTight = isTight;
+            exports.isEndTight = isEndTight;
             function isVisible(node, dir, offset = 0) {
                 if (!node)
                     return false;
@@ -6300,7 +6291,7 @@ require = function () {
                     var result = {};
                     if (mod != null)
                         for (var k in mod)
-                            if (Object.hasOwnProperty.call(mod, k))
+                            if (k !== 'default' && Object.hasOwnProperty.call(mod, k))
                                 __createBinding(result, mod, k);
                     __setModuleDefault(result, mod);
                     return result;
