@@ -4170,9 +4170,10 @@ require = function () {
             exports.account = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:(?![a-z0-9.-]{0,200}?--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9]{1,63}){1,2}\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, (source, {domain}) => {
-                domain = namespace(source) || domain;
-                const url = domain ? `https://${ domain }/@${ source.split(/[/@]/).pop() }` : `/${ source }`;
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:(?![a-z0-9.-]{0,200}?--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9]{1,63}){1,2}\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, (source, {
+                origin = ''
+            }) => {
+                const url = source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ origin }/${ source }`;
                 return [
                     [typed_dom_1.html('a', {
                             class: 'account',
@@ -4182,9 +4183,6 @@ require = function () {
                     ''
                 ];
             })));
-            function namespace(source) {
-                return source.includes('/') ? source.slice(1, source.indexOf('/')) : void 0;
-            }
         },
         {
             '../../../combinator': 28,
@@ -4270,17 +4268,16 @@ require = function () {
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z0-9]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {domain}) => {
-                const url = domain ? `https://${ domain }/hashtags/${ tag.slice(1) }` : `/hashtags/${ tag.slice(1) }`;
-                return [
-                    [typed_dom_1.html('a', {
-                            class: 'hashtag',
-                            href: url,
-                            rel: 'noopener'
-                        }, tag)],
-                    ''
-                ];
-            })));
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z0-9]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {
+                origin = ''
+            }) => [
+                [typed_dom_1.html('a', {
+                        class: 'hashtag',
+                        href: `${ origin }/hashtags/${ tag.slice(1) }`,
+                        rel: 'noopener'
+                    }, tag)],
+                ''
+            ])));
         },
         {
             '../../../combinator': 28,
@@ -5025,7 +5022,6 @@ require = function () {
             const html_1 = _dereq_('./html');
             const autolink_1 = _dereq_('../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
-            const {origin} = global_1.location;
             exports.optspec = { nofollow: [void 0] };
             void alias_1.ObjectSetPrototypeOf(exports.optspec, null);
             exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.validate([
@@ -5072,7 +5068,7 @@ require = function () {
                     href: INSECURE_URI,
                     rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
-                if (!sanitize(el, el, INSECURE_URI))
+                if (!sanitize(el, el, INSECURE_URI, context.origin))
                     return [
                         [el],
                         rest
@@ -5085,7 +5081,8 @@ require = function () {
             })));
             exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
             exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
-            function sanitize(uri, target, source) {
+            const {origin: orig} = window.location;
+            function sanitize(uri, target, source, origin = orig) {
                 let type;
                 let message;
                 switch (uri.protocol) {
@@ -5247,7 +5244,7 @@ require = function () {
                 if (cached) {
                     el.hasAttribute('alt') && void el.setAttribute('alt', text.trim());
                 } else {
-                    if (!link_1.sanitize(url, el, INSECURE_URI))
+                    if (!link_1.sanitize(url, el, INSECURE_URI, context.origin))
                         return [
                             [el],
                             rest
