@@ -1,6 +1,6 @@
 import { EmStrongParser, inline } from '../inline';
 import { union, some, creator, fmap, surround, lazy } from '../../combinator';
-import { startTight, isTight, trimEnd, defrag } from '../util';
+import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { emphasis } from './emphasis';
 import { strong } from './strong';
 import { str } from '../source';
@@ -12,7 +12,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
   startTight(union([some(inline, '*')])),
   str(/^\*{1,3}/), false,
   ([as, bs, cs], rest, context) => {
-    if (!isTight(bs, 0, bs.length)) return [unshift(as, bs), cs[0] + rest];
+    if (!isEndTight(bs)) return [unshift(as, bs), cs[0] + rest];
     switch (cs[0]) {
       case '*':
         return fmap(

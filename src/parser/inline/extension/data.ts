@@ -1,6 +1,6 @@
 import { ExtensionParser, inline } from '../../inline';
 import { inits, some, creator, surround, lazy } from '../../../combinator';
-import { startTight, isTight, trimEnd, defrag, stringify } from '../../util';
+import { startTight, isEndTight, trimEnd, defrag, stringify } from '../../util';
 import { str, char } from '../../source';
 import { DeepImmutable } from 'spica/type';
 import { html } from 'typed-dom';
@@ -17,7 +17,7 @@ export const data: DataParser = lazy(() => creator(surround(
   ]),
   char(']'), false,
   ([as, bs, cs], rest) => [
-    isTight(bs, 2, bs.length)
+    isEndTight(bs)
       ? [html('span', attributes(stringify(bs[0])), defrag(trimEnd(bs.slice(2))))]
       : push(unshift(as, bs), cs),
     rest

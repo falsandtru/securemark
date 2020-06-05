@@ -2,7 +2,7 @@ import { encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, subline, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
-import { startTight, isTight, trimEnd, dup, defrag, stringify } from '../util';
+import { startTight, isEndTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str } from '../source';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -45,7 +45,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
   ([as, bs]) => bs ? [as, bs] : [[], as]),
   ([content, options]: [(HTMLElement | string)[], string[]], rest, context) => {
     assert(options.every(p => typeof p === 'string'));
-    if (!isTight(content, 0, content.length)) return;
+    if (!isEndTight(content)) return;
     if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const INSECURE_URI = options.shift()!;

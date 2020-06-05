@@ -4,19 +4,10 @@ import { htmlentity, comment } from './inline';
 import { define, apply } from 'typed-dom';
 import { pop } from 'spica/array';
 
-export function isTight(nodes: readonly (HTMLElement | string)[], start: number, end: number): boolean {
-  if (end < 0) return isTight(nodes, start, nodes.length + end);
-  if (start >= nodes.length) return true;
-  assert(isVisible(nodes[start], 'start'));
-  switch (false) {
-    case start < nodes.length:
-    case end <= nodes.length:
-    //case isVisible(nodes[start], 'start'):
-      return false;
-    case end > start:
-      return true;
-  }
-  --end;
+export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
+  if (nodes.length === 0) return true;
+  assert(isVisible(nodes[0], 'start'));
+  const end = nodes.length - 1;
   return typeof nodes[end] === 'string' && (nodes[end] as string).length > 1
     ? isVisible(nodes[end], 'end', 0) ||
       isVisible(nodes[end], 'end', 1)

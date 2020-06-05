@@ -1,6 +1,6 @@
 import { AnnotationParser } from '../inline';
 import { union, some, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
-import { startTight, isTight, trimEnd, defrag } from '../util';
+import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
@@ -21,6 +21,6 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
   union([some(inline, ')')]))))),
   '))'),
   (ns, rest) =>
-    isTight(ns, 0, ns.length)
+    isEndTight(ns)
       ? [[html('sup', { class: 'annotation' }, defrag(trimEnd(ns)))], rest]
       : void 0)));

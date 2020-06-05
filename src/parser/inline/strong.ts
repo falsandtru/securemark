@@ -1,6 +1,6 @@
 import { StrongParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
-import { startTight, isTight, trimEnd, defrag } from '../util';
+import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { emphasis } from './emphasis';
 import { str } from '../source';
 import { html } from 'typed-dom';
@@ -11,7 +11,7 @@ export const strong: StrongParser = lazy(() => creator(surround(
   startTight(some(union([emphasis, some(inline, '*')]), '**')),
   str('**'), false,
   ([as, bs, cs], rest) =>
-    isTight(bs, 0, bs.length)
+    isEndTight(bs)
       ? [[html('strong', defrag(trimEnd(bs)))], rest]
       : [unshift(as, bs), cs[0] + rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));
