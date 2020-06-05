@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.161.1
+
+- Refactoring.
+
 ## 0.161.0
 
 - Change domain option to origin.
