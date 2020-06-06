@@ -31,24 +31,24 @@ export function twitter(url: URL): HTMLElement | undefined {
   }
   return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (h, tag) => {
     const outer = h(tag);
-    void $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}&omit_script=true`, {
+    $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}&omit_script=true`, {
       dataType: 'jsonp',
       timeout: 10 * 1e3,
       cache: true,
       success({ html }): void {
         outer.innerHTML = sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${html}</div>`);
-        void cache.set(url.href, outer.cloneNode(true));
+        cache.set(url.href, outer.cloneNode(true));
         if (window.twttr) return void window.twttr.widgets.load(outer);
         const id = 'twitter-wjs';
         if (document.getElementById(id)) return;
-        void document.body.appendChild(h('script', {
+        document.body.appendChild(h('script', {
           id,
           src: 'https://platform.twitter.com/widgets.js',
         }));
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        void define(outer, [parse(`*{ ${url.href} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
+        define(outer, [parse(`*{ ${url.href} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
       },
     });
     return outer;

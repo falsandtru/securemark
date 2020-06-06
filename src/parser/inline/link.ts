@@ -1,4 +1,4 @@
-import { encodeURI, decodeURI } from 'spica/global';
+import { undefined, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, subline, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
@@ -9,9 +9,9 @@ import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
 
 export const optspec = {
-  nofollow: [void 0],
+  nofollow: [undefined],
 } as const;
-void ObjectSetPrototypeOf(optspec, null);
+ObjectSetPrototypeOf(optspec, null);
 
 export const link: LinkParser = lazy(() => creator(10, bind(fmap(
   validate(['[', '{'],
@@ -63,9 +63,9 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
             .replace(/^tel:/, ''));
     if (!sanitize(el, el, INSECURE_URI, context.origin)) return [[el], rest];
     assert(el.classList.length === 0);
-    void define(el, ObjectAssign(
+    define(el, ObjectAssign(
       attributes('link', optspec, options, []),
-      { nofollow: void 0 }));
+      { nofollow: undefined }));
     return [[el], rest];
   })));
 
@@ -88,7 +88,7 @@ export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, source: st
     case 'http:':
     case 'https:': {
       const { host } = uri;
-      host && uri.origin !== origin && target.tagName === 'A' && void target.setAttribute('target', '_blank');
+      host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
       if (host) return true;
       type = 'parameter';
       message = 'Invalid host';
@@ -104,8 +104,8 @@ export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, source: st
       type = 'parameter';
       message = 'Invalid protocol';
   }
-  void target.classList.toggle('invalid', true);
-  void define(target, {
+  target.classList.toggle('invalid', true);
+  define(target, {
     'data-invalid-syntax': 'link',
     'data-invalid-type': type,
     'data-invalid-message': message,

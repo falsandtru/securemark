@@ -12,7 +12,7 @@ export function localize(block: BlockParser): BlockParser {
         if (!el.firstChild || el.firstElementChild) continue;
         if (!check(el)) continue;
         assert(el.firstChild.textContent === ' ');
-        void el.replaceChild(html('wbr'), el.firstChild);
+        el.replaceChild(html('wbr'), el.firstChild);
       }
     }
     return es;

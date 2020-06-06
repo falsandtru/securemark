@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, exec, check } from '../../data/parser';
 
@@ -30,7 +31,7 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
     if (!result) return;
     return exec(result).length < source.length
       ? result
-      : void 0;
+      : undefined;
   };
 }
 
@@ -46,6 +47,6 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
 //    if (!cond(eval(result), exec(result), context)) return;
 //    return exec(result).length < source.length
 //      ? result
-//      : void 0;
+//      : undefined;
 //  };
 //}

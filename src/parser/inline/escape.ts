@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { EscapeParser } from '../inline';
 import { union } from '../../combinator';
 import { str } from '../source';
@@ -14,7 +15,7 @@ export const escape: EscapeParser = union([(source, context) => {
           && source[2] === source[0]
           && source[1] === source[0]
         ? repeat(source, context)
-        : void 0;
+        : undefined;
     case '+':
     case '~':
     case '=':
@@ -22,7 +23,7 @@ export const escape: EscapeParser = union([(source, context) => {
       return source[2] === source[0]
           && source[1] === source[0]
         ? repeat(source, context)
-        : void 0;
+        : undefined;
     default:
       return;
   }

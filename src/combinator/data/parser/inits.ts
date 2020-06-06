@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, Data, SubParsers, Context, SubData, eval, exec, check } from '../parser';
 import { push } from 'spica/array';
 
@@ -21,6 +22,6 @@ export function inits<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
     assert(rest.length <= source.length);
     return rest.length < source.length
       ? [data || [], rest]
-      : void 0;
+      : undefined;
   };
 }

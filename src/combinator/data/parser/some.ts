@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, eval, exec, check } from '../parser';
 import { push } from 'spica/array';
 
@@ -5,7 +6,7 @@ export function some<P extends Parser<unknown>>(parser: P, until?: string | RegE
 export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until?: string | RegExp): Parser<T, D> {
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
-  const match: (source: string) => boolean = typeof until === 'string' && until !== void 0
+  const match: (source: string) => boolean = typeof until === 'string' && until !== undefined
     ? source => source.slice(0, until.length) === until
     : source => !!until && until.test(source);
   let memory = '';
@@ -29,6 +30,6 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
     assert(rest.length <= source.length);
     return rest.length < source.length
       ? [data || [], rest]
-      : void 0;
+      : undefined;
   };
 }

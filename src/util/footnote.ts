@@ -1,4 +1,4 @@
-import { Infinity } from 'spica/global';
+import { undefined, Infinity } from 'spica/global';
 import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
 import { MultiMap } from 'spica/multimap';
@@ -44,17 +44,17 @@ function build(
       const ref = es[i];
       assert(ref.matches('sup'));
       if (!check(ref)) continue;
-      void ++count;
+      ++count;
       const identifier = identify(ref);
       const title = ref.classList.contains('invalid')
-        ? void 0
-        : titles.get(identifier) || ref.title || text(ref) || void 0;
-      title && !titles.has(title) && void titles.set(identifier, title);
-      !title && void refs.set(identifier, ref);
+        ? undefined
+        : titles.get(identifier) || ref.title || text(ref) || undefined;
+      title && !titles.has(title) && titles.set(identifier, title);
+      !title && refs.set(identifier, ref);
       const content = contentify(ref);
       const refIndex = count;
       const refId = ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}`;
-      const def = void 0
+      const def = undefined
         || defs.get(identifier)
         || defs.set(identifier, html('li',
             { id: `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}`, class: 'footnote' },
@@ -62,11 +62,11 @@ function build(
             .get(identifier)!;
       assert(def.lastChild);
       if (title && content.firstChild && def.childNodes.length === 1) {
-        void def.insertBefore(content.cloneNode(true), def.lastChild);
+        def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
         for (const ref of refs.take(identifier, Infinity)) {
-          void ref.classList.remove('invalid');
-          void define(ref, {
+          ref.classList.remove('invalid');
+          define(ref, {
             title,
             'data-invalid-syntax': null,
             'data-invalid-type': null,
@@ -84,7 +84,7 @@ function build(
           ...title
             ? { title }
             : { class: ref.classList.contains('invalid')
-                  ? void 0
+                  ? undefined
                   : join([...ref.classList, 'invalid'], ' '),
                 'data-invalid-syntax': syntax,
                 'data-invalid-type': 'content',
@@ -92,19 +92,19 @@ function build(
               }
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
-          ? void 0
+          ? undefined
           : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
         .firstChild as HTMLAnchorElement;
       assert(ref.title || ref.matches('.invalid'));
       assert(ref.firstChild);
-      void def.lastChild!.appendChild(
+      def.lastChild!.appendChild(
         html('a',
           {
             href: `#${refId}`,
             rel: 'noopener',
             title: content.firstChild && ref.hasAttribute('data-alias')
               ? title
-              : void 0,
+              : undefined,
           },
           ` ~${refIndex}`));
     }
@@ -113,12 +113,12 @@ function build(
     let length = children.length;
     I:
     for (const def of defs.values()) {
-      void ++count;
+      ++count;
       while (length > defs.size) {
         const node = children[count - 1];
         if (equal(node, def)) continue I;
         yield footnote.removeChild(node) as HTMLLIElement;
-        void --length;
+        --length;
       }
       const node = count <= length
         ? children[count - 1]
@@ -126,11 +126,11 @@ function build(
       if (node && equal(node, def)) continue;
       assert(def.parentNode !== footnote);
       yield footnote.insertBefore(def, node);
-      void ++length;
+      ++length;
     }
     while (length > defs.size) {
       yield footnote.removeChild(children[defs.size]) as HTMLLIElement;
-      void --length;
+      --length;
     }
     return;
   }

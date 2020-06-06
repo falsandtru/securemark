@@ -18,7 +18,7 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
       push(acc, eval(block(seg, opts), []))
     , []));
   if (opts.test) return node;
-  void [...footnote(node, opts.footnotes, opts)];
-  void [...figure(node, opts.footnotes, opts)];
+  [...footnote(node, opts.footnotes, opts)];
+  [...figure(node, opts.footnotes, opts)];
   return node;
 }

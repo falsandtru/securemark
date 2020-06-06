@@ -11,7 +11,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   opts = { code, math, media: {}, ...opts };
   try {
     if (target.tagName === 'LI') {
-      opts.math && target.querySelectorAll('.math').forEach(el => void opts.math?.(el as HTMLElement));
+      opts.math && target.querySelectorAll('.math').forEach(el => opts.math?.(el as HTMLElement));
       return;
     }
     switch (true) {
@@ -34,7 +34,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         const el = media(target as HTMLImageElement, opts.media!);
         if (!el) return;
         assert(el.matches('.media'));
-        void el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, origin).reference);
+        el.setAttribute('data-src', new URL(target.getAttribute('data-src')!, origin).reference);
         const scope = el.matches('img')
           ? target
           : target.parentElement as HTMLAnchorElement;
@@ -43,7 +43,7 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
       default:
         for (let es = target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .math'), i = 0, len = es.length; i < len; ++i) {
           const el = es[i];
-          void render(el, opts);
+          render(el, opts);
         }
         return;
     }

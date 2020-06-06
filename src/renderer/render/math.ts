@@ -1,7 +1,8 @@
+import { undefined } from 'spica/global';
 import { cache } from '../../parser/inline/math';
 import { define } from 'typed-dom';
 
-void MathJax.Hub.Config({
+MathJax.Hub.Config({
   tex2jax: {
     inlineMath: [['${', '}$']],
     displayMath: [['$$\n', '\n$$']],
@@ -16,9 +17,9 @@ export function math(target: HTMLElement): void {
     : void queue(target, () =>
         target.matches('span')
           ? void cache.set(source, target.cloneNode(true))
-          : void 0);
+          : undefined);
 }
 
-function queue(target: HTMLElement, callback = () => void 0): void {
-  void MathJax.Hub.Queue(['Typeset', MathJax.Hub, target, callback]);
+function queue(target: HTMLElement, callback = () => undefined): void {
+  MathJax.Hub.Queue(['Typeset', MathJax.Hub, target, callback]);
 }

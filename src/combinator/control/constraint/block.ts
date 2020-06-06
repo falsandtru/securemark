@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, exec } from '../../data/parser';
 import { firstline, isEmpty } from './line';
 
@@ -13,6 +14,6 @@ export function block<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, sepa
     assert(rest === '' || source[source.length - rest.length - 1] === '\n');
     return rest === '' || source[source.length - rest.length - 1] === '\n'
       ? result
-      : void 0;
+      : undefined;
   };
 }

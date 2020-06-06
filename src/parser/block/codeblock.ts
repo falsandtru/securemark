@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { CodeBlockParser } from '../block';
 import { some, block, validate, fmap, clear, fence, eval } from '../../combinator';
 import { defrag } from '../util';
@@ -37,17 +38,17 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     lang = language.test(lang || ext)
       ? lang || ext
       : lang && 'invalid';
-    const el = html('pre', { class: 'notranslate' }, body.slice(0, -1) || void 0);
+    const el = html('pre', { class: 'notranslate' }, body.slice(0, -1) || undefined);
     if (lang) {
-      void el.classList.add('code');
-      void el.classList.add(`language-${lang}`);
-      void el.setAttribute('data-lang', lang);
+      el.classList.add('code');
+      el.classList.add(`language-${lang}`);
+      el.setAttribute('data-lang', lang);
     }
     else {
-      void define(el, defrag(eval(some(autolink)(el.textContent!, context), [])));
+      define(el, defrag(eval(some(autolink)(el.textContent!, context), [])));
     }
     if (path) {
-      void el.setAttribute('data-file', path);
+      el.setAttribute('data-file', path);
     }
     return [el];
   })));

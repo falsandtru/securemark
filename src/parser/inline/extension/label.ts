@@ -41,7 +41,7 @@ function increment(number: string, position: number): string {
   const ns = number.split('.');
   const ms: number[] = [];
   for (let i = 0; i < position; ++i) {
-    void ms.push(
+    ms.push(
       i < ns.length
         ? i + 1 < position
           ? +ns[i]

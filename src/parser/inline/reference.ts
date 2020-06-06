@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
 import { subsequence, some, subline, focus, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag, stringify } from '../util';
@@ -17,13 +18,13 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     //extension: true,
     //link: true,
     //autolink: true,
-  }}, state: void 0 },
+  }}, state: undefined },
   subline(subsequence([alias, startTight(some(inline, ']'))])))))),
   ']]'),
   (ns, rest) =>
     isEndTight(ns)
       ? [[html('sup', { class: 'reference', ...attributes(ns) }, defrag(trimEnd(ns)))], rest]
-      : void 0)));
+      : undefined)));
 
 const alias: ReferenceParser.AliasParser = creator(focus(
   /^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/,
@@ -33,6 +34,6 @@ function attributes(ns: (string | HTMLElement)[]): Record<string, string | undef
   return {
     'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
       ? stringify(ns.shift()!)
-      : void 0
+      : undefined
   };
 }

@@ -1,4 +1,4 @@
-
+import { undefined } from 'spica/global';
 import { Parser } from '../../data/parser';
 import { firstline } from '../constraint/line';
 import { unshift } from 'spica/array';
@@ -17,7 +17,7 @@ export function fence<D extends Parser<unknown, any, C>[], C extends object>(ope
     for (let count = 1, next: string | undefined; ; ++count) {
       if (rest === '') break;
       const line = next ?? firstline(rest);
-      next = void 0;
+      next = undefined;
       if (count > limit + 1 && (!separation || line.trim() === '')) break;
       if (count <= limit + 1 &&
           line[0] === delim[0] &&

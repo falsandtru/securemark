@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { CharParser } from '../source';
 import { Parser, creator } from '../../combinator';
 
@@ -8,6 +9,6 @@ export function char(char: string): Parser<string, []> {
     if (source === '') return;
     return source[0] === char
       ? [[char], source.slice(char.length)]
-      : void 0;
+      : undefined;
   });
 };

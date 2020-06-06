@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, fmap, bind, surround, open, lazy } from '../../combinator';
 import { dup } from '../util';
@@ -34,14 +35,14 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
       ? cache.get(key)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': INSECURE_URI, alt: text.trim() });
     if (cached) {
-      el.hasAttribute('alt') && void el.setAttribute('alt', text.trim());
+      el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
     }
     else {
       if (!sanitize(url, el, INSECURE_URI, context.origin)) return [[el], rest];
     }
-    void define(el, {
+    define(el, {
       ...attributes('media', optspec, options, cached ? [...el.classList] : ['media']),
-      nofollow: void 0,
+      nofollow: undefined,
     });
     return (context.syntax?.inline?.link ?? true)
         && (!cached || el.tagName === 'IMG')
@@ -51,8 +52,8 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
-  surround(char('('), some(union([bracket, text]), /^(?:\\?\n|\))/), char(')'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('['), some(union([bracket, text]), /^(?:\\?\n|\])/), char(']'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('{'), some(union([bracket, text]), /^(?:\\?\n|\})/), char('}'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('"'), some(text, /^(?:\\?\n|")/), char('"'), true, void 0, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('('), some(union([bracket, text]), /^(?:\\?\n|\))/), char(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('['), some(union([bracket, text]), /^(?:\\?\n|\])/), char(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('{'), some(union([bracket, text]), /^(?:\\?\n|\})/), char('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('"'), some(text, /^(?:\\?\n|")/), char('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ])));

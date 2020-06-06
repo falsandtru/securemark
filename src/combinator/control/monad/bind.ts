@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, Result, Data, SubParsers, Context, SubData, IntermediateParser, eval, exec, check } from '../../data/parser';
 
 export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (rs: SubData<P>[], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>): P;
@@ -17,6 +18,6 @@ export function bind<T, U, D extends Parser<unknown, any, C>[], C extends object
     if (!res2) return;
     return exec(res2).length <= exec(res1).length
       ? res2
-      : void 0;
+      : undefined;
   };
 }

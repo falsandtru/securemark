@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, subline, validate, guard, context, creator, fmap, surround, lazy } from '../../../combinator';
 import { startTight, isEndTight, trimEnd, defrag } from '../../util';
@@ -23,6 +24,6 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexe
   ([, bs], rest) =>
     isEndTight(bs)
       ? [[html('a', defrag(trimEnd(bs)))], rest]
-      : void 0)),
+      : undefined)),
   ([el]: [HTMLAnchorElement]) =>
-    [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : void 0 }, el.childNodes)])));
+    [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : undefined }, el.childNodes)])));

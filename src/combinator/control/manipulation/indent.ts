@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, eval, exec } from '../../data/parser';
 import { some } from '../../data/parser/some';
 import { line, firstline } from '../constraint/line';
@@ -18,6 +19,6 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
       const result = parser(join(rs, '\n'), context);
       return result && exec(result) === ''
         ? [eval(result), rest]
-        : void 0;
+        : undefined;
     });
 }

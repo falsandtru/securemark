@@ -38,15 +38,15 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       assert(rev === revision);
       const seg = sourceSegments[index];
       const es = eval(block(seg, settings), []);
-      void pairs.splice(index, 0, [seg, es]);
+      pairs.splice(index, 0, [seg, es]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
-      void push(adds, es.map<typeof adds[number]>(el => [el, base]));
+      push(adds, es.map<typeof adds[number]>(el => [el, base]));
       while (adds.length > 0) {
         assert(rev === revision);
         const [el, base] = adds.shift()!;
-        void target.insertBefore(el, base);
+        target.insertBefore(el, base);
         assert(el.parentNode);
         yield el;
         if (rev !== revision) return yield;
@@ -56,13 +56,13 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       assert(rev === revision);
       const es = refuse[i][1];
       if (es.length === 0) continue;
-      void push(dels, es);
+      push(dels, es);
     }
     assert(pairs.length === sourceSegments.length);
     while (adds.length > 0) {
       assert(rev === revision);
       const [el, base] = adds.shift()!;
-      void target.insertBefore(el, base);
+      target.insertBefore(el, base);
       assert(el.parentNode);
       yield el;
       if (rev !== revision) return yield;
@@ -70,7 +70,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     while (dels.length > 0) {
       assert(rev === revision);
       const el = dels.shift()!;
-      void el.parentNode?.removeChild(el);
+      el.parentNode?.removeChild(el);
       assert(!el.parentNode);
       yield el;
       if (rev !== revision) return yield;

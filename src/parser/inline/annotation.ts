@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
 import { union, some, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag } from '../util';
@@ -17,10 +18,10 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
     //extension: true,
     //link: true,
     //autolink: true,
-  }}, state: void 0 },
+  }}, state: undefined },
   union([some(inline, ')')]))))),
   '))'),
   (ns, rest) =>
     isEndTight(ns)
       ? [[html('sup', { class: 'annotation' }, defrag(trimEnd(ns)))], rest]
-      : void 0)));
+      : undefined)));

@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { OListParser } from '../block';
 import { union, inits, some, block, line, focus, validate, context, fmap, convert, indent, trim, lazy } from '../../combinator';
 import { defrag } from '../util';
@@ -27,11 +28,11 @@ export const olist: OListParser = lazy(() => block(fmap(validate(
       html('ol',
         {
           type: ty,
-          start: ty === '1' ? es[0].getAttribute('value') : void 0
+          start: ty === '1' ? es[0].getAttribute('value') : undefined
         },
         es.map(el =>
           define(el, {
-            value: ty === '1' ? void 0 : null,
+            value: ty === '1' ? undefined : null,
             'data-type': null
           })))
     ];
@@ -57,7 +58,7 @@ function type(index: string): undefined | '1' | 'a' | 'A' {
 
 function format(index: string): string | undefined {
   switch (type(index)) {
-    case void 0:
+    case undefined:
       return;
     case '1':
       return `${+index}`;

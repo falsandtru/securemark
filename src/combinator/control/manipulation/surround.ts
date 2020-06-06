@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, Result, Ctx, Data, SubParsers, Context, SubData, IntermediateParser, eval, exec, check } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { unshift, push } from 'spica/array';
@@ -44,7 +45,7 @@ export function surround<T, D extends Parser<unknown>[]>(
     if (!res1) return;
     const rl = eval(res1);
     const mr_ = exec(res1);
-    const res2 = mr_ !== '' ? parser(mr_, context) : void 0;
+    const res2 = mr_ !== '' ? parser(mr_, context) : undefined;
     assert(check(mr_, res2));
     const rm = eval(res2);
     const r_ = exec(res2, mr_);
@@ -60,20 +61,20 @@ export function surround<T, D extends Parser<unknown>[]>(
         : [push(unshift(rl, rm || []), rr), rest]
       : g
         ? g([rl, rm!], rest, context)
-        : void 0;
+        : undefined;
   };
 }
 
 function match(pattern: string | RegExp): (source: string, context: Ctx) => [never[], string] | undefined {
   switch (typeof pattern) {
     case 'string':
-      return source => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : void 0;
+      return source => source.slice(0, pattern.length) === pattern ? [[], source.slice(pattern.length)] : undefined;
     case 'object':
       return source => {
         const m = source.match(pattern);
         return m
           ? [[], source.slice(m[0].length)]
-          : void 0;
+          : undefined;
       };
   }
 }

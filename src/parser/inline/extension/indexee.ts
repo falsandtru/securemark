@@ -1,9 +1,10 @@
+import { undefined } from 'spica/global';
 import { Parser, fmap } from '../../../combinator';
 import { define } from 'typed-dom';
 
 export function indexee<P extends Parser<unknown>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
-  return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || void 0 })]);
+  return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || undefined })]);
 }
 
 export function text(source: HTMLElement): string {
@@ -14,10 +15,10 @@ export function text(source: HTMLElement): string {
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
-    void define(es[i], es[i].getAttribute('data-src')!);
+    define(es[i], es[i].getAttribute('data-src')!);
   }
   for (let es = target.querySelectorAll('.annotation, .reference, rt, rp'), i = 0, len = es.length; i < len; ++i) {
-    void es[i].remove();
+    es[i].remove();
   }
   return target.textContent!.trim();
 }

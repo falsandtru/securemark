@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, Context, eval, exec, check } from '../../data/parser';
 
 export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P): P;
@@ -17,7 +18,7 @@ export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, pa
     if (!result) return;
     return exec(result).length < src.length
       ? [eval(result), exec(result) + source.slice(src.length)]
-      : void 0;
+      : undefined;
   };
 }
 
@@ -39,6 +40,6 @@ export function rewrite<T, D extends Parser<unknown, any, C>[], C extends object
     assert(exec(res2) === '');
     return exec(res2).length < src.length
       ? [eval(res2), exec(res2) + exec(res1)]
-      : void 0;
+      : undefined;
   };
 }

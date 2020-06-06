@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, fmap, eval } from '../combinator';
 import { htmlentity, comment } from './inline';
@@ -80,7 +81,7 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
     }
     return (source[0] === '\\' ? source[1] : source[0])?.trim()
       ? parser(source, context)
-      : void 0;
+      : undefined;
   }
 }
 
@@ -104,7 +105,7 @@ export function defrag(nodes: readonly (HTMLElement | string)[]): (HTMLElement |
     const node = nodes[i];
     if (node === '') continue;
     if (acc.length === 0 || typeof node === 'object' || typeof nodes[i - 1] === 'object') {
-      void acc.push(node);
+      acc.push(node);
     }
     else {
       assert(acc.length > 0);
@@ -138,7 +139,7 @@ export function suppress(target: HTMLOListElement | DocumentFragment): HTMLOList
   if ('id' in target && target.tagName === 'OL') {
     assert.deepStrictEqual([...target.querySelectorAll('.footnote')], [...target.querySelectorAll(':scope > li')]);
     assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
-    void apply(target, '.footnote > sup:last-child > a', { href: null });
+    apply(target, '.footnote > sup:last-child > a', { href: null });
   }
   for (let es = target.children, i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
@@ -146,13 +147,13 @@ export function suppress(target: HTMLOListElement | DocumentFragment): HTMLOList
       case 'DL':
         assert.deepStrictEqual([...el.querySelectorAll('dt')], [...el.querySelectorAll(':scope > dt')]);
         assert.deepStrictEqual([...el.querySelectorAll(':scope > dt')], [...el.querySelectorAll(':scope > dt[id]')]);
-        void apply(el, 'dt', { id: null });
+        apply(el, 'dt', { id: null });
         continue;
       default:
-        el.id && void define(el, { id: null });
+        el.id && define(el, { id: null });
         continue;
     }
   }
-  void apply(target, 'a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]', { id: null, href: null });
+  apply(target, 'a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]', { id: null, href: null });
   return target;
 }

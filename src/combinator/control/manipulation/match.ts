@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { Parser, exec, check } from '../../data/parser';
 import { memoize as memoize_ } from 'spica/memoize';
 
@@ -15,7 +16,7 @@ export function match<T, D extends Parser<unknown>[]>(pattern: RegExp, f: (match
     if (!result) return;
     return exec(result).length < source.length && exec(result).length <= rest.length
       ? result
-      : void 0;
+      : undefined;
   };
 }
 

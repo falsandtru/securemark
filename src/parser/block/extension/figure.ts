@@ -1,4 +1,4 @@
-import { RegExp } from 'spica/global';
+import { undefined, RegExp } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, sequence, inits, some, block, line, rewrite, context, fmap, close, clear, match, memoize, convert, trim } from '../../../combinator';
 import { defrag } from '../../util';
@@ -73,10 +73,10 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
 
 function attributes(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
-  const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || void 0;
+  const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
   const invalid = group !== '$' || rebase
-    ? void 0
-    : !content.classList.contains('math') || caption.length > 0 || void 0;
+    ? undefined
+    : !content.classList.contains('math') || caption.length > 0 || undefined;
   return {
     'data-label': label,
     'data-group': group,

@@ -1,4 +1,4 @@
-import { WeakMap } from 'spica/global';
+import { undefined, WeakMap } from 'spica/global';
 import { ObjectCreate } from 'spica/alias';
 import { Parser, Ctx, Context } from '../../data/parser';
 import { template } from 'spica/assign';
@@ -10,7 +10,7 @@ export function guard<T extends unknown, D extends Parser<unknown, any>[]>(f: (c
   return (source, context) =>
     f(context)
       ? parser(source, context)
-      : void 0;
+      : undefined;
 }
 
 export function update<P extends Parser<unknown>>(context: Context<P>, parser: P): P;

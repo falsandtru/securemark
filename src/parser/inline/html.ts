@@ -1,4 +1,4 @@
-import { RegExp } from 'spica/global';
+import { undefined, RegExp } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
@@ -16,8 +16,8 @@ const attrspec = {
     dir: ObjectFreeze(['ltr', 'rtl'] as const),
   },
 } as const;
-void ObjectSetPrototypeOf(attrspec, null);
-void ObjectValues(attrspec).forEach(o => void ObjectSetPrototypeOf(o, null));
+ObjectSetPrototypeOf(attrspec, null);
+ObjectValues(attrspec).forEach(o => ObjectSetPrototypeOf(o, null));
 
 export const html: HTMLParser = lazy(() => creator(validate('<', union([
   match(
@@ -66,7 +66,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         ([as, bs, cs], rest, context) =>
           isEndTight(bs)
             ? [[elem(tag, as, trimEnd(bs), cs, context)], rest]
-            : void 0)))),
+            : undefined)))),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
     // Don't memoize this function because this key size is unlimited
@@ -81,11 +81,11 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
             ? [[elem(tag, as, trimEnd(bs), cs, {})], rest]
             : as.length === 1
               ? [push(unshift(as, bs), cs), rest]
-              : void 0,
+              : undefined,
         ([as, bs], rest) =>
           as.length === 1
             ? [unshift(as, bs), rest]
-            : void 0)),
+            : undefined)),
 ]))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
@@ -162,7 +162,7 @@ export function attributes(
       const key = param.split('=', 1)[0];
       const val = param !== key
         ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
-        : void 0;
+        : undefined;
       invalid = invalid || !spec || key in attrs;
       spec?.[key]?.includes(val)
         ? attrs[key] = val || ''
@@ -171,7 +171,7 @@ export function attributes(
     }, ObjectCreate(null));
   invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
   if (invalid) {
-    void classes.push('invalid');
+    classes.push('invalid');
     attrs.class = join(classes, ' ').trim();
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = syntax === 'html'

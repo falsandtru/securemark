@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { sequence, focus, creator, bind, surround, lazy, eval, exec } from '../../combinator';
 import { defrag } from '../util';
@@ -44,7 +45,7 @@ const text: RubyParser.TextParser = creator((source, context) => {
   let printable = false;
   while (source !== '') {
     assert(source[0] !== '\n');
-    resources && void --resources.creation;
+    resources && --resources.creation;
     const i = source.search(next);
     switch (i) {
       case -1:
@@ -70,7 +71,7 @@ const text: RubyParser.TextParser = creator((source, context) => {
           default:
             source[0].trim()
               ? acc[acc.length - 1] += source[0]
-              : void acc.push('');
+              : acc.push('');
             printable = printable || !!source[0].trim();
             source = source.slice(1);
             continue;
@@ -85,5 +86,5 @@ const text: RubyParser.TextParser = creator((source, context) => {
   assert(printable === !!acc.join('').trim());
   return printable
     ? [[acc], '']
-    : void 0;
+    : undefined;
 });

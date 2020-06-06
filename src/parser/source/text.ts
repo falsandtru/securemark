@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { TextParser } from '../source';
 import { creator } from '../../combinator';
 import { str } from './str';
@@ -18,7 +19,7 @@ export const text: TextParser = creator(source => {
       switch (source[0]) {
         case '\\':
           switch (source[1]) {
-            case void 0:
+            case undefined:
               return [[], ''];
             case '\n':
               return [[html('span', { class: 'linebreak' }, ' ')], source.slice(2)];

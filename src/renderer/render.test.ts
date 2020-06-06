@@ -3,7 +3,7 @@ import { RenderingOptions } from '../../';
 import { parse } from '../parser/api/parse';
 
 function render(target: HTMLElement, opts: RenderingOptions = {}): HTMLElement {
-  void render_(target, opts);
+  render_(target, opts);
   return target;
 }
 
