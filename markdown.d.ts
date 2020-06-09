@@ -808,23 +808,23 @@ export namespace MarkdownParser {
         export interface BracketParser extends
           Inline<'url/bracket'>,
           Parser<string, [
+            Parser<string, [
+              BracketParser,
+              SourceParser.UnescapableSourceParser,
+            ], Context>,
+            Parser<string, [
+              BracketParser,
+              SourceParser.UnescapableSourceParser,
+            ], Context>,
+            Parser<string, [
+              BracketParser,
+              SourceParser.UnescapableSourceParser,
+            ], Context>,
+            Parser<string, [
+              BracketParser,
+              SourceParser.UnescapableSourceParser,
+            ], Context>,
             SourceParser.UnescapableSourceParser,
-            Parser<string, [
-              BracketParser,
-              SourceParser.UnescapableSourceParser,
-            ], Context>,
-            Parser<string, [
-              BracketParser,
-              SourceParser.UnescapableSourceParser,
-            ], Context>,
-            Parser<string, [
-              BracketParser,
-              SourceParser.UnescapableSourceParser,
-            ], Context>,
-            Parser<string, [
-              BracketParser,
-              SourceParser.UnescapableSourceParser,
-            ], Context>,
           ], Context> {
         }
       }

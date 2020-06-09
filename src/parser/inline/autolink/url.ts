@@ -16,11 +16,11 @@ export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
     union([link])))));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(union([
-  surround('"', some(unescsource, '"'), '"', true),
   surround('(', some(union([bracket, unescsource]), ')'), ')', true),
   surround('[', some(union([bracket, unescsource]), ']'), ']', true),
   surround('{', some(union([bracket, unescsource]), '}'), '}', true),
   surround('<', some(union([bracket, unescsource]), '>'), '>', true),
+  surround('"', some(unescsource, '"'), '"', true),
 ])));
 
 export function url2link(url: string): string {
