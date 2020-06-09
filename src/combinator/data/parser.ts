@@ -2,6 +2,7 @@ export interface Ctx {
   readonly resources?: {
     creation: number;
   };
+  delimiters?: ((source: string) => boolean)[];
 }
 
 export type Parser<R, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>

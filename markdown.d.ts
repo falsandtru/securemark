@@ -869,8 +869,10 @@ export namespace MarkdownParser {
       // ()
       // []
       // {}
+      // ""
       Inline<'bracket'>,
       Parser<HTMLElement | string, [
+        InlineParser,
         InlineParser,
         InlineParser,
         InlineParser,

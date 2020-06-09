@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.162.0
+
+- Extend bracket syntax to support double quotation marks.
+
 ## 0.161.1
 
 - Refactoring.

@@ -30,6 +30,17 @@ describe('Unit: parser/inline/bracket', () => {
       assert.deepStrictEqual(inspect(parser('}')), undefined);
     });
 
+    it('"', () => {
+      assert.deepStrictEqual(inspect(parser('"')), [['"'], '']);
+      assert.deepStrictEqual(inspect(parser('""')), [['"', '"'], '']);
+      assert.deepStrictEqual(inspect(parser('"a')), [['"', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('"a"')), [['"', 'a', '"'], '']);
+      assert.deepStrictEqual(inspect(parser('"(")"')), [['"', '(', '"'], ')"']);
+      assert.deepStrictEqual(inspect(parser('"(\\")"')), [['"', '(', '"', ')', '"'], '']);
+      assert.deepStrictEqual(inspect(parser('"(\n)"')), [['"', '('], '\n)"']);
+      assert.deepStrictEqual(inspect(parser('"(\\\n)"')), [['"', '('], '\\\n)"']);
+    });
+
   });
 
 });

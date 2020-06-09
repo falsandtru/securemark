@@ -8,4 +8,5 @@ export const bracket: BracketParser = lazy(() => union([
   surround(char('('), some(inline, ')'), char(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(char('['), some(inline, ']'), char(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(char('{'), some(inline, '}'), char('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('"'), some(inline, '"', /^"|^\\?\n/), char('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ]));
