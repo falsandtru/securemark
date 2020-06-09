@@ -9,18 +9,18 @@ const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
   validate(['http', 'ttp'], open(
     str(/^h?ttps?:\/\/(?=[^/?#\s])/),
-    focus(/^[\x00-\x7F]+/, some(union([bracket, some(unescsource, closer)]))))),
+    focus(/^(?:(?!\s)[\x00-\x7F])+/, some(union([bracket, some(unescsource, closer)]))))),
   convert(
     url2link,
     context({ syntax: { inline: { link: undefined } } },
     union([link])))));
 
 const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(union([
-  surround('"', some(unescsource, /^[\s"]+/), '"', true),
-  surround('(', some(union([bracket, unescsource]), /^[\s\)]/), ')', true),
-  surround('[', some(union([bracket, unescsource]), /^[\s\]]/), ']', true),
-  surround('{', some(union([bracket, unescsource]), /^[\s\}]/), '}', true),
-  surround('<', some(union([bracket, unescsource]), /^[\s\>]/), '>', true),
+  surround('"', some(unescsource, '"'), '"', true),
+  surround('(', some(union([bracket, unescsource]), ')'), ')', true),
+  surround('[', some(union([bracket, unescsource]), ']'), ']', true),
+  surround('{', some(union([bracket, unescsource]), '}'), '}', true),
+  surround('<', some(union([bracket, unescsource]), '>'), '>', true),
 ])));
 
 export function url2link(url: string): string {
