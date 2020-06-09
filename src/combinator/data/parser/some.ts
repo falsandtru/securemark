@@ -21,6 +21,7 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
       context.delimiters
         ? context.delimiters.push(delim)
         : context.delimiters = [delim];
+      assert(context.delimiters.length <= 3);
     }
     while (true) {
       if (rest === '') break;

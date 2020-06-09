@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { subsequence, some, subline, focus, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
+import { subsequence, some, focus, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
@@ -19,7 +19,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     //link: true,
     //autolink: true,
   }}, state: undefined },
-  subline(subsequence([alias, startTight(some(inline, ']'))])))))),
+  subsequence([alias, startTight(some(inline, ']', /^\\?\n/))]))))),
   ']]'),
   (ns, rest) =>
     isEndTight(ns)

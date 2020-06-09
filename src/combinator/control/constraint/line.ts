@@ -17,20 +17,6 @@ export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allow
   };
 }
 
-export function subline<P extends Parser<unknown>>(parser: P): P;
-export function subline<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): Parser<T, D> {
-  assert(parser);
-  return (source, context) => {
-    if (source === '') return;
-    const result = parser(source, context);
-    assert(check(source, result));
-    if (!result) return;
-    return source.length - exec(result).length <= firstline(source, false).length
-      ? result
-      : undefined;
-  };
-}
-
 export function firstline(source: string, keepLinebreak = true): string {
   const i = source[0] === '\n' ? 0 : source.indexOf('\n');
   switch (i) {

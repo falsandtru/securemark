@@ -1,4 +1,4 @@
-import { line, subline } from './line';
+import { line } from './line';
 import { inspect } from '../../../debug.test';
 
 describe('Unit: combinator/line', () => {
@@ -17,22 +17,6 @@ describe('Unit: combinator/line', () => {
       assert.deepStrictEqual(inspect(line(_ => [[], ''], false)(' ')), [[], '']);
       assert.deepStrictEqual(inspect(line(_ => [[], ''], false)('\n')), [[], '']);
       assert.deepStrictEqual(inspect(line(_ => [[], ''], false)(' \n')), [[], '']);
-    });
-
-  });
-
-  describe('subline', () => {
-    it('invalid', () => {
-      assert.deepStrictEqual(inspect(subline(_ => [[], ''])('')), undefined);
-      assert.deepStrictEqual(inspect(subline(_ => [[], ''])('\n')), undefined);
-      assert.deepStrictEqual(inspect(subline(_ => [[], ''])(' \n')), undefined);
-      assert.deepStrictEqual(inspect(subline(_ => [[], ''])('\n\n')), undefined);
-      assert.deepStrictEqual(inspect(subline(_ => [[], '\n'])('\n\n\n')), undefined);
-    });
-
-    it('valid', () => {
-      assert.deepStrictEqual(inspect(subline(_ => [[], ''])(' ')), [[], '']);
-      assert.deepStrictEqual(inspect(subline(_ => [[], '\n'])(' \n')), [[], '\n']);
     });
 
   });

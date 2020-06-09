@@ -1,7 +1,7 @@
 import { undefined, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, subline, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
+import { union, inits, tails, some, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
 import { startTight, isEndTight, trimEnd, dup, defrag, stringify } from '../util';
 import { str } from '../source';
 import { attributes } from './html';
@@ -36,7 +36,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
           media: false,
           autolink: false,
         }}},
-        subline(some(inline, ']')))),
+        some(inline, ']', /^\\?\n/))),
         ']',
         true),
     ]))),
