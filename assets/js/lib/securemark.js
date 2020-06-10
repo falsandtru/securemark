@@ -2583,6 +2583,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function inits(parsers) {
                 return (source, context) => {
+                    var _a;
                     let rest = source;
                     let data;
                     for (let i = 0, len = parsers.length; i < len; ++i) {
@@ -2618,6 +2619,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function sequence(parsers) {
                 return (source, context) => {
+                    var _a;
                     let rest = source;
                     let data;
                     for (let i = 0, len = parsers.length; i < len; ++i) {
@@ -2758,6 +2760,7 @@ require = function () {
                     return parsers[0];
                 default:
                     return (source, context) => {
+                        var _a;
                         for (let i = 0, len = parsers.length; i < len; ++i) {
                             const result = parsers[i](source, context);
                             if (result)
