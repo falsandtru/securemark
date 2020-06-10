@@ -4394,7 +4394,7 @@ require = function () {
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround(source_1.char('"'), combinator_1.some(inline_1.inline, '"', /^"|^\\?\n/), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
+                combinator_1.surround(source_1.char('"'), combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(inline_1.inline, '"', '"')), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
@@ -5271,7 +5271,7 @@ require = function () {
                 util_1.dup(combinator_1.surround(/^\[(?!\s)/, combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.text
-                ]), /^(?:\\?\n|\])/), ']', true)),
+                ]), ']', /^\\?\n/), ']', true)),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     link_1.uri,
                     combinator_1.some(link_1.option)
@@ -5317,25 +5317,25 @@ require = function () {
                 combinator_1.surround(source_1.char('('), combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.text
-                ]), /^(?:\\?\n|\))/), source_1.char(')'), true, global_1.undefined, ([as, bs = []], rest) => [
+                ]), ')'), source_1.char(')'), true, global_1.undefined, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround(source_1.char('['), combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.text
-                ]), /^(?:\\?\n|\])/), source_1.char(']'), true, global_1.undefined, ([as, bs = []], rest) => [
+                ]), ']'), source_1.char(']'), true, global_1.undefined, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
                 combinator_1.surround(source_1.char('{'), combinator_1.some(combinator_1.union([
                     bracket,
                     source_1.text
-                ]), /^(?:\\?\n|\})/), source_1.char('}'), true, global_1.undefined, ([as, bs = []], rest) => [
+                ]), '}'), source_1.char('}'), true, global_1.undefined, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround(source_1.char('"'), combinator_1.some(source_1.text, /^(?:\\?\n|")/), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
+                combinator_1.surround(source_1.char('"'), combinator_1.some(source_1.text, '"'), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
@@ -5598,7 +5598,7 @@ require = function () {
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround(source_1.char('"'), combinator_1.some(source_1.escsource, /^(?:\\?\n|")/), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
+                combinator_1.surround(source_1.char('"'), combinator_1.some(source_1.escsource, /^"|^\\?\n/), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
