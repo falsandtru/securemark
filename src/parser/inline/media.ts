@@ -19,7 +19,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround(/^\[(?!\s)/, some(union([bracket, text]), /^(?:\\?\n|\])/), ']', true)),
+    dup(surround(/^\[(?!\s)/, some(union([bracket, text]), ']', /^\\?\n/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ]))))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
@@ -52,8 +52,8 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
-  surround(char('('), some(union([bracket, text]), /^(?:\\?\n|\))/), char(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('['), some(union([bracket, text]), /^(?:\\?\n|\])/), char(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('{'), some(union([bracket, text]), /^(?:\\?\n|\})/), char('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('"'), some(text, /^(?:\\?\n|")/), char('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('('), some(union([bracket, text]), ')'), char(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('['), some(union([bracket, text]), ']'), char(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('{'), some(union([bracket, text]), '}'), char('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(char('"'), some(text, '"'), char('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ])));
