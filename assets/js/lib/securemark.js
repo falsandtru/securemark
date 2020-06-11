@@ -7126,13 +7126,13 @@ require = function () {
                 return parse(cons(hs));
             }
             exports.toc = toc;
-            function parse(node, index = []) {
+            function parse(node, index = '') {
                 return typed_dom_1.html('ul', node.map(([el, cs], i) => {
-                    const idx = array_1.push(index.slice(0), [i + 1]);
+                    const idx = index === '' ? `${ i + 1 }` : `${ index }.${ i + 1 }`;
                     return typed_dom_1.html('li', array_1.push([typed_dom_1.html('a', {
                             href: `#${ el.id }`,
                             rel: 'noopener',
-                            'data-index': array_1.join(idx, '.')
+                            'data-index': idx
                         }, el.textContent)], cs.length > 0 ? [parse(cs, idx)] : []));
                 }));
             }
