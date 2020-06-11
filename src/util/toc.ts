@@ -1,5 +1,5 @@
 import { html } from 'typed-dom';
-import { push, join } from 'spica/array';
+import { push } from 'spica/array';
 
 const Tags = [...Array(6)].map((_, i) => `H${i + 1}`);
 
@@ -13,12 +13,14 @@ export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUL
 
 type Tree = readonly [HTMLHeadingElement, Tree][];
 
-function parse(node: Tree, index: number[] = []): HTMLUListElement {
+function parse(node: Tree, index: string = ''): HTMLUListElement {
   return html('ul', node.map(([el, cs], i) => {
-    const idx = push(index.slice(0), [i + 1]);
+    const idx = index === ''
+      ? `${i + 1}`
+      : `${index}.${i + 1}`;
     return html('li',
       push<HTMLElement>(
-        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': join(idx, '.') }, el.textContent!)],
+        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx }, el.textContent!)],
         cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
