@@ -11,11 +11,11 @@ export function union<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
       return parsers[0];
     default:
       return (source, context) => {
-        assert(!context?.delimiters?.some(match => match(source)));
         for (let i = 0, len = parsers.length; i < len; ++i) {
           const result = parsers[i](source, context);
           assert(check(source, result));
           if (result) return result;
+          assert(!context?.delimiters?.some(match => match(source)));
         }
       };
   }

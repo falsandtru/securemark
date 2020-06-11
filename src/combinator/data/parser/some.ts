@@ -30,7 +30,6 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
       const result = parser(rest, context);
       assert(check(rest, result));
       if (!result) break;
-      assert(result);
       data = data
         ? push(data, eval(result))
         : eval(result);
