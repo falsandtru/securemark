@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.163.0
+
+- Change bracket parser to allow media syntax in double quotation marks.
+
 ## 0.162.0
 
 - Extend bracket syntax to support double quotation marks.
