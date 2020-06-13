@@ -13,9 +13,8 @@ export function* footnote(
     id?: string;
   }> = {},
 ): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
-  if (!footnotes) return;
-  yield* annotation(target, footnotes.annotation, opts);
-  yield* reference(target, footnotes.reference, opts);
+  yield* annotation(target, footnotes?.annotation, opts);
+  yield* reference(target, footnotes?.reference, opts);
   return;
 }
 
@@ -29,12 +28,12 @@ const identify = memoize<HTMLElement, string>(
 function build(
   syntax: string,
   marker: (index: number) => string,
-): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
   assert(syntax.match(/^[a-z]+$/));
   const contentify = memoize<HTMLElement, DocumentFragment>(
     ref => frag(ref.childNodes),
     new WeakMap());
-  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
     const refs = new MultiMap<string, HTMLElement>();
@@ -108,8 +107,9 @@ function build(
           },
           ` ~${refIndex}`));
     }
-    count = 0;
+    if (!footnote) return;
     const { children } = footnote;
+    count = 0;
     let length = children.length;
     I:
     for (const def of defs.values()) {
