@@ -7,7 +7,7 @@ import { autolinkblock } from '../autolinkblock';
 import { parse } from '../api/parse';
 import { html } from 'typed-dom';
 
-export const segment: BlockquoteParser.SegmentParser = block(validate(['!', '>'], union([
+export const segment: BlockquoteParser.SegmentParser = block(validate(['!>', '>'], union([
   validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, some(contentline)),
 ])));
 
