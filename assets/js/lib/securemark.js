@@ -3117,6 +3117,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.blockquote = exports.segment = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const source_1 = _dereq_('../source');
@@ -3145,10 +3146,7 @@ require = function () {
                 combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, context) => [
                     [util_1.suppress(parse_1.parse(source, {
                             ...context,
-                            footnotes: {
-                                annotation: typed_dom_1.html('ol'),
-                                reference: typed_dom_1.html('ol')
-                            }
+                            footnotes: global_1.undefined
                         }))],
                     ''
                 ]))
@@ -3160,6 +3158,7 @@ require = function () {
             '../autolinkblock': 58,
             '../source': 118,
             '../util': 126,
+            'spica/global': 12,
             'typed-dom': 21
         }
     ],
@@ -4397,7 +4396,7 @@ require = function () {
                     array_1.unshift(as, bs),
                     rest
                 ]),
-                combinator_1.surround(source_1.char('"'), combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(inline_1.inline, '"', '"')), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
+                combinator_1.surround(source_1.char('"'), combinator_1.some(inline_1.inline, '"', '"'), source_1.char('"'), true, global_1.undefined, ([as, bs = []], rest) => [
                     array_1.unshift(as, bs),
                     rest
                 ])
@@ -6969,10 +6968,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function* footnote(target, footnotes, opts = {}) {
-                if (!footnotes)
-                    return;
-                yield* exports.annotation(target, footnotes.annotation, opts);
-                yield* exports.reference(target, footnotes.reference, opts);
+                yield* exports.annotation(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation, opts);
+                yield* exports.reference(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference, opts);
                 return;
             }
             exports.footnote = footnote;
@@ -7043,8 +7040,10 @@ require = function () {
                             title: content.firstChild && ref.hasAttribute('data-alias') ? title : global_1.undefined
                         }, ` ~${ refIndex }`));
                     }
-                    count = 0;
+                    if (!footnote)
+                        return;
                     const {children} = footnote;
+                    count = 0;
                     let length = children.length;
                     I:
                         for (const def of defs.values()) {
