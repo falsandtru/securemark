@@ -7,7 +7,7 @@ import { Cache } from 'spica/cache';
 export const cache = new Cache<string, HTMLElement>(20); // for rerendering in editing
 
 export const math: MathParser = creator(fmap(
-  surround('${', union([str(/^(?:(?!}\$)[^\n])+/)]), '}$'),
+  surround('${', union([str(/^[^\n]+?(?=}\$)/)]), '}$'),
   ([source]) =>
     cache.has(source = `\${${source.trim()}}$`)
       ? [cache.get(source)!.cloneNode(true)]
