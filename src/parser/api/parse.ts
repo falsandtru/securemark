@@ -1,7 +1,7 @@
 import { ParserSettings } from '../../..';
 import { eval } from '../../combinator';
-import { block } from '../block';
 import { segment } from '../segment';
+import { block } from '../block';
 import { normalize } from '../normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';

@@ -21,9 +21,9 @@ export function fence<D extends Parser<unknown, any, C>[], C extends object>(ope
       if (count > limit + 1 && (!separation || line.trim() === '')) break;
       if (count <= limit + 1 &&
           line[0] === delim[0] &&
-          line.slice(0, delim.length) === delim &&
           line.trim() === delim &&
           (!separation || (next = firstline(rest.slice(line.length))).trim() === '')) {
+        assert(line.slice(0, delim.length) === delim);
         closer = line.trim();
         rest = rest.slice(line.length);
         break;
