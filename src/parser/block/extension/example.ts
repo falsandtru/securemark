@@ -5,7 +5,7 @@ import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { html } from 'typed-dom';
 
-const opener = /^(~{3,})(?!~)example\/(\S+)([^\n]*)\n?/;
+const opener = /^(~{3,})(?!~)example\/(\S+)([^\n]*)(?:$|\n)/;
 
 export const segment: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 100, true))));

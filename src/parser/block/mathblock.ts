@@ -2,7 +2,7 @@ import { MathBlockParser } from '../block';
 import { block, validate, fmap, clear, fence } from '../../combinator';
 import { html } from 'typed-dom';
 
-const opener = /^(\$\$)(?!\$)([^\n]*)\n?/;
+const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;
 
 export const segment: MathBlockParser.SegmentParser = block(validate('$$',
   clear(fence(opener, 100, true))));

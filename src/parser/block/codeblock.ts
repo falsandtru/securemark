@@ -7,7 +7,7 @@ import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
 import { join } from 'spica/array';
 
-const opener = /^(`{3,})(?!`)(\S*)([^\n]*)\n?/;
+const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
 const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
 
 export const segment: CodeBlockParser.SegmentParser = block(validate('```',
