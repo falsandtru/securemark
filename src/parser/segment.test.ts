@@ -3,7 +3,7 @@ import { segment } from './segment';
 describe('Unit: parser/segment', () => {
   describe('segment', () => {
     it('basic', () => {
-      assert.deepStrictEqual(segment(''), []);
+      assert.deepStrictEqual(segment(''), ['']);
       assert.deepStrictEqual(segment('a'), ['a']);
       assert.deepStrictEqual(segment('a\n'), ['a\n']);
       assert.deepStrictEqual(segment('a\n\n'), ['a\n', '\n']);

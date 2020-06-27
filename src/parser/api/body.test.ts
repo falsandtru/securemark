@@ -5,12 +5,12 @@ describe('Unit: parser/api/body', () => {
     it('', () => {
       assert.deepStrictEqual(body(''), '');
       assert.deepStrictEqual(body('---'), '---');
-      assert.deepStrictEqual(body('---\n'), '---\n');
-      assert.deepStrictEqual(body('---\n---'), '');
-      assert.deepStrictEqual(body('---\n---\n'), '');
-      assert.deepStrictEqual(body('---\n---\n\n'), '');
-      assert.deepStrictEqual(body('---\n---\n\n\n'), '\n');
-      assert.deepStrictEqual(body('---\n---\n\n\na'), '\na');
+      assert.deepStrictEqual(body('---\na\n'), '---\na\n');
+      assert.deepStrictEqual(body('---\na\n---'), '');
+      assert.deepStrictEqual(body('---\na\n---\n'), '');
+      assert.deepStrictEqual(body('---\na\n---\n\n'), '');
+      assert.deepStrictEqual(body('---\na\n---\n\n\n'), '\n');
+      assert.deepStrictEqual(body('---\na\n---\n\n\na'), '\na');
     });
 
   });

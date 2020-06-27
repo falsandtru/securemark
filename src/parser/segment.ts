@@ -39,6 +39,7 @@ export function segment(source: string): string[] {
         : push(segments, segs);
     source = rest;
   }
+  segments.length === 0 && segments.push('');
   assert(segments.join('') === arguments[0] || segments.some(seg => seg === '# ***Too large block over 10,000 characters***'));
   return segments;
 }
