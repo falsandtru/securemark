@@ -29,6 +29,7 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```\n\\\n```')), [['<pre class="notranslate">\\</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n\n\n```')), [['<pre class="notranslate"><br></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n`\n```')), [['<pre class="notranslate">`</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```\n```\n```')), [['<pre class="notranslate">```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n```\n\n```')), [['<pre class="notranslate"></pre>'], '\n```']);
       assert.deepStrictEqual(inspect(parser('```\n````\n```')), [['<pre class="notranslate">````</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n````\n\n```')), [['<pre class="notranslate">````<br></pre>'], '']);
