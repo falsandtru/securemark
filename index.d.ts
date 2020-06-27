@@ -5,6 +5,7 @@
 * @author falsandtru https://github.com/falsandtru/securemark
 */
 
+export function header(source: string): string[] | undefined;
 export function parse(source: string, options?: Partial<ParserSettings>): DocumentFragment;
 // The `bind` function yields the elements below.
 //   1. Added or removed child elements of the target container element (<any> excluding the others).

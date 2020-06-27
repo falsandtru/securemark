@@ -3,6 +3,7 @@
 ## 0.164.0
 
 - Add header syntax.
+- Add header function.
 
 ## 0.163.0
 
