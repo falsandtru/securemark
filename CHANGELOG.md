@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.164.0
+
+- Add header syntax.
+
 ## 0.163.0
 
 - Change bracket parser to allow media syntax in double quotation marks.

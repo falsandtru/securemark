@@ -42,6 +42,13 @@ export namespace MarkdownParser {
       SourceParser.EmptyLineParser,
     ], Context> {
   }
+  export interface HeaderParser extends
+    // ---
+    // url: https://host/path
+    // ---
+    Markdown<'header'>,
+    Parser<HTMLDivElement | HTMLPreElement, [], Context> {
+  }
   export interface BlockParser extends
     Markdown<'block'>,
     Parser<HTMLElement, [

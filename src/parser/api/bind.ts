@@ -1,6 +1,7 @@
 import { ParserSettings } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
+import { header } from '../header';
 import { block } from '../block';
 import { normalize } from '../normalize';
 import { figure } from '../../util/figure';
@@ -37,7 +38,11 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = eval(block(seg, settings), []);
+      const es = eval(
+        index === 0
+        && header(seg, settings)
+        || block(seg, settings),
+        []);
       pairs.splice(index, 0, [seg, es]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
