@@ -4,6 +4,7 @@
 
 - Add header syntax.
 - Add header function.
+- Add body function.
 
 ## 0.163.0
 
