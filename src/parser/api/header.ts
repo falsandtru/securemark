@@ -1,10 +1,9 @@
 import { undefined } from 'spica/global';
-import { segment } from '../segment';
-import { header as parse } from '../header';
+import { body } from './body';
 
 export function header(source: string): string[] | undefined {
-  source = segment(source)[0];
-  return parse(source, {})
-    ? source.trim().match(/^.*$/gm)?.slice(1, -1) || []
+  source = source.slice(0, source.length - body(source).length).trim();
+  return source !== ''
+    ? source.split('\n').slice(1, -1)
     : undefined;
 }

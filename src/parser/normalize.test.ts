@@ -51,8 +51,8 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\x7F') === '');
     });
 
-    it('sanitization', () => {
-      assert.deepStrictEqual(normalize('\r\n'.repeat(100) + '.'), '\n'.repeat(100) + '.');
+    it('header', () => {
+      assert(normalize('---\r\na: b\r\n---\r\n\r\nb\r\n') === '---\r\na: b\r\n---\n\nb\n');
     });
 
   });

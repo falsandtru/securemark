@@ -1,7 +1,10 @@
-import { header } from './header';
+import { undefined } from 'spica/global';
+import { exec } from '../../combinator/data/parser';
+import { header } from '../header';
 
 export function body(source: string): string {
-  return header(source)
-    ? source.replace(/^(?:[^\n]*\n)+?---[^\S\n]*(?:$|\n(?:[^\S\n]*\n?)?)/, '')
+  const rest = exec(header(source, {}));
+  return rest !== undefined
+    ? rest.replace(/^[^\S\n]*\n?/, '')
     : source;
 }

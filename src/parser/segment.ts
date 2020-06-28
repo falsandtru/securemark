@@ -5,7 +5,6 @@ import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
 import { contentline, emptyline } from './source';
-import { normalize } from './normalize';
 import { push } from 'spica/array';
 
 import SegmentParser = MarkdownParser.SegmentParser;
@@ -20,7 +19,6 @@ const parser: SegmentParser = union([
 ]);
 
 export function segment(source: string): string[] {
-  assert(source === normalize(source));
   if (source.length > 1000 * 1000) return ['# ***Too large input over 1,000,000 characters***'];
   assert(source.length < Number.MAX_SAFE_INTEGER);
   const segments: string[] = [];
