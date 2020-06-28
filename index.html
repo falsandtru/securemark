@@ -17,15 +17,9 @@
     font-family: SFMono-Regular,Consolas,Courier New,Liberation Mono,Menlo,monospace;
     letter-spacing: -.03em;
   }
-  #viewer .media {
-    display: block;
-    min-height: 3em;
+  .header {
+    display: none;
   }
-  /*
-  #viewer img.media {
-    display: flow;
-  }
-  */
   blockquote {
     padding: .3em;
     border-inline-start: .2em solid #eee;
@@ -112,15 +106,15 @@
     grid-row: 2;
     grid-column: 1 / -1;
   }
-  .comment:before {
-    content: "†";
-    color: red;
-    font-weight: bold;
+  .media {
+    display: block;
+    min-height: 3em;
   }
-  .code  .comment:before,
-  .media .comment:before {
-    all: unset;
+  /*
+  img.media {
+    display: flow;
   }
+  */
   ins,
   del {
     position: relative;
@@ -164,6 +158,15 @@
   del code {
     background: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
+  .comment:before {
+    content: "†";
+    color: red;
+    font-weight: bold;
+  }
+  .code  .comment:before,
+  .media .comment:before {
+    all: unset;
+  }
   .invalid:before {
     display: block;
     margin-bottom: 1em;
@@ -174,6 +177,18 @@
   }
   .invalid[data-invalid-type="closer"]:before {
     content: attr(data-invalid-message);
+  }
+  @media print {
+    #viewer > hr {
+      break-after: page;
+      display: block;
+      visibility: hidden;
+      width: 0;
+      height: 0;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
   }
 </style>
 
