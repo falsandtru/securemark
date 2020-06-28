@@ -6,7 +6,7 @@ import { html } from 'typed-dom';
 
 export const header: MarkdownParser.HeaderParser = block(validate('---', focus(
   // Must check the next line of the block.
-  /^---[^\S\n]*\n(?:[a-z][^\n]*\n){1,100}---[^\S\n]*(?:$|\n(?=[^\S\n]*(?:$|\n)))/,
+  /^---[^\S\v\f\r\n]*\r?\n(?:[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/,
   // TODO: Set the specified base URL.
   source =>
     segment(source)[0] === source

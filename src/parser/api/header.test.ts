@@ -9,6 +9,9 @@ describe('Unit: parser/api/header', () => {
       assert.deepStrictEqual(header('---\n---'), undefined);
       assert.deepStrictEqual(header('---\n---\n'), undefined);
       assert.deepStrictEqual(header('---\na: b\n'), undefined);
+      assert.deepStrictEqual(header('---\r \na: b\n---'), undefined);
+      assert.deepStrictEqual(header('---\na:\rb\n---'), undefined);
+      assert.deepStrictEqual(header('---\na: b\r \n---'), undefined);
       assert.deepStrictEqual(header('---\n\n---'), undefined);
       assert.deepStrictEqual(header('---\n \n---'), undefined);
       assert.deepStrictEqual(header('---\n-\n---'), undefined);
