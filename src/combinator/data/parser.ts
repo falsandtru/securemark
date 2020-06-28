@@ -20,7 +20,7 @@ type ExtractData<D extends Parser<unknown>[]> = ExtractParser<D> extends infer T
 type ExtractParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
 export { eval_ as eval };
-function eval_<R>(result: NonNullable<Result<R>>, default_?: unknown): R[];
+function eval_<R>(result: NonNullable<Result<R>>, default_?: R[]): R[];
 function eval_<R>(result: Result<R>, default_: R[]): R[];
 function eval_<R>(result: Result<R>, default_?: undefined): R[] | undefined;
 function eval_<R>(result: Result<R>, default_?: R[]): R[] | undefined {
@@ -29,13 +29,16 @@ function eval_<R>(result: Result<R>, default_?: R[]): R[] | undefined {
     : default_;
 }
 
-export function exec(result: Result<unknown>, default_: string = ''): string {
+export function exec(result: NonNullable<Result<unknown>>, default_?: string): string;
+export function exec(result: Result<unknown>, default_: string): string
+export function exec(result: Result<unknown>, default_?: undefined): string | undefined;
+export function exec(result: Result<unknown>, default_?: string): string | undefined {
   return result
     ? result[1]
     : default_;
 }
 
 export function check(source: string, result: Result<unknown>, mustConsume = true): true {
-  assert(source.slice(mustConsume ? 1 : 0).endsWith(exec(result)));
+  assert(source.slice(mustConsume ? 1 : 0).endsWith(exec(result, '')));
   return true;
 }

@@ -25,8 +25,9 @@ export function segment(source: string): string[] {
   assert(source.length < Number.MAX_SAFE_INTEGER);
   const segments: string[] = [];
   while (source !== '') {
-    const r = parser(source, {});
-    const segs = eval(r, []);
+    const r = parser(source, {})!;
+    assert(r);
+    const segs = eval(r);
     const rest = exec(r);
     assert(segs.length === 0 || segs.join('') === source.slice(0, source.length - rest.length));
     assert(source.slice(1).endsWith(rest));
