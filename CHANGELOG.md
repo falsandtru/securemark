@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.165.0
+
+- Add normalize function.
+
 ## 0.164.0
 
 - Add header syntax.

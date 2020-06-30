@@ -1,4 +1,4 @@
-import { body } from './api/body';
+import { body } from './body';
 
 export function normalize(source: string): string {
   const rest = body(source);

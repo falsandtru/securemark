@@ -3,7 +3,7 @@ import { eval } from '../../combinator';
 import { segment } from '../segment';
 import { header } from '../header';
 import { block } from '../block';
-import { normalize } from '../normalize';
+import { normalize } from './normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { push, splice } from 'spica/array';
