@@ -6,11 +6,11 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\0\0') === '\n\n');
     });
 
-    it('surrogate pairs', () => {
+    it('invalid surrogate pairs', () => {
       assert(normalize('\uDC00\uD800') === '\uFFFD\uFFFD');
     });
 
-    it('control', () => {
+    it('controls', () => {
       assert(normalize('\v') === '\n');
       assert(normalize('\f') === '\n');
       assert(normalize('\r') === '\n');
