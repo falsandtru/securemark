@@ -3,7 +3,7 @@ import { normalize } from './normalize';
 describe('Unit: parser/normalize', () => {
   describe('normalize', () => {
     it('insecure characters', () => {
-      assert(normalize('\u0000\u0000') === '\uFFFD\uFFFD');
+      assert(normalize('\0\0') === '\n\n');
     });
 
     it('surrogate pairs', () => {
@@ -16,7 +16,7 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\r') === '\n');
       assert(normalize('\r\n') === '\n');
       assert(normalize('\n\r') === '\n\n');
-      assert(normalize('\x00') === '\uFFFD');
+      assert(normalize('\x00') === '\n');
       assert(normalize('\x01') === '');
       assert(normalize('\x02') === '');
       assert(normalize('\x03') === '');
