@@ -15,19 +15,19 @@ export const ruby: RubyParser = lazy(() => creator(bind(
     switch (true) {
       case rubies.length <= texts.length:
         return [[html('ruby', defrag(texts
-          .reduce<(HTMLElement | string)[]>((acc, _, i) =>
-            push(acc, unshift([texts[i]],
+          .reduce((acc, _, i) =>
+            push(acc, unshift<HTMLElement | string>([texts[i]],
               i < rubies.length && rubies[i].trim() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
-                : [html('rt')] as typeof acc))
+                : [html('rt')]))
           , [])))], rest];
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
         return [[html('ruby', defrag([...texts[0]]
-          .reduce<(HTMLElement | string)[]>((acc, _, i, texts) =>
-            push(acc, unshift([texts[i]],
+          .reduce((acc, _, i, texts) =>
+            push(acc, unshift<HTMLElement | string>([texts[i]],
               i < rubies.length && rubies[i].trim() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
-                : [html('rt')] as typeof acc))
+                : [html('rt')]))
           , [])))], rest];
       default:
         assert(rubies.length > 0);
