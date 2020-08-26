@@ -555,7 +555,8 @@ require = function () {
                 let g;
                 return xs.length < arity ? (...ys) => curry_(g = g || xs.length && f.bind(global_1.undefined, ...xs) || f, arity - xs.length, ...ys) : f(...xs);
             }
-            exports.uncurry = f => uncurry_(f);
+            const uncurry = f => uncurry_(f);
+            exports.uncurry = uncurry;
             function uncurry_(f) {
                 const arity = f.length;
                 return (...xs) => arity === 0 || xs.length < 2 || xs.length <= arity ? f(...xs) : uncurry_(f(...array_1.shift(xs, arity)[0]))(...xs);
@@ -634,7 +635,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (p !== 'default' && !exports.hasOwnProperty(p))
+                    if (p !== 'default' && !Object.prototype.hasOwnProperty.call(exports, p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -1926,7 +1927,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (p !== 'default' && !exports.hasOwnProperty(p))
+                    if (p !== 'default' && !Object.prototype.hasOwnProperty.call(exports, p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -2797,7 +2798,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (p !== 'default' && !exports.hasOwnProperty(p))
+                    if (p !== 'default' && !Object.prototype.hasOwnProperty.call(exports, p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -6468,7 +6469,7 @@ require = function () {
                     var result = {};
                     if (mod != null)
                         for (var k in mod)
-                            if (k !== 'default' && Object.hasOwnProperty.call(mod, k))
+                            if (k !== 'default' && Object.prototype.hasOwnProperty.call(mod, k))
                                 __createBinding(result, mod, k);
                     __setModuleDefault(result, mod);
                     return result;
@@ -6492,30 +6493,13 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const math_1 = _dereq_('../../parser/inline/math');
             const typed_dom_1 = _dereq_('typed-dom');
-            MathJax.Hub.Config({
-                tex2jax: {
-                    inlineMath: [[
-                            '${',
-                            '}$'
-                        ]],
-                    displayMath: [[
-                            '$$\n',
-                            '\n$$'
-                        ]]
-                }
-            });
             function math(target) {
                 const source = target.textContent;
                 return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : global_1.undefined);
             }
             exports.math = math;
             function queue(target, callback = () => global_1.undefined) {
-                MathJax.Hub.Queue([
-                    'Typeset',
-                    MathJax.Hub,
-                    target,
-                    callback
-                ]);
+                MathJax.typesetPromise([target]).then(callback);
             }
         },
         {
@@ -7274,7 +7258,7 @@ require = function () {
             });
             var __exportStar = this && this.__exportStar || function (m, exports) {
                 for (var p in m)
-                    if (p !== 'default' && !exports.hasOwnProperty(p))
+                    if (p !== 'default' && !Object.prototype.hasOwnProperty.call(exports, p))
                         __createBinding(exports, m, p);
             };
             Object.defineProperty(exports, '__esModule', { value: true });

@@ -236,22 +236,34 @@
 <script>
   Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.16.0/components/';
 </script>
-<script type="text/x-mathjax-config">
-  MathJax.Hub.Config({
-    Safe: {
-      allow: {
-        require: 'none',
+<script>
+  MathJax = {
+    loader: {
+      load: ['ui/safe'],
+    },
+    startup: {
+      typeset: false,
+    },
+    tex: {
+      inlineMath: [['${', '}$']],
+      displayMath: [['$$\n', '\n$$']],
+      require: {
+        defaultAllow: false,
       },
     },
-    CommonHTML: {
+    chtml: {
       matchFontHeight: false,
     },
-    messageStyle: 'none',
-    skipStartupTypeset: true,
-    extensions: ['Safe.js'],
-  });
+    options: {
+      safeOptions: {
+        safeProtocols: {
+          file: false,
+        },
+      },
+    },
+  };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_CHTML,Safe" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.1.0/es5/tex-chtml.min.js" integrity="sha512-uwL1UtpYdWra2iqJlAW8Ts0s9Os6IxWLDJDF/BnWdhDmT7DEMFba3GPsFwmV3QiTNcUyl2GB5vsgycB/MOvo9g==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/1.0.8/purify.js" integrity="sha256-x9t6YjmmT13WS/j1ORGIlE+bKIiXvVe2087WllvNwjI=" crossorigin="anonymous"></script>
 <script src="/securemark/assets/js/lib/securemark.js"></script>
 
