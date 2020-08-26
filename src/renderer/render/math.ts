@@ -2,13 +2,6 @@ import { undefined } from 'spica/global';
 import { cache } from '../../parser/inline/math';
 import { define } from 'typed-dom';
 
-MathJax.Hub.Config({
-  tex2jax: {
-    inlineMath: [['${', '}$']],
-    displayMath: [['$$\n', '\n$$']],
-  },
-});
-
 export function math(target: HTMLElement): void {
   assert(target.children.length === 0);
   const source = target.textContent!;
@@ -21,5 +14,6 @@ export function math(target: HTMLElement): void {
 }
 
 function queue(target: HTMLElement, callback = () => undefined): void {
-  MathJax.Hub.Queue(['Typeset', MathJax.Hub, target, callback]);
+  // @ts-ignore
+  MathJax.typesetPromise([target]).then(callback);
 }

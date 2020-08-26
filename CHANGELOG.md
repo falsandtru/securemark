@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.166.0
+
+- Update MathJax to v3.
+
 ## 0.165.0
 
 - Add normalize function.
