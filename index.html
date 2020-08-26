@@ -379,21 +379,24 @@
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   document.getElementById('chars').textContent = document.getElementById('editor').value.length;
-  let timer = 0;
   let wait;
-  (async () => log(await display()))();
-  function run() {
-    clearTimeout(timer);
-    wait = wait || new Promise(requestAnimationFrame);
-    timer = setTimeout(async function () {
-      await wait;
-      wait = undefined;
-      log(await display());
-      share();
-    }, 500);
-  }
-  document.getElementById('editor').addEventListener('input', run);
-  document.getElementById('editor').addEventListener('change', run);
+  (async () => {
+    await MathJax.startup.promise;
+    let timer = 0;
+    log(await display());
+    function run() {
+      clearTimeout(timer);
+      wait = wait || new Promise(requestAnimationFrame);
+      timer = setTimeout(async function () {
+        await wait;
+        wait = undefined;
+        log(await display());
+        share();
+      }, 500);
+    }
+    document.getElementById('editor').addEventListener('input', run);
+    document.getElementById('editor').addEventListener('change', run);
+  })();
   async function display() {
     let start = Date.now();
     let time = 0;
