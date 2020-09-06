@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.166.1
+
+- Refactoring.
+
 ## 0.166.0
 
 - Update MathJax to v3.
