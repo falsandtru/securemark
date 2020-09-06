@@ -6498,7 +6498,8 @@ require = function () {
                 return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : global_1.undefined);
             }
             exports.math = math;
-            function queue(target, callback = () => global_1.undefined) {
+            async function queue(target, callback = () => global_1.undefined) {
+                MathJax.typesetPromise || await MathJax.startup.promise;
                 MathJax.typesetPromise([target]).then(callback);
             }
         },
