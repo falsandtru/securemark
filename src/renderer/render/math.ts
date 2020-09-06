@@ -13,7 +13,9 @@ export function math(target: HTMLElement): void {
           : undefined);
 }
 
-function queue(target: HTMLElement, callback = () => undefined): void {
+async function queue(target: HTMLElement, callback = () => undefined): Promise<void> {
+  // @ts-ignore
+  MathJax.typesetPromise || await MathJax.startup.promise;
   // @ts-ignore
   MathJax.typesetPromise([target]).then(callback);
 }

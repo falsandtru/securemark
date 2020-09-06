@@ -381,7 +381,6 @@
   document.getElementById('chars').textContent = document.getElementById('editor').value.length;
   let wait;
   (async () => {
-    await MathJax.startup.promise;
     let timer = 0;
     log(await display());
     function run() {
