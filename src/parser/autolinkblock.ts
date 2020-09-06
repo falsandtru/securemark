@@ -2,6 +2,7 @@ import { MarkdownParser } from '../../markdown';
 import { subsequence, some, rewrite, fmap, lazy } from '../combinator';
 import { autolink } from './autolink';
 import { mention } from './block/paragraph/mention';
+import { syntax as delimiter } from './block/paragraph/mention/quotation';
 import { anyline } from './source';
 import { html } from 'typed-dom';
 import { push } from 'spica/array';
@@ -17,6 +18,6 @@ export const autolinkblock: AutolinkblockParser = lazy(() => some(subsequence([
       return es;
     }),
   rewrite(
-    some(anyline, '>'),
+    some(anyline, delimiter),
     some(autolink)),
 ])));

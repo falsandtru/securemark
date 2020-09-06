@@ -24,21 +24,29 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('mention', () => {
-      assert.deepStrictEqual(inspect(parser('>a')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\nb')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br>b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\nb\n>c')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br>b<br><a href="?log=c" rel="noopener" class="address" data-level="1">&gt;c</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n>b')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br><a href="?log=b" rel="noopener" class="address" data-level="1">&gt;b</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n> b')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br><span class="quotation">&gt; b</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n> b\nc')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br><span class="quotation">&gt; b</span><br>c</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n> b\n>c')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br><span class="quotation">&gt; b</span><br><a href="?log=c" rel="noopener" class="address" data-level="1">&gt;c</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a\n> b\n> c')), [['<p><a href="?log=a" rel="noopener" class="address" data-level="1">&gt;a</a><br><span class="quotation">&gt; b<br>&gt; c</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a b\nc')), [['<p><span class="quotation">&gt;a b</span><br>c</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>a b\n>c')), [['<p><span class="quotation">&gt;a b<br>&gt;c</span></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a>b')), [['<p>a&gt;b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a >b')), [['<p>a &gt;b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n>b')), [['<p>a<br><a href="?log=b" rel="noopener" class="address" data-level="1">&gt;b</a></p>'], '']);
-      assert.deepStrictEqual(inspect(parser('a\n>b\nc')), [['<p>a<br><a href="?log=b" rel="noopener" class="address" data-level="1">&gt;b</a><br>c</p>'], '']);
-      assert.deepStrictEqual(inspect(parser(' >a')), [['<p>&gt;a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1')), [['<p><span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1\na')), [['<p><span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1\na\n>2')), [['<p><span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br>a<br><span class="quotation"><a class="address" href="?res=2" rel="noopener">&gt;2</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1\n>2')), [['<p><span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br><span class="quotation"><a class="address" href="?res=2" rel="noopener">&gt;2</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1\na')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br>a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1\na\n>>2')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br>a<br><span class="quotation">&gt;<a class="address" href="?res=2" rel="noopener">&gt;2</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1\n>>2')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br><span class="quotation">&gt;<a class="address" href="?res=2" rel="noopener">&gt;2</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1\n> a')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br><span class="quotation">&gt; a</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1\n> a\nb')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br><span class="quotation">&gt; a</span><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1\n> a\n>>2')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br><span class="quotation">&gt; a</span><br><span class="quotation">&gt;<a class="address" href="?res=2" rel="noopener">&gt;2</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1\n> a\n>> b')), [['<p><span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br><span class="quotation">&gt; a<br>&gt;&gt; b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1 a\nb')), [['<p><a class="address" href="?res=1" rel="noopener">&gt;1</a> a<br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1 a\n>2')), [['<p><a class="address" href="?res=1" rel="noopener">&gt;1</a> a<br><span class="quotation"><a class="address" href="?res=2" rel="noopener">&gt;2</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1 a\n>b')), [['<p><a class="address" href="?res=1" rel="noopener">&gt;1</a> a<br><span class="quotation">&gt;b</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>1 a\n> 2')), [['<p><a class="address" href="?res=1" rel="noopener">&gt;1</a> a<br><span class="quotation">&gt; 2</span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>11.')), [['<p><a class="address" href="?res=11" rel="noopener">&gt;11</a>.</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>11 a')), [['<p><a class="address" href="?res=11" rel="noopener">&gt;11</a> a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a>1')), [['<p>a<a class="address" href="?res=1" rel="noopener">&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a >1')), [['<p>a <a class="address" href="?res=1" rel="noopener">&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>1')), [['<p>a<br><span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>1\nb')), [['<p>a<br><span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser(' >1')), [['<p><a class="address" href="?res=1" rel="noopener">&gt;1</a></p>'], '']);
     });
 
     it('comment', () => {

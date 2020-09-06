@@ -5,13 +5,15 @@ import { contentline } from '../../../source';
 import { autolinkblock } from '../../../autolinkblock';
 import { html } from 'typed-dom';
 
+export const syntax = /^>+(?!>|[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*(?![^\S\n]*(?:$|\n)))/;
+
 export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() => creator(block(fmap(
   union([
     rewrite(
       some(validate(/^>+(?:$|\s)/, contentline)),
       convert(source => source.replace(/\n$/, ''), text)),
     rewrite(
-      some(validate(/^>+/, contentline)),
+      some(validate(syntax, contentline)),
       convert(source => source.replace(/\n$/, ''), text)),
   ]),
   ns => [html('span', { class: 'quotation' }, ns)]),
@@ -20,12 +22,12 @@ export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() 
 const text: ParagraphParser.MentionParser.QuotationParser.TextParser = (source, context) => {
   const lines = source.match(/^.*\n?/mg)!;
   assert(lines);
-  const flags = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg)!;
-  assert(flags);
-  assert(flags.length > 0);
-  const block = lines.reduce((block, line, row) => block + line.slice(flags[row].length), '');
+  const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg)!;
+  assert(quotes);
+  assert(quotes.length > 0);
+  const block = lines.reduce((block, line, row) => block + line.slice(quotes[row].length), '');
   const ns = eval(autolinkblock(block, context), []);
-  ns.unshift(flags.shift()!);
+  ns.unshift(quotes.shift()!);
   for (let i = 0; i < ns.length; ++i) {
     const child = ns[i] as string | Text | Element;
     if (typeof child === 'string') continue;
@@ -35,8 +37,8 @@ const text: ParagraphParser.MentionParser.QuotationParser.TextParser = (source, 
     }
     assert(child instanceof HTMLElement);
     if (child.tagName === 'BR') {
-      assert(flags.length > 0);
-      ns.splice(i + 1, 0, flags.shift()!);
+      assert(quotes.length > 0);
+      ns.splice(i + 1, 0, quotes.shift()!);
       ++i;
       continue;
     }
@@ -48,6 +50,6 @@ const text: ParagraphParser.MentionParser.QuotationParser.TextParser = (source, 
     }
   }
   assert(ns.every(n => typeof n === 'string' || n instanceof HTMLElement));
-  assert(flags.length === 0);
+  assert(quotes.length === 0);
   return [defrag(ns), ''];
 };

@@ -7,10 +7,11 @@ import { channel } from './autolink/channel';
 import { account } from './autolink/account';
 import { hashtag } from './autolink/hashtag';
 import { hashref } from './autolink/hashref';
+import { address } from './autolink/address';
 import { str } from '../source';
 
 export const autolink: AutolinkParser = fmap(
-  validate(/^[@#A-Za-z0-9]|^[^\x00-\x7F\s]#/,
+  validate(/^[@#>A-Za-z0-9]|^[^\x00-\x7F\s]#/,
   guard(context => context.syntax?.inline?.autolink ?? true,
   some(union([
     url,
@@ -27,5 +28,8 @@ export const autolink: AutolinkParser = fmap(
     str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
     hashtag,
     hashref,
+    address,
+    // Escape symbols.
+    str(/^>>+/),
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);

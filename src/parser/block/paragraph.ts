@@ -2,6 +2,7 @@ import { ParagraphParser } from '../block';
 import { subsequence, some, block, rewrite, fmap, convert, trim } from '../../combinator';
 import { trimEnd, defrag } from '../util';
 import { mention } from './paragraph/mention';
+import { syntax as delimiter } from './paragraph/mention/quotation';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { html, define } from 'typed-dom';
@@ -17,7 +18,7 @@ export const paragraph: ParagraphParser = block(fmap(
       es => es.reduce((acc, el) => push(acc, [el, html('br')]), [])),
     fmap(
       rewrite(
-        some(anyline, '>'),
+        some(anyline, delimiter),
         trim(some(inline))),
       ns => push(ns, [html('br')])),
   ]))),
