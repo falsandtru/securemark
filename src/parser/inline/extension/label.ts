@@ -4,7 +4,7 @@ import { str } from '../../source';
 import { html } from 'typed-dom';
 import { join } from 'spica/array';
 
-const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
+const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.[0-9]))?|-[0-9]+(?:\.[0-9]+){0,2}(?!\.[0-9]))/);
 
 export const label: ExtensionParser.LabelParser = creator(fmap(
   validate(['[$', '$'],
