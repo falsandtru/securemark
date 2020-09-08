@@ -3,7 +3,7 @@ import { BlockquoteParser } from '../block';
 import { union, some, block, validate, rewrite, creator, fmap, open, convert, lazy } from '../../combinator';
 import { defrag, suppress } from '../util';
 import { contentline } from '../source';
-import { autolinkblock } from '../autolinkblock';
+import { autolink } from '../autolink';
 import { parse } from '../api/parse';
 import { html } from 'typed-dom';
 
@@ -33,7 +33,7 @@ const text: BlockquoteParser.TextParser = lazy(() => fmap(
       convert(unindent, text)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, fmap(autolinkblock, ns => [html('pre', defrag(ns))]))),
+      convert(unindent, fmap(some(autolink), ns => [html('pre', defrag(ns))]))),
   ])),
   ns => [html('blockquote', ns)]));
 
