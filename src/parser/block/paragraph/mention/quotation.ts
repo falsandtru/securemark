@@ -30,33 +30,33 @@ const block_: ParagraphParser.MentionParser.QuotationParser.BlockParser = (sourc
   const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg)!;
   assert(quotes);
   assert(quotes.length > 0);
-  const block = lines.reduce((block, line, row) => block + line.slice(quotes[row].length), '');
-  const ns = eval(some(text)(block, context), []);
-  ns.unshift(quotes.shift()!);
-  for (let i = 0; i < ns.length; ++i) {
-    const child = ns[i] as string | Text | Element;
+  const content = lines.reduce((acc, line, row) => acc + line.slice(quotes[row].length), '');
+  const nodes = eval(some(text)(content, context), []);
+  nodes.unshift(quotes.shift()!);
+  for (let i = 0; i < nodes.length; ++i) {
+    const child = nodes[i] as string | Text | Element;
     if (typeof child === 'string') continue;
     if ('wholeText' in child) {
-      ns[i] = child.data;
+      nodes[i] = child.data;
       continue;
     }
     assert(child instanceof HTMLElement);
     if (child.tagName === 'BR') {
       assert(quotes.length > 0);
-      ns.splice(i + 1, 0, quotes.shift()!);
+      nodes.splice(i + 1, 0, quotes.shift()!);
       ++i;
       continue;
     }
     if (child.classList.contains('quotation')) {
       context.resources && (context.resources.creation -= child.childNodes.length);
-      ns.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
+      nodes.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
       --i;
       continue;
     }
   }
-  assert(ns.every(n => typeof n === 'string' || n instanceof HTMLElement));
+  assert(nodes.every(n => typeof n === 'string' || n instanceof HTMLElement));
   assert(quotes.length === 0);
-  return [defrag(ns), ''];
+  return [defrag(nodes), ''];
 };
 
 const text: ParagraphParser.MentionParser.QuotationParser.TextParser = union([
