@@ -406,14 +406,21 @@ export namespace MarkdownParser {
           // > text
           Block<'paragraph/mention/quotation'>,
           Parser<HTMLSpanElement, [
-            QuotationParser.TextParser,
-            QuotationParser.TextParser,
+            QuotationParser.BlockParser,
+            QuotationParser.BlockParser,
           ], Context> {
         }
         export namespace QuotationParser {
+          export interface BlockParser extends
+            Block<'paragraph/mention/quotation/block'>,
+            Parser<string | HTMLElement, [
+              TextParser,
+            ], Context> {
+          }
           export interface TextParser extends
             Block<'paragraph/mention/quotation/text'>,
             Parser<string | HTMLElement, [
+              InlineParser.MathParser,
               AutolinkParser,
             ], Context> {
           }

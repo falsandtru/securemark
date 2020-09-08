@@ -40,6 +40,7 @@ describe('Unit: parser/block/paragraph/mention/quotation', () => {
       assert.deepStrictEqual(inspect(parser('> >>0\n> > b\n> c')), [['<span class="quotation">&gt; &gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a><br>&gt; &gt; b<br>&gt; c</span>'], '']);
       assert.deepStrictEqual(inspect(parser('> > a\n> > b\n> > c')), [['<span class="quotation">&gt; &gt; a<br>&gt; &gt; b<br>&gt; &gt; c</span>'], '']);
       assert.deepStrictEqual(inspect(parser('> > > a\n> > > b')), [['<span class="quotation">&gt; &gt; &gt; a<br>&gt; &gt; &gt; b</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>${a}$')), [['<span class="quotation">&gt;<span class="math notranslate" data-src="${a}$">${a}$</span></span>'], '']);
     });
 
   });

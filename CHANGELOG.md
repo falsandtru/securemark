@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.168.0
+
+- Extend quotation parser to support math syntax.
+
 ## 0.167.1
 
 - Refactoring.
