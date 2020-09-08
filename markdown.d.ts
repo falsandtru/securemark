@@ -799,7 +799,6 @@ export namespace MarkdownParser {
         AutolinkParser.HashtagParser,
         AutolinkParser.HashrefParser,
         AutolinkParser.AddressParser,
-        SourceParser.StrParser,
       ], Context> {
     }
     export namespace AutolinkParser {

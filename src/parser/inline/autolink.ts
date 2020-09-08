@@ -29,7 +29,5 @@ export const autolink: AutolinkParser = fmap(
     hashtag,
     hashref,
     address,
-    // Escape symbols.
-    str(/^>>+/),
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);

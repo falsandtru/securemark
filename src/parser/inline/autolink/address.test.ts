@@ -9,7 +9,7 @@ describe('Unit: parser/inline/autolink/address', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('>')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>')), [['>>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>')), undefined);
       assert.deepStrictEqual(inspect(parser(' >0')), undefined);
     });
 
