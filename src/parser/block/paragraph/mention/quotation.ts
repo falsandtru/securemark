@@ -2,7 +2,7 @@ import { ParagraphParser } from '../../../block';
 import { union, some, block, validate, rewrite, creator, fmap, convert, lazy, eval } from '../../../../combinator';
 import { defrag } from '../../../util';
 import { contentline } from '../../../source';
-import { autolinkblock } from '../../../autolinkblock';
+import { autolink } from '../../../autolink';
 import { html } from 'typed-dom';
 
 export const syntax = /^>+(?!>|[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*(?![^\S\n]*(?:$|\n)))/;
@@ -26,7 +26,7 @@ const text: ParagraphParser.MentionParser.QuotationParser.TextParser = (source, 
   assert(quotes);
   assert(quotes.length > 0);
   const block = lines.reduce((block, line, row) => block + line.slice(quotes[row].length), '');
-  const ns = eval(autolinkblock(block, context), []);
+  const ns = eval(some(autolink)(block, context), []);
   ns.unshift(quotes.shift()!);
   for (let i = 0; i < ns.length; ++i) {
     const child = ns[i] as string | Text | Element;

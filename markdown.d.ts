@@ -414,7 +414,7 @@ export namespace MarkdownParser {
           export interface TextParser extends
             Block<'paragraph/mention/quotation/text'>,
             Parser<string | HTMLElement, [
-              AutolinkblockParser,
+              AutolinkParser,
             ], Context> {
           }
         }
@@ -897,13 +897,6 @@ export namespace MarkdownParser {
       InlineParser.AutolinkParser,
       SourceParser.LinebreakParser,
       SourceParser.UnescapableSourceParser,
-    ], Context> {
-  }
-  export interface AutolinkblockParser extends
-    Markdown<'autolinkblock'>,
-    Parser<HTMLElement | string, [
-      BlockParser.ParagraphParser.MentionParser,
-      AutolinkParser,
     ], Context> {
   }
   export namespace SourceParser {
