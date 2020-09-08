@@ -3876,7 +3876,7 @@ require = function () {
             const inline_1 = _dereq_('../../../inline');
             const str_1 = _dereq_('../../../source/str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.validate(/^(>+)(?!>)[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*[^\S\n]*(?:$|\n(?:\1[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*[^\S\n]*(?:$|\n))*(?!\1))/, combinator_1.some(combinator_1.line(combinator_1.fmap(combinator_1.tails([
+            exports.address = combinator_1.validate(/^(>+)[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*[^\S\n]*(?:$|\n(?:\1[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*[^\S\n]*(?:$|\n))*(?!\1))/, combinator_1.some(combinator_1.line(combinator_1.fmap(combinator_1.tails([
                 str_1.str(/^>*(?=>)/),
                 inline_1.address
             ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)]))));
@@ -4362,7 +4362,7 @@ require = function () {
             exports.address = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>+(?!>)[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, source => [
+            exports.address = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>+[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, source => [
                 [typed_dom_1.html('a', {
                         class: 'address',
                         href: `?res=${ source.slice(source.lastIndexOf('>') + 1) }`,
@@ -4929,7 +4929,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = source_1.str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2})?|-[0-9]+(?:\.[0-9]+){0,2})/);
+            const body = source_1.str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.[0-9]))?|-[0-9]+(?:\.[0-9]+){0,2}(?!\.[0-9]))/);
             exports.label = combinator_1.creator(combinator_1.fmap(combinator_1.validate([
                 '[$',
                 '$'
@@ -6159,6 +6159,7 @@ require = function () {
                     case '+':
                     case '~':
                     case '=':
+                    case '$':
                         return source[1] === source[0] ? repeat(source, {}) : [
                             [source[0]],
                             source.slice(1)
