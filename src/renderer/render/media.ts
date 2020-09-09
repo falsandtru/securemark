@@ -1,4 +1,4 @@
-import { location } from 'spica/global';
+import { location, URL } from 'spica/global';
 import { RenderingOptions } from '../../../';
 import { twitter } from './media/twitter';
 import { youtube } from './media/youtube';
