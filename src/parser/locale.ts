@@ -48,13 +48,17 @@ function text(node: Node | Text | HTMLElement): string {
           default:
             return 'wholeText' in child
               ? child.data
-              : child.textContent!;
+              : 'innerText' in child
+                ? child.innerText
+                : child.textContent!;
         }
       }
       return '';
     default:
       return 'wholeText' in node
         ? node.data
-        : node.textContent!;
+        : 'innerText' in node
+          ? node.innerText
+          : node.textContent!;
   }
 }

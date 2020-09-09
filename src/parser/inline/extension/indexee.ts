@@ -20,7 +20,7 @@ export function text(source: HTMLElement): string {
   for (let es = target.querySelectorAll('.annotation, .reference, rt, rp'), i = 0, len = es.length; i < len; ++i) {
     es[i].remove();
   }
-  return target.textContent!.trim();
+  return target.innerText.trim();
 }
 
 function identity(index: string): string {

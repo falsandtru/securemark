@@ -4,7 +4,7 @@ import { define } from 'typed-dom';
 
 export function math(target: HTMLElement): void {
   assert(target.children.length === 0);
-  const source = target.textContent!;
+  const source = target.innerText;
   return cache.has(source)
     ? void define(target, cache.get(source)!.cloneNode(true).childNodes)
     : void queue(target, () =>
