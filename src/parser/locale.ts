@@ -44,7 +44,7 @@ function text(node: Node | Text | HTMLElement): string {
         switch ('id' in child && child.tagName) {
           case 'RT':
           case 'RP':
-            break;
+            continue;
           default:
             return 'wholeText' in child
               ? child.data
