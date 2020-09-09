@@ -6,10 +6,6 @@ import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
 import { html } from 'typed-dom';
 
-// コード、数式、ルビ、画像などテキストとして直接引用できないものは引用の際にテキストに自動変換されるようユーザー側で処理を追加しなければならない。
-// コード・数式：ソーステキストに変換　ルビ：ルビを除去　画像：URLに変換
-// TODO: ユーザーに提供する自動変換機能付き引用機能の実装
-
 export const syntax = /^>+(?!>|[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*(?![^\S\n]*(?:$|\n)))/;
 
 export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() => creator(block(fmap(

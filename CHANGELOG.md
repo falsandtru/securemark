@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.169.0
+
+- Add quote function.
+
 ## 0.168.0
 
 - Extend quotation parser to support math syntax.
