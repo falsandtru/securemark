@@ -9,7 +9,6 @@ import { segment as seg_example } from '../extension/example';
 import { segment as seg_blockquote } from '../blockquote';
 
 import FigParser = ExtensionParser.FigParser;
-import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigParser.SegmentParser = block(
   sequence([
@@ -23,10 +22,10 @@ export const segment: FigParser.SegmentParser = block(
     ]),
   ]));
 
-export const fig: FigureParser = block(rewrite(segment, convert(
+export const fig: FigParser = block(rewrite(segment, convert(
   source => {
     const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     return `${fence}figure ${source}\n\n${fence}`;
   },
-  figure)));
+  union([figure]))));

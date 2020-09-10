@@ -273,7 +273,7 @@ export namespace MarkdownParser {
       // ~~~
       Block<'extension'>,
       Parser<HTMLElement, [
-        ExtensionParser.FigureParser,
+        ExtensionParser.FigParser,
         ExtensionParser.FigureParser,
         ExtensionParser.ExampleParser,
         ExtensionParser.PlaceholderParser,
@@ -290,14 +290,11 @@ export namespace MarkdownParser {
         ], Context> {
       }
       export interface FigureParser extends
-        // ~~~figure [$group-name]
+        // ~~~figure $group-name
         // !https://host/image.png
         //
         // caption
         // ~~~
-        //
-        // [$group-name]
-        // !https://host/image.png
         Block<'extension/figure'>,
         Parser<HTMLElement, [
           InlineParser.ExtensionParser.LabelParser,
@@ -338,9 +335,17 @@ export namespace MarkdownParser {
           ], Context> {
         }
       }
+      export interface FigParser extends
+        // $group-name
+        // !https://host/image.png
+        Block<'extension/fig'>,
+        Parser<HTMLElement, [
+          FigureParser,
+        ], Context> {
+      }
       export namespace FigParser {
         export interface SegmentParser extends
-          Block<'extension/figure/segment'>,
+          Block<'extension/fig/segment'>,
           Parser<never, [
             InlineParser.ExtensionParser.LabelParser.SegmentParser,
             Parser<never, [
