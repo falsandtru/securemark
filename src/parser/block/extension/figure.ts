@@ -1,9 +1,9 @@
 import { undefined, RegExp } from 'spica/global';
 import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, context, fmap, close, clear, match, memoize, convert, trim } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, context, fmap, close, match, memoize, convert, trim } from '../../../combinator';
 import { defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
-import { label } from '../../inline/extension/label';
+import { label, segment as seg_label } from '../../inline/extension/label';
 import { table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
@@ -21,7 +21,7 @@ export const segment: FigureParser.SegmentParser = block(match(
   (fence, closer = new RegExp(`^${fence}[^\\S\\n]*(?:$|\\n)`)) =>
     close(
       sequence([
-        line(clear(label)),
+        line(seg_label),
         inits([
           // All parsers which can include closing terms.
           union([

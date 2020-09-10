@@ -1,10 +1,15 @@
 import { ExtensionParser } from '../../inline';
-import { union, validate, guard, creator, fmap, surround } from '../../../combinator';
+import { union, validate, guard, creator, fmap, surround, clear } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom';
 import { join } from 'spica/array';
 
 const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.[0-9]))?|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){0,2}(?!\.[0-9]))/);
+
+export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate(['[$', '$'], union([
+  surround('[', body, ']'),
+  body,
+])));
 
 export const label: ExtensionParser.LabelParser = creator(fmap(
   validate(['[$', '$'],
