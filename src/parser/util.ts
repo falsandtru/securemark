@@ -121,13 +121,13 @@ export function stringify(node: HTMLElement | string): string;
 export function stringify(nodes: readonly (HTMLElement | string)[]): string;
 export function stringify(nodes: HTMLElement | string | readonly (HTMLElement | string)[]): string {
   if (typeof nodes === 'string') return nodes;
-  if (!isArray(nodes)) return nodes.textContent!;
+  if (!isArray(nodes)) return nodes.innerText;
   let acc = '';
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
     acc += typeof node === 'string'
       ? node
-      : node.textContent;
+      : node.innerText;
   }
   return acc;
 }

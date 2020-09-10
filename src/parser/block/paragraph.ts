@@ -36,6 +36,6 @@ export const paragraph: ParagraphParser = block(fmap(
       : []));
 
 function isVisible(node: HTMLElement): boolean {
-  return node.textContent!.trim() !== ''
+  return node.innerText.trim() !== ''
       || node.getElementsByClassName('media').length > 0;
 }

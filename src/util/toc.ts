@@ -20,7 +20,7 @@ function parse(node: Tree, index: string = ''): HTMLUListElement {
       : `${index}.${i + 1}`;
     return html('li',
       push<HTMLElement>(
-        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx }, el.textContent!)],
+        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx }, el.innerText)],
         cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
