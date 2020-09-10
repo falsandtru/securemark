@@ -80,7 +80,7 @@ export function* figure(
     }
     assert(def.matches('figure:not([style])'));
     assert(number.split('.').pop() !== '0');
-    numbers.set(group, number);
+    !isFixed(label) && numbers.set(group, number);
     assert(!void def.setAttribute('data-number', number));
     const figid = isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
     def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${figid}`);
