@@ -4861,7 +4861,7 @@ require = function () {
                 for (let es = target.querySelectorAll('.annotation, .reference, rt, rp'), i = 0, len = es.length; i < len; ++i) {
                     es[i].remove();
                 }
-                return target.textContent.trim();
+                return target.innerText.trim();
             }
             exports.text = text;
             function identity(index) {
@@ -5788,14 +5788,14 @@ require = function () {
                         switch ('id' in child && child.tagName) {
                         case 'RT':
                         case 'RP':
-                            break;
+                            continue;
                         default:
-                            return 'wholeText' in child ? child.data : child.textContent;
+                            return 'wholeText' in child ? child.data : 'innerText' in child ? child.innerText : child.textContent;
                         }
                     }
                     return '';
                 default:
-                    return 'wholeText' in node ? node.data : node.textContent;
+                    return 'wholeText' in node ? node.data : 'innerText' in node ? node.innerText : node.textContent;
                 }
             }
         },
@@ -6383,12 +6383,9 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.render = void 0;
-            const global_1 = _dereq_('spica/global');
             const code_1 = _dereq_('./render/code');
             const math_1 = _dereq_('./render/math');
             const media_1 = _dereq_('./render/media');
-            const url_1 = _dereq_('spica/url');
-            const {origin} = global_1.location;
             function render(target, opts = {}) {
                 opts = {
                     code: code_1.code,
@@ -6417,7 +6414,7 @@ require = function () {
                             const el = media_1.media(target, opts.media);
                             if (!el)
                                 return;
-                            el.setAttribute('data-src', new url_1.URL(target.getAttribute('data-src'), origin).reference);
+                            el.setAttribute('data-src', target.getAttribute('data-src'));
                             const scope = el.matches('img') ? target : target.parentElement;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
@@ -6437,9 +6434,7 @@ require = function () {
         {
             './render/code': 132,
             './render/math': 133,
-            './render/media': 134,
-            'spica/global': 12,
-            'spica/url': 18
+            './render/media': 134
         }
     ],
     132: [
@@ -6499,7 +6494,7 @@ require = function () {
             const math_1 = _dereq_('../../parser/inline/math');
             const typed_dom_1 = _dereq_('typed-dom');
             function math(target) {
-                const source = target.textContent;
+                const source = target.innerText;
                 return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : global_1.undefined);
             }
             exports.math = math;
@@ -6542,7 +6537,7 @@ require = function () {
                     image: image_1.image,
                     ...opts
                 };
-                const url = new URL(target.getAttribute('data-src'), origin);
+                const url = new global_1.URL(target.getAttribute('data-src'), origin);
                 const alt = target.getAttribute('alt') || '';
                 return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.gist) === null || _c === void 0 ? void 0 : _c.call(opts, url)) || ((_d = opts.slideshare) === null || _d === void 0 ? void 0 : _d.call(opts, url)) || ((_e = opts.pdf) === null || _e === void 0 ? void 0 : _e.call(opts, url)) || ((_f = opts.video) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt)) || ((_g = opts.audio) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt)) || ((_h = opts.image) === null || _h === void 0 ? void 0 : _h.call(opts, url, alt));
             }
@@ -6905,7 +6900,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.context = exports.info = exports.toc = void 0;
+            exports.context = exports.info = exports.toc = exports.quote = void 0;
+            var quote_1 = _dereq_('./util/quote');
+            Object.defineProperty(exports, 'quote', {
+                enumerable: true,
+                get: function () {
+                    return quote_1.quote;
+                }
+            });
             var toc_1 = _dereq_('./util/toc');
             Object.defineProperty(exports, 'toc', {
                 enumerable: true,
@@ -6931,7 +6933,8 @@ require = function () {
         {
             './util/context': 144,
             './util/info': 147,
-            './util/toc': 148
+            './util/quote': 148,
+            './util/toc': 149
         }
     ],
     144: [
@@ -7202,6 +7205,68 @@ require = function () {
         { './context': 144 }
     ],
     148: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            exports.quote = void 0;
+            const global_1 = _dereq_('spica/global');
+            const url_1 = _dereq_('spica/url');
+            const typed_dom_1 = _dereq_('typed-dom');
+            const {origin} = global_1.location;
+            function quote(range) {
+                const expansion = expand(range);
+                const node = range.cloneContents();
+                for (let es = node.querySelectorAll('code[data-src], .math[data-src], rt, rp, .media'), i = 0, len = es.length; i < len; ++i) {
+                    const el = es[i];
+                    switch (true) {
+                    case el.matches('code'):
+                    case el.matches('.math'):
+                        typed_dom_1.define(el, el.getAttribute('data-src'));
+                        continue;
+                    case el.matches('rt, rp'):
+                        el.remove();
+                        continue;
+                    case el.matches('.media'):
+                        el.replaceWith(`!${ new url_1.URL(el.getAttribute('data-src'), origin).reference }`);
+                        continue;
+                    }
+                }
+                node.prepend(expansion ? '>' : '> ');
+                for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
+                    const el = es[i];
+                    const target = el.nextSibling;
+                    el.replaceWith(target && 'id' in target && target.matches('.quotation') ? '\n>' : '\n> ');
+                }
+                return node.textContent.replace(/^>*\s*(?:\n|$)/gm, '');
+            }
+            exports.quote = quote;
+            function expand(range) {
+                var _a, _b, _c;
+                const node = range.startContainer;
+                const offset = range.startOffset;
+                if (!((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.quotation, .quotation > .address:first-child')))
+                    return false;
+                if (!/^>+$/.test(node.textContent.slice(0, offset + 1)))
+                    return false;
+                switch (true) {
+                case ((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.address')) && /^>*$/.test(((_c = node.parentElement.previousSibling) === null || _c === void 0 ? void 0 : _c.textContent.slice(0, offset)) || ''):
+                    range.setStart(node.parentElement.previousSibling, 0);
+                    return true;
+                case node.previousSibling === null && /^>*$/.test(node.textContent.slice(0, offset)):
+                    range.setStart(node, 0);
+                    return true;
+                default:
+                    return false;
+                }
+            }
+        },
+        {
+            'spica/global': 12,
+            'spica/url': 18,
+            'typed-dom': 21
+        }
+    ],
+    149: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
