@@ -19,11 +19,17 @@ describe('Unit: parser/block/extension', () => {
       assert(parser('~~~a\n'));
       assert(parser('~~~a\n\n'));
       assert(parser('~~~a\nb~~~'));
+      assert(!parser('$-name'));
+      assert(!parser('$-name-0'));
+      assert(!parser('$group-0'));
     });
 
     it('valid', () => {
       assert(parser('~~~a\n~~~'));
       assert(parser('~~~a\nb\n~~~'));
+      assert(parser('$-0'));
+      assert(parser('$-0\n'));
+      assert(parser('$-0\n\n'));
     });
 
   });

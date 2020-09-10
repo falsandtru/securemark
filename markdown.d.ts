@@ -273,6 +273,7 @@ export namespace MarkdownParser {
       // ~~~
       Block<'extension'>,
       Parser<HTMLElement, [
+        ExtensionParser.FigbaseParser,
         ExtensionParser.FigParser,
         ExtensionParser.FigureParser,
         ExtensionParser.ExampleParser,
@@ -283,6 +284,7 @@ export namespace MarkdownParser {
       export interface SegmentParser extends
         Block<'extension/segment'>,
         Parser<never, [
+          FigbaseParser.SegmentParser,
           FigParser.SegmentParser,
           FigureParser.SegmentParser,
           ExampleParser.SegmentParser,
@@ -355,6 +357,21 @@ export namespace MarkdownParser {
               BlockquoteParser.SegmentParser,
               SourceParser.ContentLineParser,
             ], Context>,
+          ], Context> {
+        }
+      }
+      export interface FigbaseParser extends
+        // $group-name
+        Block<'extension/figbase'>,
+        Parser<HTMLElement, [
+          InlineParser.ExtensionParser.LabelParser,
+        ], Context> {
+      }
+      export namespace FigbaseParser {
+        export interface SegmentParser extends
+          Block<'extension/figbase/segment'>,
+          Parser<never, [
+            InlineParser.ExtensionParser.LabelParser.SegmentParser,
           ], Context> {
         }
       }

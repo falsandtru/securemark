@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.170.0
+
+- Refine the control of the base figure number.
+  - Add figbase syntax.
+
 ## 0.169.0
 
 - Add quote function.

@@ -73,17 +73,24 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
 
 function attributes(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
-  const rebase = /^[^-]+-(?:[0-9]+\.)*0$/.test(label) || undefined;
-  const invalid = group !== '$' || rebase
-    ? undefined
-    : !content.classList.contains('math') || caption.length > 0 || undefined;
+  const invalidLabel = /^[^-]+-(?:[0-9]+\.)*0$/.test(label);
+  const invalidContent = group === '$' && (!content.classList.contains('math') || caption.length > 0);
+  const invalid = invalidLabel || invalidContent || undefined;
   return {
     'data-label': label,
     'data-group': group,
-    style: rebase && 'display: none;',
     class: invalid && 'invalid',
-    'data-invalid-syntax': invalid && 'figure',
-    'data-invalid-type': invalid && 'content',
-    'data-invalid-message': invalid && 'A figure labeled to define a formula number can contain only a math formula and no caption',
+    ...
+      invalidLabel && {
+        'data-invalid-syntax': 'figure',
+        'data-invalid-type': 'label',
+        'data-invalid-message': 'The last part of the fixed label numbers must not be 0',
+      } ||
+      invalidContent && {
+        'data-invalid-syntax': 'figure',
+        'data-invalid-type': 'content',
+        'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption',
+      } ||
+      undefined,
   };
 }
