@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.171.0
+
+- Change figures labeled with $-0, $-0.0, or $-0.0.0 to be ignored in inappropriate usage.
+
 ## 0.170.0
 
 - Refine the control of the base figure number.

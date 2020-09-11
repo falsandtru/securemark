@@ -34,6 +34,9 @@ export function* figure(
       ? def.getAttribute('data-label')!
       : `$-${increment(index, def as HTMLHeadingElement)}`;
     if (label === '$-') continue;
+    if (label === '$-0') continue;
+    if (label === '$-0.0' && (i !== 1 || def.previousElementSibling?.tagName !== 'H1')) continue;
+    if (label === '$-0.0.0' && (i === 0 || def.previousElementSibling?.tagName !== 'H2')) continue;
     const group = label.split('-', 1)[0];
     assert(label && group);
     assert(group === def.getAttribute('data-group') || !def.matches('figure'));
@@ -53,10 +56,6 @@ export function* figure(
     if (number.split('.').pop() === '0') {
       assert(isFixed(label));
       switch (true) {
-        case number === '0':
-          base = number;
-          bases = base.split('.');
-          break;
         case number.startsWith('0.'):
           assert(number.endsWith('.0'));
           number = join(
