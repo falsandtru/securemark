@@ -12,7 +12,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
   char(']'), false,
   ([as, bs, cs], rest) => [
     isEndTight(bs)
-      ? [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax', 'data-invalid-message': 'Invalid symbol' }, defrag(trimEnd(bs)))]
+      ? [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax', 'data-invalid-message': 'Invalid symbol.' }, defrag(trimEnd(bs)))]
       : push(unshift(as, bs), cs),
     rest
   ],

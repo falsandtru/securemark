@@ -94,28 +94,28 @@ export const attribute: HTMLParser.TagParser.AttributeParser = union([
 
 function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
   if (!tags.includes(tag)) {
-    return invalid('tag', 'Invalid HTML tag', as, bs, cs);
+    return invalid('tag', 'Invalid HTML tag.', as, bs, cs);
   }
   switch (tag) {
     case 'bdo':
     case 'bdi':
       switch (true) {
         case context.state?.in?.bdx:
-          return invalid('nest', 'Cannot nest bdo/bdi HTML tag', as, bs, cs);
+          return invalid('nest', 'Cannot nest bdo/bdi HTML tag.', as, bs, cs);
       }
       break;
     case 'sup':
     case 'sub':
       switch (true) {
         case context.state?.in?.supsub:
-          return invalid('nest', 'Cannot nest sup/sub HTML tag', as, bs, cs);
+          return invalid('nest', 'Cannot nest sup/sub HTML tag.', as, bs, cs);
       }
       break;
     case 'small':
       switch (true) {
         case context.state?.in?.supsub:
         case context.state?.in?.small:
-          return invalid('nest', 'Cannot nest small HTML tag', as, bs, cs);
+          return invalid('nest', 'Cannot nest small HTML tag.', as, bs, cs);
       }
       break;
   }
@@ -123,9 +123,9 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
   switch (true) {
     case stringify(as[as.length - 1]) !== '>'
       || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(stringify), [])):
-      return invalid('attribute', 'Invalid HTML attribute', as, bs, cs);
+      return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
     case cs.length === 0:
-      return invalid('closer', 'Missing closing HTML tag', as, bs, cs);
+      return invalid('closer', 'Missing closing HTML tag.', as, bs, cs);
     default:
       return h(tag as 'span', attrs, defrag(bs));
   }
@@ -177,7 +177,7 @@ export function attributes(
     attrs['data-invalid-type'] = syntax === 'html'
       ? 'attribute'
       : 'parameter';
-    attrs['data-invalid-message'] = `Invalid ${attrs['data-invalid-type']}`;
+    attrs['data-invalid-message'] = `Invalid ${attrs['data-invalid-type']}.`;
   }
   return attrs;
 }

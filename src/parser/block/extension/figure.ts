@@ -84,12 +84,12 @@ function attributes(label: string, content: HTMLElement, caption: readonly HTMLE
       invalidLabel && {
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'label',
-        'data-invalid-message': 'The last part of the fixed label numbers must not be 0',
+        'data-invalid-message': 'The last part of the fixed label numbers must not be 0.',
       } ||
       invalidContent && {
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'content',
-        'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption',
+        'data-invalid-message': 'A figure labeled to define a formula number can contain only a math formula and no caption.',
       } ||
       undefined,
   };

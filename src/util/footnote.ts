@@ -87,7 +87,7 @@ function build(
                   : join([...ref.classList, 'invalid'], ' '),
                 'data-invalid-syntax': syntax,
                 'data-invalid-type': 'content',
-                'data-invalid-message': 'Missing content',
+                'data-invalid-message': 'Missing content.',
               }
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
