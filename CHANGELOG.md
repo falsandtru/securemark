@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.171.1
+
+- Fix figure function to update indexes of references.
+
 ## 0.171.0
 
 - Change figures labeled with $-0, $-0.0, or $-0.0.0 to be ignored in inappropriate usage.

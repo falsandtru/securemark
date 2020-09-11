@@ -87,7 +87,7 @@ export function* figure(
     define(
       def.querySelector(':scope > .figindex')!,
       group === '$' ? figindex : `${figindex}. `);
-    for (const ref of refs.take(figid, Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
+    for (const ref of refs.take(figid, Infinity)) {
       if (ref.hash.slice(1) === def.id && ref.textContent === figindex) continue;
       yield define(ref, { href: `#${def.id}` }, figindex);
     }
