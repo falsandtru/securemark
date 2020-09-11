@@ -53,33 +53,27 @@ export function* figure(
             '.')
         : base);
     assert(def.matches('figure') || number.endsWith('.0'));
-    if (number.split('.').pop() === '0') {
+    if (number.endsWith('.0')) {
       assert(isFixed(label));
-      switch (true) {
-        case number.startsWith('0.'):
-          assert(number.endsWith('.0'));
-          number = join(
-            index.slice(0)
-              .reduce((ns, _, i, bs) => {
-                i === ns.length
-                  ? bs.length = i
-                  : ns[i] = +ns[i] > +bs[i]
-                    ? ns[i]
-                    : +ns[i] === 0
-                      ? bs[i]
-                      : `${+bs[i] + 1}`;
-                return ns;
-              }, number.split('.')),
-            '.');
-          base = number;
-          index = bases = base.split('.');
-          numbers.clear();
-          break;
-        default:
-          base = number;
-          index = bases = base.split('.');
-          numbers.clear();
+      if (number.startsWith('0.')) {
+        assert(number.endsWith('.0'));
+        number = join(
+          index.slice(0)
+            .reduce((ns, _, i, bs) => {
+              i === ns.length
+                ? bs.length = i
+                : ns[i] = +ns[i] > +bs[i]
+                  ? ns[i]
+                  : +ns[i] === 0
+                    ? bs[i]
+                    : `${+bs[i] + 1}`;
+              return ns;
+            }, number.split('.')),
+          '.');
       }
+      base = number;
+      bases = index = base.split('.');
+      numbers.clear();
       assert(def.tagName !== 'FIGURE' || !void def.setAttribute('data-number', number));
       continue;
     }
