@@ -175,15 +175,18 @@
     all: unset;
   }
   .invalid:before {
-    display: block;
-    margin-bottom: 1em;
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message);
     font-style: italic;
     font-weight: bold;
     color: gray;
   }
-  .invalid[data-invalid-type="closer"]:before {
-    content: attr(data-invalid-message);
+  div.invalid:before,
+  pre.invalid:before,
+  figure.invalid:before,
+  ul.invalid:before,
+  p.invalid:before {
+    display: block;
+    margin-bottom: 1em;
   }
   @media print {
     #viewer > hr {

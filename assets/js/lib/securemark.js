@@ -7011,6 +7011,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function* figure(target, footnotes, opts = {}) {
+                var _a, _b;
                 const refs = new multimap_1.MultiMap([
                     ...target.querySelectorAll('a.label'),
                     ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label')) || [],
@@ -7037,28 +7038,24 @@ require = function () {
                     const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(index, def) }`;
                     if (label === '$-')
                         continue;
+                    if (label === '$-0')
+                        continue;
+                    if (label === '$-0.0' && (i !== 1 || ((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName) !== 'H1'))
+                        continue;
+                    if (label === '$-0.0.0' && (i === 0 || ((_b = def.previousElementSibling) === null || _b === void 0 ? void 0 : _b.tagName) !== 'H2'))
+                        continue;
                     const group = label.split('-', 1)[0];
                     let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? array_1.join(numbers.get(group).split('.').slice(0, bases.length).slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length), '.') : base);
-                    if (number.split('.').pop() === '0') {
-                        switch (true) {
-                        case number === '0':
-                            base = number;
-                            bases = base.split('.');
-                            break;
-                        case number.startsWith('0.'):
+                    if (number.endsWith('.0')) {
+                        if (number.startsWith('0.')) {
                             number = array_1.join(index.slice(0).reduce((ns, _, i, bs) => {
                                 i === ns.length ? bs.length = i : ns[i] = +ns[i] > +bs[i] ? ns[i] : +ns[i] === 0 ? bs[i] : `${ +bs[i] + 1 }`;
                                 return ns;
                             }, number.split('.')), '.');
-                            base = number;
-                            index = bases = base.split('.');
-                            numbers.clear();
-                            break;
-                        default:
-                            base = number;
-                            index = bases = base.split('.');
-                            numbers.clear();
                         }
+                        base = number;
+                        bases = index = base.split('.');
+                        numbers.clear();
                         continue;
                     }
                     !inline_1.isFixed(label) && numbers.set(group, number);
