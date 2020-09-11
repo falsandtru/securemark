@@ -4,7 +4,7 @@ import { str } from '../../source';
 import { html } from 'typed-dom';
 import { join } from 'spica/array';
 
-const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.[0-9]))?|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){0,2}(?!\.[0-9]))/);
+const body = str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.?[A-Za-z0-9]))?(?!-?[A-Za-z0-9])|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){0,2}(?![.-]?[A-Za-z0-9]))/);
 
 export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate(['[$', '$'], union([
   surround('[', body, ']'),
