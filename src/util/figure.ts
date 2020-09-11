@@ -24,14 +24,15 @@ export function* figure(
   const numbers = new Map<string, string>();
   let base = '0';
   let bases: readonly string[] = base.split('.');
+  let index: readonly string[] = bases;
   for (let defs = target.children, i = 0, len = defs.length; i < len; ++i) {
     const def = defs[i];
     if (!['FIGURE', 'H1', 'H2', 'H3'].includes(def.tagName)) continue;
-    if (base === '0' && def.tagName[0] === 'H') continue;
+    if (bases.length === 1 && def.tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);
     const label = def.tagName === 'FIGURE'
       ? def.getAttribute('data-label')!
-      : `$-${increment(bases, def as HTMLHeadingElement)}`;
+      : `$-${increment(index, def as HTMLHeadingElement)}`;
     if (label === '$-') continue;
     const group = label.split('-', 1)[0];
     assert(label && group);
@@ -40,7 +41,7 @@ export function* figure(
       label,
       numbers.has(group) && !isFixed(label)
         ? join(
-            numbers.get(group)!.split('.')
+            numbers.get(group)!.split('.').slice(0, bases.length)
               .slice(
                 0,
                 isFormatted(label)
@@ -53,12 +54,13 @@ export function* figure(
       assert(isFixed(label));
       switch (true) {
         case number === '0':
-          number = `0${'.0'.repeat(bases.length - 1)}`;
+          base = number;
+          bases = base.split('.');
           break;
         case number.startsWith('0.'):
           assert(number.endsWith('.0'));
           number = join(
-            bases.slice(0)
+            index.slice(0)
               .reduce((ns, _, i, bs) => {
                 i === ns.length
                   ? bs.length = i
@@ -70,11 +72,15 @@ export function* figure(
                 return ns;
               }, number.split('.')),
             '.');
+          base = number;
+          index = bases = base.split('.');
+          numbers.clear();
           break;
+        default:
+          base = number;
+          index = bases = base.split('.');
+          numbers.clear();
       }
-      base = number;
-      bases = base.split('.');
-      numbers.clear();
       assert(def.tagName !== 'FIGURE' || !void def.setAttribute('data-number', number));
       continue;
     }

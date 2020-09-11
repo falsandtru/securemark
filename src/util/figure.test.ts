@@ -38,8 +38,8 @@ describe('Unit: util/figure', () => {
       const target = parse([
         '$fig-a\n> ',
         '## 0',
-        '$table-a\n> ',
         '$fig-b\n> ',
+        '$table-a\n> ',
       ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         [...figure(target)];
@@ -48,8 +48,8 @@ describe('Unit: util/figure', () => {
           [
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="table-a" data-group="table" data-number="1" id="label:table-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Table 1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-b" data-group="fig" data-number="2" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2. </span><figcaption></figcaption></figure>',
+            '<figure data-label="table-a" data-group="table" data-number="1" id="label:table-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Table 1. </span><figcaption></figcaption></figure>',
           ]);
       }
     });
@@ -165,15 +165,15 @@ describe('Unit: util/figure', () => {
             '<figure data-label="fig-e" data-group="fig" data-number="6.1" id="label:fig-e"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 6.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="$-5.0" data-group="$" style="display: none;" data-number="5.0"></figure>',
             '<figure data-label="fig-f" data-group="fig" data-number="5.1" id="label:fig-f"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 5.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="$-0" data-group="$" style="display: none;" data-number="0.0"></figure>',
-            '<figure data-label="fig-g" data-group="fig" data-number="0.1" id="label:fig-g"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 0.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="$-0" data-group="$" style="display: none;" data-number="0"></figure>',
+            '<figure data-label="fig-g" data-group="fig" data-number="6" id="label:fig-g"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 6. </span><figcaption></figcaption></figure>',
             '<h3 id="index:0">0</h3>',
-            '<figure data-label="fig-h" data-group="fig" data-number="0.2" id="label:fig-h"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 0.2. </span><figcaption></figcaption></figure>',
-            '<figure data-label="$-0.0.0" data-group="$" style="display: none;" data-number="0.0.0"></figure>',
+            '<figure data-label="fig-h" data-group="fig" data-number="7" id="label:fig-h"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 7. </span><figcaption></figcaption></figure>',
+            '<figure data-label="$-0.0.0" data-group="$" style="display: none;" data-number="5.0.0"></figure>',
             '<h3 id="index:0">0</h3>',
-            '<figure data-label="fig-i" data-group="fig" data-number="0.1.1" id="label:fig-i"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 0.1.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-i" data-group="fig" data-number="5.1.1" id="label:fig-i"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 5.1.1. </span><figcaption></figcaption></figure>',
             '<h1 id="index:0">0</h1>',
-            '<figure data-label="fig-j" data-group="fig" data-number="1.1" id="label:fig-j"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-j" data-group="fig" data-number="6.1" id="label:fig-j"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 6.1. </span><figcaption></figcaption></figure>',
           ]);
       }
     });
