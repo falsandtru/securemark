@@ -4943,7 +4943,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = source_1.str(/^(?:\$[a-z]*)(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.?[A-Za-z0-9]))?(?!-?[A-Za-z0-9])|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){0,2}(?![.-]?[A-Za-z0-9]))/);
+            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.?[A-Za-z0-9]))?(?!-?[A-Za-z0-9])|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){0,2}(?![.-]?[A-Za-z0-9]))/);
             exports.segment = combinator_1.clear(combinator_1.validate([
                 '[$',
                 '$'
@@ -7063,7 +7063,7 @@ require = function () {
                     def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ figid }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) } ${ number }`;
                     typed_dom_1.define(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
-                    for (const ref of refs.take(figid, global_1.Infinity).filter(ref => ref.hash.slice(1) !== def.id)) {
+                    for (const ref of refs.take(figid, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.textContent === figindex)
                             continue;
                         yield typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
