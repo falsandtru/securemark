@@ -5,6 +5,7 @@
 - Refine the control of the base figure number.
   - Add figbase syntax.
   - Change figures labeled with a fixed number not to affect the base figure number.
+- Improve heading parser.
 
 ## 0.169.0
 
