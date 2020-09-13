@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.171.2
+
+- Fix alias syntax.
+
 ## 0.171.1
 
 - Fix figure function to update indexes of references.

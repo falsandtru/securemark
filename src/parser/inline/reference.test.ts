@@ -56,9 +56,9 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[~a|b]]')), [['<sup class="reference">~a|b</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[~a  b]]')), [['<sup class="reference">~a  b</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[~Xyz2020]]')), [['<sup class="reference" data-alias="Xyz2020"></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[~X, 2020]]')), [['<sup class="reference" data-alias="X, 2020"></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[~X, Y, 2020, p1-2]]')), [['<sup class="reference" data-alias="X, Y, 2020, p1-2"></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[~X, Y, 2020, p1-2| a]]')), [['<sup class="reference" data-alias="X, Y, 2020, p1-2">a</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[~X, 2020, p1-2]]')), [['<sup class="reference" data-alias="X, 2020, p1-2"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[~X, Y. Zw, 2020, p1-2]]')), [['<sup class="reference" data-alias="X, Y. Zw, 2020, p1-2"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[~X| a]]')), [['<sup class="reference" data-alias="X">a</sup>'], '']);
     });
 
   });
