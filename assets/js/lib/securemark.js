@@ -5554,7 +5554,7 @@ require = function () {
                     }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : global_1.undefined)));
-            const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9',-]*(?: [A-Za-z0-9',-]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
+            const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9]*(?:(?:[-]|[.,] )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.split('|', 1)[0].slice(1))],
                 ''
             ]));
@@ -7042,7 +7042,7 @@ require = function () {
                         continue;
                     if (label === '$-0.0' && (i !== 1 || ((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName) !== 'H1'))
                         continue;
-                    if (label === '$-0.0.0' && (i === 0 || ((_b = def.previousElementSibling) === null || _b === void 0 ? void 0 : _b.tagName) !== 'H2'))
+                    if (label === '$-0.0.0' && ((_b = def.previousElementSibling) === null || _b === void 0 ? void 0 : _b.tagName) !== 'H2')
                         continue;
                     const group = label.split('-', 1)[0];
                     let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? array_1.join(numbers.get(group).split('.').slice(0, bases.length).slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length), '.') : base);
