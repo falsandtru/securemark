@@ -127,7 +127,9 @@ export function stringify(nodes: HTMLElement | string | readonly (HTMLElement | 
     const node = nodes[i];
     acc += typeof node === 'string'
       ? node
-      : node.innerText;
+      : node.tagName === 'BR'
+        ? '\n'
+        : node.innerText;
   }
   return acc;
 }
