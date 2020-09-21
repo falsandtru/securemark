@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.172.0
+
+- Refine quote function.
+
 ## 0.171.2
 
 - Fix alias syntax.

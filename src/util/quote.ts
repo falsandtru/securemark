@@ -4,8 +4,8 @@ import { define } from 'typed-dom';
 
 const { origin } = location;
 
-export function quote(range: Range): string {
-  const expansion = expand(range);
+export function quote(address: string, range: Range): string {
+  let expansion = expand(range);
   const node = range.cloneContents();
   for (let es = node.querySelectorAll('code[data-src], .math[data-src], rt, rp, .media'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
@@ -22,30 +22,51 @@ export function quote(range: Range): string {
         continue;
     }
   }
-  node.prepend(expansion ? '>' : '> ');
+  expansion = expansion || !!trim(node).firstElementChild?.matches('.quotation');
+  if (!node.firstChild) return '';
+  let add: boolean;
+  if (expansion) {
+    node.prepend('>');
+    add = true;
+  }
+  else {
+    node.prepend(`>>${address}\n> `);
+    add = false;
+  }
   for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     const target = el.nextSibling as Node | Element;
-    el.replaceWith(target && 'id' in target && target.matches('.quotation') ? '\n>' : '\n> ');
+    if (target && 'id' in target && target.matches('.quotation')) {
+      el.replaceWith('\n>');
+      add = add || i < len - 1;
+    }
+    else {
+      el.replaceWith(add ? `\n>>${address}\n> ` : '\n> ');
+      add = false;
+    }
   }
-  return node.textContent!.replace(/^>*\s*(?:\n|$)/gm, '');
+  add && node.append(`\n>>${address}`);
+  return node.textContent!;
 }
 
 function expand(range: Range): boolean {
   const node = range.startContainer;
-  const offset = range.startOffset;
-  if (!node.parentElement?.matches('.quotation, .quotation > .address:first-child')) return false;
-  if (!/^>+$/.test(node.textContent!.slice(0, offset + 1))) return false;
-  switch (true) {
-    case node.parentElement?.matches('.address')
-      && /^>*$/.test(node.parentElement.previousSibling?.textContent!.slice(0, offset) || ''):
-      range.setStart(node.parentElement.previousSibling!, 0);
-      return true;
-    case node.previousSibling === null
-      && /^>*$/.test(node.textContent!.slice(0, offset)):
-      range.setStart(node, 0);
-      return true;
-    default:
-      return false;
+  if (node.parentElement?.matches('.quotation > .address:first-child')) {
+    range.setStart(node.parentElement.previousSibling!, 0);
+    return true;
   }
+  const offset = range.startOffset;
+  if (node.parentElement?.matches('.quotation') && node.textContent!.slice(0, offset) === '>'.repeat(offset)) {
+    range.setStart(node, 0);
+    return true;
+  }
+  return false;
+}
+
+function trim<T extends Node>(node: T): T {
+  for (let child: ChildNode | null; child = node.firstChild;) {
+    if (child.textContent) break;
+    child.remove();
+  }
+  return node;
 }

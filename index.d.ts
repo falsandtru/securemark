@@ -15,7 +15,7 @@ export function parse(source: string, options?: Partial<ParserSettings>): Docume
 //   4. Added or changed figure links (<a>).
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined>;
 export function render(target: HTMLElement, options?: RenderingOptions): void;
-export function quote(range: Range): string;
+export function quote(address: string, range: Range): string;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
