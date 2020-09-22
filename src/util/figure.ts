@@ -4,7 +4,7 @@ import { isFixed } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
-import { push, join } from 'spica/array';
+import { join } from 'spica/array';
 
 export function* figure(
   target: DocumentFragment | HTMLElement | ShadowRoot,
@@ -88,10 +88,21 @@ export function* figure(
 }
 
 function increment(bases: readonly string[], el: HTMLHeadingElement): string {
-  const cursor = +el.tagName[1] - 1 || 1;
-  assert(cursor > 0);
-  return cursor < bases.length || bases.length === 1
-    ? join(push(bases.slice(0, cursor - 1), [+bases[cursor - 1] + 1, '0']), '.')
+  const index = (+el.tagName[1] - 1 || 1) - 1;
+  assert(index >= 0);
+  return index < bases.length - 1
+    ? join(
+        bases.slice(0, index + 2).map((v, i) => {
+          switch (true) {
+            case i < index:
+              return v;
+            case i === index:
+              return +v + 1;
+            default:
+              return 0;
+          }
+        }),
+        '.')
     : '';
 }
 
