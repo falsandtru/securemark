@@ -1,6 +1,6 @@
 import { Infinity } from 'spica/global';
 import { context } from './context';
-import { isFixed, isFormatted } from '../parser/inline';
+import { isFixed } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
@@ -43,14 +43,7 @@ export function* figure(
     let number = calculate(
       label,
       numbers.has(group) && !isFixed(label)
-        ? join(
-            numbers.get(group)!.split('.').slice(0, bases.length)
-              .slice(
-                0,
-                isFormatted(label)
-                  ? label.slice(label.lastIndexOf('-') + 1).split('.').length
-                  : bases.length),
-            '.')
+        ? join(numbers.get(group)!.split('.').slice(0, bases.length), '.')
         : base);
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.endsWith('.0')) {
@@ -81,13 +74,12 @@ export function* figure(
     assert(number.split('.').pop() !== '0');
     !isFixed(label) && numbers.set(group, number);
     assert(!void def.setAttribute('data-number', number));
-    const figid = isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
-    def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${figid}`);
+    def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)} ${number}`;
     define(
       def.querySelector(':scope > .figindex')!,
       group === '$' ? figindex : `${figindex}. `);
-    for (const ref of refs.take(figid, Infinity)) {
+    for (const ref of refs.take(label, Infinity)) {
       if (ref.hash.slice(1) === def.id && ref.textContent === figindex) continue;
       yield define(ref, { href: `#${def.id}` }, figindex);
     }

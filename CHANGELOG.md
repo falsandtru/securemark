@@ -4,6 +4,7 @@
 
 - Refine quote function.
 - Extend alias parser.
+- Remove formatted label syntax.
 
 ## 0.171.2
 

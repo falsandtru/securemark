@@ -54,33 +54,12 @@ describe('Unit: util/figure', () => {
       }
     });
 
-    it('format', () => {
-      const target = parse([
-        '$fig-a-0.0.0\n> ',
-        '$fig-b-0.0\n> ',
-        '$fig-c\n> ',
-        '$fig-b',
-      ].join('\n\n'));
-      for (let i = 0; i < 2; ++i) {
-        [...figure(target)];
-        assert.deepStrictEqual(
-          [...target.children].map(el => el.outerHTML),
-          [
-            '<figure data-label="fig-a-0.0.0" data-group="fig" data-number="1.0.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1.0.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-b-0.0" data-group="fig" data-number="1.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-c" data-group="fig" data-number="2" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2. </span><figcaption></figcaption></figure>',
-            '<p><a class="label" data-label="fig-b" href="#label:fig-b">Fig 1.1</a></p>',
-          ]);
-      }
-    });
-
     it('fixed', () => {
       const target = parse([
         '$fig-2.1\n> ',
-        '$fig-a-0.0.0\n> ',
         '$-4.1\n$$\n$$',
         '$-a\n$$\n$$',
-        '$fig-b\n> ',
+        '$fig-a\n> ',
         '$fig-1',
         '$-4.1',
       ].join('\n\n'));
@@ -90,10 +69,9 @@ describe('Unit: util/figure', () => {
           [...target.children].map(el => el.outerHTML),
           [
             '<figure data-label="fig-2.1" data-group="fig" data-number="2.1" id="label:fig-2.1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-a-0.0.0" data-group="fig" data-number="1.0.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1.0.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="$-4.1" data-group="$" data-number="4.1" id="label:$-4.1"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(4.1)</span><figcaption></figcaption></figure>',
             '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-b" data-group="fig" data-number="2" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
             '<p><a class="label" data-label="fig-1">$fig-1</a></p>',
             '<p><a class="label" data-label="$-4.1" href="#label:$-4.1">(4.1)</a></p>',
           ]);
@@ -106,13 +84,11 @@ describe('Unit: util/figure', () => {
         '$-0.0',
         '## 0',
         '$fig-1\n> ',
-        '$fig-a-0.0\n> ',
         '## 0',
         '!> ## 0',
         '$fig-b\n> ',
         '## 0',
         '$-0.0.0',
-        '$quote-a-0.0\n> ',
         '$fig-c\n> ',
         '## 0',
         '$-0.1.0',
@@ -146,13 +122,11 @@ describe('Unit: util/figure', () => {
             '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="0.0"></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="fig-1" data-group="fig" data-number="1" id="label:fig-1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="fig-a-0.0" data-group="fig" data-number="1.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1.1. </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
             '<blockquote><h2>0</h2></blockquote>',
             '<figure data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2.1. </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0.0" data-group="$" style="display: none;" data-number="3.0.0"></figure>',
-            '<figure data-label="quote-a-0.0" data-group="quote" data-number="3.1" id="label:quote-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Quote 3.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-c" data-group="fig" data-number="3.0.1" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 3.0.1. </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.1.0" data-group="$" style="display: none;" data-number="4.1.0"></figure>',

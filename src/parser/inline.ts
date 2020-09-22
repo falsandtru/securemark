@@ -85,4 +85,4 @@ export { url } from './inline/autolink/url';
 export { address } from './inline/autolink/address';
 export { indexer } from './inline/extension/indexer';
 export { indexee } from './inline/extension/indexee';
-export { isFixed, isFormatted } from './inline/extension/label';
+export { isFixed } from './inline/extension/label';
