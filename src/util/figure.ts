@@ -36,7 +36,7 @@ export function* figure(
     if (label === '$-') continue;
     if (label === '$-0') continue;
     if (label === '$-0.0' && (i !== 1 || def.previousElementSibling?.tagName !== 'H1')) continue;
-    if (label === '$-0.0.0' && def.previousElementSibling?.tagName !== 'H2') continue;
+    if (label === '$-0.0.0'/* && def.previousElementSibling?.tagName !== 'H2'*/) continue;
     const group = label.split('-', 1)[0];
     assert(label && group);
     assert(group === def.getAttribute('data-group') || !def.matches('figure'));
@@ -48,6 +48,7 @@ export function* figure(
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.endsWith('.0')) {
       assert(isFixed(label));
+      if (number.split('.').length > 2) continue;
       if (group !== '$' || def.tagName === 'FIGURE' && def.firstChild) continue;
       if (number.startsWith('0.')) {
         assert(number.endsWith('.0'));

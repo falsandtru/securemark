@@ -4,6 +4,7 @@
 
 - Refine quote function.
 - Extend alias parser.
+- Change labels numbered by 3 dimensions to be ignored.
 - Remove formatted label syntax.
 
 ## 0.171.2
