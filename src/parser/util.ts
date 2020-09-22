@@ -143,6 +143,8 @@ export function suppress(target: HTMLOListElement | DocumentFragment): HTMLOList
     assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
     apply(target, '.footnote > sup:last-child > a', { href: null });
   }
+  // Bug: Firefox
+  //for (let es = target.querySelectorAll(':scope > dl, :scope > [id]'), i = 0, len = es.length; i < len; ++i) {
   for (let es = target.children, i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
