@@ -48,6 +48,7 @@ export function* figure(
     assert(def.matches('figure') || number.endsWith('.0'));
     if (number.endsWith('.0')) {
       assert(isFixed(label));
+      if (group !== '$' || def.tagName === 'FIGURE' && def.firstChild) continue;
       if (number.startsWith('0.')) {
         assert(number.endsWith('.0'));
         number = join(
