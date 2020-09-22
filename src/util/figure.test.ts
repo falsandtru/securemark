@@ -56,24 +56,28 @@ describe('Unit: util/figure', () => {
 
     it('fixed', () => {
       const target = parse([
-        '$fig-2.1\n> ',
-        '$-4.1\n$$\n$$',
+        '$fig-2\n> ',
+        '$fig-3.1\n> ',
+        '$-4.1.1\n$$\n$$',
         '$-a\n$$\n$$',
         '$fig-a\n> ',
+        '$fig-2',
+        '$-4.1.1',
         '$fig-1',
-        '$-4.1',
       ].join('\n\n'));
       for (let i = 0; i < 2; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<figure data-label="fig-2.1" data-group="fig" data-number="2.1" id="label:fig-2.1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2.1. </span><figcaption></figcaption></figure>',
-            '<figure data-label="$-4.1" data-group="$" data-number="4.1" id="label:$-4.1"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(4.1)</span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-2" data-group="fig" data-number="2" id="label:fig-2"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2. </span><figcaption></figcaption></figure>',
+            '<figure data-label="fig-3.1" data-group="fig" data-number="3.1" id="label:fig-3.1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 3.1. </span><figcaption></figcaption></figure>',
+            '<figure data-label="$-4.1.1" data-group="$" data-number="4.1.1" id="label:$-4.1.1"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(4.1.1)</span><figcaption></figcaption></figure>',
             '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
+            '<p><a class="label" data-label="fig-2" href="#label:fig-2">Fig 2</a></p>',
+            '<p><a class="label" data-label="$-4.1.1" href="#label:$-4.1.1">(4.1.1)</a></p>',
             '<p><a class="label" data-label="fig-1">$fig-1</a></p>',
-            '<p><a class="label" data-label="$-4.1" href="#label:$-4.1">(4.1)</a></p>',
           ]);
       }
     });
