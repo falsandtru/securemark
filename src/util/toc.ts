@@ -20,7 +20,7 @@ function parse(node: Tree, index: string = ''): HTMLUListElement {
       : `${index}.${i + 1}`;
     return html('li',
       push<HTMLElement>(
-        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx }, el.innerText)],
+        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx }, fix(el))],
         cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
@@ -40,4 +40,13 @@ function cons(hs: HTMLHeadingElement[]): Tree {
 function level(h: HTMLHeadingElement): number {
   assert(isFinite(+h.tagName[1]));
   return +h.tagName[1];
+}
+
+function fix(h: HTMLHeadingElement): Iterable<Node> {
+  h = h.cloneNode(true);
+  for (let es = h.getElementsByTagName('a'), i = 0, len = es.length; i < len; ++i) {
+    const el = es[i];
+    el.replaceWith(...el.childNodes);
+  }
+  return h.childNodes;
 }
