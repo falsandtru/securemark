@@ -3,6 +3,7 @@
 ## 0.172.0
 
 - Refine quote function.
+- Extend alias parser.
 
 ## 0.171.2
 
