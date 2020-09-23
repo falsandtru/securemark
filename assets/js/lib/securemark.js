@@ -4090,7 +4090,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.isFormatted = exports.isFixed = exports.indexee = exports.indexer = exports.address = exports.url = exports.autolink = exports.shortmedia = exports.htmlentity = exports.math = exports.comment = exports.media = exports.link = exports.inline = void 0;
+            exports.isFixed = exports.indexee = exports.indexer = exports.address = exports.url = exports.autolink = exports.shortmedia = exports.htmlentity = exports.math = exports.comment = exports.media = exports.link = exports.inline = void 0;
             const combinator_1 = _dereq_('../combinator');
             const escape_1 = _dereq_('./inline/escape');
             const annotation_1 = _dereq_('./inline/annotation');
@@ -4222,12 +4222,6 @@ require = function () {
                 enumerable: true,
                 get: function () {
                     return label_1.isFixed;
-                }
-            });
-            Object.defineProperty(exports, 'isFormatted', {
-                enumerable: true,
-                get: function () {
-                    return label_1.isFormatted;
                 }
             });
         },
@@ -4938,12 +4932,12 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.isFormatted = exports.isFixed = exports.number = exports.label = exports.segment = void 0;
+            exports.isFixed = exports.number = exports.label = exports.segment = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*)+(?:-0(?:\.0){0,2}(?!\.?[A-Za-z0-9]))?(?!-?[A-Za-z0-9])|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){0,2}(?![.-]?[A-Za-z0-9]))/);
+            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*)+(?!-?[A-Za-z0-9])|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*))*(?![.-]?[A-Za-z0-9]))/);
             exports.segment = combinator_1.clear(combinator_1.validate([
                 '[$',
                 '$'
@@ -4965,17 +4959,13 @@ require = function () {
                     'data-label': text.slice(text[1] === '-' ? 0 : 1)
                 }, [text])]));
             function number(label, base) {
-                return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : base.split('.').length);
+                return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, base.split('.').length);
             }
             exports.number = number;
             function isFixed(label) {
                 return /^[^-]+-[0-9]+(?:\.[0-9]+)*$/.test(label);
             }
             exports.isFixed = isFixed;
-            function isFormatted(label) {
-                return /^[^-]+.+?-0(?:\.0)*$/.test(label);
-            }
-            exports.isFormatted = isFormatted;
             function increment(number, position) {
                 if (number === '0' && position > 1)
                     return increment('1', position);
@@ -5554,7 +5544,7 @@ require = function () {
                     }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : global_1.undefined)));
-            const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9]*(?:(?:[-]|[.,] )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
+            const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9]*(?:(?:[-]|[.,]? |\., )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.split('|', 1)[0].slice(1))],
                 ''
             ]));
@@ -6369,7 +6359,7 @@ require = function () {
                 let acc = '';
                 for (let i = 0; i < nodes.length; ++i) {
                     const node = nodes[i];
-                    acc += typeof node === 'string' ? node : node.innerText;
+                    acc += typeof node === 'string' ? node : node.tagName === 'BR' ? '\n' : node.innerText;
                 }
                 return acc;
             }
@@ -7011,7 +7001,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function* figure(target, footnotes, opts = {}) {
-                var _a, _b;
+                var _a;
                 const refs = new multimap_1.MultiMap([
                     ...target.querySelectorAll('a.label'),
                     ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label')) || [],
@@ -7042,11 +7032,15 @@ require = function () {
                         continue;
                     if (label === '$-0.0' && (i !== 1 || ((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName) !== 'H1'))
                         continue;
-                    if (label === '$-0.0.0' && ((_b = def.previousElementSibling) === null || _b === void 0 ? void 0 : _b.tagName) !== 'H2')
+                    if (label === '$-0.0.0')
                         continue;
                     const group = label.split('-', 1)[0];
-                    let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? array_1.join(numbers.get(group).split('.').slice(0, bases.length).slice(0, inline_1.isFormatted(label) ? label.slice(label.lastIndexOf('-') + 1).split('.').length : bases.length), '.') : base);
+                    let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? array_1.join(numbers.get(group).split('.').slice(0, bases.length), '.') : base);
                     if (number.endsWith('.0')) {
+                        if (number.split('.').length > 2)
+                            continue;
+                        if (group !== '$' || def.tagName === 'FIGURE' && def.firstChild)
+                            continue;
                         if (number.startsWith('0.')) {
                             number = array_1.join(index.slice(0).reduce((ns, _, i, bs) => {
                                 i === ns.length ? bs.length = i : ns[i] = +ns[i] > +bs[i] ? ns[i] : +ns[i] === 0 ? bs[i] : `${ +bs[i] + 1 }`;
@@ -7059,11 +7053,10 @@ require = function () {
                         continue;
                     }
                     !inline_1.isFixed(label) && numbers.set(group, number);
-                    const figid = inline_1.isFormatted(label) ? label.slice(0, label.lastIndexOf('-')) : label;
-                    def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ figid }`);
+                    def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) } ${ number }`;
                     typed_dom_1.define(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
-                    for (const ref of refs.take(figid, global_1.Infinity)) {
+                    for (const ref of refs.take(label, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.textContent === figindex)
                             continue;
                         yield typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
@@ -7073,11 +7066,17 @@ require = function () {
             }
             exports.figure = figure;
             function increment(bases, el) {
-                const cursor = +el.tagName[1] - 1 || 1;
-                return cursor < bases.length || bases.length === 1 ? array_1.join(array_1.push(bases.slice(0, cursor - 1), [
-                    +bases[cursor - 1] + 1,
-                    '0'
-                ]), '.') : '';
+                const index = (+el.tagName[1] - 1 || 1) - 1;
+                return index < bases.length - 1 ? array_1.join(bases.slice(0, index + 2).map((v, i) => {
+                    switch (true) {
+                    case i < index:
+                        return v;
+                    case i === index:
+                        return +v + 1;
+                    default:
+                        return 0;
+                    }
+                }), '.') : '';
             }
             function capitalize(label) {
                 return label[0].toUpperCase() + label.slice(1);
@@ -7259,8 +7258,9 @@ require = function () {
             const url_1 = _dereq_('spica/url');
             const typed_dom_1 = _dereq_('typed-dom');
             const {origin} = global_1.location;
-            function quote(range) {
-                const expansion = expand(range);
+            function quote(address, range) {
+                var _a;
+                let expansion = expand(range);
                 const node = range.cloneContents();
                 for (let es = node.querySelectorAll('code[data-src], .math[data-src], rt, rp, .media'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
@@ -7277,33 +7277,53 @@ require = function () {
                         continue;
                     }
                 }
-                node.prepend(expansion ? '>' : '> ');
+                expansion = expansion || !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.quotation'));
+                if (!node.firstChild)
+                    return '';
+                let add;
+                if (expansion) {
+                    node.prepend('>');
+                    add = true;
+                } else {
+                    node.prepend(`>>${ address }\n> `);
+                    add = false;
+                }
                 for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     const target = el.nextSibling;
-                    el.replaceWith(target && 'id' in target && target.matches('.quotation') ? '\n>' : '\n> ');
+                    if (target && 'id' in target && target.matches('.quotation')) {
+                        el.replaceWith('\n>');
+                        add = add || i < len - 1;
+                    } else {
+                        el.replaceWith(add ? `\n>>${ address }\n> ` : '\n> ');
+                        add = false;
+                    }
                 }
-                return node.textContent.replace(/^>*\s*(?:\n|$)/gm, '');
+                add && node.append(`\n>>${ address }`);
+                return node.textContent;
             }
             exports.quote = quote;
             function expand(range) {
-                var _a, _b, _c;
+                var _a, _b;
                 const node = range.startContainer;
-                const offset = range.startOffset;
-                if (!((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.quotation, .quotation > .address:first-child')))
-                    return false;
-                if (!/^>+$/.test(node.textContent.slice(0, offset + 1)))
-                    return false;
-                switch (true) {
-                case ((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.address')) && /^>*$/.test(((_c = node.parentElement.previousSibling) === null || _c === void 0 ? void 0 : _c.textContent.slice(0, offset)) || ''):
+                if ((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.quotation > .address:first-child')) {
                     range.setStart(node.parentElement.previousSibling, 0);
                     return true;
-                case node.previousSibling === null && /^>*$/.test(node.textContent.slice(0, offset)):
+                }
+                const offset = range.startOffset;
+                if (((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.quotation')) && node.textContent.slice(0, offset) === '>'.repeat(offset)) {
                     range.setStart(node, 0);
                     return true;
-                default:
-                    return false;
                 }
+                return false;
+            }
+            function trim(node) {
+                for (let child; child = node.firstChild;) {
+                    if (child.textContent)
+                        break;
+                    child.remove();
+                }
+                return node;
             }
         },
         {
@@ -7332,7 +7352,7 @@ require = function () {
                             href: `#${ el.id }`,
                             rel: 'noopener',
                             'data-index': idx
-                        }, el.innerText)], cs.length > 0 ? [parse(cs, idx)] : []));
+                        }, fix(el))], cs.length > 0 ? [parse(cs, idx)] : []));
                 }));
             }
             function cons(hs) {
@@ -7349,6 +7369,14 @@ require = function () {
             }
             function level(h) {
                 return +h.tagName[1];
+            }
+            function fix(h) {
+                h = h.cloneNode(true);
+                for (let es = h.getElementsByTagName('a'), i = 0, len = es.length; i < len; ++i) {
+                    const el = es[i];
+                    el.replaceWith(...el.childNodes);
+                }
+                return h.childNodes;
             }
         },
         {
