@@ -1,10 +1,10 @@
 import { ParagraphParser } from '../../../block';
-import { tails, some, line, fmap } from '../../../../combinator';
+import { tails, line, creator, fmap } from '../../../../combinator';
 import { address as addr } from '../../../inline';
 import { str } from '../../../source/str';
 import { html } from 'typed-dom';
 
-export const address: ParagraphParser.MentionParser.AddressParser = some(line(fmap(
+export const address: ParagraphParser.MentionParser.AddressParser = creator(line(fmap(
   tails([
     str(/^>*(?=>)/),
     addr,
