@@ -19,8 +19,6 @@ describe('Unit: parser/block/paragraph/mention/address', () => {
       assert.deepStrictEqual(inspect(parser('>> 0')), undefined);
       assert.deepStrictEqual(inspect(parser(' >>0')), undefined);
       assert.deepStrictEqual(inspect(parser('\\>>0')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>0\n>>')), undefined);
-      assert.deepStrictEqual(inspect(parser('>>0\n>>>1')), undefined);
     });
 
     it('valid', () => {
@@ -31,7 +29,9 @@ describe('Unit: parser/block/paragraph/mention/address', () => {
       assert.deepStrictEqual(inspect(parser('>>>0')), [['<span class="quotation">&gt;&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>'], '']);
       assert.deepStrictEqual(inspect(parser('>>0\n1')), [['<span class="quotation">&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>'], '1']);
       assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<span class="quotation">&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>', '<span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>>')), [['<span class="quotation">&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>'], '>>']);
       assert.deepStrictEqual(inspect(parser('>>0\n>>1')), [['<span class="quotation">&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>', '<span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>>>1')), [['<span class="quotation">&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>', '<span class="quotation">&gt;&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span>'], '']);
       assert.deepStrictEqual(inspect(parser('>>>0\n>>')), [['<span class="quotation">&gt;&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>'], '>>']);
       assert.deepStrictEqual(inspect(parser('>>>0\n>>1')), [['<span class="quotation">&gt;&gt;<a class="address" href="?res=0" rel="noopener">&gt;0</a></span>', '<span class="quotation">&gt;<a class="address" href="?res=1" rel="noopener">&gt;1</a></span>'], '']);
     });
