@@ -3331,7 +3331,6 @@ require = function () {
             exports.extension = exports.segment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const figbase_1 = _dereq_('./extension/figbase');
-            const figbase_2 = _dereq_('./extension/figbase');
             const fig_1 = _dereq_('./extension/fig');
             const figure_1 = _dereq_('./extension/figure');
             const example_1 = _dereq_('./extension/example');
@@ -3340,20 +3339,19 @@ require = function () {
                 '~~~',
                 '[$',
                 '$'
-            ], combinator_1.validate(/^~{3,}|^\[?\$[a-z-]\S+[^\S\n]*(?:\n|$)/, combinator_1.union([
-                figbase_2.segment,
+            ], combinator_1.validate(/^~{3,}|^\[?\$[a-z-]\S+[^\S\n]*(?:$|\n)/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
                 example_1.segment,
                 placeholder_1.segment
             ])));
-            exports.extension = combinator_1.rewrite(exports.segment, combinator_1.union([
+            exports.extension = combinator_1.union([
                 figbase_1.figbase,
                 fig_1.fig,
                 figure_1.figure,
                 example_1.example,
                 placeholder_1.placeholder
-            ]));
+            ]);
         },
         {
             '../../combinator': 28,
@@ -3474,12 +3472,11 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.figbase = exports.segment = void 0;
+            exports.figbase = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const label_1 = _dereq_('../../inline/extension/label');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.validate(/^\[?\$-(?:[0-9]+\.)*0\]?[^\S\n]*(?!\S|\n[^\S\n]*\S)/, combinator_1.line(combinator_1.union([label_1.segment]))));
-            exports.figbase = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.fmap(combinator_1.line(combinator_1.union([label_1.label])), ([el]) => {
+            exports.figbase = combinator_1.block(combinator_1.fmap(combinator_1.validate(/^\[?\$-(?:[0-9]+\.)*0\]?[^\S\n]*(?!\S|\n[^\S\n]*\S)/, combinator_1.line(combinator_1.union([label_1.label]))), ([el]) => {
                 const label = el.getAttribute('data-label');
                 const group = label.split('-', 1)[0];
                 return [typed_dom_1.html('figure', {
@@ -3487,7 +3484,7 @@ require = function () {
                         'data-group': group,
                         style: 'display: none;'
                     })];
-            })));
+            }));
         },
         {
             '../../../combinator': 28,
@@ -3878,10 +3875,10 @@ require = function () {
             const inline_1 = _dereq_('../../../inline');
             const str_1 = _dereq_('../../../source/str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.validate(/^(>+)[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*[^\S\n]*(?:$|\n(?:\1[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*[^\S\n]*(?:$|\n))*(?!\1))/, combinator_1.some(combinator_1.line(combinator_1.fmap(combinator_1.tails([
+            exports.address = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.tails([
                 str_1.str(/^>*(?=>)/),
                 inline_1.address
-            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)]))));
+            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)])));
         },
         {
             '../../../../combinator': 28,
@@ -4937,7 +4934,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*)+(?!-?[A-Za-z0-9])|-(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*))*(?![.-]?[A-Za-z0-9]))/);
+            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*(?!-?[A-Za-z0-9]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![.-]?[A-Za-z0-9]))/);
             exports.segment = combinator_1.clear(combinator_1.validate([
                 '[$',
                 '$'
@@ -5544,7 +5541,7 @@ require = function () {
                     }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : global_1.undefined)));
-            const alias = combinator_1.creator(combinator_1.focus(/^~[A-za-z][A-Za-z0-9]*(?:(?:[-]|[.,]? |\., )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
+            const alias = combinator_1.creator(combinator_1.focus(/^~[A-Za-z0-9]+(?:(?:['-]|[.,]? |\., )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.split('|', 1)[0].slice(1))],
                 ''
             ]));
