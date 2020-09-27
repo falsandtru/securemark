@@ -27,7 +27,7 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
       : undefined)));
 
 const alias: ReferenceParser.AliasParser = creator(focus(
-  /^~[A-za-z][A-Za-z0-9]*(?:(?:[-]|[.,]? |\., )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/,
+  /^~[A-Za-z0-9]+(?:(?:['-]|[.,]? |\., )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/,
   source => [[html('abbr', source.split('|', 1)[0].slice(1))], '']));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.173.0
+
+- Extend alias parser.
+
 ## 0.172.0
 
 - Refine quote function.
