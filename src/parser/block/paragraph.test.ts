@@ -42,7 +42,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('>1 a\n> 2')), [['<p><a class="address" href="?res=1" rel="noopener">&gt;1</a> a<br><span class="quotation">&gt; 2</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('>11.')), [['<p><a class="address" href="?res=11" rel="noopener">&gt;11</a>.</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>11 a')), [['<p><a class="address" href="?res=11" rel="noopener">&gt;11</a> a</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>11 a')), [['<p>&gt;<a class="address" href="?res=11" rel="noopener">&gt;11</a> a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>11 a')), [['<p><a class="address" href="?res=11" rel="noopener">&gt;&gt;11</a> a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>1')), [['<p>a<a class="address" href="?res=1" rel="noopener">&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >1')), [['<p>a <a class="address" href="?res=1" rel="noopener">&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>1')), [['<p>a<br><span class="quotation"><a class="address" href="?res=1" rel="noopener">&gt;1</a></span></p>'], '']);
