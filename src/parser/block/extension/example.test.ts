@@ -9,9 +9,9 @@ describe('Unit: parser/block/extension/example', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~example\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~example/\n~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~example/a\n~~~')), [['<pre class="example notranslate invalid">~~~example/a\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~example/markdown a\n~~~')), [['<pre class="example notranslate invalid">~~~example/markdown a\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser(`~~~example/markdown\n${'\n'.repeat(101)}~~~`), '>'), [['<pre class="example notranslate invalid">'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~example/a\n~~~')), [['<pre class="notranslate invalid">~~~example/a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~example/markdown a\n~~~')), [['<pre class="notranslate invalid">~~~example/markdown a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser(`~~~example/markdown\n${'\n'.repeat(101)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
     });
 
     it('valid', () => {
