@@ -3372,13 +3372,13 @@ require = function () {
             const parse_1 = _dereq_('../../api/parse');
             const mathblock_1 = _dereq_('../mathblock');
             const typed_dom_1 = _dereq_('typed-dom');
-            const opener = /^(~{3,})(?!~)example\/(\S+)([^\n]*)(?:$|\n)/;
+            const opener = /^(~{3,})example\/(\S+)([^\n]*)(?:$|\n)/;
             exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, true))));
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
             exports.example = combinator_1.creator(10, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, type, param], _, context) => {
                 if (!closer || param.trim() !== '')
                     return [typed_dom_1.html('pre', {
-                            class: `example notranslate invalid`,
+                            class: 'notranslate invalid',
                             'data-invalid-syntax': 'example',
                             'data-invalid-type': closer ? 'parameter' : 'closer',
                             'data-invalid-message': closer ? 'Invalid parameter.' : `Missing closing delimiter ${ delim }.`
@@ -3414,7 +3414,7 @@ require = function () {
                         ])];
                 default:
                     return [typed_dom_1.html('pre', {
-                            class: 'example notranslate invalid',
+                            class: 'notranslate invalid',
                             'data-invalid-syntax': 'example',
                             'data-invalid-message': `Invalid example type.`
                         }, `${ opener }${ body }${ closer }`)];
@@ -4367,7 +4367,7 @@ require = function () {
             exports.address = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, source => [
+            exports.address = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>>?[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, source => [
                 [typed_dom_1.html('a', {
                         class: 'address',
                         href: `?res=${ source.slice(source.lastIndexOf('>') + 1) }`,
