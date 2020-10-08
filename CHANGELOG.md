@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.174.0
+
+- Extend label syntax to allow branch number.
+
 ## 0.173.1
 
 - Refactoring.
