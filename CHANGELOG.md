@@ -2,6 +2,7 @@
 
 ## 0.174.0
 
+- Refine olist syntax.
 - Extend label syntax to allow branch number.
 
 ## 0.173.1

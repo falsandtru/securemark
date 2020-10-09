@@ -29,6 +29,8 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), undefined);
       assert.deepStrictEqual(inspect(parser('0.\n0 ')), undefined);
       assert.deepStrictEqual(inspect(parser('0. !http://host')), [['<ol><li>!<a href="http://host" rel="noopener" target="_blank">http://host</a></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(I) ')), undefined);
+      assert.deepStrictEqual(inspect(parser('(A) ')), undefined);
       assert.deepStrictEqual(inspect(parser(' 0.')), undefined);
     });
 
@@ -40,7 +42,10 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('0. \\\n')), [['<ol><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('0. -')), [['<ol><li>-</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('0. -\n')), [['<ol><li>-</li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('00. ')), [['<ol><li></li></ol>'], '']);
+      // pending
+      assert.deepStrictEqual(inspect(parser('(1) ')), [['<ol data-format="paren"><li></li></ol>'], '']);
+      // filled
+      assert.deepStrictEqual(inspect(parser('(1) a')), [['<ol data-format="paren"><li>a</li></ol>'], '']);
     });
 
     it('multiple', () => {
@@ -52,6 +57,12 @@ describe('Unit: parser/block/olist', () => {
       // filled
       assert.deepStrictEqual(inspect(parser('0. 1\n0. 2')), [['<ol><li>1</li><li>2</li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('0. 1\n0. 2\n0. 3')), [['<ol><li>1</li><li>2</li><li>3</li></ol>'], '']);
+      // pending
+      assert.deepStrictEqual(inspect(parser('(1) \n(')), [['<ol data-format="paren"><li></li><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1) \n(1')), [['<ol data-format="paren"><li></li><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1) \n(1)')), [['<ol data-format="paren"><li></li><li></li></ol>'], '']);
+      // filled
+      assert.deepStrictEqual(inspect(parser('(1) \n(1) ')), [['<ol data-format="paren"><li></li><li></li></ol>'], '']);
     });
 
     it('nest', () => {
@@ -67,18 +78,32 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('index', () => {
-      assert.deepStrictEqual(inspect(parser('1. ')), [['<ol type="1" start="1"><li value="1"></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('99. 1')), [['<ol type="1" start="99"><li value="99">1</li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('01. ')), [['<ol type="1" start="1"><li value="1"></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1.\n0.\n9')), [['<ol type="1" start="1"><li value="1"></li><li></li><li value="9"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. ')), [['<ol><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('9. ')), [['<ol><li data-value="9."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('00. ')), [['<ol><li data-value="00."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('01. ')), [['<ol><li data-value="01."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('0.\n1')), [['<ol><li></li><li data-value="1."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('8.\n9')), [['<ol><li data-value="8."></li><li data-value="9."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('9.\n9')), [['<ol><li data-value="9."></li><li data-value="9."></li></ol>'], '']);
     });
 
-    it('alphabet', () => {
-      assert.deepStrictEqual(inspect(parser('a. ')), [['<ol type="a"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('A. ')), [['<ol type="A"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('z. ')), [['<ol type="a"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('Z. ')), [['<ol type="A"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('a.\n0.\nc')), [['<ol type="a"><li></li><li></li><li></li></ol>'], '']);
+    it('branch', () => {
+      assert.deepStrictEqual(inspect(parser('1-1. ')), [['<ol><li data-value="1-1."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1.\n1-')), [['<ol><li></li><li data-value="1-."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1.\n1-1')), [['<ol><li></li><li data-value="1-1."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1)-1 ')), [['<ol data-format="paren"><li data-value="(1)-1"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1)\n(1)-')), [['<ol data-format="paren"><li></li><li data-value="(1)-"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1)\n(1)-1')), [['<ol data-format="paren"><li></li><li data-value="(1)-1"></li></ol>'], '']);
+    });
+
+    it('type', () => {
+      // Bug: Firefox
+      if (navigator.userAgent.includes('Firefox')) return;
+      assert.deepStrictEqual(inspect(parser('i. ')), [['<ol type="i" data-type="lower-roman"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('a. ')), [['<ol type="a" data-type="lower-alpha"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('I. ')), [['<ol type="I" data-type="upper-roman"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('A. ')), [['<ol type="A" data-type="upper-alpha"><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('a.\n0.\nc')), [['<ol type="a" data-type="lower-alpha"><li></li><li data-value="0."></li><li data-value="c."></li></ol>'], '']);
     });
 
   });

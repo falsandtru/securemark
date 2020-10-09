@@ -24,6 +24,52 @@
   .header {
     display: none;
   }
+  ol {
+    display: table;
+    counter-reset: counter;
+    list-style-type: none;
+    padding-inline-start: 0;
+  }
+  ol > li {
+    display: table-row;
+    counter-increment: counter;
+  }
+  ol > li::before {
+    display: table-cell;
+    white-space: pre;
+    text-align: end;
+    content: counter(counter) ". ";
+  }
+  /*
+  ol[data-type] > li::before {
+    content: counter(counter, attr(data-type)) ". ";
+  }
+  */
+  ol[type="i"][data-type="lower-roman"] > li::before {
+    content: counter(counter, lower-roman) ". ";
+  }
+  ol[type="a"][data-type="lower-alpha"] > li::before {
+    content: counter(counter, lower-alpha) ". ";
+  }
+  ol[type="I"][data-type="upper-roman"] > li::before {
+    content: counter(counter, upper-roman) ". ";
+  }
+  ol[type="A"][data-type="upper-alpha"] > li::before {
+    content: counter(counter, upper-alpha) ". ";
+  }
+  ol[data-format="paren"] > li::before {
+    text-align: start;
+    content: "(" counter(counter) ") ";
+  }
+  ol[data-format="paren"][type="i"] > li::before {
+    content: "(" counter(counter, lower-roman) ") ";
+  }
+  ol[data-format="paren"][type="a"] > li::before {
+    content: "(" counter(counter, lower-alpha) ") ";
+  }
+  ol > li[data-value]::before {
+    content: attr(data-value) " " !important;
+  }
   blockquote {
     padding-inline-start: .3em;
     border-inline-start: .2em solid #eee;
@@ -355,16 +401,16 @@
     '!>> **a',
     'b**',
     '> - A',
-    '  0. a',
-    '  0. b',
-    '  0. c',
+    '  1. a',
+    '  1. b',
+    '  1. c',
     '- B',
     '  a. 4',
     '  a. 5',
     '  a. 6',
     '- C',
     '  7. a',
-    '  0. b',
+    '  8. b',
     '  9. c',
     '',
     ''
