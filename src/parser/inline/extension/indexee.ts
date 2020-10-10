@@ -9,9 +9,9 @@ export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
 
 export function text(source: HTMLElement): string {
   assert(!source.matches('.indexer'));
-  assert(source.querySelectorAll('.indexer').length < 2);
+  assert(source.querySelectorAll('.indexer').length <= 1);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
-  const indexer = source.querySelector(':scope > .indexer');
+  const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
