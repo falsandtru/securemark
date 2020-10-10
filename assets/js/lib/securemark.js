@@ -3743,10 +3743,13 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^(?=([0-9]+|[a-z]+|[A-Z]+)\.(?=[^\S\n]|\n[^\S\n]*\S))/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.match(/^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/, combinator_1.memoize(ms => type(ms[1] || ms[ms.length - 2]) + (ms[2] || ms[ms.length - 1]), (_, type = _.slice(0, -1), delim = _[_.length - 1]) => combinator_1.fmap(combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.inits([
-                        combinator_1.focus(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?![^.\n])\.?(?:$|\s)/, source => [
-                            [source.split('.')[0]],
+                        combinator_1.focus(delim === '.' ? /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/ : /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/, delim === '.' ? source => [
+                            [`${ source.split('.', 1)[0] }.`],
+                            ''
+                        ] : source => [
+                            [source.trim().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')],
                             ''
                         ]),
                         combinator_1.trim(combinator_1.some(inline_1.inline))
@@ -3756,42 +3759,63 @@ require = function () {
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', {
-                        value: format(ns[0]),
-                        'data-type': type(ns[0])
-                    }, util_1.defrag(ulist_1.fillFirstLine(array_1.shift(ns)[1])))])])))), es => {
-                const ty = es[0].getAttribute('data-type');
-                return [typed_dom_1.html('ol', {
-                        type: ty,
-                        start: ty === '1' ? es[0].getAttribute('value') : global_1.undefined
-                    }, es.map(el => typed_dom_1.define(el, {
-                        value: ty === '1' ? global_1.undefined : null,
-                        'data-type': null
-                    })))];
-            })));
-            exports.olist_ = combinator_1.convert(source => source.replace(/^([0-9]+|[A-Z]+|[a-z]+)\.?(?=$|\n)/, `$1. `), exports.olist);
+                ]), ns => [typed_dom_1.html('li', { 'data-value': ns[0] }, util_1.defrag(ulist_1.fillFirstLine(array_1.shift(ns)[1])))])]))), es => [typed_dom_1.html('ol', {
+                    type: type || global_1.undefined,
+                    'data-format': delim === '.' ? global_1.undefined : 'paren',
+                    'data-type': style(type) || global_1.undefined
+                }, format(es, type))])))));
+            exports.olist_ = combinator_1.convert(source => source[0] === '(' ? source.replace(/^\(((?:[0-9]+|[a-z]+))\)?(?:-[0-9]*)?(?=$|\n)/, `($1) `).replace(/^\(\)?(?=$|\n)/, `(1) `) : source.replace(/^((?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?)\.?(?=$|\n)/, `$1. `), exports.olist);
             function type(index) {
-                switch (true) {
-                case +index === 0:
-                    return;
-                case +index > 0:
-                    return '1';
-                case index === index.toLowerCase():
+                switch (index) {
+                case 'i':
+                    return 'i';
+                case 'a':
                     return 'a';
-                case index === index.toUpperCase():
+                case 'I':
+                    return 'I';
+                case 'A':
                     return 'A';
+                default:
+                    return '';
                 }
             }
-            function format(index) {
-                switch (type(index)) {
-                case global_1.undefined:
-                    return;
-                case '1':
-                    return `${ +index }`;
+            function style(type) {
+                switch (type) {
+                case 'i':
+                    return 'lower-roman';
                 case 'a':
-                    return index;
+                    return 'lower-alpha';
+                case 'I':
+                    return 'upper-roman';
                 case 'A':
-                    return index;
+                    return 'upper-alpha';
+                default:
+                    return '';
+                }
+            }
+            function format(es, type) {
+                var _a;
+                const value = ((_a = es[0].getAttribute('data-value').match(initial(type))) === null || _a === void 0 ? void 0 : _a[0]) || '';
+                for (let i = 0; i < es.length; ++i) {
+                    const el = es[i];
+                    if (el.getAttribute('data-value') !== value)
+                        break;
+                    typed_dom_1.define(el, { 'data-value': null });
+                }
+                return es;
+            }
+            function initial(type) {
+                switch (type) {
+                case 'i':
+                    return /^\(?i[).]?$/;
+                case 'a':
+                    return /^\(?a[).]?$/;
+                case 'I':
+                    return /^\(?I[).]?$/;
+                case 'A':
+                    return /^\(?A[).]?$/;
+                default:
+                    return /^\(?[01][).]?$/;
                 }
             }
         },
@@ -4934,7 +4958,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*(?!-?[A-Za-z0-9]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![.-]?[A-Za-z0-9]))/);
+            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*(?![A-Za-z0-9]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[A-Za-z0-9]))/);
             exports.segment = combinator_1.clear(combinator_1.validate([
                 '[$',
                 '$'
