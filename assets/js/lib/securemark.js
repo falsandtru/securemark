@@ -584,7 +584,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             const global = void 0 || typeof globalThis !== 'undefined' && globalThis || typeof self !== 'undefined' && self || Function('return this')();
-            global.global = global;
+            eval('global.global = global');
             module.exports = global;
         },
         {}
@@ -2147,7 +2147,7 @@ require = function () {
             }
             exports.firstline = firstline;
             function isEmpty(line) {
-                return line === '' || line === '\n' || line.trim() === '';
+                return line === '' || line === '\n' || line.trimStart() === '';
             }
             exports.isEmpty = isEmpty;
         },
@@ -2277,10 +2277,10 @@ require = function () {
                             break;
                         const line = next !== null && next !== void 0 ? next : line_1.firstline(rest);
                         next = global_1.undefined;
-                        if (count > limit + 1 && (!separation || line.trim() === ''))
+                        if (count > limit + 1 && (!separation || line.trimStart() === ''))
                             break;
-                        if (count <= limit + 1 && line[0] === delim[0] && line.trim() === delim && (!separation || (next = line_1.firstline(rest.slice(line.length))).trim() === '')) {
-                            closer = line.trim();
+                        if (count <= limit + 1 && line.slice(0, delim.length) === delim && line.trimEnd() === delim && (!separation || (next = line_1.firstline(rest.slice(line.length))).trimStart() === '')) {
+                            closer = delim;
                             rest = rest.slice(line.length);
                             break;
                         }
@@ -2890,7 +2890,14 @@ require = function () {
                     var _a;
                     const rev = revision = Symbol();
                     source = normalize_1.normalize(source);
-                    const sourceSegments = segment_1.segment(source);
+                    const sourceSegments = [];
+                    for (const seg of segment_1.segment(source)) {
+                        sourceSegments.push(seg);
+                        yield {
+                            type: 'segment',
+                            value: seg
+                        };
+                    }
                     const targetSegments = pairs.map(([seg]) => seg);
                     let head = 0;
                     for (; head < targetSegments.length; ++head) {
@@ -2922,9 +2929,12 @@ require = function () {
                         while (adds.length > 0) {
                             const [el, base] = adds.shift();
                             target.insertBefore(el, base);
-                            yield el;
+                            yield {
+                                type: 'block',
+                                value: el
+                            };
                             if (rev !== revision)
-                                return yield;
+                                return yield { type: 'cancel' };
                         }
                     }
                     for (let refuse = array_1.splice(pairs, index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
@@ -2936,26 +2946,38 @@ require = function () {
                     while (adds.length > 0) {
                         const [el, base] = adds.shift();
                         target.insertBefore(el, base);
-                        yield el;
+                        yield {
+                            type: 'block',
+                            value: el
+                        };
                         if (rev !== revision)
-                            return yield;
+                            return yield { type: 'cancel' };
                     }
                     while (dels.length > 0) {
                         const el = dels.shift();
                         (_a = el.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(el);
-                        yield el;
+                        yield {
+                            type: 'block',
+                            value: el
+                        };
                         if (rev !== revision)
-                            return yield;
+                            return yield { type: 'cancel' };
                     }
                     for (const el of footnote_1.footnote(target, settings.footnotes, settings)) {
-                        yield el;
+                        yield {
+                            type: 'footnote',
+                            value: el
+                        };
                         if (rev !== revision)
-                            return yield;
+                            return yield { type: 'cancel' };
                     }
                     for (const el of figure_1.figure(target, settings.footnotes, settings)) {
-                        yield el;
+                        yield {
+                            type: 'figure',
+                            value: el
+                        };
                         if (rev !== revision)
-                            return yield;
+                            return yield { type: 'cancel' };
                     }
                 };
                 function next(index) {
@@ -3025,7 +3047,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const body_1 = _dereq_('./body');
             function header(source) {
-                source = source.slice(0, source.length - body_1.body(source).length).trim();
+                source = source.slice(0, source.length - body_1.body(source).length).trimEnd();
                 return source !== '' ? source.split('\n').slice(1, -1) : global_1.undefined;
             }
             exports.header = header;
@@ -3078,7 +3100,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function parse(source, opts = {}) {
                 opts = alias_1.ObjectCreate(opts);
-                const node = typed_dom_1.frag(segment_1.segment(normalize_1.normalize(source)).reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
+                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
                 if (opts.test)
                     return node;
                 [...footnote_1.footnote(node, opts.footnotes, opts)];
@@ -3376,7 +3398,7 @@ require = function () {
             exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, true))));
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
             exports.example = combinator_1.creator(10, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, type, param], _, context) => {
-                if (!closer || param.trim() !== '')
+                if (!closer || param.trimStart() !== '')
                     return [typed_dom_1.html('pre', {
                             class: 'notranslate invalid',
                             'data-invalid-syntax': 'example',
@@ -3442,7 +3464,10 @@ require = function () {
             const mathblock_1 = _dereq_('../mathblock');
             const example_1 = _dereq_('../extension/example');
             const blockquote_1 = _dereq_('../blockquote');
-            exports.segment = combinator_1.block(combinator_1.sequence([
+            exports.segment = combinator_1.block(combinator_1.validate([
+                '[$',
+                '$'
+            ], combinator_1.sequence([
                 combinator_1.line(label_1.segment),
                 combinator_1.union([
                     codeblock_1.segment,
@@ -3451,7 +3476,7 @@ require = function () {
                     blockquote_1.segment,
                     combinator_1.some(source_1.contentline)
                 ])
-            ]));
+            ])));
             exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.convert(source => {
                 const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
                 return `${ fence }figure ${ source }\n\n${ fence }`;
@@ -3718,7 +3743,7 @@ require = function () {
             const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;
             exports.segment = combinator_1.block(combinator_1.validate('$$', combinator_1.clear(combinator_1.fence(opener, 100, true))));
             exports.segment_ = combinator_1.block(combinator_1.validate('$$', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
-            exports.mathblock = combinator_1.block(combinator_1.validate('$$', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, param]) => closer && param.trim() === '' ? [typed_dom_1.html('div', { class: `math notranslate` }, `$$\n${ body }$$`)] : [typed_dom_1.html('pre', {
+            exports.mathblock = combinator_1.block(combinator_1.validate('$$', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, param]) => closer && param.trimStart() === '' ? [typed_dom_1.html('div', { class: `math notranslate` }, `$$\n${ body }$$`)] : [typed_dom_1.html('pre', {
                     class: `math notranslate invalid`,
                     'data-invalid-syntax': 'mathblock',
                     'data-invalid-type': closer ? 'parameter' : 'closer',
@@ -3749,7 +3774,7 @@ require = function () {
                             [`${ source.split('.', 1)[0] }.`],
                             ''
                         ] : source => [
-                            [source.trim().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')],
+                            [source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')],
                             ''
                         ]),
                         combinator_1.trim(combinator_1.some(inline_1.inline))
@@ -3857,7 +3882,7 @@ require = function () {
                 'data-invalid-message': 'All paragraphs must have a visible content.'
             })) : []));
             function isVisible(node) {
-                return node.innerText.trim() !== '' || node.getElementsByClassName('media').length > 0;
+                return node.innerText.trimStart() !== '' || node.getElementsByClassName('media').length > 0;
             }
         },
         {
@@ -4095,7 +4120,7 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const segment_1 = _dereq_('./segment');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[0] === source ? [
+            exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
                 [typed_dom_1.html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', -1)))],
                 ''
             ] : global_1.undefined)));
@@ -4902,7 +4927,7 @@ require = function () {
             }
             exports.indexee = indexee;
             function text(source) {
-                const indexer = source.querySelector(':scope > .indexer');
+                const indexer = source.querySelector('.indexer');
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
@@ -5464,7 +5489,7 @@ require = function () {
                 as
             ]), ([[text], options], rest, context) => {
                 var _a, _b, _c;
-                if (text.length > 0 && text.slice(-2).trim() === '')
+                if (text.length > 0 && text.slice(-2).trimStart() === '')
                     return;
                 const INSECURE_URI = options.shift();
                 url.href = INSECURE_URI;
@@ -5599,7 +5624,7 @@ require = function () {
                 switch (true) {
                 case rubies.length <= texts.length:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag(texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trim() !== '' ? [
+                        [typed_dom_1.html('ruby', util_1.defrag(texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() !== '' ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -5608,7 +5633,7 @@ require = function () {
                     ];
                 case texts.length === 1 && [...texts[0]].length >= rubies.length:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag([...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trim() !== '' ? [
+                        [typed_dom_1.html('ruby', util_1.defrag([...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() !== '' ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -5638,33 +5663,33 @@ require = function () {
                     switch (i) {
                     case -1:
                         acc[acc.length - 1] += source;
-                        printable = printable || !!source.trim();
+                        printable = printable || !!source.trimStart();
                         source = '';
                         continue;
                     case 0:
                         switch (source[0]) {
                         case '\\':
                             acc[acc.length - 1] += source[i + 1] || '';
-                            printable = printable || !!((_a = source[i + 1]) === null || _a === void 0 ? void 0 : _a.trim());
+                            printable = printable || !!((_a = source[i + 1]) === null || _a === void 0 ? void 0 : _a.trimStart());
                             source = source.slice(2);
                             continue;
                         case '&': {
                                 const result = htmlentity_1.htmlentity(source, context);
                                 const str = combinator_1.eval(result, [])[0] || source[0];
                                 acc[acc.length - 1] += str;
-                                printable = printable || !!str.trim();
+                                printable = printable || !!str.trimStart();
                                 source = combinator_1.exec(result, source.slice(str.length));
                                 continue;
                             }
                         default:
-                            source[0].trim() ? acc[acc.length - 1] += source[0] : acc.push('');
-                            printable = printable || !!source[0].trim();
+                            source[0].trimStart() ? acc[acc.length - 1] += source[0] : acc.push('');
+                            printable = printable || !!source[0].trimStart();
                             source = source.slice(1);
                             continue;
                         }
                     default:
                         acc[acc.length - 1] += source.slice(0, i);
-                        printable = printable || !!source.slice(0, i).trim();
+                        printable = printable || !!source.slice(0, i).trimStart();
                         source = source.slice(i);
                         continue;
                     }
@@ -5890,7 +5915,6 @@ require = function () {
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
-            const array_1 = _dereq_('spica/array');
             const parser = combinator_1.union([
                 heading_1.segment,
                 codeblock_1.segment,
@@ -5899,19 +5923,16 @@ require = function () {
                 combinator_1.some(source_1.contentline),
                 combinator_1.some(source_1.emptyline)
             ]);
-            function segment(source) {
+            function* segment(source) {
                 if (source.length > 1000 * 1000)
-                    return ['# ***Too large input over 1,000,000 characters***'];
-                const segments = [];
+                    return yield '# ***Too large input over 1,000,000 characters***';
                 while (source !== '') {
                     const r = parser(source, {});
                     const segs = combinator_1.eval(r);
                     const rest = combinator_1.exec(r);
-                    source.length - rest.length > 10 * 1000 ? segments.push('# ***Too large block over 10,000 characters***') : segs.length === 0 ? segments.push(source.slice(0, source.length - rest.length)) : array_1.push(segments, segs);
+                    source.length - rest.length > 10 * 1000 ? yield '# ***Too large block over 10,000 characters***' : segs.length === 0 ? yield source.slice(0, source.length - rest.length) : yield* segs;
                     source = rest;
                 }
-                segments.length === 0 && segments.push('');
-                return segments;
             }
             exports.segment = segment;
         },
@@ -5921,8 +5942,7 @@ require = function () {
             './block/extension': 65,
             './block/heading': 71,
             './block/mathblock': 74,
-            './source': 122,
-            'spica/array': 6
+            './source': 122
         }
     ],
     122: [
@@ -6197,7 +6217,7 @@ require = function () {
                             source.slice(1)
                         ];
                     default:
-                        const b = source[0].trim() === '';
+                        const b = source[0].trimStart() === '';
                         const i = b ? source.search(next) : 0;
                         const r = !b && source.match(exports.alphanumeric);
                         if (r)
@@ -6300,7 +6320,7 @@ require = function () {
                     case '\n':
                         return false;
                     default:
-                        return char.trim() !== '';
+                        return char.trimStart() !== '';
                     }
                 default:
                     switch (node.tagName) {
@@ -6329,7 +6349,7 @@ require = function () {
                         return;
                     case '&':
                         switch (true) {
-                        case source.length > 2 && source[1] !== ' ' && ((_a = combinator_1.eval(inline_1.htmlentity(source, context))) === null || _a === void 0 ? void 0 : _a[0].trim()) == '':
+                        case source.length > 2 && source[1] !== ' ' && ((_a = combinator_1.eval(inline_1.htmlentity(source, context))) === null || _a === void 0 ? void 0 : _a[0].trimStart()) == '':
                             return;
                         }
                         break;
@@ -6342,7 +6362,7 @@ require = function () {
                         }
                         break;
                     }
-                    return ((_b = source[0] === '\\' ? source[1] : source[0]) === null || _b === void 0 ? void 0 : _b.trim()) ? parser(source, context) : global_1.undefined;
+                    return ((_b = source[0] === '\\' ? source[1] : source[0]) === null || _b === void 0 ? void 0 : _b.trimStart()) ? parser(source, context) : global_1.undefined;
                 };
             }
             exports.startTight = startTight;
@@ -6494,47 +6514,49 @@ require = function () {
     133: [
         function (_dereq_, module, exports) {
             (function (global) {
-                'use strict';
-                var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
-                    if (k2 === undefined)
-                        k2 = k;
-                    Object.defineProperty(o, k2, {
-                        enumerable: true,
-                        get: function () {
-                            return m[k];
-                        }
+                (function () {
+                    'use strict';
+                    var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+                        if (k2 === undefined)
+                            k2 = k;
+                        Object.defineProperty(o, k2, {
+                            enumerable: true,
+                            get: function () {
+                                return m[k];
+                            }
+                        });
+                    } : function (o, m, k, k2) {
+                        if (k2 === undefined)
+                            k2 = k;
+                        o[k2] = m[k];
                     });
-                } : function (o, m, k, k2) {
-                    if (k2 === undefined)
-                        k2 = k;
-                    o[k2] = m[k];
-                });
-                var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
-                    Object.defineProperty(o, 'default', {
-                        enumerable: true,
-                        value: v
+                    var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
+                        Object.defineProperty(o, 'default', {
+                            enumerable: true,
+                            value: v
+                        });
+                    } : function (o, v) {
+                        o['default'] = v;
                     });
-                } : function (o, v) {
-                    o['default'] = v;
-                });
-                var __importStar = this && this.__importStar || function (mod) {
-                    if (mod && mod.__esModule)
-                        return mod;
-                    var result = {};
-                    if (mod != null)
-                        for (var k in mod)
-                            if (k !== 'default' && Object.prototype.hasOwnProperty.call(mod, k))
-                                __createBinding(result, mod, k);
-                    __setModuleDefault(result, mod);
-                    return result;
-                };
-                Object.defineProperty(exports, '__esModule', { value: true });
-                exports.code = void 0;
-                const Prism = __importStar(typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null);
-                function code(target) {
-                    requestAnimationFrame(() => Prism.highlightElement(target, false));
-                }
-                exports.code = code;
+                    var __importStar = this && this.__importStar || function (mod) {
+                        if (mod && mod.__esModule)
+                            return mod;
+                        var result = {};
+                        if (mod != null)
+                            for (var k in mod)
+                                if (k !== 'default' && Object.prototype.hasOwnProperty.call(mod, k))
+                                    __createBinding(result, mod, k);
+                        __setModuleDefault(result, mod);
+                        return result;
+                    };
+                    Object.defineProperty(exports, '__esModule', { value: true });
+                    exports.code = void 0;
+                    const Prism = __importStar(typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null);
+                    function code(target) {
+                        requestAnimationFrame(() => Prism.highlightElement(target, false));
+                    }
+                    exports.code = code;
+                }.call(this));
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {}
@@ -6643,56 +6665,58 @@ require = function () {
     137: [
         function (_dereq_, module, exports) {
             (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                exports.gist = void 0;
-                const global_1 = _dereq_('spica/global');
-                const parser_1 = _dereq_('../../../parser');
-                const media_1 = _dereq_('../../../parser/inline/media');
-                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const typed_dom_1 = _dereq_('typed-dom');
-                const origins = new Set(['https://gist.github.com']);
-                function gist(url) {
-                    if (!origins.has(url.origin))
-                        return;
-                    if (url.pathname.split('/').pop().includes('.'))
-                        return;
-                    if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/))
-                        return;
-                    if (media_1.cache.has(url.href))
-                        return media_1.cache.get(url.href).cloneNode(true);
-                    return typed_dom_1.HTML.div({
-                        class: 'media',
-                        style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (html, tag) => {
-                        const outer = html(tag);
-                        $.ajax(`${ url.href }.json`, {
-                            dataType: 'jsonp',
-                            timeout: 10 * 1000,
-                            cache: true,
-                            success({div, stylesheet, description}) {
-                                if (!stylesheet.startsWith('https://github.githubassets.com/'))
-                                    return;
-                                outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
-                                const gist = outer.querySelector('.gist');
-                                gist.insertBefore(html('div', { class: 'gist-description' }, [typed_dom_1.HTML.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
-                                media_1.cache.set(url.href, outer.cloneNode(true));
-                                if (global_1.document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
-                                    return;
-                                global_1.document.head.appendChild(html('link', {
-                                    rel: 'stylesheet',
-                                    href: stylesheet,
-                                    crossorigin: 'anonymous'
-                                }));
-                            },
-                            error({status, statusText}) {
-                                typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
-                            }
-                        });
-                        return outer;
-                    }).element;
-                }
-                exports.gist = gist;
+                (function () {
+                    'use strict';
+                    Object.defineProperty(exports, '__esModule', { value: true });
+                    exports.gist = void 0;
+                    const global_1 = _dereq_('spica/global');
+                    const parser_1 = _dereq_('../../../parser');
+                    const media_1 = _dereq_('../../../parser/inline/media');
+                    const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                    const typed_dom_1 = _dereq_('typed-dom');
+                    const origins = new Set(['https://gist.github.com']);
+                    function gist(url) {
+                        if (!origins.has(url.origin))
+                            return;
+                        if (url.pathname.split('/').pop().includes('.'))
+                            return;
+                        if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/))
+                            return;
+                        if (media_1.cache.has(url.href))
+                            return media_1.cache.get(url.href).cloneNode(true);
+                        return typed_dom_1.HTML.div({
+                            class: 'media',
+                            style: 'position: relative;'
+                        }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (html, tag) => {
+                            const outer = html(tag);
+                            $.ajax(`${ url.href }.json`, {
+                                dataType: 'jsonp',
+                                timeout: 10 * 1000,
+                                cache: true,
+                                success({div, stylesheet, description}) {
+                                    if (!stylesheet.startsWith('https://github.githubassets.com/'))
+                                        return;
+                                    outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
+                                    const gist = outer.querySelector('.gist');
+                                    gist.insertBefore(html('div', { class: 'gist-description' }, [typed_dom_1.HTML.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
+                                    media_1.cache.set(url.href, outer.cloneNode(true));
+                                    if (global_1.document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
+                                        return;
+                                    global_1.document.head.appendChild(html('link', {
+                                        rel: 'stylesheet',
+                                        href: stylesheet,
+                                        crossorigin: 'anonymous'
+                                    }));
+                                },
+                                error({status, statusText}) {
+                                    typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                }
+                            });
+                            return outer;
+                        }).element;
+                    }
+                    exports.gist = gist;
+                }.call(this));
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
@@ -6763,49 +6787,51 @@ require = function () {
     140: [
         function (_dereq_, module, exports) {
             (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                exports.slideshare = void 0;
-                const parser_1 = _dereq_('../../../parser');
-                const media_1 = _dereq_('../../../parser/inline/media');
-                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const typed_dom_1 = _dereq_('typed-dom');
-                const origins = new Set(['https://www.slideshare.net']);
-                function slideshare(url) {
-                    if (!origins.has(url.origin))
-                        return;
-                    if (url.pathname.split('/').pop().includes('.'))
-                        return;
-                    if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/))
-                        return;
-                    if (media_1.cache.has(url.href))
-                        return media_1.cache.get(url.href).cloneNode(true);
-                    return typed_dom_1.HTML.div({
-                        class: 'media',
-                        style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (html, tag) => {
-                        const outer = html(tag);
-                        $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
-                            dataType: 'jsonp',
-                            timeout: 10 * 1000,
-                            cache: true,
-                            success({html}) {
-                                outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; padding-top: 83%;">${ html }</div>`, { ADD_TAGS: ['iframe'] });
-                                const iframe = outer.querySelector('iframe');
-                                iframe.setAttribute('style', 'position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100%; height: 100%;');
-                                iframe.parentElement.style.paddingTop = `${ +iframe.height / +iframe.width * 100 }%`;
-                                outer.appendChild(iframe.nextElementSibling);
-                                outer.lastElementChild.removeAttribute('style');
-                                media_1.cache.set(url.href, outer.cloneNode(true));
-                            },
-                            error({status, statusText}) {
-                                typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
-                            }
-                        });
-                        return outer;
-                    }).element;
-                }
-                exports.slideshare = slideshare;
+                (function () {
+                    'use strict';
+                    Object.defineProperty(exports, '__esModule', { value: true });
+                    exports.slideshare = void 0;
+                    const parser_1 = _dereq_('../../../parser');
+                    const media_1 = _dereq_('../../../parser/inline/media');
+                    const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                    const typed_dom_1 = _dereq_('typed-dom');
+                    const origins = new Set(['https://www.slideshare.net']);
+                    function slideshare(url) {
+                        if (!origins.has(url.origin))
+                            return;
+                        if (url.pathname.split('/').pop().includes('.'))
+                            return;
+                        if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/))
+                            return;
+                        if (media_1.cache.has(url.href))
+                            return media_1.cache.get(url.href).cloneNode(true);
+                        return typed_dom_1.HTML.div({
+                            class: 'media',
+                            style: 'position: relative;'
+                        }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (html, tag) => {
+                            const outer = html(tag);
+                            $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
+                                dataType: 'jsonp',
+                                timeout: 10 * 1000,
+                                cache: true,
+                                success({html}) {
+                                    outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; padding-top: 83%;">${ html }</div>`, { ADD_TAGS: ['iframe'] });
+                                    const iframe = outer.querySelector('iframe');
+                                    iframe.setAttribute('style', 'position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100%; height: 100%;');
+                                    iframe.parentElement.style.paddingTop = `${ +iframe.height / +iframe.width * 100 }%`;
+                                    outer.appendChild(iframe.nextElementSibling);
+                                    outer.lastElementChild.removeAttribute('style');
+                                    media_1.cache.set(url.href, outer.cloneNode(true));
+                                },
+                                error({status, statusText}) {
+                                    typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                }
+                            });
+                            return outer;
+                        }).element;
+                    }
+                    exports.slideshare = slideshare;
+                }.call(this));
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
@@ -6817,59 +6843,61 @@ require = function () {
     141: [
         function (_dereq_, module, exports) {
             (function (global) {
-                'use strict';
-                Object.defineProperty(exports, '__esModule', { value: true });
-                exports.twitter = void 0;
-                const global_1 = _dereq_('spica/global');
-                const parser_1 = _dereq_('../../../parser');
-                const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                const typed_dom_1 = _dereq_('typed-dom');
-                const cache_1 = _dereq_('spica/cache');
-                const origins = new Set(['https://twitter.com']);
-                const cache = new cache_1.Cache(10);
-                function twitter(url) {
-                    var _a;
-                    if (!origins.has(url.origin))
-                        return;
-                    if (url.pathname.split('/').pop().includes('.'))
-                        return;
-                    if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
-                        return;
-                    if (cache.has(url.href)) {
-                        const el = cache.get(url.href).cloneNode(true);
-                        (_a = global_1.window.twttr) === null || _a === void 0 ? void 0 : _a.widgets.load(el);
-                        return el;
+                (function () {
+                    'use strict';
+                    Object.defineProperty(exports, '__esModule', { value: true });
+                    exports.twitter = void 0;
+                    const global_1 = _dereq_('spica/global');
+                    const parser_1 = _dereq_('../../../parser');
+                    const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
+                    const typed_dom_1 = _dereq_('typed-dom');
+                    const cache_1 = _dereq_('spica/cache');
+                    const origins = new Set(['https://twitter.com']);
+                    const cache = new cache_1.Cache(10);
+                    function twitter(url) {
+                        var _a;
+                        if (!origins.has(url.origin))
+                            return;
+                        if (url.pathname.split('/').pop().includes('.'))
+                            return;
+                        if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
+                            return;
+                        if (cache.has(url.href)) {
+                            const el = cache.get(url.href).cloneNode(true);
+                            (_a = global_1.window.twttr) === null || _a === void 0 ? void 0 : _a.widgets.load(el);
+                            return el;
+                        }
+                        return typed_dom_1.HTML.div({
+                            class: 'media',
+                            style: 'position: relative;'
+                        }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
+                            const outer = h(tag);
+                            $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
+                                dataType: 'jsonp',
+                                timeout: 10 * 1000,
+                                cache: true,
+                                success({html}) {
+                                    outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`);
+                                    cache.set(url.href, outer.cloneNode(true));
+                                    if (global_1.window.twttr)
+                                        return void global_1.window.twttr.widgets.load(outer);
+                                    const id = 'twitter-wjs';
+                                    if (global_1.document.getElementById(id))
+                                        return;
+                                    global_1.document.body.appendChild(h('script', {
+                                        id,
+                                        src: 'https://platform.twitter.com/widgets.js'
+                                    }));
+                                },
+                                error({status, statusText}) {
+                                    typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                }
+                            });
+                            return outer;
+                        }).element;
                     }
-                    return typed_dom_1.HTML.div({
-                        class: 'media',
-                        style: 'position: relative;'
-                    }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
-                        const outer = h(tag);
-                        $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
-                            dataType: 'jsonp',
-                            timeout: 10 * 1000,
-                            cache: true,
-                            success({html}) {
-                                outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`);
-                                cache.set(url.href, outer.cloneNode(true));
-                                if (global_1.window.twttr)
-                                    return void global_1.window.twttr.widgets.load(outer);
-                                const id = 'twitter-wjs';
-                                if (global_1.document.getElementById(id))
-                                    return;
-                                global_1.document.body.appendChild(h('script', {
-                                    id,
-                                    src: 'https://platform.twitter.com/widgets.js'
-                                }));
-                            },
-                            error({status, statusText}) {
-                                typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
-                            }
-                        });
-                        return outer;
-                    }).element;
-                }
-                exports.twitter = twitter;
+                    exports.twitter = twitter;
+                }.call(this));
             }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
