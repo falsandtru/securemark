@@ -24,7 +24,7 @@ export const olist: OListParser = lazy(() => block(match(
                   : /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/,
                 delim === '.'
                   ? source => [[`${source.split('.', 1)[0]}.`], '']
-                  : source => [[source.trim().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')], '']),
+                  : source => [[source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')], '']),
               trim(some(inline)),
             ])),
             indent(union([ulist_, olist_, ilist_]))

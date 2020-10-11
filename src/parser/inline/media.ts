@@ -24,7 +24,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   ]))))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
   ([[text], options], rest, context) => {
-    if (text.length > 0 && text.slice(-2).trim() === '') return;
+    if (text.length > 0 && text.slice(-2).trimStart() === '') return;
     const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));

@@ -17,7 +17,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(
         return [[html('ruby', defrag(texts
           .reduce((acc, _, i) =>
             push(acc, unshift<HTMLElement | string>([texts[i]],
-              i < rubies.length && rubies[i].trim() !== ''
+              i < rubies.length && rubies[i].trimStart() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')]))
           , [])))], rest];
@@ -25,7 +25,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(
         return [[html('ruby', defrag([...texts[0]]
           .reduce((acc, _, i, texts) =>
             push(acc, unshift<HTMLElement | string>([texts[i]],
-              i < rubies.length && rubies[i].trim() !== ''
+              i < rubies.length && rubies[i].trimStart() !== ''
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')]))
           , [])))], rest];
@@ -50,40 +50,40 @@ const text: RubyParser.TextParser = creator((source, context) => {
     switch (i) {
       case -1:
         acc[acc.length - 1] += source;
-        printable = printable || !!source.trim();
+        printable = printable || !!source.trimStart();
         source = '';
         continue;
       case 0:
         switch (source[0]) {
           case '\\':
             acc[acc.length - 1] += source[i + 1] || '';
-            printable = printable || !!source[i + 1]?.trim();
+            printable = printable || !!source[i + 1]?.trimStart();
             source = source.slice(2);
             continue;
           case '&': {
             const result = htmlentity(source, context);
             const str = eval(result, [])[0] || source[0];
             acc[acc.length - 1] += str;
-            printable = printable || !!str.trim();
+            printable = printable || !!str.trimStart();
             source = exec(result, source.slice(str.length));
             continue;
           }
           default:
-            source[0].trim()
+            source[0].trimStart()
               ? acc[acc.length - 1] += source[0]
               : acc.push('');
-            printable = printable || !!source[0].trim();
+            printable = printable || !!source[0].trimStart();
             source = source.slice(1);
             continue;
         }
       default:
         acc[acc.length - 1] += source.slice(0, i);
-        printable = printable || !!source.slice(0, i).trim();
+        printable = printable || !!source.slice(0, i).trimStart();
         source = source.slice(i);
         continue;
     }
   }
-  assert(printable === !!acc.join('').trim());
+  assert(printable === !!acc.join('').trimStart());
   return printable
     ? [[acc], '']
     : undefined;

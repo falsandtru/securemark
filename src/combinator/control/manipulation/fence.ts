@@ -18,13 +18,13 @@ export function fence<D extends Parser<unknown, any, C>[], C extends object>(ope
       if (rest === '') break;
       const line = next ?? firstline(rest);
       next = undefined;
-      if (count > limit + 1 && (!separation || line.trim() === '')) break;
+      if (count > limit + 1 && (!separation || line.trimStart() === '')) break;
       if (count <= limit + 1 &&
-          line[0] === delim[0] &&
-          line.trim() === delim &&
-          (!separation || (next = firstline(rest.slice(line.length))).trim() === '')) {
+          line.slice(0, delim.length) === delim &&
+          line.trimEnd() === delim &&
+          (!separation || (next = firstline(rest.slice(line.length))).trimStart() === '')) {
         assert(line.slice(0, delim.length) === delim);
-        closer = line.trim();
+        closer = delim;
         rest = rest.slice(line.length);
         break;
       }

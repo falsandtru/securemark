@@ -17,7 +17,7 @@ export const example: ExtensionParser.ExampleParser = creator(10, block(validate
   fence(opener, 100, true),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type, param]: string[], _, context) => {
-    if (!closer || param.trim() !== '') return [html('pre', {
+    if (!closer || param.trimStart() !== '') return [html('pre', {
       class: 'notranslate invalid',
       'data-invalid-syntax': 'example',
       'data-invalid-type': closer ? 'parameter' : 'closer',

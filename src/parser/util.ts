@@ -29,7 +29,7 @@ function isVisible(node: HTMLElement | string | undefined, dir: 'start' | 'end',
         case '\n':
           return false;
         default:
-          return char.trim() !== '';
+          return char.trimStart() !== '';
       }
     default:
       switch (node.tagName) {
@@ -60,7 +60,7 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
         switch (true) {
           case source.length > 2
             && source[1] !== ' '
-            && eval(htmlentity(source, context))?.[0].trim() == '':
+            && eval(htmlentity(source, context))?.[0].trimStart() == '':
             return;
         }
         break;
@@ -79,7 +79,7 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
         }
         break;
     }
-    return (source[0] === '\\' ? source[1] : source[0])?.trim()
+    return (source[0] === '\\' ? source[1] : source[0])?.trimStart()
       ? parser(source, context)
       : undefined;
   }

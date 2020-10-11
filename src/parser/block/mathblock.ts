@@ -14,7 +14,7 @@ export const mathblock: MathBlockParser = block(validate('$$', fmap(
   fence(opener, 100, true),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[]) =>
-    closer && param.trim() === ''
+    closer && param.trimStart() === ''
       ? [html('div', { class: `math notranslate` }, `$$\n${body}$$`)]
       : [html('pre', {
           class: `math notranslate invalid`,

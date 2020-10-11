@@ -37,7 +37,7 @@ export const text: TextParser = creator(source => {
             ? repeat(source, {})
             : [[source[0]], source.slice(1)];
         default:
-          const b = source[0].trim() === '';
+          const b = source[0].trimStart() === '';
           const i = b ? source.search(next) : 0;
           assert(i !== -1);
           assert(!['\\', '\n'].includes(source[0]));

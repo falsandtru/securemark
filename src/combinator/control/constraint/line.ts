@@ -32,5 +32,5 @@ export function firstline(source: string, keepLinebreak = true): string {
 export function isEmpty(line: string): boolean {
   return line === ''
       || line === '\n'
-      || line.trim() === '';
+      || line.trimStart() === '';
 }
