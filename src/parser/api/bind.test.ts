@@ -1,12 +1,29 @@
-import { ParserSettings } from '../../..';
+import { ParserSettings, Result } from '../../..';
 import { bind } from './bind';
 import { html } from 'typed-dom';
+import { Sequence } from 'spica/sequence';
 
 describe('Unit: parser/api/bind', () => {
   describe('bind', () => {
-    function inspect(iter: Iterable<HTMLElement | undefined>) {
-      return [...iter].filter(e => e?.parentNode).map(e => e?.outerHTML);
+    function inspect(iter: Iterable<Result>) {
+      return [...iter].flatMap(s => 'value' in s && s.value instanceof HTMLElement && s.value.parentNode ? [s.value.outerHTML] : []);
     }
+    function inspectS(iter: IterableIterator<Result>, count: number) {
+      return Sequence.from(iter)
+        .bind(result => {
+          switch (result.type) {
+            case 'segment':
+              return Sequence.from([]);
+            case 'block':
+              return Sequence.from([result.value.outerHTML]);
+            default:
+              return Sequence.from([undefined]);
+          }
+        })
+        .take(count)
+        .extract();
+    }
+
     const cfgs: ParserSettings = { footnotes: { annotation: html('ol'), reference: html('ol') } };
 
     it('empty', () => {
@@ -91,42 +108,33 @@ describe('Unit: parser/api/bind', () => {
       const update = bind(el, cfgs);
 
       const iter = update('0\n\n1\n');
-      assert(iter.next().value?.outerHTML === '<p>0</p>');
+      assert.deepStrictEqual(inspectS(iter, 1), ['<p>0</p>']);
       assert.deepStrictEqual(inspect(update('0\n\n1\n\n2')), ['<p>1</p>', '<p>2</p>']);
       assert(el.innerHTML === '<p>0</p><p>1</p><p>2</p>');
       assert.deepStrictEqual(inspect(update('3\n')), ['<p>3</p>']);
       assert(el.innerHTML === '<p>3</p>');
-      assert.deepStrictEqual(iter.next(), { value: undefined, done: false });
-      assert.deepStrictEqual(iter.next(), { value: undefined, done: true });
+      assert.deepStrictEqual(inspectS(iter, 1), [undefined]);
+      assert.deepStrictEqual(inspectS(iter, 1), []);
       assert(el.innerHTML === '<p>3</p>');
       assert.deepStrictEqual(inspect(update('3\n\n4')), ['<p>4</p>']);
       assert(el.innerHTML === '<p>3</p><p>4</p>');
     });
 
     it('concurrency', () => {
-      function inspect(iter: Iterator<HTMLElement | undefined, undefined>, count: number) {
-        return [...Array(count)]
-          .map(() => iter.next())
-          .map(res =>
-            res.done
-              ? true
-              : res.value?.outerHTML);
-      }
-
       const el = html('div');
       const update = bind(el, cfgs);
 
-      assert.deepStrictEqual(inspect(update('1\n'), 1), ['<p>1</p>']);
+      assert.deepStrictEqual(inspectS(update('1\n'), 1), ['<p>1</p>']);
       assert(el.innerHTML === '<p>1</p>');
-      assert.deepStrictEqual(inspect(update('1\n\n3\n\n4'), 1), ['<p>3</p>']);
+      assert.deepStrictEqual(inspectS(update('1\n\n3\n\n4'), 1), ['<p>3</p>']);
       assert(el.innerHTML === '<p>1</p><p>3</p>');
-      assert.deepStrictEqual(inspect(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>', true]);
+      assert.deepStrictEqual(inspectS(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>']);
       assert(el.innerHTML === '<p>1</p><p>2</p><p>4</p>');
       [...update('')];
       assert(el.innerHTML === '');
-      assert.deepStrictEqual(inspect(update('# a\n# b'), 1), ['<h1 id="index:a">a</h1>']);
+      assert.deepStrictEqual(inspectS(update('# a\n# b'), 1), ['<h1 id="index:a">a</h1>']);
       assert(el.innerHTML === '<h1 id="index:a">a</h1>');
-      assert.deepStrictEqual(inspect(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>', true]);
+      assert.deepStrictEqual(inspectS(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>']);
       assert(el.innerHTML === '<h1 id="index:a">a</h1><h1 id="index:b">b</h1>');
     });
 

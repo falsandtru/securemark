@@ -8,12 +8,13 @@
 export function header(source: string): string[] | undefined;
 export function body(source: string): string;
 export function parse(source: string, options?: Partial<ParserSettings>): DocumentFragment;
-// The `bind` function yields the elements below.
-//   1. Added or removed child elements of the target container element (<any> excluding the others).
-//   2. All footnote links (<sup>).
-//   3. Added or removed child elements of the footnote elements (<li>).
-//   4. Added or changed figure links (<a>).
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined>;
+export type Result
+  = { type: 'segment', value: string; }
+  | { type: 'block', value: HTMLElement }
+  | { type: 'footnote', value: HTMLLIElement | HTMLElement }
+  | { type: 'figure', value: HTMLAnchorElement }
+  | { type: 'cancel' };
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<Result, undefined, undefined>;
 export function render(target: HTMLElement, options?: RenderingOptions): void;
 export function quote(address: string, range: Range): string;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;

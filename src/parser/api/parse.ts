@@ -16,7 +16,7 @@ interface Options extends Partial<ParserSettings> {
 
 export function parse(source: string, opts: Options = {}): DocumentFragment {
   opts = ObjectCreate(opts);
-  const node = frag(segment(normalize(source))
+  const node = frag([...segment(normalize(source))]
     .reduce((acc, seg, i) =>
       push(acc, eval(i === 0 && header(seg, opts) || block(seg, opts), []))
     , []));

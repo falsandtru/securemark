@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.175.0
+
+- Change bind function's return type.
+
 ## 0.174.0
 
 - Refine olist syntax.

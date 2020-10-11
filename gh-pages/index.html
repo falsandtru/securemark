@@ -453,26 +453,40 @@
     document.getElementById('editor').addEventListener('change', run);
   })();
   async function display() {
+    let count = 0;
     let start = Date.now();
     let time = 0;
     let resource = 100;
-    for (const el of update(document.getElementById('editor').value)) {
-      if (!el || wait) throw new Error('Cancel.');
-      switch (el.tagName) {
-        case 'A':
-        case 'SUP':
+    for (const result of update(document.getElementById('editor').value)) {
+      if (wait) throw new Error('Cancel.');
+      switch (result.type) {
+        case 'segment':
+          if (++count % 100) continue;
+          count = 0;
           break;
-        default:
+        case 'footnote':
+          if (result.value.tagName !== 'LI') break;
+        case 'block':
+          const el = result.value;
           el.parentNode
             ? observer.observe(el)
             : observer.unobserve(el);
+          break;
+        case 'cancel':
+          throw new Error('Cancel.');
       }
-      const delta = Date.now() - start;
+      const now = Date.now();
+      const delta = now - start;
       time += delta;
-      resource = resource - delta > 0
-        ? resource - delta
-        : void await new Promise(requestAnimationFrame) || 200;
-      start = Date.now();
+      resource -= delta;
+      if (resource > 0) {
+        start = now;
+      }
+      else {
+        await new Promise(requestAnimationFrame);
+        resource = 200;
+        start = Date.now();
+      }
     }
     return time += Date.now() - start;
   }

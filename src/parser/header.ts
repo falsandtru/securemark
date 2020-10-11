@@ -1,4 +1,4 @@
-import { undefined } from 'spica/global';
+import { undefined, Symbol } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { block, focus, validate } from '../combinator';
 import { segment } from './segment';
@@ -9,6 +9,6 @@ export const header: MarkdownParser.HeaderParser = block(validate('---', focus(
   /^---[^\S\v\f\r\n]*\r?\n(?:[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/,
   // TODO: Set the specified base URL.
   source =>
-    segment(source)[0] === source
+    segment(source)[Symbol.iterator]().next().value === source
       ? [[html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', -1)))], '']
       : undefined)));

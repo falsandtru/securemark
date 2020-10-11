@@ -5,7 +5,6 @@ import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';
 import { segment as extension } from './block/extension';
 import { contentline, emptyline } from './source';
-import { push } from 'spica/array';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 
@@ -18,10 +17,9 @@ const parser: SegmentParser = union([
   some(emptyline),
 ]);
 
-export function segment(source: string): string[] {
-  if (source.length > 1000 * 1000) return ['# ***Too large input over 1,000,000 characters***'];
+export function* segment(source: string): Generator<string, undefined, undefined> {
+  if (source.length > 1000 * 1000) return yield '# ***Too large input over 1,000,000 characters***';
   assert(source.length < Number.MAX_SAFE_INTEGER);
-  const segments: string[] = [];
   while (source !== '') {
     const r = parser(source, {})!;
     assert(r);
@@ -32,13 +30,10 @@ export function segment(source: string): string[] {
     // Limit the size of a segment not to block user operations
     // bacause of a long process caused by a huge segment.
     source.length - rest.length > 10 * 1000
-      ? segments.push('# ***Too large block over 10,000 characters***')
+      ? yield '# ***Too large block over 10,000 characters***'
       : segs.length === 0
-        ? segments.push(source.slice(0, source.length - rest.length))
-        : push(segments, segs);
+        ? yield source.slice(0, source.length - rest.length)
+        : yield* segs;
     source = rest;
   }
-  segments.length === 0 && segments.push('');
-  assert(segments.join('') === arguments[0] || segments.includes('# ***Too large block over 10,000 characters***'));
-  return segments;
 }

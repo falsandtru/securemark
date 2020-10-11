@@ -1,4 +1,4 @@
-import { ParserSettings } from '../../..';
+import { ParserSettings, Result } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
 import { header } from '../header';
@@ -8,7 +8,7 @@ import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { push, splice } from 'spica/array';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<HTMLElement | undefined, undefined, undefined> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<Result, undefined, undefined> {
   settings = { ...settings, id: '' };
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
@@ -16,10 +16,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   const dels: HTMLElement[] = [];
   const bottom = target.firstChild;
   let revision: symbol;
-  return function* (source: string): Generator<HTMLElement | undefined, undefined, undefined> {
+  return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
     source = normalize(source);
-    const sourceSegments = segment(source);
+    const sourceSegments: string[] = [];
+    for (const seg of segment(source)) {
+      sourceSegments.push(seg);
+      yield { type: 'segment', value: seg };
+    }
     const targetSegments = pairs.map(([seg]) => seg);
     let head = 0;
     for (; head < targetSegments.length; ++head) {
@@ -53,8 +57,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
         const [el, base] = adds.shift()!;
         target.insertBefore(el, base);
         assert(el.parentNode);
-        yield el;
-        if (rev !== revision) return yield;
+        yield { type: 'block', value: el };
+        if (rev !== revision) return yield { type: 'cancel' };
       }
     }
     for (let refuse = splice(pairs, index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
@@ -69,26 +73,26 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       const [el, base] = adds.shift()!;
       target.insertBefore(el, base);
       assert(el.parentNode);
-      yield el;
-      if (rev !== revision) return yield;
+      yield { type: 'block', value: el };
+      if (rev !== revision) return yield { type: 'cancel' };
     }
     while (dels.length > 0) {
       assert(rev === revision);
       const el = dels.shift()!;
       el.parentNode?.removeChild(el);
       assert(!el.parentNode);
-      yield el;
-      if (rev !== revision) return yield;
+      yield { type: 'block', value: el };
+      if (rev !== revision) return yield { type: 'cancel' };
     }
     for (const el of footnote(target, settings.footnotes, settings)) {
       assert(rev === revision);
-      yield el;
-      if (rev !== revision) return yield;
+      yield { type: 'footnote', value: el };
+      if (rev !== revision) return yield { type: 'cancel' };
     }
     for (const el of figure(target, settings.footnotes, settings)) {
       assert(rev === revision);
-      yield el;
-      if (rev !== revision) return yield;
+      yield { type: 'figure', value: el };
+      if (rev !== revision) return yield { type: 'cancel' };
     }
   };
 

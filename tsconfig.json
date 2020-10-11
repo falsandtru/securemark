@@ -4,6 +4,7 @@
     "lib": [
       "ES2018",
       "ES2019.String",
+      "ES2019.Array",
       "DOM",
       "DOM.Iterable"
     ],
