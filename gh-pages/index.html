@@ -37,7 +37,7 @@
   ol > li::before {
     display: table-cell;
     white-space: pre;
-    text-align: end;
+    text-align: start;
     font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
     content: counter(counter) ". ";
   }
@@ -59,7 +59,6 @@
     content: counter(counter, upper-alpha) ". ";
   }
   ol[data-format="paren"] > li::before {
-    text-align: start;
     content: "(" counter(counter) ") ";
   }
   ol[data-format="paren"][type="i"] > li::before {
