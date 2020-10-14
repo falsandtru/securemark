@@ -38,6 +38,7 @@
     display: table-cell;
     white-space: pre;
     text-align: end;
+    font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
     content: counter(counter) ". ";
   }
   /*
@@ -409,9 +410,10 @@
     '  a. 5',
     '  a. 6',
     '- C',
-    '  7. a',
-    '  8. b',
-    '  9. c',
+    '  (7) d',
+    '  (7)-1 e',
+    '  (8) f',
+    '  (9) g',
     '',
     ''
   ].join('\n');
@@ -453,9 +455,9 @@
     document.getElementById('editor').addEventListener('change', run);
   })();
   async function display() {
-    let count = 0;
-    let start = Date.now();
     let time = 0;
+    let start = Date.now();
+    let count = 0;
     let resource = 100;
     for (const result of update(document.getElementById('editor').value)) {
       if (wait) throw new Error('Cancel.');
