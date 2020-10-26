@@ -1,6 +1,6 @@
 import { undefined, Symbol } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { block, focus, validate } from '../combinator';
+import { block, validate, focus } from '../combinator';
 import { segment } from './segment';
 import { html } from 'typed-dom';
 
