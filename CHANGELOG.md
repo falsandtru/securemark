@@ -2,6 +2,7 @@
 
 ## 0.175.1
 
+- Fix account parser to limit the length.
 - Fix email parser to limit the length.
 
 ## 0.175.0
