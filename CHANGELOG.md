@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.175.1
+
+- Fix email parser to limit the length.
+
 ## 0.175.0
 
 - Change bind function's return type.
