@@ -4388,13 +4388,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.account = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:(?![a-z0-9.-]{0,200}?--)[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9]{1,63}){1,2}\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, (source, {
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, (source, {
                 origin = ''
             }) => {
                 const url = source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ origin }/${ source }`;
-                return [
+                return verify(source) && [
                     [typed_dom_1.html('a', {
                             class: 'account',
                             href: url,
@@ -4403,9 +4404,13 @@ require = function () {
                     ''
                 ];
             })));
+            function verify(source) {
+                return source.length - (source.indexOf('/') + 1 || 1) <= 64 && source.length - 1 <= 254 || global_1.undefined;
+            }
         },
         {
             '../../../combinator': 28,
+            'spica/global': 12,
             'typed-dom': 21
         }
     ],
@@ -4466,9 +4471,10 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.email = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.email = combinator_1.creator(combinator_1.focus(/^[A-Za-z0-9]+(?:[.+_-][A-Za-z0-9]+)*@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*/, source => [
+            exports.email = combinator_1.creator(combinator_1.focus(/^[A-Za-z0-9]+(?:[.+_-][A-Za-z0-9]+)*@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*/, source => verify(source) && [
                 [typed_dom_1.html('a', {
                         class: 'email',
                         href: `mailto:${ source }`,
@@ -4476,9 +4482,13 @@ require = function () {
                     }, source)],
                 ''
             ]));
+            function verify(source) {
+                return source.indexOf('@') <= 64 && source.length <= 254 || global_1.undefined;
+            }
         },
         {
             '../../../combinator': 28,
+            'spica/global': 12,
             'typed-dom': 21
         }
     ],
