@@ -549,7 +549,6 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, [
         ExtensionParser.IndexParser,
         ExtensionParser.LabelParser,
-        ExtensionParser.DataParser,
         ExtensionParser.PlaceholderParser,
       ], Context> {
     }
@@ -585,17 +584,6 @@ export namespace MarkdownParser {
             SourceParser.StrParser,
           ], Context> {
         }
-      }
-      export interface DataParser extends
-        // [~name]
-        // [~name=value]
-        // [~name=value|text]
-        Inline<'extension/data'>,
-        Parser<HTMLElement | string, [
-          SourceParser.StrParser,
-          SourceParser.CharParser,
-          InlineParser,
-        ], Context> {
       }
       export interface PlaceholderParser extends
         // [^abc]

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.176.0
+
+- Remove data syntax.
+
 ## 0.175.1
 
 - Fix account parser to limit the length.

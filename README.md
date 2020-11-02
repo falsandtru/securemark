@@ -52,7 +52,6 @@ https://falsandtru.github.io/securemark/
 - Index (# title [#indexer], ~ term [#indexer], [#index])
 - Figure (~~~figure $fig-name)
 - Label ($fig-name, [$fig-name])
-- Data ([~name], [~name=value], [~name=value|text])
 - Annotation (((annotation)))
 - Reference ([[reference]])
 - Channel (@account#tag)

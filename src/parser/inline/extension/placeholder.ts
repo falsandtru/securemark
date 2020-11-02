@@ -5,7 +5,8 @@ import { str, char } from '../../source';
 import { html } from 'typed-dom';
 import { unshift, push } from 'spica/array';
 
-// Already used symbols: !@$&*<
+// Don't use the symbols already used: !#$@&*+~=
+
 export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(surround(
   str(/^\[[:^]/),
   startTight(some(union([inline]), ']')),
