@@ -2964,18 +2964,18 @@ require = function () {
                             return yield { type: 'cancel' };
                     }
                     for (const el of footnote_1.footnote(target, settings.footnotes, settings)) {
-                        yield {
+                        el ? yield {
                             type: 'footnote',
                             value: el
-                        };
+                        } : yield { type: 'break' };
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
                     for (const el of figure_1.figure(target, settings.footnotes, settings)) {
-                        yield {
+                        el ? yield {
                             type: 'figure',
                             value: el
-                        };
+                        } : yield { type: 'break' };
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
@@ -7030,6 +7030,7 @@ require = function () {
                 let bases = base.split('.');
                 let index = bases;
                 for (let defs = target.children, i = 0, len = defs.length; i < len; ++i) {
+                    yield;
                     const def = defs[i];
                     if (![
                             'FIGURE',
@@ -7041,14 +7042,16 @@ require = function () {
                     if (bases.length === 1 && def.tagName[0] === 'H')
                         continue;
                     const label = def.tagName === 'FIGURE' ? def.getAttribute('data-label') : `$-${ increment(index, def) }`;
-                    if (label === '$-')
+                    if (label.endsWith('-'))
                         continue;
-                    if (label === '$-0')
+                    if (label.endsWith('-0'))
                         continue;
-                    if (label === '$-0.0' && (i !== 1 || ((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName) !== 'H1'))
-                        continue;
-                    if (label === '$-0.0.0')
-                        continue;
+                    if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
+                        if (label.lastIndexOf('.', -2) < 0 && ((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName) !== 'H1')
+                            continue;
+                        if (label.lastIndexOf('.', -2) > 0)
+                            continue;
+                    }
                     const group = label.split('-', 1)[0];
                     let number = label_1.number(label, numbers.has(group) && !inline_1.isFixed(label) ? array_1.join(numbers.get(group).split('.').slice(0, bases.length), '.') : base);
                     if (number.endsWith('.0')) {
@@ -7138,6 +7141,7 @@ require = function () {
                     const titles = new Map();
                     let count = 0;
                     for (let es = target.querySelectorAll(`.${ syntax }`), i = 0, len = es.length; i < len; ++i) {
+                        yield;
                         const ref = es[i];
                         if (!check(ref))
                             continue;
