@@ -16,6 +16,8 @@ describe('Unit: parser/api/bind', () => {
               return Sequence.from([]);
             case 'block':
               return Sequence.from([result.value.outerHTML]);
+            case 'break':
+              return Sequence.from([null]);
             default:
               return Sequence.from([undefined]);
           }
@@ -128,13 +130,13 @@ describe('Unit: parser/api/bind', () => {
       assert(el.innerHTML === '<p>1</p>');
       assert.deepStrictEqual(inspectS(update('1\n\n3\n\n4'), 1), ['<p>3</p>']);
       assert(el.innerHTML === '<p>1</p><p>3</p>');
-      assert.deepStrictEqual(inspectS(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>']);
+      assert.deepStrictEqual(inspectS(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>', null]);
       assert(el.innerHTML === '<p>1</p><p>2</p><p>4</p>');
       [...update('')];
       assert(el.innerHTML === '');
       assert.deepStrictEqual(inspectS(update('# a\n# b'), 1), ['<h1 id="index:a">a</h1>']);
       assert(el.innerHTML === '<h1 id="index:a">a</h1>');
-      assert.deepStrictEqual(inspectS(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>']);
+      assert.deepStrictEqual(inspectS(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>', null]);
       assert(el.innerHTML === '<h1 id="index:a">a</h1><h1 id="index:b">b</h1>');
     });
 

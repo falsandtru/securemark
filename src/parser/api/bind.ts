@@ -86,12 +86,16 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     for (const el of footnote(target, settings.footnotes, settings)) {
       assert(rev === revision);
-      yield { type: 'footnote', value: el };
+      el
+        ? yield { type: 'footnote', value: el }
+        : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
     for (const el of figure(target, settings.footnotes, settings)) {
       assert(rev === revision);
-      yield { type: 'figure', value: el };
+      el
+        ? yield { type: 'figure', value: el }
+        : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
   };

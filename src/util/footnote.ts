@@ -12,7 +12,7 @@ export function* footnote(
   opts: Readonly<{
     id?: string;
   }> = {},
-): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   yield* annotation(target, footnotes?.annotation, opts);
   yield* reference(target, footnotes?.reference, opts);
   return;
@@ -28,18 +28,19 @@ const identify = memoize<HTMLElement, string>(
 function build(
   syntax: string,
   marker: (index: number) => string,
-): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   assert(syntax.match(/^[a-z]+$/));
   const contentify = memoize<HTMLElement, DocumentFragment>(
     ref => frag(ref.childNodes),
     new WeakMap());
-  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement, undefined, undefined> {
+  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
     const refs = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     let count = 0;
     for (let es = target.querySelectorAll<HTMLElement>(`.${syntax}`), i = 0, len = es.length; i < len; ++i) {
+      yield;
       const ref = es[i];
       assert(ref.matches('sup'));
       if (!check(ref)) continue;

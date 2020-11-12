@@ -13,6 +13,7 @@ export type Result
   | { type: 'block', value: HTMLElement }
   | { type: 'footnote', value: HTMLLIElement | HTMLElement }
   | { type: 'figure', value: HTMLAnchorElement }
+  | { type: 'break' }
   | { type: 'cancel' };
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<Result, undefined, undefined>;
 export function render(target: HTMLElement, options?: RenderingOptions): void;

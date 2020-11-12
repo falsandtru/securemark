@@ -12,7 +12,7 @@ export function* figure(
   opts: Readonly<{
     id?: string;
   }> = {},
-): Generator<HTMLAnchorElement, undefined, undefined> {
+): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(
     [
       ...target.querySelectorAll<HTMLAnchorElement>('a.label'),
@@ -26,6 +26,7 @@ export function* figure(
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   for (let defs = target.children, i = 0, len = defs.length; i < len; ++i) {
+    yield;
     const def = defs[i];
     if (!['FIGURE', 'H1', 'H2', 'H3'].includes(def.tagName)) continue;
     if (bases.length === 1 && def.tagName[0] === 'H') continue;

@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.176.1
+## 0.177.0
 
+- Extend bind function to return the break type.
 - Fix figures to be ignored in inappropriate usage.
 
 ## 0.176.0
