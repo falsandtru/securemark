@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.176.1
+
+- Fix figures to be ignored in inappropriate usage.
+
 ## 0.176.0
 
 - Remove data syntax.

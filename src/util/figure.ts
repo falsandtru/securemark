@@ -33,10 +33,14 @@ export function* figure(
     const label = def.tagName === 'FIGURE'
       ? def.getAttribute('data-label')!
       : `$-${increment(index, def as HTMLHeadingElement)}`;
-    if (label === '$-') continue;
-    if (label === '$-0') continue;
-    if (label === '$-0.0' && (i !== 1 || def.previousElementSibling?.tagName !== 'H1')) continue;
-    if (label === '$-0.0.0'/* && def.previousElementSibling?.tagName !== 'H2'*/) continue;
+    if (label.endsWith('-')) continue;
+    if (label.endsWith('-0')) continue;
+    if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
+      // $-x.0
+      if (label.lastIndexOf('.', -2) < 0 && def.previousElementSibling?.tagName !== 'H1') continue;
+      // $-x.x.0
+      if (label.lastIndexOf('.', -2) > 0) continue;
+    }
     const group = label.split('-', 1)[0];
     assert(label && group);
     assert(group === def.getAttribute('data-group') || !def.matches('figure'));
