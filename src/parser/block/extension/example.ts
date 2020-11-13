@@ -13,7 +13,7 @@ export const segment: ExtensionParser.ExampleParser.SegmentParser = block(valida
 export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 100, false))), false);
 
-export const example: ExtensionParser.ExampleParser = creator(10, block(validate('~~~', fmap(
+export const example: ExtensionParser.ExampleParser = creator(100, block(validate('~~~', fmap(
   fence(opener, 100, true),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type, param]: string[], _, context) => {

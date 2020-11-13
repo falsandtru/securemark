@@ -11,10 +11,10 @@ export const segment: BlockquoteParser.SegmentParser = block(validate(['!>', '>'
   validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, some(contentline)),
 ])));
 
-export const blockquote: BlockquoteParser = lazy(() => creator(10, block(rewrite(segment, union([
+export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
   open(/^(?=>)/, text),
   open(/^!(?=>)/, source),
-])))));
+]))));
 
 const opener = /^(?=>>+(?:$|\s))/;
 
@@ -37,7 +37,7 @@ const text: BlockquoteParser.TextParser = lazy(() => fmap(
   ])),
   ns => [html('blockquote', ns)]));
 
-const source: BlockquoteParser.SourceParser = lazy(() => fmap(
+const source: BlockquoteParser.SourceParser = lazy(() => creator(100, fmap(
   some(union([
     rewrite(
       indent,
@@ -46,4 +46,4 @@ const source: BlockquoteParser.SourceParser = lazy(() => fmap(
       some(contentline, opener),
       convert(unindent, (source, context) => [[suppress(parse(source, { ...context, footnotes: undefined }))], ''])),
   ])),
-  ns => [html('blockquote', ns)]));
+  ns => [html('blockquote', ns)])));

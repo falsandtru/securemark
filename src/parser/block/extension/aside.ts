@@ -9,7 +9,7 @@ const opener = /^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/;
 export const segment: ExtensionParser.AsideParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 1000, true))));
 
-export const aside: ExtensionParser.AsideParser = creator(10, block(validate('~~~', fmap(
+export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~~~', fmap(
   fence(opener, 1000, true),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
