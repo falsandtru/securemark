@@ -216,8 +216,8 @@ export namespace MarkdownParser {
       // > abc
       Block<'blockquote'>,
       Parser<HTMLQuoteElement, [
-        BlockquoteParser.TextParser,
         BlockquoteParser.SourceParser,
+        BlockquoteParser.ContentParser,
       ], Context> {
     }
     export namespace BlockquoteParser {
@@ -227,17 +227,17 @@ export namespace MarkdownParser {
           SourceParser.ContentLineParser,
         ], Context> {
       }
-      export interface TextParser extends
-        Block<'blockquote/text'>,
-        Parser<HTMLQuoteElement, [
-          TextParser,
-          AutolinkParser,
-        ], Context> {
-      }
       export interface SourceParser extends
         Block<'blockquote/source'>,
         Parser<HTMLQuoteElement, [
           SourceParser,
+          AutolinkParser,
+        ], Context> {
+      }
+      export interface ContentParser extends
+        Block<'blockquote/markdown'>,
+        Parser<HTMLQuoteElement, [
+          ContentParser,
           MarkdownParser,
         ], Context> {
       }
@@ -380,7 +380,9 @@ export namespace MarkdownParser {
         // ~~~example
         // ~~~
         Block<'extension/example'>,
-        Parser<HTMLElement, [], Context> {
+        Parser<HTMLElement, [
+          MarkdownParser,
+        ], Context> {
       }
       export namespace ExampleParser {
         export interface SegmentParser extends
@@ -392,7 +394,9 @@ export namespace MarkdownParser {
         // ~~~aside
         // ~~~
         Block<'extension/aside'>,
-        Parser<HTMLElement, [], Context> {
+        Parser<HTMLElement, [
+          MarkdownParser,
+        ], Context> {
       }
       export namespace AsideParser {
         export interface SegmentParser extends

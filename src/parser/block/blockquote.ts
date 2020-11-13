@@ -12,8 +12,8 @@ export const segment: BlockquoteParser.SegmentParser = block(validate(['!>', '>'
 ])));
 
 export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
-  open(/^(?=>)/, text),
-  open(/^!(?=>)/, source),
+  open(/^(?=>)/, source),
+  open(/^!(?=>)/, markdown),
 ]))));
 
 const opener = /^(?=>>+(?:$|\s))/;
@@ -26,22 +26,22 @@ function unindent(source: string): string {
     .replace(/^>(?:$|\s|(?=>+(?:$|\s)))/mg, '');
 }
 
-const text: BlockquoteParser.TextParser = lazy(() => fmap(
+const source: BlockquoteParser.SourceParser = lazy(() => fmap(
   some(union([
     rewrite(
       indent,
-      convert(unindent, text)),
+      convert(unindent, source)),
     rewrite(
       some(contentline, opener),
       convert(unindent, fmap(some(autolink), ns => [html('pre', defrag(ns))]))),
   ])),
   ns => [html('blockquote', ns)]));
 
-const source: BlockquoteParser.SourceParser = lazy(() => creator(100, fmap(
+const markdown: BlockquoteParser.ContentParser = lazy(() => creator(100, fmap(
   some(union([
     rewrite(
       indent,
-      convert(unindent, source)),
+      convert(unindent, markdown)),
     rewrite(
       some(contentline, opener),
       convert(unindent, (source, context) => [[suppress(parse(source, { ...context, footnotes: undefined }))], ''])),
