@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.178.0
+
+- Add aside syntax.
+
 ## 0.177.0
 
 - Extend bind function to return the break type.

@@ -1,26 +1,45 @@
+import { undefined } from 'spica/global';
 import { html } from 'typed-dom';
 import { push } from 'spica/array';
 
-const Tags = [...Array(6)].map((_, i) => `H${i + 1}`);
-
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   const hs = [...source.children]
-    .filter((el): el is HTMLHeadingElement =>
-      el.id !== '' &&
-      Tags.includes(el.tagName));
+    .reduce<HTMLHeadingElement[]>((acc, el) => {
+      switch (el.id && el.tagName) {
+        case 'H1':
+        case 'H2':
+        case 'H3':
+        case 'H4':
+        case 'H5':
+        case 'H6':
+          return push(acc, [el as HTMLHeadingElement]);
+        case 'ASIDE':
+          return el.classList.contains('aside')
+            ? push(acc, [html(`h${acc[acc.length - 1]?.tagName[1] || 1}` as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes)])
+            : acc;
+        default:
+          return acc;
+      }
+    }, []);
   return parse(cons(hs));
 }
 
 type Tree = readonly [HTMLHeadingElement, Tree][];
 
 function parse(node: Tree, index: string = ''): HTMLUListElement {
-  return html('ul', node.map(([el, cs], i) => {
-    const idx = index === ''
-      ? `${i + 1}`
-      : `${index}.${i + 1}`;
+  let i = 0;
+  return html('ul', node.map(([el, cs]) => {
+    const isHeading = !el.className;
+    const idx = isHeading
+      ? index === ''
+        ? `${++i}`
+        : `${index}.${++i}`
+      : index === ''
+        ? `${i}`
+        : `${index}.${i}`;
     return html('li',
       push<HTMLElement>(
-        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': idx }, fix(el))],
+        [html('a', { href: `#${el.id}`, rel: 'noopener', 'data-index': isHeading ? idx : undefined }, fix(el))],
         cs.length > 0 ? [parse(cs, idx)] : []));
   }));
 }
