@@ -2879,7 +2879,7 @@ require = function () {
             function bind(target, settings) {
                 settings = {
                     ...settings,
-                    id: ''
+                    id: undefined
                 };
                 const pairs = [];
                 const adds = [];
@@ -3233,10 +3233,11 @@ require = function () {
             const markdown = combinator_1.lazy(() => combinator_1.creator(100, combinator_1.fmap(combinator_1.some(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, markdown)),
                 combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, context) => [
-                    [util_1.suppress(parse_1.parse(source, {
+                    [parse_1.parse(source, {
                             ...context,
+                            id: '',
                             footnotes: global_1.undefined
-                        }))],
+                        })],
                     ''
                 ]))
             ])), ns => [typed_dom_1.html('blockquote', ns)])));
@@ -3394,7 +3395,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.aside = exports.segment = void 0;
             const combinator_1 = _dereq_('../../../combinator');
-            const util_1 = _dereq_('../../util');
+            const indexee_1 = _dereq_('../../inline/extension/indexee');
             const parse_1 = _dereq_('../../api/parse');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/;
@@ -3412,12 +3413,13 @@ require = function () {
                 const reference = typed_dom_1.html('ol');
                 const view = parse_1.parse(body.slice(0, -1), {
                     ...context,
+                    id: '',
                     footnotes: {
                         annotation,
                         reference
                     }
                 });
-                const heading = ((_a = view.firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('h1[id]')) && view.firstElementChild || null;
+                const heading = ((_a = view.firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('h1')) && view.firstElementChild || null;
                 if (!heading)
                     return [typed_dom_1.html('pre', {
                             class: `notranslate invalid`,
@@ -3426,19 +3428,19 @@ require = function () {
                             'data-invalid-message': 'Missing title at the first line.'
                         }, `${ opener }${ body }${ closer }`)];
                 return [typed_dom_1.html('aside', {
-                        id: heading.id,
+                        id: indexee_1.identity(heading),
                         class: 'aside'
                     }, [
-                        util_1.suppress(view),
-                        util_1.suppress(annotation),
-                        util_1.suppress(reference)
+                        view,
+                        annotation,
+                        reference
                     ])];
             }))));
         },
         {
             '../../../combinator': 28,
             '../../api/parse': 59,
-            '../../util': 130,
+            '../../inline/extension/indexee': 103,
             'typed-dom': 21
         }
     ],
@@ -3448,7 +3450,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.example = exports.segment_ = exports.segment = void 0;
             const combinator_1 = _dereq_('../../../combinator');
-            const util_1 = _dereq_('../../util');
             const parse_1 = _dereq_('../../api/parse');
             const mathblock_1 = _dereq_('../mathblock');
             const typed_dom_1 = _dereq_('typed-dom');
@@ -3469,6 +3470,7 @@ require = function () {
                         const reference = typed_dom_1.html('ol');
                         const view = parse_1.parse(body.slice(0, -1), {
                             ...context,
+                            id: '',
                             footnotes: {
                                 annotation,
                                 reference
@@ -3479,9 +3481,9 @@ require = function () {
                                 'data-type': 'markdown'
                             }, [
                                 typed_dom_1.html('pre', body.slice(0, -1)),
-                                typed_dom_1.html('div', [util_1.suppress(view)]),
-                                util_1.suppress(annotation),
-                                util_1.suppress(reference)
+                                typed_dom_1.html('div', [view]),
+                                annotation,
+                                reference
                             ])];
                     }
                 case 'math':
@@ -3504,7 +3506,6 @@ require = function () {
         {
             '../../../combinator': 28,
             '../../api/parse': 59,
-            '../../util': 130,
             '../mathblock': 75,
             'typed-dom': 21
         }
@@ -4924,7 +4925,7 @@ require = function () {
                 [typed_dom_1.html('a', util_1.defrag(util_1.trimEnd(bs)))],
                 rest
             ] : global_1.undefined)), ([el]) => [typed_dom_1.define(el, {
-                    id: null,
+                    id: el.id ? null : global_1.undefined,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : global_1.undefined
                 }, el.childNodes)])));
@@ -4942,14 +4943,18 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.text = exports.indexee = void 0;
+            exports.text = exports.identity = exports.indexee = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             function indexee(parser) {
-                return combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, { id: identity(text(el)) || global_1.undefined })]);
+                return combinator_1.fmap(parser, ([el], _, {id}) => [typed_dom_1.define(el, { id: id !== '' && identity(el) || global_1.undefined })]);
             }
             exports.indexee = indexee;
+            function identity(source) {
+                return identify(text(source));
+            }
+            exports.identity = identity;
             function text(source) {
                 const indexer = source.querySelector('.indexer');
                 if (indexer)
@@ -4964,7 +4969,7 @@ require = function () {
                 return target.innerText.trim();
             }
             exports.text = text;
-            function identity(index) {
+            function identify(index) {
                 return index ? `index:${ index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }` : '';
             }
         },
@@ -6317,12 +6322,11 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.suppress = exports.stringify = exports.defrag = exports.dup = exports.trimEnd = exports.startTight = exports.isEndTight = void 0;
+            exports.stringify = exports.defrag = exports.dup = exports.trimEnd = exports.startTight = exports.isEndTight = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../combinator');
             const inline_1 = _dereq_('./inline');
-            const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function isEndTight(nodes) {
                 if (nodes.length === 0)
@@ -6429,36 +6433,13 @@ require = function () {
                 return acc;
             }
             exports.stringify = stringify;
-            function suppress(target) {
-                if ('id' in target && target.tagName === 'OL') {
-                    typed_dom_1.apply(target, '.footnote > sup:last-child > a', { href: null });
-                }
-                for (let es = target.children, i = 0, len = es.length; i < len; ++i) {
-                    const el = es[i];
-                    switch (el.tagName) {
-                    case 'DL':
-                        typed_dom_1.apply(el, 'dt', { id: null });
-                        continue;
-                    default:
-                        el.id && typed_dom_1.define(el, { id: null });
-                        continue;
-                    }
-                }
-                typed_dom_1.apply(target, 'a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]', {
-                    id: null,
-                    href: null
-                });
-                return target;
-            }
-            exports.suppress = suppress;
         },
         {
             '../combinator': 28,
             './inline': 84,
             'spica/alias': 5,
             'spica/array': 6,
-            'spica/global': 12,
-            'typed-dom': 21
+            'spica/global': 12
         }
     ],
     131: [
@@ -7048,18 +7029,25 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.context = void 0;
+            const global_1 = _dereq_('spica/global');
             function context(base, bound = 'id' in base && base.id ? `#${ base.id }` : 'section, article, aside, blockquote') {
                 const memory = new WeakMap();
                 const context = 'id' in base && base.closest(bound) || null;
                 return el => {
                     var _a;
-                    const node = memory.has(el.parentNode) ? el.parentNode : el.parentNode.parentNode;
-                    return memory.get(node) || memory.set(node, el.closest(bound) === context).get(node);
+                    const {parentNode} = el;
+                    const node = memory.has(parentNode) ? parentNode : parentNode.parentNode;
+                    let result = memory.get(node);
+                    if (result === global_1.undefined) {
+                        result = el.closest(bound) === context;
+                        memory.set(node, result);
+                    }
+                    return result;
                 };
             }
             exports.context = context;
         },
-        {}
+        { 'spica/global': 12 }
     ],
     146: [
         function (_dereq_, module, exports) {
@@ -7129,13 +7117,13 @@ require = function () {
                         continue;
                     }
                     !inline_1.isFixed(label) && numbers.set(group, number);
-                    def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
+                    opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
                     const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) } ${ number }`;
                     typed_dom_1.define(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
                     for (const ref of refs.take(label, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.textContent === figindex)
                             continue;
-                        yield typed_dom_1.define(ref, { href: `#${ def.id }` }, figindex);
+                        yield typed_dom_1.define(ref, opts.id !== '' ? { href: `#${ def.id }` } : global_1.undefined, figindex);
                     }
                 }
                 return;
@@ -7210,9 +7198,9 @@ require = function () {
                         !title && refs.set(identifier, ref);
                         const content = contentify(ref);
                         const refIndex = count;
-                        const refId = ref.id || `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }ref:${ count }`;
+                        const refId = opts.id !== '' ? ref.id || `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }ref:${ count }` : global_1.undefined;
                         const def = global_1.undefined || defs.get(identifier) || defs.set(identifier, typed_dom_1.html('li', {
-                            id: `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }def:${ defs.size + 1 }`,
+                            id: opts.id !== '' ? `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }def:${ defs.size + 1 }` : global_1.undefined,
                             class: 'footnote'
                         }, [
                             content.cloneNode(true),
@@ -7230,8 +7218,8 @@ require = function () {
                                 });
                             }
                         }
-                        const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1);
-                        const defId = def.id;
+                        const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || defs.size;
+                        const defId = def.id || global_1.undefined;
                         const refChild = ref.firstChild;
                         yield typed_dom_1.define(ref, {
                             id: refId,
@@ -7244,12 +7232,12 @@ require = function () {
                                 'data-invalid-type': 'content',
                                 'data-invalid-message': 'Missing content.'
                             }
-                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && refChild.textContent === marker(defIndex) ? global_1.undefined : [typed_dom_1.html('a', {
-                                href: `#${ defId }`,
+                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && (refChild === null || refChild === void 0 ? void 0 : refChild.textContent) === marker(defIndex) ? global_1.undefined : [typed_dom_1.html('a', {
+                                href: defId && `#${ defId }`,
                                 rel: 'noopener'
                             }, marker(defIndex))]).firstChild;
                         def.lastChild.appendChild(typed_dom_1.html('a', {
-                            href: `#${ refId }`,
+                            href: refId && `#${ refId }`,
                             rel: 'noopener',
                             title: content.firstChild && ref.hasAttribute('data-alias') ? title : global_1.undefined
                         }, ` ~${ refIndex }`));
