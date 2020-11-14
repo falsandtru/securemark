@@ -18,7 +18,7 @@ export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allow
 }
 
 export function firstline(source: string, keepLinebreak = true): string {
-  const i = source[0] === '\n' ? 0 : source.indexOf('\n');
+  const i = source.indexOf('\n');
   switch (i) {
     case -1:
       return source;
