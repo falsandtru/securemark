@@ -4,7 +4,11 @@ import { define } from 'typed-dom';
 
 export function indexee<P extends Parser<unknown>>(parser: P): P;
 export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
-  return fmap(parser, ([el]) => [define(el, { id: identity(text(el)) || undefined })]);
+  return fmap(parser, ([el], _, { id }) => [define(el, { id: id !== '' && identity(el) || undefined })]);
+}
+
+export function identity(source: HTMLElement): string {
+  return identify(text(source));
 }
 
 export function text(source: HTMLElement): string {
@@ -23,12 +27,12 @@ export function text(source: HTMLElement): string {
   return target.innerText.trim();
 }
 
-function identity(index: string): string {
+function identify(index: string): string {
   assert(!index.includes('\n'));
   return index
     ? `index:${index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`
     : '';
 }
-assert(identity('0'.repeat(100)).slice(6) === '0'.repeat(100));
-assert(identity('0'.repeat(101)).slice(6) === '0'.repeat(97) + '...');
-assert(identity('0'.repeat(200)).slice(6) === '0'.repeat(97) + '...');
+assert(identify('0'.repeat(100)).slice(6) === '0'.repeat(100));
+assert(identify('0'.repeat(101)).slice(6) === '0'.repeat(97) + '...');
+assert(identify('0'.repeat(200)).slice(6) === '0'.repeat(97) + '...');

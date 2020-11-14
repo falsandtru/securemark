@@ -3,6 +3,7 @@ export interface Ctx {
     creation: number;
   };
   delimiters?: ((source: string) => boolean)[];
+  readonly id?: string;
 }
 
 export type Parser<R, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>

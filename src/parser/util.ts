@@ -2,7 +2,6 @@ import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, fmap, eval } from '../combinator';
 import { htmlentity, comment } from './inline';
-import { define, apply } from 'typed-dom';
 import { pop } from 'spica/array';
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
@@ -132,32 +131,4 @@ export function stringify(nodes: HTMLElement | string | readonly (HTMLElement | 
         : node.innerText;
   }
   return acc;
-}
-
-export function suppress<T extends HTMLOListElement | DocumentFragment>(target: T): T;
-export function suppress(target: HTMLOListElement | DocumentFragment): HTMLOListElement | DocumentFragment {
-  assert(!target.parentElement);
-  assert(target instanceof DocumentFragment || target instanceof HTMLOListElement);
-  if ('id' in target && target.tagName === 'OL') {
-    assert.deepStrictEqual([...target.querySelectorAll('.footnote')], [...target.querySelectorAll(':scope > li')]);
-    assert.deepStrictEqual([...target.querySelectorAll('.footnote > sup:last-child > a')], [...target.querySelectorAll(':scope > .footnote[id] > sup:last-child > a[href]')]);
-    apply(target, '.footnote > sup:last-child > a', { href: null });
-  }
-  // Bug: Firefox
-  //for (let es = target.querySelectorAll(':scope > dl, :scope > [id]'), i = 0, len = es.length; i < len; ++i) {
-  for (let es = target.children, i = 0, len = es.length; i < len; ++i) {
-    const el = es[i];
-    switch (el.tagName) {
-      case 'DL':
-        assert.deepStrictEqual([...el.querySelectorAll('dt')], [...el.querySelectorAll(':scope > dt')]);
-        assert.deepStrictEqual([...el.querySelectorAll(':scope > dt')], [...el.querySelectorAll(':scope > dt[id]')]);
-        apply(el, 'dt', { id: null });
-        continue;
-      default:
-        el.id && define(el, { id: null });
-        continue;
-    }
-  }
-  apply(target, 'a.index[href], a.label[href], .annotation[id], .annotation[id] > a[href], .reference[id], .reference[id] > a[href]', { id: null, href: null });
-  return target;
 }

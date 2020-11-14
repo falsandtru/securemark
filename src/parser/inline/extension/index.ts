@@ -26,4 +26,4 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexe
       ? [[html('a', defrag(trimEnd(bs)))], rest]
       : undefined)),
   ([el]: [HTMLAnchorElement]) =>
-    [define(el, { id: null, class: 'index', href: el.id ? `#${el.id}` : undefined }, el.childNodes)])));
+    [define(el, { id: el.id ? null : undefined, class: 'index', href: el.id ? `#${el.id}` : undefined }, el.childNodes)])));

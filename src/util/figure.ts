@@ -1,4 +1,4 @@
-import { Infinity } from 'spica/global';
+import { undefined, Infinity } from 'spica/global';
 import { context } from './context';
 import { isFixed } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';
@@ -81,14 +81,14 @@ export function* figure(
     assert(number.split('.').pop() !== '0');
     !isFixed(label) && numbers.set(group, number);
     assert(!void def.setAttribute('data-number', number));
-    def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
+    opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)} ${number}`;
     define(
       def.querySelector(':scope > .figindex')!,
       group === '$' ? figindex : `${figindex}. `);
     for (const ref of refs.take(label, Infinity)) {
       if (ref.hash.slice(1) === def.id && ref.textContent === figindex) continue;
-      yield define(ref, { href: `#${def.id}` }, figindex);
+      yield define(ref, opts.id !== '' ? { href: `#${def.id}` } : undefined, figindex);
     }
   }
   return;

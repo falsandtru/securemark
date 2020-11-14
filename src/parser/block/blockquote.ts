@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { BlockquoteParser } from '../block';
 import { union, some, block, validate, rewrite, creator, fmap, open, convert, lazy } from '../../combinator';
-import { defrag, suppress } from '../util';
+import { defrag } from '../util';
 import { contentline } from '../source';
 import { autolink } from '../autolink';
 import { parse } from '../api/parse';
@@ -44,6 +44,6 @@ const markdown: BlockquoteParser.ContentParser = lazy(() => creator(100, fmap(
       convert(unindent, markdown)),
     rewrite(
       some(contentline, opener),
-      convert(unindent, (source, context) => [[suppress(parse(source, { ...context, footnotes: undefined }))], ''])),
+      convert(unindent, (source, context) => [[parse(source, { ...context, id: '', footnotes: undefined })], ''])),
   ])),
   ns => [html('blockquote', ns)])));

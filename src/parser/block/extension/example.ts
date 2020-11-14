@@ -1,6 +1,5 @@
 import { ExtensionParser } from '../../block';
 import { block, validate, creator, fmap, clear, fence, eval } from '../../../combinator';
-import { suppress } from '../../util';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { html } from 'typed-dom';
@@ -29,6 +28,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
         const reference = html('ol');
         const view = parse(body.slice(0, -1), {
           ...context,
+          id: '',
           footnotes: {
             annotation,
             reference,
@@ -36,9 +36,9 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
         });
         return [html('aside', { class: 'example', 'data-type': 'markdown' }, [
           html('pre', body.slice(0, -1)),
-          html('div', [suppress(view)]),
-          suppress(annotation),
-          suppress(reference),
+          html('div', [view]),
+          annotation,
+          reference,
         ])];
       }
       case 'math':

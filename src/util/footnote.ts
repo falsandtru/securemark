@@ -53,11 +53,11 @@ function build(
       !title && refs.set(identifier, ref);
       const content = contentify(ref);
       const refIndex = count;
-      const refId = ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}`;
+      const refId = opts.id !== '' ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}` : undefined;
       const def = undefined
         || defs.get(identifier)
         || defs.set(identifier, html('li',
-            { id: `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}`, class: 'footnote' },
+            { id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}` : undefined, class: 'footnote' },
             [content.cloneNode(true), html('sup', [])]))
             .get(identifier)!;
       assert(def.lastChild);
@@ -74,8 +74,8 @@ function build(
           });
         }
       }
-      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1);
-      const defId = def.id;
+      const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || defs.size;
+      const defId = def.id || undefined;
       const refChild = ref.firstChild as HTMLAnchorElement | null;
       assert(refChild instanceof HTMLAnchorElement || !refChild);
       yield define(ref,
@@ -91,16 +91,16 @@ function build(
                 'data-invalid-message': 'Missing content.',
               }
         },
-        refChild?.getAttribute('href')?.slice(1) === defId && refChild.textContent === marker(defIndex)
+        refChild?.getAttribute('href')?.slice(1) === defId && refChild?.textContent === marker(defIndex)
           ? undefined
-          : [html('a', { href: `#${defId}`, rel: 'noopener' }, marker(defIndex))])
+          : [html('a', { href: defId && `#${defId}`, rel: 'noopener' }, marker(defIndex))])
         .firstChild as HTMLAnchorElement;
       assert(ref.title || ref.matches('.invalid'));
       assert(ref.firstChild);
       def.lastChild!.appendChild(
         html('a',
           {
-            href: `#${refId}`,
+            href: refId && `#${refId}`,
             rel: 'noopener',
             title: content.firstChild && ref.hasAttribute('data-alias')
               ? title
