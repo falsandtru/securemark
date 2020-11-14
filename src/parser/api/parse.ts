@@ -23,5 +23,8 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
   if (opts.test) return node;
   [...footnote(node, opts.footnotes, opts)];
   [...figure(node, opts.footnotes, opts)];
+  assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
+  assert(opts.id !== '' || !opts.footnotes?.annotation.querySelector('[id], .index[href], .label[href]'));
+  assert(opts.id !== '' || !opts.footnotes?.reference.querySelector('[id], .index[href], .label[href]'));
   return node;
 }
