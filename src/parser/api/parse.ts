@@ -1,4 +1,4 @@
-import { ParserSettings } from '../../..';
+import { ParserOptions } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
 import { header } from '../header';
@@ -9,7 +9,7 @@ import { footnote } from '../../util/footnote';
 import { frag } from 'typed-dom';
 import { push } from 'spica/array';
 
-interface Options extends Partial<ParserSettings> {
+interface Options extends ParserOptions {
   readonly test?: boolean;
 }
 

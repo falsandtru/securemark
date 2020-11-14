@@ -7,7 +7,7 @@
 
 export function header(source: string): string[] | undefined;
 export function body(source: string): string;
-export function parse(source: string, options?: Partial<ParserSettings>): DocumentFragment;
+export function parse(source: string, options?: ParserOptions): DocumentFragment;
 export type Result
   = { type: 'segment', value: string; }
   | { type: 'block', value: HTMLElement }
@@ -23,6 +23,7 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
 export function normalize(source: string): string;
 
+export type ParserOptions = Partial<ParserSettings>;
 export interface ParserSettings {
   // For servers.
   readonly origin?: string;
