@@ -21,19 +21,20 @@ export function* segment(source: string): Generator<string, undefined, undefined
   if (source.length > 1000 * 1000) return yield '# ***Too large input over 1,000,000 characters***';
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
-    const r = parser(source, {})!;
-    assert(r);
-    const segs = eval(r);
-    const rest = exec(r);
-    assert(segs.length === 0 || segs.join('') === source.slice(0, source.length - rest.length));
+    const result = parser(source, {})!;
+    assert(result);
+    const rest = exec(result);
+    const segs = eval(result).length ? eval(result) : [source.slice(0, source.length - rest.length)];
     assert(source.slice(1).endsWith(rest));
-    // Limit the size of a segment not to block user operations
-    // bacause of a long process caused by a huge segment.
-    source.length - rest.length > 10 * 1000
-      ? yield '# ***Too large block over 10,000 characters***'
-      : segs.length === 0
-        ? yield source.slice(0, source.length - rest.length)
-        : yield* segs;
+    assert(segs.join('') === source.slice(0, source.length - rest.length));
+    for (let i = 0; i < segs.length; ++i) {
+      const seg = segs[i];
+      // Limit the size of a segment not to block user operations
+      // bacause of a long process caused by a huge segment.
+      seg.length > 10 * 1000
+        ? yield '# ***Too large block over 10,000 characters***'
+        : yield seg;
+    }
     source = rest;
   }
 }
