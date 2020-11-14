@@ -1,4 +1,3 @@
-import { ObjectCreate } from 'spica/alias';
 import { ParserSettings } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
@@ -15,7 +14,7 @@ interface Options extends Partial<ParserSettings> {
 }
 
 export function parse(source: string, opts: Options = {}): DocumentFragment {
-  opts = ObjectCreate(opts);
+  assert(Object.freeze(opts));
   const node = frag([...segment(normalize(source))]
     .reduce((acc, seg, i) =>
       push(acc, eval(i === 0 && header(seg, opts) || block(seg, opts), []))

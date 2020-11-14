@@ -9,7 +9,8 @@ import { footnote } from '../../util/footnote';
 import { push, splice } from 'spica/array';
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<Result, undefined, undefined> {
-  settings = { ...settings, id: undefined };
+  assert(!settings.id);
+  assert(Object.freeze(settings));
   type Pair = readonly [string, readonly HTMLElement[]];
   const pairs: Pair[] = [];
   const adds: [HTMLElement, Node | null][] = [];
