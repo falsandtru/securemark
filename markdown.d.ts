@@ -868,14 +868,14 @@ export namespace MarkdownParser {
         }
       }
       export interface EmailParser extends
-        // account@host
+        // user@host
         Inline<'email'>,
         Parser<HTMLAnchorElement, [
           SourceParser.StrParser,
         ], Context> {
       }
       export interface ChannelParser extends
-        // @account#tag
+        // @user#tag
         Inline<'channel'>,
         Parser<HTMLAnchorElement, [
           InlineParser.AutolinkParser.AccountParser,
@@ -883,7 +883,7 @@ export namespace MarkdownParser {
         ], Context> {
       }
       export interface AccountParser extends
-        // @account
+        // @user
         Inline<'account'>,
         Parser<HTMLAnchorElement, [
           SourceParser.StrParser,
