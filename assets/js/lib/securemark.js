@@ -7443,7 +7443,7 @@ require = function () {
             function parse(node, index = '') {
                 let i = 0;
                 return typed_dom_1.html('ul', node.map(([el, cs]) => {
-                    const isHeading = !el.className;
+                    const isHeading = !el.classList.contains('aside');
                     const idx = isHeading ? index === '' ? `${ ++i }` : `${ index }.${ ++i }` : index === '' ? `${ i }` : `${ index }.${ i }`;
                     return typed_dom_1.html('li', array_1.push([typed_dom_1.html('a', {
                             href: `#${ el.id }`,
