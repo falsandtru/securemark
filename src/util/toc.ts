@@ -29,7 +29,7 @@ type Tree = readonly [HTMLHeadingElement, Tree][];
 function parse(node: Tree, index: string = ''): HTMLUListElement {
   let i = 0;
   return html('ul', node.map(([el, cs]) => {
-    const isHeading = !el.className;
+    const isHeading = !el.classList.contains('aside');
     const idx = isHeading
       ? index === ''
         ? `${++i}`
