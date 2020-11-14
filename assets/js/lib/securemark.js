@@ -2877,10 +2877,6 @@ require = function () {
             const footnote_1 = _dereq_('../../util/footnote');
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
-                settings = {
-                    ...settings,
-                    id: undefined
-                };
                 const pairs = [];
                 const adds = [];
                 const dels = [];
@@ -3088,7 +3084,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.parse = void 0;
-            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const segment_1 = _dereq_('../segment');
             const header_1 = _dereq_('../header');
@@ -3099,7 +3094,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function parse(source, opts = {}) {
-                opts = alias_1.ObjectCreate(opts);
+                var _a, _b;
                 const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
                 if (opts.test)
                     return node;
@@ -3117,7 +3112,6 @@ require = function () {
             '../header': 83,
             '../segment': 121,
             './normalize': 58,
-            'spica/alias': 5,
             'spica/array': 6,
             'typed-dom': 21
         }
