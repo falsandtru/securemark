@@ -34,6 +34,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
             reference,
           },
         });
+        assert(!view.querySelector('[id]'));
         return [html('aside', { class: 'example', 'data-type': 'markdown' }, [
           html('pre', body.slice(0, -1)),
           html('div', [view]),

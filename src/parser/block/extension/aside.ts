@@ -29,6 +29,7 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
         reference,
       },
     });
+    assert(!view.querySelector('[id]'));
     // Bug: Firefox
     //const heading = view.querySelector(':scope > h1:first-child');
     const heading = view.firstElementChild?.matches('h1') && view.firstElementChild as HTMLElement || null;
@@ -38,6 +39,7 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       'data-invalid-type': 'content',
       'data-invalid-message': 'Missing title at the first line.',
     }, `${opener}${body}${closer}`)];
+    assert(identity(heading));
     return [html('aside', { id: identity(heading), class: 'aside' }, [
       view,
       annotation,
