@@ -2135,7 +2135,7 @@ require = function () {
             }
             exports.line = line;
             function firstline(source, keepLinebreak = true) {
-                const i = source[0] === '\n' ? 0 : source.indexOf('\n');
+                const i = source.indexOf('\n');
                 switch (i) {
                 case -1:
                     return source;
@@ -5950,10 +5950,13 @@ require = function () {
                 if (source.length > 1000 * 1000)
                     return yield '# ***Too large input over 1,000,000 characters***';
                 while (source !== '') {
-                    const r = parser(source, {});
-                    const segs = combinator_1.eval(r);
-                    const rest = combinator_1.exec(r);
-                    source.length - rest.length > 10 * 1000 ? yield '# ***Too large block over 10,000 characters***' : segs.length === 0 ? yield source.slice(0, source.length - rest.length) : yield* segs;
+                    const result = parser(source, {});
+                    const rest = combinator_1.exec(result);
+                    const segs = combinator_1.eval(result).length ? combinator_1.eval(result) : [source.slice(0, source.length - rest.length)];
+                    for (let i = 0; i < segs.length; ++i) {
+                        const seg = segs[i];
+                        seg.length > 10 * 1000 ? yield '# ***Too large block over 10,000 characters***' : yield seg;
+                    }
                     source = rest;
                 }
             }
