@@ -46,7 +46,7 @@ https://falsandtru.github.io/securemark/
 - Inline markups (*, `, []{}, {}, ![]{}, !{}, \[](), ++, ~~, (()), ...)
 - Inline HTML tags (\<small>, \<bdi>, ...)
 - Autolink (https://host, ttps://host, user@host, @user)
-- Shartmedia (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
+- Shortmedia (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
 - Syntex highlight (```lang filename)
 - LaTeX (${expr}$, $$expr$$)
 - Index (# title [#indexer], ~ term [#indexer], [#index])
