@@ -2989,8 +2989,8 @@ require = function () {
         },
         {
             '../../combinator': 28,
-            '../../util/figure': 146,
-            '../../util/footnote': 147,
+            '../../util/figure': 145,
+            '../../util/footnote': 146,
             '../block': 61,
             '../header': 83,
             '../segment': 121,
@@ -3106,8 +3106,8 @@ require = function () {
         },
         {
             '../../combinator': 28,
-            '../../util/figure': 146,
-            '../../util/footnote': 147,
+            '../../util/figure': 145,
+            '../../util/footnote': 146,
             '../block': 61,
             '../header': 83,
             '../segment': 121,
@@ -6570,10 +6570,9 @@ require = function () {
             exports.math = void 0;
             const global_1 = _dereq_('spica/global');
             const math_1 = _dereq_('../../parser/inline/math');
-            const typed_dom_1 = _dereq_('typed-dom');
             function math(target) {
                 const source = target.innerText;
-                return math_1.cache.has(source) ? void typed_dom_1.define(target, math_1.cache.get(source).cloneNode(true).childNodes) : void queue(target, () => target.matches('span') ? void math_1.cache.set(source, target.cloneNode(true)) : global_1.undefined);
+                queue(target, target.tagName === 'SPAN' ? () => void math_1.cache.set(source, target.cloneNode(true)) : global_1.undefined);
             }
             exports.math = math;
             async function queue(target, callback = () => global_1.undefined) {
@@ -6583,8 +6582,7 @@ require = function () {
         },
         {
             '../../parser/inline/math': 112,
-            'spica/global': 12,
-            'typed-dom': 21
+            'spica/global': 12
         }
     ],
     135: [
@@ -6596,19 +6594,17 @@ require = function () {
             const twitter_1 = _dereq_('./media/twitter');
             const youtube_1 = _dereq_('./media/youtube');
             const gist_1 = _dereq_('./media/gist');
-            const slideshare_1 = _dereq_('./media/slideshare');
             const pdf_1 = _dereq_('./media/pdf');
             const video_1 = _dereq_('./media/video');
             const audio_1 = _dereq_('./media/audio');
             const image_1 = _dereq_('./media/image');
             const {origin} = global_1.location;
             function media(target, opts) {
-                var _a, _b, _c, _d, _e, _f, _g, _h;
+                var _a, _b, _c, _d, _e, _f, _g;
                 opts = {
                     twitter: twitter_1.twitter,
                     youtube: youtube_1.youtube,
                     gist: gist_1.gist,
-                    slideshare: slideshare_1.slideshare,
                     pdf: pdf_1.pdf,
                     video: video_1.video,
                     audio: audio_1.audio,
@@ -6617,7 +6613,7 @@ require = function () {
                 };
                 const url = new global_1.URL(target.getAttribute('data-src'), origin);
                 const alt = target.getAttribute('alt') || '';
-                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.gist) === null || _c === void 0 ? void 0 : _c.call(opts, url)) || ((_d = opts.slideshare) === null || _d === void 0 ? void 0 : _d.call(opts, url)) || ((_e = opts.pdf) === null || _e === void 0 ? void 0 : _e.call(opts, url)) || ((_f = opts.video) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt)) || ((_g = opts.audio) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt)) || ((_h = opts.image) === null || _h === void 0 ? void 0 : _h.call(opts, url, alt));
+                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.gist) === null || _c === void 0 ? void 0 : _c.call(opts, url)) || ((_d = opts.pdf) === null || _d === void 0 ? void 0 : _d.call(opts, url)) || ((_e = opts.video) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt)) || ((_f = opts.audio) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt)) || ((_g = opts.image) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt));
             }
             exports.media = media;
         },
@@ -6626,10 +6622,9 @@ require = function () {
             './media/gist': 137,
             './media/image': 138,
             './media/pdf': 139,
-            './media/slideshare': 140,
-            './media/twitter': 141,
-            './media/video': 142,
-            './media/youtube': 143,
+            './media/twitter': 140,
+            './media/video': 141,
+            './media/youtube': 142,
             'spica/global': 12
         }
     ],
@@ -6792,62 +6787,6 @@ require = function () {
                 (function () {
                     'use strict';
                     Object.defineProperty(exports, '__esModule', { value: true });
-                    exports.slideshare = void 0;
-                    const parser_1 = _dereq_('../../../parser');
-                    const media_1 = _dereq_('../../../parser/inline/media');
-                    const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
-                    const typed_dom_1 = _dereq_('typed-dom');
-                    const origins = new Set(['https://www.slideshare.net']);
-                    function slideshare(url) {
-                        if (!origins.has(url.origin))
-                            return;
-                        if (url.pathname.split('/').pop().includes('.'))
-                            return;
-                        if (!url.pathname.match(/^\/[^/?#]+\/[^/?#]+/))
-                            return;
-                        if (media_1.cache.has(url.href))
-                            return media_1.cache.get(url.href).cloneNode(true);
-                        return typed_dom_1.HTML.div({
-                            class: 'media',
-                            style: 'position: relative;'
-                        }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (html, tag) => {
-                            const outer = html(tag);
-                            $.ajax(`https://www.slideshare.net/api/oembed/2?url=${ url.href }&format=json`, {
-                                dataType: 'jsonp',
-                                timeout: 10 * 1000,
-                                cache: true,
-                                success({html}) {
-                                    outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; padding-top: 83%;">${ html }</div>`, { ADD_TAGS: ['iframe'] });
-                                    const iframe = outer.querySelector('iframe');
-                                    iframe.setAttribute('style', 'position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100%; height: 100%;');
-                                    iframe.parentElement.style.paddingTop = `${ +iframe.height / +iframe.width * 100 }%`;
-                                    outer.appendChild(iframe.nextElementSibling);
-                                    outer.lastElementChild.removeAttribute('style');
-                                    media_1.cache.set(url.href, outer.cloneNode(true));
-                                },
-                                error({status, statusText}) {
-                                    typed_dom_1.define(outer, [parser_1.parse(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
-                                }
-                            });
-                            return outer;
-                        }).element;
-                    }
-                    exports.slideshare = slideshare;
-                }.call(this));
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
-        },
-        {
-            '../../../parser': 52,
-            '../../../parser/inline/media': 113,
-            'typed-dom': 21
-        }
-    ],
-    141: [
-        function (_dereq_, module, exports) {
-            (function (global) {
-                (function () {
-                    'use strict';
-                    Object.defineProperty(exports, '__esModule', { value: true });
                     exports.twitter = void 0;
                     const global_1 = _dereq_('spica/global');
                     const parser_1 = _dereq_('../../../parser');
@@ -6909,7 +6848,7 @@ require = function () {
             'typed-dom': 21
         }
     ],
-    142: [
+    141: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -6941,7 +6880,7 @@ require = function () {
             'typed-dom': 21
         }
     ],
-    143: [
+    142: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -6980,7 +6919,7 @@ require = function () {
             'typed-dom': 21
         }
     ],
-    144: [
+    143: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -7015,13 +6954,13 @@ require = function () {
             });
         },
         {
-            './util/context': 145,
-            './util/info': 148,
-            './util/quote': 149,
-            './util/toc': 150
+            './util/context': 144,
+            './util/info': 147,
+            './util/quote': 148,
+            './util/toc': 149
         }
     ],
-    145: [
+    144: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -7046,7 +6985,7 @@ require = function () {
         },
         { 'spica/global': 12 }
     ],
-    146: [
+    145: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -7146,14 +7085,14 @@ require = function () {
         {
             '../parser/inline': 84,
             '../parser/inline/extension/label': 105,
-            './context': 145,
+            './context': 144,
             'spica/array': 6,
             'spica/global': 12,
             'spica/multimap': 14,
             'typed-dom': 21
         }
     ],
-    147: [
+    146: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -7273,7 +7212,7 @@ require = function () {
         },
         {
             '../parser/inline/extension/indexee': 103,
-            './context': 145,
+            './context': 144,
             'spica/array': 6,
             'spica/global': 12,
             'spica/memoize': 13,
@@ -7281,7 +7220,7 @@ require = function () {
             'typed-dom': 21
         }
     ],
-    148: [
+    147: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -7309,9 +7248,9 @@ require = function () {
             }
             exports.info = info;
         },
-        { './context': 145 }
+        { './context': 144 }
     ],
-    149: [
+    148: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -7394,7 +7333,7 @@ require = function () {
             'typed-dom': 21
         }
     ],
-    150: [
+    149: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -7498,7 +7437,7 @@ require = function () {
         {
             './src/parser': 52,
             './src/renderer': 131,
-            './src/util': 144,
+            './src/util': 143,
             'spica/global': 12
         }
     ]
