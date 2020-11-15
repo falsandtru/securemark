@@ -14,9 +14,11 @@ describe('Unit: renderer/render', () => {
       assert(render(parse('```\n${E = mc^2}$\n```').querySelector('pre')!).matches('pre'));
     });
 
-    it('math', () => {
-      assert(render(parse('${E = mc^2}$').querySelector('p')!).querySelector('.math'));
-      assert(render(parse('$$\nE = mc^2\n$$').querySelector('div')!).matches('.math'));
+    it('math', async () => {
+      // @ts-ignore
+      MathJax.typesetPromise || await MathJax.startup.promise;
+      //assert(render(parse('${E = mc^2}$').querySelector('p')!).querySelector('span.math')!.firstElementChild);
+      assert(render(parse('$$\nE = mc^2\n$$').querySelector('div')!).firstElementChild);
     });
 
     it('media', () => {
