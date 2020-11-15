@@ -42,7 +42,6 @@ export interface RenderingOptions {
     readonly twitter?: (url: URL) => HTMLElement | undefined;
     readonly youtube?: (url: URL) => HTMLElement | undefined;
     readonly gist?: (url: URL) => HTMLElement | undefined;
-    readonly slideshare?: (url: URL) => HTMLElement | undefined;
     readonly pdf?: (url: URL) => HTMLElement | undefined;
     readonly video?: (url: URL, alt: string) => HTMLVideoElement | undefined;
     readonly audio?: (url: URL, alt: string) => HTMLAudioElement | undefined;

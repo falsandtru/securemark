@@ -38,15 +38,6 @@ describe('Unit: renderer/render/media', () => {
       });
     });
 
-    it('slideshare', done => {
-      media(parse('!http://www.slideshare.net/Slideshare/get-started-with-slide-share').querySelector('img')!, {
-        slideshare: () => void done(false) || html('div')
-      });
-      media(parse('!https://www.slideshare.net/Slideshare/get-started-with-slide-share').querySelector('img')!, {
-        slideshare: () => void done() || html('div')
-      });
-    });
-
     it('pdf', done => {
       media(parse('!http://example.pdf').querySelector('img')!, {
         pdf: () => void done(false) || html('div')

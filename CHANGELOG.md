@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.180.0
+
+- Drop media support of SlideShare for security.
+
 ## 0.179.1
 
 - Refactoring.
