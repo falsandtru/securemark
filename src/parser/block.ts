@@ -1,5 +1,5 @@
 import { MarkdownParser } from '../../markdown.d';
-import { union, update, recover } from '../combinator';
+import { union, update, creator, recover } from '../combinator';
 import { emptyline } from './source/line';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -30,7 +30,7 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = recover(localize(
+export const block: BlockParser = creator(recover(localize(
   update({ resources: { creation: 100 * 1000 } },
   union([
     emptyline,
@@ -54,4 +54,4 @@ export const block: BlockParser = recover(localize(
         ? `${reason.name}: ${reason.message}`
         : `Unknown error: ${reason}`)],
     ''
-  ]);
+  ]));

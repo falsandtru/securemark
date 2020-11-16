@@ -1,5 +1,5 @@
 import { DListParser } from '../block';
-import { union, inits, some, block, line, validate, rewrite, context, fmap, open, convert, trim, lazy } from '../../combinator';
+import { union, inits, some, block, line, validate, rewrite, context, creator, fmap, open, convert, trim, lazy } from '../../combinator';
 import { defrag } from '../util';
 import { anyline } from '../source';
 import { inline, indexer, indexee } from '../inline';
@@ -20,14 +20,14 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
   ]))))),
   es => [html('dl', fillTrailingDescription(es))])));
 
-const term: DListParser.TermParser = line(indexee(fmap(
+const term: DListParser.TermParser = creator(line(indexee(fmap(
   open(
     /^~(?=[^\S\n])/,
     trim(some(union([indexer, inline]))),
     true),
-  ns => [html('dt', defrag(ns))])));
+  ns => [html('dt', defrag(ns))]))));
 
-const desc: DListParser.DescriptionParser = block(fmap(
+const desc: DListParser.DescriptionParser = creator(block(fmap(
   open(
     /^:(?=[^\S\n])|/,
     rewrite(
@@ -35,7 +35,7 @@ const desc: DListParser.DescriptionParser = block(fmap(
       trim(some(union([inline])))),
     true),
   ns => [html('dd', defrag(ns))]),
-  false);
+  false));
 
 function fillTrailingDescription(es: HTMLElement[]): HTMLElement[] {
   return es.length > 0 && es[es.length - 1].tagName === 'DT'

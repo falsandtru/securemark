@@ -27,23 +27,24 @@ function unindent(source: string): string {
 }
 
 const source: BlockquoteParser.SourceParser = lazy(() => fmap(
-  some(union([
+  some(creator(union([
     rewrite(
       indent,
       convert(unindent, source)),
     rewrite(
       some(contentline, opener),
       convert(unindent, fmap(some(autolink), ns => [html('pre', defrag(ns))]))),
-  ])),
+  ]))),
   ns => [html('blockquote', ns)]));
 
-const markdown: BlockquoteParser.ContentParser = lazy(() => creator(100, fmap(
-  some(union([
+const markdown: BlockquoteParser.ContentParser = lazy(() => fmap(
+  some(creator(union([
     rewrite(
       indent,
       convert(unindent, markdown)),
+    creator(99,
     rewrite(
       some(contentline, opener),
-      convert(unindent, (source, context) => [[parse(source, { ...context, id: '', footnotes: undefined })], ''])),
-  ])),
-  ns => [html('blockquote', ns)])));
+      convert(unindent, (source, context) => [[parse(source, { ...context, id: '', footnotes: undefined })], '']))),
+  ]))),
+  ns => [html('blockquote', ns)]));

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, some, block, line, focus, context, fmap, match, memoize, convert, indent, trim, lazy } from '../../combinator';
+import { union, inits, some, block, line, focus, context, creator, fmap, match, memoize, convert, indent, trim, lazy } from '../../combinator';
 import { defrag } from '../util';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
@@ -14,7 +14,7 @@ export const olist: OListParser = lazy(() => block(match(
   (_, type = _.slice(0, -1), delim = _[_.length - 1]) =>
     fmap(
       context({ syntax: { inline: { media: false } } },
-      some(union([
+      some(creator(union([
         fmap(
           inits([
             line(inits([
@@ -30,7 +30,7 @@ export const olist: OListParser = lazy(() => block(match(
             indent(union([ulist_, olist_, ilist_]))
           ]),
           (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
-      ]))),
+      ])))),
       es => [
         html('ol',
           {
