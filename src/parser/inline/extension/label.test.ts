@@ -34,6 +34,7 @@ describe('Unit: parser/inline/extension/label', () => {
       assert.deepStrictEqual(inspect(parser('$-b-$-c')), [['<a class="label" data-label="$-b">$-b</a>'], '-$-c']);
       assert.deepStrictEqual(inspect(parser('$-0')), [['<a class="label" data-label="$-0">$-0</a>'], '']);
       assert.deepStrictEqual(inspect(parser('$-0-$-0')), [['<a class="label" data-label="$-0">$-0</a>'], '-$-0']);
+      assert.deepStrictEqual(inspect(parser('$A-B')), [['<a class="label" data-label="a-b">$A-B</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[$a-b]')), [['<a class="label" data-label="a-b">$a-b</a>'], '']);
     });
 

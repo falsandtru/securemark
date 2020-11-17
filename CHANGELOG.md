@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.181.0
+
+- Change label parser to be case-insensitive.
+
 ## 0.180.1
 
 - Refactoring.
