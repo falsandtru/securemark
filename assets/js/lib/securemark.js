@@ -2169,7 +2169,7 @@ require = function () {
                     if (!resources)
                         return parser(source, context);
                     if (resources.creation < 0)
-                        throw new Error('Too many creations');
+                        throw new Error('Too many creations.');
                     const result = parser(source, context);
                     if (result) {
                         resources.creation -= cost;
@@ -5008,7 +5008,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = source_1.str(/^\$[a-z]*(?:(?:-[a-z][0-9a-z]*(?![A-Za-z0-9]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[A-Za-z0-9]))/);
+            const body = source_1.str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*(?![A-Za-z0-9]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[A-Za-z0-9]))/);
             exports.segment = combinator_1.clear(combinator_1.validate([
                 '[$',
                 '$'
@@ -5027,7 +5027,7 @@ require = function () {
                 body
             ]))), ([text]) => [typed_dom_1.html('a', {
                     class: 'label',
-                    'data-label': text.slice(text[1] === '-' ? 0 : 1)
+                    'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase()
                 }, text)]));
             function number(label, base) {
                 return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, base.split('.').length);
@@ -5950,14 +5950,14 @@ require = function () {
             ]);
             function* segment(source) {
                 if (source.length > 1000 * 1000)
-                    return yield '# ***Too large input over 1,000,000 characters***';
+                    return yield '# ***Too large input over 1,000,000 characters.***';
                 while (source !== '') {
                     const result = parser(source, {});
                     const rest = combinator_1.exec(result);
                     const segs = combinator_1.eval(result).length ? combinator_1.eval(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        seg.length > 10 * 1000 ? yield '# ***Too large block over 10,000 characters***' : yield seg;
+                        seg.length > 10 * 1000 ? yield '# ***Too large block over 10,000 characters.***' : yield seg;
                     }
                     source = rest;
                 }
