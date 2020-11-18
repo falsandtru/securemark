@@ -3,6 +3,8 @@ import { html } from 'typed-dom';
 import { push } from 'spica/array';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
+  // Bug: Firefox
+  //const hs = [...source.querySelectorAll([...Array(6)].map((_, i) => `H${i + 1}[id]`).concat('ASIDE.aside[id]').map(q => `:scope > ${q}`).join())]
   const hs = [...source.children]
     .reduce<HTMLHeadingElement[]>((acc, el) => {
       switch (el.id && el.tagName) {
