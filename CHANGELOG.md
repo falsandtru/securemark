@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.182.0
+
+- Change figbase syntax to enable to be used after level 2 headings.
+
 ## 0.181.0
 
 - Change label parser to be case-insensitive.

@@ -141,7 +141,7 @@ describe('Unit: util/figure', () => {
         '## 0',
         '$-0.0',
         '$fig-e\n> ',
-        '# 0',
+        '## 0',
         '$-5.0',
         '$fig-f\n> ',
         '$-0',
@@ -178,9 +178,9 @@ describe('Unit: util/figure', () => {
             '<figure data-label="$-0.1.0" data-group="$" style="display: none;"></figure>',
             '<h2 id="index:0">0</h2>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-0.0" data-group="$" style="display: none;"></figure>',
+            '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="6.0"></figure>',
             '<figure data-label="fig-e" data-group="fig" data-number="6.1" id="label:fig-e"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 6.1. </span><figcaption></figcaption></figure>',
-            '<h1 id="index:0">0</h1>',
+            '<h2 id="index:0">0</h2>',
             '<figure data-label="$-5.0" data-group="$" style="display: none;" data-number="5.0"></figure>',
             '<figure data-label="fig-f" data-group="fig" data-number="5.1" id="label:fig-f"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 5.1. </span><figcaption></figcaption></figure>',
             '<figure data-label="$-0" data-group="$" style="display: none;"></figure>',
@@ -192,6 +192,36 @@ describe('Unit: util/figure', () => {
             '<figure data-label="fig-i" data-group="fig" data-number="5.4" id="label:fig-i"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 5.4. </span><figcaption></figcaption></figure>',
             '<h1 id="index:0">0</h1>',
             '<figure data-label="fig-j" data-group="fig" data-number="6.1" id="label:fig-j"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 6.1. </span><figcaption></figcaption></figure>',
+          ]);
+      }
+    });
+
+    it('concatenation', () => {
+      const target = parse([
+        '# 0',
+        '$-0.0',
+        '## 0',
+        '## 0',
+        '$-1.0',
+        '$fig-a\n> ',
+        '## 0',
+        '$-0.0',
+        '$fig-b\n> ',
+      ].join('\n\n'));
+      for (let i = 0; i < 2; ++i) {
+        [...figure(target)];
+        assert.deepStrictEqual(
+          [...target.children].map(el => el.outerHTML),
+          [
+            '<h1 id="index:0">0</h1>',
+            '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="0.0"></figure>',
+            '<h2 id="index:0">0</h2>',
+            '<h2 id="index:0">0</h2>',
+            '<figure data-label="$-1.0" data-group="$" style="display: none;" data-number="1.0"></figure>',
+            '<figure data-label="fig-a" data-group="fig" data-number="1.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1.1. </span><figcaption></figcaption></figure>',
+            '<h2 id="index:0">0</h2>',
+            '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="2.0"></figure>',
+            '<figure data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2.1. </span><figcaption></figcaption></figure>',
           ]);
       }
     });
