@@ -7000,6 +7000,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function* figure(target, footnotes, opts = {}) {
+                var _a;
                 const refs = new multimap_1.MultiMap([
                     ...target.querySelectorAll('a.label'),
                     ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label')) || [],
@@ -7030,7 +7031,7 @@ require = function () {
                     if (label.endsWith('-0'))
                         continue;
                     if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
-                        if (label.lastIndexOf('.', -2) < 0 && !(+def.previousElementSibling.tagName[1] <= 2))
+                        if (label.lastIndexOf('.', -2) < 0 && !(+((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName[1]) <= 2))
                             continue;
                         if (label.lastIndexOf('.', -2) > 0)
                             continue;
