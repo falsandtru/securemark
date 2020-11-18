@@ -1,4 +1,4 @@
-import { undefined, Infinity } from 'spica/global';
+import { undefined, Infinity, Map } from 'spica/global';
 import { context } from './context';
 import { isFixed } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';

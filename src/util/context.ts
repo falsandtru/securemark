@@ -1,4 +1,4 @@
-import { undefined } from 'spica/global';
+import { undefined, WeakMap } from 'spica/global';
 
 export function context(
   base: DocumentFragment | HTMLElement | ShadowRoot,

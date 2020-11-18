@@ -1,4 +1,4 @@
-import { undefined, Infinity } from 'spica/global';
+import { undefined, Infinity, Map, WeakMap } from 'spica/global';
 import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
 import { MultiMap } from 'spica/multimap';
