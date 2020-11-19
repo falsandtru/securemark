@@ -288,7 +288,6 @@ export namespace MarkdownParser {
           FigParser.SegmentParser,
           FigureParser.SegmentParser,
           ExampleParser.SegmentParser,
-          AsideParser.SegmentParser,
           PlaceholderParser.SegmentParser,
         ], Context> {
       }
@@ -397,12 +396,6 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           MarkdownParser,
         ], Context> {
-      }
-      export namespace AsideParser {
-        export interface SegmentParser extends
-          Block<'extension/aside/segment'>,
-          Parser<never, [], Context> {
-        }
       }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,

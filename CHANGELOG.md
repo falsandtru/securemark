@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.184.0
+
+- Change aside syntax to decrease the maximum number of contained lines to 300.
+
 ## 0.183.0
 
 - Change blockquote parser to render footnotes.

@@ -1,16 +1,13 @@
 import { ExtensionParser } from '../../block';
-import { block, validate, creator, fmap, clear, fence } from '../../../combinator';
+import { block, validate, creator, fmap, fence } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom';
 
 const opener = /^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/;
 
-export const segment: ExtensionParser.AsideParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 1000, true))));
-
 export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~~~', fmap(
-  fence(opener, 1000, true),
+  fence(opener, 300, true),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
     if (!closer || param.trimStart() !== '') return [html('pre', {
