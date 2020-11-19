@@ -3,6 +3,7 @@
 ## 0.184.0
 
 - Change aside syntax to decrease the maximum number of contained lines to 300.
+- Fix footnote processing to ignore footnotes in separated contexts.
 
 ## 0.183.0
 

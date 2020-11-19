@@ -92,7 +92,7 @@ function build(
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild?.textContent === marker(defIndex)
           ? undefined
-          : [html('a', { href: refId && `#${defId}`, rel: 'noopener' }, marker(defIndex))])
+          : [html('a', { href: refId && defId && `#${defId}`, rel: 'noopener' }, marker(defIndex))])
         .firstChild as HTMLAnchorElement;
       assert(ref.title || ref.matches('.invalid'));
       assert(ref.firstChild);
