@@ -42,7 +42,6 @@ function build(
     for (let es = target.querySelectorAll<HTMLElement>(`sup.${syntax}`), i = 0, len = es.length; i < len; ++i) {
       yield;
       const ref = es[i];
-      assert(ref.matches('sup'));
       if (!check(ref)) continue;
       ++count;
       const identifier = identify(ref);
@@ -85,7 +84,7 @@ function build(
             ? { title }
             : { class: ref.classList.contains('invalid')
                   ? undefined
-                  : join([...ref.classList, 'invalid'], ' '),
+                  : void ref.classList.add('invalid'),
                 'data-invalid-syntax': syntax,
                 'data-invalid-type': 'content',
                 'data-invalid-message': 'Missing content.',
