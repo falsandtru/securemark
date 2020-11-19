@@ -24,8 +24,8 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
     }, `${opener}${body}${closer}`)];
     switch (type) {
       case 'markdown': {
-        const annotation = html('ol');
-        const reference = html('ol');
+        const annotation = html('ol', { class: 'annotation' });
+        const reference = html('ol', { class: 'reference' });
         const view = parse(body.slice(0, -1), {
           ...context,
           id: '',

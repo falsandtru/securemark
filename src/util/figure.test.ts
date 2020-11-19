@@ -110,8 +110,8 @@ describe('Unit: util/figure', () => {
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<blockquote><blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure></blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure></blockquote>',
-            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><div><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><p><a class="label" data-label="fig-a">Fig 1</a></p></div><ol></ol><ol></ol></aside>',
+            '<blockquote><blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><ol class="annotation"></ol><ol class="reference"></ol></blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><ol class="annotation"></ol><ol class="reference"></ol></blockquote>',
+            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><div><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><p><a class="label" data-label="fig-a">Fig 1</a></p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>',
             '<figure data-label="fig-b" data-group="fig" data-number="1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-a" data-group="fig" data-number="2" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2. </span><figcaption></figcaption></figure>',
           ]);
@@ -164,7 +164,7 @@ describe('Unit: util/figure', () => {
             '<h2 id="index:0">0</h2>',
             '<figure data-label="fig-1" data-group="fig" data-number="1" id="label:fig-1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
-            '<blockquote><h2>0</h2></blockquote>',
+            '<blockquote><h2>0</h2><ol class="annotation"></ol><ol class="reference"></ol></blockquote>',
             '<figure data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2.1. </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0.0" data-group="$" style="display: none;"></figure>',

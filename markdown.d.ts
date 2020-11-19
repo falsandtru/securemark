@@ -217,7 +217,7 @@ export namespace MarkdownParser {
       Block<'blockquote'>,
       Parser<HTMLQuoteElement, [
         BlockquoteParser.SourceParser,
-        BlockquoteParser.ContentParser,
+        BlockquoteParser.MarkdownParser,
       ], Context> {
     }
     export namespace BlockquoteParser {
@@ -234,11 +234,11 @@ export namespace MarkdownParser {
           AutolinkParser,
         ], Context> {
       }
-      export interface ContentParser extends
+      export interface MarkdownParser extends
         Block<'blockquote/markdown'>,
         Parser<HTMLQuoteElement, [
-          ContentParser,
           MarkdownParser,
+          Parser<DocumentFragment | HTMLOListElement, [], Context>,
         ], Context> {
       }
     }

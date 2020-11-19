@@ -19,8 +19,8 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       'data-invalid-type': closer ? 'parameter' : 'closer',
       'data-invalid-message': closer ? 'Invalid parameter.' : `Missing closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
-    const annotation = html('ol');
-    const reference = html('ol');
+    const annotation = html('ol', { class: 'annotation' });
+    const reference = html('ol', { class: 'reference' });
     const view = parse(body.slice(0, -1), {
       ...context,
       id: '',

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.183.0
+
+- Change blockquote parser to render footnotes.
+
 ## 0.182.0
 
 - Change figbase syntax to enable to be used after level 2 headings.

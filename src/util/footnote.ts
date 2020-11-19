@@ -39,7 +39,7 @@ function build(
     const refs = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     let count = 0;
-    for (let es = target.querySelectorAll<HTMLElement>(`.${syntax}`), i = 0, len = es.length; i < len; ++i) {
+    for (let es = target.querySelectorAll<HTMLElement>(`sup.${syntax}`), i = 0, len = es.length; i < len; ++i) {
       yield;
       const ref = es[i];
       assert(ref.matches('sup'));
@@ -57,7 +57,7 @@ function build(
       const def = undefined
         || defs.get(identifier)
         || defs.set(identifier, html('li',
-            { id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}` : undefined, class: 'footnote' },
+            { id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}` : undefined },
             [content.cloneNode(true), html('sup', [])]))
             .get(identifier)!;
       assert(def.lastChild);
