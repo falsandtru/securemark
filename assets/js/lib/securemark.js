@@ -3202,7 +3202,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.blockquote = exports.segment = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const source_1 = _dereq_('../source');
@@ -3228,14 +3227,25 @@ require = function () {
             ]))), ns => [typed_dom_1.html('blockquote', ns)]));
             const markdown = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.creator(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, markdown)),
-                combinator_1.creator(99, combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, context) => [
-                    [parse_1.parse(source, {
-                            ...context,
-                            id: '',
-                            footnotes: global_1.undefined
-                        })],
-                    ''
-                ])))
+                combinator_1.creator(99, combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, context) => {
+                    const annotation = typed_dom_1.html('ol', { class: 'annotation' });
+                    const reference = typed_dom_1.html('ol', { class: 'reference' });
+                    return [
+                        [
+                            parse_1.parse(source, {
+                                ...context,
+                                id: '',
+                                footnotes: {
+                                    annotation,
+                                    reference
+                                }
+                            }),
+                            annotation,
+                            reference
+                        ],
+                        ''
+                    ];
+                })))
             ]))), ns => [typed_dom_1.html('blockquote', ns)]));
         },
         {
@@ -3244,7 +3254,6 @@ require = function () {
             '../autolink': 60,
             '../source': 122,
             '../util': 130,
-            'spica/global': 12,
             'typed-dom': 21
         }
     ],
@@ -3405,8 +3414,8 @@ require = function () {
                             'data-invalid-type': closer ? 'parameter' : 'closer',
                             'data-invalid-message': closer ? 'Invalid parameter.' : `Missing closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
-                const annotation = typed_dom_1.html('ol');
-                const reference = typed_dom_1.html('ol');
+                const annotation = typed_dom_1.html('ol', { class: 'annotation' });
+                const reference = typed_dom_1.html('ol', { class: 'reference' });
                 const view = parse_1.parse(body.slice(0, -1), {
                     ...context,
                     id: '',
@@ -3462,8 +3471,8 @@ require = function () {
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'markdown': {
-                        const annotation = typed_dom_1.html('ol');
-                        const reference = typed_dom_1.html('ol');
+                        const annotation = typed_dom_1.html('ol', { class: 'annotation' });
+                        const reference = typed_dom_1.html('ol', { class: 'reference' });
                         const view = parse_1.parse(body.slice(0, -1), {
                             ...context,
                             id: '',
@@ -6968,8 +6977,8 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.context = void 0;
             const global_1 = _dereq_('spica/global');
-            function context(base, bound = 'id' in base && base.id ? `#${ base.id }` : 'section, article, aside, blockquote') {
-                const memory = new WeakMap();
+            function context(base, bound = `${ 'id' in base && base.id ? `#${ base.id }, ` : '' }section, article, aside, blockquote`) {
+                const memory = new global_1.WeakMap();
                 const context = 'id' in base && base.closest(bound) || null;
                 return el => {
                     var _a;
@@ -7009,7 +7018,7 @@ require = function () {
                     el.getAttribute('data-label'),
                     el
                 ]));
-                const numbers = new Map();
+                const numbers = new global_1.Map();
                 let base = '0';
                 let bases = base.split('.');
                 let index = bases;
@@ -7114,17 +7123,17 @@ require = function () {
             exports.footnote = footnote;
             exports.annotation = build('annotation', n => `*${ n }`);
             exports.reference = build('reference', n => `[${ n }]`);
-            const identify = memoize_1.memoize(ref => ref.getAttribute('data-alias') || ref.innerHTML, new WeakMap());
+            const identify = memoize_1.memoize(ref => ref.getAttribute('data-alias') || ref.innerHTML, new global_1.WeakMap());
             function build(syntax, marker) {
-                const contentify = memoize_1.memoize(ref => typed_dom_1.frag(ref.childNodes), new WeakMap());
+                const contentify = memoize_1.memoize(ref => typed_dom_1.frag(ref.childNodes), new global_1.WeakMap());
                 return function* (target, footnote, opts = {}) {
                     var _a;
                     const check = context_1.context(target);
-                    const defs = new Map();
+                    const defs = new global_1.Map();
                     const refs = new multimap_1.MultiMap();
-                    const titles = new Map();
+                    const titles = new global_1.Map();
                     let count = 0;
-                    for (let es = target.querySelectorAll(`.${ syntax }`), i = 0, len = es.length; i < len; ++i) {
+                    for (let es = target.querySelectorAll(`sup.${ syntax }`), i = 0, len = es.length; i < len; ++i) {
                         yield;
                         const ref = es[i];
                         if (!check(ref))
@@ -7137,10 +7146,7 @@ require = function () {
                         const content = contentify(ref);
                         const refIndex = count;
                         const refId = opts.id !== '' ? ref.id || `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }ref:${ count }` : global_1.undefined;
-                        const def = global_1.undefined || defs.get(identifier) || defs.set(identifier, typed_dom_1.html('li', {
-                            id: opts.id !== '' ? `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }def:${ defs.size + 1 }` : global_1.undefined,
-                            class: 'footnote'
-                        }, [
+                        const def = global_1.undefined || defs.get(identifier) || defs.set(identifier, typed_dom_1.html('li', { id: opts.id !== '' ? `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }def:${ defs.size + 1 }` : global_1.undefined }, [
                             content.cloneNode(true),
                             typed_dom_1.html('sup', [])
                         ])).get(identifier);
@@ -7171,7 +7177,7 @@ require = function () {
                                 'data-invalid-message': 'Missing content.'
                             }
                         }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && (refChild === null || refChild === void 0 ? void 0 : refChild.textContent) === marker(defIndex) ? global_1.undefined : [typed_dom_1.html('a', {
-                                href: defId && `#${ defId }`,
+                                href: refId && `#${ defId }`,
                                 rel: 'noopener'
                             }, marker(defIndex))]).firstChild;
                         def.lastChild.appendChild(typed_dom_1.html('a', {
