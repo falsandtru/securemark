@@ -2,9 +2,7 @@ import { undefined, WeakMap } from 'spica/global';
 
 export function context(
   base: DocumentFragment | HTMLElement | ShadowRoot,
-  bound: string = 'id' in base && base.id
-    ? `#${base.id}`
-    : 'section, article, aside, blockquote',
+  bound: string = `${'id' in base && base.id ? `#${base.id}, ` : ''}section, article, aside, blockquote`,
 ): (el: Element) => boolean {
   const memory = new WeakMap<Node, boolean>();
   const context = 'id' in base && base.closest(bound) || null;

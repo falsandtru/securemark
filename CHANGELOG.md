@@ -3,6 +3,7 @@
 ## 0.183.0
 
 - Change blockquote parser to render footnotes.
+- Fix footnote processing to ignore footnotes in separated contexts.
 
 ## 0.182.0
 
