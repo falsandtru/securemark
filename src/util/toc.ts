@@ -3,17 +3,20 @@ import { html } from 'typed-dom';
 import { push } from 'spica/array';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
+  const hs: HTMLHeadingElement[] = [];
   // Bug: Firefox
-  //const hs = [...source.querySelectorAll([...Array(6)].map((_, i) => `h${i + 1}[id]`).concat('aside.aside[id]').map(q => `:scope > ${q}`).join())]
-  const hs = [...source.querySelectorAll([...Array(6)].map((_, i) => `h${i + 1}[id]`).concat('aside.aside[id]').join())]
-    .map<HTMLHeadingElement>(el => {
-      switch (el.tagName) {
-        case 'ASIDE':
-          return html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes);
-        default:
-          return el as HTMLHeadingElement;
-      }
-    }, []);
+  //for (let es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join()), i = 0, len = es.length; i < len; ++i) {
+  for (let es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${s}[id]`).join()), i = 0, len = es.length; i < len; ++i) {
+    const el = es[i];
+    switch (el.tagName) {
+      case 'ASIDE':
+        hs.push(html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes));
+        continue;
+      default:
+        hs.push(el as HTMLHeadingElement);
+        continue;
+    }
+  }
   return parse(cons(hs));
 }
 

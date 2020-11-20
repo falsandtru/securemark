@@ -2,7 +2,7 @@ import { Info } from '../..';
 import { context } from './context';
 
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
-  const filter = context(source, 'section, article, aside, blockquote, .media, pre.notranslate, .math');
+  const match = context(source, 'section, article, aside, blockquote, .media, pre.notranslate, .math');
   return {
     hashtag: find('a.hashtag[href]'),
     hashref: find('a.hashref[href]'),
@@ -18,6 +18,12 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
   };
 
   function find<T extends HTMLElement>(selector: string): T[] {
-    return [...source.querySelectorAll<T>(selector)].filter(filter);
+    const acc: T[] = [];
+    for (let es = source.querySelectorAll<T>(selector), i = 0, len = es.length; i < len; ++i) {
+      const el = es[i];
+      if (!match(el)) continue;
+      acc.push(el);
+    }
+    return acc;
   }
 }
