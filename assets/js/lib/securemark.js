@@ -538,6 +538,17 @@ require = function () {
                     this.store.set(key, vs);
                     return vs;
                 }
+                *[Symbol.iterator]() {
+                    for (const [k, vs] of this.store) {
+                        for (let i = 0; i < vs.length; ++i) {
+                            yield [
+                                k,
+                                vs[i]
+                            ];
+                        }
+                    }
+                    return;
+                }
             }
             exports.MultiMap = MultiMap;
         },
@@ -3295,8 +3306,7 @@ require = function () {
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
                 const el = typed_dom_1.html('pre', { class: 'notranslate' }, body.slice(0, -1) || global_1.undefined);
                 if (lang) {
-                    el.classList.add('code');
-                    el.classList.add(`language-${ lang }`);
+                    el.className += ` code language-${ lang }`;
                     el.setAttribute('data-lang', lang);
                 } else {
                     typed_dom_1.define(el, util_1.defrag(combinator_1.eval(combinator_1.some(autolink_1.autolink)(el.textContent, context), [])));
@@ -3372,7 +3382,6 @@ require = function () {
                 fig_1.segment,
                 figure_1.segment,
                 example_1.segment,
-                aside_1.segment,
                 placeholder_1.segment
             ])));
             exports.extension = combinator_1.union([
@@ -3398,14 +3407,13 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.aside = exports.segment = void 0;
+            exports.aside = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const indexee_1 = _dereq_('../../inline/extension/indexee');
             const parse_1 = _dereq_('../../api/parse');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/;
-            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 1000, true))));
-            exports.aside = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 1000, true), ([body, closer, opener, delim, param], _, context) => {
+            exports.aside = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300, true), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
                 if (!closer || param.trimStart() !== '')
                     return [typed_dom_1.html('pre', {
@@ -5375,6 +5383,7 @@ require = function () {
             exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
             const {origin: orig} = window.location;
             function sanitize(uri, target, source, origin = orig) {
+                var _a;
                 let type;
                 let message;
                 switch (uri.protocol) {
@@ -5398,7 +5407,7 @@ require = function () {
                     type = 'parameter';
                     message = 'Invalid protocol.';
                 }
-                target.classList.toggle('invalid', true);
+                target.classList.add('invalid');
                 typed_dom_1.define(target, {
                     'data-invalid-syntax': 'link',
                     'data-invalid-type': type,
@@ -5544,7 +5553,7 @@ require = function () {
                         ];
                 }
                 typed_dom_1.define(el, {
-                    ...html_1.attributes('media', link_1.optspec, options, cached ? [...el.classList] : ['media']),
+                    ...html_1.attributes('media', link_1.optspec, options, cached ? el.className.trim().match(/\s+/g) || [] : ['media']),
                     nofollow: global_1.undefined
                 });
                 return ((_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(options) } }${ rest }`, context) : [
@@ -7002,7 +7011,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.figure = void 0;
             const global_1 = _dereq_('spica/global');
-            const context_1 = _dereq_('./context');
             const inline_1 = _dereq_('../parser/inline');
             const label_1 = _dereq_('../parser/inline/extension/label');
             const multimap_1 = _dereq_('spica/multimap');
@@ -7011,10 +7019,10 @@ require = function () {
             function* figure(target, footnotes, opts = {}) {
                 var _a;
                 const refs = new multimap_1.MultiMap([
-                    ...target.querySelectorAll('a.label'),
+                    ...target.querySelectorAll('a.label:not(.disabled)[data-label]'),
                     ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label')) || [],
                     ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label')) || []
-                ].filter(context_1.context(target)).map(el => [
+                ].map(el => [
                     el.getAttribute('data-label'),
                     el
                 ]));
@@ -7070,8 +7078,12 @@ require = function () {
                     for (const ref of refs.take(label, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.textContent === figindex)
                             continue;
-                        yield typed_dom_1.define(ref, opts.id !== '' ? { href: `#${ def.id }` } : global_1.undefined, figindex);
+                        yield typed_dom_1.define(ref, opts.id !== '' ? { href: `#${ def.id }` } : { class: `${ ref.className } disabled` }, figindex);
                     }
+                }
+                for (const [, ref] of refs) {
+                    opts.id !== '' && ref.classList.add('disabled');
+                    yield ref;
                 }
                 return;
             }
@@ -7096,7 +7108,6 @@ require = function () {
         {
             '../parser/inline': 84,
             '../parser/inline/extension/label': 105,
-            './context': 144,
             'spica/array': 6,
             'spica/global': 12,
             'spica/multimap': 14,
@@ -7109,12 +7120,10 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.reference = exports.annotation = exports.footnote = void 0;
             const global_1 = _dereq_('spica/global');
-            const context_1 = _dereq_('./context');
             const indexee_1 = _dereq_('../parser/inline/extension/indexee');
             const multimap_1 = _dereq_('spica/multimap');
             const memoize_1 = _dereq_('spica/memoize');
             const typed_dom_1 = _dereq_('typed-dom');
-            const array_1 = _dereq_('spica/array');
             function* footnote(target, footnotes, opts = {}) {
                 yield* exports.annotation(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation, opts);
                 yield* exports.reference(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference, opts);
@@ -7128,16 +7137,13 @@ require = function () {
                 const contentify = memoize_1.memoize(ref => typed_dom_1.frag(ref.childNodes), new global_1.WeakMap());
                 return function* (target, footnote, opts = {}) {
                     var _a;
-                    const check = context_1.context(target);
                     const defs = new global_1.Map();
                     const refs = new multimap_1.MultiMap();
                     const titles = new global_1.Map();
                     let count = 0;
-                    for (let es = target.querySelectorAll(`sup.${ syntax }`), i = 0, len = es.length; i < len; ++i) {
+                    for (let es = target.querySelectorAll(`sup.${ syntax }:not(.disabled)`), i = 0, len = es.length; i < len; ++i) {
                         yield;
                         const ref = es[i];
-                        if (!check(ref))
-                            continue;
                         ++count;
                         const identifier = identify(ref);
                         const title = ref.classList.contains('invalid') ? global_1.undefined : titles.get(identifier) || ref.title || indexee_1.text(ref) || global_1.undefined;
@@ -7167,17 +7173,15 @@ require = function () {
                         const refChild = ref.firstChild;
                         yield typed_dom_1.define(ref, {
                             id: refId,
+                            class: opts.id !== '' ? global_1.undefined : `${ ref.className } disabled`,
                             ...title ? { title } : {
-                                class: ref.classList.contains('invalid') ? global_1.undefined : array_1.join([
-                                    ...ref.classList,
-                                    'invalid'
-                                ], ' '),
+                                class: void ref.classList.add('invalid'),
                                 'data-invalid-syntax': syntax,
                                 'data-invalid-type': 'content',
                                 'data-invalid-message': 'Missing content.'
                             }
                         }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && (refChild === null || refChild === void 0 ? void 0 : refChild.textContent) === marker(defIndex) ? global_1.undefined : [typed_dom_1.html('a', {
-                                href: refId && `#${ defId }`,
+                                href: refId && defId && `#${ defId }`,
                                 rel: 'noopener'
                             }, marker(defIndex))]).firstChild;
                         def.lastChild.appendChild(typed_dom_1.html('a', {
@@ -7220,8 +7224,6 @@ require = function () {
         },
         {
             '../parser/inline/extension/indexee': 103,
-            './context': 144,
-            'spica/array': 6,
             'spica/global': 12,
             'spica/memoize': 13,
             'spica/multimap': 14,
