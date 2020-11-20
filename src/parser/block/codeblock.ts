@@ -40,8 +40,8 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       : lang && 'invalid';
     const el = html('pre', { class: 'notranslate' }, body.slice(0, -1) || undefined);
     if (lang) {
-      el.classList.add('code');
-      el.classList.add(`language-${lang}`);
+      assert(el.className);
+      el.className += ` code language-${lang}`;
       el.setAttribute('data-lang', lang);
     }
     else {

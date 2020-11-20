@@ -104,7 +104,8 @@ export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, source: st
       type = 'parameter';
       message = 'Invalid protocol.';
   }
-  target.classList.toggle('invalid', true);
+  target.classList.add('invalid');
+  assert(target.className.match(/invalid/g)?.length === 1);
   define(target, {
     'data-invalid-syntax': 'link',
     'data-invalid-type': type,

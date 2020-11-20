@@ -41,7 +41,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
       if (!sanitize(url, el, INSECURE_URI, context.origin)) return [[el], rest];
     }
     define(el, {
-      ...attributes('media', optspec, options, cached ? [...el.classList] : ['media']),
+      ...attributes('media', optspec, options, cached ? el.className.trim().match(/\s+/g) || [] : ['media']),
       nofollow: undefined,
     });
     return (context.syntax?.inline?.link ?? true)

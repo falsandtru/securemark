@@ -76,12 +76,10 @@ function build(
       yield define(ref,
         {
           id: refId,
-          class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
+          class: opts.id !== '' ? undefined : `${ref.className} disabled`,
           ...title
             ? { title }
-            : { class: ref.classList.contains('invalid')
-                  ? undefined
-                  : void ref.classList.add('invalid'),
+            : { class: void ref.classList.add('invalid'),
                 'data-invalid-syntax': syntax,
                 'data-invalid-type': 'content',
                 'data-invalid-message': 'Missing content.',
