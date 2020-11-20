@@ -29,7 +29,7 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
     assert(!view.querySelector('[id]'));
     // Bug: Firefox
     //const heading = view.querySelector(':scope > h1:first-child');
-    const heading = view.firstElementChild?.matches('h1') && view.firstElementChild as HTMLElement || null;
+    const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(view.firstElementChild?.tagName!) && view.firstElementChild as HTMLHeadingElement;
     if (!heading) return [html('pre', {
       class: `notranslate invalid`,
       'data-invalid-syntax': 'aside',

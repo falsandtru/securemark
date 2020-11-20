@@ -5,22 +5,13 @@ import { push } from 'spica/array';
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   // Bug: Firefox
   //const hs = [...source.querySelectorAll([...Array(6)].map((_, i) => `h${i + 1}[id]`).concat('aside.aside[id]').map(q => `:scope > ${q}`).join())]
-  const hs = [...source.children]
-    .reduce<HTMLHeadingElement[]>((acc, el) => {
-      switch (el.id && el.tagName) {
-        case 'H1':
-        case 'H2':
-        case 'H3':
-        case 'H4':
-        case 'H5':
-        case 'H6':
-          return push(acc, [el as HTMLHeadingElement]);
+  const hs = [...source.querySelectorAll([...Array(6)].map((_, i) => `h${i + 1}[id]`).concat('aside.aside[id]').join())]
+    .map<HTMLHeadingElement>(el => {
+      switch (el.tagName) {
         case 'ASIDE':
-          return el.classList.contains('aside')
-            ? push(acc, [html(`h${acc[acc.length - 1]?.tagName[1] || 1}` as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes)])
-            : acc;
+          return html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes);
         default:
-          return acc;
+          return el as HTMLHeadingElement;
       }
     }, []);
   return parse(cons(hs));

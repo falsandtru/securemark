@@ -15,6 +15,7 @@ describe('Unit: parser/block/extension/aside', () => {
 
     it('valid', () => {
       assert.deepStrictEqual(inspect(parser('~~~aside\n# 0\n~~~')), [['<aside id="index:0" class="aside"><h1>0</h1><ol class="annotation"></ol><ol class="reference"></ol></aside>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~aside\n## 0\n~~~')), [['<aside id="index:0" class="aside"><h2>0</h2><ol class="annotation"></ol><ol class="reference"></ol></aside>'], '']);
     });
 
   });

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.185.0
+
+- Enhance aside parser to enable to define the heading level.
+
 ## 0.184.0
 
 - Change aside syntax to decrease the maximum number of contained lines to 300.

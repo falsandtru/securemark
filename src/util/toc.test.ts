@@ -122,7 +122,7 @@ describe('Unit: util/toc', () => {
 
     it('A12A2', () => {
       assert.strictEqual(
-        toc(parse('~~~aside\n# 1\n~~~\n\n# 2\n\n## 3\n\n~~~aside\n# 4\n~~~\n\n## 5')).outerHTML,
+        toc(parse('~~~aside\n# 1\n~~~\n\n# 2\n\n## 3\n\n~~~aside\n## 4\n~~~\n\n## 5')).outerHTML,
         html('ul', [
           html('li', [html('a', { href: '#index:1', rel: 'noopener' }, '1')]),
           html('li', [html('a', { href: '#index:2', rel: 'noopener', 'data-index': '1' }, '2'),
