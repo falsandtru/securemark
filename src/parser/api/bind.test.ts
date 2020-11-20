@@ -130,7 +130,7 @@ describe('Unit: parser/api/bind', () => {
       assert(el.innerHTML === '<p>1</p>');
       assert.deepStrictEqual(inspectS(update('1\n\n3\n\n4'), 1), ['<p>3</p>']);
       assert(el.innerHTML === '<p>1</p><p>3</p>');
-      assert.deepStrictEqual(inspectS(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>', null]);
+      assert.deepStrictEqual(inspectS(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>']);
       assert(el.innerHTML === '<p>1</p><p>2</p><p>4</p>');
       [...update('')];
       assert(el.innerHTML === '');

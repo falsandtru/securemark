@@ -25,10 +25,10 @@ export function* figure(
   let index: readonly string[] = bases;
   // Bug: Firefox
   //for (let defs = target.querySelectorAll(':scope > figure, :scope > h1, :scope > h2, :scope > h3'), i = 0, len = defs.length; i < len; ++i) {
-  for (let defs = target.children, i = 0, len = defs.length; i < len; ++i) {
+  for (let defs = target.querySelectorAll('figure, h1, h2, h3'), i = 0, len = defs.length; i < len; ++i) {
     yield;
     const def = defs[i];
-    if (!['FIGURE', 'H1', 'H2', 'H3'].includes(def.tagName)) continue;
+    if (def.parentNode !== target) continue;
     if (bases.length === 1 && def.tagName[0] === 'H') continue;
     assert(base === '0' || bases.length > 1);
     const label = def.tagName === 'FIGURE'
