@@ -3809,12 +3809,17 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.mathblock = exports.segment_ = exports.segment = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;
             exports.segment = combinator_1.block(combinator_1.validate('$$', combinator_1.clear(combinator_1.fence(opener, 100, true))));
             exports.segment_ = combinator_1.block(combinator_1.validate('$$', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
-            exports.mathblock = combinator_1.block(combinator_1.validate('$$', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, param]) => closer && param.trimStart() === '' ? [typed_dom_1.html('div', { class: `math notranslate` }, `$$\n${ body }$$`)] : [typed_dom_1.html('pre', {
+            exports.mathblock = combinator_1.block(combinator_1.validate('$$', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, param], _, {
+                caches: {
+                    math: cache = global_1.undefined
+                } = {}
+            }) => [closer && param.trimStart() === '' ? (body = `$$\n${ body }$$`) && (cache === null || cache === void 0 ? void 0 : cache.has(body)) ? cache.get(body).cloneNode(true) : typed_dom_1.html('div', { class: `math notranslate` }, body) : typed_dom_1.html('pre', {
                     class: `math notranslate invalid`,
                     'data-invalid-syntax': 'mathblock',
                     'data-invalid-type': closer ? 'parameter' : 'closer',
@@ -3823,6 +3828,7 @@ require = function () {
         },
         {
             '../../combinator': 28,
+            'spica/global': 12,
             'typed-dom': 21
         }
     ],
@@ -5475,12 +5481,17 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.math = exports.cache = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const cache_1 = _dereq_('spica/cache');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\n]+?(?=}\$)/)]), '}$'), ([source]) => exports.cache.has(source = `\${${ source.trim() }}$`) ? [exports.cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
+            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\n]+?(?=}\$)/)]), '}$'), ([source], _, {
+                caches: {
+                    math: cache = global_1.undefined
+                } = {}
+            }) => [(source = `\${${ source.trim() }}$`) && (cache === null || cache === void 0 ? void 0 : cache.has(source)) ? cache.get(source).cloneNode(true) : typed_dom_1.html('span', {
                     class: 'math notranslate',
                     'data-src': source
                 }, source)]));
@@ -5489,6 +5500,7 @@ require = function () {
             '../../combinator': 28,
             '../source': 122,
             'spica/cache': 8,
+            'spica/global': 12,
             'typed-dom': 21
         }
     ],
@@ -5504,8 +5516,8 @@ require = function () {
             const source_1 = _dereq_('../source');
             const html_1 = _dereq_('./html');
             const typed_dom_1 = _dereq_('typed-dom');
-            const cache_1 = _dereq_('spica/cache');
             const array_1 = _dereq_('spica/array');
+            const cache_1 = _dereq_('spica/cache');
             const url = typed_dom_1.html('a');
             exports.cache = new cache_1.Cache(10);
             exports.media = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.validate([
@@ -5530,14 +5542,15 @@ require = function () {
                 [''],
                 as
             ]), ([[text], options], rest, context) => {
-                var _a, _b, _c;
+                var _a, _b, _c, _d;
                 if (text.length > 0 && text.slice(-2).trimStart() === '')
                     return;
                 const INSECURE_URI = options.shift();
                 url.href = INSECURE_URI;
                 const key = url.href;
-                const cached = exports.cache.has(key);
-                const el = cached ? exports.cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
+                const cache = (_a = context.caches) === null || _a === void 0 ? void 0 : _a.media;
+                const cached = cache === null || cache === void 0 ? void 0 : cache.has(key);
+                const el = cache && cached ? cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': INSECURE_URI,
                     alt: text.trim()
@@ -5555,7 +5568,7 @@ require = function () {
                     ...html_1.attributes('media', link_1.optspec, options, cached ? el.className.trim().match(/\s+/g) || [] : ['media']),
                     nofollow: global_1.undefined
                 });
-                return ((_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(options) } }${ rest }`, context) : [
+                return ((_d = (_c = (_b = context.syntax) === null || _b === void 0 ? void 0 : _b.inline) === null || _c === void 0 ? void 0 : _c.link) !== null && _d !== void 0 ? _d : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(options) } }${ rest }`, context) : [
                     [el],
                     rest
                 ];
@@ -6482,6 +6495,7 @@ require = function () {
             const math_1 = _dereq_('./render/math');
             const media_1 = _dereq_('./render/media');
             function render(target, opts = {}) {
+                var _a, _b;
                 opts = {
                     code: code_1.code,
                     math: math_1.math,
@@ -6502,11 +6516,11 @@ require = function () {
                     case !!opts.code && !target.firstElementChild && target.matches('pre.code'):
                         return void opts.code(target);
                     case !!opts.math && !target.firstElementChild && target.matches('.math'):
-                        return void opts.math(target);
+                        return void opts.math(target, (_a = opts.caches) === null || _a === void 0 ? void 0 : _a.math);
                     case target.matches('.media:not(img)'):
                         return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
                     case !!opts.media && target.matches('img.media:not([src])[data-src]'): {
-                            const el = media_1.media(target, opts.media);
+                            const el = media_1.media(target, opts.media, (_b = opts.caches) === null || _b === void 0 ? void 0 : _b.media);
                             if (!el)
                                 return;
                             el.setAttribute('data-src', target.getAttribute('data-src'));
@@ -6588,10 +6602,9 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.math = void 0;
             const global_1 = _dereq_('spica/global');
-            const math_1 = _dereq_('../../parser/inline/math');
-            function math(target) {
-                const source = target.innerText;
-                queue(target, target.tagName === 'SPAN' ? () => void math_1.cache.set(source, target.cloneNode(true)) : global_1.undefined);
+            function math(target, cache) {
+                const source = target.innerHTML;
+                queue(target, () => void (cache === null || cache === void 0 ? void 0 : cache.set(source, target.cloneNode(true))));
             }
             exports.math = math;
             async function queue(target, callback = () => global_1.undefined) {
@@ -6599,10 +6612,7 @@ require = function () {
                 MathJax.typesetPromise([target]).then(callback);
             }
         },
-        {
-            '../../parser/inline/math': 112,
-            'spica/global': 12
-        }
+        { 'spica/global': 12 }
     ],
     135: [
         function (_dereq_, module, exports) {
@@ -6618,7 +6628,7 @@ require = function () {
             const audio_1 = _dereq_('./media/audio');
             const image_1 = _dereq_('./media/image');
             const {origin} = global_1.location;
-            function media(target, opts) {
+            function media(target, opts, cache) {
                 var _a, _b, _c, _d, _e, _f, _g;
                 opts = {
                     twitter: twitter_1.twitter,
@@ -6632,7 +6642,7 @@ require = function () {
                 };
                 const url = new global_1.URL(target.getAttribute('data-src'), origin);
                 const alt = target.getAttribute('alt') || '';
-                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.gist) === null || _c === void 0 ? void 0 : _c.call(opts, url)) || ((_d = opts.pdf) === null || _d === void 0 ? void 0 : _d.call(opts, url)) || ((_e = opts.video) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt)) || ((_f = opts.audio) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt)) || ((_g = opts.image) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt));
+                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url, cache)) || ((_c = opts.gist) === null || _c === void 0 ? void 0 : _c.call(opts, url, cache)) || ((_d = opts.pdf) === null || _d === void 0 ? void 0 : _d.call(opts, url, cache)) || ((_e = opts.video) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt, cache)) || ((_f = opts.audio) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt, cache)) || ((_g = opts.image) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt, cache));
             }
             exports.media = media;
         },
@@ -6652,31 +6662,29 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.audio = void 0;
-            const media_1 = _dereq_('../../../parser/inline/media');
             const typed_dom_1 = _dereq_('typed-dom');
             const extensions = new Set([
                 '.oga',
                 '.ogg'
             ]);
-            function audio(url, alt) {
+            function audio(url, alt, cache) {
                 if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                if (media_1.cache.has(url.href))
-                    return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.html('audio', {
+                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
+                    return cache.get(url.href).cloneNode(true);
+                const el = typed_dom_1.html('audio', {
                     class: 'media',
                     src: url.href,
                     alt,
                     controls: '',
                     style: 'width: 100%;'
-                }).cloneNode(true));
+                });
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
+                return el;
             }
             exports.audio = audio;
         },
-        {
-            '../../../parser/inline/media': 113,
-            'typed-dom': 21
-        }
+        { 'typed-dom': 21 }
     ],
     137: [
         function (_dereq_, module, exports) {
@@ -6687,19 +6695,18 @@ require = function () {
                     exports.gist = void 0;
                     const global_1 = _dereq_('spica/global');
                     const parser_1 = _dereq_('../../../parser');
-                    const media_1 = _dereq_('../../../parser/inline/media');
                     const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                     const typed_dom_1 = _dereq_('typed-dom');
                     const origins = new Set(['https://gist.github.com']);
-                    function gist(url) {
+                    function gist(url, cache) {
                         if (!origins.has(url.origin))
                             return;
                         if (url.pathname.split('/').pop().includes('.'))
                             return;
                         if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/))
                             return;
-                        if (media_1.cache.has(url.href))
-                            return media_1.cache.get(url.href).cloneNode(true);
+                        if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
+                            return cache.get(url.href).cloneNode(true);
                         return typed_dom_1.HTML.div({
                             class: 'media',
                             style: 'position: relative;'
@@ -6715,7 +6722,7 @@ require = function () {
                                     outer.innerHTML = dompurify_1.sanitize(`<div style="position: relative; margin-bottom: -1em;">${ div }</div>`);
                                     const gist = outer.querySelector('.gist');
                                     gist.insertBefore(html('div', { class: 'gist-description' }, [typed_dom_1.HTML.a({ style: 'color: #555; font-weight: 600;' }, description, () => parser_1.parse(`{ ${ url.href } }`).querySelector('a')).element]), gist.firstChild);
-                                    media_1.cache.set(url.href, outer.cloneNode(true));
+                                    cache === null || cache === void 0 ? void 0 : cache.set(url.href, outer.cloneNode(true));
                                     if (global_1.document.head.querySelector(`link[rel="stylesheet"][href="${ stylesheet }"]`))
                                         return;
                                     global_1.document.head.appendChild(html('link', {
@@ -6737,7 +6744,6 @@ require = function () {
         },
         {
             '../../../parser': 52,
-            '../../../parser/inline/media': 113,
             'spica/global': 12,
             'typed-dom': 21
         }
@@ -6747,24 +6753,22 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.image = void 0;
-            const media_1 = _dereq_('../../../parser/inline/media');
             const typed_dom_1 = _dereq_('typed-dom');
-            function image(url, alt) {
-                if (media_1.cache.has(url.href))
-                    return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.html('img', {
+            function image(url, alt, cache) {
+                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
+                    return cache.get(url.href).cloneNode(true);
+                const el = typed_dom_1.html('img', {
                     class: 'media',
                     src: url.href,
                     alt,
                     style: 'max-width: 100%;'
-                }).cloneNode(true));
+                });
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
+                return el;
             }
             exports.image = image;
         },
-        {
-            '../../../parser/inline/media': 113,
-            'typed-dom': 21
-        }
+        { 'typed-dom': 21 }
     ],
     139: [
         function (_dereq_, module, exports) {
@@ -6772,15 +6776,14 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.pdf = void 0;
             const parser_1 = _dereq_('../../../parser');
-            const media_1 = _dereq_('../../../parser/inline/media');
             const typed_dom_1 = _dereq_('typed-dom');
             const extensions = new Set(['.pdf']);
-            function pdf(url) {
+            function pdf(url, cache) {
                 if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                if (media_1.cache.has(url.href))
-                    return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.html('div', {
+                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
+                    return cache.get(url.href).cloneNode(true);
+                const el = typed_dom_1.html('div', {
                     class: 'media',
                     style: 'position: relative;'
                 }, [
@@ -6790,13 +6793,14 @@ require = function () {
                             style: 'width: 100%; height: 100%; min-height: 400px;'
                         })]),
                     typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**{ ${ url.href } }**`).firstElementChild.childNodes)
-                ]));
+                ]);
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
+                return el;
             }
             exports.pdf = pdf;
         },
         {
             '../../../parser': 52,
-            '../../../parser/inline/media': 113,
             'typed-dom': 21
         }
     ],
@@ -6811,22 +6815,14 @@ require = function () {
                     const parser_1 = _dereq_('../../../parser');
                     const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                     const typed_dom_1 = _dereq_('typed-dom');
-                    const cache_1 = _dereq_('spica/cache');
                     const origins = new Set(['https://twitter.com']);
-                    const cache = new cache_1.Cache(10);
                     function twitter(url) {
-                        var _a;
                         if (!origins.has(url.origin))
                             return;
                         if (url.pathname.split('/').pop().includes('.'))
                             return;
                         if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                             return;
-                        if (cache.has(url.href)) {
-                            const el = cache.get(url.href).cloneNode(true);
-                            (_a = global_1.window.twttr) === null || _a === void 0 ? void 0 : _a.widgets.load(el);
-                            return el;
-                        }
                         return typed_dom_1.HTML.div({
                             class: 'media',
                             style: 'position: relative;'
@@ -6838,7 +6834,6 @@ require = function () {
                                 cache: true,
                                 success({html}) {
                                     outer.innerHTML = dompurify_1.sanitize(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`);
-                                    cache.set(url.href, outer.cloneNode(true));
                                     if (global_1.window.twttr)
                                         return void global_1.window.twttr.widgets.load(outer);
                                     const id = 'twitter-wjs';
@@ -6862,7 +6857,6 @@ require = function () {
         },
         {
             '../../../parser': 52,
-            'spica/cache': 8,
             'spica/global': 12,
             'typed-dom': 21
         }
@@ -6872,45 +6866,42 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.video = void 0;
-            const media_1 = _dereq_('../../../parser/inline/media');
             const typed_dom_1 = _dereq_('typed-dom');
             const extensions = new Set([
                 '.webm',
                 '.ogv'
             ]);
-            function video(url, alt) {
+            function video(url, alt, cache) {
                 if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                if (media_1.cache.has(url.href))
-                    return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.html('video', {
+                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
+                    return cache.get(url.href).cloneNode(true);
+                const el = typed_dom_1.html('video', {
                     class: 'media',
                     src: url.href,
                     alt,
                     muted: '',
                     controls: '',
                     style: 'max-width: 100%;'
-                }).cloneNode(true));
+                });
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
+                return el;
             }
             exports.video = video;
         },
-        {
-            '../../../parser/inline/media': 113,
-            'typed-dom': 21
-        }
+        { 'typed-dom': 21 }
     ],
     142: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.youtube = void 0;
-            const media_1 = _dereq_('../../../parser/inline/media');
             const typed_dom_1 = _dereq_('typed-dom');
             const origins = new Set([
                 'https://www.youtube.com',
                 'https://youtu.be'
             ]);
-            function youtube(url) {
+            function youtube(url, cache) {
                 if (!origins.has(url.origin))
                     return;
                 if (url.pathname.split('/').pop().includes('.'))
@@ -6919,9 +6910,9 @@ require = function () {
                     return;
                 if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w-]+$/))
                     return;
-                if (media_1.cache.has(url.href))
-                    return media_1.cache.get(url.href).cloneNode(true);
-                return media_1.cache.set(url.href, typed_dom_1.html('div', {
+                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
+                    return cache.get(url.href).cloneNode(true);
+                const el = typed_dom_1.html('div', {
                     class: 'media',
                     style: 'position: relative;'
                 }, [typed_dom_1.html('div', { style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.html('iframe', {
@@ -6929,14 +6920,13 @@ require = function () {
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
-                        })])]));
+                        })])]);
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
+                return el;
             }
             exports.youtube = youtube;
         },
-        {
-            '../../../parser/inline/media': 113,
-            'typed-dom': 21
-        }
+        { 'typed-dom': 21 }
     ],
     143: [
         function (_dereq_, module, exports) {
