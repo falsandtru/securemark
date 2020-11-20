@@ -1,13 +1,13 @@
 import { html } from 'typed-dom';
 import { Cache } from 'spica/cache';
 
-const extensions = new Set([
+const extensions = [
   '.oga',
   '.ogg',
-]);
+];
 
 export function audio(url: URL, alt: string, cache?: Cache<string, HTMLElement>): HTMLAudioElement | undefined {
-  if (!extensions.has(url.pathname.split(/(?=\.)/).pop()!)) return;
+  if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLAudioElement;
   const el = html('audio', {
     class: 'media',

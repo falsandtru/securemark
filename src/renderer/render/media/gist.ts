@@ -4,12 +4,12 @@ import { sanitize } from 'dompurify';
 import { HTML, define } from 'typed-dom';
 import { Cache } from 'spica/cache';
 
-const origins = new Set([
+const origins = [
   'https://gist.github.com',
-]);
+];
 
 export function gist(url: URL, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
-  if (!origins.has(url.origin)) return;
+  if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
   if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/)) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true);

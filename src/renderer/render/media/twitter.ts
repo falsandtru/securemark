@@ -14,12 +14,12 @@ declare global {
   }
 }
 
-const origins = new Set([
+const origins = [
   'https://twitter.com',
-]);
+];
 
 export function twitter(url: URL): HTMLElement | undefined {
-  if (!origins.has(url.origin)) return;
+  if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
   if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
   return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (h, tag) => {

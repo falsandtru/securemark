@@ -1,13 +1,13 @@
 import { html } from 'typed-dom';
 import { Cache } from 'spica/cache';
 
-const origins = new Set([
+const origins = [
   'https://www.youtube.com',
   'https://youtu.be',
-]);
+];
 
 export function youtube(url: URL, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
-  if (!origins.has(url.origin)) return;
+  if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
   if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/)) return;
   if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w-]+$/)) return;

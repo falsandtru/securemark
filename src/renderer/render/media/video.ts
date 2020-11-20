@@ -1,13 +1,13 @@
 import { html } from 'typed-dom';
 import { Cache } from 'spica/cache';
 
-const extensions = new Set([
+const extensions = [
   '.webm',
   '.ogv',
-]);
+];
 
 export function video(url: URL, alt: string, cache?: Cache<string, HTMLElement>): HTMLVideoElement | undefined {
-  if (!extensions.has(url.pathname.split(/(?=\.)/).pop()!)) return;
+  if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLVideoElement;
   const el = html('video', {
     class: 'media',
