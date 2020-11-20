@@ -1,5 +1,4 @@
-import { undefined, Infinity, Map } from 'spica/global';
-import { context } from './context';
+import { Infinity, Map } from 'spica/global';
 import { isFixed } from '../parser/inline';
 import { number as calculate } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
@@ -15,11 +14,10 @@ export function* figure(
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(
     [
-      ...target.querySelectorAll<HTMLAnchorElement>('a.label'),
+      ...target.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)[data-label]'),
       ...footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label') || [],
       ...footnotes?.reference.querySelectorAll<HTMLAnchorElement>('a.label') || [],
     ]
-      .filter(context(target))
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
   let base = '0';
@@ -90,8 +88,12 @@ export function* figure(
       group === '$' ? figindex : `${figindex}. `);
     for (const ref of refs.take(label, Infinity)) {
       if (ref.hash.slice(1) === def.id && ref.textContent === figindex) continue;
-      yield define(ref, opts.id !== '' ? { href: `#${def.id}` } : undefined, figindex);
+      yield define(ref, opts.id !== '' ? { href: `#${def.id}` } : void ref.classList.add('disabled'), figindex);
     }
+  }
+  for (const [, ref] of refs) {
+    opts.id !== '' && ref.classList.add('disabled');
+    yield ref;
   }
   return;
 }

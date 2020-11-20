@@ -1,10 +1,8 @@
 import { undefined, Infinity, Map, WeakMap } from 'spica/global';
-import { context } from './context';
 import { text } from '../parser/inline/extension/indexee';
 import { MultiMap } from 'spica/multimap';
 import { memoize } from 'spica/memoize';
 import { frag, html, define } from 'typed-dom';
-import { join } from 'spica/array';
 
 export function* footnote(
   target: DocumentFragment | HTMLElement | ShadowRoot,
@@ -34,15 +32,13 @@ function build(
     ref => frag(ref.childNodes),
     new WeakMap());
   return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-    const check = context(target);
     const defs = new Map<string, HTMLLIElement>();
     const refs = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     let count = 0;
-    for (let es = target.querySelectorAll<HTMLElement>(`sup.${syntax}`), i = 0, len = es.length; i < len; ++i) {
+    for (let es = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`), i = 0, len = es.length; i < len; ++i) {
       yield;
       const ref = es[i];
-      if (!check(ref)) continue;
       ++count;
       const identifier = identify(ref);
       const title = ref.classList.contains('invalid')
@@ -80,6 +76,7 @@ function build(
       yield define(ref,
         {
           id: refId,
+          class: opts.id !== '' ? undefined : void ref.classList.add('disabled'),
           ...title
             ? { title }
             : { class: ref.classList.contains('invalid')

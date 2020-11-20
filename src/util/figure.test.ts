@@ -93,7 +93,7 @@ describe('Unit: util/figure', () => {
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
             '<p><a class="label" data-label="fig-2" href="#label:fig-2">Fig 2</a></p>',
             '<p><a class="label" data-label="$-4.1.1" href="#label:$-4.1.1">(4.1.1)</a></p>',
-            '<p><a class="label" data-label="fig-1">$fig-1</a></p>',
+            '<p><a class="label disabled" data-label="fig-1">$fig-1</a></p>',
           ]);
       }
     });
@@ -111,7 +111,7 @@ describe('Unit: util/figure', () => {
           [...target.children].map(el => el.outerHTML),
           [
             '<blockquote><blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><ol class="annotation"></ol><ol class="reference"></ol></blockquote><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><ol class="annotation"></ol><ol class="reference"></ol></blockquote>',
-            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><div><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><p><a class="label" data-label="fig-a">Fig 1</a></p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>',
+            '<aside class="example" data-type="markdown"><pre>~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><div><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure><p><a class="label disabled" data-label="fig-a">Fig 1</a></p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>',
             '<figure data-label="fig-b" data-group="fig" data-number="1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-a" data-group="fig" data-number="2" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 2. </span><figcaption></figcaption></figure>',
           ]);
