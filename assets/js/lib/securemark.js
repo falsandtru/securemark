@@ -7020,8 +7020,8 @@ require = function () {
                 var _a;
                 const refs = new multimap_1.MultiMap([
                     ...target.querySelectorAll('a.label:not(.disabled)[data-label]'),
-                    ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label')) || [],
-                    ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label')) || []
+                    ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label:not(.disabled)')) || [],
+                    ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label:not(.disabled)')) || []
                 ].map(el => [
                     el.getAttribute('data-label'),
                     el
