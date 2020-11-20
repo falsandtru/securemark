@@ -6,8 +6,8 @@ import { link, optspec, uri, option, sanitize } from './link';
 import { text, char } from '../source';
 import { attributes } from './html';
 import { html, define } from 'typed-dom';
-import { Cache } from 'spica/cache';
 import { unshift, join } from 'spica/array';
+import { Cache } from 'spica/cache';
 
 const url = html('a');
 
@@ -30,8 +30,9 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     assert(!INSECURE_URI.match(/\s/));
     url.href = INSECURE_URI;
     const key = url.href;
-    const cached = cache.has(key);
-    const el = cached
+    const cache = context.caches?.media;
+    const cached = cache?.has(key);
+    const el = cache && cached
       ? cache.get(key)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': INSECURE_URI, alt: text.trim() });
     if (cached) {

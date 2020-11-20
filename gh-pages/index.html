@@ -422,8 +422,9 @@
     ''
   ].join('\n');
   const viewer = document.getElementById('viewer');
-  const { bind, render } = require('securemark');
+  const { bind, render, caches } = require('securemark');
   const update = bind(viewer, {
+    caches,
     footnotes: {
       annotation: viewer.querySelector('#annotation'),
       reference: viewer.querySelector('#reference'),
@@ -433,7 +434,7 @@
     changes
       .forEach(function (change) {
         observer.unobserve(change.target);
-        render(change.target);
+        render(change.target, { caches });
       });
   }, {
     rootMargin: '100px',

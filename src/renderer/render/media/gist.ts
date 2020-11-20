@@ -1,18 +1,18 @@
 import { document } from 'spica/global';
 import { parse } from '../../../parser';
-import { cache } from '../../../parser/inline/media';
 import { sanitize } from 'dompurify';
 import { HTML, define } from 'typed-dom';
+import { Cache } from 'spica/cache';
 
 const origins = new Set([
   'https://gist.github.com',
 ]);
 
-export function gist(url: URL): HTMLElement | undefined {
+export function gist(url: URL, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
   if (!origins.has(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
   if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/)) return;
-  if (cache.has(url.href)) return cache.get(url.href)!.cloneNode(true);
+  if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true);
   return HTML.div({ class: 'media', style: 'position: relative;' }, [HTML.em(`loading ${url.href}`)], (html, tag) => {
     const outer = html(tag);
     $.ajax(`${url.href}.json`, {
@@ -29,7 +29,7 @@ export function gist(url: URL): HTMLElement | undefined {
               parse(`{ ${url.href} }`).querySelector('a')!).element,
           ]),
           gist.firstChild);
-        cache.set(url.href, outer.cloneNode(true));
+        cache?.set(url.href, outer.cloneNode(true));
         if (document.head!.querySelector(`link[rel="stylesheet"][href="${stylesheet}"]`)) return;
         document.head!.appendChild(html('link', {
           rel: 'stylesheet',

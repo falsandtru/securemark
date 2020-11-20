@@ -1,10 +1,10 @@
 import { undefined } from 'spica/global';
-import { cache } from '../../parser/inline/math';
+import { Cache } from 'spica/cache';
 
-export function math(target: HTMLElement): void {
+export function math(target: HTMLElement, cache?: Cache<string, HTMLElement>): void {
   assert(target.children.length === 0);
-  const source = target.innerText;
-  queue(target, () => void cache.set(source, target.cloneNode(true)));
+  const source = target.innerHTML;
+  queue(target, () => void cache?.set(source, target.cloneNode(true)));
 }
 
 async function queue(target: HTMLElement, callback = () => undefined): Promise<void> {

@@ -1,6 +1,6 @@
+import { undefined } from 'spica/global';
 import { MathBlockParser } from '../block';
 import { block, validate, fmap, clear, fence } from '../../combinator';
-import { cache } from '../inline/math';
 import { html } from 'typed-dom';
 
 const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;
@@ -14,9 +14,9 @@ export const segment_: MathBlockParser.SegmentParser = block(validate('$$',
 export const mathblock: MathBlockParser = block(validate('$$', fmap(
   fence(opener, 100, true),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, param]: string[]) => [
+  ([body, closer, opener, delim, param]: string[], _, { caches: { math: cache = undefined } = {} }) => [
     closer && param.trimStart() === ''
-      ? cache.has(body = `$$\n${body}$$`)
+      ? (body = `$$\n${body}$$`) && cache?.has(body)
         ? cache.get(body)!.cloneNode(true) as HTMLDivElement
         : html('div', { class: `math notranslate` }, body)
       : html('pre', {

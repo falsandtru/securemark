@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { MathParser } from '../inline';
 import { union, creator, fmap, surround } from '../../combinator';
 import { str } from '../source';
@@ -8,8 +9,8 @@ export const cache = new Cache<string, HTMLElement>(20); // for rerendering in e
 
 export const math: MathParser = creator(fmap(
   surround('${', union([str(/^[^\n]+?(?=}\$)/)]), '}$'),
-  ([source]) => [
-    cache.has(source = `\${${source.trim()}}$`)
+  ([source], _, { caches: { math: cache = undefined } = {} }) => [
+    (source = `\${${source.trim()}}$`) && cache?.has(source)
       ? cache.get(source)!.cloneNode(true)
       : html('span', { class: 'math notranslate', 'data-src': source }, source),
   ]));

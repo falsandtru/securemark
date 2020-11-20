@@ -2,6 +2,7 @@
 
 ## 0.185.0
 
+- Refine cache control.
 - Enhance aside parser to enable to define the heading level.
 
 ## 0.184.0

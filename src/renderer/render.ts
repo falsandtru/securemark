@@ -20,14 +20,14 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
       case !!opts.math
         && !target.firstElementChild
         && target.matches('.math'):
-        return void opts.math!(target);
+        return void opts.math!(target, opts.caches?.math);
       case target.matches('.media:not(img)'):
         assert(target.matches('a > .media'));
         return void target.parentElement!.parentElement!.replaceChild(target, target.parentElement!);
       case !!opts.media
         && target.matches('img.media:not([src])[data-src]'): {
         assert(target.matches('a > .media'));
-        const el = media(target as HTMLImageElement, opts.media!);
+        const el = media(target as HTMLImageElement, opts.media!, opts.caches?.media);
         if (!el) return;
         assert(el.matches('.media'));
         el.setAttribute('data-src', target.getAttribute('data-src')!);
