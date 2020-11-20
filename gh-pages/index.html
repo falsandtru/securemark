@@ -241,6 +241,33 @@
     display: block;
     margin-bottom: 1em;
   }
+  ol#annotation,
+  ol.annotation,
+  ol#reference,
+  ol.reference {
+    position: relative;
+    margin-top: 3em;
+    width: 100%;
+  }
+  ol#annotation::before,
+  ol.annotation::before,
+  ol#reference::before,
+  ol.reference::before {
+    display: table-row;
+    position: absolute;
+    top: -1.3em;
+    width: 100%;
+    text-align: center;
+    font-size: 2em;
+  }
+  ol#annotation::before,
+  ol.annotation::before {
+    content: "Annotations";
+  }
+  ol#reference::before,
+  ol.reference::before {
+    content: "References";
+  }
   @media print {
     #viewer > hr {
       break-after: page;
@@ -378,7 +405,7 @@
     '',
     '## Annotation',
     '',
-    'Annotation syntax is refined footnotes((Annotations and its helper function generate footnotes *without manual numbering*.)).',
+    'Annotation syntax is refined footnotes((Annotations generate footnotes *without manual numbering*.)).',
     '',
     '## Link',
     '',
