@@ -1,9 +1,10 @@
 import { undefined } from 'spica/global';
+import { MarkdownParser } from '../../../../markdown';
 import { Parser, fmap } from '../../../combinator';
 import { define } from 'typed-dom';
 
-export function indexee<P extends Parser<unknown>>(parser: P): P;
-export function indexee(parser: Parser<HTMLElement>): Parser<HTMLElement> {
+export function indexee<P extends Parser<unknown, any, MarkdownParser.Context>>(parser: P): P;
+export function indexee(parser: Parser<HTMLElement, any, MarkdownParser.Context>): Parser<HTMLElement> {
   return fmap(parser, ([el], _, { id }) => [define(el, { id: id !== '' && identity(el) || undefined })]);
 }
 

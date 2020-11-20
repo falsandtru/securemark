@@ -23,6 +23,7 @@ export namespace MarkdownParser {
         readonly autolink?: boolean;
       };
     };
+    readonly id?: string;
     readonly state?: {
       readonly in?: {
         readonly bdx?: boolean;
