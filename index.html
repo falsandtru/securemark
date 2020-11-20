@@ -37,6 +37,7 @@
   }
   ol > li::before {
     display: table-cell;
+    width: 1px;
     white-space: pre;
     text-align: start;
     font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
@@ -97,7 +98,7 @@
     margin-bottom: 1rem;
     overflow: auto;
   }
-  pre[data-file]:before {
+  pre[data-file]::before {
     content: attr(data-file);
     direction: ltr;
     position: absolute;
@@ -189,16 +190,16 @@
     background: linear-gradient(transparent 60%, yellow 0%);
     padding: 0 0.2em;
   }
-  ins:before {
+  ins::before {
     content: "ins";
     color: green;
   }
-  del:before {
+  del::before {
     content: "del";
     color: blue;
   }
-  ins:before,
-  del:before {
+  ins::before,
+  del::before {
     top: -.5em;
     position: relative;
     font-size: 75%;
@@ -217,28 +218,55 @@
   del code {
     background: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
-  .comment:before {
+  .comment::before {
     content: "†";
     color: red;
     font-weight: bold;
   }
-  .code  .comment:before,
-  .media .comment:before {
+  .code  .comment::before,
+  .media .comment::before {
     all: unset;
   }
-  .invalid:before {
+  .invalid::before {
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-message);
     font-style: italic;
     font-weight: bold;
     color: gray;
   }
-  div.invalid:before,
-  pre.invalid:before,
-  figure.invalid:before,
-  ul.invalid:before,
-  p.invalid:before {
+  div.invalid::before,
+  pre.invalid::before,
+  figure.invalid::before,
+  ul.invalid::before,
+  p.invalid::before {
     display: block;
     margin-bottom: 1em;
+  }
+  ol#annotation,
+  ol.annotation,
+  ol#reference,
+  ol.reference {
+    position: relative;
+    margin-top: 3em;
+    width: 100%;
+  }
+  ol#annotation::before,
+  ol.annotation::before,
+  ol#reference::before,
+  ol.reference::before {
+    display: table-row;
+    position: absolute;
+    top: -1.3em;
+    width: 100%;
+    text-align: center;
+    font-size: 2em;
+  }
+  ol#annotation::before,
+  ol.annotation::before {
+    content: "Annotations";
+  }
+  ol#reference::before,
+  ol.reference::before {
+    content: "References";
   }
   @media print {
     #viewer > hr {
@@ -377,7 +405,7 @@
     '',
     '## Annotation',
     '',
-    'Annotation syntax is refined footnotes((Annotations and its helper function generate footnotes *without manual numbering*.)).',
+    'Annotation syntax is refined footnotes((Annotations generate footnotes *without manual numbering*.)).',
     '',
     '## Link',
     '',

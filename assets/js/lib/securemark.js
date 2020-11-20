@@ -6663,12 +6663,12 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.audio = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            const extensions = new Set([
+            const extensions = [
                 '.oga',
                 '.ogg'
-            ]);
+            ];
             function audio(url, alt, cache) {
-                if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
+                if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
@@ -6697,9 +6697,9 @@ require = function () {
                     const parser_1 = _dereq_('../../../parser');
                     const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                     const typed_dom_1 = _dereq_('typed-dom');
-                    const origins = new Set(['https://gist.github.com']);
+                    const origins = ['https://gist.github.com'];
                     function gist(url, cache) {
-                        if (!origins.has(url.origin))
+                        if (!origins.includes(url.origin))
                             return;
                         if (url.pathname.split('/').pop().includes('.'))
                             return;
@@ -6777,9 +6777,9 @@ require = function () {
             exports.pdf = void 0;
             const parser_1 = _dereq_('../../../parser');
             const typed_dom_1 = _dereq_('typed-dom');
-            const extensions = new Set(['.pdf']);
+            const extensions = ['.pdf'];
             function pdf(url, cache) {
-                if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
+                if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
@@ -6815,9 +6815,9 @@ require = function () {
                     const parser_1 = _dereq_('../../../parser');
                     const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                     const typed_dom_1 = _dereq_('typed-dom');
-                    const origins = new Set(['https://twitter.com']);
+                    const origins = ['https://twitter.com'];
                     function twitter(url) {
-                        if (!origins.has(url.origin))
+                        if (!origins.includes(url.origin))
                             return;
                         if (url.pathname.split('/').pop().includes('.'))
                             return;
@@ -6867,12 +6867,12 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.video = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            const extensions = new Set([
+            const extensions = [
                 '.webm',
                 '.ogv'
-            ]);
+            ];
             function video(url, alt, cache) {
-                if (!extensions.has(url.pathname.split(/(?=\.)/).pop()))
+                if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
@@ -6897,12 +6897,12 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.youtube = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            const origins = new Set([
+            const origins = [
                 'https://www.youtube.com',
                 'https://youtu.be'
-            ]);
+            ];
             function youtube(url, cache) {
-                if (!origins.has(url.origin))
+                if (!origins.includes(url.origin))
                     return;
                 if (url.pathname.split('/').pop().includes('.'))
                     return;
@@ -7221,23 +7221,30 @@ require = function () {
             exports.info = void 0;
             const context_1 = _dereq_('./context');
             function info(source) {
-                const filter = context_1.context(source, 'section, article, aside, blockquote, .media, pre.notranslate, .math');
+                const match = context_1.context(source, 'section, article, aside, blockquote, .media, pre.notranslate, .math');
                 return {
                     hashtag: find('a.hashtag[href]'),
                     hashref: find('a.hashref[href]'),
                     channel: find('a.channel[href]'),
                     account: find('a.account[href]'),
                     mention: find('a.address[href]'),
-                    url: find('a[href]').filter(el => [
+                    url: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.address)').filter(el => [
                         'http:',
                         'https:'
-                    ].includes(el.protocol)).filter(el => !el.matches('.hashtag, .hashref, .channel, .account, .address')),
-                    tel: find('a[href]').filter(el => el.protocol === 'tel:'),
+                    ].includes(el.protocol)),
+                    tel: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.address)').filter(el => el.protocol === 'tel:'),
                     email: find('a.email[href]'),
                     media: find('.media[data-src]')
                 };
                 function find(selector) {
-                    return [...source.querySelectorAll(selector)].filter(filter);
+                    const acc = [];
+                    for (let es = source.querySelectorAll(selector), i = 0, len = es.length; i < len; ++i) {
+                        const el = es[i];
+                        if (!match(el))
+                            continue;
+                        acc.push(el);
+                    }
+                    return acc;
                 }
             }
             exports.info = info;
@@ -7336,17 +7343,21 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function toc(source) {
-                const hs = [...source.querySelectorAll([...Array(6)].map((_, i) => `h${ i + 1 }[id]`).concat('aside.aside[id]').join())].map(el => {
+                const hs = [];
+                for (let es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${ s }[id]`).join()), i = 0, len = es.length; i < len; ++i) {
+                    const el = es[i];
                     switch (el.tagName) {
                     case 'ASIDE':
-                        return typed_dom_1.html(el.firstElementChild.tagName.toLowerCase(), {
+                        hs.push(typed_dom_1.html(el.firstElementChild.tagName.toLowerCase(), {
                             id: el.id,
                             class: 'aside'
-                        }, el.firstElementChild.cloneNode(true).childNodes);
+                        }, el.firstElementChild.cloneNode(true).childNodes));
+                        continue;
                     default:
-                        return el;
+                        hs.push(el);
+                        continue;
                     }
-                }, []);
+                }
                 return parse(cons(hs));
             }
             exports.toc = toc;
