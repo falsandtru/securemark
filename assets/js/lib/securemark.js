@@ -3412,8 +3412,7 @@ require = function () {
             const indexee_1 = _dereq_('../../inline/extension/indexee');
             const parse_1 = _dereq_('../../api/parse');
             const typed_dom_1 = _dereq_('typed-dom');
-            const opener = /^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/;
-            exports.aside = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300, true), ([body, closer, opener, delim, param], _, context) => {
+            exports.aside = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300, true), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
                 if (!closer || param.trimStart() !== '')
                     return [typed_dom_1.html('pre', {
@@ -3432,7 +3431,7 @@ require = function () {
                         reference
                     }
                 });
-                const heading = ((_a = view.firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('h1')) && view.firstElementChild || null;
+                const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes((_a = view.firstElementChild) === null || _a === void 0 ? void 0 : _a.tagName) && view.firstElementChild;
                 if (!heading)
                     return [typed_dom_1.html('pre', {
                             class: `notranslate invalid`,
@@ -7030,15 +7029,10 @@ require = function () {
                 let base = '0';
                 let bases = base.split('.');
                 let index = bases;
-                for (let defs = target.children, i = 0, len = defs.length; i < len; ++i) {
+                for (let defs = target.querySelectorAll('figure, h1, h2, h3'), i = 0, len = defs.length; i < len; ++i) {
                     yield;
                     const def = defs[i];
-                    if (![
-                            'FIGURE',
-                            'H1',
-                            'H2',
-                            'H3'
-                        ].includes(def.tagName))
+                    if (def.parentNode !== target)
                         continue;
                     if (bases.length === 1 && def.tagName[0] === 'H')
                         continue;
@@ -7352,23 +7346,15 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             function toc(source) {
-                const hs = [...source.children].reduce((acc, el) => {
-                    var _a;
-                    switch (el.id && el.tagName) {
-                    case 'H1':
-                    case 'H2':
-                    case 'H3':
-                    case 'H4':
-                    case 'H5':
-                    case 'H6':
-                        return array_1.push(acc, [el]);
+                const hs = [...source.querySelectorAll([...Array(6)].map((_, i) => `h${ i + 1 }[id]`).concat('aside.aside[id]').join())].map(el => {
+                    switch (el.tagName) {
                     case 'ASIDE':
-                        return el.classList.contains('aside') ? array_1.push(acc, [typed_dom_1.html(`h${ ((_a = acc[acc.length - 1]) === null || _a === void 0 ? void 0 : _a.tagName[1]) || 1 }`, {
-                                id: el.id,
-                                class: 'aside'
-                            }, el.firstElementChild.cloneNode(true).childNodes)]) : acc;
+                        return typed_dom_1.html(el.firstElementChild.tagName.toLowerCase(), {
+                            id: el.id,
+                            class: 'aside'
+                        }, el.firstElementChild.cloneNode(true).childNodes);
                     default:
-                        return acc;
+                        return el;
                     }
                 }, []);
                 return parse(cons(hs));
