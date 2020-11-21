@@ -8,6 +8,7 @@ export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUL
   //for (let es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join()), i = 0, len = es.length; i < len; ++i) {
   for (let es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${s}[id]`).join()), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
+    assert(el.parentNode === source);
     switch (el.tagName) {
       case 'ASIDE':
         hs.push(html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes));
