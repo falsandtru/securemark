@@ -7,13 +7,13 @@ import { html } from 'typed-dom';
 const opener = /^(~{3,})example\/(\S+)([^\n]*)(?:$|\n)/;
 
 export const segment: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 100, true))));
+  clear(fence(opener, 100))));
 
 export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 100, false))), false);
 
 export const example: ExtensionParser.ExampleParser = creator(100, block(validate('~~~', fmap(
-  fence(opener, 100, true),
+  fence(opener, 100),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type, param]: string[], _, context) => {
     if (!closer || param.trimStart() !== '') return [html('pre', {

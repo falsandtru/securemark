@@ -6,13 +6,13 @@ import { html } from 'typed-dom';
 const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;
 
 export const segment: MathBlockParser.SegmentParser = block(validate('$$',
-  clear(fence(opener, 100, true))));
+  clear(fence(opener, 100))));
 
 export const segment_: MathBlockParser.SegmentParser = block(validate('$$',
   clear(fence(opener, 100, false))), false);
 
 export const mathblock: MathBlockParser = block(validate('$$', fmap(
-  fence(opener, 100, true),
+  fence(opener, 100),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, { caches: { math: cache = undefined } = {} }) => [
     closer && param.trimStart() === ''

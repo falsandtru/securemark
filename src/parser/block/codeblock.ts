@@ -11,13 +11,13 @@ const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
 const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
 
 export const segment: CodeBlockParser.SegmentParser = block(validate('```',
-  clear(fence(opener, 300, true))));
+  clear(fence(opener, 300))));
 
 export const segment_: CodeBlockParser.SegmentParser = block(validate('```',
   clear(fence(opener, 300, false))), false);
 
 export const codeblock: CodeBlockParser = block(validate('```', fmap(
-  fence(opener, 300, true),
+  fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, lang, param]: string[], _, context) => {
     [lang, param] = language.test(lang)

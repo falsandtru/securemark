@@ -5,7 +5,7 @@ import { parse } from '../../api/parse';
 import { html } from 'typed-dom';
 
 export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~~~', fmap(
-  fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300, true),
+  fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
     if (!closer || param.trimStart() !== '') return [html('pre', {
