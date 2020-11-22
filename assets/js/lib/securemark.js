@@ -2272,7 +2272,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const line_1 = _dereq_('../constraint/line');
             const array_1 = _dereq_('spica/array');
-            function fence(opener, limit, separation) {
+            function fence(opener, limit, separation = true) {
                 return source => {
                     if (source === '')
                         return;
@@ -3282,9 +3282,9 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
             const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
-            exports.segment = combinator_1.block(combinator_1.validate('```', combinator_1.clear(combinator_1.fence(opener, 300, true))));
+            exports.segment = combinator_1.block(combinator_1.validate('```', combinator_1.clear(combinator_1.fence(opener, 300))));
             exports.segment_ = combinator_1.block(combinator_1.validate('```', combinator_1.clear(combinator_1.fence(opener, 300, false))), false);
-            exports.codeblock = combinator_1.block(combinator_1.validate('```', combinator_1.fmap(combinator_1.fence(opener, 300, true), ([body, closer, opener, delim, lang, param], _, context) => {
+            exports.codeblock = combinator_1.block(combinator_1.validate('```', combinator_1.fmap(combinator_1.fence(opener, 300), ([body, closer, opener, delim, lang, param], _, context) => {
                 [lang, param] = language.test(lang) ? [
                     lang,
                     param
@@ -3412,7 +3412,7 @@ require = function () {
             const indexee_1 = _dereq_('../../inline/extension/indexee');
             const parse_1 = _dereq_('../../api/parse');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.aside = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300, true), ([body, closer, opener, delim, param], _, context) => {
+            exports.aside = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
                 if (!closer || param.trimStart() !== '')
                     return [typed_dom_1.html('pre', {
@@ -3466,9 +3466,9 @@ require = function () {
             const mathblock_1 = _dereq_('../mathblock');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})example\/(\S+)([^\n]*)(?:$|\n)/;
-            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, true))));
+            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100))));
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
-            exports.example = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, type, param], _, context) => {
+            exports.example = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100), ([body, closer, opener, delim, type, param], _, context) => {
                 if (!closer || param.trimStart() !== '')
                     return [typed_dom_1.html('pre', {
                             class: 'notranslate invalid',
@@ -3688,8 +3688,8 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
-            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 300, true))));
-            exports.placeholder = combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300, true), ([body, closer, opener]) => [typed_dom_1.html('pre', {
+            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 300))));
+            exports.placeholder = combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300), ([body, closer, opener]) => [typed_dom_1.html('pre', {
                     class: 'notranslate invalid',
                     'data-invalid-syntax': 'extension',
                     'data-invalid-type': 'syntax',
@@ -3813,9 +3813,9 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;
-            exports.segment = combinator_1.block(combinator_1.validate('$$', combinator_1.clear(combinator_1.fence(opener, 100, true))));
+            exports.segment = combinator_1.block(combinator_1.validate('$$', combinator_1.clear(combinator_1.fence(opener, 100))));
             exports.segment_ = combinator_1.block(combinator_1.validate('$$', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
-            exports.mathblock = combinator_1.block(combinator_1.validate('$$', combinator_1.fmap(combinator_1.fence(opener, 100, true), ([body, closer, opener, delim, param], _, {
+            exports.mathblock = combinator_1.block(combinator_1.validate('$$', combinator_1.fmap(combinator_1.fence(opener, 100), ([body, closer, opener, delim, param], _, {
                 caches: {
                     math: cache = global_1.undefined
                 } = {}
