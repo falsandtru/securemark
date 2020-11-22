@@ -1,23 +1,26 @@
 import { html } from 'typed-dom';
 import { Cache } from 'spica/cache';
 
-const origins = [
-  'https://www.youtube.com',
-  'https://youtu.be',
-];
-
 export function youtube(url: URL, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
-  if (!origins.includes(url.origin)) return;
+  let id: string;
+  switch (url.origin) {
+    case 'https://www.youtube.com':
+      if (!url.pathname.match(/^\/watch$/)) return;
+      id = url.href.replace(/.+?=/, '').replace(/&/, '?');
+      break;
+    case 'https://youtu.be':
+      if (!url.pathname.match(/^\/[\w-]+$/)) return;
+      id = url.href.slice(url.href.indexOf('/', 9) + 1);
+      break;
+    default:
+      return;
+  }
   if (url.pathname.split('/').pop()!.includes('.')) return;
-  if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/)) return;
-  if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w-]+$/)) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLElement;
   const el = html('div', { class: 'media', style: 'position: relative;' }, [
     html('div', { style: 'position: relative; padding-top: 56.25%;' }, [
       html('iframe', {
-        src: `https://www.youtube.com/embed/${url.origin === 'https://www.youtube.com' && url.href.replace(/.+?=/, '').replace(/&/, '?') ||
-          url.origin === 'https://youtu.be' && url.href.slice(url.href.indexOf('/', 9) + 1)
-          }`,
+        src: `https://www.youtube.com/embed/${id}`,
         allowfullscreen: '',
         frameborder: '0',
         style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;',
