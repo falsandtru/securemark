@@ -450,12 +450,14 @@
     ''
   ].join('\n');
   const viewer = document.getElementById('viewer');
+  const annotation = document.getElementById('annotation');
+  const reference = document.getElementById('reference');
   const { bind, render, caches } = require('securemark');
   const update = bind(viewer, {
     caches,
     footnotes: {
-      annotation: viewer.querySelector('#annotation'),
-      reference: viewer.querySelector('#reference'),
+      annotation,
+      reference,
     },
   });
   const observer = new IntersectionObserver(function (changes) {
@@ -488,6 +490,7 @@
     document.getElementById('editor').addEventListener('change', run);
   })();
   async function display() {
+    const { Date } = global;
     let time = 0;
     let start = Date.now();
     let count = 0;
@@ -503,8 +506,6 @@
           if (++count % 100) continue;
           count = 0;
           break;
-        case 'footnote':
-          if (result.value.tagName !== 'LI') break;
         case 'block':
           const el = result.value;
           el.parentNode
@@ -527,6 +528,8 @@
         start = Date.now();
       }
     }
+    render(annotation, { caches });
+    render(reference, { caches });
     return time += Date.now() - start;
   }
   function log(time) {

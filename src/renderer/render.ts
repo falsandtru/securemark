@@ -3,16 +3,21 @@ import { code } from './render/code';
 import { math } from './render/math';
 import { media } from './render/media';
 
+const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
+
 export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   opts = { code, math, media: {}, ...opts };
+  if (target.classList.contains('invalid')) return;
+  if (target.matches(selector)) return void render_(target, opts);
+  for (let es = target.querySelectorAll<HTMLElement>(selector), i = 0, len = es.length; i < len; ++i) {
+    render_(es[i], opts);
+  }
+}
+
+function render_(target: HTMLElement, opts: RenderingOptions): void {
+  assert(!target.matches('.invalid'));
   try {
-    if (target.tagName === 'LI') {
-      opts.math && target.querySelectorAll('.math').forEach(el => opts.math?.(el as HTMLElement));
-      return;
-    }
     switch (true) {
-      case target.classList.contains('invalid'):
-        return;
       case !!opts.code
         && !target.firstElementChild
         && target.matches('pre.code'):
@@ -37,10 +42,6 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
         return void scope.parentElement!.replaceChild(el, scope);
       }
       default:
-        for (let es = target.querySelectorAll<HTMLElement>('img.media:not([src])[data-src], a > .media:not(img), pre.code, .math'), i = 0, len = es.length; i < len; ++i) {
-          const el = es[i];
-          render(el, opts);
-        }
         return;
     }
   }
