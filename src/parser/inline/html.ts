@@ -125,7 +125,7 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
       || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(stringify), [])):
       return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
     case cs.length === 0:
-      return invalid('closer', 'Missing closing HTML tag.', as, bs, cs);
+      return invalid('closer', 'Missing the closing HTML tag.', as, bs, cs);
     default:
       return h(tag as 'span', attrs, defrag(bs));
   }

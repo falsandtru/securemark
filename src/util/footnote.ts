@@ -82,7 +82,7 @@ function build(
             : { class: void ref.classList.add('invalid'),
                 'data-invalid-syntax': syntax,
                 'data-invalid-type': 'content',
-                'data-invalid-message': 'Missing content.',
+                'data-invalid-message': 'Missing the content.',
               }
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild?.textContent === marker(defIndex)
