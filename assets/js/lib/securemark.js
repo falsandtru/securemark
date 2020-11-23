@@ -7348,7 +7348,7 @@ require = function () {
                         el.remove();
                         continue;
                     case el.matches('.media'):
-                        el.replaceWith(`!${ new url_1.ReadonlyURL(el.getAttribute('data-src'), base).href }`);
+                        el.replaceWith(`!{ ${ new url_1.ReadonlyURL(el.getAttribute('data-src'), base).href } }`);
                         continue;
                     }
                 }
