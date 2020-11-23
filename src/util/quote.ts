@@ -6,18 +6,18 @@ export function quote(address: string, range: Range): string {
   let expansion = expand(range);
   const node = range.cloneContents();
   const base = location.href;
-  for (let es = node.querySelectorAll('code[data-src], .math[data-src], rt, rp, .media'), i = 0, len = es.length; i < len; ++i) {
+  for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (true) {
       case el.matches('code'):
       case el.matches('.math'):
         define(el, el.getAttribute('data-src')!);
         continue;
-      case el.matches('rt, rp'):
-        el.remove();
-        continue;
       case el.matches('.media'):
         el.replaceWith(`!{ ${new ReadonlyURL(el.getAttribute('data-src')!, base).href} }`);
+        continue;
+      case el.matches('rt, rp'):
+        el.remove();
         continue;
     }
   }
