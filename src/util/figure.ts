@@ -92,7 +92,14 @@ export function* figure(
     }
   }
   for (const [, ref] of refs) {
-    opts.id !== '' && ref.classList.add('disabled');
+    if (opts.id !== '') {
+      define(ref, {
+        class: `${ref.className} disabled invalid`,
+        'data-invalid-syntax': 'label',
+        'data-invalid-type': 'reference',
+        'data-invalid-message': `Missing reference.`,
+      });
+    }
     yield ref;
   }
   return;
