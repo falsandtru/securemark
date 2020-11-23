@@ -50,7 +50,10 @@ export const block: BlockParser = creator(recover(localize(
   ]))),
   (_, __, reason) => [
     [html('h1',
-      { id: `error:${uuid()}`, class: 'invalid' },
+      {
+        id: `error:${uuid()}`,
+        class: 'invalid',
+      },
       reason instanceof Error
         ? `${reason.name}: ${reason.message}`
         : `Unknown error: ${reason}`)],
