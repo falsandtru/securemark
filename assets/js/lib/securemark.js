@@ -7337,18 +7337,18 @@ require = function () {
                 let expansion = expand(range);
                 const node = range.cloneContents();
                 const base = global_1.location.href;
-                for (let es = node.querySelectorAll('code[data-src], .math[data-src], rt, rp, .media'), i = 0, len = es.length; i < len; ++i) {
+                for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     switch (true) {
                     case el.matches('code'):
                     case el.matches('.math'):
                         typed_dom_1.define(el, el.getAttribute('data-src'));
                         continue;
-                    case el.matches('rt, rp'):
-                        el.remove();
-                        continue;
                     case el.matches('.media'):
                         el.replaceWith(`!{ ${ new url_1.ReadonlyURL(el.getAttribute('data-src'), base).href } }`);
+                        continue;
+                    case el.matches('rt, rp'):
+                        el.remove();
                         continue;
                     }
                 }
