@@ -15,6 +15,7 @@ import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 import { localize } from './locale';
 import { html } from 'typed-dom';
+import { uuid } from 'spica/uuid';
 
 export import BlockParser = MarkdownParser.BlockParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
@@ -49,7 +50,7 @@ export const block: BlockParser = creator(recover(localize(
   ]))),
   (_, __, reason) => [
     [html('h1',
-      { class: 'invalid' },
+      { id: `error:${uuid()}`, class: 'invalid' },
       reason instanceof Error
         ? `${reason.name}: ${reason.message}`
         : `Unknown error: ${reason}`)],

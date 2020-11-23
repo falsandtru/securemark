@@ -24,8 +24,8 @@ export function* figure(
   let bases: readonly string[] = base.split('.');
   let index: readonly string[] = bases;
   // Bug: Firefox
-  //for (let defs = target.querySelectorAll(':scope > figure, :scope > h1, :scope > h2, :scope > h3'), i = 0, len = defs.length; i < len; ++i) {
-  for (let defs = target.querySelectorAll('figure, h1, h2, h3'), i = 0, len = defs.length; i < len; ++i) {
+  //for (let defs = target.querySelectorAll(':scope > figure[data-label], :scope > h1[id], :scope > h2[id], :scope > h3[id]'), i = 0, len = defs.length; i < len; ++i) {
+  for (let defs = target.querySelectorAll('figure[data-label], h1[id], h2[id], h3[id]'), i = 0, len = defs.length; i < len; ++i) {
     yield;
     const def = defs[i];
     if (def.parentNode !== target) continue;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.185.2
+
+- Fix error handling.
+
 ## 0.185.1
 
 - Fix URL completion.
