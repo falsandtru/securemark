@@ -1,3 +1,4 @@
+import { location } from 'spica/global';
 import { RenderingOptions } from '../../';
 import { code } from './render/code';
 import { math } from './render/math';
@@ -8,13 +9,14 @@ const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).me
 export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   opts = { code, math, media: {}, ...opts };
   if (target.classList.contains('invalid')) return;
-  if (target.matches(selector)) return void render_(target, opts);
+  const base = location.href;
+  if (target.matches(selector)) return void render_(base, target, opts);
   for (let es = target.querySelectorAll<HTMLElement>(selector), i = 0, len = es.length; i < len; ++i) {
-    render_(es[i], opts);
+    render_(base, es[i], opts);
   }
 }
 
-function render_(target: HTMLElement, opts: RenderingOptions): void {
+function render_(base: string, target: HTMLElement, opts: RenderingOptions): void {
   assert(!target.matches('.invalid'));
   try {
     switch (true) {
@@ -32,7 +34,7 @@ function render_(target: HTMLElement, opts: RenderingOptions): void {
       case !!opts.media
         && target.matches('img.media:not([src])[data-src]'): {
         assert(target.matches('a > .media'));
-        const el = media(target as HTMLImageElement, opts.media!, opts.caches?.media);
+        const el = media(base, target as HTMLImageElement, opts.media!, opts.caches?.media);
         if (!el) return;
         assert(el.matches('.media'));
         el.setAttribute('data-src', target.getAttribute('data-src')!);

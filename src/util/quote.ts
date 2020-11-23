@@ -2,11 +2,10 @@ import { location } from 'spica/global';
 import { ReadonlyURL } from 'spica/url';
 import { define } from 'typed-dom';
 
-const { origin } = location;
-
 export function quote(address: string, range: Range): string {
   let expansion = expand(range);
   const node = range.cloneContents();
+  const base = location.href;
   for (let es = node.querySelectorAll('code[data-src], .math[data-src], rt, rp, .media'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (true) {
@@ -18,7 +17,7 @@ export function quote(address: string, range: Range): string {
         el.remove();
         continue;
       case el.matches('.media'):
-        el.replaceWith(`!${new ReadonlyURL(el.getAttribute('data-src')!, origin).href}`);
+        el.replaceWith(`!${new ReadonlyURL(el.getAttribute('data-src')!, base).href}`);
         continue;
     }
   }

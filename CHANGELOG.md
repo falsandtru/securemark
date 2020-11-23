@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.185.1
+
+- Fix URL completion.
+
 ## 0.185.0
 
 - Refine cache control.
