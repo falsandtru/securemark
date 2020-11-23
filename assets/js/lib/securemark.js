@@ -3239,6 +3239,7 @@ require = function () {
             const paragraph_1 = _dereq_('./block/paragraph');
             const locale_1 = _dereq_('./locale');
             const typed_dom_1 = _dereq_('typed-dom');
+            const uuid_1 = _dereq_('spica/uuid');
             exports.block = combinator_1.creator(combinator_1.recover(locale_1.localize(combinator_1.update({ resources: { creation: 100 * 1000 } }, combinator_1.union([
                 line_1.emptyline,
                 horizontalrule_1.horizontalrule,
@@ -3254,7 +3255,10 @@ require = function () {
                 blockquote_1.blockquote,
                 paragraph_1.paragraph
             ]))), (_, __, reason) => [
-                [typed_dom_1.html('h1', { class: 'invalid' }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `Unknown error: ${ reason }`)],
+                [typed_dom_1.html('h1', {
+                        id: `error:${ uuid_1.uuid() }`,
+                        class: 'invalid'
+                    }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `Unknown error: ${ reason }`)],
                 ''
             ]));
         },
@@ -3274,6 +3278,7 @@ require = function () {
             './block/ulist': 82,
             './locale': 119,
             './source/line': 125,
+            'spica/uuid': 20,
             'typed-dom': 21
         }
     ],
@@ -3368,7 +3373,7 @@ require = function () {
                             class: `notranslate invalid`,
                             'data-invalid-syntax': 'codeblock',
                             'data-invalid-type': closer ? 'parameter' : 'closer',
-                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing closing delimiter ${ delim }.`
+                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
                 const file = path.split('/').pop() || '';
                 const ext = file && file.includes('.') && file[0] !== '.' ? file.split('.').pop() : '';
@@ -3488,7 +3493,7 @@ require = function () {
                             class: `notranslate invalid`,
                             'data-invalid-syntax': 'aside',
                             'data-invalid-type': closer ? 'parameter' : 'closer',
-                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing closing delimiter ${ delim }.`
+                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
                 const annotation = typed_dom_1.html('ol', { class: 'annotation' });
                 const reference = typed_dom_1.html('ol', { class: 'reference' });
@@ -3506,7 +3511,7 @@ require = function () {
                             class: `notranslate invalid`,
                             'data-invalid-syntax': 'aside',
                             'data-invalid-type': 'content',
-                            'data-invalid-message': 'Missing title at the first line.'
+                            'data-invalid-message': 'Missing the title at the first line.'
                         }, `${ opener }${ body }${ closer }`)];
                 return [typed_dom_1.html('aside', {
                         id: indexee_1.identity(heading),
@@ -3543,7 +3548,7 @@ require = function () {
                             class: 'notranslate invalid',
                             'data-invalid-syntax': 'example',
                             'data-invalid-type': closer ? 'parameter' : 'closer',
-                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing closing delimiter ${ delim }.`
+                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'markdown': {
@@ -3892,7 +3897,7 @@ require = function () {
                     class: `math notranslate invalid`,
                     'data-invalid-syntax': 'mathblock',
                     'data-invalid-type': closer ? 'parameter' : 'closer',
-                    'data-invalid-message': closer ? 'Invalid parameter.' : `Missing closing delimiter ${ delim }.`
+                    'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
                 }, `${ opener }${ body }${ closer }`)])));
         },
         {
@@ -5254,28 +5259,28 @@ require = function () {
             function elem(tag, as, bs, cs, context) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
                 if (!tags.includes(tag)) {
-                    return invalid('tag', 'Invalid HTML tag.', as, bs, cs);
+                    return invalid('tag', `Invalid HTML tag <${ tag }>.`, as, bs, cs);
                 }
                 switch (tag) {
                 case 'bdo':
                 case 'bdi':
                     switch (true) {
                     case (_b = (_a = context.state) === null || _a === void 0 ? void 0 : _a.in) === null || _b === void 0 ? void 0 : _b.bdx:
-                        return invalid('nest', 'Cannot nest bdo/bdi HTML tag.', as, bs, cs);
+                        return invalid('nest', `Unnestable HTML tag <${ tag }>.`, as, bs, cs);
                     }
                     break;
                 case 'sup':
                 case 'sub':
                     switch (true) {
                     case (_d = (_c = context.state) === null || _c === void 0 ? void 0 : _c.in) === null || _d === void 0 ? void 0 : _d.supsub:
-                        return invalid('nest', 'Cannot nest sup/sub HTML tag.', as, bs, cs);
+                        return invalid('nest', `Unnestable HTML tag <${ tag }>.`, as, bs, cs);
                     }
                     break;
                 case 'small':
                     switch (true) {
                     case (_f = (_e = context.state) === null || _e === void 0 ? void 0 : _e.in) === null || _f === void 0 ? void 0 : _f.supsub:
                     case (_h = (_g = context.state) === null || _g === void 0 ? void 0 : _g.in) === null || _h === void 0 ? void 0 : _h.small:
-                        return invalid('nest', 'Cannot nest small HTML tag.', as, bs, cs);
+                        return invalid('nest', `Unnestable HTML tag <${ tag }>.`, as, bs, cs);
                     }
                     break;
                 }
@@ -5284,7 +5289,7 @@ require = function () {
                 case util_1.stringify(as[as.length - 1]) !== '>' || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(util_1.stringify), [])):
                     return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
                 case cs.length === 0:
-                    return invalid('closer', 'Missing closing HTML tag.', as, bs, cs);
+                    return invalid('closer', `Missing the closing HTML tag <${ tag }>.`, as, bs, cs);
                 default:
                     return typed_dom_1.html(tag, attrs, util_1.defrag(bs));
                 }
@@ -5457,7 +5462,6 @@ require = function () {
             exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
             const {origin: orig} = window.location;
             function sanitize(uri, target, source, origin = orig) {
-                var _a;
                 let type;
                 let message;
                 switch (uri.protocol) {
@@ -5481,8 +5485,8 @@ require = function () {
                     type = 'parameter';
                     message = 'Invalid protocol.';
                 }
-                target.classList.add('invalid');
                 typed_dom_1.define(target, {
+                    class: `${ target.className } invalid`.trim(),
                     'data-invalid-syntax': 'link',
                     'data-invalid-type': type,
                     'data-invalid-message': message,
@@ -6039,6 +6043,7 @@ require = function () {
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
+            const uuid_1 = _dereq_('spica/uuid');
             const parser = combinator_1.union([
                 heading_1.segment,
                 codeblock_1.segment,
@@ -6049,14 +6054,14 @@ require = function () {
             ]);
             function* segment(source) {
                 if (source.length > 1000 * 1000)
-                    return yield '# ***Too large input over 1,000,000 characters.***';
+                    return yield `# ***Too large input over 1,000,000 characters.*** [#error:${ uuid_1.uuid() }]`;
                 while (source !== '') {
                     const result = parser(source, {});
                     const rest = combinator_1.exec(result);
                     const segs = combinator_1.eval(result).length ? combinator_1.eval(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        seg.length > 10 * 1000 ? yield '# ***Too large block over 10,000 characters.***' : yield seg;
+                        seg.length > 10 * 1000 ? yield `# ***Too large block over 10,000 characters.*** [#error:${ uuid_1.uuid() }]` : yield seg;
                     }
                     source = rest;
                 }
@@ -6069,7 +6074,8 @@ require = function () {
             './block/extension': 65,
             './block/heading': 72,
             './block/mathblock': 75,
-            './source': 122
+            './source': 122,
+            'spica/uuid': 20
         }
     ],
     122: [
@@ -7092,7 +7098,7 @@ require = function () {
                 let base = '0';
                 let bases = base.split('.');
                 let index = bases;
-                for (let defs = target.querySelectorAll('figure, h1, h2, h3'), i = 0, len = defs.length; i < len; ++i) {
+                for (let defs = target.querySelectorAll('figure[data-label], h1[id], h2[id], h3[id]'), i = 0, len = defs.length; i < len; ++i) {
                     yield;
                     const def = defs[i];
                     if (def.parentNode !== target)
@@ -7139,7 +7145,14 @@ require = function () {
                     }
                 }
                 for (const [, ref] of refs) {
-                    opts.id !== '' && ref.classList.add('disabled');
+                    if (opts.id !== '') {
+                        typed_dom_1.define(ref, {
+                            class: `${ ref.className } disabled invalid`,
+                            'data-invalid-syntax': 'label',
+                            'data-invalid-type': 'reference',
+                            'data-invalid-message': `Missing the reference.`
+                        });
+                    }
                     yield ref;
                 }
                 return;
@@ -7235,7 +7248,7 @@ require = function () {
                                 class: void ref.classList.add('invalid'),
                                 'data-invalid-syntax': syntax,
                                 'data-invalid-type': 'content',
-                                'data-invalid-message': 'Missing content.'
+                                'data-invalid-message': 'Missing the content.'
                             }
                         }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && (refChild === null || refChild === void 0 ? void 0 : refChild.textContent) === marker(defIndex) ? global_1.undefined : [typed_dom_1.html('a', {
                                 href: refId && defId && `#${ defId }`,
