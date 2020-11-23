@@ -17,7 +17,7 @@ export function quote(address: string, range: Range): string {
         el.remove();
         continue;
       case el.matches('.media'):
-        el.replaceWith(`!${new ReadonlyURL(el.getAttribute('data-src')!, base).href}`);
+        el.replaceWith(`!{ ${new ReadonlyURL(el.getAttribute('data-src')!, base).href} }`);
         continue;
     }
   }

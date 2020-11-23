@@ -8,7 +8,7 @@ describe('Unit: util/quote', () => {
       const el = parse('>>1\n> a\n>0 `b` ${c}$ !{d}\n[e](f)').firstElementChild!;
       range.setStart(el.firstChild!.firstChild!, 0);
       range.setEnd(el.lastChild!.lastChild!.lastChild!, 1);
-      assert(quote('2', range) === `>>>1\n>> a\n>>2\n> >0 \`b\` \${c}$ !${new URL('d', location.href).href}\n> e`);
+      assert(quote('2', range) === `>>>1\n>> a\n>>2\n> >0 \`b\` \${c}$ !{ ${new URL('d', location.href).href} }\n> e`);
     });
 
     it('adjustment', () => {
