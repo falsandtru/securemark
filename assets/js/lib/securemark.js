@@ -1027,8 +1027,9 @@ require = function () {
     18: [
         function (_dereq_, module, exports) {
             'use strict';
+            var _a;
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.URL = exports.standardize = void 0;
+            exports.URL = exports.ReadonlyURL = exports.standardize = void 0;
             const global_1 = _dereq_('./global');
             const format_1 = _dereq_('./url/domain/format');
             var format_2 = _dereq_('./url/domain/format');
@@ -1038,57 +1039,65 @@ require = function () {
                     return format_2.standardize;
                 }
             });
+            var format_3 = _dereq_('./url/domain/format');
+            Object.defineProperty(exports, 'ReadonlyURL', {
+                enumerable: true,
+                get: function () {
+                    return format_3.ReadonlyURL;
+                }
+            });
+            const internal = Symbol();
             class URL {
                 constructor(url, base = global_1.location.href) {
-                    this.url = new format_1.ReadonlyURL(url, base);
+                    this[_a] = {
+                        url: global_1.undefined,
+                        resource: global_1.undefined,
+                        path: global_1.undefined,
+                        query: global_1.undefined,
+                        fragment: global_1.undefined
+                    };
+                    this[internal].url = new format_1.ReadonlyURL(url, base);
                 }
                 get reference() {
-                    var _a;
-                    return this.reference_ = (_a = this.reference_) !== null && _a !== void 0 ? _a : this.url.href;
+                    return this[internal].url.href;
                 }
                 get resource() {
-                    return this.resource_ = this.resource_ === void 0 ? this.reference.slice(0, this.query === '?' ? this.fragment ? -this.fragment.length - 1 : -1 : -this.fragment.length || this.reference.length) : this.resource_;
+                    return this[internal].resource = this[internal].resource === global_1.undefined ? this.reference.slice(0, this.query === '?' ? this.fragment ? -this.fragment.length - 1 : -1 : -this.fragment.length || this.reference.length) : this[internal].resource;
                 }
                 get origin() {
-                    var _a;
-                    return this.origin_ = (_a = this.origin_) !== null && _a !== void 0 ? _a : this.url.origin;
+                    return this[internal].url.origin;
                 }
                 get scheme() {
-                    var _a;
-                    return this.scheme_ = (_a = this.scheme_) !== null && _a !== void 0 ? _a : this.url.protocol.slice(0, -1);
+                    return this[internal].url.protocol.slice(0, -1);
                 }
                 get protocol() {
-                    var _a;
-                    return this.protocol_ = (_a = this.protocol_) !== null && _a !== void 0 ? _a : this.reference.slice(0, this.reference.indexOf(':') + 1);
+                    return this[internal].url.protocol;
                 }
                 get host() {
-                    var _a;
-                    return this.host_ = (_a = this.host_) !== null && _a !== void 0 ? _a : this.url.host;
+                    return this[internal].url.host;
                 }
                 get hostname() {
-                    var _a;
-                    return this.hostname_ = (_a = this.hostname_) !== null && _a !== void 0 ? _a : this.url.hostname;
+                    return this[internal].url.hostname;
                 }
                 get port() {
-                    var _a;
-                    return this.port_ = (_a = this.port_) !== null && _a !== void 0 ? _a : this.url.port;
+                    return this[internal].url.port;
                 }
                 get path() {
-                    var _a;
-                    return this.path_ = (_a = this.path_) !== null && _a !== void 0 ? _a : `${ this.pathname }${ this.query }`;
+                    var _b;
+                    return this[internal].path = (_b = this[internal].path) !== null && _b !== void 0 ? _b : `${ this.pathname }${ this.query }`;
                 }
                 get pathname() {
-                    var _a;
-                    return this.pathname_ = (_a = this.pathname_) !== null && _a !== void 0 ? _a : this.url.pathname;
+                    return this[internal].url.pathname;
                 }
                 get query() {
-                    return this.query_ = this.query_ === void 0 ? this.reference.slice(~(~this.reference.slice(0, -this.fragment.length || this.reference.length).indexOf('?') || ~this.reference.length), -this.fragment.length || this.reference.length) : this.query_;
+                    return this[internal].query = this[internal].query === global_1.undefined ? this.reference.slice(~(~this.reference.slice(0, -this.fragment.length || this.reference.length).indexOf('?') || ~this.reference.length), -this.fragment.length || this.reference.length) : this[internal].query;
                 }
                 get fragment() {
-                    return this.fragment_ = this.fragment_ === void 0 ? this.reference.slice(~(~this.reference.indexOf('#') || ~this.reference.length)) : this.fragment_;
+                    return this[internal].fragment = this[internal].fragment === global_1.undefined ? this.reference.slice(~(~this.reference.indexOf('#') || ~this.reference.length)) : this[internal].fragment;
                 }
             }
             exports.URL = URL;
+            _a = internal;
         },
         {
             './global': 12,
@@ -1098,6 +1107,7 @@ require = function () {
     19: [
         function (_dereq_, module, exports) {
             'use strict';
+            var _a;
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.ReadonlyURL = exports._encode = exports.standardize = void 0;
             const global_1 = _dereq_('../../global');
@@ -1120,23 +1130,82 @@ require = function () {
             function normalize(url, base) {
                 return new ReadonlyURL(url, base).href;
             }
+            const internal = Symbol();
             class ReadonlyURL {
                 constructor(url, base) {
-                    return ReadonlyURL.freezable ? alias_1.ObjectFreeze(ReadonlyURL.new(url, base)) : ReadonlyURL.new(url, base);
+                    this[_a] = {
+                        url: global_1.undefined,
+                        href: global_1.undefined,
+                        origin: global_1.undefined,
+                        protocol: global_1.undefined,
+                        username: global_1.undefined,
+                        password: global_1.undefined,
+                        host: global_1.undefined,
+                        hostname: global_1.undefined,
+                        port: global_1.undefined,
+                        pathname: global_1.undefined,
+                        search: global_1.undefined,
+                        hash: global_1.undefined,
+                        searchParams: global_1.undefined
+                    };
+                    this[internal].url = ReadonlyURL.freezable ? alias_1.ObjectFreeze(ReadonlyURL.new(url, base)) : ReadonlyURL.new(url, base);
+                }
+                get href() {
+                    return this[internal].href === global_1.undefined ? this[internal].href = this[internal].url.href : this[internal].href;
+                }
+                get origin() {
+                    return this[internal].origin === global_1.undefined ? this[internal].origin = this[internal].url.origin : this[internal].origin;
+                }
+                get protocol() {
+                    return this[internal].protocol === global_1.undefined ? this[internal].protocol = this[internal].url.protocol : this[internal].protocol;
+                }
+                get username() {
+                    return this[internal].username === global_1.undefined ? this[internal].username = this[internal].url.username : this[internal].username;
+                }
+                get password() {
+                    return this[internal].password === global_1.undefined ? this[internal].password = this[internal].url.password : this[internal].password;
+                }
+                get host() {
+                    return this[internal].host === global_1.undefined ? this[internal].host = this[internal].url.host : this[internal].host;
+                }
+                get hostname() {
+                    return this[internal].hostname === global_1.undefined ? this[internal].hostname = this[internal].url.hostname : this[internal].hostname;
+                }
+                get port() {
+                    return this[internal].port === global_1.undefined ? this[internal].port = this[internal].url.port : this[internal].port;
+                }
+                get pathname() {
+                    return this[internal].pathname === global_1.undefined ? this[internal].pathname = this[internal].url.pathname : this[internal].pathname;
+                }
+                get search() {
+                    return this[internal].search === global_1.undefined ? this[internal].search = this[internal].url.search : this[internal].search;
+                }
+                get hash() {
+                    return this[internal].hash === global_1.undefined ? this[internal].hash = this[internal].url.hash : this[internal].hash;
+                }
+                get searchParams() {
+                    return this[internal].searchParams === global_1.undefined ? this[internal].searchParams = this[internal].url.searchParams : this[internal].searchParams;
+                }
+                toString() {
+                    return this.href;
+                }
+                toJSON() {
+                    return this.href;
                 }
             }
             exports.ReadonlyURL = ReadonlyURL;
+            _a = internal;
             ReadonlyURL.freezable = (() => {
                 try {
                     alias_1.ObjectFreeze(new global_1.global.URL(global_1.location.href));
                     return true;
-                } catch (_a) {
+                } catch (_b) {
                     return false;
                 }
             })();
             ReadonlyURL.new = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => new global_1.global.URL(formatURLForEdge(url, base), base), new cache_1.Cache(100)), new cache_1.Cache(100))));
             function formatURLForEdge(url, base) {
-                return url.trim() || base;
+                return url.trim() || base || '';
             }
         },
         {
@@ -6491,28 +6560,32 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.render = void 0;
+            const global_1 = _dereq_('spica/global');
             const code_1 = _dereq_('./render/code');
             const math_1 = _dereq_('./render/math');
             const media_1 = _dereq_('./render/media');
+            const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
             function render(target, opts = {}) {
-                var _a, _b;
                 opts = {
                     code: code_1.code,
                     math: math_1.math,
                     media: {},
                     ...opts
                 };
+                if (target.classList.contains('invalid'))
+                    return;
+                const base = global_1.location.href;
+                if (target.matches(selector))
+                    return void render_(base, target, opts);
+                for (let es = target.querySelectorAll(selector), i = 0, len = es.length; i < len; ++i) {
+                    render_(base, es[i], opts);
+                }
+            }
+            exports.render = render;
+            function render_(base, target, opts) {
+                var _a, _b;
                 try {
-                    if (target.tagName === 'LI') {
-                        opts.math && target.querySelectorAll('.math').forEach(el => {
-                            var _a;
-                            return (_a = opts.math) === null || _a === void 0 ? void 0 : _a.call(opts, el);
-                        });
-                        return;
-                    }
                     switch (true) {
-                    case target.classList.contains('invalid'):
-                        return;
                     case !!opts.code && !target.firstElementChild && target.matches('pre.code'):
                         return void opts.code(target);
                     case !!opts.math && !target.firstElementChild && target.matches('.math'):
@@ -6520,7 +6593,7 @@ require = function () {
                     case target.matches('.media:not(img)'):
                         return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
                     case !!opts.media && target.matches('img.media:not([src])[data-src]'): {
-                            const el = media_1.media(target, opts.media, (_b = opts.caches) === null || _b === void 0 ? void 0 : _b.media);
+                            const el = media_1.media(base, target, opts.media, (_b = opts.caches) === null || _b === void 0 ? void 0 : _b.media);
                             if (!el)
                                 return;
                             el.setAttribute('data-src', target.getAttribute('data-src'));
@@ -6528,22 +6601,18 @@ require = function () {
                             return void scope.parentElement.replaceChild(el, scope);
                         }
                     default:
-                        for (let es = target.querySelectorAll('img.media:not([src])[data-src], a > .media:not(img), pre.code, .math'), i = 0, len = es.length; i < len; ++i) {
-                            const el = es[i];
-                            render(el, opts);
-                        }
                         return;
                     }
                 } catch (reason) {
                     console.error(reason);
                 }
             }
-            exports.render = render;
         },
         {
             './render/code': 133,
             './render/math': 134,
-            './render/media': 135
+            './render/media': 135,
+            'spica/global': 12
         }
     ],
     133: [
@@ -6619,7 +6688,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.media = void 0;
-            const global_1 = _dereq_('spica/global');
             const twitter_1 = _dereq_('./media/twitter');
             const youtube_1 = _dereq_('./media/youtube');
             const gist_1 = _dereq_('./media/gist');
@@ -6627,8 +6695,8 @@ require = function () {
             const video_1 = _dereq_('./media/video');
             const audio_1 = _dereq_('./media/audio');
             const image_1 = _dereq_('./media/image');
-            const {origin} = global_1.location;
-            function media(target, opts, cache) {
+            const url_1 = _dereq_('spica/url');
+            function media(base, target, opts, cache) {
                 var _a, _b, _c, _d, _e, _f, _g;
                 opts = {
                     twitter: twitter_1.twitter,
@@ -6640,7 +6708,7 @@ require = function () {
                     image: image_1.image,
                     ...opts
                 };
-                const url = new global_1.URL(target.getAttribute('data-src'), origin);
+                const url = new url_1.ReadonlyURL(target.getAttribute('data-src'), base);
                 const alt = target.getAttribute('alt') || '';
                 return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url, cache)) || ((_c = opts.gist) === null || _c === void 0 ? void 0 : _c.call(opts, url, cache)) || ((_d = opts.pdf) === null || _d === void 0 ? void 0 : _d.call(opts, url, cache)) || ((_e = opts.video) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt, cache)) || ((_f = opts.audio) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt, cache)) || ((_g = opts.image) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt, cache));
             }
@@ -6654,7 +6722,7 @@ require = function () {
             './media/twitter': 140,
             './media/video': 141,
             './media/youtube': 142,
-            'spica/global': 12
+            'spica/url': 18
         }
     ],
     136: [
@@ -6897,18 +6965,23 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.youtube = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            const origins = [
-                'https://www.youtube.com',
-                'https://youtu.be'
-            ];
             function youtube(url, cache) {
-                if (!origins.includes(url.origin))
+                let id;
+                switch (url.origin) {
+                case 'https://www.youtube.com':
+                    if (!url.pathname.match(/^\/watch$/))
+                        return;
+                    id = url.href.replace(/.+?=/, '').replace(/&/, '?');
+                    break;
+                case 'https://youtu.be':
+                    if (!url.pathname.match(/^\/[\w-]+$/))
+                        return;
+                    id = url.href.slice(url.href.indexOf('/', 9) + 1);
+                    break;
+                default:
                     return;
+                }
                 if (url.pathname.split('/').pop().includes('.'))
-                    return;
-                if (url.origin === 'https://www.youtube.com' && !url.pathname.match(/^\/watch$/))
-                    return;
-                if (url.origin === 'https://youtu.be' && !url.pathname.match(/^\/[\w-]+$/))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
@@ -6916,7 +6989,7 @@ require = function () {
                     class: 'media',
                     style: 'position: relative;'
                 }, [typed_dom_1.html('div', { style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.html('iframe', {
-                            src: `https://www.youtube.com/embed/${ url.origin === 'https://www.youtube.com' && url.href.replace(/.+?=/, '').replace(/&/, '?') || url.origin === 'https://youtu.be' && url.href.slice(url.href.indexOf('/', 9) + 1) }`,
+                            src: `https://www.youtube.com/embed/${ id }`,
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
@@ -7259,11 +7332,11 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const url_1 = _dereq_('spica/url');
             const typed_dom_1 = _dereq_('typed-dom');
-            const {origin} = global_1.location;
             function quote(address, range) {
                 var _a;
                 let expansion = expand(range);
                 const node = range.cloneContents();
+                const base = global_1.location.href;
                 for (let es = node.querySelectorAll('code[data-src], .math[data-src], rt, rp, .media'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     switch (true) {
@@ -7275,7 +7348,7 @@ require = function () {
                         el.remove();
                         continue;
                     case el.matches('.media'):
-                        el.replaceWith(`!${ new url_1.URL(el.getAttribute('data-src'), origin).reference }`);
+                        el.replaceWith(`!${ new url_1.ReadonlyURL(el.getAttribute('data-src'), base).href }`);
                         continue;
                     }
                 }
