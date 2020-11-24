@@ -6,7 +6,7 @@ import { html } from 'typed-dom';
 
 export const separator = /[\s\x00-\x7F]|[^\x00-\x7F\s]#/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|$/;
-const nonWhitespace = /[\S\n]|$/;
+export const nonWhitespace = /[\S\n]|$/;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creator(source => {
@@ -37,6 +37,7 @@ export const text: TextParser = creator(source => {
             ? repeat(source, {})
             : [[source[0]], source.slice(1)];
         default:
+          assert(source[0] !== '\n');
           const b = source[0].trimStart() === '';
           const i = b || isAlphanumeric(source[0])
             ? source.search(b ? nonWhitespace : nonAlphanumeric)

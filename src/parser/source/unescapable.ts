@@ -1,6 +1,6 @@
 import { UnescapableSourceParser } from '../source';
 import { creator } from '../../combinator';
-import { separator, nonAlphanumeric, isAlphanumeric } from './text';
+import { separator, nonAlphanumeric, nonWhitespace, isAlphanumeric } from './text';
 
 export const unescsource: UnescapableSourceParser = creator(source => {
   if (source === '') return;
@@ -9,8 +9,9 @@ export const unescsource: UnescapableSourceParser = creator(source => {
     case -1:
       return [[source], ''];
     case 0: {
-      const i = isAlphanumeric(source[0])
-        ? source.search(nonAlphanumeric)
+      const b = source[0] !== '\n' && source[0].trimStart() === '';
+      const i = b || isAlphanumeric(source[0])
+        ? source.search(b ? nonWhitespace : nonAlphanumeric)
         : 1;
       assert(i > 0);
       return [[source.slice(0, i)], source.slice(i)];
