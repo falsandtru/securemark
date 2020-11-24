@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.185.3
+
+- Fix escape for hashtag parser.
+
 ## 0.185.2
 
 - Fix error handling.
