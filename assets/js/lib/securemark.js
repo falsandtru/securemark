@@ -3355,7 +3355,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
-            const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
+            const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;
             exports.segment = combinator_1.block(combinator_1.validate('```', combinator_1.clear(combinator_1.fence(opener, 300))));
             exports.segment_ = combinator_1.block(combinator_1.validate('```', combinator_1.clear(combinator_1.fence(opener, 300, false))), false);
             exports.codeblock = combinator_1.block(combinator_1.validate('```', combinator_1.fmap(combinator_1.fence(opener, 300), ([body, closer, opener, delim, lang, param], _, context) => {
@@ -4098,7 +4098,7 @@ require = function () {
             const source_1 = _dereq_('../../../source');
             const autolink_1 = _dereq_('../../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.syntax = /^>+(?!>|[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*(?![^\S\n]*(?:$|\n)))/;
+            exports.syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
             exports.quotation = combinator_1.lazy(() => combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.union([
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+(?:$|\s)/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), block_)),
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(exports.syntax, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), block_))
@@ -4271,7 +4271,7 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const segment_1 = _dereq_('./segment');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[a-z][a-z0-9]*(?:-[a-z][a-z0-9]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
+            exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[a-z][0-9a-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
                 [typed_dom_1.html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', -1)))],
                 ''
             ] : global_1.undefined)));
@@ -4504,18 +4504,18 @@ require = function () {
             const hashref_1 = _dereq_('./autolink/hashref');
             const address_1 = _dereq_('./autolink/address');
             const source_1 = _dereq_('../source');
-            exports.autolink = combinator_1.fmap(combinator_1.validate(/^[@#>A-Za-z0-9]|^[^\x00-\x7F\s]#/, combinator_1.guard(context => {
+            exports.autolink = combinator_1.fmap(combinator_1.validate(/^[@#>0-9A-Za-z]|^[^\x00-\x7F\s]#/, combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.autolink) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.some(combinator_1.union([
                 url_1.url,
                 email_1.email,
-                source_1.str(/^[A-Za-z0-9]+(?:[.+_-][A-Za-z0-9]+)*(?:@(?:[A-Za-z0-9]+(?:[.-][A-Za-z0-9]+)*)?)+/),
-                source_1.str(/^[@#]+(?![A-Za-z0-9]|[^\x00-\x7F\s])/),
+                source_1.str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/),
+                source_1.str(/^[@#]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
                 channel_1.channel,
                 account_1.account,
-                source_1.str(/^@[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/),
-                source_1.str(/^(?:[A-Za-z0-9]|[^\x00-\x7F\s])(?=#)/),
+                source_1.str(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
+                source_1.str(/^[0-9A-Za-z]+(?=#)/),
                 hashtag_1.hashtag,
                 hashref_1.hashref,
                 address_1.address
@@ -4542,7 +4542,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*\/)?[A-Z-a-z][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, (source, {
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, (source, {
                 origin = ''
             }) => {
                 const url = source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ origin }/${ source }`;
@@ -4572,7 +4572,7 @@ require = function () {
             exports.address = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>>?[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*/, source => [
+            exports.address = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>>?[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, source => [
                 [typed_dom_1.html('a', {
                         class: 'address',
                         href: `?res=${ source.slice(source.lastIndexOf('>') + 1) }`,
@@ -4625,7 +4625,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.email = combinator_1.creator(combinator_1.focus(/^[A-Za-z0-9]+(?:[.+_-][A-Za-z0-9]+)*@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*/, source => verify(source) && [
+            exports.email = combinator_1.creator(combinator_1.focus(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*@[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*/, source => verify(source) && [
                 [typed_dom_1.html('a', {
                         class: 'email',
                         href: `mailto:${ source }`,
@@ -4650,7 +4650,7 @@ require = function () {
             exports.hashref = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![A-Za-z0-9]|[^\x00-\x7F\s])/, ref => [
+            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/, ref => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
                         rel: 'noopener'
@@ -4670,7 +4670,7 @@ require = function () {
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![A-Za-z0-9]|[^\x00-\x7F\s]))(?:[A-Za-z0-9]|[^\x00-\x7F\s])+/, (tag, {
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (tag, {
                 origin = ''
             }) => [
                 [typed_dom_1.html('a', {
@@ -5104,7 +5104,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = source_1.str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*(?![A-Za-z0-9]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[A-Za-z0-9]))/);
+            const body = source_1.str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*(?![0-9A-Za-z]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[0-9A-Za-z]))/);
             exports.segment = combinator_1.clear(combinator_1.validate([
                 '[$',
                 '$'
@@ -5286,7 +5286,7 @@ require = function () {
                 }
                 let attrs;
                 switch (true) {
-                case util_1.stringify(as[as.length - 1]) !== '>' || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(util_1.stringify), [])):
+                case as[as.length - 1] !== '>' || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(util_1.stringify), [])):
                     return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
                 case cs.length === 0:
                     return invalid('closer', `Missing the closing HTML tag <${ tag }>.`, as, bs, cs);
@@ -5718,7 +5718,7 @@ require = function () {
                     }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : global_1.undefined)));
-            const alias = combinator_1.creator(combinator_1.focus(/^~[A-Za-z0-9]+(?:(?:['-]|[.,]? |\., )[A-Za-z0-9]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
+            const alias = combinator_1.creator(combinator_1.focus(/^~[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
                 [typed_dom_1.html('abbr', source.split('|', 1)[0].slice(1))],
                 ''
             ]));
@@ -6186,7 +6186,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.escsource = void 0;
             const combinator_1 = _dereq_('../../combinator');
-            const separator = /\s|(?=[\x00-\x7F])[^A-Za-z0-9\s]/;
+            const separator = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
             exports.escsource = combinator_1.creator(source => {
                 if (source === '')
                     return;
@@ -6296,14 +6296,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.text = exports.alphanumeric = exports.separator = void 0;
+            exports.isAlphanumeric = exports.text = exports.nonAlphanumeric = exports.separator = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const str_1 = _dereq_('./str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.separator = /\s|[\x00-\x7F]|\S#/;
-            exports.alphanumeric = /^[A-Za-z0-9]+/;
-            const next = /[\S\n]|$/;
+            exports.separator = /[\s\x00-\x7F]/;
+            exports.nonAlphanumeric = /[^0-9A-Za-z]|$/;
+            const nonWhitespace = /[\S\n]|$/;
             const repeat = str_1.str(/^(.)\1*/);
             exports.text = combinator_1.creator(source => {
                 if (source === '')
@@ -6351,19 +6351,13 @@ require = function () {
                         ];
                     default:
                         const b = source[0].trimStart() === '';
-                        const i = b ? source.search(next) : 0;
-                        const r = !b && source.match(exports.alphanumeric);
-                        if (r)
-                            return [
-                                [r[0]],
-                                source.slice(r[0].length)
-                            ];
-                        return i === source.length || source[i] === '\n' || source[i] === '\\' && source[i + 1] === '\n' ? [
+                        const i = b || isAlphanumeric(source[0]) ? source.search(b ? nonWhitespace : exports.nonAlphanumeric) : 1;
+                        return b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n' ? [
                             [],
                             source.slice(i)
                         ] : [
-                            [source.slice(0, i || 1)],
-                            source.slice(i || 1)
+                            [source.slice(0, i)],
+                            source.slice(i)
                         ];
                     }
                 default:
@@ -6373,6 +6367,10 @@ require = function () {
                     ];
                 }
             });
+            function isAlphanumeric(char) {
+                return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
+            }
+            exports.isAlphanumeric = isAlphanumeric;
         },
         {
             '../../combinator': 28,
@@ -6398,17 +6396,13 @@ require = function () {
                         [source],
                         ''
                     ];
-                case 0:
-                    const r = source.match(text_1.alphanumeric);
-                    if (r)
+                case 0: {
+                        const i = text_1.isAlphanumeric(source[0]) ? source.search(text_1.nonAlphanumeric) : 1;
                         return [
-                            [r[0]],
-                            source.slice(r[0].length)
+                            [source.slice(0, i)],
+                            source.slice(i)
                         ];
-                    return [
-                        [source.slice(0, 1)],
-                        source.slice(1)
-                    ];
+                    }
                 default:
                     return [
                         [source.slice(0, i)],
