@@ -1,7 +1,7 @@
 import { EscapableSourceParser } from '../source';
 import { creator } from '../../combinator';
 
-const separator = /\s|[\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
+const separator = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 
 export const escsource: EscapableSourceParser = creator(source => {
   if (source === '') return;

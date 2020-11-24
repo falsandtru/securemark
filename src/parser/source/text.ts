@@ -4,7 +4,7 @@ import { creator } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom';
 
-export const separator = /\s|[\x00-\x7F]/;
+export const separator = /[\s\x00-\x7F]/;
 export const nonAlphanumeric = /[^0-9A-Za-z]|$/;
 const nonWhitespace = /[\S\n]|$/;
 const repeat = str(/^(.)\1*/);
