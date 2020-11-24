@@ -5,8 +5,8 @@ import { str } from './str';
 import { html } from 'typed-dom';
 
 export const separator = /\s|[\x00-\x7F]|\S#/;
-export const alphanumeric = /^[A-Za-z0-9]+/;
-const next = /[\S\n]|$/;
+export const nonAlphanumeric = /[^A-Za-z0-9]|$/;
+const nonWhitespace = /[\S\n]|$/;
 const repeat = str(/^(.)\1*/);
 
 export const text: TextParser = creator(source => {
@@ -38,18 +38,25 @@ export const text: TextParser = creator(source => {
             : [[source[0]], source.slice(1)];
         default:
           const b = source[0].trimStart() === '';
-          const i = b ? source.search(next) : 0;
-          assert(i !== -1);
+          const i = b || isAlphanumeric(source[0])
+            ? source.search(b ? nonWhitespace : nonAlphanumeric)
+            : 1;
+          assert(i > 0);
           assert(!['\\', '\n'].includes(source[0]));
-          const r = !b && source.match(alphanumeric);
-          if (r) return [[r[0]], source.slice(r[0].length)];
-          return i === source.length
-              || source[i] === '\n'
-              || source[i] === '\\' && source[i + 1] === '\n'
+          return b && i === source.length
+              || b && source[i] === '\n'
+              || b && source[i] === '\\' && source[i + 1] === '\n'
             ? [[], source.slice(i)]
-            : [[source.slice(0, i || 1)], source.slice(i || 1)];
+            : [[source.slice(0, i)], source.slice(i)];
       }
     default:
       return [[source.slice(0, i)], source.slice(i)];
   }
 });
+
+export function isAlphanumeric(char: string): boolean {
+  assert(char.length === 1);
+  return '0' <= char && char <= '9'
+      || 'a' <= char && char <= 'z'
+      || 'A' <= char && char <= 'Z';
+}
