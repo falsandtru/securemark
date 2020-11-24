@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.185.4
+
+- Fix escape for label parser.
+
 ## 0.185.3
 
 - Fix escape for hashtag parser.

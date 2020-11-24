@@ -32,7 +32,6 @@ export const text: TextParser = creator(source => {
         case '+':
         case '~':
         case '=':
-        case '$':
           return source[1] === source[0]
             ? repeat(source, {})
             : [[source[0]], source.slice(1)];
