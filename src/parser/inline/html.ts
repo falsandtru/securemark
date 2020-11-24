@@ -121,7 +121,7 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
   }
   let attrs: Record<string, string | undefined> | undefined;
   switch (true) {
-    case stringify(as[as.length - 1]) !== '>'
+    case as[as.length - 1] !== '>'
       || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(stringify), [])):
       return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
     case cs.length === 0:
