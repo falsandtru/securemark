@@ -4504,7 +4504,7 @@ require = function () {
             const hashref_1 = _dereq_('./autolink/hashref');
             const address_1 = _dereq_('./autolink/address');
             const source_1 = _dereq_('../source');
-            exports.autolink = combinator_1.fmap(combinator_1.validate(/^[@#>0-9A-Za-z]|^[^\x00-\x7F\s]#/, combinator_1.guard(context => {
+            exports.autolink = combinator_1.fmap(combinator_1.validate(/^[@#>0-9A-Za-z]/, combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.autolink) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.some(combinator_1.union([
