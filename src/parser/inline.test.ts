@@ -114,8 +114,8 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('(http://host)')), [['(', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', ')'], '']);
       assert.deepStrictEqual(inspect(parser(' http://host')), [[' ', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser(' ttp://host')), [[' ', '<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('あhttp://host')), [['あ', '<a href="http://host" rel="noopener" target="_blank">http://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('あttp://host')), [['あ', '<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('あhttp://hostい')), [['あ', '<a href="http://host" rel="noopener" target="_blank">http://host</a>', 'い'], '']);
+      assert.deepStrictEqual(inspect(parser('あttp://hostい')), [['あ', '<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>', 'い'], '']);
     });
 
     it('email', () => {
