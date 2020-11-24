@@ -4504,7 +4504,7 @@ require = function () {
             const hashref_1 = _dereq_('./autolink/hashref');
             const address_1 = _dereq_('./autolink/address');
             const source_1 = _dereq_('../source');
-            exports.autolink = combinator_1.fmap(combinator_1.validate(/^[@#>0-9A-Za-z]/, combinator_1.guard(context => {
+            exports.autolink = combinator_1.fmap(combinator_1.validate(/^(?:[@#>0-9A-Za-z]|[^\x00-\x7F\s]#)/, combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.autolink) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.some(combinator_1.union([
@@ -4515,7 +4515,7 @@ require = function () {
                 channel_1.channel,
                 account_1.account,
                 source_1.str(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
-                source_1.str(/^[0-9A-Za-z]+(?=#)/),
+                source_1.str(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s](?=#)/),
                 hashtag_1.hashtag,
                 hashref_1.hashref,
                 address_1.address
@@ -6296,14 +6296,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.isAlphanumeric = exports.text = exports.nonAlphanumeric = exports.separator = void 0;
+            exports.isAlphanumeric = exports.text = exports.nonWhitespace = exports.nonAlphanumeric = exports.separator = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const str_1 = _dereq_('./str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.separator = /[\s\x00-\x7F]/;
+            exports.separator = /[\s\x00-\x7F]|[^\x00-\x7F\s]#/;
             exports.nonAlphanumeric = /[^0-9A-Za-z]|$/;
-            const nonWhitespace = /[\S\n]|$/;
+            exports.nonWhitespace = /[\S\n]|$/;
             const repeat = str_1.str(/^(.)\1*/);
             exports.text = combinator_1.creator(source => {
                 if (source === '')
@@ -6351,7 +6351,7 @@ require = function () {
                         ];
                     default:
                         const b = source[0].trimStart() === '';
-                        const i = b || isAlphanumeric(source[0]) ? source.search(b ? nonWhitespace : exports.nonAlphanumeric) : 1;
+                        const i = b || isAlphanumeric(source[0]) ? source.search(b ? exports.nonWhitespace : exports.nonAlphanumeric) : 1;
                         return b && i === source.length || b && source[i] === '\n' || b && source[i] === '\\' && source[i + 1] === '\n' ? [
                             [],
                             source.slice(i)
@@ -6397,7 +6397,8 @@ require = function () {
                         ''
                     ];
                 case 0: {
-                        const i = text_1.isAlphanumeric(source[0]) ? source.search(text_1.nonAlphanumeric) : 1;
+                        const b = source[0] !== '\n' && source[0].trimStart() === '';
+                        const i = b || text_1.isAlphanumeric(source[0]) ? source.search(b ? text_1.nonWhitespace : text_1.nonAlphanumeric) : 1;
                         return [
                             [source.slice(0, i)],
                             source.slice(i)
