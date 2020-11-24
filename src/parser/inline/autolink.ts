@@ -11,21 +11,21 @@ import { address } from './autolink/address';
 import { str } from '../source';
 
 export const autolink: AutolinkParser = fmap(
-  validate(/^[@#>A-Za-z0-9]|^[^\x00-\x7F\s]#/,
+  validate(/^[@#>0-9A-Za-z]|^[^\x00-\x7F\s]#/,
   guard(context => context.syntax?.inline?.autolink ?? true,
   some(union([
     url,
     email,
     // Escape unmatched email-like strings.
-    str(/^[A-Za-z0-9]+(?:[.+_-][A-Za-z0-9]+)*(?:@(?:[A-Za-z0-9]+(?:[.-][A-Za-z0-9]+)*)?)+/),
+    str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/),
     // Escape repeated symbols.
-    str(/^[@#]+(?![A-Za-z0-9]|[^\x00-\x7F\s])/),
+    str(/^[@#]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
     channel,
     account,
     // Escape unmatched account-like strings.
-    str(/^@[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/),
+    str(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
     // Escape invalid leading characters.
-    str(/^[A-Za-z0-9]+(?=#)/),
+    str(/^[0-9A-Za-z]+(?=#)/),
     hashtag,
     hashref,
     address,

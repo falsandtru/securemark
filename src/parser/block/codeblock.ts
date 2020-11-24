@@ -8,7 +8,7 @@ import { html, define } from 'typed-dom';
 import { join } from 'spica/array';
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
-const language = /^[a-z0-9]+(?:-[a-z][a-z0-9]*)*$/;
+const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;
 
 export const segment: CodeBlockParser.SegmentParser = block(validate('```',
   clear(fence(opener, 300))));

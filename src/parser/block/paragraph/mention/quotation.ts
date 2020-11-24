@@ -6,7 +6,7 @@ import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
 import { html } from 'typed-dom';
 
-export const syntax = /^>+(?!>|[0-9][A-Za-z0-9]*(?:-[A-Za-z0-9]+)*(?![^\S\n]*(?:$|\n)))/;
+export const syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
 
 export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() => creator(block(fmap(
   union([
