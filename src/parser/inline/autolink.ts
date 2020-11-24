@@ -11,7 +11,7 @@ import { address } from './autolink/address';
 import { str } from '../source';
 
 export const autolink: AutolinkParser = fmap(
-  validate(/^[@#>0-9A-Za-z]|^[^\x00-\x7F\s]#/,
+  validate(/^[@#>0-9A-Za-z]/,
   guard(context => context.syntax?.inline?.autolink ?? true,
   some(union([
     url,
