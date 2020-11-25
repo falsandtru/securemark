@@ -51,7 +51,7 @@ export const block: BlockParser = creator(recover(localize(
   (_, __, reason) => [
     [html('h1',
       {
-        id: `error:${uuid()}`,
+        id: `index:error:${uuid()}`,
         class: 'invalid',
       },
       reason instanceof Error
