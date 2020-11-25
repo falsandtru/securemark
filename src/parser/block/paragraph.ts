@@ -1,12 +1,12 @@
 import { ParagraphParser } from '../block';
 import { subsequence, some, block, rewrite, fmap, convert, trim } from '../../combinator';
-import { trimEnd, defrag } from '../util';
+import { defrag } from '../util';
 import { mention } from './paragraph/mention';
 import { syntax as delimiter } from './paragraph/mention/quotation';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { html, define } from 'typed-dom';
-import { push } from 'spica/array';
+import { pop, push } from 'spica/array';
 
 export const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
 
@@ -22,18 +22,20 @@ export const paragraph: ParagraphParser = block(fmap(
         trim(some(inline))),
       ns => push(ns, [html('br')])),
   ]))),
-  ns =>
-    ns.length > 0
-      ? [html('p', defrag(trimEnd(ns)))].map(el =>
-          isVisible(el)
-            ? el
-            : define(el, {
-                class: 'invalid',
-                'data-invalid-syntax': 'paragraph',
-                'data-invalid-type': 'visibility',
-                'data-invalid-message': 'All paragraphs must have a visible content.',
-              }))
-      : []));
+  ns => {
+    if (ns.length === 0) return [];
+    const el = html('p', defrag(pop(ns)[0]));
+    return [
+      isVisible(el)
+        ? el
+        : define(el, {
+            class: 'invalid',
+            'data-invalid-syntax': 'paragraph',
+            'data-invalid-type': 'visibility',
+            'data-invalid-message': 'Paragraphs must have a visible content.',
+          })
+    ];
+  }));
 
 function isVisible(node: HTMLElement): boolean {
   return node.innerText.trimStart() !== ''
