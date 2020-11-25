@@ -12,19 +12,20 @@ describe('Unit: parser/inline/insertion', () => {
       assert.deepStrictEqual(inspect(parser('++')), undefined);
       assert.deepStrictEqual(inspect(parser('++a')), [['++', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('++a+')), [['++', 'a', '+'], '']);
-      assert.deepStrictEqual(inspect(parser('++ ++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++ a++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++ a ++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++\na++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++\\\na++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++<wbr>a++')), undefined);
-      assert.deepStrictEqual(inspect(parser('++<# a #>b++')), undefined);
     });
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('++a++')), [['<ins>a</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++ab++')), [['<ins>ab</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++a ++')), [['<ins>a </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++ ++')), [['<ins> </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++ a++')), [['<ins> a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++ a ++')), [['<ins> a </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++  a  ++')), [['<ins>  a  </ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++\na++')), [['<ins><br>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++\\\na++')), [['<ins><span class="linebreak"> </span>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++<wbr>a++')), [['<ins><wbr>a</ins>'], '']);
+      assert.deepStrictEqual(inspect(parser('++<# a #>b++')), [['<ins><sup class="comment" title="a"></sup>b</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++a\nb++')), [['<ins>a<br>b</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++a\\\nb++')), [['<ins>a<span class="linebreak"> </span>b</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++\\+++')), [['<ins>+</ins>'], '']);

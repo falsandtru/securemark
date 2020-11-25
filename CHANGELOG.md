@@ -3,6 +3,7 @@
 ## 0.186.0
 
 - Refine error handling.
+- Improve insertion and deletion parsers to allow to have whitespace anywhere.
 - Fix escape for label parser.
 
 ## 0.185.3

@@ -32,6 +32,9 @@ describe('Unit: parser/inline', () => {
       assert.deepStrictEqual(inspect(parser('****a****')), [['****', 'a', '****'], '']);
       assert.deepStrictEqual(inspect(parser('*(*a*)*')), [['<em>(<em>a</em>)</em>'], '']);
       assert.deepStrictEqual(inspect(parser('**(**a**)**')), [['<strong>(<strong>a</strong>)</strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('*++ ++*')), [['<em><ins> </ins></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*++ a ++*')), [['<em><ins> a </ins></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*++  a  ++*')), [['<em><ins>  a  </ins></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*<small>`a`</small>*')), [['<em><small><code data-src="`a`">a</code></small></em>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>*<bdi>a</bdi>*</small>')), [['<small><em><bdi>a</bdi></em></small>'], '']);
       assert.deepStrictEqual(inspect(parser('<bdi>((<bdi>((a))</bdi>))</bdi>')), [['<bdi><sup class="annotation"><bdi>((a))</bdi></sup></bdi>'], '']);
