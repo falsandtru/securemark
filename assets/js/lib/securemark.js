@@ -3223,6 +3223,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.block = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../combinator');
             const line_1 = _dereq_('./source/line');
             const horizontalrule_1 = _dereq_('./block/horizontalrule');
@@ -3254,9 +3255,9 @@ require = function () {
                 extension_1.extension,
                 blockquote_1.blockquote,
                 paragraph_1.paragraph
-            ]))), (_, __, reason) => [
+            ]))), (_, {id}, reason) => [
                 [typed_dom_1.html('h1', {
-                        id: `error:${ uuid_1.uuid() }`,
+                        id: id !== '' ? `index:error:${ uuid_1.uuid() }` : global_1.undefined,
                         class: 'invalid'
                     }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `Unknown error: ${ reason }`)],
                 ''
@@ -3278,6 +3279,7 @@ require = function () {
             './block/ulist': 82,
             './locale': 119,
             './source/line': 125,
+            'spica/global': 12,
             'spica/uuid': 20,
             'typed-dom': 21
         }
@@ -6344,7 +6346,6 @@ require = function () {
                     case '+':
                     case '~':
                     case '=':
-                    case '$':
                         return source[1] === source[0] ? repeat(source, {}) : [
                             [source[0]],
                             source.slice(1)
