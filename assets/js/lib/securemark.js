@@ -4030,12 +4030,17 @@ require = function () {
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, quotation_1.syntax), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
-            ]))), ns => ns.length > 0 ? [typed_dom_1.html('p', util_1.defrag(util_1.trimEnd(ns)))].map(el => isVisible(el) ? el : typed_dom_1.define(el, {
-                class: 'invalid',
-                'data-invalid-syntax': 'paragraph',
-                'data-invalid-type': 'visibility',
-                'data-invalid-message': 'All paragraphs must have a visible content.'
-            })) : []));
+            ]))), ns => {
+                if (ns.length === 0)
+                    return [];
+                const el = typed_dom_1.html('p', util_1.defrag(array_1.pop(ns)[0]));
+                return [isVisible(el) ? el : typed_dom_1.define(el, {
+                        class: 'invalid',
+                        'data-invalid-syntax': 'paragraph',
+                        'data-invalid-type': 'visibility',
+                        'data-invalid-message': 'Paragraphs must have a visible content.'
+                    })];
+            }));
             function isVisible(node) {
                 return node.innerText.trimStart() !== '' || node.getElementsByClassName('media').length > 0;
             }
@@ -4826,12 +4831,9 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.deletion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('~~'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '~~')])), source_1.str('~~'), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
-                [typed_dom_1.html('del', util_1.defrag(util_1.trimEnd(bs)))],
+            exports.deletion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('~~'), combinator_1.union([combinator_1.some(inline_1.inline, '~~')]), source_1.str('~~'), false, ([, bs], rest) => [
+                [typed_dom_1.html('del', util_1.defrag(bs))],
                 rest
-            ] : [
-                array_1.unshift(as, bs),
-                cs[0] + rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
                 rest
@@ -5371,12 +5373,9 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.insertion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('++'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '++')])), source_1.str('++'), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
-                [typed_dom_1.html('ins', util_1.defrag(util_1.trimEnd(bs)))],
+            exports.insertion = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('++'), combinator_1.union([combinator_1.some(inline_1.inline, '++')]), source_1.str('++'), false, ([, bs], rest) => [
+                [typed_dom_1.html('ins', util_1.defrag(bs))],
                 rest
-            ] : [
-                array_1.unshift(as, bs),
-                cs[0] + rest
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
                 rest
@@ -5564,14 +5563,17 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const cache_1 = _dereq_('spica/cache');
             exports.cache = new cache_1.Cache(20);
-            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\n]+?(?=}\$)/)]), '}$'), ([source], _, {
+            exports.math = combinator_1.creator(combinator_1.bind(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\n]+?(?=}\$)/)]), '}$'), ([source], rest, {
                 caches: {
                     math: cache = global_1.undefined
                 } = {}
-            }) => [(source = `\${${ source.trim() }}$`) && (cache === null || cache === void 0 ? void 0 : cache.has(source)) ? cache.get(source).cloneNode(true) : typed_dom_1.html('span', {
-                    class: 'math notranslate',
-                    'data-src': source
-                }, source)]));
+            }) => (source = `\${${ source.trim() }}$`) === '${}$' ? global_1.undefined : [
+                (cache === null || cache === void 0 ? void 0 : cache.has(source)) ? [cache.get(source).cloneNode(true)] : [typed_dom_1.html('span', {
+                        class: 'math notranslate',
+                        'data-src': source
+                    }, source)],
+                rest
+            ]));
         },
         {
             '../../combinator': 28,
@@ -6684,9 +6686,14 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.math = void 0;
             const global_1 = _dereq_('spica/global');
+            const typed_dom_1 = _dereq_('typed-dom');
             function math(target, cache) {
-                const source = target.innerHTML;
-                queue(target, () => void (cache === null || cache === void 0 ? void 0 : cache.set(source, target.cloneNode(true))));
+                const source = target.textContent;
+                queue(target, () => {
+                    var _a;
+                    !((_a = target.textContent) === null || _a === void 0 ? void 0 : _a.trim()) && typed_dom_1.define(target, [typed_dom_1.html('span', source)]);
+                    return void (cache === null || cache === void 0 ? void 0 : cache.set(source, target.cloneNode(true)));
+                });
             }
             exports.math = math;
             async function queue(target, callback = () => global_1.undefined) {
@@ -6694,7 +6701,10 @@ require = function () {
                 MathJax.typesetPromise([target]).then(callback);
             }
         },
-        { 'spica/global': 12 }
+        {
+            'spica/global': 12,
+            'typed-dom': 21
+        }
     ],
     135: [
         function (_dereq_, module, exports) {
