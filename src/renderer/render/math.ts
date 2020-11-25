@@ -1,10 +1,14 @@
 import { undefined } from 'spica/global';
 import { Cache } from 'spica/cache';
+import { html, define } from 'typed-dom';
 
 export function math(target: HTMLElement, cache?: Cache<string, HTMLElement>): void {
   assert(target.children.length === 0);
-  const source = target.innerHTML;
-  queue(target, () => void cache?.set(source, target.cloneNode(true)));
+  const source = target.textContent!;
+  queue(target, () => {
+    !target.textContent?.trim() && define(target, [html('span', source)]);
+    return void cache?.set(source, target.cloneNode(true));
+  });
 }
 
 async function queue(target: HTMLElement, callback = () => undefined): Promise<void> {
