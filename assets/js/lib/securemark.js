@@ -3239,9 +3239,10 @@ require = function () {
             const extension_1 = _dereq_('./block/extension');
             const paragraph_1 = _dereq_('./block/paragraph');
             const locale_1 = _dereq_('./locale');
+            const util_1 = _dereq_('./util');
             const typed_dom_1 = _dereq_('typed-dom');
             const uuid_1 = _dereq_('spica/uuid');
-            exports.block = combinator_1.creator(combinator_1.recover(locale_1.localize(combinator_1.update({ resources: { creation: 100 * 1000 } }, combinator_1.union([
+            exports.block = combinator_1.creator(combinator_1.recover(util_1.error(locale_1.localize(combinator_1.update({ resources: { creation: 100 * 1000 } }, combinator_1.union([
                 line_1.emptyline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -3255,11 +3256,11 @@ require = function () {
                 extension_1.extension,
                 blockquote_1.blockquote,
                 paragraph_1.paragraph
-            ]))), (_, {id}, reason) => [
+            ])))), (_, {id}, reason) => [
                 [typed_dom_1.html('h1', {
-                        id: id !== '' ? `index:error:${ uuid_1.uuid() }` : global_1.undefined,
-                        class: 'invalid'
-                    }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `Unknown error: ${ reason }`)],
+                        id: id !== '' ? `error:${ uuid_1.uuid() }` : global_1.undefined,
+                        class: 'error'
+                    }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `UnknownError: ${ reason }`)],
                 ''
             ]));
         },
@@ -3279,6 +3280,7 @@ require = function () {
             './block/ulist': 82,
             './locale': 119,
             './source/line': 125,
+            './util': 130,
             'spica/global': 12,
             'spica/uuid': 20,
             'typed-dom': 21
@@ -6045,7 +6047,6 @@ require = function () {
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
-            const uuid_1 = _dereq_('spica/uuid');
             const parser = combinator_1.union([
                 heading_1.segment,
                 codeblock_1.segment,
@@ -6056,14 +6057,14 @@ require = function () {
             ]);
             function* segment(source) {
                 if (source.length > 1000 * 1000)
-                    return yield `# ***Too large input over 1,000,000 characters.*** [#error:${ uuid_1.uuid() }]`;
+                    return yield `\0# Error: Too large input over length 1,000,000.`;
                 while (source !== '') {
                     const result = parser(source, {});
                     const rest = combinator_1.exec(result);
                     const segs = combinator_1.eval(result).length ? combinator_1.eval(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        seg.length > 10 * 1000 ? yield `# ***Too large block over 10,000 characters.*** [#error:${ uuid_1.uuid() }]` : yield seg;
+                        seg.length > 10 * 1000 ? yield `\0# Error: Too large block over length 10,000.` : yield seg;
                     }
                     source = rest;
                 }
@@ -6076,8 +6077,7 @@ require = function () {
             './block/extension': 65,
             './block/heading': 72,
             './block/mathblock': 75,
-            './source': 122,
-            'spica/uuid': 20
+            './source': 122
         }
     ],
     122: [
@@ -6422,12 +6422,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.defrag = exports.dup = exports.trimEnd = exports.startTight = exports.isEndTight = void 0;
+            exports.error = exports.stringify = exports.defrag = exports.dup = exports.trimEnd = exports.startTight = exports.isEndTight = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../combinator');
             const inline_1 = _dereq_('./inline');
+            const uuid_1 = _dereq_('spica/uuid');
             const array_1 = _dereq_('spica/array');
+            const typed_dom_1 = _dereq_('typed-dom');
             function isEndTight(nodes) {
                 if (nodes.length === 0)
                     return true;
@@ -6533,13 +6535,22 @@ require = function () {
                 return acc;
             }
             exports.stringify = stringify;
+            function error(parser) {
+                return (source, context) => source[0] === '\0' ? combinator_1.fmap(parser, ([el]) => [typed_dom_1.define(el, {
+                        id: `error:${ uuid_1.uuid() }`,
+                        class: 'error'
+                    })])(source.slice(1), context) : parser(source, context);
+            }
+            exports.error = error;
         },
         {
             '../combinator': 28,
             './inline': 84,
             'spica/alias': 5,
             'spica/array': 6,
-            'spica/global': 12
+            'spica/global': 12,
+            'spica/uuid': 20,
+            'typed-dom': 21
         }
     ],
     131: [
