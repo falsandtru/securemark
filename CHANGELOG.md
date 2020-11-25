@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.185.4
+## 0.186.0
 
+- Refine error handling.
 - Fix escape for label parser.
 
 ## 0.185.3

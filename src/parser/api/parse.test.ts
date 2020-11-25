@@ -61,8 +61,15 @@ describe('Unit: parser/api/parse', () => {
 
     it('normalize', () => {
       assert.deepStrictEqual(
-        [...parse('a\\\r\nb').children].map(el => el.outerHTML),
+        [...parse('\0a\\\r\nb').children].map(el => el.outerHTML),
         ['<p>a<span class="linebreak"> </span>b</p>']);
+    });
+
+    it('error', () => {
+      const a = parse(`${'a'.repeat(1000)}\n\n`.repeat(1000));
+      assert(a.firstElementChild?.matches('h1.error[id^="error:"]'));
+      const b = parse(`${'a'.repeat(10 * 1000 + 1)}`);
+      assert(b.firstElementChild?.matches('h1.error[id^="error:"]'));
     });
 
 /*

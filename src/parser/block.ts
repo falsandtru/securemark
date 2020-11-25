@@ -15,6 +15,7 @@ import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 import { localize } from './locale';
+import { error } from './util';
 import { html } from 'typed-dom';
 import { uuid } from 'spica/uuid';
 
@@ -32,7 +33,7 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = creator(recover(localize(
+export const block: BlockParser = creator(recover(error(localize(
   update({ resources: { creation: 100 * 1000 } },
   union([
     emptyline,
@@ -48,15 +49,15 @@ export const block: BlockParser = creator(recover(localize(
     extension,
     blockquote,
     paragraph
-  ]))),
+  ])))),
   (_, { id }, reason) => [
     [html('h1',
       {
-        id: id !== '' ? `index:error:${uuid()}` : undefined,
-        class: 'invalid',
+        id: id !== '' ? `error:${uuid()}` : undefined,
+        class: 'error',
       },
       reason instanceof Error
         ? `${reason.name}: ${reason.message}`
-        : `Unknown error: ${reason}`)],
+        : `UnknownError: ${reason}`)],
     ''
   ]));

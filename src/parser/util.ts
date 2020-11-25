@@ -2,7 +2,9 @@ import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, fmap, eval } from '../combinator';
 import { htmlentity, comment } from './inline';
+import { uuid } from 'spica/uuid';
 import { pop } from 'spica/array';
+import { define } from 'typed-dom';
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
@@ -131,4 +133,17 @@ export function stringify(nodes: HTMLElement | string | readonly (HTMLElement | 
         : node.innerText;
   }
   return acc;
+}
+
+export function error<P extends Parser<HTMLElement>>(parser: P): P;
+export function error<T extends HTMLElement, D extends Parser<unknown>[]>(parser: Parser<T, D>): Parser<T, D> {
+  return (source, context) =>
+    source[0] === '\0'
+      ? fmap(parser, ([el]) => [
+          define(el, {
+            id: `error:${uuid()}`,
+            class: 'error',
+          })
+        ])(source.slice(1), context)
+      : parser(source, context);
 }
