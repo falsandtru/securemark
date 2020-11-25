@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown.d';
 import { union, update, creator, recover } from '../combinator';
 import { emptyline } from './source/line';
@@ -48,10 +49,10 @@ export const block: BlockParser = creator(recover(localize(
     blockquote,
     paragraph
   ]))),
-  (_, __, reason) => [
+  (_, { id }, reason) => [
     [html('h1',
       {
-        id: `index:error:${uuid()}`,
+        id: id !== '' ? `index:error:${uuid()}` : undefined,
         class: 'invalid',
       },
       reason instanceof Error
