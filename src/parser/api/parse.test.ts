@@ -53,16 +53,16 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<br>b</p>']);
     });
 
-    it('normalize', () => {
-      assert.deepStrictEqual(
-        [...parse('a\\\r\nb').children].map(el => el.outerHTML),
-        ['<p>a<span class="linebreak"> </span>b</p>']);
-    });
-
     it('origin', () => {
       assert.deepStrictEqual(
         [...parse('@a', { origin: 'https://localhost' }).children].map(el => el.outerHTML),
         ['<p><a class="account" href="https://localhost/@a" rel="noopener">@a</a></p>']);
+    });
+
+    it('normalize', () => {
+      assert.deepStrictEqual(
+        [...parse('a\\\r\nb').children].map(el => el.outerHTML),
+        ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
 /*
