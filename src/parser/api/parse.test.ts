@@ -53,10 +53,44 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<br>b</p>']);
     });
 
-    it('origin', () => {
+    it('url', () => {
       assert.deepStrictEqual(
-        [...parse('@a', { origin: 'https://localhost' }).children].map(el => el.outerHTML),
-        ['<p><a class="account" href="https://localhost/@a" rel="noopener">@a</a></p>']);
+        [...parse([
+          [
+            '---',
+            'url: https://host/x/y',
+            '---',
+          ].join('\n'),
+          '@a',
+          '@domain/a',
+          '@a#b',
+          '@domain/a#b',
+          '#a',
+          '{a}',
+          '{/a}',
+          '{./a}',
+          '{../a}',
+          '{../../a}',
+          '{//domain/a}',
+          '!{a}',
+          '!{../../a}',
+        ].join('\n\n')).children].map(el => el.outerHTML),
+        [
+          '<div class="header">url: https://host/x/y</div>',
+          '<p><a class="account" href="https://host/@a" rel="noopener" target="_blank">@a</a></p>',
+          '<p><a class="account" href="https://domain/@a" rel="noopener" target="_blank">@domain/a</a></p>',
+          '<p><a class="channel" href="https://host/@a?ch=b" rel="noopener" target="_blank">@a#b</a></p>',
+          '<p><a class="channel" href="https://domain/@a?ch=b" rel="noopener" target="_blank">@domain/a#b</a></p>',
+          '<p><a class="hashtag" href="https://host/hashtags/a" rel="noopener" target="_blank">#a</a></p>',
+          '<p><a href="https://host/x/a" rel="noopener" target="_blank">a</a></p>',
+          '<p><a href="https://host/a" rel="noopener" target="_blank">/a</a></p>',
+          '<p><a href="https://host/x/a" rel="noopener" target="_blank">./a</a></p>',
+          '<p><a href="https://host/a" rel="noopener" target="_blank">../a</a></p>',
+          '<p><a href="https://host/a" rel="noopener" target="_blank">../../a</a></p>',
+          '<p><a href="//domain/a" rel="noopener" target="_blank">//domain/a</a></p>',
+          '<p><a href="https://host/x/a" rel="noopener" target="_blank"><img class="media" data-src="https://host/x/a" alt=""></a></p>',
+          '<p><a href="https://host/a" rel="noopener" target="_blank"><img class="media" data-src="https://host/a" alt=""></a></p>',
+        ]);
     });
 
     it('normalize', () => {

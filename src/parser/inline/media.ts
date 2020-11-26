@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, fmap, bind, surround, open, lazy } from '../../combinator';
 import { dup } from '../util';
-import { link, optspec, uri, option, sanitize } from './link';
+import { link, optspec, uri, option, fix, sanitize } from './link';
 import { text, char } from '../source';
 import { attributes } from './html';
 import { html, define } from 'typed-dom';
@@ -25,13 +25,13 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    url.href = INSECURE_URI;
+    url.href = fix(INSECURE_URI, context.url);
     const cache = context.caches?.media;
     const key = url.href;
     const cached = cache?.has(key);
     const el = cache && cached
       ? cache.get(key)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': INSECURE_URI, alt: text.trim() });
+      : html('img', { class: 'media', 'data-src': fix(INSECURE_URI, context.url), alt: text.trim() });
     if (cached) {
       el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
     }

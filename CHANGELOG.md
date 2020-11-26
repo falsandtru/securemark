@@ -2,6 +2,7 @@
 
 ## 0.187.0
 
+- Refine origin management.
 - Add cache of code highlight.
 
 ## 0.186.0

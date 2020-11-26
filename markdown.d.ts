@@ -13,6 +13,7 @@ export interface MarkdownParser extends
 export namespace MarkdownParser {
   export interface Context extends Ctx {
     readonly origin?: string;
+    readonly url?: URL;
     readonly syntax?: {
       readonly inline?: {
         readonly annotation?: boolean;

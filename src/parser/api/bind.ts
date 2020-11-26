@@ -1,14 +1,22 @@
+import { location } from 'spica/global';
 import { ParserSettings, Result } from '../../..';
 import { eval } from '../../combinator';
 import { segment } from '../segment';
+import { header as h } from '../api/header';
 import { header } from '../header';
 import { block } from '../block';
 import { normalize } from './normalize';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { push, splice } from 'spica/array';
+import { ReadonlyURL } from 'spica/url';
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<Result, undefined, undefined> {
+interface Settings extends ParserSettings {
+  readonly url?: URL;
+}
+
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): (source: string) => Generator<Result, undefined, undefined> {
+  settings = settings.origin ? settings : { ...settings, origin: location.href };
   assert(!settings.id);
   assert(Object.freeze(settings));
   type Pair = readonly [string, readonly HTMLElement[]];
@@ -19,6 +27,9 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let revision: symbol;
   return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
+    const url = h(source)?.find(s => s.startsWith('url: '))?.slice(5).trim();
+    settings = url ? { ...settings, url: new ReadonlyURL(url, settings.origin) } : settings;
+    assert(Object.freeze(settings));
     source = normalize(source);
     const sourceSegments: string[] = [];
     for (const seg of segment(source)) {

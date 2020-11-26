@@ -1,4 +1,4 @@
-import { undefined, encodeURI, decodeURI } from 'spica/global';
+import { undefined, location, encodeURI, decodeURI } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
@@ -6,6 +6,7 @@ import { startTight, isEndTight, trimEnd, dup, defrag, stringify } from '../util
 import { str } from '../source';
 import { attributes } from './html';
 import { autolink } from '../autolink';
+import { ReadonlyURL } from 'spica/url';
 import { html, define } from 'typed-dom';
 
 export const optspec = {
@@ -53,12 +54,12 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
     assert(!INSECURE_URI.match(/\s/));
     const el = html('a',
       {
-        href: INSECURE_URI,
+        href: fix(INSECURE_URI, context.url),
         rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
         ? content = defrag(trimEnd(content))
-        : decode(INSECURE_URI || '.')
+        : decode(INSECURE_URI)
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h')
             .replace(/^tel:/, ''));
     if (!sanitize(el, el, INSECURE_URI, context.origin)) return [[el], rest];
@@ -80,8 +81,21 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 
-const { origin: orig } = global.location;
-export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, source: string, origin: string = orig): boolean {
+export function fix(uri: string, base?: URL): string {
+  assert(uri);
+  assert(uri === uri.trim());
+  uri = uri.trim();
+  switch (true) {
+    case !base || uri.startsWith(base.origin) && !uri[base.origin.length]?.indexOf('/'):
+    case uri.startsWith('//'):
+      return uri;
+    default:
+      assert(base);
+      return new ReadonlyURL(uri, base!.href.split(/[?#]/, 1)[0]).href;
+  }
+}
+
+export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, text: string, origin: string = location.origin): boolean {
   let type: string;
   let message: string;
   switch (uri.protocol) {
@@ -96,7 +110,7 @@ export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, source: st
     }
     case target.tagName === 'A'
       && 'tel:':
-      if (`tel:${target.textContent!.replace(/-(?=[0-9])/g, '')}` === source) return true;
+      if (`tel:${target.textContent!.replace(/-(?=[0-9])/g, '')}` === text) return true;
       type = 'content';
       message = 'Invalid phone number.';
       break;

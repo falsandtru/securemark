@@ -6,5 +6,13 @@ import { html } from 'typed-dom';
 
 export const hashtag: AutolinkParser.HashtagParser = creator(validate('#', focus(
   /^#(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/,
-  (tag, { origin = '' }) =>
-    [[html('a', { class: 'hashtag', href: `${origin}/hashtags/${tag.slice(1)}`, rel: 'noopener' }, tag)], ''])));
+  (tag, { url }) => [[
+    html('a',
+      {
+        class: 'hashtag',
+        href: `${url?.origin || ''}/hashtags/${tag.slice(1)}`,
+        rel: 'noopener',
+        target: url?.origin ? '_blank' : undefined,
+      },
+      tag)
+  ], ''])));
