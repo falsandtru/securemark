@@ -1,9 +1,9 @@
-import { cache as code } from '../block/codeblock';
-import { cache as math } from '../inline/math';
-import { cache as media } from '../inline/media';
+import { Cache } from 'spica/cache';
+
+// For rerendering in editing.
 
 export const caches = {
-  code,
-  math,
-  media,
+  code: new Cache<string, HTMLElement>(10),
+  math: new Cache<string, HTMLElement>(20),
+  media: new Cache<string, HTMLElement>(10),
 };

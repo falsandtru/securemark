@@ -7,11 +7,8 @@ import { text, char } from '../source';
 import { attributes } from './html';
 import { html, define } from 'typed-dom';
 import { unshift, join } from 'spica/array';
-import { Cache } from 'spica/cache';
 
 const url = html('a');
-
-export const cache = new Cache<string, HTMLElement>(10); // for rerendering in editing
 
 export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   '!',

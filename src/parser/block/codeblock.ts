@@ -6,9 +6,6 @@ import { escsource } from '../source';
 import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
 import { join } from 'spica/array';
-import { Cache } from 'spica/cache';
-
-export const cache = new Cache<string, HTMLElement>(20); // for rerendering in editing
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;

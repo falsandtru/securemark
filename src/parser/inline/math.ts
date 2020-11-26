@@ -3,9 +3,6 @@ import { MathParser } from '../inline';
 import { union, creator, bind, surround } from '../../combinator';
 import { str } from '../source';
 import { html } from 'typed-dom';
-import { Cache } from 'spica/cache';
-
-export const cache = new Cache<string, HTMLElement>(20); // for rerendering in editing
 
 export const math: MathParser = creator(bind(
   surround('${', union([str(/^[^\n]+?(?=}\$)/)]), '}$'),
