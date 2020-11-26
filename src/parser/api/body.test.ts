@@ -2,7 +2,7 @@ import { body } from './body';
 
 describe('Unit: parser/api/body', () => {
   describe('body', () => {
-    it('', () => {
+    it('basic', () => {
       assert.deepStrictEqual(body(''), '');
       assert.deepStrictEqual(body('---'), '---');
       assert.deepStrictEqual(body('---\na: b\n'), '---\na: b\n');
