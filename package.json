@@ -63,7 +63,7 @@
     "npm-check-updates": "^10.2.2",
     "power-assert": "^1.6.1",
     "semver": "^7.3.2",
-    "spica": "0.0.388",
+    "spica": "0.0.389",
     "tsify": "^5.0.2",
     "typed-dom": "0.0.202",
     "typescript": "4.2.0-dev.20201126",
