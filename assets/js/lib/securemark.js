@@ -403,7 +403,7 @@ require = function () {
                 }
                 set(key, value) {
                     this.put(key, value);
-                    return value;
+                    return this;
                 }
                 get(key) {
                     const val = this.store.get(key);
@@ -509,7 +509,7 @@ require = function () {
                 constructor(entries = [], store = new Map()) {
                     this.store = store;
                     for (const [k, v] of entries) {
-                        void this.set(k, v);
+                        this.set(k, v);
                     }
                 }
                 get(key) {
