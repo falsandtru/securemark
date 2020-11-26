@@ -80,7 +80,7 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 
-const { origin: orig } = window.location;
+const { origin: orig } = global.location;
 export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, source: string, origin: string = orig): boolean {
   let type: string;
   let message: string;
@@ -96,7 +96,7 @@ export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, source: st
     }
     case target.tagName === 'A'
       && 'tel:':
-      if (`tel:${uri.textContent!.replace(/-(?=[0-9])/g, '')}` === source) return true;
+      if (`tel:${target.textContent!.replace(/-(?=[0-9])/g, '')}` === source) return true;
       type = 'content';
       message = 'Invalid phone number.';
       break;
