@@ -38,9 +38,9 @@ export function* figure(
     if (label.endsWith('-0')) continue;
     if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
       // $-x.0 after h1 or h2.
-      if (label.lastIndexOf('.', -2) < 0 && !(+def.previousElementSibling?.tagName[1]! <= 2)) continue;
+      if (label.lastIndexOf('.', label.length - 3) < 0 && !(+def.previousElementSibling?.tagName[1]! <= 2)) continue;
       // $-x.x.0 is disabled.
-      if (label.lastIndexOf('.', -2) > 0) continue;
+      if (label.lastIndexOf('.', label.length - 3) > 0) continue;
     }
     const group = label.split('-', 1)[0];
     assert(label && group);
