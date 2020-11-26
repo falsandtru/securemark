@@ -3161,8 +3161,8 @@ require = function () {
                 const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
                 if (opts.test)
                     return node;
-                [...footnote_1.footnote(node, opts.footnotes, opts)];
-                [...figure_1.figure(node, opts.footnotes, opts)];
+                for (const _ of footnote_1.footnote(node, opts.footnotes, opts));
+                for (const _ of figure_1.figure(node, opts.footnotes, opts));
                 return node;
             }
             exports.parse = parse;
@@ -5377,122 +5377,126 @@ require = function () {
     ],
     110: [
         function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
-            exports.sanitize = exports.option = exports.uri = exports.link = exports.optspec = void 0;
-            const global_1 = _dereq_('spica/global');
-            const alias_1 = _dereq_('spica/alias');
-            const inline_1 = _dereq_('../inline');
-            const combinator_1 = _dereq_('../../combinator');
-            const util_1 = _dereq_('../util');
-            const source_1 = _dereq_('../source');
-            const html_1 = _dereq_('./html');
-            const autolink_1 = _dereq_('../autolink');
-            const typed_dom_1 = _dereq_('typed-dom');
-            exports.optspec = { nofollow: [global_1.undefined] };
-            alias_1.ObjectSetPrototypeOf(exports.optspec, null);
-            exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.validate([
-                '[',
-                '{'
-            ], combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
-                var _a, _b, _c;
-                return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
-            }, combinator_1.tails([
-                combinator_1.context({ syntax: { inline: { link: false } } }, util_1.dup(combinator_1.union([
-                    combinator_1.surround('[', inline_1.media, ']'),
-                    combinator_1.surround('[', inline_1.shortmedia, ']'),
-                    combinator_1.surround('[', util_1.startTight(combinator_1.context({
-                        syntax: {
-                            inline: {
-                                annotation: false,
-                                reference: false,
-                                index: false,
-                                label: false,
-                                link: false,
-                                media: false,
-                                autolink: false
+            (function (global) {
+                (function () {
+                    'use strict';
+                    Object.defineProperty(exports, '__esModule', { value: true });
+                    exports.sanitize = exports.option = exports.uri = exports.link = exports.optspec = void 0;
+                    const global_1 = _dereq_('spica/global');
+                    const alias_1 = _dereq_('spica/alias');
+                    const inline_1 = _dereq_('../inline');
+                    const combinator_1 = _dereq_('../../combinator');
+                    const util_1 = _dereq_('../util');
+                    const source_1 = _dereq_('../source');
+                    const html_1 = _dereq_('./html');
+                    const autolink_1 = _dereq_('../autolink');
+                    const typed_dom_1 = _dereq_('typed-dom');
+                    exports.optspec = { nofollow: [global_1.undefined] };
+                    alias_1.ObjectSetPrototypeOf(exports.optspec, null);
+                    exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.validate([
+                        '[',
+                        '{'
+                    ], combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
+                        var _a, _b, _c;
+                        return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
+                    }, combinator_1.tails([
+                        combinator_1.context({ syntax: { inline: { link: false } } }, util_1.dup(combinator_1.union([
+                            combinator_1.surround('[', inline_1.media, ']'),
+                            combinator_1.surround('[', inline_1.shortmedia, ']'),
+                            combinator_1.surround('[', util_1.startTight(combinator_1.context({
+                                syntax: {
+                                    inline: {
+                                        annotation: false,
+                                        reference: false,
+                                        index: false,
+                                        label: false,
+                                        link: false,
+                                        media: false,
+                                        autolink: false
+                                    }
+                                }
+                            }, combinator_1.some(inline_1.inline, ']', /^\\?\n/))), ']', true)
+                        ]))),
+                        util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
+                            exports.uri,
+                            combinator_1.some(exports.option)
+                        ]), /^ ?}/))
+                    ])))), ([as, bs]) => bs ? [
+                        as,
+                        bs
+                    ] : [
+                        [],
+                        as
+                    ]), ([content, options], rest, context) => {
+                        if (!util_1.isEndTight(content))
+                            return;
+                        if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
+                            return;
+                        const INSECURE_URI = options.shift();
+                        const el = typed_dom_1.html('a', {
+                            href: INSECURE_URI,
+                            rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
+                        }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
+                        if (!sanitize(el, el, INSECURE_URI, context.origin))
+                            return [
+                                [el],
+                                rest
+                            ];
+                        typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, options, []), { nofollow: global_1.undefined }));
+                        return [
+                            [el],
+                            rest
+                        ];
+                    })));
+                    exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
+                    exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
+                    const {origin: orig} = global.location;
+                    function sanitize(uri, target, source, origin = orig) {
+                        let type;
+                        let message;
+                        switch (uri.protocol) {
+                        case 'http:':
+                        case 'https:': {
+                                const {host} = uri;
+                                host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
+                                if (host)
+                                    return true;
+                                type = 'parameter';
+                                message = 'Invalid host.';
+                                break;
                             }
+                        case target.tagName === 'A' && 'tel:':
+                            if (`tel:${ target.textContent.replace(/-(?=[0-9])/g, '') }` === source)
+                                return true;
+                            type = 'content';
+                            message = 'Invalid phone number.';
+                            break;
+                        default:
+                            type = 'parameter';
+                            message = 'Invalid protocol.';
                         }
-                    }, combinator_1.some(inline_1.inline, ']', /^\\?\n/))), ']', true)
-                ]))),
-                util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
-                    exports.uri,
-                    combinator_1.some(exports.option)
-                ]), /^ ?}/))
-            ])))), ([as, bs]) => bs ? [
-                as,
-                bs
-            ] : [
-                [],
-                as
-            ]), ([content, options], rest, context) => {
-                if (!util_1.isEndTight(content))
-                    return;
-                if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
-                    return;
-                const INSECURE_URI = options.shift();
-                const el = typed_dom_1.html('a', {
-                    href: INSECURE_URI,
-                    rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
-                if (!sanitize(el, el, INSECURE_URI, context.origin))
-                    return [
-                        [el],
-                        rest
-                    ];
-                typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, options, []), { nofollow: global_1.undefined }));
-                return [
-                    [el],
-                    rest
-                ];
-            })));
-            exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
-            exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
-            const {origin: orig} = window.location;
-            function sanitize(uri, target, source, origin = orig) {
-                let type;
-                let message;
-                switch (uri.protocol) {
-                case 'http:':
-                case 'https:': {
-                        const {host} = uri;
-                        host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
-                        if (host)
-                            return true;
-                        type = 'parameter';
-                        message = 'Invalid host.';
-                        break;
+                        typed_dom_1.define(target, {
+                            class: `${ target.className } invalid`.trim(),
+                            'data-invalid-syntax': 'link',
+                            'data-invalid-type': type,
+                            'data-invalid-message': message,
+                            ...target.tagName === 'A' ? {
+                                href: null,
+                                rel: null
+                            } : { 'data-src': null }
+                        });
+                        return false;
                     }
-                case target.tagName === 'A' && 'tel:':
-                    if (`tel:${ uri.textContent.replace(/-(?=[0-9])/g, '') }` === source)
-                        return true;
-                    type = 'content';
-                    message = 'Invalid phone number.';
-                    break;
-                default:
-                    type = 'parameter';
-                    message = 'Invalid protocol.';
-                }
-                typed_dom_1.define(target, {
-                    class: `${ target.className } invalid`.trim(),
-                    'data-invalid-syntax': 'link',
-                    'data-invalid-type': type,
-                    'data-invalid-message': message,
-                    ...target.tagName === 'A' ? {
-                        href: null,
-                        rel: null
-                    } : { 'data-src': null }
-                });
-                return false;
-            }
-            exports.sanitize = sanitize;
-            function decode(uri) {
-                try {
-                    uri = global_1.decodeURI(uri);
-                } finally {
-                    return uri.replace(/\s+/g, global_1.encodeURI);
-                }
-            }
+                    exports.sanitize = sanitize;
+                    function decode(uri) {
+                        try {
+                            uri = global_1.decodeURI(uri);
+                        } finally {
+                            return uri.replace(/\s+/g, global_1.encodeURI);
+                        }
+                    }
+                }.call(this));
+            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
         },
         {
             '../../combinator': 28,
@@ -5606,8 +5610,8 @@ require = function () {
                     return;
                 const INSECURE_URI = options.shift();
                 url.href = INSECURE_URI;
-                const key = url.href;
                 const cache = (_a = context.caches) === null || _a === void 0 ? void 0 : _a.media;
+                const key = url.href;
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(key);
                 const el = cache && cached ? cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
