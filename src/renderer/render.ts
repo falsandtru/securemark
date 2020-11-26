@@ -23,7 +23,7 @@ function render_(base: string, target: HTMLElement, opts: RenderingOptions): voi
       case !!opts.code
         && !target.firstElementChild
         && target.matches('pre.code'):
-        return void opts.code!(target);
+        return void opts.code!(target, opts.caches?.code);
       case !!opts.math
         && !target.firstElementChild
         && target.matches('.math'):

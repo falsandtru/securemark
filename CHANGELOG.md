@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.187.0
+
+- Add cache of code highlight.
+
 ## 0.186.0
 
 - Refine error handling.

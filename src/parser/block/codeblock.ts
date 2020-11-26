@@ -6,6 +6,9 @@ import { escsource } from '../source';
 import { autolink } from '../autolink';
 import { html, define } from 'typed-dom';
 import { join } from 'spica/array';
+import { Cache } from 'spica/cache';
+
+export const cache = new Cache<string, HTMLElement>(20); // for rerendering in editing
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;
@@ -49,6 +52,9 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     }
     if (path) {
       el.setAttribute('data-file', path);
+    }
+    if (context.caches?.code?.has(`${lang}\n${el.textContent}`)) {
+      define(el, context.caches.code.get(`${lang}\n${el.textContent}`)!.cloneNode(true).childNodes);
     }
     return [el];
   })));

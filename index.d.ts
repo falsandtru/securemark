@@ -30,6 +30,7 @@ export interface ParserSettings {
   // For comments and timelines.
   readonly id?: string;
   readonly caches?: {
+    readonly code?: Cache<string, HTMLElement>;
     readonly math?: Cache<string, HTMLElement>;
     readonly media?: Cache<string, HTMLElement>;
   };
@@ -40,7 +41,7 @@ export interface ParserSettings {
 }
 
 export interface RenderingOptions {
-  readonly code?: (target: HTMLElement) => void;
+  readonly code?: (target: HTMLElement, cache?: Cache<string, HTMLElement>) => void;
   readonly math?: (target: HTMLElement, cache?: Cache<string, HTMLElement>) => void;
   readonly media?: {
     readonly twitter?: (url: URL) => HTMLElement | undefined;
@@ -52,6 +53,7 @@ export interface RenderingOptions {
     readonly image?: (url: URL, alt: string, cache?: Cache<string, HTMLElement>) => HTMLImageElement;
   };
   readonly caches?: {
+    readonly code?: Cache<string, HTMLElement>;
     readonly math?: Cache<string, HTMLElement>;
     readonly media?: Cache<string, HTMLElement>;
   };
@@ -71,6 +73,7 @@ export interface Info {
 
 import { Cache } from 'spica/cache';
 export const caches: {
+  readonly code: Cache<string, HTMLElement>;
   readonly math: Cache<string, HTMLElement>;
   readonly media: Cache<string, HTMLElement>;
 };

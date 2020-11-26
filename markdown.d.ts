@@ -33,6 +33,7 @@ export namespace MarkdownParser {
       };
     };
     readonly caches?: {
+      readonly code?: Cache<string, HTMLElement>;
       readonly math?: Cache<string, HTMLElement>;
       readonly media?: Cache<string, HTMLElement>;
     };
