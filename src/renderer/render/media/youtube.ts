@@ -1,7 +1,7 @@
 import { html } from 'typed-dom';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 
-export function youtube(url: URL, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
+export function youtube(url: URL, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
   let id: string;
   switch (url.origin) {
     case 'https://www.youtube.com':

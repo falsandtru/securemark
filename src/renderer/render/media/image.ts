@@ -1,7 +1,7 @@
 import { html } from 'typed-dom';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 
-export function image(url: URL, alt: string, cache?: Cache<string, HTMLElement>): HTMLImageElement {
+export function image(url: URL, alt: string, cache?: Collection<string, HTMLElement>): HTMLImageElement {
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLImageElement;
   const el = html('img', {
     class: 'media',

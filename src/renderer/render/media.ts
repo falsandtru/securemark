@@ -6,10 +6,10 @@ import { pdf } from './media/pdf';
 import { video } from './media/video';
 import { audio } from './media/audio';
 import { image } from './media/image';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 import { ReadonlyURL } from 'spica/url';
 
-export function media(base: string, target: HTMLImageElement, opts: NonNullable<RenderingOptions['media']>, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
+export function media(base: string, target: HTMLImageElement, opts: NonNullable<RenderingOptions['media']>, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
   assert(target.matches('img:not([src])[data-src]'));
   opts = { twitter, youtube, gist, pdf, video, audio, image, ...opts };
   const url = new ReadonlyURL(target.getAttribute('data-src')!, base);

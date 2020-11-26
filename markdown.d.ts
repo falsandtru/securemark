@@ -1,5 +1,5 @@
 import { Parser, Ctx } from './src/combinator';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 
 declare abstract class Markdown<T> {
   private parser?: T;
@@ -33,9 +33,9 @@ export namespace MarkdownParser {
       };
     };
     readonly caches?: {
-      readonly code?: Cache<string, HTMLElement>;
-      readonly math?: Cache<string, HTMLElement>;
-      readonly media?: Cache<string, HTMLElement>;
+      readonly code?: Collection<string, HTMLElement>;
+      readonly math?: Collection<string, HTMLElement>;
+      readonly media?: Collection<string, HTMLElement>;
     };
   }
   export interface SegmentParser extends

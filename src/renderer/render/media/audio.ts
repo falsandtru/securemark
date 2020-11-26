@@ -1,12 +1,12 @@
 import { html } from 'typed-dom';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 
 const extensions = [
   '.oga',
   '.ogg',
 ];
 
-export function audio(url: URL, alt: string, cache?: Cache<string, HTMLElement>): HTMLAudioElement | undefined {
+export function audio(url: URL, alt: string, cache?: Collection<string, HTMLElement>): HTMLAudioElement | undefined {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLAudioElement;
   const el = html('audio', {

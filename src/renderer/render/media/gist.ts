@@ -2,13 +2,13 @@ import { document } from 'spica/global';
 import { parse } from '../../../parser';
 import { sanitize } from 'dompurify';
 import { HTML, define } from 'typed-dom';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 
 const origins = [
   'https://gist.github.com',
 ];
 
-export function gist(url: URL, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
+export function gist(url: URL, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
   if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
   if (!url.pathname.match(/^\/[\w-]+?\/\w{32}(?!\w)/)) return;

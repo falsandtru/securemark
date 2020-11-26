@@ -1,12 +1,12 @@
 import { parse } from '../../../parser';
 import { html } from 'typed-dom';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 
 const extensions = [
   '.pdf',
 ];
 
-export function pdf(url: URL, cache?: Cache<string, HTMLElement>): HTMLElement | undefined {
+export function pdf(url: URL, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLAudioElement;
   const el = html('div', { class: 'media', style: 'position: relative;' }, [

@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
-import { Cache } from 'spica/cache';
+import { Collection } from 'spica/collection';
 import { html, define } from 'typed-dom';
 
-export function math(target: HTMLElement, cache?: Cache<string, HTMLElement>): void {
+export function math(target: HTMLElement, cache?: Collection<string, HTMLElement>): void {
   assert(target.children.length === 0);
   const source = target.textContent!;
   queue(target, () => {

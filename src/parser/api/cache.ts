@@ -6,4 +6,4 @@ export const caches = {
   code: new Cache<string, HTMLElement>(10),
   math: new Cache<string, HTMLElement>(20),
   media: new Cache<string, HTMLElement>(10),
-};
+} as const;

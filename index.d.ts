@@ -5,6 +5,8 @@
 * @author falsandtru https://github.com/falsandtru/securemark
 */
 
+import { Collection } from 'spica/collection';
+
 export function header(source: string): string[] | undefined;
 export function body(source: string): string;
 export function parse(source: string, options?: ParserOptions): DocumentFragment;
@@ -29,10 +31,11 @@ export interface ParserSettings {
   readonly origin?: string;
   // For comments and timelines.
   readonly id?: string;
+  // For editing.
   readonly caches?: {
-    readonly code?: Cache<string, HTMLElement>;
-    readonly math?: Cache<string, HTMLElement>;
-    readonly media?: Cache<string, HTMLElement>;
+    readonly code?: Collection<string, HTMLElement>;
+    readonly math?: Collection<string, HTMLElement>;
+    readonly media?: Collection<string, HTMLElement>;
   };
   readonly footnotes: {
     readonly annotation: HTMLOListElement;
@@ -41,21 +44,21 @@ export interface ParserSettings {
 }
 
 export interface RenderingOptions {
-  readonly code?: (target: HTMLElement, cache?: Cache<string, HTMLElement>) => void;
-  readonly math?: (target: HTMLElement, cache?: Cache<string, HTMLElement>) => void;
+  readonly code?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
+  readonly math?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
   readonly media?: {
     readonly twitter?: (url: URL) => HTMLElement | undefined;
-    readonly youtube?: (url: URL, cache?: Cache<string, HTMLElement>) => HTMLElement | undefined;
-    readonly gist?: (url: URL, cache?: Cache<string, HTMLElement>) => HTMLElement | undefined;
-    readonly pdf?: (url: URL, cache?: Cache<string, HTMLElement>) => HTMLElement | undefined;
-    readonly video?: (url: URL, alt: string, cache?: Cache<string, HTMLElement>) => HTMLVideoElement | undefined;
-    readonly audio?: (url: URL, alt: string, cache?: Cache<string, HTMLElement>) => HTMLAudioElement | undefined;
-    readonly image?: (url: URL, alt: string, cache?: Cache<string, HTMLElement>) => HTMLImageElement;
+    readonly youtube?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
+    readonly gist?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
+    readonly pdf?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
+    readonly video?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLVideoElement | undefined;
+    readonly audio?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLAudioElement | undefined;
+    readonly image?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLImageElement;
   };
   readonly caches?: {
-    readonly code?: Cache<string, HTMLElement>;
-    readonly math?: Cache<string, HTMLElement>;
-    readonly media?: Cache<string, HTMLElement>;
+    readonly code?: Collection<string, HTMLElement>;
+    readonly math?: Collection<string, HTMLElement>;
+    readonly media?: Collection<string, HTMLElement>;
   };
 }
 
@@ -71,9 +74,8 @@ export interface Info {
   readonly media: HTMLElement[];
 }
 
-import { Cache } from 'spica/cache';
 export const caches: {
-  readonly code: Cache<string, HTMLElement>;
-  readonly math: Cache<string, HTMLElement>;
-  readonly media: Cache<string, HTMLElement>;
+  readonly code: Collection<string, HTMLElement>;
+  readonly math: Collection<string, HTMLElement>;
+  readonly media: Collection<string, HTMLElement>;
 };
