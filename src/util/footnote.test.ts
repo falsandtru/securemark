@@ -155,6 +155,33 @@ describe('Unit: util/footnote', () => {
       }
     });
 
+    it('id', () => {
+      const target = parse('((a \n b))');
+      const footnote = html('ol');
+      for (let i = 0; i < 3; ++i) {
+        assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 3 : 2);
+        assert.deepStrictEqual(
+          [...target.children].map(el => el.outerHTML),
+          [
+            html('p', [
+              html('sup', { class: "annotation", id: "annotation:0:ref:1", title: "a b" }, [
+                html('a', { href: "#annotation:0:def:1", rel: "noopener" }, '*1')
+              ]),
+            ]).outerHTML,
+          ]);
+        assert.deepStrictEqual(
+          footnote.outerHTML,
+          html('ol', [
+            html('li', { id: 'annotation:0:def:1' }, [
+              'a',
+              html('br'),
+              ' b',
+              html('sup', [html('a', { href: '#annotation:0:ref:1', rel: 'noopener' }, ' ~1')])
+            ]),
+          ]).outerHTML);
+      }
+    });
+
   });
 
   describe('reference', () => {
@@ -213,33 +240,6 @@ describe('Unit: util/footnote', () => {
                 html('a', { href: '#reference:ref:2', rel: 'noopener', title: 'b' }, ' ~2'),
                 html('a', { href: '#reference:ref:3', rel: 'noopener' }, ' ~3'),
               ])
-            ]),
-          ]).outerHTML);
-      }
-    });
-
-    it('id', () => {
-      const target = parse('((a \n b))');
-      const footnote = html('ol');
-      for (let i = 0; i < 3; ++i) {
-        assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 3 : 2);
-        assert.deepStrictEqual(
-          [...target.children].map(el => el.outerHTML),
-          [
-            html('p', [
-              html('sup', { class: "annotation", id: "annotation:0:ref:1", title: "a b" }, [
-                html('a', { href: "#annotation:0:def:1", rel: "noopener" }, '*1')
-              ]),
-            ]).outerHTML,
-          ]);
-        assert.deepStrictEqual(
-          footnote.outerHTML,
-          html('ol', [
-            html('li', { id: 'annotation:0:def:1' }, [
-              'a',
-              html('br'),
-              ' b',
-              html('sup', [html('a', { href: '#annotation:0:ref:1', rel: 'noopener' }, ' ~1')])
             ]),
           ]).outerHTML);
       }
