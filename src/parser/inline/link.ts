@@ -1,4 +1,4 @@
-import { undefined, location, encodeURI, decodeURI } from 'spica/global';
+import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
@@ -52,9 +52,10 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
     const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
+    const base = context.url || context.host || location;
     const el = html('a',
       {
-        href: fix(INSECURE_URI, context.url),
+        href: fix(INSECURE_URI, base, !context.url),
         rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
@@ -62,7 +63,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
         : decode(INSECURE_URI)
             .replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h')
             .replace(/^tel:/, ''));
-    if (!sanitize(el, el, INSECURE_URI, context.origin)) return [[el], rest];
+    if (!sanitize(el, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
     define(el, ObjectAssign(
       attributes('link', optspec, options, []),
@@ -81,20 +82,21 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 
-export function fix(uri: string, base?: URL): string {
+export function fix(uri: string, base: URL | Location, sameorigin: boolean): string {
   assert(uri);
   assert(uri === uri.trim());
-  assert(base?.pathname ?? 1);
-  uri = uri.trim();
+  assert(base.pathname);
   switch (true) {
     case uri.startsWith('^/'):
-      return `${fillTrailingSlash(base?.pathname || location.pathname)}${uri.slice(2)}`;
-    case !base || uri.startsWith(base!.origin) && !uri[base!.origin.length]?.indexOf('/'):
+      return `${fillTrailingSlash(base.pathname)}${uri.slice(2)}`;
+    case sameorigin:
     case uri.startsWith('//'):
       return uri;
     default:
-      assert(base);
-      return new ReadonlyURL(uri, `${base!.origin}${base!.pathname}`).href;
+      const url = new ReadonlyURL(uri, base.href.split(/[?#]/, 1)[0]);
+      return url.origin === uri.match(/^[^:]+:\/\/[^/?#]*/)?.[0]
+        ? uri
+        : url.href;
   }
 }
 

@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 
 export const account: AutolinkParser.AccountParser = creator(validate('@', focus(
   /^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/,
-  (source, { origin, url }) =>
+  (source, { host, url }) =>
     verify(source) &&
     [[
       html('a',
@@ -17,7 +17,7 @@ export const account: AutolinkParser.AccountParser = creator(validate('@', focus
             ? `https://${source.slice(1).replace('/', '/@')}`
             : `${url?.origin || ''}/${source}`,
           rel: 'noopener',
-          target: source.includes('/') || url && url.origin !== origin
+          target: source.includes('/') || url && url.origin !== host?.origin
             ? '_blank'
             : undefined,
         },

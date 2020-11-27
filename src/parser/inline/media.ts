@@ -1,4 +1,4 @@
-import { undefined } from 'spica/global';
+import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, fmap, bind, surround, open, lazy } from '../../combinator';
 import { dup } from '../util';
@@ -25,18 +25,19 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    url.href = fix(INSECURE_URI, context.url);
+    const base = context.url || context.host || location;
+    url.href = fix(INSECURE_URI, base, !context.url);
     const cache = context.caches?.media;
     const key = url.href;
     const cached = cache?.has(key);
     const el = cache && cached
       ? cache.get(key)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': fix(INSECURE_URI, context.url), alt: text.trim() });
+      : html('img', { class: 'media', 'data-src': fix(INSECURE_URI, base, !context.url), alt: text.trim() });
     if (cached) {
       el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
     }
     else {
-      if (!sanitize(url, el, INSECURE_URI, context.origin)) return [[el], rest];
+      if (!sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     }
     define(el, {
       ...attributes('media', optspec, options, cached ? el.className.trim().match(/\s+/g) || [] : ['media']),

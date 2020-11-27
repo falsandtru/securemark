@@ -16,7 +16,7 @@ interface Settings extends ParserSettings {
 }
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): (source: string) => Generator<Result, undefined, undefined> {
-  settings = settings.origin ? settings : { ...settings, origin: location.href };
+  settings = settings.host ? settings : { ...settings, host: new ReadonlyURL(location.origin + location.pathname) };
   assert(!settings.id);
   assert(Object.freeze(settings));
   type Pair = readonly [string, readonly HTMLElement[]];
@@ -27,8 +27,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let revision: symbol;
   return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
-    const url = h(source)?.find(s => s.toLowerCase().startsWith('url: '))?.slice(5).trim();
-    settings = url ? { ...settings, url: new ReadonlyURL(url, settings.origin) } : settings;
+    const url = h(source)?.find(s => s.toLowerCase().startsWith('url:'))?.slice(4).trim();
+    settings = url ? { ...settings, url: new ReadonlyURL(url) } : settings;
     assert(Object.freeze(settings));
     source = normalize(source);
     const sourceSegments: string[] = [];
@@ -38,13 +38,13 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     const targetSegments = pairs.map(([seg]) => seg);
     let head = 0;
-    for (; head < targetSegments.length; ++head) {
+    for (; !url && head < targetSegments.length; ++head) {
       if (targetSegments[head] !== sourceSegments[head]) break;
     }
     assert(head <= targetSegments.length);
     if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length) return;
     let last = 0;
-    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+    for (; !url && head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
       if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1]) break;
     }
     assert(last <= targetSegments.length);

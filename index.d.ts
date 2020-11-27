@@ -27,8 +27,8 @@ export function normalize(source: string): string;
 
 export type ParserOptions = Partial<ParserSettings>;
 export interface ParserSettings {
-  // Host origin.
-  readonly origin?: string;
+  // Host URL.
+  readonly host?: URL;
   // Id of comments and timelines.
   readonly id?: string;
   // For editing.
