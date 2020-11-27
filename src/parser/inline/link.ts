@@ -91,7 +91,7 @@ export function fix(uri: string, base?: URL): string {
       return uri;
     default:
       assert(base);
-      return new ReadonlyURL(uri, base!.href.split(/[?#]/, 1)[0]).href;
+      return new ReadonlyURL(uri, `${base!.origin}${base!.pathname}`).href;
   }
 }
 
