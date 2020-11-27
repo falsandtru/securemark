@@ -11,5 +11,5 @@ export const header: MarkdownParser.HeaderParser = block(validate('---', focus(
   /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/,
   source =>
     segment(source)[Symbol.iterator]().next().value === source
-      ? [[html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2)))], '']
+      ? [[html('details', { class: 'header' }, [html('summary', 'Header'), source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2))])], '']
       : undefined)));
