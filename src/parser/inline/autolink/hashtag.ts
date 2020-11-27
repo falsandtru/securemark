@@ -7,19 +7,19 @@ import { html } from 'typed-dom';
 
 export const hashtag: AutolinkParser.HashtagParser = creator(validate('#', focus(
   /^#(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/,
-  (source, { origin, url }) => {
-    if (!verify(source)) return;
-    const href = source.includes('/')
-      ? `https://${source.slice(1).replace('/', '/hashtags/')}`
-      : `${url?.origin || ''}/hashtags/${source.slice(1)}`;
-    return [[
+  (source, { origin, url }) =>
+    verify(source) &&
+    [[
       html('a',
         {
           class: 'hashtag',
-          href,
+          href: source.includes('/')
+            ? `https://${source.slice(1).replace('/', '/hashtags/')}`
+            : `${url?.origin || ''}/hashtags/${source.slice(1)}`,
           rel: 'noopener',
-          target: source.includes('/') || url && url.origin !== origin ? '_blank' : undefined,
+          target: source.includes('/') || url && url.origin !== origin
+            ? '_blank'
+            : undefined,
         },
         source)
-    ], ''];
-  })));
+    ], ''])));

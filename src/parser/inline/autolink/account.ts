@@ -7,22 +7,22 @@ import { html } from 'typed-dom';
 
 export const account: AutolinkParser.AccountParser = creator(validate('@', focus(
   /^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/,
-  (source, { origin, url }) => {
-    if (!verify(source)) return;
-    const href = source.includes('/')
-      ? `https://${source.slice(1).replace('/', '/@')}`
-      : `${url?.origin || ''}/${source}`;
-    return [[
+  (source, { origin, url }) =>
+    verify(source) &&
+    [[
       html('a',
         {
           class: 'account',
-          href,
+          href: source.includes('/')
+            ? `https://${source.slice(1).replace('/', '/@')}`
+            : `${url?.origin || ''}/${source}`,
           rel: 'noopener',
-          target: source.includes('/') || url && url.origin !== origin ? '_blank' : undefined,
+          target: source.includes('/') || url && url.origin !== origin
+            ? '_blank'
+            : undefined,
         },
         source)
-    ], ''];
-  })));
+    ], ''])));
 
 export function verify(source: string): true | undefined {
   return source.length - ((source.indexOf('/') + 1) || 1) <= 64
