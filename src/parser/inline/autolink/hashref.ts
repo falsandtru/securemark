@@ -4,4 +4,4 @@ import { html } from 'typed-dom';
 
 export const hashref: AutolinkParser.HashrefParser = creator(validate('#', focus(
   /^#[0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/,
-  ref => [[html('a', { class: 'hashref', rel: 'noopener' }, ref)], ''])));
+  source => [[html('a', { class: 'hashref', rel: 'noopener' }, source)], ''])));
