@@ -88,6 +88,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{a b}')), [['<a href="a" rel="noopener" class="invalid">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{?b=c+d&\\#}')), [['<a href="?b=c+d&amp;\\#" rel="noopener">?b=c+d&amp;\\#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{?&amp;}')), [['<a href="?&amp;amp;" rel="noopener">?&amp;amp;</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}')), [[`<a href="${location.pathname}/b" rel="noopener">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{./b}')), [['<a href="./b" rel="noopener">./b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{#}')), [['<a href="#" rel="noopener">#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{#b}')), [['<a href="#b" rel="noopener">#b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a]{b}')), [['<a href="b" rel="noopener">a</a>'], '']);

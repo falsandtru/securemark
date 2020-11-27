@@ -84,15 +84,25 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
 export function fix(uri: string, base?: URL): string {
   assert(uri);
   assert(uri === uri.trim());
+  assert(base?.pathname ?? 1);
   uri = uri.trim();
   switch (true) {
-    case !base || uri.startsWith(base.origin) && !uri[base.origin.length]?.indexOf('/'):
+    case uri.startsWith('^/'):
+      return `${fillTrailingSlash(base?.pathname || location.pathname)}${uri.slice(2)}`;
+    case !base || uri.startsWith(base!.origin) && !uri[base!.origin.length]?.indexOf('/'):
     case uri.startsWith('//'):
       return uri;
     default:
       assert(base);
       return new ReadonlyURL(uri, `${base!.origin}${base!.pathname}`).href;
   }
+}
+
+function fillTrailingSlash(pathname: string): string {
+  assert(pathname);
+  return pathname[pathname.length - 1] === '/'
+    ? pathname
+    : pathname + '/';
 }
 
 export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, text: string, origin: string = location.origin): boolean {

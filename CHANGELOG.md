@@ -3,6 +3,7 @@
 ## 0.187.0
 
 - Refine origin management.
+- Define subresource path.
 - Add cache of code highlight.
 - Extend hashtag syntax to enable it to specify the domain.
 - Change header parser to be case-insensitive.

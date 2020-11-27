@@ -69,11 +69,13 @@ describe('Unit: parser/api/parse', () => {
           '#domain/a',
           '{a}',
           '{/a}',
+          '{^/a}',
           '{./a}',
           '{../a}',
           '{../../a}',
           '{//domain/a}',
           '!{a}',
+          '!{^/a}',
           '!{../../a}',
         ].join('\n\n')).children].map(el => el.outerHTML),
         [
@@ -86,11 +88,13 @@ describe('Unit: parser/api/parse', () => {
           '<p><a class="hashtag" href="https://domain/hashtags/a" rel="noopener" target="_blank">#domain/a</a></p>',
           '<p><a href="https://host/x/a" rel="noopener" target="_blank">a</a></p>',
           '<p><a href="https://host/a" rel="noopener" target="_blank">/a</a></p>',
+          '<p><a href="/x/y/a" rel="noopener" target="_blank">^/a</a></p>',
           '<p><a href="https://host/x/a" rel="noopener" target="_blank">./a</a></p>',
           '<p><a href="https://host/a" rel="noopener" target="_blank">../a</a></p>',
           '<p><a href="https://host/a" rel="noopener" target="_blank">../../a</a></p>',
           '<p><a href="//domain/a" rel="noopener" target="_blank">//domain/a</a></p>',
           '<p><a href="https://host/x/a" rel="noopener" target="_blank"><img class="media" data-src="https://host/x/a" alt=""></a></p>',
+          '<p><a href="/x/y/a" rel="noopener" target="_blank"><img class="media" data-src="/x/y/a" alt=""></a></p>',
           '<p><a href="https://host/a" rel="noopener" target="_blank"><img class="media" data-src="https://host/a" alt=""></a></p>',
         ]);
     });
