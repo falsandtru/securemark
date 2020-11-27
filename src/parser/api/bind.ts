@@ -19,7 +19,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   settings = settings.host ? settings : { ...settings, host: new ReadonlyURL(location.origin + location.pathname) };
   assert(!settings.id);
   assert(Object.freeze(settings));
-  type Pair = readonly [string, readonly HTMLElement[]];
+  type Pair = readonly [string, readonly HTMLElement[], string];
   const pairs: Pair[] = [];
   const adds: [HTMLElement, Node | null][] = [];
   const dels: HTMLElement[] = [];
@@ -27,7 +27,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let revision: symbol;
   return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
-    const url = h(source)?.find(s => s.toLowerCase().startsWith('url:'))?.slice(4).trim();
+    const url = h(source)?.find(s => s.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
     settings = url ? { ...settings, url: new ReadonlyURL(url) } : settings;
     assert(Object.freeze(settings));
     source = normalize(source);
@@ -38,13 +38,17 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     const targetSegments = pairs.map(([seg]) => seg);
     let head = 0;
-    for (; !url && head < targetSegments.length; ++head) {
+    for (; head < targetSegments.length; ++head) {
+      assert(head < pairs.length);
+      if (pairs[head][2] !== url) break;
       if (targetSegments[head] !== sourceSegments[head]) break;
     }
     assert(head <= targetSegments.length);
     if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length) return;
     let last = 0;
-    for (; !url && head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+      assert(targetSegments.length - last - 1 < pairs.length);
+      if (pairs[targetSegments.length - last - 1][2] !== url) break;
       if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1]) break;
     }
     assert(last <= targetSegments.length);
@@ -59,7 +63,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
         && header(seg, settings)
         || block(seg, settings),
         []);
-      pairs.splice(index, 0, [seg, es]);
+      pairs.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
