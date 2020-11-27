@@ -12,7 +12,7 @@ export const hashtag: AutolinkParser.HashtagParser = creator(validate('#', focus
         class: 'hashtag',
         href: `${url?.origin || ''}/hashtags/${source.slice(1)}`,
         rel: 'noopener',
-        target: url?.origin ? '_blank' : undefined,
+        target: url && url.origin !== origin ? '_blank' : undefined,
       },
       source)
   ], ''])));
