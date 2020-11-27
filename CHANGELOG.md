@@ -4,6 +4,7 @@
 
 - Refine origin management.
 - Add cache of code highlight.
+- Extend hashtag syntax to enable it to specify the domain.
 - Change header parser to be case-insensitive.
 
 ## 0.186.0

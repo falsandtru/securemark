@@ -24,7 +24,7 @@ export const account: AutolinkParser.AccountParser = creator(validate('@', focus
     ], ''];
   })));
 
-function verify(source: string): true | undefined {
+export function verify(source: string): true | undefined {
   return source.length - ((source.indexOf('/') + 1) || 1) <= 64
       && source.length - 1 <= 254
       || undefined;
