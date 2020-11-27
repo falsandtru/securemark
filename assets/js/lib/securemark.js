@@ -2958,7 +2958,7 @@ require = function () {
                 return function* (source) {
                     var _a, _b, _c;
                     const rev = revision = Symbol();
-                    const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
+                    const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
                     settings = url ? {
                         ...settings,
                         url: new url_1.ReadonlyURL(url, settings.origin)
@@ -3180,7 +3180,7 @@ require = function () {
                     ...opts,
                     origin: global_1.location.href
                 };
-                const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
+                const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
                 opts = url ? {
                     ...opts,
                     url: new url_1.ReadonlyURL(url, opts.origin)
@@ -4295,7 +4295,7 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const segment_1 = _dereq_('./segment');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[a-z][0-9a-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
+            exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
                 [typed_dom_1.html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2)))],
                 ''
             ] : global_1.undefined)));
@@ -4675,11 +4675,11 @@ require = function () {
             exports.hashref = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/, ref => [
+            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/, source => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
                         rel: 'noopener'
-                    }, ref)],
+                    }, source)],
                 ''
             ])));
         },
@@ -4695,13 +4695,13 @@ require = function () {
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (tag, {url}) => [
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (source, {url}) => [
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
-                        href: `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ tag.slice(1) }`,
+                        href: `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ source.slice(1) }`,
                         rel: 'noopener',
                         target: (url === null || url === void 0 ? void 0 : url.origin) ? '_blank' : undefined
-                    }, tag)],
+                    }, source)],
                 ''
             ])));
         },
