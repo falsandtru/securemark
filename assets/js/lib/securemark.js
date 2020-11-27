@@ -4562,27 +4562,23 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.account = void 0;
+            exports.verify = exports.account = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, (source, {url}) => {
-                if (!verify(source))
-                    return;
-                const href = source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/${ source }`;
-                return [
-                    [typed_dom_1.html('a', {
-                            class: 'account',
-                            href,
-                            rel: 'noopener',
-                            target: source.includes('/') || (url === null || url === void 0 ? void 0 : url.origin) ? '_blank' : global_1.undefined
-                        }, source)],
-                    ''
-                ];
-            })));
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, (source, {origin, url}) => verify(source) && [
+                [typed_dom_1.html('a', {
+                        class: 'account',
+                        href: source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/${ source }`,
+                        rel: 'noopener',
+                        target: source.includes('/') || url && url.origin !== origin ? '_blank' : global_1.undefined
+                    }, source)],
+                ''
+            ])));
             function verify(source) {
                 return source.length - (source.indexOf('/') + 1 || 1) <= 64 && source.length - 1 <= 254 || global_1.undefined;
             }
+            exports.verify = verify;
         },
         {
             '../../../combinator': 28,
@@ -4621,17 +4617,22 @@ require = function () {
             const account_1 = _dereq_('./account');
             const hashtag_1 = _dereq_('./hashtag');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.channel = combinator_1.validate('@', combinator_1.fmap(combinator_1.sequence([
+            exports.channel = combinator_1.validate('@', combinator_1.bind(combinator_1.sequence([
                 account_1.account,
                 combinator_1.some(hashtag_1.hashtag)
-            ]), es => {
+            ]), (es, rest) => {
                 const source = util_1.stringify(es);
+                if (source.indexOf('/', source.indexOf('#')) !== -1)
+                    return;
                 const el = es[0];
                 const url = `${ el.getAttribute('href') }?ch=${ source.slice(source.indexOf('#') + 1).replace(/#/g, '+') }`;
-                return [typed_dom_1.define(el, {
-                        class: 'channel',
-                        href: url
-                    }, source)];
+                return [
+                    [typed_dom_1.define(el, {
+                            class: 'channel',
+                            href: url
+                        }, source)],
+                    rest
+                ];
             }));
         },
         {
@@ -4675,10 +4676,11 @@ require = function () {
             exports.hashref = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/, source => [
+            exports.hashref = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#[0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/, (source, {url}) => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
-                        rel: 'noopener'
+                        rel: 'noopener',
+                        target: url && url.origin !== origin ? '_blank' : undefined
                     }, source)],
                 ''
             ])));
@@ -4694,19 +4696,21 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
+            const account_1 = _dereq_('./account');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (source, {url}) => [
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (source, {origin, url}) => account_1.verify(source) && [
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
-                        href: `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ source.slice(1) }`,
+                        href: source.includes('/') ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ source.slice(1) }`,
                         rel: 'noopener',
-                        target: (url === null || url === void 0 ? void 0 : url.origin) ? '_blank' : undefined
+                        target: source.includes('/') || url && url.origin !== origin ? '_blank' : undefined
                     }, source)],
                 ''
             ])));
         },
         {
             '../../../combinator': 28,
+            './account': 87,
             'typed-dom': 21
         }
     ],
