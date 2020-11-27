@@ -26,7 +26,7 @@
 ## 0.185.0
 
 - Refine cache control.
-- Enhance aside parser to enable to define the heading level.
+- Enhance aside parser to enable it to define the heading level.
 
 ## 0.184.0
 
@@ -40,7 +40,7 @@
 
 ## 0.182.0
 
-- Change figbase syntax to enable to be used after level 2 headings.
+- Change figbase syntax to enable it to be used after level 2 headings.
 
 ## 0.181.0
 
@@ -744,7 +744,7 @@
 ## 0.106.0
 
 - Allow address syntax to use URL.
-- Extend quote syntax to enable to be used at the first lines of paragraphs.
+- Extend quote syntax to enable it to be used at the first lines of paragraphs.
 
 ## 0.105.0
 
