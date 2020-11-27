@@ -58,7 +58,7 @@ describe('Unit: parser/api/parse', () => {
         [...parse([
           [
             '---',
-            'url: https://host/x/y',
+            'URL: https://host/x/y',
             '---',
           ].join('\n'),
           '@a',
@@ -76,7 +76,7 @@ describe('Unit: parser/api/parse', () => {
           '!{../../a}',
         ].join('\n\n')).children].map(el => el.outerHTML),
         [
-          '<div class="header">url: https://host/x/y</div>',
+          '<div class="header">URL: https://host/x/y</div>',
           '<p><a class="account" href="https://host/@a" rel="noopener" target="_blank">@a</a></p>',
           '<p><a class="account" href="https://domain/@a" rel="noopener" target="_blank">@domain/a</a></p>',
           '<p><a class="channel" href="https://host/@a?ch=b" rel="noopener" target="_blank">@a#b</a></p>',

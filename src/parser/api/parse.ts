@@ -19,7 +19,7 @@ interface Options extends ParserOptions {
 
 export function parse(source: string, opts: Options = {}): DocumentFragment {
   opts = opts.origin ? opts : { ...opts, origin: location.href };
-  const url = h(source)?.find(s => s.startsWith('url: '))?.slice(5).trim();
+  const url = h(source)?.find(s => s.toLowerCase().startsWith('url: '))?.slice(5).trim();
   opts = url ? { ...opts, url: new ReadonlyURL(url, opts.origin) } : opts;
   assert(Object.freeze(opts));
   const node = frag([...segment(normalize(source))]

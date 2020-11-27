@@ -27,7 +27,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let revision: symbol;
   return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
-    const url = h(source)?.find(s => s.startsWith('url: '))?.slice(5).trim();
+    const url = h(source)?.find(s => s.toLowerCase().startsWith('url: '))?.slice(5).trim();
     settings = url ? { ...settings, url: new ReadonlyURL(url, settings.origin) } : settings;
     assert(Object.freeze(settings));
     source = normalize(source);

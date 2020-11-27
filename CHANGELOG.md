@@ -4,6 +4,7 @@
 
 - Refine origin management.
 - Add cache of code highlight.
+- Change header parser to be case-insensitive.
 
 ## 0.186.0
 
