@@ -2946,9 +2946,9 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const url_1 = _dereq_('spica/url');
             function bind(target, settings) {
-                settings = settings.origin ? settings : {
+                settings = settings.host ? settings : {
                     ...settings,
-                    origin: global_1.location.href
+                    host: new url_1.ReadonlyURL(global_1.location.origin + global_1.location.pathname)
                 };
                 const pairs = [];
                 const adds = [];
@@ -2958,10 +2958,10 @@ require = function () {
                 return function* (source) {
                     var _a, _b, _c;
                     const rev = revision = Symbol();
-                    const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
+                    const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim();
                     settings = url ? {
                         ...settings,
-                        url: new url_1.ReadonlyURL(url, settings.origin)
+                        url: new url_1.ReadonlyURL(url)
                     } : settings;
                     source = normalize_1.normalize(source);
                     const sourceSegments = [];
@@ -2974,14 +2974,14 @@ require = function () {
                     }
                     const targetSegments = pairs.map(([seg]) => seg);
                     let head = 0;
-                    for (; head < targetSegments.length; ++head) {
+                    for (; !url && head < targetSegments.length; ++head) {
                         if (targetSegments[head] !== sourceSegments[head])
                             break;
                     }
                     if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length)
                         return;
                     let last = 0;
-                    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+                    for (; !url && head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
                         if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1])
                             break;
                     }
@@ -3176,14 +3176,14 @@ require = function () {
             const url_1 = _dereq_('spica/url');
             function parse(source, opts = {}) {
                 var _a, _b, _c, _d;
-                opts = opts.origin ? opts : {
+                opts = opts.host ? opts : {
                     ...opts,
-                    origin: global_1.location.href
+                    host: new url_1.ReadonlyURL(global_1.location.origin + global_1.location.pathname)
                 };
-                const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
+                const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim();
                 opts = url ? {
                     ...opts,
-                    url: new url_1.ReadonlyURL(url, opts.origin)
+                    url: new url_1.ReadonlyURL(url)
                 } : opts;
                 const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_2.header(seg, opts) || block_1.block(seg, opts), [])), []));
                 if (opts.test)
@@ -4296,7 +4296,10 @@ require = function () {
             const segment_1 = _dereq_('./segment');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
-                [typed_dom_1.html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2)))],
+                [typed_dom_1.html('details', { class: 'header' }, [
+                        typed_dom_1.html('summary', 'Header'),
+                        source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2))
+                    ])],
                 ''
             ] : global_1.undefined)));
         },
@@ -4566,12 +4569,12 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, (source, {origin, url}) => verify(source) && [
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, (source, {host, url}) => verify(source) && [
                 [typed_dom_1.html('a', {
                         class: 'account',
                         href: source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/${ source }`,
                         rel: 'noopener',
-                        target: source.includes('/') || url && url.origin !== origin ? '_blank' : global_1.undefined
+                        target: source.includes('/') || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
                     }, source)],
                 ''
             ])));
@@ -4698,12 +4701,12 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const account_1 = _dereq_('./account');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (source, {origin, url}) => account_1.verify(source) && [
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (source, {host, url}) => account_1.verify(source) && [
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
                         href: source.includes('/') ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ source.slice(1) }`,
                         rel: 'noopener',
-                        target: source.includes('/') || url && url.origin !== origin ? '_blank' : undefined
+                        target: source.includes('/') || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : undefined
                     }, source)],
                 ''
             ])));
@@ -5461,16 +5464,18 @@ require = function () {
                 [],
                 as
             ]), ([content, options], rest, context) => {
+                var _a;
                 if (!util_1.isEndTight(content))
                     return;
                 if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = options.shift();
+                const base = context.url || context.host || global_1.location;
                 const el = typed_dom_1.html('a', {
-                    href: fix(INSECURE_URI, context.url),
+                    href: fix(INSECURE_URI, base, !context.url),
                     rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI).replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
-                if (!sanitize(el, el, INSECURE_URI, context.origin))
+                if (!sanitize(el, el, INSECURE_URI, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.origin) || global_1.location.origin))
                     return [
                         [el],
                         rest
@@ -5483,18 +5488,23 @@ require = function () {
             })));
             exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
             exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
-            function fix(uri, base) {
+            function fix(uri, base, sameorigin) {
                 var _a;
-                uri = uri.trim();
                 switch (true) {
-                case !base || uri.startsWith(base.origin) && !((_a = uri[base.origin.length]) === null || _a === void 0 ? void 0 : _a.indexOf('/')):
+                case uri.startsWith('^/'):
+                    return `${ fillTrailingSlash(base.pathname) }${ uri.slice(2) }`;
+                case sameorigin:
                 case uri.startsWith('//'):
                     return uri;
                 default:
-                    return new url_1.ReadonlyURL(uri, base.href.split(/[?#]/, 1)[0]).href;
+                    const url = new url_1.ReadonlyURL(uri, base.href.split(/[?#]/, 1)[0]);
+                    return url.origin === ((_a = uri.match(/^[^:]+:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : url.href;
                 }
             }
             exports.fix = fix;
+            function fillTrailingSlash(pathname) {
+                return pathname[pathname.length - 1] === '/' ? pathname : pathname + '/';
+            }
             function sanitize(uri, target, text, origin = global_1.location.origin) {
                 let type;
                 let message;
@@ -5648,23 +5658,24 @@ require = function () {
                 [''],
                 as
             ]), ([[text], options], rest, context) => {
-                var _a, _b, _c, _d;
+                var _a, _b, _c, _d, _e;
                 if (text.length > 0 && text.slice(-2).trimStart() === '')
                     return;
                 const INSECURE_URI = options.shift();
-                url.href = link_1.fix(INSECURE_URI, context.url);
+                const base = context.url || context.host || global_1.location;
+                url.href = link_1.fix(INSECURE_URI, base, !context.url);
                 const cache = (_a = context.caches) === null || _a === void 0 ? void 0 : _a.media;
                 const key = url.href;
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(key);
                 const el = cache && cached ? cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
-                    'data-src': link_1.fix(INSECURE_URI, context.url),
+                    'data-src': link_1.fix(INSECURE_URI, base, !context.url),
                     alt: text.trim()
                 });
                 if (cached) {
                     el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
                 } else {
-                    if (!link_1.sanitize(url, el, INSECURE_URI, context.origin))
+                    if (!link_1.sanitize(url, el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
                         return [
                             [el],
                             rest
@@ -5674,7 +5685,7 @@ require = function () {
                     ...html_1.attributes('media', link_1.optspec, options, cached ? el.className.trim().match(/\s+/g) || [] : ['media']),
                     nofollow: global_1.undefined
                 });
-                return ((_d = (_c = (_b = context.syntax) === null || _b === void 0 ? void 0 : _b.inline) === null || _c === void 0 ? void 0 : _c.link) !== null && _d !== void 0 ? _d : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(options) } }${ rest }`, context) : [
+                return ((_e = (_d = (_c = context.syntax) === null || _c === void 0 ? void 0 : _c.inline) === null || _d === void 0 ? void 0 : _d.link) !== null && _e !== void 0 ? _e : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(options) } }${ rest }`, context) : [
                     [el],
                     rest
                 ];
