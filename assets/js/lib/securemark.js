@@ -2934,23 +2934,35 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.bind = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const segment_1 = _dereq_('../segment');
-            const header_1 = _dereq_('../header');
+            const header_1 = _dereq_('../api/header');
+            const header_2 = _dereq_('../header');
             const block_1 = _dereq_('../block');
             const normalize_1 = _dereq_('./normalize');
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
             const array_1 = _dereq_('spica/array');
+            const url_1 = _dereq_('spica/url');
             function bind(target, settings) {
+                settings = settings.origin ? settings : {
+                    ...settings,
+                    origin: global_1.location.href
+                };
                 const pairs = [];
                 const adds = [];
                 const dels = [];
                 const bottom = target.firstChild;
                 let revision;
                 return function* (source) {
-                    var _a;
+                    var _a, _b, _c;
                     const rev = revision = Symbol();
+                    const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
+                    settings = url ? {
+                        ...settings,
+                        url: new url_1.ReadonlyURL(url, settings.origin)
+                    } : settings;
                     source = normalize_1.normalize(source);
                     const sourceSegments = [];
                     for (const seg of segment_1.segment(source)) {
@@ -2977,7 +2989,7 @@ require = function () {
                     let index = head;
                     for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
-                        const es = combinator_1.eval(index === 0 && header_1.header(seg, settings) || block_1.block(seg, settings), []);
+                        const es = combinator_1.eval(index === 0 && header_2.header(seg, settings) || block_1.block(seg, settings), []);
                         pairs.splice(index, 0, [
                             seg,
                             es
@@ -3017,7 +3029,7 @@ require = function () {
                     }
                     while (dels.length > 0) {
                         const el = dels.shift();
-                        (_a = el.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(el);
+                        (_c = el.parentNode) === null || _c === void 0 ? void 0 : _c.removeChild(el);
                         yield {
                             type: 'block',
                             value: el
@@ -3057,11 +3069,14 @@ require = function () {
             '../../combinator': 28,
             '../../util/figure': 145,
             '../../util/footnote': 146,
+            '../api/header': 57,
             '../block': 61,
             '../header': 83,
             '../segment': 121,
             './normalize': 58,
-            'spica/array': 6
+            'spica/array': 6,
+            'spica/global': 12,
+            'spica/url': 18
         }
     ],
     55: [
@@ -3147,18 +3162,30 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.parse = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const segment_1 = _dereq_('../segment');
-            const header_1 = _dereq_('../header');
+            const header_1 = _dereq_('../api/header');
+            const header_2 = _dereq_('../header');
             const block_1 = _dereq_('../block');
             const normalize_1 = _dereq_('./normalize');
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
+            const url_1 = _dereq_('spica/url');
             function parse(source, opts = {}) {
-                var _a, _b;
-                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
+                var _a, _b, _c, _d;
+                opts = opts.origin ? opts : {
+                    ...opts,
+                    origin: global_1.location.href
+                };
+                const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.startsWith('url: '))) === null || _b === void 0 ? void 0 : _b.slice(5).trim();
+                opts = url ? {
+                    ...opts,
+                    url: new url_1.ReadonlyURL(url, opts.origin)
+                } : opts;
+                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_2.header(seg, opts) || block_1.block(seg, opts), [])), []));
                 if (opts.test)
                     return node;
                 for (const _ of footnote_1.footnote(node, opts.footnotes, opts));
@@ -3171,11 +3198,14 @@ require = function () {
             '../../combinator': 28,
             '../../util/figure': 145,
             '../../util/footnote': 146,
+            '../api/header': 57,
             '../block': 61,
             '../header': 83,
             '../segment': 121,
             './normalize': 58,
             'spica/array': 6,
+            'spica/global': 12,
+            'spica/url': 18,
             'typed-dom': 21
         }
     ],
@@ -4266,7 +4296,7 @@ require = function () {
             const segment_1 = _dereq_('./segment');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[a-z][0-9a-z]*(?:-[a-z][0-9a-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
-                [typed_dom_1.html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', -1)))],
+                [typed_dom_1.html('div', { class: 'header' }, source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2)))],
                 ''
             ] : global_1.undefined)));
         },
@@ -4536,15 +4566,16 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, (source, {
-                origin = ''
-            }) => {
-                const url = source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ origin }/${ source }`;
-                return verify(source) && [
+            exports.account = combinator_1.creator(combinator_1.validate('@', combinator_1.focus(/^@(?:[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\/)?[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, (source, {url}) => {
+                if (!verify(source))
+                    return;
+                const href = source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/${ source }`;
+                return [
                     [typed_dom_1.html('a', {
                             class: 'account',
-                            href: url,
-                            rel: 'noopener'
+                            href,
+                            rel: 'noopener',
+                            target: source.includes('/') || (url === null || url === void 0 ? void 0 : url.origin) ? '_blank' : global_1.undefined
                         }, source)],
                     ''
                 ];
@@ -4664,13 +4695,12 @@ require = function () {
             exports.hashtag = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (tag, {
-                origin = ''
-            }) => [
+            exports.hashtag = combinator_1.creator(combinator_1.validate('#', combinator_1.focus(/^#(?![0-9]+(?![0-9A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/, (tag, {url}) => [
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
-                        href: `${ origin }/hashtags/${ tag.slice(1) }`,
-                        rel: 'noopener'
+                        href: `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ tag.slice(1) }`,
+                        rel: 'noopener',
+                        target: (url === null || url === void 0 ? void 0 : url.origin) ? '_blank' : undefined
                     }, tag)],
                 ''
             ])));
@@ -5377,126 +5407,134 @@ require = function () {
     ],
     110: [
         function (_dereq_, module, exports) {
-            (function (global) {
-                (function () {
-                    'use strict';
-                    Object.defineProperty(exports, '__esModule', { value: true });
-                    exports.sanitize = exports.option = exports.uri = exports.link = exports.optspec = void 0;
-                    const global_1 = _dereq_('spica/global');
-                    const alias_1 = _dereq_('spica/alias');
-                    const inline_1 = _dereq_('../inline');
-                    const combinator_1 = _dereq_('../../combinator');
-                    const util_1 = _dereq_('../util');
-                    const source_1 = _dereq_('../source');
-                    const html_1 = _dereq_('./html');
-                    const autolink_1 = _dereq_('../autolink');
-                    const typed_dom_1 = _dereq_('typed-dom');
-                    exports.optspec = { nofollow: [global_1.undefined] };
-                    alias_1.ObjectSetPrototypeOf(exports.optspec, null);
-                    exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.validate([
-                        '[',
-                        '{'
-                    ], combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
-                        var _a, _b, _c;
-                        return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
-                    }, combinator_1.tails([
-                        combinator_1.context({ syntax: { inline: { link: false } } }, util_1.dup(combinator_1.union([
-                            combinator_1.surround('[', inline_1.media, ']'),
-                            combinator_1.surround('[', inline_1.shortmedia, ']'),
-                            combinator_1.surround('[', util_1.startTight(combinator_1.context({
-                                syntax: {
-                                    inline: {
-                                        annotation: false,
-                                        reference: false,
-                                        index: false,
-                                        label: false,
-                                        link: false,
-                                        media: false,
-                                        autolink: false
-                                    }
-                                }
-                            }, combinator_1.some(inline_1.inline, ']', /^\\?\n/))), ']', true)
-                        ]))),
-                        util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
-                            exports.uri,
-                            combinator_1.some(exports.option)
-                        ]), /^ ?}/))
-                    ])))), ([as, bs]) => bs ? [
-                        as,
-                        bs
-                    ] : [
-                        [],
-                        as
-                    ]), ([content, options], rest, context) => {
-                        if (!util_1.isEndTight(content))
-                            return;
-                        if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
-                            return;
-                        const INSECURE_URI = options.shift();
-                        const el = typed_dom_1.html('a', {
-                            href: INSECURE_URI,
-                            rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                        }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI || '.').replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
-                        if (!sanitize(el, el, INSECURE_URI, context.origin))
-                            return [
-                                [el],
-                                rest
-                            ];
-                        typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, options, []), { nofollow: global_1.undefined }));
-                        return [
-                            [el],
-                            rest
-                        ];
-                    })));
-                    exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
-                    exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
-                    const {origin: orig} = global.location;
-                    function sanitize(uri, target, source, origin = orig) {
-                        let type;
-                        let message;
-                        switch (uri.protocol) {
-                        case 'http:':
-                        case 'https:': {
-                                const {host} = uri;
-                                host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
-                                if (host)
-                                    return true;
-                                type = 'parameter';
-                                message = 'Invalid host.';
-                                break;
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            exports.sanitize = exports.fix = exports.option = exports.uri = exports.link = exports.optspec = void 0;
+            const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
+            const inline_1 = _dereq_('../inline');
+            const combinator_1 = _dereq_('../../combinator');
+            const util_1 = _dereq_('../util');
+            const source_1 = _dereq_('../source');
+            const html_1 = _dereq_('./html');
+            const autolink_1 = _dereq_('../autolink');
+            const url_1 = _dereq_('spica/url');
+            const typed_dom_1 = _dereq_('typed-dom');
+            exports.optspec = { nofollow: [global_1.undefined] };
+            alias_1.ObjectSetPrototypeOf(exports.optspec, null);
+            exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.validate([
+                '[',
+                '{'
+            ], combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
+                var _a, _b, _c;
+                return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
+            }, combinator_1.tails([
+                combinator_1.context({ syntax: { inline: { link: false } } }, util_1.dup(combinator_1.union([
+                    combinator_1.surround('[', inline_1.media, ']'),
+                    combinator_1.surround('[', inline_1.shortmedia, ']'),
+                    combinator_1.surround('[', util_1.startTight(combinator_1.context({
+                        syntax: {
+                            inline: {
+                                annotation: false,
+                                reference: false,
+                                index: false,
+                                label: false,
+                                link: false,
+                                media: false,
+                                autolink: false
                             }
-                        case target.tagName === 'A' && 'tel:':
-                            if (`tel:${ target.textContent.replace(/-(?=[0-9])/g, '') }` === source)
-                                return true;
-                            type = 'content';
-                            message = 'Invalid phone number.';
-                            break;
-                        default:
-                            type = 'parameter';
-                            message = 'Invalid protocol.';
                         }
-                        typed_dom_1.define(target, {
-                            class: `${ target.className } invalid`.trim(),
-                            'data-invalid-syntax': 'link',
-                            'data-invalid-type': type,
-                            'data-invalid-message': message,
-                            ...target.tagName === 'A' ? {
-                                href: null,
-                                rel: null
-                            } : { 'data-src': null }
-                        });
-                        return false;
+                    }, combinator_1.some(inline_1.inline, ']', /^\\?\n/))), ']', true)
+                ]))),
+                util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
+                    exports.uri,
+                    combinator_1.some(exports.option)
+                ]), /^ ?}/))
+            ])))), ([as, bs]) => bs ? [
+                as,
+                bs
+            ] : [
+                [],
+                as
+            ]), ([content, options], rest, context) => {
+                if (!util_1.isEndTight(content))
+                    return;
+                if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
+                    return;
+                const INSECURE_URI = options.shift();
+                const el = typed_dom_1.html('a', {
+                    href: fix(INSECURE_URI, context.url),
+                    rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
+                }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI).replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
+                if (!sanitize(el, el, INSECURE_URI, context.origin))
+                    return [
+                        [el],
+                        rest
+                    ];
+                typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, options, []), { nofollow: global_1.undefined }));
+                return [
+                    [el],
+                    rest
+                ];
+            })));
+            exports.uri = combinator_1.union([combinator_1.match(/^ ?(?! )/, combinator_1.memoize(([delim]) => delim, delim => source_1.str(delim ? /^\S+/ : /^[^\s{}]+/)))]);
+            exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
+            function fix(uri, base) {
+                var _a;
+                uri = uri.trim();
+                switch (true) {
+                case !base || uri.startsWith(base.origin) && !((_a = uri[base.origin.length]) === null || _a === void 0 ? void 0 : _a.indexOf('/')):
+                case uri.startsWith('//'):
+                    return uri;
+                default:
+                    return new url_1.ReadonlyURL(uri, base.href.split(/[?#]/, 1)[0]).href;
+                }
+            }
+            exports.fix = fix;
+            function sanitize(uri, target, text, origin = global_1.location.origin) {
+                let type;
+                let message;
+                switch (uri.protocol) {
+                case 'http:':
+                case 'https:': {
+                        const {host} = uri;
+                        host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
+                        if (host)
+                            return true;
+                        type = 'parameter';
+                        message = 'Invalid host.';
+                        break;
                     }
-                    exports.sanitize = sanitize;
-                    function decode(uri) {
-                        try {
-                            uri = global_1.decodeURI(uri);
-                        } finally {
-                            return uri.replace(/\s+/g, global_1.encodeURI);
-                        }
-                    }
-                }.call(this));
-            }.call(this, typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : typeof window !== 'undefined' ? window : {}));
+                case target.tagName === 'A' && 'tel:':
+                    if (`tel:${ target.textContent.replace(/-(?=[0-9])/g, '') }` === text)
+                        return true;
+                    type = 'content';
+                    message = 'Invalid phone number.';
+                    break;
+                default:
+                    type = 'parameter';
+                    message = 'Invalid protocol.';
+                }
+                typed_dom_1.define(target, {
+                    class: `${ target.className } invalid`.trim(),
+                    'data-invalid-syntax': 'link',
+                    'data-invalid-type': type,
+                    'data-invalid-message': message,
+                    ...target.tagName === 'A' ? {
+                        href: null,
+                        rel: null
+                    } : { 'data-src': null }
+                });
+                return false;
+            }
+            exports.sanitize = sanitize;
+            function decode(uri) {
+                try {
+                    uri = global_1.decodeURI(uri);
+                } finally {
+                    return uri.replace(/\s+/g, global_1.encodeURI);
+                }
+            }
         },
         {
             '../../combinator': 28,
@@ -5507,6 +5545,7 @@ require = function () {
             './html': 107,
             'spica/alias': 5,
             'spica/global': 12,
+            'spica/url': 18,
             'typed-dom': 21
         }
     ],
@@ -5609,13 +5648,13 @@ require = function () {
                 if (text.length > 0 && text.slice(-2).trimStart() === '')
                     return;
                 const INSECURE_URI = options.shift();
-                url.href = INSECURE_URI;
+                url.href = link_1.fix(INSECURE_URI, context.url);
                 const cache = (_a = context.caches) === null || _a === void 0 ? void 0 : _a.media;
                 const key = url.href;
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(key);
                 const el = cache && cached ? cache.get(key).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
-                    'data-src': INSECURE_URI,
+                    'data-src': link_1.fix(INSECURE_URI, context.url),
                     alt: text.trim()
                 });
                 if (cached) {
@@ -7112,9 +7151,9 @@ require = function () {
                     if (label.endsWith('-0'))
                         continue;
                     if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
-                        if (label.lastIndexOf('.', -2) < 0 && !(+((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName[1]) <= 2))
+                        if (label.lastIndexOf('.', label.length - 3) < 0 && !(+((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName[1]) <= 2))
                             continue;
-                        if (label.lastIndexOf('.', -2) > 0)
+                        if (label.lastIndexOf('.', label.length - 3) > 0)
                             continue;
                     }
                     const group = label.split('-', 1)[0];
