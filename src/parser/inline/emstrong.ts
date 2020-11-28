@@ -13,7 +13,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
     if (!isEndTight(bs)) return [unshift(as, bs), cs[0] + rest];
     switch (cs[0]) {
       case '*':
-        return bind<HTMLElement | string, EmStrongParser>(
+        return bind<EmStrongParser>(
           union([some(inline, '**')]),
           (ms, rest) =>
             rest.slice(0, 2) === '**'
@@ -21,7 +21,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
               : [unshift(['**', html('em', defrag(trimEnd(bs)))], ms), rest])
           (rest, context) || [['**', html('em', defrag(trimEnd(bs)))], rest];
       case '**':
-        return bind<HTMLElement | string, EmStrongParser>(
+        return bind<EmStrongParser>(
           union([some(inline, '*')]),
           (ms, rest) =>
             rest.slice(0, 1) === '*'
