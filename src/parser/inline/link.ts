@@ -87,11 +87,11 @@ export function fix(uri: string, base: URL | Location, sameorigin: boolean): str
   assert(uri === uri.trim());
   assert(base.pathname);
   switch (true) {
-    case uri.startsWith('^/')
+    case uri.slice(0, 2) === '^/'
       && !uri.split(/[?#]/, 1)[0].includes('/../'):
       return `${fillTrailingSlash(base.pathname)}${uri.slice(2)}`;
     case sameorigin:
-    case uri.startsWith('//'):
+    case uri.slice(0, 2) === '//':
       return uri;
     default:
       const url = new ReadonlyURL(uri, base.href.split(/[?#]/, 1)[0]);
