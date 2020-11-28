@@ -2876,7 +2876,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.caches = exports.normalize = exports.body = exports.header = exports.bind = exports.parse = void 0;
+            exports.caches = exports.normalize = exports.body = exports.headers = exports.header = exports.bind = exports.parse = void 0;
             var parse_1 = _dereq_('./api/parse');
             Object.defineProperty(exports, 'parse', {
                 enumerable: true,
@@ -2896,6 +2896,12 @@ require = function () {
                 enumerable: true,
                 get: function () {
                     return header_1.header;
+                }
+            });
+            Object.defineProperty(exports, 'headers', {
+                enumerable: true,
+                get: function () {
+                    return header_1.headers;
                 }
             });
             var body_1 = _dereq_('./api/body');
@@ -2936,11 +2942,11 @@ require = function () {
             exports.bind = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
-            const segment_1 = _dereq_('../segment');
-            const header_1 = _dereq_('../api/header');
-            const header_2 = _dereq_('../header');
+            const header_1 = _dereq_('../header');
             const block_1 = _dereq_('../block');
+            const segment_1 = _dereq_('../segment');
             const normalize_1 = _dereq_('./normalize');
+            const header_2 = _dereq_('../api/header');
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
             const array_1 = _dereq_('spica/array');
@@ -2956,9 +2962,9 @@ require = function () {
                 const bottom = target.firstChild;
                 let revision;
                 return function* (source) {
-                    var _a, _b, _c;
+                    var _a, _b;
                     const rev = revision = Symbol();
-                    const url = ((_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim()) || '';
+                    const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                     settings = url ? {
                         ...settings,
                         url: new url_1.ReadonlyURL(url)
@@ -2993,7 +2999,7 @@ require = function () {
                     let index = head;
                     for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
-                        const es = combinator_1.eval(index === 0 && header_2.header(seg, settings) || block_1.block(seg, settings), []);
+                        const es = combinator_1.eval(index === 0 && header_1.header(seg, settings) || block_1.block(seg, settings), []);
                         blocks.splice(index, 0, [
                             seg,
                             es,
@@ -3034,7 +3040,7 @@ require = function () {
                     }
                     while (dels.length > 0) {
                         const el = dels.shift();
-                        (_c = el.parentNode) === null || _c === void 0 ? void 0 : _c.removeChild(el);
+                        (_b = el.parentNode) === null || _b === void 0 ? void 0 : _b.removeChild(el);
                         yield {
                             type: 'block',
                             value: el
@@ -3089,20 +3095,13 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.body = void 0;
-            const global_1 = _dereq_('spica/global');
-            const parser_1 = _dereq_('../../combinator/data/parser');
-            const header_1 = _dereq_('../header');
+            const header_1 = _dereq_('./header');
             function body(source) {
-                const rest = parser_1.exec(header_1.header(source, {}));
-                return rest !== global_1.undefined ? rest.replace(/^[^\S\n]*\n?/, '') : source;
+                return source.slice(header_1.header(source).length);
             }
             exports.body = body;
         },
-        {
-            '../../combinator/data/parser': 45,
-            '../header': 83,
-            'spica/global': 12
-        }
+        { './header': 57 }
     ],
     56: [
         function (_dereq_, module, exports) {
@@ -3122,21 +3121,19 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.header = void 0;
-            const global_1 = _dereq_('spica/global');
-            const body_1 = _dereq_('./body');
-            const normalize_1 = _dereq_('./normalize');
+            exports.headers = exports.header = exports.syntax = void 0;
+            exports.syntax = /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?:[^\S\v\f\r\n]*(?:$|\r?\n)))/;
             function header(source) {
-                source = normalize_1.normalize(source.slice(0, source.length - body_1.body(source).length).trimEnd());
-                return source !== '' ? source.split('\n').slice(1, -1) : global_1.undefined;
+                var _a;
+                return ((_a = source.match(exports.syntax)) === null || _a === void 0 ? void 0 : _a[0]) || '';
             }
             exports.header = header;
+            function headers(source) {
+                return header(source).trimEnd().split('\n').slice(1, -1);
+            }
+            exports.headers = headers;
         },
-        {
-            './body': 55,
-            './normalize': 58,
-            'spica/global': 12
-        }
+        {}
     ],
     58: [
         function (_dereq_, module, exports) {
@@ -3168,28 +3165,28 @@ require = function () {
             exports.parse = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
-            const segment_1 = _dereq_('../segment');
-            const header_1 = _dereq_('../api/header');
-            const header_2 = _dereq_('../header');
+            const header_1 = _dereq_('../header');
             const block_1 = _dereq_('../block');
+            const segment_1 = _dereq_('../segment');
             const normalize_1 = _dereq_('./normalize');
+            const header_2 = _dereq_('../api/header');
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             const url_1 = _dereq_('spica/url');
             function parse(source, opts = {}) {
-                var _a, _b, _c, _d;
+                var _a, _b, _c;
                 opts = opts.host ? opts : {
                     ...opts,
                     host: new url_1.ReadonlyURL(global_1.location.origin + global_1.location.pathname)
                 };
-                const url = ((_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim()) || '';
+                const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                 opts = url ? {
                     ...opts,
                     url: new url_1.ReadonlyURL(url)
                 } : opts;
-                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_2.header(seg, opts) || block_1.block(seg, opts), [])), []));
+                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
                 if (opts.test)
                     return node;
                 for (const _ of footnote_1.footnote(node, opts.footnotes, opts));
@@ -4295,24 +4292,20 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.header = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../combinator');
-            const normalize_1 = _dereq_('./api/normalize');
-            const segment_1 = _dereq_('./segment');
+            const header_1 = _dereq_('./api/header');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.header = combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, combinator_1.convert(normalize_1.normalize, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
+            exports.header = combinator_1.validate('---', combinator_1.focus(header_1.syntax, source => [
                 [typed_dom_1.html('details', { class: 'header' }, [
                         typed_dom_1.html('summary', 'Header'),
                         source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2))
                     ])],
                 ''
-            ] : global_1.undefined)));
+            ]));
         },
         {
             '../combinator': 28,
-            './api/normalize': 58,
-            './segment': 121,
-            'spica/global': 12,
+            './api/header': 57,
             'typed-dom': 21
         }
     ],
