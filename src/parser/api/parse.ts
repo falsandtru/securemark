@@ -1,11 +1,11 @@
 import { location } from 'spica/global';
 import { ParserOptions } from '../../..';
 import { eval } from '../../combinator';
-import { segment } from '../segment';
-import { header as h } from '../api/header';
 import { header } from '../header';
 import { block } from '../block';
+import { segment } from '../segment';
 import { normalize } from './normalize';
+import { header as h } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { frag } from 'typed-dom';
