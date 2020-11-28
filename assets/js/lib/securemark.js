@@ -5497,7 +5497,7 @@ require = function () {
             function fix(uri, base, sameorigin) {
                 var _a;
                 switch (true) {
-                case uri.startsWith('^/'):
+                case uri.startsWith('^/') && !uri.split(/[?#]/, 1)[0].includes('/../'):
                     return `${ fillTrailingSlash(base.pathname) }${ uri.slice(2) }`;
                 case sameorigin:
                 case uri.startsWith('//'):
