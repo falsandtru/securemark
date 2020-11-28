@@ -1,9 +1,5 @@
-import { body } from './body';
-
 export function normalize(source: string): string {
-  const rest = body(source);
-  const header = source.slice(0, source.length - rest.length);
-  return header.replace(/(^|\S)[^\S\n]+(?=$|\n)$/mg, '$1') + rest
+  return source
     .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str =>
       str.length === 1
         ? '\uFFFD'
