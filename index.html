@@ -223,6 +223,12 @@
   del code {
     background: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
+  sup.annotation + sup.annotation,
+  sup.annotation + sup.reference,
+  sup.reference + sup.annotation,
+  sup.reference + sup.reference {
+    margin-inline-start: .2em;
+  }
   .comment::before {
     content: "†";
     color: red;
@@ -256,7 +262,7 @@
   ol#reference,
   ol.reference {
     position: relative;
-    margin-top: 3em;
+    margin-top: 7em;
     width: 100%;
   }
   ol#annotation::before,
@@ -265,7 +271,7 @@
   ol.reference::before {
     display: table-row;
     position: absolute;
-    top: -1.3em;
+    top: -2em;
     width: 100%;
     text-align: center;
     font-size: 2em;
@@ -277,6 +283,12 @@
   ol#reference::before,
   ol.reference::before {
     content: "References";
+  }
+  ol#annotation > li > sup:last-child > a,
+  ol.annotation > li > sup:last-child > a,
+  ol#reference > li > sup:last-child > a,
+  ol.reference > li > sup:last-child > a {
+    margin-inline-start: .1em;
   }
   @media print {
     #viewer > hr {
@@ -313,7 +325,7 @@
 <!-- ----- PRIMARY ------------------------------------------------------------ -->
 <div id="primary" class="col-12">
 <article id="content" class="row">
-  <div class="col-6"><textarea id="editor" class="w-100 h-100"></textarea></div>
+  <div class="col-6"><textarea id="editor" class="w-100 h-100" spellcheck="false"></textarea></div>
   <div id="viewer" class="col-6"><ol id="annotation"></ol><ol id="reference"></ol></div>
 </article>
 <aside></aside>
@@ -371,12 +383,42 @@
   document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
   document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
+    '---',
+    'url: https://falsandtru.github.io/securemark',
+    '---',
+    '',
     '# Securemark [#Title]',
     '',
     'Mark++down++~~up~~ +\\',
     '`Syntax highlight` +\\',
     '${LaTeX}$',
     'and Media content embedding.',
+    '',
+    '## List',
+    '',
+    '*Branch number* is supported.',
+    '',
+    '- Number',
+    '  1. a',
+    '  1. b',
+    '  1. c',
+    '- Alphabet',
+    '  a. 4',
+    '  a. 5',
+    '  a. 6',
+    '- Branch number',
+    '  (7) d',
+    '  (7)-1 e',
+    '  (8) f',
+    '  (9) g',
+    '',
+    '## Blockquote',
+    '',
+    '>> **a',
+    'b**',
+    '',
+    '!>> **a',
+    'b**',
     '',
     '## Code',
     '',
@@ -413,20 +455,37 @@
     '$-name',
     '$fig-name',
     '',
-    '## Annotation',
+    '## Annotation and Reference',
     '',
-    'Annotation syntax is refined footnotes((Annotations generate footnotes *without manual numbering*.)).',
+    'Annotation and Reference syntax generate footnotes((*without manual numbering*.))((Another annotation.))[[^alias]][[^alias|A reference.]].',
     '',
     '## Link',
     '',
-    '~ normal [#normal link]',
+    '[Google]{https://google.com}',
+    '{https://google.com}',
     'https://google.com',
-    '~ nofollow [#nofollow link]',
     'ttps://google.com',
+    '',
+    '## Term',
+    '',
+    '~ Term',
+    'Description.',
     '',
     '## Index',
     '',
-    '[#Title], [#Link], [#normal link], [#nofollow link]',
+    '[#Title], [#Link], [#Term]',
+    '',
+    '## Relative URL fixation',
+    '',
+    '*Relative links ({./...})* base on the host URL or the **document URL** defined in the document **header**.',
+    '',
+    'You have to add the header and the document URL to make the relative links permanent before rendering the document under another URL, or reporting or distributing the document.',
+    '',
+    '## Subresource representation',
+    '',
+    '***Subresource links ({^/...})*** always base on the **host URL**, displayed on the browser.',
+    '',
+    'Only the *subdirectory path (`^/`)* can make relative links to the subdirectories as: {^/materials/image.png}',
     '',
     '## Media',
     '',
@@ -435,27 +494,6 @@
     '!https://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf',
     '!https://twitter.com/hourenso_u/status/856828123882676225?hide_thread=true',
     '!https://pbs.twimg.com/media/C-QQoa7VoAA2hVH?format=jpg',
-    '',
-    '## Blockquote',
-    '',
-    '>> **a',
-    'b**',
-    '',
-    '!>> **a',
-    'b**',
-    '> - A',
-    '  1. a',
-    '  1. b',
-    '  1. c',
-    '- B',
-    '  a. 4',
-    '  a. 5',
-    '  a. 6',
-    '- C',
-    '  (7) d',
-    '  (7)-1 e',
-    '  (8) f',
-    '  (9) g',
     '',
     ''
   ].join('\n');

@@ -4914,8 +4914,6 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
-            const emphasis_1 = _dereq_('./emphasis');
-            const strong_1 = _dereq_('./strong');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
@@ -4927,13 +4925,37 @@ require = function () {
                     ];
                 switch (cs[0]) {
                 case '*':
-                    return combinator_1.fmap(strong_1.strong, ms => typeof ms[0] === 'object' ? (ms[0].prepend(typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))), ms) : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('**' + rest, context) || [
-                        array_1.push(array_1.unshift(as, bs), cs),
+                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '**')]), (ms, rest) => rest.slice(0, 2) === '**' ? [
+                        [typed_dom_1.html('strong', array_1.unshift([typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))], util_1.defrag(util_1.trimEnd(ms))))],
+                        rest.slice(2)
+                    ] : [
+                        array_1.unshift([
+                            '**',
+                            typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))
+                        ], ms),
+                        rest
+                    ])(rest, context) || [
+                        [
+                            '**',
+                            typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))
+                        ],
                         rest
                     ];
                 case '**':
-                    return combinator_1.fmap(emphasis_1.emphasis, ms => typeof ms[0] === 'object' ? (ms[0].prepend(typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))), ms) : array_1.push(array_1.unshift(as, bs), array_1.shift(ms)[1]))('*' + rest, context) || [
-                        array_1.push(array_1.unshift(as, bs), cs),
+                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '*')]), (ms, rest) => rest.slice(0, 1) === '*' ? [
+                        [typed_dom_1.html('em', array_1.unshift([typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))], util_1.defrag(util_1.trimEnd(ms))))],
+                        rest.slice(1)
+                    ] : [
+                        array_1.unshift([
+                            '*',
+                            typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))
+                        ], ms),
+                        rest
+                    ])(rest, context) || [
+                        [
+                            '*',
+                            typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))
+                        ],
                         rest
                     ];
                 case '***':
@@ -4952,8 +4974,6 @@ require = function () {
             '../inline': 84,
             '../source': 122,
             '../util': 130,
-            './emphasis': 98,
-            './strong': 117,
             'spica/array': 6,
             'typed-dom': 21
         }
@@ -5491,10 +5511,10 @@ require = function () {
             function fix(uri, base, sameorigin) {
                 var _a;
                 switch (true) {
-                case uri.startsWith('^/') && !uri.split(/[?#]/, 1)[0].includes('/../'):
+                case uri.slice(0, 2) === '^/' && !uri.split(/[?#]/, 1)[0].includes('/../'):
                     return `${ fillTrailingSlash(base.pathname) }${ uri.slice(2) }`;
                 case sameorigin:
-                case uri.startsWith('//'):
+                case uri.slice(0, 2) === '//':
                     return uri;
                 default:
                     const url = new url_1.ReadonlyURL(uri, base.href.split(/[?#]/, 1)[0]);
@@ -5761,7 +5781,7 @@ require = function () {
                     }, util_1.defrag(util_1.trimEnd(ns)))],
                 rest
             ] : global_1.undefined)));
-            const alias = combinator_1.creator(combinator_1.focus(/^~[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*(?:(?=]])|\|(?:(?=]])| ))/, source => [
+            const alias = combinator_1.creator(combinator_1.focus(/^\^[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*(?:(?=]])|\|[^\S\n]?)/, source => [
                 [typed_dom_1.html('abbr', source.split('|', 1)[0].slice(1))],
                 ''
             ]));
@@ -7313,7 +7333,7 @@ require = function () {
                             href: refId && `#${ refId }`,
                             rel: 'noopener',
                             title: content.firstChild && ref.hasAttribute('data-alias') ? title : global_1.undefined
-                        }, ` ~${ refIndex }`));
+                        }, `~${ refIndex }`));
                     }
                     if (!footnote)
                         return;
