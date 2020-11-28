@@ -5,7 +5,7 @@ import { header } from '../header';
 import { block } from '../block';
 import { segment } from '../segment';
 import { normalize } from './normalize';
-import { header as h } from '../api/header';
+import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { frag } from 'typed-dom';
@@ -19,7 +19,7 @@ interface Options extends ParserOptions {
 
 export function parse(source: string, opts: Options = {}): DocumentFragment {
   opts = opts.host ? opts : { ...opts, host: new ReadonlyURL(location.origin + location.pathname) };
-  const url = h(source)?.find(s => s.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
+  const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
   opts = url ? { ...opts, url: new ReadonlyURL(url) } : opts;
   assert(Object.freeze(opts));
   const node = frag([...segment(normalize(source))]

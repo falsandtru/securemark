@@ -1,25 +1,25 @@
-import { header } from './header';
+import { headers } from './header';
 
 describe('Unit: parser/api/header', () => {
-  describe('header', () => {
+  describe('headers', () => {
     it('basic', () => {
-      assert.deepStrictEqual(header(''), undefined);
-      assert.deepStrictEqual(header('---'), undefined);
-      assert.deepStrictEqual(header('---\n'), undefined);
-      assert.deepStrictEqual(header('---\n---'), undefined);
-      assert.deepStrictEqual(header('---\n---\n'), undefined);
-      assert.deepStrictEqual(header('---\na: b\n'), undefined);
-      assert.deepStrictEqual(header('---\na: b\n---c'), undefined);
-      assert.deepStrictEqual(header('---\na: b\n---\nc'), undefined);
-      assert.deepStrictEqual(header('---\r \na: b\n---'), undefined);
-      assert.deepStrictEqual(header('---\na:\rb\n---'), undefined);
-      assert.deepStrictEqual(header('---\na: b\r \n---'), undefined);
-      assert.deepStrictEqual(header('---\n\n---'), undefined);
-      assert.deepStrictEqual(header('---\n \n---'), undefined);
-      assert.deepStrictEqual(header('---\n-\n---'), undefined);
-      assert.deepStrictEqual(header('---\na: b\n---'), ['a: b']);
-      assert.deepStrictEqual(header('---\na: b\nc: d\n---'), ['a: b', 'c: d']);
-      assert.deepStrictEqual(header('--- \r\na: b \r\n--- \r\n \r\n'), ['a: b ']);
+      assert.deepStrictEqual(headers(''), []);
+      assert.deepStrictEqual(headers('---'), []);
+      assert.deepStrictEqual(headers('---\n'), []);
+      assert.deepStrictEqual(headers('---\n---'), []);
+      assert.deepStrictEqual(headers('---\n---\n'), []);
+      assert.deepStrictEqual(headers('---\na: b\n'), []);
+      assert.deepStrictEqual(headers('---\na: b\n---c'), []);
+      assert.deepStrictEqual(headers('---\na: b\n---\nc'), []);
+      assert.deepStrictEqual(headers('---\r \na: b\n---'), []);
+      assert.deepStrictEqual(headers('---\na:\rb\n---'), []);
+      assert.deepStrictEqual(headers('---\na: b\r \n---'), []);
+      assert.deepStrictEqual(headers('---\n\n---'), []);
+      assert.deepStrictEqual(headers('---\n \n---'), []);
+      assert.deepStrictEqual(headers('---\n-\n---'), []);
+      assert.deepStrictEqual(headers('---\na: b\n---'), ['a: b']);
+      assert.deepStrictEqual(headers('---\na: b\nC: d\n---\n'), ['a: b', 'C: d']);
+      assert.deepStrictEqual(headers('--- \r\na: b \r\n--- \r\n \r\n'), ['a: b \r']);
     });
 
   });

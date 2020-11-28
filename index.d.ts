@@ -7,7 +7,8 @@
 
 import { Collection } from 'spica/collection';
 
-export function header(source: string): string[] | undefined;
+export function header(source: string): string;
+export function headers(source: string): string[];
 export function body(source: string): string;
 export function parse(source: string, options?: ParserOptions): DocumentFragment;
 export type Result

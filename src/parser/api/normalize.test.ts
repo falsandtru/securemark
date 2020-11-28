@@ -52,7 +52,11 @@ describe('Unit: parser/normalize', () => {
     });
 
     it('header', () => {
-      assert(normalize('---\r\na: b \r\n---\r\n\r\nb\r\n') === '---\na: b \n---\n\nb\n');
+      assert(normalize('---\r\na: b \r\n---\r\n\r\nb\r\n') === '---\na: b\n---\n\nb\n');
+      assert(normalize('---\na: b\x01\n---\n\n\x01\n') === '---\na: b\x01\n---\n\n\n');
+      assert(normalize('---\na: b\x01\n---\n\x01\n\n') === '---\na: b\n---\n\n\n');
+      assert(normalize('---\na: b\x01\n---') === '---\na: b\x01\n---');
+      assert(normalize(' ---\na: b\x01\n---') === ' ---\na: b\n---');
     });
 
   });

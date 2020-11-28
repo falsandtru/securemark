@@ -5,7 +5,7 @@ import { header } from '../header';
 import { block } from '../block';
 import { segment } from '../segment';
 import { normalize } from './normalize';
-import { header as h } from '../api/header';
+import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { push, splice } from 'spica/array';
@@ -27,7 +27,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let revision: symbol;
   return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
-    const url = h(source)?.find(s => s.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
+    const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
     settings = url ? { ...settings, url: new ReadonlyURL(url) } : settings;
     assert(Object.freeze(settings));
     source = normalize(source);
