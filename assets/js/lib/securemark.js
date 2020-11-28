@@ -2950,7 +2950,7 @@ require = function () {
                     ...settings,
                     host: new url_1.ReadonlyURL(global_1.location.origin + global_1.location.pathname)
                 };
-                const pairs = [];
+                const blocks = [];
                 const adds = [];
                 const dels = [];
                 const bottom = target.firstChild;
@@ -2958,7 +2958,7 @@ require = function () {
                 return function* (source) {
                     var _a, _b, _c;
                     const rev = revision = Symbol();
-                    const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim();
+                    const url = ((_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim()) || '';
                     settings = url ? {
                         ...settings,
                         url: new url_1.ReadonlyURL(url)
@@ -2972,16 +2972,20 @@ require = function () {
                             value: seg
                         };
                     }
-                    const targetSegments = pairs.map(([seg]) => seg);
+                    const targetSegments = blocks.map(([seg]) => seg);
                     let head = 0;
-                    for (; !url && head < targetSegments.length; ++head) {
+                    for (; head < targetSegments.length; ++head) {
+                        if (blocks[head][2] !== url)
+                            break;
                         if (targetSegments[head] !== sourceSegments[head])
                             break;
                     }
                     if (adds.length + dels.length === 0 && sourceSegments.length === targetSegments.length && head === sourceSegments.length)
                         return;
                     let last = 0;
-                    for (; !url && head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+                    for (; head + last < targetSegments.length && head + last < sourceSegments.length; ++last) {
+                        if (blocks[targetSegments.length - last - 1][2] !== url)
+                            break;
                         if (targetSegments[targetSegments.length - last - 1] !== sourceSegments[sourceSegments.length - last - 1])
                             break;
                     }
@@ -2990,9 +2994,10 @@ require = function () {
                     for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
                         const es = combinator_1.eval(index === 0 && header_2.header(seg, settings) || block_1.block(seg, settings), []);
-                        pairs.splice(index, 0, [
+                        blocks.splice(index, 0, [
                             seg,
-                            es
+                            es,
+                            url
                         ]);
                         if (es.length === 0)
                             continue;
@@ -3011,7 +3016,7 @@ require = function () {
                                 return yield { type: 'cancel' };
                         }
                     }
-                    for (let refuse = array_1.splice(pairs, index, pairs.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
+                    for (let refuse = array_1.splice(blocks, index, blocks.length - sourceSegments.length), i = 0; i < refuse.length; ++i) {
                         const es = refuse[i][1];
                         if (es.length === 0)
                             continue;
@@ -3055,8 +3060,8 @@ require = function () {
                     }
                 };
                 function next(index) {
-                    for (let i = index; i < pairs.length; ++i) {
-                        const [, es] = pairs[i];
+                    for (let i = index; i < blocks.length; ++i) {
+                        const [, es] = blocks[i];
                         if (es.length > 0)
                             return es[0];
                     }
