@@ -3,6 +3,7 @@
 ## 0.188.0
 
 - Refine header function.
+- Fix normalization.
 
 ## 0.187.2
 
