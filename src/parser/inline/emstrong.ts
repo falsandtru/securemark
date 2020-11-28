@@ -3,7 +3,7 @@ import { union, some, creator, bind, surround, lazy } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { str } from '../source';
 import { html } from 'typed-dom';
-import { unshift, push } from 'spica/array';
+import { unshift } from 'spica/array';
 
 export const emstrong: EmStrongParser = lazy(() => creator(surround(
   str('***'),
@@ -17,17 +17,17 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
           union([some(inline, '**')]),
           (ms, rest) =>
             rest.slice(0, 2) === '**'
-              ? [[html('strong', unshift([html('em', defrag(trimEnd(bs)))], defrag(ms)))], rest.slice(2)]
-              : [push(push(unshift(as, bs), cs), ms), rest])
-          (rest, context) || [push(unshift(as, bs), cs), rest];
+              ? [[html('strong', unshift([html('em', defrag(trimEnd(bs)))], defrag(trimEnd(ms))))], rest.slice(2)]
+              : [unshift(['**', html('em', defrag(trimEnd(bs)))], ms), rest])
+          (rest, context) || [['**', html('em', defrag(trimEnd(bs)))], rest];
       case '**':
         return bind<HTMLElement | string, EmStrongParser>(
           union([some(inline, '*')]),
           (ms, rest) =>
             rest.slice(0, 1) === '*'
-              ? [[html('em', unshift([html('strong', defrag(trimEnd(bs)))], defrag(ms)))], rest.slice(1)]
-              : [push(push(unshift(as, bs), cs), ms), rest])
-          (rest, context) || [push(unshift(as, bs), cs), rest];
+              ? [[html('em', unshift([html('strong', defrag(trimEnd(bs)))], defrag(trimEnd(ms))))], rest.slice(1)]
+              : [unshift(['*', html('strong', defrag(trimEnd(bs)))], ms), rest])
+          (rest, context) || [['*', html('strong', defrag(trimEnd(bs)))], rest];
       case '***':
         return [[html('em', [html('strong', defrag(trimEnd(bs)))])], rest];
     }
