@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.188.1
+
+- Fix normalization.
+
 ## 0.188.0
 
 - Refine header function.
