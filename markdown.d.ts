@@ -525,9 +525,9 @@ export namespace MarkdownParser {
     }
     export namespace ReferenceParser {
       export interface AliasParser extends
-        // ~Xyz2020:
-        // ~X, 2020:
-        // ~X, Y, 2020, p1-2:
+        // ^Xyz2020:
+        // ^X, 2020, p1-2:
+        // ^X. Y., Z et al., 2020, p1-2
         Inline<'reference/alias'>,
         Parser<HTMLElement, [
           SourceParser.StrParser,

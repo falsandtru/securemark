@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.188.2
+## 0.189.0
 
+- Change alias syntax to use `^` symbol instead of `~`.
 - Fix emstrong parser.
 
 ## 0.188.1

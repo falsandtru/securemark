@@ -211,7 +211,7 @@ describe('Unit: util/footnote', () => {
     });
 
     it('alias', () => {
-      const target = parse('[[~a]][[~a| b]][[~a]]');
+      const target = parse('[[^a]][[^a| b]][[^a]]');
       const footnote = html('ol');
       for (let i = 0; i < 3; ++i) {
         [...reference(target, footnote)];
