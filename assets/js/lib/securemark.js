@@ -3140,8 +3140,9 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.normalize = void 0;
+            const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
             function normalize(source) {
-                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 1 ? '\uFFFD' : str).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
+                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : str).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
                     switch (char) {
                     case '\0':
                     case '\r':
@@ -3150,7 +3151,7 @@ require = function () {
                     case '\r\n':
                         return '\n';
                     default:
-                        return '';
+                        return UNICODE_REPLACEMENT_CHARACTER;
                     }
                 });
             }
