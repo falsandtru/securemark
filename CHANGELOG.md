@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.188.2
+
+- Fix emstrong parser.
+
 ## 0.188.1
 
 - Fix normalization.

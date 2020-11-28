@@ -773,9 +773,6 @@ export namespace MarkdownParser {
       Inline<'emstrong'>,
       Parser<HTMLElement | string, [
         InlineParser,
-      ] | [
-        EmphasisParser | StrongParser,
-        InlineParser,
       ], Context> {
     }
     export interface EmphasisParser extends
