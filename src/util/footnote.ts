@@ -100,7 +100,7 @@ function build(
               ? title
               : undefined,
           },
-          ` ~${refIndex}`));
+          `~${refIndex}`));
     }
     if (!footnote) return;
     const { children } = footnote;
