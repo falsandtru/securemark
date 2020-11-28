@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.187.2
+
+- Fix normalization.
+
 ## 0.187.1
 
 - Refactoring.
