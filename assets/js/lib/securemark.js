@@ -3125,14 +3125,16 @@ require = function () {
             exports.header = void 0;
             const global_1 = _dereq_('spica/global');
             const body_1 = _dereq_('./body');
+            const normalize_1 = _dereq_('./normalize');
             function header(source) {
-                source = source.slice(0, source.length - body_1.body(source).length).trimEnd();
+                source = normalize_1.normalize(source.slice(0, source.length - body_1.body(source).length).trimEnd());
                 return source !== '' ? source.split('\n').slice(1, -1) : global_1.undefined;
             }
             exports.header = header;
         },
         {
             './body': 55,
+            './normalize': 58,
             'spica/global': 12
         }
     ],
@@ -3141,11 +3143,8 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.normalize = void 0;
-            const body_1 = _dereq_('./body');
             function normalize(source) {
-                const rest = body_1.body(source);
-                const header = source.slice(0, source.length - rest.length);
-                return header.replace(/(^|\S)[^\S\n]+(?=$|\n)$/mg, '$1') + rest.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 1 ? '\uFFFD' : str).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
+                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 1 ? '\uFFFD' : str).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
                     switch (char) {
                     case '\0':
                     case '\r':
@@ -3160,7 +3159,7 @@ require = function () {
             }
             exports.normalize = normalize;
         },
-        { './body': 55 }
+        {}
     ],
     59: [
         function (_dereq_, module, exports) {
@@ -3185,7 +3184,7 @@ require = function () {
                     ...opts,
                     host: new url_1.ReadonlyURL(global_1.location.origin + global_1.location.pathname)
                 };
-                const url = (_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim();
+                const url = ((_b = (_a = header_1.header(source)) === null || _a === void 0 ? void 0 : _a.find(s => s.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim()) || '';
                 opts = url ? {
                     ...opts,
                     url: new url_1.ReadonlyURL(url)
@@ -4298,9 +4297,10 @@ require = function () {
             exports.header = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../combinator');
+            const normalize_1 = _dereq_('./api/normalize');
             const segment_1 = _dereq_('./segment');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.header = combinator_1.block(combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
+            exports.header = combinator_1.validate('---', combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?=[^\S\v\f\r\n]*(?:$|\r?\n)))/, combinator_1.convert(normalize_1.normalize, source => segment_1.segment(source)[global_1.Symbol.iterator]().next().value === source ? [
                 [typed_dom_1.html('details', { class: 'header' }, [
                         typed_dom_1.html('summary', 'Header'),
                         source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2))
@@ -4310,6 +4310,7 @@ require = function () {
         },
         {
             '../combinator': 28,
+            './api/normalize': 58,
             './segment': 121,
             'spica/global': 12,
             'typed-dom': 21
