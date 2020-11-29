@@ -9,8 +9,8 @@ describe('Unit: parser/inline/strong', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('**')), undefined);
       assert.deepStrictEqual(inspect(parser('**a')), [['**', 'a'], '']);
-      assert.deepStrictEqual(inspect(parser('**a*')), [['**', 'a'], '*']);
-      assert.deepStrictEqual(inspect(parser('**a*b**')), [['**', 'a', '<em>b</em>'], '*']);
+      assert.deepStrictEqual(inspect(parser('**a*')), [['**', 'a', '*'], '']);
+      assert.deepStrictEqual(inspect(parser('**a*b**')), [['**', 'a', '<em>b</em>', '*'], '']);
       assert.deepStrictEqual(inspect(parser('** **')), undefined);
       assert.deepStrictEqual(inspect(parser('** a**')), undefined);
       assert.deepStrictEqual(inspect(parser('** a **')), undefined);
@@ -20,6 +20,7 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('**\\\na**')), undefined);
       assert.deepStrictEqual(inspect(parser('**<wbr>a**')), undefined);
       assert.deepStrictEqual(inspect(parser('**<# a #>b**')), undefined);
+      assert.deepStrictEqual(inspect(parser('***a***')), undefined);
     });
 
     it('basic', () => {
@@ -32,7 +33,7 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('**a\\\nb**')), [['<strong>a<span class="linebreak"> </span>b</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a*b*c**')), [['<strong>a<em>b</em>c</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a*b*c**d')), [['<strong>a<em>b</em>c</strong>'], 'd']);
-      assert.deepStrictEqual(inspect(parser('***a***')), [['<strong><em>a</em></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**a  *b***')), [['<strong>a  <em>b</em></strong>'], '']);
     });
 
     it('nest', () => {

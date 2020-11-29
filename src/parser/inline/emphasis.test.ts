@@ -10,6 +10,7 @@ describe('Unit: parser/inline/emphasis', () => {
       assert.deepStrictEqual(inspect(parser('*')), undefined);
       assert.deepStrictEqual(inspect(parser('*a')), [['*', 'a'], '']);
       assert.deepStrictEqual(inspect(parser('*a**b')), [['*', 'a', '**', 'b'], '']);
+      assert.deepStrictEqual(inspect(parser('*a**b*')), [['*', 'a', '**', 'b', '*'], '']);
       assert.deepStrictEqual(inspect(parser('* *')), undefined);
       assert.deepStrictEqual(inspect(parser('* a*')), undefined);
       assert.deepStrictEqual(inspect(parser('* a *')), undefined);
@@ -20,6 +21,7 @@ describe('Unit: parser/inline/emphasis', () => {
       assert.deepStrictEqual(inspect(parser('*<wbr>a*')), undefined);
       assert.deepStrictEqual(inspect(parser('*<# a #>b*')), undefined);
       assert.deepStrictEqual(inspect(parser('**a**')), undefined);
+      assert.deepStrictEqual(inspect(parser('***a***')), undefined);
     });
 
     it('basic', () => {
@@ -31,9 +33,7 @@ describe('Unit: parser/inline/emphasis', () => {
       assert.deepStrictEqual(inspect(parser('*a\nb*')), [['<em>a<br>b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a\\\nb*')), [['<em>a<span class="linebreak"> </span>b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a**')), [['<em>a</em>'], '*']);
-      assert.deepStrictEqual(inspect(parser('*a**b*')), [['<em>a**b</em>'], '']);
       assert.deepStrictEqual(inspect(parser('*a**b**c*')), [['<em>a<strong>b</strong>c</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('***a***')), [['<em><strong>a</strong></em>'], '']);
     });
 
     it('nest', () => {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.189.2
+
+- Fix strong and em parsers.
+
 ## 0.189.1
 
 - Fix subdirectory path resolution.

@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
 
 export const emphasis: EmphasisParser = lazy(() => creator(surround(
-  char('*'),
+  char('*', '*'),
   startTight(some(union([strong, some(inline, '*')]))),
   char('*'), false,
   ([as, bs, cs], rest) =>

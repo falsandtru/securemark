@@ -789,6 +789,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, [
         EmphasisParser,
         InlineParser,
+        SourceParser.CharParser,
       ], Context> {
     }
     export interface CodeParser extends

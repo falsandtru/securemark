@@ -2,13 +2,13 @@ import { StrongParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { emphasis } from './emphasis';
-import { str } from '../source';
+import { str, char } from '../source';
 import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
 
 export const strong: StrongParser = lazy(() => creator(surround(
-  str('**'),
-  startTight(some(union([emphasis, some(inline, '*')]), '**')),
+  str('**', '*'),
+  startTight(some(union([emphasis, some(inline, '*'), char('*')]), '**')),
   str('**'), false,
   ([as, bs, cs], rest) =>
     isEndTight(bs)
