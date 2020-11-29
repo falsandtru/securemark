@@ -93,8 +93,8 @@ export function fix(uri: string, base: URL | Location, sameorigin: boolean): str
     case uri.slice(0, 2) === '//':
       return uri;
     default:
-      const url = new ReadonlyURL(uri, base.href.split(/[?#]/, 1)[0]);
-      return url.origin === uri.match(/^[^:]+:\/\/[^/?#]*/)?.[0]
+      const url = new ReadonlyURL(uri, base.href);
+      return url.origin === uri.match(/^[^:/?#]+:\/\/[^/?#]*/)?.[0]
         ? uri
         : url.href;
   }
