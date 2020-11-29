@@ -3,7 +3,7 @@ import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, fmap, bind, surround, open, lazy } from '../../combinator';
 import { dup } from '../util';
 import { link, optspec, uri, option, fix, sanitize } from './link';
-import { text, char } from '../source';
+import { text, str } from '../source';
 import { attributes } from './html';
 import { html, define } from 'typed-dom';
 import { unshift, join } from 'spica/array';
@@ -51,8 +51,8 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
-  surround(char('('), some(union([bracket, text]), ')'), char(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('['), some(union([bracket, text]), ']'), char(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('{'), some(union([bracket, text]), '}'), char('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('"'), some(text, '"'), char('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('('), some(union([bracket, text]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('['), some(union([bracket, text]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('{'), some(union([bracket, text]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('"'), some(text, '"'), str('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ])));

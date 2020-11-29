@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { TemplateParser } from '../inline';
 import { union, some, rewrite, creator, surround, lazy } from '../../combinator';
-import { escsource, char } from '../source';
+import { escsource, str } from '../source';
 import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
 
@@ -10,8 +10,8 @@ export const template: TemplateParser = lazy(() => creator(rewrite(
   source => [[html('span', { class: 'template' }, source)], ''])));
 
 const bracket: TemplateParser.BracketParser = lazy(() => creator(union([
-  surround(char('('), some(union([bracket, escsource]), ')'), char(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('['), some(union([bracket, escsource]), ']'), char(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('{'), some(union([bracket, escsource]), '}'), char('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(char('"'), some(escsource, /^"|^\\?\n/), char('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('['), some(union([bracket, escsource]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('{'), some(union([bracket, escsource]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('"'), some(escsource, /^"|^\\?\n/), str('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ])));

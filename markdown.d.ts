@@ -789,7 +789,7 @@ export namespace MarkdownParser {
       Parser<HTMLElement | string, [
         EmphasisParser,
         InlineParser,
-        SourceParser.CharParser,
+        SourceParser.StrParser,
       ], Context> {
     }
     export interface CodeParser extends
@@ -955,10 +955,6 @@ export namespace MarkdownParser {
     }
     export interface StrParser extends
       Source<'str'>,
-      Parser<string, [], Context> {
-    }
-    export interface CharParser extends
-      Source<'char'>,
       Parser<string, [], Context> {
     }
     export interface ContentLineParser extends
