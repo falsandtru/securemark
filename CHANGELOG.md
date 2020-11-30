@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.189.4
+
+- Fix emstrong parser.
+
 ## 0.189.3
 
 - Refactoring.

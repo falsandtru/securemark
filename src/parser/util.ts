@@ -8,7 +8,7 @@ import { define } from 'typed-dom';
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
-  assert(isVisible(nodes[0], 'start'));
+  //assert(isVisible(nodes[0], 'start'));
   const end = nodes.length - 1;
   return typeof nodes[end] === 'string' && (nodes[end] as string).length > 1
     ? isVisible(nodes[end], 'end', 0) ||
