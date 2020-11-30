@@ -24,9 +24,9 @@ export function surround<P extends Parser<unknown>, S = string>(
   g?: (rss: [S[], Data<P>[] | undefined], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
 ): P;
 export function surround<T, D extends Parser<unknown>[]>(
-  opener: string | RegExp | Parser<T, any>, parser: Parser<T, D>, closer: string | RegExp | Parser<T, any>, optional: boolean = false,
-  f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T, D, Ctx>,
-  g?: (rss: [T[], T[]], rest: string, context: Ctx) => Result<T, D, Ctx>,
+  opener: string | RegExp | Parser<T>, parser: Parser<T, D>, closer: string | RegExp | Parser<T>, optional: boolean = false,
+  f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T, D>,
+  g?: (rss: [T[], T[]], rest: string, context: Ctx) => Result<T, D>,
 ): Parser<T, D> {
   switch (typeof opener) {
     case 'string':
@@ -79,15 +79,15 @@ function match(pattern: string | RegExp): (source: string, context: Ctx) => [nev
   }
 }
 
-export function open<P extends Parser<unknown, any, object>>(opener: string | RegExp | Parser<Data<P>, any, Context<P>>, parser: P, optional?: boolean): P;
-export function open<T, D extends Parser<unknown, any, C>[], C extends object>(opener: string | RegExp | Parser<T, any, C>, parser: Parser<T, D, C>, optional = false): Parser<T, D, C> {
+export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Data<P>, any, Context<P>>, parser: P, optional?: boolean): P;
+export function open<T, D extends Parser<unknown>[]>(opener: string | RegExp | Parser<T>, parser: Parser<T, D>, optional = false): Parser<T, D> {
   return surround(opener, parser, '', optional);
 }
-export function close<P extends Parser<unknown, any, object>>(parser: P, closer: string | RegExp | Parser<Data<P>, any, Context<P>>, optional?: boolean): P;
-export function close<T, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, closer: string | RegExp | Parser<T, any, C>, optional: boolean = false): Parser<T, D, C> {
+export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Data<P>, any, Context<P>>, optional?: boolean): P;
+export function close<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, closer: string | RegExp | Parser<T>, optional: boolean = false): Parser<T, D> {
   return surround('', parser, closer, optional);
 }
 
-export function clear<D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<unknown, D, C>): Parser<never, D, C> {
+export function clear<D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<unknown, D, C>): Parser<never, D, C> {
   return fmap<never, Parser<unknown, D, C>>(parser, () => []);
 }

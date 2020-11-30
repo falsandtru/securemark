@@ -29,15 +29,16 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
     const result = parser(source, context);
     assert(check(source, result));
     if (!result) return;
+    assert(exec(result).length < source.length);
     return exec(result).length < source.length
       ? result
       : undefined;
   };
 }
 
-//export function verify<T, U extends T, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, cond: (results: readonly T[], rest: string, context: C) => results is readonly U[]): Parser<U, D, C>;
+//export function verify<T, U extends T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>, cond: (results: readonly T[], rest: string, context: C) => results is readonly U[]): Parser<U, D, C>;
 //export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Data<P>[], rest: string, context: Context<P>) => boolean): P;
-//export function verify<T, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>, cond: (results: readonly T[], rest: string, context: C) => boolean): Parser<T, D, C> {
+//export function verify<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, cond: (results: readonly T[], rest: string, context: Ctx) => boolean): Parser<T, D> {
 //  assert(parser);
 //  return (source, context) => {
 //    if (source === '') return;
@@ -45,6 +46,7 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
 //    assert(check(source, result));
 //    if (!result) return;
 //    if (!cond(eval(result), exec(result), context)) return;
+//    assert(exec(result).length < source.length);
 //    return exec(result).length < source.length
 //      ? result
 //      : undefined;

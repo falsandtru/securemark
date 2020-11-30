@@ -8,7 +8,7 @@ import { open } from './surround';
 import { join } from 'spica/array';
 
 export function indent<P extends Parser<unknown>>(parser: P): P;
-export function indent<T>(parser: Parser<T>): Parser<T> {
+export function indent<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): Parser<T, D> {
   assert(parser);
   return bind(match(
     /^(?=(([^\S\n])\2*))/,

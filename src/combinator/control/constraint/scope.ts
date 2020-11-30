@@ -16,6 +16,7 @@ export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, pa
     const result = parser(src, context);
     assert(check(src, result));
     if (!result) return;
+    assert(exec(result).length < src.length);
     return exec(result).length < src.length
       ? [eval(result), exec(result) + source.slice(src.length)]
       : undefined;
@@ -23,7 +24,7 @@ export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, pa
 }
 
 export function rewrite<P extends Parser<unknown>>(scope: Parser<unknown, any, Context<P>>, parser: P): P;
-export function rewrite<T, D extends Parser<unknown, any, C>[], C extends object>(scope: Parser<unknown, any, C>, parser: Parser<T, D, C>): Parser<T, D, C> {
+export function rewrite<T, D extends Parser<unknown>[]>(scope: Parser<unknown>, parser: Parser<T, D>): Parser<T, D> {
   assert(scope);
   assert(parser);
   return (source, context) => {

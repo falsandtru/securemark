@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
-import { Parser, fmap, eval } from '../combinator';
+import { Parser, Ctx, fmap, eval } from '../combinator';
 import { htmlentity, comment } from './inline';
 import { uuid } from 'spica/uuid';
 import { pop } from 'spica/array';
@@ -95,7 +95,7 @@ export function trimEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)
     : nodes;
 }
 
-export function dup<T, D extends Parser<unknown, any, C>[], C extends object>(parser: Parser<T, D, C>): Parser<T[], D, C> {
+export function dup<T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>): Parser<T[], D, C> {
   return fmap(parser, ns => [ns]);
 }
 

@@ -6,7 +6,7 @@ import { type, isPrimitive } from 'spica/type';
 import { memoize } from 'spica/memoize';
 
 export function guard<P extends Parser<unknown>>(f: (context: Context<P>) => boolean, parser: P): P;
-export function guard<T extends unknown, D extends Parser<unknown, any>[]>(f: (context: Ctx) => boolean, parser: Parser<T, D>): Parser<T, D> {
+export function guard<T extends unknown, D extends Parser<unknown>[]>(f: (context: Ctx) => boolean, parser: Parser<T, D>): Parser<T, D> {
   return (source, context) =>
     f(context)
       ? parser(source, context)
@@ -14,7 +14,7 @@ export function guard<T extends unknown, D extends Parser<unknown, any>[]>(f: (c
 }
 
 export function update<P extends Parser<unknown>>(context: Context<P>, parser: P): P;
-export function update<T extends unknown, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
+export function update<T extends unknown, D extends Parser<unknown>[]>(base: Ctx, parser: Parser<T, D>): Parser<T, D> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   return (source, context) =>
@@ -22,10 +22,10 @@ export function update<T extends unknown, D extends Parser<unknown, any, C>[], C
 }
 
 export function context<P extends Parser<unknown>>(context: Context<P>, parser: P): P;
-export function context<T extends unknown, D extends Parser<unknown, any, C>[], C extends Ctx>(base: C, parser: Parser<T, D, C>): Parser<T, D, C> {
+export function context<T extends unknown, D extends Parser<unknown>[]>(base: Ctx, parser: Parser<T, D>): Parser<T, D> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
-  const inherit_ = memoize<C, C>(context => inherit(ObjectCreate(context), base), new WeakMap());
+  const inherit_ = memoize<Ctx, Ctx>(context => inherit(ObjectCreate(context), base), new WeakMap());
   return (source, context) =>
     parser(source, inherit_(context));
 }
