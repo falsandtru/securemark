@@ -34,7 +34,7 @@ export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = creator(recover(error(localize(
-  update({ resources: { creation: 100 * 1000 } },
+  update({ resources: { budget: 100 * 1000 } },
   union([
     emptyline,
     horizontalrule,

@@ -44,7 +44,7 @@ const block_: ParagraphParser.MentionParser.QuotationParser.BlockParser = (sourc
       continue;
     }
     if (child.classList.contains('quotation')) {
-      context.resources && (context.resources.creation -= child.childNodes.length);
+      context.resources && (context.resources.budget -= child.childNodes.length);
       nodes.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
       --i;
       continue;

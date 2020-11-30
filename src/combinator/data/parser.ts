@@ -1,6 +1,6 @@
 export interface Ctx {
   readonly resources?: {
-    creation: number;
+    budget: number;
   };
   delimiters?: ((source: string) => boolean)[];
 }

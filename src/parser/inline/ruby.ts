@@ -45,7 +45,7 @@ const text: RubyParser.TextParser = creator((source, context) => {
   let printable = false;
   while (source !== '') {
     assert(source[0] !== '\n');
-    resources && --resources.creation;
+    resources && --resources.budget;
     const i = source.search(next);
     switch (i) {
       case -1:

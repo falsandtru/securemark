@@ -7,4 +7,4 @@ export const comment: CommentParser = creator(validate('<#', match(
   ([, , title, closer]) => (rest, { resources }) =>
     closer
       ? [[html('sup', { class: 'comment', title: title.trim() })], rest]
-      : resources && void (resources.creation -= title.match(/\s+/g)!.length))));
+      : resources && void (resources.budget -= title.match(/\s+/g)!.length))));

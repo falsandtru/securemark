@@ -8,13 +8,13 @@ export function creator(cost: number | Parser<unknown>, parser?: Parser<unknown>
   return (source, context) => {
     const { resources } = context;
     if (!resources) return parser!(source, context);
-    assert(resources.creation !== undefined);
-    if (resources.creation < 0) throw new Error('Too many creations.');
     const result = parser!(source, context);
     if (result) {
-      resources.creation -= cost;
-      assert(Object.getPrototypeOf(resources).creation % 10 === 0);
+      resources.budget -= cost;
+      assert(Object.getPrototypeOf(resources).budget % 10 === 0);
     }
+    assert(resources.budget !== undefined);
+    if (resources.budget < 0) throw new Error('Too many creations.');
     return result;
   };
 }
