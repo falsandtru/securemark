@@ -4925,7 +4925,7 @@ require = function () {
                     ];
                 switch (cs[0]) {
                 case '*':
-                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '**')]), (ms, rest) => rest.slice(0, 2) === '**' ? [
+                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '**')]), (ms, rest) => rest.slice(0, 2) === '**' && util_1.isEndTight(ms) ? [
                         [typed_dom_1.html('strong', array_1.unshift([typed_dom_1.html('em', util_1.defrag(util_1.trimEnd(bs)))], util_1.defrag(util_1.trimEnd(ms))))],
                         rest.slice(2)
                     ] : [
@@ -4942,7 +4942,7 @@ require = function () {
                         rest
                     ];
                 case '**':
-                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '*')]), (ms, rest) => rest.slice(0, 1) === '*' ? [
+                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '*')]), (ms, rest) => rest.slice(0, 1) === '*' && util_1.isEndTight(ms) ? [
                         [typed_dom_1.html('em', array_1.unshift([typed_dom_1.html('strong', util_1.defrag(util_1.trimEnd(bs)))], util_1.defrag(util_1.trimEnd(ms))))],
                         rest.slice(1)
                     ] : [
