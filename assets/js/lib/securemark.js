@@ -2232,12 +2232,12 @@ require = function () {
                     const {resources} = context;
                     if (!resources)
                         return parser(source, context);
-                    if (resources.creation < 0)
-                        throw new Error('Too many creations.');
                     const result = parser(source, context);
                     if (result) {
-                        resources.creation -= cost;
+                        resources.budget -= cost;
                     }
+                    if (resources.budget < 0)
+                        throw new Error('Too many creations.');
                     return result;
                 };
             }
@@ -3255,7 +3255,7 @@ require = function () {
             const util_1 = _dereq_('./util');
             const typed_dom_1 = _dereq_('typed-dom');
             const uuid_1 = _dereq_('spica/uuid');
-            exports.block = combinator_1.creator(combinator_1.recover(util_1.error(locale_1.localize(combinator_1.update({ resources: { creation: 100 * 1000 } }, combinator_1.union([
+            exports.block = combinator_1.creator(combinator_1.recover(util_1.error(locale_1.localize(combinator_1.update({ resources: { budget: 100 * 1000 } }, combinator_1.union([
                 line_1.emptyline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -4149,7 +4149,7 @@ require = function () {
                         continue;
                     }
                     if (child.classList.contains('quotation')) {
-                        context.resources && (context.resources.creation -= child.childNodes.length);
+                        context.resources && (context.resources.budget -= child.childNodes.length);
                         nodes.splice(i, 1, ...child.childNodes);
                         --i;
                         continue;
@@ -4835,7 +4835,7 @@ require = function () {
                         title: title.trim()
                     })],
                 rest
-            ] : resources && void (resources.creation -= title.match(/\s+/g).length))));
+            ] : resources && void (resources.budget -= title.match(/\s+/g).length))));
         },
         {
             '../../combinator': 28,
@@ -5849,7 +5849,7 @@ require = function () {
                 const acc = [''];
                 let printable = false;
                 while (source !== '') {
-                    resources && --resources.creation;
+                    resources && --resources.budget;
                     const i = source.search(next);
                     switch (i) {
                     case -1:
