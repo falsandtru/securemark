@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.189.3
+
+- Refactoring.
+
 ## 0.189.2
 
 - Fix strong and em parsers.
