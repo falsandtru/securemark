@@ -90,10 +90,11 @@ export function fix(uri: string, base: URL | Location, sameorigin: boolean): str
       return `${fillTrailingSlash(base.pathname)}${uri.slice(2)}`;
     case sameorigin:
     case uri.slice(0, 2) === '//':
+    case /^[A-Za-z]+(?:[.+-][0-9A-Za-z]+):\/\/[A-Za-z]+(?:[.+-][0-9A-Za-z]+)(?::[0-9]*)?(?:$|\/)/.test(uri):
       return uri;
     default:
       const url = new ReadonlyURL(uri, base.href);
-      return url.origin === uri.match(/^[^:/?#]+:\/\/[^/?#]*/)?.[0]
+      return url.origin === uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)?.[0]
         ? uri
         : url.href;
   }
