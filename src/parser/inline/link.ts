@@ -61,7 +61,6 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
       content.length > 0
         ? content = defrag(trimEnd(content))
         : decode(INSECURE_URI)
-            .replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h')
             .replace(/^tel:/, ''));
     if (!sanitize(el, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);

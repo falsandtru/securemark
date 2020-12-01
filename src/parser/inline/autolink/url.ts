@@ -7,11 +7,11 @@ import { link } from '../link';
 const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 
 export const url: AutolinkParser.UrlParser = lazy(() => rewrite(
-  validate(['http', 'ttp'], open(
-    str(/^h?ttps?:\/\/(?=[^/?#\s])/),
+  validate('http', open(
+    str(/^https?:\/\/(?=[^/?#\s])/),
     focus(/^(?:(?!\s)[\x00-\x7F])+/, some(union([bracket, some(unescsource, closer)]))))),
   convert(
-    url2link,
+    url => `{ ${url} }`,
     context({ syntax: { inline: { link: undefined } } },
     union([link])))));
 
@@ -22,10 +22,3 @@ const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(union
   surround('<', some(union([bracket, unescsource]), '>'), '>', true),
   surround('"', some(unescsource, '"'), '"', true),
 ])));
-
-export function url2link(url: string): string {
-  assert(url.match(/^h?ttps?:\S+$/));
-  return url[0] === 'h'
-    ? `{ ${url} }`
-    : `{ h${url} nofollow }`;
-}

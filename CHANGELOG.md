@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.190.0
+
+- Change autolink syntax to remove nofollow autolink syntax.
+
 ## 0.189.4
 
 - Fix emstrong parser.

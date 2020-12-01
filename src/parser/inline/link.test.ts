@@ -160,8 +160,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{/ nofollow }')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{ / nofollow}')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{ / nofollow }')), [['<a href="/" rel="noopener nofollow noreferrer">/</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{http://host nofollow}')), [['<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">ttp://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[!ttp://host]{http://host}')), [['<a href="http://host" rel="noopener" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{http://host nofollow}')), [['<a href="http://host" rel="noopener nofollow noreferrer" target="_blank">http://host</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[!http://host]{http://host nofollow}')), [['<a href="http://host" rel="noopener nofollow noreferrer" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
     });
 
