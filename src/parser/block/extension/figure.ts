@@ -16,7 +16,7 @@ import { html } from 'typed-dom';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
-  /^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
+  /^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
   memoize(([, fence]) => fence,
   (fence, closer = new RegExp(`^${fence}[^\\S\\n]*(?:$|\\n)`)) =>
     close(
@@ -40,8 +40,8 @@ export const segment: FigureParser.SegmentParser = block(match(
       ]),
       closer))));
 
-export const figure: FigureParser = block(rewrite(segment, trim(fmap(
-  convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')),
+export const figure: FigureParser = block(rewrite(segment, fmap(
+  convert(source => source.slice(source.search(/\s/) + 1, source.trimEnd().lastIndexOf('\n')),
   sequence([
     line(label),
     inits([
@@ -69,7 +69,7 @@ export const figure: FigureParser = block(rewrite(segment, trim(fmap(
         html('span', { class: 'figindex' }),
         html('figcaption', defrag(caption))
       ])
-  ]))));
+  ])));
 
 function attributes(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
