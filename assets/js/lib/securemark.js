@@ -3701,7 +3701,7 @@ require = function () {
             const paragraph_1 = _dereq_('../paragraph');
             const inline_1 = _dereq_('../../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[\w-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, combinator_1.memoize(([, fence]) => fence, (fence, closer = new global_1.RegExp(`^${ fence }[^\\S\\n]*(?:$|\\n)`)) => combinator_1.close(combinator_1.sequence([
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, combinator_1.memoize(([, fence]) => fence, (fence, closer = new global_1.RegExp(`^${ fence }[^\\S\\n]*(?:$|\\n)`)) => combinator_1.close(combinator_1.sequence([
                 combinator_1.line(label_1.segment),
                 combinator_1.inits([
                     combinator_1.union([
@@ -3718,7 +3718,7 @@ require = function () {
                     ])
                 ])
             ]), closer))));
-            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.trim(combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.lastIndexOf('\n')), combinator_1.sequence([
+            exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/\s/) + 1, source.trimEnd().lastIndexOf('\n')), combinator_1.sequence([
                 combinator_1.line(label_1.label),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
@@ -3737,7 +3737,7 @@ require = function () {
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
                     typed_dom_1.html('figcaption', util_1.defrag(caption))
-                ])]))));
+                ])])));
             function attributes(label, content, caption) {
                 const group = label.split('-', 1)[0];
                 const invalidLabel = /^[^-]+-(?:[0-9]+\.)*0$/.test(label);
@@ -4299,7 +4299,7 @@ require = function () {
             exports.header = combinator_1.validate('---', combinator_1.focus(header_1.syntax, source => [
                 [typed_dom_1.html('details', { class: 'header' }, [
                         typed_dom_1.html('summary', 'Header'),
-                        source.slice(source.indexOf('\n') + 1, source.lastIndexOf('\n', source.length - 2))
+                        source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))
                     ])],
                 ''
             ]));
@@ -4721,19 +4721,16 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.url2link = exports.url = void 0;
+            exports.url = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const link_1 = _dereq_('../link');
             const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
-            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.validate([
-                'http',
-                'ttp'
-            ], combinator_1.open(source_1.str(/^h?ttps?:\/\/(?=[^/?#\s])/), combinator_1.focus(/^(?:(?!\s)[\x00-\x7F])+/, combinator_1.some(combinator_1.union([
+            exports.url = combinator_1.lazy(() => combinator_1.rewrite(combinator_1.validate('http', combinator_1.open(source_1.str(/^https?:\/\/(?=[\x00-\x7F])/), combinator_1.focus(/^(?:(?!\s)[\x00-\x7F])+/, combinator_1.some(combinator_1.union([
                 bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ]))))), combinator_1.convert(url2link, combinator_1.context({ syntax: { inline: { link: global_1.undefined } } }, combinator_1.union([link_1.link])))));
+            ]))))), combinator_1.convert(url => `{ ${ url } }`, combinator_1.context({ syntax: { inline: { link: global_1.undefined } } }, combinator_1.union([link_1.link])))));
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
@@ -4753,10 +4750,6 @@ require = function () {
                 ]), '>'), '>', true),
                 combinator_1.surround('"', combinator_1.some(source_1.unescsource, '"'), '"', true)
             ])));
-            function url2link(url) {
-                return url[0] === 'h' ? `{ ${ url } }` : `{ h${ url } nofollow }`;
-            }
-            exports.url2link = url2link;
         },
         {
             '../../../combinator': 28,
@@ -5494,7 +5487,7 @@ require = function () {
                 const el = typed_dom_1.html('a', {
                     href: fix(INSECURE_URI, base, !context.url),
                     rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI).replace(/^h(?=ttps?:\/\/[^/?#\s])/, options.includes(' nofollow') ? '' : 'h').replace(/^tel:/, ''));
+                }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI).replace(/^tel:/, ''));
                 if (!sanitize(el, el, INSECURE_URI, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.origin) || global_1.location.origin))
                     return [
                         [el],
@@ -5515,10 +5508,11 @@ require = function () {
                     return `${ fillTrailingSlash(base.pathname) }${ uri.slice(2) }`;
                 case sameorigin:
                 case uri.slice(0, 2) === '//':
+                case /^[A-Za-z]+(?:[.+-][0-9A-Za-z]+):\/\/[A-Za-z]+(?:[.+-][0-9A-Za-z]+)(?::[0-9]*)?(?:$|\/)/.test(uri):
                     return uri;
                 default:
                     const url = new url_1.ReadonlyURL(uri, base.href);
-                    return url.origin === ((_a = uri.match(/^[^:/?#]+:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : url.href;
+                    return url.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : url.href;
                 }
             }
             exports.fix = fix;
@@ -5911,7 +5905,7 @@ require = function () {
             exports.shortmedia = combinator_1.rewrite(combinator_1.open('!', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
-            }, url_1.url)), combinator_1.convert(source => `!${ url_1.url2link(source.slice(1)) }`, combinator_1.union([media_1.media])));
+            }, url_1.url)), combinator_1.convert(source => `!{ ${ source.slice(1) } }`, combinator_1.union([media_1.media])));
         },
         {
             '../../combinator': 28,
