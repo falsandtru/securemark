@@ -2,8 +2,8 @@ import { ParagraphParser } from '../../../block';
 import { union, some, block, validate, rewrite, creator, fmap, convert, lazy, eval } from '../../../../combinator';
 import { defrag } from '../../../util';
 import { math } from '../../../inline';
-import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
+import { contentline } from '../../../source';
 import { html } from 'typed-dom';
 
 export const syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;

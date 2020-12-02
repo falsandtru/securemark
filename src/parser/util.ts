@@ -1,7 +1,8 @@
 import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, Ctx, fmap, eval } from '../combinator';
-import { htmlentity, comment } from './inline';
+import { comment } from './inline/comment';
+import { htmlentity } from './inline/htmlentity';
 import { uuid } from 'spica/uuid';
 import { pop } from 'spica/array';
 import { define } from 'typed-dom';

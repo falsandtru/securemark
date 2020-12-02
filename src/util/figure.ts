@@ -1,6 +1,5 @@
 import { Infinity, Map } from 'spica/global';
-import { isFixed } from '../parser/inline';
-import { number as calculate } from '../parser/inline/extension/label';
+import { number as calculate, isFixed } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
 import { define } from 'typed-dom';
 import { join } from 'spica/array';

@@ -3,9 +3,9 @@ import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
 import { startTight, isEndTight, trimEnd, dup, defrag, stringify } from '../util';
-import { str } from '../source';
 import { attributes } from './html';
 import { autolink } from '../autolink';
+import { str } from '../source';
 import { ReadonlyURL } from 'spica/url';
 import { html, define } from 'typed-dom';
 

@@ -2,8 +2,8 @@ import { undefined } from 'spica/global';
 import { CodeBlockParser } from '../block';
 import { some, block, validate, fmap, clear, fence, eval } from '../../combinator';
 import { defrag } from '../util';
-import { escsource } from '../source';
 import { autolink } from '../autolink';
+import { escsource } from '../source';
 import { html, define } from 'typed-dom';
 import { join } from 'spica/array';
 

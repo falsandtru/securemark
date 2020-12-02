@@ -1,9 +1,9 @@
 import { DListParser } from '../block';
 import { union, inits, some, block, line, validate, rewrite, context, creator, fmap, open, convert, trim, lazy } from '../../combinator';
 import { defrag } from '../util';
-import { anyline } from '../source';
-import { inline, indexer, indexee } from '../inline';
 import { blankline } from './paragraph';
+import { inline, indexer, indexee } from '../inline';
+import { anyline } from '../source';
 import { html } from 'typed-dom';
 import { push } from 'spica/array';
 

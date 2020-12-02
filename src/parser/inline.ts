@@ -74,15 +74,10 @@ export const inline: InlineParser = union([
   text
 ]);
 
-export { link } from './inline/link';
 export { media } from './inline/media';
-export { comment } from './inline/comment';
 export { math } from './inline/math';
-export { htmlentity } from './inline/htmlentity';
 export { shortmedia } from './inline/shortmedia';
 export { autolink } from './inline/autolink';
-export { url } from './inline/autolink/url';
 export { address } from './inline/autolink/address';
 export { indexer } from './inline/extension/indexer';
 export { indexee } from './inline/extension/indexee';
-export { isFixed } from './inline/extension/label';

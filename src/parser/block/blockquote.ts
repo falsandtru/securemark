@@ -1,8 +1,8 @@
 import { BlockquoteParser } from '../block';
 import { union, some, block, validate, rewrite, creator, fmap, open, convert, lazy } from '../../combinator';
 import { defrag } from '../util';
-import { contentline } from '../source';
 import { autolink } from '../autolink';
+import { contentline } from '../source';
 import { parse } from '../api/parse';
 import { html } from 'typed-dom';
 
