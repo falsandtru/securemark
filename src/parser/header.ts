@@ -8,5 +8,6 @@ export const header: MarkdownParser.HeaderParser = validate('---', focus(
   source => [[
     html('details', { class: 'header' }, [
       html('summary', 'Header'),
-      source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))])
+      source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n')),
+    ])
   ], '']));
