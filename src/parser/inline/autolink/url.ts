@@ -4,7 +4,7 @@ import { union, some, validate, focus, rewrite, context, creator, convert, surro
 import { link } from '../link';
 import { unescsource } from '../../source';
 
-const closer = /^[-+*~^,.;:!?]*(?=["`|\[\](){}<>]|\\?$)/;
+const closer = /^[-+*=~^,.;:!?]*(?=["`|\[\](){}<>]|\\?$)/;
 
 export const url: AutolinkParser.UrlParser = lazy(() => validate('http', rewrite(
   open(

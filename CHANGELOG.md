@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.190.1
+
+- Fix url parser not to match trailing `=` symbol.
+
 ## 0.190.0
 
 - Change autolink syntax to remove nofollow autolink syntax.
