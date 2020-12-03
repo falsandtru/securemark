@@ -32,6 +32,7 @@ describe('Unit: parser/inline/autolink/hashref', () => {
       assert.deepStrictEqual(inspect(parser('0##a')), [['0##a'], '']);
       assert.deepStrictEqual(inspect(parser('あ#1')), [['あ#1'], '']);
       assert.deepStrictEqual(inspect(parser(' #1')), undefined);
+      assert.deepStrictEqual(inspect(parser('#12345678901234567')), [['#12345678901234567'], '']);
     });
 
     it('valid', () => {
@@ -41,6 +42,7 @@ describe('Unit: parser/inline/autolink/hashref', () => {
       assert.deepStrictEqual(inspect(parser('#1\\')), [['<a class="hashref" rel="noopener">#1</a>'], '\\']);
       assert.deepStrictEqual(inspect(parser('#1\\ ')), [['<a class="hashref" rel="noopener">#1</a>'], '\\ ']);
       assert.deepStrictEqual(inspect(parser('#1\\\n')), [['<a class="hashref" rel="noopener">#1</a>'], '\\\n']);
+      assert.deepStrictEqual(inspect(parser('#1234567890123456')), [['<a class="hashref" rel="noopener">#1234567890123456</a>'], '']);
     });
 
   });

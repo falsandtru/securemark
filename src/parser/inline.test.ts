@@ -178,6 +178,7 @@ describe('Unit: parser/inline', () => {
 
     it('hashref', () => {
       assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashref" rel="noopener">#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#12345678901234567@a')), [['#12345678901234567@a'], '']);
     });
 
   });

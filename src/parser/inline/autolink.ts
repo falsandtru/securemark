@@ -28,6 +28,8 @@ export const autolink: AutolinkParser = fmap(
     str(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s](?=#)/),
     hashtag,
     hashref,
+    // Escape unmatched hashtag-like strings.
+    str(/^#(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/),
     address,
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);
