@@ -8,8 +8,8 @@ const closer = /^[-+*~^,.;:!?]*(?=[\s"`|\[\](){}<>]|\\?(?:$|\s))/;
 
 export const url: AutolinkParser.UrlParser = lazy(() => validate('http', rewrite(
   open(
-    /^https?:\/\/(?=[\x00-\x7F])/,
-    focus(/^(?:(?!\s)[\x00-\x7F])+/, some(union([bracket, some(unescsource, closer)])))),
+    /^https?:\/\/(?=[\x21-\x7E])/,
+    focus(/^[\x21-\x7E]+/, some(union([bracket, some(unescsource, closer)])))),
   convert(
     url => `{ ${url} }`,
     context({ syntax: { inline: { link: undefined } } },
