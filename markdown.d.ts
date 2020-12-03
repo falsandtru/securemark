@@ -656,6 +656,7 @@ export namespace MarkdownParser {
           Inline<'link/parameter/uri'>,
           Parser<string, [
             SourceParser.StrParser,
+            SourceParser.StrParser,
           ], Context> {
         }
         export interface OptionParser extends

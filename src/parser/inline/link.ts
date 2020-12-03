@@ -1,7 +1,7 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, validate, guard, context, creator, fmap, bind, surround, match, memoize, lazy, eval } from '../../combinator';
+import { union, inits, tails, some, validate, guard, context, creator, fmap, bind, surround, open, lazy, eval } from '../../combinator';
 import { startTight, isEndTight, trimEnd, dup, defrag, stringify } from '../util';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -71,10 +71,8 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
   })));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
-  match(
-    /^ ?(?! )/,
-    memoize(([delim]) => delim,
-    delim => str(delim ? /^\S+/ : /^[^\s{}]+/)))
+  open(' ', str(/^\S+/)),
+  str(/^[^\s{}]+/),
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
