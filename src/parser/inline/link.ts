@@ -1,7 +1,7 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, validate, guard, context, creator, fmap, bind, surround, open, lazy, eval } from '../../combinator';
+import { union, inits, tails, some, validate, guard, context, creator, bind, surround, open, reverse, lazy, eval } from '../../combinator';
 import { startTight, isEndTight, trimEnd, dup, defrag, stringify } from '../util';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -14,7 +14,7 @@ export const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => creator(10, bind(fmap(
+export const link: LinkParser = lazy(() => creator(10, bind(reverse(
   validate(['[', '{'],
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   guard(context => context.syntax?.inline?.link ?? true,
@@ -42,9 +42,8 @@ export const link: LinkParser = lazy(() => creator(10, bind(fmap(
         true),
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
-  ])))),
-  ([as, bs]) => bs ? [as, bs] : [[], as]),
-  ([content, options]: [(HTMLElement | string)[], string[]], rest, context) => {
+  ]))))),
+  ([options, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(options.every(p => typeof p === 'string'));
     if (!isEndTight(content)) return;
     if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;

@@ -19,5 +19,6 @@ export * from './combinator/control/manipulation/convert';
 export * from './combinator/control/manipulation/indent';
 export * from './combinator/control/manipulation/fence';
 export * from './combinator/control/manipulation/trim';
+export * from './combinator/control/manipulation/reverse';
 export * from './combinator/control/manipulation/lazy';
 export * from './combinator/control/manipulation/recovery';
