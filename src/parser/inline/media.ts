@@ -16,7 +16,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround(/^\[(?!\s)/, some(union([bracket, text]), ']', /^\\?\n/), ']', true)),
+    dup(surround(/^\[(?!\\?\s)/, some(union([bracket, text]), ']', /^\\?\n/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ]))))),
   ([as, bs]: string[][]) => bs ? [[join(as)], bs] : [[''], as]),
