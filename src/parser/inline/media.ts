@@ -26,13 +26,13 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const base = context.url || context.host || location;
-    url.href = fix(INSECURE_URI, base, !context.url);
+    const src = fix(INSECURE_URI, base, !context.url);
     const cache = context.caches?.media;
-    const key = url.href;
+    const key = (url.href = src, url.href);
     const cached = cache?.has(key);
     const el = cache && cached
       ? cache.get(key)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': fix(INSECURE_URI, base, !context.url), alt: text.trim() });
+      : html('img', { class: 'media', 'data-src': src, alt: text.trim() });
     if (cached) {
       el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
     }
@@ -40,7 +40,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
       if (!sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     }
     define(el, {
-      ...attributes('media', optspec, options, cached ? el.className.trim().match(/\s+/g) || [] : ['media']),
+      ...attributes('media', optspec, options, el.className.trim().split(/\s+/)),
       nofollow: undefined,
     });
     return (context.syntax?.inline?.link ?? true)

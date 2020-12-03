@@ -152,7 +152,6 @@ export function attributes(
 ): Record<string, string | undefined> {
   assert(spec instanceof Object === false);
   assert(params.every(param => param.match(/^ \w+(=".*?")?$/)));
-  assert(!classes.includes('invalid'));
   let invalid = false;
   const attrs = params
     .reduce<Record<string, string>>((attrs, param) => {
@@ -171,7 +170,7 @@ export function attributes(
     }, ObjectCreate(null));
   invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
   if (invalid) {
-    classes.push('invalid');
+    !classes.includes('invalid') && classes.push('invalid');
     attrs.class = join(classes, ' ').trim();
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = syntax === 'html'
