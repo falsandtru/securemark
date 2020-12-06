@@ -5501,12 +5501,12 @@ require = function () {
                 case uri.slice(0, 2) === '^/':
                     const filename = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
                     return filename.includes('.') ? `${ host.pathname.slice(0, -filename.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
-                case host.origin === source.origin:
+                case host.origin === source.origin && host.pathname === source.pathname:
                 case uri.slice(0, 2) === '//':
                     return uri;
                 default:
-                    const url = new url_1.ReadonlyURL(uri, source.href);
-                    return url.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : url.href;
+                    const target = new url_1.ReadonlyURL(uri, source.href);
+                    return target.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : host.origin === source.origin ? target.href.slice(target.origin.length) : target.href;
                 }
             }
             exports.resolve = resolve;
