@@ -2,6 +2,7 @@
 
 ## 0.190.2
 
+- Fix subdirectory path resolution to be based on the host path.
 - Fix subdirectory path resolution to remove the file name.
 
 ## 0.190.1

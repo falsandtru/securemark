@@ -51,10 +51,9 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    const base = context.url || context.host || location;
     const el = html('a',
       {
-        href: resolve(INSECURE_URI, base, !context.url),
+        href: resolve(INSECURE_URI, context.url || location, context.host || location, !context.url),
         rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
@@ -78,22 +77,20 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 
-export function resolve(uri: string, base: URL | Location, sameorigin: boolean): string {
+export function resolve(uri: string, source: URL | Location, host: URL | Location, sameorigin: boolean): string {
   assert(uri);
   assert(uri === uri.trim());
-  assert(base.pathname);
   switch (true) {
     case uri.slice(0, 2) === '^/':
-      const filename = base.pathname.slice(base.pathname.lastIndexOf('/') + 1);
+      const filename = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
       return filename.includes('.')
-        ? `${base.pathname.slice(0, -filename.length)}${uri.slice(2)}`
-        : `${fillTrailingSlash(base.pathname)}${uri.slice(2)}`;
+        ? `${host.pathname.slice(0, -filename.length)}${uri.slice(2)}`
+        : `${fillTrailingSlash(host.pathname)}${uri.slice(2)}`;
     case sameorigin:
     case uri.slice(0, 2) === '//':
-    case /^[A-Za-z]+(?:[.+-][0-9A-Za-z]+):\/\/[A-Za-z]+(?:[.+-][0-9A-Za-z]+)(?::[0-9]*)?(?:$|\/)/.test(uri):
       return uri;
     default:
-      const url = new ReadonlyURL(uri, base.href);
+      const url = new ReadonlyURL(uri, source.href);
       return url.origin === uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)?.[0]
         ? uri
         : url.href;
@@ -107,7 +104,7 @@ function fillTrailingSlash(pathname: string): string {
     : pathname + '/';
 }
 
-export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, text: string, origin: string = location.origin): boolean {
+export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, text: string, origin: string): boolean {
   let type: string;
   let message: string;
   switch (uri.protocol) {
