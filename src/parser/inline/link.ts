@@ -54,7 +54,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     const base = context.url || context.host || location;
     const el = html('a',
       {
-        href: fix(INSECURE_URI, base, !context.url),
+        href: resolve(INSECURE_URI, base, !context.url),
         rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
@@ -78,7 +78,7 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 
-export function fix(uri: string, base: URL | Location, sameorigin: boolean): string {
+export function resolve(uri: string, base: URL | Location, sameorigin: boolean): string {
   assert(uri);
   assert(uri === uri.trim());
   assert(base.pathname);

@@ -2,7 +2,7 @@ import { undefined, location } from 'spica/global';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, fmap, bind, surround, open, lazy } from '../../combinator';
 import { dup } from '../util';
-import { link, optspec, uri, option, fix, sanitize } from './link';
+import { link, optspec, uri, option, resolve, sanitize } from './link';
 import { text, str } from '../source';
 import { attributes } from './html';
 import { html, define } from 'typed-dom';
@@ -26,7 +26,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const base = context.url || context.host || location;
-    const src = fix(INSECURE_URI, base, !context.url);
+    const src = resolve(INSECURE_URI, base, !context.url);
     const cache = context.caches?.media;
     const key = (url.href = src, url.href);
     const cached = cache?.has(key);
