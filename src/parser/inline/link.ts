@@ -94,7 +94,7 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
       const target = new ReadonlyURL(uri, source.href);
       return target.origin === uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)?.[0]
         ? uri
-        : host.origin === source.origin
+        : target.origin === host.origin
           ? target.href.slice(target.origin.length)
           : target.href;
   }
