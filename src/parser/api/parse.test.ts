@@ -128,6 +128,21 @@ describe('Unit: parser/api/parse', () => {
           '<p><a href="/a" rel="noopener">^/a</a></p>',
           '<p><a href="https://source/x/a" rel="noopener" target="_blank">./a</a></p>',
         ]);
+      assert.deepStrictEqual(
+        [...parse([
+          [
+            '---',
+            `URL: ${location.origin}/x/y`,
+            '---',
+          ].join('\n'),
+          '{^/a}',
+          '{./a}',
+        ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
+        [
+          `<details class="header"><summary>Header</summary>URL: ${location.origin}/x/y</details>`,
+          '<p><a href="/z/a" rel="noopener">^/a</a></p>',
+          '<p><a href="/x/a" rel="noopener">./a</a></p>',
+        ]);
     });
 
     it('normalize', () => {

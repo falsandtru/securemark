@@ -86,14 +86,17 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
       return filename.includes('.')
         ? `${host.pathname.slice(0, -filename.length)}${uri.slice(2)}`
         : `${fillTrailingSlash(host.pathname)}${uri.slice(2)}`;
-    case host.origin === source.origin:
+    case host.origin === source.origin
+      && host.pathname === source.pathname:
     case uri.slice(0, 2) === '//':
       return uri;
     default:
-      const url = new ReadonlyURL(uri, source.href);
-      return url.origin === uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)?.[0]
+      const target = new ReadonlyURL(uri, source.href);
+      return target.origin === uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)?.[0]
         ? uri
-        : url.href;
+        : host.origin === source.origin
+          ? target.href.slice(target.origin.length)
+          : target.href;
   }
 }
 
