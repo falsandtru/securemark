@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.190.2
+
+- Fix subdirectory path resolution to remove the file name.
+
 ## 0.190.1
 
 - Fix url parser not to match trailing `=` symbol.

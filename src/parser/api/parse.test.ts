@@ -113,6 +113,21 @@ describe('Unit: parser/api/parse', () => {
           '<p><a href="/x/y/a" rel="noopener" target="_blank"><img class="media" data-src="/x/y/a" alt=""></a></p>',
           '<p><a href="https://host/a" rel="noopener" target="_blank"><img class="media" data-src="https://host/a" alt=""></a></p>',
         ]);
+      assert.deepStrictEqual(
+        [...parse([
+          [
+            '---',
+            'URL: https://host/x/index.md',
+            '---',
+          ].join('\n'),
+          '{^/a}',
+          '{./a}',
+        ].join('\n\n')).children].map(el => el.outerHTML),
+        [
+          '<details class="header"><summary>Header</summary>URL: https://host/x/index.md</details>',
+          '<p><a href="/x/a" rel="noopener">^/a</a></p>',
+          '<p><a href="https://host/x/a" rel="noopener" target="_blank">./a</a></p>',
+        ]);
     });
 
     it('normalize', () => {

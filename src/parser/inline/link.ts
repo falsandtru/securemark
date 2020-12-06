@@ -84,7 +84,10 @@ export function resolve(uri: string, base: URL | Location, sameorigin: boolean):
   assert(base.pathname);
   switch (true) {
     case uri.slice(0, 2) === '^/':
-      return `${fillTrailingSlash(base.pathname)}${uri.slice(2)}`;
+      const filename = base.pathname.slice(base.pathname.lastIndexOf('/') + 1);
+      return filename.includes('.')
+        ? `${base.pathname.slice(0, -filename.length)}${uri.slice(2)}`
+        : `${fillTrailingSlash(base.pathname)}${uri.slice(2)}`;
     case sameorigin:
     case uri.slice(0, 2) === '//':
     case /^[A-Za-z]+(?:[.+-][0-9A-Za-z]+):\/\/[A-Za-z]+(?:[.+-][0-9A-Za-z]+)(?::[0-9]*)?(?:$|\/)/.test(uri):
