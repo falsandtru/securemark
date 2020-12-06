@@ -53,7 +53,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     assert(!INSECURE_URI.match(/\s/));
     const el = html('a',
       {
-        href: resolve(INSECURE_URI, context.url || location, context.host || location, !context.url),
+        href: resolve(INSECURE_URI, context.host || location, context.url || location),
         rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
@@ -77,7 +77,7 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 
-export function resolve(uri: string, source: URL | Location, host: URL | Location, sameorigin: boolean): string {
+export function resolve(uri: string, host: URL | Location, source: URL | Location): string {
   assert(uri);
   assert(uri === uri.trim());
   switch (true) {
@@ -86,7 +86,7 @@ export function resolve(uri: string, source: URL | Location, host: URL | Locatio
       return filename.includes('.')
         ? `${host.pathname.slice(0, -filename.length)}${uri.slice(2)}`
         : `${fillTrailingSlash(host.pathname)}${uri.slice(2)}`;
-    case sameorigin:
+    case host.origin === source.origin:
     case uri.slice(0, 2) === '//':
       return uri;
     default:

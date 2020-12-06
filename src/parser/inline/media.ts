@@ -25,7 +25,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    const src = resolve(INSECURE_URI, context.url || location, context.host || location, !context.url);
+    const src = resolve(INSECURE_URI, context.host || location, context.url || location);
     const cache = context.caches?.media;
     const key = (url.href = src, url.href);
     const cached = cache?.has(key);
