@@ -5427,7 +5427,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.sanitize = exports.fix = exports.option = exports.uri = exports.link = exports.optspec = void 0;
+            exports.sanitize = exports.resolve = exports.option = exports.uri = exports.link = exports.optspec = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const inline_1 = _dereq_('../inline');
@@ -5475,9 +5475,8 @@ require = function () {
                 if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = options.shift();
-                const base = context.url || context.host || global_1.location;
                 const el = typed_dom_1.html('a', {
-                    href: fix(INSECURE_URI, base, !context.url),
+                    href: resolve(INSECURE_URI, context.url || global_1.location, context.host || global_1.location, !context.url),
                     rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI).replace(/^tel:/, ''));
                 if (!sanitize(el, el, INSECURE_URI, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.origin) || global_1.location.origin))
@@ -5496,25 +5495,25 @@ require = function () {
                 source_1.str(/^[^\s{}]+/)
             ]);
             exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
-            function fix(uri, base, sameorigin) {
+            function resolve(uri, source, host, sameorigin) {
                 var _a;
                 switch (true) {
                 case uri.slice(0, 2) === '^/':
-                    return `${ fillTrailingSlash(base.pathname) }${ uri.slice(2) }`;
+                    const filename = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
+                    return filename.includes('.') ? `${ host.pathname.slice(0, -filename.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
                 case sameorigin:
                 case uri.slice(0, 2) === '//':
-                case /^[A-Za-z]+(?:[.+-][0-9A-Za-z]+):\/\/[A-Za-z]+(?:[.+-][0-9A-Za-z]+)(?::[0-9]*)?(?:$|\/)/.test(uri):
                     return uri;
                 default:
-                    const url = new url_1.ReadonlyURL(uri, base.href);
+                    const url = new url_1.ReadonlyURL(uri, source.href);
                     return url.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : url.href;
                 }
             }
-            exports.fix = fix;
+            exports.resolve = resolve;
             function fillTrailingSlash(pathname) {
                 return pathname[pathname.length - 1] === '/' ? pathname : pathname + '/';
             }
-            function sanitize(uri, target, text, origin = global_1.location.origin) {
+            function sanitize(uri, target, text, origin) {
                 let type;
                 let message;
                 switch (uri.protocol) {
@@ -5671,8 +5670,7 @@ require = function () {
                 if (text.length > 0 && text.slice(-2).trimStart() === '')
                     return;
                 const INSECURE_URI = options.shift();
-                const base = context.url || context.host || global_1.location;
-                const src = link_1.fix(INSECURE_URI, base, !context.url);
+                const src = link_1.resolve(INSECURE_URI, context.url || global_1.location, context.host || global_1.location, !context.url);
                 const cache = (_a = context.caches) === null || _a === void 0 ? void 0 : _a.media;
                 const key = (url.href = src, url.href);
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(key);
