@@ -5476,7 +5476,7 @@ require = function () {
                     return;
                 const INSECURE_URI = options.shift();
                 const el = typed_dom_1.html('a', {
-                    href: resolve(INSECURE_URI, context.url || global_1.location, context.host || global_1.location, !context.url),
+                    href: resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location),
                     rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI).replace(/^tel:/, ''));
                 if (!sanitize(el, el, INSECURE_URI, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.origin) || global_1.location.origin))
@@ -5495,13 +5495,13 @@ require = function () {
                 source_1.str(/^[^\s{}]+/)
             ]);
             exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
-            function resolve(uri, source, host, sameorigin) {
+            function resolve(uri, host, source) {
                 var _a;
                 switch (true) {
                 case uri.slice(0, 2) === '^/':
                     const filename = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
                     return filename.includes('.') ? `${ host.pathname.slice(0, -filename.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
-                case sameorigin:
+                case host.origin === source.origin:
                 case uri.slice(0, 2) === '//':
                     return uri;
                 default:
@@ -5670,7 +5670,7 @@ require = function () {
                 if (text.length > 0 && text.slice(-2).trimStart() === '')
                     return;
                 const INSECURE_URI = options.shift();
-                const src = link_1.resolve(INSECURE_URI, context.url || global_1.location, context.host || global_1.location, !context.url);
+                const src = link_1.resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
                 const cache = (_a = context.caches) === null || _a === void 0 ? void 0 : _a.media;
                 const key = (url.href = src, url.href);
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(key);
