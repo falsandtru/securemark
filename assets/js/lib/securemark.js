@@ -3846,25 +3846,26 @@ require = function () {
                         media: false
                     }
                 }
-            }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.match(/^(?=(#+))/, combinator_1.memoize(([, sym]) => sym, sym => combinator_1.open(source_1.str(/^#+/), combinator_1.context({
-                syntax: {
-                    inline: sym.length === 1 ? {
-                        annotation: false,
-                        reference: false,
-                        index: false,
-                        label: false,
-                        link: false,
-                        media: false,
-                        autolink: false
-                    } : {
-                        label: false,
-                        media: false
+            }, combinator_1.some(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.union([
+                combinator_1.open(source_1.str(/^##+/), combinator_1.trim(util_1.startTight(combinator_1.some(combinator_1.union([
+                    inline_1.indexer,
+                    inline_1.inline
+                ])))), true),
+                combinator_1.open(source_1.str('#'), combinator_1.context({
+                    syntax: {
+                        inline: {
+                            annotation: false,
+                            reference: false,
+                            index: false,
+                            link: false,
+                            autolink: false
+                        }
                     }
-                }
-            }, combinator_1.trim(util_1.startTight(combinator_1.some(combinator_1.union([
-                inline_1.indexer,
-                inline_1.inline
-            ]))))), true))), ns => [typed_dom_1.html(`h${ ns[0].length }`, util_1.defrag(array_1.shift(ns)[1]))])))))));
+                }, combinator_1.trim(util_1.startTight(combinator_1.some(combinator_1.union([
+                    inline_1.indexer,
+                    inline_1.inline
+                ]))))), true)
+            ]), ns => [typed_dom_1.html(`h${ ns[0].length }`, util_1.defrag(array_1.shift(ns)[1]))])))))));
         },
         {
             '../../combinator': 28,
@@ -5506,7 +5507,7 @@ require = function () {
                     return uri;
                 default:
                     const target = new url_1.ReadonlyURL(uri, source.href);
-                    return target.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : host.origin === source.origin ? target.href.slice(target.origin.length) : target.href;
+                    return target.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
                 }
             }
             exports.resolve = resolve;
@@ -5679,15 +5680,12 @@ require = function () {
                     'data-src': src,
                     alt: text.trim()
                 });
-                if (cached) {
-                    el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
-                } else {
-                    if (!link_1.sanitize(url, el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
-                        return [
-                            [el],
-                            rest
-                        ];
-                }
+                if (!cached && !link_1.sanitize(url, el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
+                    return [
+                        [el],
+                        rest
+                    ];
+                cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
                 typed_dom_1.define(el, {
                     ...html_1.attributes('media', link_1.optspec, options, el.className.trim().split(/\s+/)),
                     nofollow: global_1.undefined
