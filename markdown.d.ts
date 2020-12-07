@@ -88,8 +88,14 @@ export namespace MarkdownParser {
       // # Title
       Block<'heading'>,
       Parser<HTMLHeadingElement, [
-        InlineParser.ExtensionParser.IndexerParser,
-        InlineParser,
+        Parser<HTMLElement | string, [
+          InlineParser.ExtensionParser.IndexerParser,
+          InlineParser,
+        ], Context>,
+        Parser<HTMLElement | string, [
+          InlineParser.ExtensionParser.IndexerParser,
+          InlineParser,
+        ], Context>,
       ], Context> {
     }
     export namespace HeadingParser {
