@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.190.4
+
+- Refactoring.
+
 ## 0.190.3
 
 - Fix relative path resolution to be based on the document path.
