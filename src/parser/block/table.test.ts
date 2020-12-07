@@ -35,7 +35,9 @@ describe('Unit: parser/block/table', () => {
       assert.deepStrictEqual(inspect(parser('|a\n|-\n|1')), [['<table><thead><tr><td>a</td></tr></thead><tbody><tr><td>1</td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('||\n|-\n||')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('||\n|-\n||\\')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td><td></td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('||\n|-\n||\\ ')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td><td></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('||\n|-\n||\\\n')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td><td></td></tr></tbody></table>'], '']);
+      assert.deepStrictEqual(inspect(parser('||\n|-\n||\\\n||')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td><td></td></tr><tr><td></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|| \n|- \n|| ')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|| \n|-| \n|| ')), [['<table><thead><tr><td></td></tr></thead><tbody><tr><td></td></tr></tbody></table>'], '']);
       assert.deepStrictEqual(inspect(parser('|!http://host\n|-\n|')), [['<table><thead><tr><td>!<a href="http://host" rel="noopener" target="_blank">http://host</a></td></tr></thead><tbody><tr></tr></tbody></table>'], '']);
