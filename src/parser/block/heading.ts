@@ -15,7 +15,7 @@ export const heading: HeadingParser = block(rewrite(segment,
     label: false,
     media: false,
   }}},
-  some(line(indexee(fmap(union([
+  line(indexee(fmap(union([
     open(
       str(/^##+/),
       trim(startTight(some(union([indexer, inline])))), true),
@@ -34,4 +34,4 @@ export const heading: HeadingParser = block(rewrite(segment,
       }}},
       trim(startTight(some(union([indexer, inline]))))), true),
   ]),
-  (ns: [string, ...(HTMLElement | string)[]]) => [html(`h${ns[0].length}` as 'h1', defrag(shift(ns)[1]))])))))));
+  (ns: [string, ...(HTMLElement | string)[]]) => [html(`h${ns[0].length}` as 'h1', defrag(shift(ns)[1]))]))))));
