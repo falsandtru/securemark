@@ -10,7 +10,7 @@ export function fence<D extends Parser<unknown, any, C>[], C extends Ctx>(opener
     if (!matches) return;
     assert(matches[0] === firstline(source));
     const delim = matches[1];
-    if (matches[0].slice(delim.length).includes(delim)) return;
+    if (matches[0].slice(delim.length).indexOf(delim) > -1) return;
     let rest = source.slice(matches[0].length);
     let block = '';
     let closer = '';
