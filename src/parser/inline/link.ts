@@ -51,16 +51,17 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     const INSECURE_URI = options.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
+    const src = resolve(INSECURE_URI, context.host || location, context.url || location);
     const el = html('a',
       {
-        href: resolve(INSECURE_URI, context.host || location, context.url || location),
+        href: src,
         rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
         ? content = defrag(trimEnd(content))
         : decode(INSECURE_URI)
             .replace(/^tel:/, ''));
-    if (!sanitize(el, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
+    if (!sanitize(new ReadonlyURL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
     define(el, ObjectAssign(
       attributes('link', optspec, options, []),
@@ -107,15 +108,14 @@ function fillTrailingSlash(pathname: string): string {
     : pathname + '/';
 }
 
-export function sanitize(uri: HTMLAnchorElement, target: HTMLElement, text: string, origin: string): boolean {
+export function sanitize(uri: URL, target: HTMLElement, text: string, origin: string): boolean {
   let type: string;
   let message: string;
   switch (uri.protocol) {
     case 'http:':
     case 'https:': {
-      const { host } = uri;
-      host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
-      if (host) return true;
+      uri.host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
+      if (uri.host) return true;
       type = 'parameter';
       message = 'Invalid host.';
       break;

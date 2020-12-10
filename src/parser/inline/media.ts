@@ -5,10 +5,9 @@ import { dup } from '../util';
 import { link, optspec, uri, option, resolve, sanitize } from './link';
 import { text, str } from '../source';
 import { attributes } from './html';
+import { ReadonlyURL } from 'spica/url';
 import { unshift, join } from 'spica/array';
 import { html, define } from 'typed-dom';
-
-const url = html('a');
 
 export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   '!',
@@ -26,11 +25,11 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const src = resolve(INSECURE_URI, context.host || location, context.url || location);
+    const url = new ReadonlyURL(src, context.host?.href || location.href);
     const cache = context.caches?.media;
-    const key = (url.href = src, url.href);
-    const cached = cache?.has(key);
+    const cached = cache?.has(url.href);
     const el = cache && cached
-      ? cache.get(key)!.cloneNode(true)
+      ? cache.get(url.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': src, alt: text.trim() });
     if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());

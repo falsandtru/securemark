@@ -74,7 +74,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[*a\nb*]{/}')), undefined);
       assert.deepStrictEqual(inspect(parser('[http://host]{http://host}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{ttp://host}')), [['<a class="invalid">ttp://host</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{http://[::ffff:0:0/96]}')), [['<a class="invalid">http://[::ffff:0:0/96]</a>'], '']);
+      //assert.deepStrictEqual(inspect(parser('[]{http://[::ffff:0:0%1]}')), [['<a class="invalid">http://[::ffff:0:0%1]</a>'], '']);
+      //assert.deepStrictEqual(inspect(parser('[]{http://[::ffff:0:0/96]}')), [['<a class="invalid">http://[::ffff:0:0/96]</a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{/}')), undefined);
     });
 

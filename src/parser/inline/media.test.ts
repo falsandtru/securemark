@@ -48,7 +48,8 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![a\\\nb]{ab}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{ttp://host}')), [['<img class="media invalid" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('![]{tel:1234567890}')), [['<img class="media invalid" alt="">'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{http://[::ffff:0:0/96]}')), [['<img class="media invalid" alt="">'], '']);
+      //assert.deepStrictEqual(inspect(parser('![]{http://[::ffff:0:0%1]}')), [['<img class="media invalid" alt="">'], '']);
+      //assert.deepStrictEqual(inspect(parser('![]{http://[::ffff:0:0/96]}')), [['<img class="media invalid" alt="">'], '']);
       assert.deepStrictEqual(inspect(parser('[]{/}')), undefined);
     });
 
