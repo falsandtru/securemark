@@ -5,8 +5,8 @@ import { dup } from '../util';
 import { link, optspec, uri, option, resolve, sanitize } from './link';
 import { text, str } from '../source';
 import { attributes } from './html';
-import { html, define } from 'typed-dom';
 import { unshift, join } from 'spica/array';
+import { html, define } from 'typed-dom';
 
 const url = html('a');
 

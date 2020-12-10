@@ -8,9 +8,9 @@ import { normalize } from './normalize';
 import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
-import { frag } from 'typed-dom';
-import { push } from 'spica/array';
 import { ReadonlyURL } from 'spica/url';
+import { push } from 'spica/array';
+import { frag } from 'typed-dom';
 
 interface Options extends ParserOptions {
   readonly url?: URL;

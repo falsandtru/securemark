@@ -8,8 +8,8 @@ import { normalize } from './normalize';
 import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
-import { push, splice } from 'spica/array';
 import { ReadonlyURL } from 'spica/url';
+import { push, splice } from 'spica/array';
 
 interface Settings extends ParserSettings {
   readonly url?: URL;
