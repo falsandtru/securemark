@@ -5,9 +5,8 @@ import { startTight, isEndTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => creator(bind(surround(
+export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', bind(surround(
   '[[',
-  validate(/^\S[^\n]*\]\]/,
   guard(context => context.syntax?.inline?.reference ?? true,
   startTight(
   context({ syntax: { inline: {
@@ -19,12 +18,12 @@ export const reference: ReferenceParser = lazy(() => creator(bind(surround(
     //link: true,
     //autolink: true,
   }}, state: undefined },
-  subsequence([alias, startTight(some(inline, ']', /^\\?\n/))]))))),
+  subsequence([alias, startTight(some(inline, ']', /^\\?\n/))])))),
   ']]'),
   (ns, rest) =>
     isEndTight(ns)
       ? [[html('sup', { class: 'reference', ...attributes(ns) }, defrag(trimEnd(ns)))], rest]
-      : undefined)));
+      : undefined))));
 
 const alias: ReferenceParser.AliasParser = creator(focus(
   /^\^[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*(?:(?=]])|\|[^\S\n]?)/,

@@ -5,9 +5,8 @@ import { startTight, isEndTight, trimEnd, defrag } from '../../util';
 import { indexee } from './indexee';
 import { html, define } from 'typed-dom';
 
-export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexee(surround(
+export const index: ExtensionParser.IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(surround(
   '[#',
-  validate(/^[^\n\]]+\]/,
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
   context({ syntax: { inline: {
@@ -19,11 +18,11 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(fmap(indexe
     media: false,
     autolink: false,
   }}},
-  union([some(inline, ']', /^\\?\n/)]))))),
+  union([some(inline, ']', /^\\?\n/)])))),
   ']', false,
   ([, bs], rest) =>
     isEndTight(bs)
       ? [[html('a', defrag(trimEnd(bs)))], rest]
       : undefined)),
   ([el]: [HTMLAnchorElement]) =>
-    [define(el, { id: el.id ? null : undefined, class: 'index', href: el.id ? `#${el.id}` : undefined }, el.childNodes)])));
+    [define(el, { id: el.id ? null : undefined, class: 'index', href: el.id ? `#${el.id}` : undefined }, el.childNodes)]))));

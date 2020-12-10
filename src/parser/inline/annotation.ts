@@ -5,9 +5,8 @@ import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';
 
-export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
+export const annotation: AnnotationParser = lazy(() => creator(validate('((', '))', bind(surround(
   '((',
-  validate(/^\S[\s\S]*\)\)/,
   guard(context => context.syntax?.inline?.annotation ?? true,
   startTight(
   context({ syntax: { inline: {
@@ -19,9 +18,9 @@ export const annotation: AnnotationParser = lazy(() => creator(bind(surround(
     //link: true,
     //autolink: true,
   }}, state: undefined },
-  union([some(inline, ')')]))))),
+  union([some(inline, ')')])))),
   '))'),
   (ns, rest) =>
     isEndTight(ns)
       ? [[html('sup', { class: 'annotation' }, defrag(trimEnd(ns)))], rest]
-      : undefined)));
+      : undefined))));

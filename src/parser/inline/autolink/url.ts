@@ -6,7 +6,7 @@ import { unescsource } from '../../source';
 
 const closer = /^[-+*=~^,.;:!?]*(?=["`|\[\](){}<>]|\\?$)/;
 
-export const url: AutolinkParser.UrlParser = lazy(() => validate('http', rewrite(
+export const url: AutolinkParser.UrlParser = lazy(() => validate('http', '://', '\n', rewrite(
   open(
     /^https?:\/\/(?=[\x21-\x7E])/,
     focus(/^[\x21-\x7E]+/, some(union([bracket, some(unescsource, closer)])))),

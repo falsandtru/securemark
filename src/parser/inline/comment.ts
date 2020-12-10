@@ -2,7 +2,7 @@ import { CommentParser } from '../inline';
 import { validate, creator, match } from '../../combinator';
 import { html } from 'typed-dom';
 
-export const comment: CommentParser = creator(validate('<#', match(
+export const comment: CommentParser = creator(validate('<#', '#>', match(
   /^<(#+)\s+((?:(?!\1>)\S+\s+)+)(\1>)?/,
   ([, , title, closer]) => (rest, { resources }) =>
     closer
