@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.190.6
+
+- Update dependencies.
+
 ## 0.190.5
 
 - Refactoring.
