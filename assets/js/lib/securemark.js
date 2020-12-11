@@ -1046,7 +1046,7 @@ require = function () {
                     return format_3.ReadonlyURL;
                 }
             });
-            const internal = Symbol();
+            const internal = Symbol.for('spica/url::internal');
             class URL {
                 constructor(url, base = global_1.location.href) {
                     this[_a] = {
@@ -1062,7 +1062,7 @@ require = function () {
                     return this[internal].url.href;
                 }
                 get resource() {
-                    return this[internal].resource = this[internal].resource === global_1.undefined ? this.reference.slice(0, this.query === '?' ? this.fragment ? -this.fragment.length - 1 : -1 : -this.fragment.length || this.reference.length) : this[internal].resource;
+                    return this[internal].resource === global_1.undefined ? this[internal].resource = this.reference.slice(0, this.query === '?' ? -this.fragment.length - 1 : -this.fragment.length || this.reference.length) : this[internal].resource;
                 }
                 get origin() {
                     return this[internal].url.origin;
@@ -1083,17 +1083,16 @@ require = function () {
                     return this[internal].url.port;
                 }
                 get path() {
-                    var _b;
-                    return this[internal].path = (_b = this[internal].path) !== null && _b !== void 0 ? _b : `${ this.pathname }${ this.query }`;
+                    return this[internal].path === global_1.undefined ? this[internal].path = `${ this.pathname }${ this.query }` : this[internal].path;
                 }
                 get pathname() {
                     return this[internal].url.pathname;
                 }
                 get query() {
-                    return this[internal].query = this[internal].query === global_1.undefined ? this.reference.slice(~(~this.reference.slice(0, -this.fragment.length || this.reference.length).indexOf('?') || ~this.reference.length), -this.fragment.length || this.reference.length) : this[internal].query;
+                    return this[internal].query === global_1.undefined ? this[internal].query = this.reference.slice(~(~this.reference.slice(0, -this.fragment.length || this.reference.length).indexOf('?') || ~this.reference.length), -this.fragment.length || this.reference.length) : this[internal].query;
                 }
                 get fragment() {
-                    return this[internal].fragment = this[internal].fragment === global_1.undefined ? this.reference.slice(~(~this.reference.indexOf('#') || ~this.reference.length)) : this[internal].fragment;
+                    return this[internal].fragment === global_1.undefined ? this[internal].fragment = this.reference.slice(~(~this.reference.indexOf('#') || ~this.reference.length)) : this[internal].fragment;
                 }
             }
             exports.URL = URL;
@@ -1128,13 +1127,27 @@ require = function () {
             function normalize(url, base) {
                 return new ReadonlyURL(url, base).href;
             }
-            const internal = Symbol();
+            const internal = Symbol.for('spica/url::internal');
             class ReadonlyURL {
-                constructor(url, base) {
-                    this[internal] = ReadonlyURL.get(url, base);
+                constructor(src, base) {
+                    var _a, _b;
+                    this.src = src;
+                    this.base = base;
+                    const i = (_a = base === null || base === void 0 ? void 0 : base.indexOf('#')) !== null && _a !== void 0 ? _a : -1;
+                    if (i > -1) {
+                        base = base === null || base === void 0 ? void 0 : base.slice(0, i);
+                    }
+                    const j = (_b = base === null || base === void 0 ? void 0 : base.indexOf('?')) !== null && _b !== void 0 ? _b : -1;
+                    if (i > -1 && src.indexOf('#') === -1) {
+                        base = base === null || base === void 0 ? void 0 : base.slice(0, j);
+                    }
+                    this[internal] = ReadonlyURL.get(src, base);
                 }
                 get href() {
                     return this[internal].href === global_1.undefined ? this[internal].href = this[internal].url.href : this[internal].href;
+                }
+                get resource() {
+                    return this[internal].resource === global_1.undefined ? this[internal].resource = `${ this.origin }${ this.path }` : this[internal].resource;
                 }
                 get origin() {
                     return this[internal].origin === global_1.undefined ? this[internal].origin = this[internal].url.origin : this[internal].origin;
@@ -1156,6 +1169,9 @@ require = function () {
                 }
                 get port() {
                     return this[internal].port === global_1.undefined ? this[internal].port = this[internal].url.port : this[internal].port;
+                }
+                get path() {
+                    return this[internal].path === global_1.undefined ? this[internal].path = `${ this.pathname }${ this.search }` : this[internal].path;
                 }
                 get pathname() {
                     return this[internal].pathname === global_1.undefined ? this[internal].pathname = this[internal].url.pathname : this[internal].pathname;
@@ -1180,6 +1196,7 @@ require = function () {
             ReadonlyURL.get = flip_1.flip(curry_1.uncurry(memoize_1.memoize(base => memoize_1.memoize(url => ({
                 url: new global_1.global.URL(url, base),
                 href: global_1.undefined,
+                resource: global_1.undefined,
                 origin: global_1.undefined,
                 protocol: global_1.undefined,
                 username: global_1.undefined,
@@ -1187,6 +1204,7 @@ require = function () {
                 host: global_1.undefined,
                 hostname: global_1.undefined,
                 port: global_1.undefined,
+                path: global_1.undefined,
                 pathname: global_1.undefined,
                 search: global_1.undefined,
                 hash: global_1.undefined,
