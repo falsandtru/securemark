@@ -8,15 +8,16 @@ import { normalize } from './normalize';
 import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
-import { ReadonlyURL } from 'spica/url';
+import { URL } from 'spica/url';
 import { push, splice } from 'spica/array';
 
 interface Settings extends ParserSettings {
-  readonly url?: URL;
+  readonly url?: global.URL;
 }
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): (source: string) => Generator<Result, undefined, undefined> {
-  settings = settings.host ? settings : { ...settings, host: new ReadonlyURL(location.origin + location.pathname) };
+  settings = settings.host ? settings : { ...settings, host: new URL(location.pathname, location.origin) };
+  if (settings.host?.origin === 'null') throw new Error(`Invalid host: ${settings.host.href}`);
   assert(!settings.id);
   assert(Object.freeze(settings));
   type Block = readonly [string, readonly HTMLElement[], string];
@@ -28,7 +29,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
-    settings = url ? { ...settings, url: new ReadonlyURL(url) } : settings;
+    settings = url ? { ...settings, url: new URL(url, url) } : settings;
     assert(Object.freeze(settings));
     source = normalize(source);
     const sourceSegments: string[] = [];

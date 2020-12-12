@@ -8,19 +8,20 @@ import { normalize } from './normalize';
 import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
-import { ReadonlyURL } from 'spica/url';
+import { URL } from 'spica/url';
 import { push } from 'spica/array';
 import { frag } from 'typed-dom';
 
 interface Options extends ParserOptions {
-  readonly url?: URL;
+  readonly url?: global.URL;
   readonly test?: boolean;
 }
 
 export function parse(source: string, opts: Options = {}): DocumentFragment {
-  opts = opts.host ? opts : { ...opts, host: new ReadonlyURL(location.origin + location.pathname) };
+  opts = opts.host ? opts : { ...opts, host: new URL(location.pathname, location.origin) };
+  if (opts.host?.origin === 'null') throw new Error(`Invalid host: ${opts.host.href}`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
-  opts = url ? { ...opts, url: new ReadonlyURL(url) } : opts;
+  opts = url ? { ...opts, url: new URL(url, url) } : opts;
   assert(Object.freeze(opts));
   const node = frag([...segment(normalize(source))]
     .reduce((acc, seg, i) =>
