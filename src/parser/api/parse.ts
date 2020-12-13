@@ -1,4 +1,5 @@
 import { location } from 'spica/global';
+import { ObjectAssign, ObjectCreate } from 'spica/alias';
 import { ParserOptions } from '../../..';
 import { eval } from '../../combinator';
 import { header } from '../header';
@@ -21,7 +22,7 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
   opts = !opts.host ? { ...opts, host: new URL(location.pathname, location.origin) } : opts;
   if (opts.host?.origin === 'null') throw new Error(`Invalid host: ${opts.host.href}`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
-  opts = url ? { ...opts, url: new URL(url, url) } : opts;
+  opts = url ? ObjectAssign(ObjectCreate(opts), { url: new URL(url, url) }) : opts;
   //assert(Object.freeze(opts));
   const node = frag([...segment(normalize(source))]
     .reduce((acc, seg, i) =>

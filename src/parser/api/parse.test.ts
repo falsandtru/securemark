@@ -30,9 +30,6 @@ describe('Unit: parser/api/parse', () => {
     it('linebreak', () => {
       assert('a\n\nb'.match(/^\s*$/m));
       assert(!parse('*a\n*\nb').textContent?.match(/^\s*$/m));
-    });
-
-    it('separation', () => {
       assert.deepStrictEqual(
         [...parse('\\ ').children].map(el => el.outerHTML),
         []);
@@ -142,6 +139,32 @@ describe('Unit: parser/api/parse', () => {
           `<details class="header"><summary>Header</summary>URL: ${location.origin}/x/y</details>`,
           '<p><a href="/z/a" rel="noopener">^/a</a></p>',
           '<p><a href="/x/a" rel="noopener">./a</a></p>',
+        ]);
+    });
+
+    it('separation', () => {
+      assert.deepStrictEqual(
+        [...parse([
+          [
+            '---',
+            'URL: https://example/x',
+            '---',
+          ].join('\n'),
+          [
+            '~~~example/markdown',
+            '---',
+            'URL: https://example/y',
+            '---',
+            '',
+            '{#}',
+            '~~~',
+          ].join('\n'),
+          '{#}',
+        ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
+        [
+          `<details class="header"><summary>Header</summary>URL: https://example/x</details>`,
+          '<aside class="example" data-type="markdown"><pre>---\nURL: https://example/y\n---\n\n{#}</pre><hr><div><details class="header"><summary>Header</summary>URL: https://example/y</details><p><a href="https://example/y#" rel="noopener" target="_blank">#</a></p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>',
+          '<p><a href="https://example/x#" rel="noopener" target="_blank">#</a></p>',
         ]);
     });
 

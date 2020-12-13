@@ -1,4 +1,5 @@
 import { location } from 'spica/global';
+import { ObjectAssign, ObjectCreate } from 'spica/alias';
 import { ParserSettings, Result } from '../../..';
 import { eval } from '../../combinator';
 import { header } from '../header';
@@ -29,7 +30,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   return function* (source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
-    settings = url ? { ...settings, url: new URL(url, url) } : settings;
+    settings = url ? ObjectAssign(ObjectCreate(settings), { url: new URL(url, url) }) : settings;
     assert(Object.freeze(settings));
     source = normalize(source);
     const sourceSegments: string[] = [];
