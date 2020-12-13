@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.190.7
+
+- Fix figure numbering in sub-context.
+
 ## 0.190.6
 
 - Update dependencies.
