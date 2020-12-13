@@ -146,7 +146,7 @@ describe('Unit: util/footnote', () => {
           [...target.children].map(el => el.outerHTML),
           [
             '<blockquote><blockquote><p><sup class="annotation disabled" title="a"><a rel="noopener">*1</a></sup></p><ol class="annotation"><li>a<sup><a rel="noopener">~1</a></sup></li></ol><ol class="reference"></ol></blockquote><p><sup class="annotation disabled" title="a"><a rel="noopener">*1</a></sup><br>~~~</p><ol class="annotation"><li>a<sup><a rel="noopener">~1</a></sup></li></ol><ol class="reference"></ol></blockquote>',
-            '<aside class="example" data-type="markdown"><pre>((a))</pre><div><p><sup class="annotation disabled" title="a"><a rel="noopener">*1</a></sup></p></div><ol class="annotation"><li>a<sup><a rel="noopener">~1</a></sup></li></ol><ol class="reference"></ol></aside>',
+            '<aside class="example" data-type="markdown"><pre>((a))</pre><hr><div><p><sup class="annotation disabled" title="a"><a rel="noopener">*1</a></sup></p></div><ol class="annotation"><li>a<sup><a rel="noopener">~1</a></sup></li></ol><ol class="reference"></ol></aside>',
             '<p><sup class="annotation" id="annotation:ref:1" title="a"><a href="#annotation:def:1" rel="noopener">*1</a></sup></p>',
           ]);
         assert.deepStrictEqual(

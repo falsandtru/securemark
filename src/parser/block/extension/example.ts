@@ -39,6 +39,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
         assert(!view.querySelector('[id]'));
         return [html('aside', { class: 'example', 'data-type': 'markdown' }, [
           html('pre', body.slice(0, -1)),
+          html('hr'),
           html('div', [view]),
           annotation,
           reference,
@@ -47,6 +48,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
       case 'math':
         return [html('aside', { class: 'example', 'data-type': 'math' }, [
           html('pre', body.slice(0, -1)),
+          html('hr'),
           eval(mathblock(`$$\n${body}$$`, context), [])[0]
         ])];
       default:

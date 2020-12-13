@@ -27,6 +27,9 @@
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
+  h1 {
+    margin-bottom: 1rem;
+  }
   ol:empty {
     display: none;
   }
@@ -162,9 +165,26 @@
     grid-row: 2;
     grid-column: 1 / -1;
   }
+  aside.example,
   aside.aside {
+    margin-bottom: 1rem;
     border: solid 2px #ddd;
     border-radius: 5px;
+  }
+  aside.example > pre,
+  aside.example > div,
+  aside.example > ol {
+    transform: scale(0.9);
+  }
+  aside.example > pre {
+    margin: 0;
+  }
+  aside.example > hr {
+    margin: 0;
+    border: 0;
+    border-top: dashed 2px #ddd;
+  }
+  aside.aside {
     padding: .5em;
   }
   .quotation {
@@ -396,7 +416,27 @@
     '',
     '## Heading',
     '',
-    'Since h2(##) headings are special in Securemark, second level headings such as chapters must be h2(##).',
+    'As level 2 headings(##) increment the chapter number of figure numbers, second level headings such as chapters must be level 2 headings.',
+    '',
+    '~~~example/markdown',
+    '# Example',
+    '',
+    '$-0.0',
+    '',
+    '## Chapter 1',
+    '',
+    '$-a',
+    '$$',
+    'A',
+    '$$',
+    '',
+    '## Chapter 2',
+    '',
+    '$-b',
+    '$$',
+    'B',
+    '$$',
+    '~~~',
     '',
     '## List',
     '',
