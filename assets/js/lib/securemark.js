@@ -1027,10 +1027,8 @@ require = function () {
     18: [
         function (_dereq_, module, exports) {
             'use strict';
-            var _a;
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.URL = exports.ReadonlyURL = exports.standardize = void 0;
-            const global_1 = _dereq_('./global');
             const format_1 = _dereq_('./url/domain/format');
             var format_2 = _dereq_('./url/domain/format');
             Object.defineProperty(exports, 'standardize', {
@@ -1048,60 +1046,72 @@ require = function () {
             });
             const internal = Symbol.for('spica/url::internal');
             class URL {
-                constructor(url, base = global_1.location.href) {
-                    this[_a] = {
-                        url: global_1.undefined,
-                        resource: global_1.undefined,
-                        path: global_1.undefined,
-                        query: global_1.undefined,
-                        fragment: global_1.undefined
-                    };
-                    this[internal].url = new format_1.ReadonlyURL(url, base);
+                constructor(url, base) {
+                    this.url = url;
+                    this.base = base;
+                    this[internal] = new format_1.ReadonlyURL(url, base);
                 }
-                get reference() {
-                    return this[internal].url.href;
+                get href() {
+                    return this[internal].href;
                 }
                 get resource() {
-                    return this[internal].resource === global_1.undefined ? this[internal].resource = this.reference.slice(0, this.query === '?' ? -this.fragment.length - 1 : -this.fragment.length || this.reference.length) : this[internal].resource;
+                    return this[internal].resource;
                 }
                 get origin() {
-                    return this[internal].url.origin;
+                    return this[internal].origin;
                 }
                 get scheme() {
-                    return this[internal].url.protocol.slice(0, -1);
+                    return this[internal].protocol.slice(0, -1);
                 }
                 get protocol() {
-                    return this[internal].url.protocol;
+                    return this[internal].protocol;
+                }
+                get username() {
+                    return this[internal].username;
+                }
+                get password() {
+                    return this[internal].password;
                 }
                 get host() {
-                    return this[internal].url.host;
+                    return this[internal].host;
                 }
                 get hostname() {
-                    return this[internal].url.hostname;
+                    return this[internal].hostname;
                 }
                 get port() {
-                    return this[internal].url.port;
+                    return this[internal].port;
                 }
                 get path() {
-                    return this[internal].path === global_1.undefined ? this[internal].path = `${ this.pathname }${ this.query }` : this[internal].path;
+                    return this[internal].path;
                 }
                 get pathname() {
-                    return this[internal].url.pathname;
+                    return this[internal].pathname;
+                }
+                get search() {
+                    return this[internal].search;
                 }
                 get query() {
-                    return this[internal].query === global_1.undefined ? this[internal].query = this.reference.slice(~(~this.reference.slice(0, -this.fragment.length || this.reference.length).indexOf('?') || ~this.reference.length), -this.fragment.length || this.reference.length) : this[internal].query;
+                    return this[internal].query;
+                }
+                get hash() {
+                    return this[internal].hash;
                 }
                 get fragment() {
-                    return this[internal].fragment === global_1.undefined ? this[internal].fragment = this.reference.slice(~(~this.reference.indexOf('#') || ~this.reference.length)) : this[internal].fragment;
+                    return this[internal].fragment;
+                }
+                get searchParams() {
+                    return this[internal].searchParams;
+                }
+                toString() {
+                    return this.href;
+                }
+                toJSON() {
+                    return this.href;
                 }
             }
             exports.URL = URL;
-            _a = internal;
         },
-        {
-            './global': 12,
-            './url/domain/format': 19
-        }
+        { './url/domain/format': 19 }
     ],
     19: [
         function (_dereq_, module, exports) {
@@ -1147,7 +1157,7 @@ require = function () {
                     return this[internal].href === global_1.undefined ? this[internal].href = this[internal].url.href : this[internal].href;
                 }
                 get resource() {
-                    return this[internal].resource === global_1.undefined ? this[internal].resource = `${ this.origin }${ this.path }` : this[internal].resource;
+                    return this[internal].resource === global_1.undefined ? this[internal].resource = this.host ? `${ this.origin }${ this.pathname === '/' ? '' : this.pathname }${ this.search }` : this.href.slice(0, -this.fragment.length || this.href.length) : this[internal].resource;
                 }
                 get origin() {
                     return this[internal].origin === global_1.undefined ? this[internal].origin = this[internal].url.origin : this[internal].origin;
@@ -1179,8 +1189,14 @@ require = function () {
                 get search() {
                     return this[internal].search === global_1.undefined ? this[internal].search = this[internal].url.search : this[internal].search;
                 }
+                get query() {
+                    return this[internal].query === global_1.undefined ? this[internal].query = this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '' : this[internal].query;
+                }
                 get hash() {
                     return this[internal].hash === global_1.undefined ? this[internal].hash = this[internal].url.hash : this[internal].hash;
+                }
+                get fragment() {
+                    return this[internal].fragment === global_1.undefined ? this[internal].fragment = this.hash || this.href[this.href.length - 1] === '#' && '#' || '' : this[internal].fragment;
                 }
                 get searchParams() {
                     return this[internal].searchParams === global_1.undefined ? this[internal].searchParams = this[internal].url.searchParams : this[internal].searchParams;
@@ -1207,7 +1223,9 @@ require = function () {
                 path: global_1.undefined,
                 pathname: global_1.undefined,
                 search: global_1.undefined,
+                query: global_1.undefined,
                 hash: global_1.undefined,
+                fragment: global_1.undefined,
                 searchParams: global_1.undefined
             }), new cache_1.Cache(100)), new cache_1.Cache(100))));
         },
@@ -3010,10 +3028,13 @@ require = function () {
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
+                var _a;
                 settings = settings.host ? settings : {
                     ...settings,
-                    host: new url_1.ReadonlyURL(global_1.location.origin + global_1.location.pathname)
+                    host: new url_1.URL(global_1.location.pathname, global_1.location.origin)
                 };
+                if (((_a = settings.host) === null || _a === void 0 ? void 0 : _a.origin) === 'null')
+                    throw new Error(`Invalid host: ${ settings.host.href }`);
                 const blocks = [];
                 const adds = [];
                 const dels = [];
@@ -3025,7 +3046,7 @@ require = function () {
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                     settings = url ? {
                         ...settings,
-                        url: new url_1.ReadonlyURL(url)
+                        url: new url_1.URL(url, url)
                     } : settings;
                     source = normalize_1.normalize(source);
                     const sourceSegments = [];
@@ -3235,18 +3256,20 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             function parse(source, opts = {}) {
-                var _a, _b, _c;
+                var _a, _b, _c, _d;
                 opts = opts.host ? opts : {
                     ...opts,
-                    host: new url_1.ReadonlyURL(global_1.location.origin + global_1.location.pathname)
+                    host: new url_1.URL(global_1.location.pathname, global_1.location.origin)
                 };
-                const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
+                if (((_a = opts.host) === null || _a === void 0 ? void 0 : _a.origin) === 'null')
+                    throw new Error(`Invalid host: ${ opts.host.href }`);
+                const url = ((_b = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim()) || '';
                 opts = url ? {
                     ...opts,
-                    url: new url_1.ReadonlyURL(url)
+                    url: new url_1.URL(url, url)
                 } : opts;
                 const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
-                if (opts.test)
+                if (opts.test && opts.hasOwnProperty('test'))
                     return node;
                 for (const _ of footnote_1.footnote(node, opts.footnotes, opts));
                 for (const _ of figure_1.figure(node, opts.footnotes, opts));
@@ -3362,6 +3385,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.blockquote = exports.segment = void 0;
+            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const autolink_1 = _dereq_('../autolink');
@@ -3392,14 +3416,13 @@ require = function () {
                     const reference = typed_dom_1.html('ol', { class: 'reference' });
                     return [
                         [
-                            parse_1.parse(source, {
-                                ...context,
+                            parse_1.parse(source, alias_1.ObjectAssign(alias_1.ObjectCreate(context), {
                                 id: '',
                                 footnotes: {
                                     annotation,
                                     reference
                                 }
-                            }),
+                            })),
                             annotation,
                             reference
                         ],
@@ -3414,6 +3437,7 @@ require = function () {
             '../autolink': 61,
             '../source': 123,
             '../util': 130,
+            'spica/alias': 5,
             'typed-dom': 21
         }
     ],
@@ -3561,6 +3585,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.aside = void 0;
+            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../../combinator');
             const indexee_1 = _dereq_('../../inline/extension/indexee');
             const parse_1 = _dereq_('../../api/parse');
@@ -3576,14 +3601,13 @@ require = function () {
                         }, `${ opener }${ body }${ closer }`)];
                 const annotation = typed_dom_1.html('ol', { class: 'annotation' });
                 const reference = typed_dom_1.html('ol', { class: 'reference' });
-                const view = parse_1.parse(body.slice(0, -1), {
-                    ...context,
+                const view = parse_1.parse(body.slice(0, -1), alias_1.ObjectAssign(alias_1.ObjectCreate(context), {
                     id: '',
                     footnotes: {
                         annotation,
                         reference
                     }
-                });
+                }));
                 const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes((_a = view.firstElementChild) === null || _a === void 0 ? void 0 : _a.tagName) && view.firstElementChild;
                 if (!heading)
                     return [typed_dom_1.html('pre', {
@@ -3606,6 +3630,7 @@ require = function () {
             '../../../combinator': 28,
             '../../api/parse': 60,
             '../../inline/extension/indexee': 104,
+            'spica/alias': 5,
             'typed-dom': 21
         }
     ],
@@ -3614,6 +3639,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.example = exports.segment_ = exports.segment = void 0;
+            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../../combinator');
             const parse_1 = _dereq_('../../api/parse');
             const mathblock_1 = _dereq_('../mathblock');
@@ -3633,19 +3659,19 @@ require = function () {
                 case 'markdown': {
                         const annotation = typed_dom_1.html('ol', { class: 'annotation' });
                         const reference = typed_dom_1.html('ol', { class: 'reference' });
-                        const view = parse_1.parse(body.slice(0, -1), {
-                            ...context,
+                        const view = parse_1.parse(body.slice(0, -1), alias_1.ObjectAssign(alias_1.ObjectCreate(context), {
                             id: '',
                             footnotes: {
                                 annotation,
                                 reference
                             }
-                        });
+                        }));
                         return [typed_dom_1.html('aside', {
                                 class: 'example',
                                 'data-type': 'markdown'
                             }, [
                                 typed_dom_1.html('pre', body.slice(0, -1)),
+                                typed_dom_1.html('hr'),
                                 typed_dom_1.html('div', [view]),
                                 annotation,
                                 reference
@@ -3657,6 +3683,7 @@ require = function () {
                             'data-type': 'math'
                         }, [
                             typed_dom_1.html('pre', body.slice(0, -1)),
+                            typed_dom_1.html('hr'),
                             combinator_1.eval(mathblock_1.mathblock(`$$\n${ body }$$`, context), [])[0]
                         ])];
                 default:
@@ -3672,6 +3699,7 @@ require = function () {
             '../../../combinator': 28,
             '../../api/parse': 60,
             '../mathblock': 76,
+            'spica/alias': 5,
             'typed-dom': 21
         }
     ],
@@ -5511,7 +5539,7 @@ require = function () {
                     href: src,
                     rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(util_1.trimEnd(content)) : decode(INSECURE_URI).replace(/^tel:/, ''));
-                if (!sanitize(new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
+                if (!sanitize(new url_1.URL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
                     return [
                         [el],
                         rest
@@ -5537,7 +5565,7 @@ require = function () {
                 case uri.slice(0, 2) === '//':
                     return uri;
                 default:
-                    const target = new url_1.ReadonlyURL(uri, source.href);
+                    const target = new url_1.URL(uri, source.href);
                     return target.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
                 }
             }
@@ -5699,7 +5727,7 @@ require = function () {
                     return;
                 const INSECURE_URI = options.shift();
                 const src = link_1.resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
-                const url = new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
+                const url = new url_1.URL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
                 const cache = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.media;
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(url.href);
                 const el = cache && cached ? cache.get(url.href).cloneNode(true) : typed_dom_1.html('img', {
@@ -7155,7 +7183,7 @@ require = function () {
                 let base = '0';
                 let bases = base.split('.');
                 let index = bases;
-                for (let defs = target.querySelectorAll('figure[data-label], h1[id], h2[id], h3[id]'), i = 0, len = defs.length; i < len; ++i) {
+                for (let defs = target.querySelectorAll('figure[data-label], h1, h2, h3'), i = 0, len = defs.length; i < len; ++i) {
                     yield;
                     const def = defs[i];
                     if (def.parentNode !== target)
