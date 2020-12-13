@@ -18,7 +18,7 @@ interface Options extends ParserOptions {
 }
 
 export function parse(source: string, opts: Options = {}): DocumentFragment {
-  opts = opts.host ? opts : { ...opts, host: new URL(location.pathname, location.origin) };
+  opts = !opts.host ? { ...opts, host: new URL(location.pathname, location.origin) } : opts;
   if (opts.host?.origin === 'null') throw new Error(`Invalid host: ${opts.host.href}`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
   opts = url ? { ...opts, url: new URL(url, url) } : opts;

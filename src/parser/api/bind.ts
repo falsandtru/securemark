@@ -16,7 +16,7 @@ interface Settings extends ParserSettings {
 }
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): (source: string) => Generator<Result, undefined, undefined> {
-  settings = settings.host ? settings : { ...settings, host: new URL(location.pathname, location.origin) };
+  settings = !settings.host ? { ...settings, host: new URL(location.pathname, location.origin) } : settings;
   if (settings.host?.origin === 'null') throw new Error(`Invalid host: ${settings.host.href}`);
   assert(!settings.id);
   assert(Object.freeze(settings));
