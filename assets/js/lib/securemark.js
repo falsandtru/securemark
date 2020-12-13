@@ -3017,6 +3017,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.bind = void 0;
             const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const header_1 = _dereq_('../header');
             const block_1 = _dereq_('../block');
@@ -3029,10 +3030,10 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
                 var _a;
-                settings = settings.host ? settings : {
+                settings = !settings.host ? {
                     ...settings,
                     host: new url_1.URL(global_1.location.pathname, global_1.location.origin)
-                };
+                } : settings;
                 if (((_a = settings.host) === null || _a === void 0 ? void 0 : _a.origin) === 'null')
                     throw new Error(`Invalid host: ${ settings.host.href }`);
                 const blocks = [];
@@ -3044,10 +3045,7 @@ require = function () {
                     var _a, _b;
                     const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
-                    settings = url ? {
-                        ...settings,
-                        url: new url_1.URL(url, url)
-                    } : settings;
+                    settings = url ? alias_1.ObjectAssign(alias_1.ObjectCreate(settings), { url: new url_1.URL(url, url) }) : settings;
                     source = normalize_1.normalize(source);
                     const sourceSegments = [];
                     for (const seg of segment_1.segment(source)) {
@@ -3164,6 +3162,7 @@ require = function () {
             '../header': 84,
             '../segment': 122,
             './normalize': 59,
+            'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 12,
             'spica/url': 18
@@ -3244,6 +3243,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.parse = void 0;
             const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const header_1 = _dereq_('../header');
             const block_1 = _dereq_('../block');
@@ -3257,17 +3257,14 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             function parse(source, opts = {}) {
                 var _a, _b, _c, _d;
-                opts = opts.host ? opts : {
+                opts = !opts.host ? {
                     ...opts,
                     host: new url_1.URL(global_1.location.pathname, global_1.location.origin)
-                };
+                } : opts;
                 if (((_a = opts.host) === null || _a === void 0 ? void 0 : _a.origin) === 'null')
                     throw new Error(`Invalid host: ${ opts.host.href }`);
                 const url = ((_b = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim()) || '';
-                opts = url ? {
-                    ...opts,
-                    url: new url_1.URL(url, url)
-                } : opts;
+                opts = url ? alias_1.ObjectAssign(alias_1.ObjectCreate(opts), { url: new url_1.URL(url, url) }) : opts;
                 const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
                 if (opts.test && opts.hasOwnProperty('test'))
                     return node;
@@ -3286,6 +3283,7 @@ require = function () {
             '../header': 84,
             '../segment': 122,
             './normalize': 59,
+            'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 12,
             'spica/url': 18,
