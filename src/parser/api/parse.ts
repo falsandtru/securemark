@@ -22,12 +22,12 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
   if (opts.host?.origin === 'null') throw new Error(`Invalid host: ${opts.host.href}`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
   opts = url ? { ...opts, url: new URL(url, url) } : opts;
-  assert(Object.freeze(opts));
+  //assert(Object.freeze(opts));
   const node = frag([...segment(normalize(source))]
     .reduce((acc, seg, i) =>
       push(acc, eval(i === 0 && header(seg, opts) || block(seg, opts), []))
     , []));
-  if (opts.test) return node;
+  if (opts.test && opts.hasOwnProperty('test')) return node;
   for (const _ of footnote(node, opts.footnotes, opts));
   for (const _ of figure(node, opts.footnotes, opts));
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
