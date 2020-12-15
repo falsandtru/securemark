@@ -6,7 +6,7 @@ export function youtube(url: URL, cache?: Collection<string, HTMLElement>): HTML
   switch (url.origin) {
     case 'https://www.youtube.com':
       if (!url.pathname.match(/^\/watch$/)) return;
-      id = url.href.replace(/.+?=/, '').replace(/&/, '?');
+      id = url.href.replace(/.+?=/, '').replace('&', '?');
       break;
     case 'https://youtu.be':
       if (!url.pathname.match(/^\/[\w-]+$/)) return;
