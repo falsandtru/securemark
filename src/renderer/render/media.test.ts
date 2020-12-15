@@ -42,7 +42,7 @@ describe('Unit: renderer/render/media', () => {
       media(location.href, parse('!http://example.pdf').querySelector('img')!, {
         pdf: () => void done(false) || html('div')
       });
-      assert(media(location.href, parse('!http://example.com/example.pdf').querySelector('img')!, {})!.querySelector('object')!.getAttribute('type') === 'application/pdf');
+      assert(media(location.href, parse('!http://example/example.pdf').querySelector('img')!, {})!.querySelector('object')!.getAttribute('type') === 'application/pdf');
       done();
     });
 

@@ -4,7 +4,7 @@ import { tails, verify, rewrite, creator, open } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom';
 
-// https://example.com/@user must be a user page or a redirect page going there.
+// https://example/@user must be a user page or a redirect page going there.
 
 export const account: AutolinkParser.AccountParser = creator(rewrite(
   open(

@@ -5,7 +5,7 @@ import { account } from './account';
 import { hashtag } from './hashtag';
 import { define } from 'typed-dom';
 
-// https://example.com/@user?ch=a+b must be a user channel page or a redirect page going there.
+// https://example/@user?ch=a+b must be a user channel page or a redirect page going there.
 
 export const channel: AutolinkParser.ChannelParser = validate('@', bind(
   sequence([

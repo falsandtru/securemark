@@ -3,7 +3,7 @@ import { tails, validate, verify, rewrite, creator, open } from '../../../combin
 import { str } from '../../source';
 import { html } from 'typed-dom';
 
-// https://example.com/hashtags/a must be a hashtag page or a redirect page going there.
+// https://example/hashtags/a must be a hashtag page or a redirect page going there.
 
 export const hashtag: AutolinkParser.HashtagParser = creator(rewrite(
   open(
