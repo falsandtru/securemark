@@ -63,7 +63,6 @@ https://falsandtru.github.io/securemark/
 
 - Twitter
 - YouTube
-- Gist
 - PDF (.pdf)
 - Video (.webm, .ogv)
 - Audio (.oga, .ogg)

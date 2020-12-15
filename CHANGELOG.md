@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.191.0
+
+- Drop media support of Gist for keeping word limits of timelines and threads.
+
 ## 0.190.8
 
 - Fix context handling.

@@ -50,7 +50,6 @@ export interface RenderingOptions {
   readonly media?: {
     readonly twitter?: (url: URL) => HTMLElement | undefined;
     readonly youtube?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
-    readonly gist?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
     readonly pdf?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
     readonly video?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLVideoElement | undefined;
     readonly audio?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLAudioElement | undefined;

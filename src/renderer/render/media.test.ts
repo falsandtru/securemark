@@ -29,15 +29,6 @@ describe('Unit: renderer/render/media', () => {
       });
     });
 
-    it('gist', done => {
-      media(location.href, parse('!http://gist.github.com/falsandtru/cdf4a19b70012b0d6e3c9e1ec021e557').querySelector('img')!, {
-        gist: () => void done(false) || html('div')
-      });
-      media(location.href, parse('!https://gist.github.com/falsandtru/cdf4a19b70012b0d6e3c9e1ec021e557').querySelector('img')!, {
-        gist: () => void done() || html('div')
-      });
-    });
-
     it('pdf', done => {
       media(location.href, parse('!http://example.pdf').querySelector('img')!, {
         pdf: () => void done(false) || html('div')

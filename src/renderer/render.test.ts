@@ -31,11 +31,10 @@ describe('Unit: renderer/render', () => {
       // all
       assert(render(parse([
         '!https://youtu.be/xRF7WIZV4lA',
-        '!https://gist.github.com/falsandtru/cdf4a19b70012b0d6e3c9e1ec021e557',
         '!http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_open_parameters.pdf',
         '!https://twitter.com/hourenso_u/status/856828123882676225?hide_thread=true',
         '!https://pbs.twimg.com/media/C-RAIleV0AAO81x.jpg',
-      ].join('\n')).querySelector('p')!).querySelectorAll('.media').length === 5);
+      ].join('\n')).querySelector('p')!).querySelectorAll('.media').length === 4);
     });
 
   });
