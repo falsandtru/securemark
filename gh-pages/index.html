@@ -17,10 +17,6 @@
   textarea {
     background-color: #fdfdfd;
   }
-  #editor {
-    font-family: SFMono-Regular,Consolas,Courier New,Liberation Mono,Menlo,monospace;
-    letter-spacing: -.03em;
-  }
   #viewer {
     overflow: auto;
   }
@@ -350,7 +346,7 @@
 <div id="primary" class="col-12">
 <article id="content" class="row">
   <div class="col-6"><textarea id="editor" class="w-100" spellcheck="false"></textarea></div>
-  <div id="viewer" class="col-6"><ol id="annotation"></ol><ol id="reference"></ol></div>
+  <div id="viewer" class="col-6"><ol id="annotation" class="footnote"></ol><ol id="reference" class="footnote"></ol></div>
 </article>
 <aside></aside>
 </div>
@@ -545,7 +541,7 @@
   ].join('\n');
   const editor = document.getElementById('editor');
   const viewer = document.getElementById('viewer');
-  const { bind, render, caches } = require('securemark');
+  const { bind, render, sync, caches } = require('securemark');
   const { parse, nearest } = bind(viewer, {
     caches,
     footnotes: {
@@ -562,6 +558,10 @@
   }, {
     rootMargin: '100px',
   });
+  sync(editor, viewer, [
+    document.getElementById('annotation'),
+    document.getElementById('reference'),
+  ]);
   editor.addEventListener('click', () => {
     const el = nearest(editor.selectionStart);
     el?.scrollIntoView({ block: 'start' });

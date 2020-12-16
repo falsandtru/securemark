@@ -3,4 +3,5 @@ export { bind } from './api/bind';
 export { header, headers } from './api/header';
 export { body } from './api/body';
 export { normalize } from './api/normalize';
+export { sync } from './api/sync';
 export { caches } from './api/cache';

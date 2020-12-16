@@ -28,6 +28,7 @@ export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUL
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
 export function normalize(source: string): string;
+export function sync(editor: HTMLElement, viewer: HTMLElement, footnote: HTMLOListElement[]): () => void;
 
 export type ParserOptions = Partial<ParserSettings>;
 export interface ParserSettings {
