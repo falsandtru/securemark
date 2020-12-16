@@ -16,7 +16,10 @@ interface Settings extends ParserSettings {
   readonly url?: global.URL;
 }
 
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): (source: string) => Generator<Result, undefined, undefined> {
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): {
+  parse: (source: string) => Generator<Result, undefined, undefined>;
+  nearest: (position: number) => HTMLElement | undefined;
+} {
   settings = !settings.host ? { ...settings, host: new URL(location.pathname, location.origin) } : settings;
   if (settings.host?.origin === 'null') throw new Error(`Invalid host: ${settings.host.href}`);
   assert(!settings.id);
@@ -27,7 +30,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   const dels: HTMLElement[] = [];
   const bottom = target.firstChild;
   let revision: symbol;
-  return function* (source: string): Generator<Result, undefined, undefined> {
+  return {
+    parse,
+    nearest,
+  };
+
+  function* parse(source: string): Generator<Result, undefined, undefined> {
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
     settings = url ? ObjectAssign(ObjectCreate(settings), { url: new URL(url, url) }) : settings;
@@ -116,7 +124,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-  };
+  }
 
   function next(index: number): Node | null {
     assert(index >= 0);
@@ -126,5 +134,17 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       if (es.length > 0) return es[0];
     }
     return bottom;
+  }
+
+  function nearest(position: number): HTMLElement | undefined {
+    let el: HTMLElement | undefined;
+    let len = 0;
+    for (let i = 0; i < blocks.length; ++i) {
+      const block = blocks[i];
+      len += block[0].length;
+      el = block[1][0] || el;
+      if (len >= position && block[1].length > 0) break;
+    }
+    return el;
   }
 }

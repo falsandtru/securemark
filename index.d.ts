@@ -18,7 +18,10 @@ export type Result
   | { type: 'figure', value: HTMLAnchorElement }
   | { type: 'break' }
   | { type: 'cancel' };
-export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): (source: string) => Generator<Result, undefined, undefined>;
+export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): {
+  parse: (source: string) => Generator<Result, undefined, undefined>;
+  nearest: (position: number) => HTMLElement | undefined;
+};
 export function render(target: HTMLElement, options?: RenderingOptions): void;
 export function quote(address: string, range: Range): string;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;

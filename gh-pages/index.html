@@ -21,6 +21,9 @@
     font-family: SFMono-Regular,Consolas,Courier New,Liberation Mono,Menlo,monospace;
     letter-spacing: -.03em;
   }
+  #viewer {
+    overflow: auto;
+  }
   details.header {
     margin-top: 0;
     margin-bottom: 1rem;
@@ -346,7 +349,7 @@
 <!-- ----- PRIMARY ------------------------------------------------------------ -->
 <div id="primary" class="col-12">
 <article id="content" class="row">
-  <div class="col-6"><textarea id="editor" class="w-100 h-100" spellcheck="false"></textarea></div>
+  <div class="col-6"><textarea id="editor" class="w-100" spellcheck="false"></textarea></div>
   <div id="viewer" class="col-6"><ol id="annotation"></ol><ol id="reference"></ol></div>
 </article>
 <aside></aside>
@@ -401,8 +404,8 @@
 <script src="/securemark/assets/js/lib/securemark.js"></script>
 
 <script>
-  document.getElementById('editor').style.minHeight = window.innerHeight * 0.7 + 'px';
-  document.getElementById('viewer').style.minHeight = window.innerHeight * 0.7 + 'px';
+  document.getElementById('editor').style.height = window.innerHeight * 0.7 + 'px';
+  document.getElementById('viewer').style.height = window.innerHeight * 0.7 + 'px';
   document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
     '---',
     'url: https://falsandtru.github.io/securemark',
@@ -540,9 +543,10 @@
     '',
     ''
   ].join('\n');
+  const editor = document.getElementById('editor');
   const viewer = document.getElementById('viewer');
   const { bind, render, caches } = require('securemark');
-  const update = bind(viewer, {
+  const { parse, nearest } = bind(viewer, {
     caches,
     footnotes: {
       annotation: document.getElementById('annotation'),
@@ -558,9 +562,15 @@
   }, {
     rootMargin: '100px',
   });
+  editor.addEventListener('click', () => {
+    const el = nearest(editor.selectionStart);
+    el?.scrollIntoView({ block: 'start' });
+    viewer.scrollBy({ top: -viewer.clientHeight / 9 });
+    el?.scrollIntoView({ block: 'nearest' });
+  });
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
-  document.getElementById('chars').textContent = document.getElementById('editor').value.length;
+  document.getElementById('chars').textContent = editor.value.length;
   let wait;
   (async () => {
     let timer = 0;
@@ -575,8 +585,8 @@
         share();
       }, 500);
     }
-    document.getElementById('editor').addEventListener('input', run);
-    document.getElementById('editor').addEventListener('change', run);
+    editor.addEventListener('input', run);
+    editor.addEventListener('change', run);
   })();
   async function display() {
     const { Date } = global;
@@ -584,7 +594,7 @@
     let start = Date.now();
     let count = 0;
     let resource = 100;
-    for (const result of update(document.getElementById('editor').value)) {
+    for (const result of parse(editor.value)) {
       if (wait) throw new Error('Cancel.');
       switch (result.type) {
         case 'segment':
@@ -625,9 +635,9 @@
     document.getElementById('time').textContent = time;
   }
   function share() {
-    document.getElementById('chars').textContent = document.getElementById('editor').value.length;
-    if (document.getElementById('editor').value.length > 10000) return;
-    document.getElementById('share').href = '#' + encodeURIComponent(document.getElementById('editor').value);
+    document.getElementById('chars').textContent = editor.value.length;
+    if (editor.value.length > 10000) return;
+    document.getElementById('share').href = '#' + encodeURIComponent(editor.value);
     document.getElementById('share').textContent = document.getElementById('share').href;
   }
 </script>

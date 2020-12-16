@@ -30,7 +30,7 @@ describe('Unit: parser/api/bind', () => {
 
     it('empty', () => {
       const el = html('div');
-      const update = bind(el, cfgs);
+      const update = bind(el, cfgs).parse;
 
       // init with empty
       assert.deepStrictEqual(inspect(update('')), []);
@@ -42,7 +42,7 @@ describe('Unit: parser/api/bind', () => {
 
     it('update', () => {
       const el = html('div', [html('ol')]);
-      const update = bind(el, cfgs);
+      const update = bind(el, cfgs).parse;
 
       // init with nonempty
       assert.deepStrictEqual(inspect(update('0')), ['<p>0</p>']);
@@ -98,16 +98,16 @@ describe('Unit: parser/api/bind', () => {
     });
 
     it('complex', () => {
-      assert.deepStrictEqual(inspect(bind(html('div'), cfgs)('# a\n# b')), ['<h1 id="index:a">a</h1>', '<h1 id="index:b">b</h1>']);
+      assert.deepStrictEqual(inspect(bind(html('div'), cfgs).parse('# a\n# b')), ['<h1 id="index:a">a</h1>', '<h1 id="index:b">b</h1>']);
     });
 
     it('normalize', () => {
-      assert.deepStrictEqual(inspect(bind(html('div'), cfgs)('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
+      assert.deepStrictEqual(inspect(bind(html('div'), cfgs).parse('a\\\r\nb')), ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
     it('reentrant', () => {
       const el = html('div');
-      const update = bind(el, cfgs);
+      const update = bind(el, cfgs).parse;
 
       const iter = update('0\n\n1\n');
       assert.deepStrictEqual(inspectS(iter, 1), ['<p>0</p>']);
@@ -124,7 +124,7 @@ describe('Unit: parser/api/bind', () => {
 
     it('concurrency', () => {
       const el = html('div');
-      const update = bind(el, cfgs);
+      const update = bind(el, cfgs).parse;
 
       assert.deepStrictEqual(inspectS(update('1\n'), 1), ['<p>1</p>']);
       assert(el.innerHTML === '<p>1</p>');
