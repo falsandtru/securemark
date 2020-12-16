@@ -3179,7 +3179,7 @@ require = function () {
                         const block = blocks[i];
                         len += block[0].length;
                         el = block[1][0] || el;
-                        if (len >= position && block[1].length > 0)
+                        if (len >= position)
                             break;
                     }
                     return el;
