@@ -581,14 +581,15 @@
       timer = setTimeout(async function () {
         await wait;
         wait = undefined;
-        log(await display(true));
+        log(await display());
+        nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' });
         share();
       }, 500);
     }
     editor.addEventListener('input', run);
     editor.addEventListener('change', run);
   })();
-  async function display(focus) {
+  async function display() {
     const { Date } = global;
     let time = 0;
     let start = Date.now();
@@ -629,7 +630,6 @@
         start = Date.now();
       }
     }
-    focus && nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' });
     return time += Date.now() - start;
   }
   function log(time) {
