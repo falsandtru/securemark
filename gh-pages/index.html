@@ -558,23 +558,25 @@
   }, {
     rootMargin: '100px',
   });
-  sync(editor, viewer, [
-    document.getElementById('annotation'),
-    document.getElementById('reference'),
-  ]);
   editor.addEventListener('click', () => {
     const el = nearest(editor.selectionStart);
     el?.scrollIntoView({ block: 'start' });
     viewer.scrollBy({ top: -viewer.clientHeight / 9 });
     el?.scrollIntoView({ block: 'nearest' });
   });
+  sync(editor, viewer, [
+    document.getElementById('annotation'),
+    document.getElementById('reference'),
+  ]);
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   document.getElementById('chars').textContent = editor.value.length;
   let wait;
   (async () => {
-    let timer = 0;
     log(await display());
+    let timer = 0;
+    editor.addEventListener('input', run);
+    editor.addEventListener('change', run);
     function run() {
       clearTimeout(timer);
       wait = wait || new Promise(requestAnimationFrame);
@@ -586,8 +588,6 @@
         share();
       }, 500);
     }
-    editor.addEventListener('input', run);
-    editor.addEventListener('change', run);
   })();
   async function display() {
     const { Date } = global;
