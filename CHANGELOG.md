@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.192.2
+
+- Fix sync function.
+
 ## 0.192.1
 
 - Improve sync function.

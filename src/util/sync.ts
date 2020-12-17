@@ -2,7 +2,11 @@ import { Math, window, document } from 'spica/global';
 import { Cancellation } from 'spica/cancellation';
 import { bind } from 'typed-dom';
 
-export function sync(editor: HTMLElement, viewer: HTMLElement, footnotes: readonly HTMLOListElement[]): () => void {
+export function sync(
+  editor: HTMLElement,
+  viewer: HTMLElement,
+  bottom: HTMLElement | null = viewer.firstElementChild as HTMLElement,
+): () => void {
   const cancellation = new Cancellation();
   let hover = document.activeElement?.contains(editor) ?? true;
   cancellation.register(bind(editor, 'mouseenter', () => {
@@ -19,16 +23,14 @@ export function sync(editor: HTMLElement, viewer: HTMLElement, footnotes: readon
       case 0:
         return void viewer.scrollTo({ top: 0 });
       default:
+        const viewer_scrollHeight = bottom?.offsetTop
+          ? bottom.offsetTop - +window.getComputedStyle(bottom).marginTop.slice(0, -2)
+          : viewer.scrollHeight;
         return void viewer.scrollBy({
-          top: Math.round(
-            + delta
-            * footnotes.reduce((scrollHeight, el) => {
-                const { marginTop, marginBottom, display } = window.getComputedStyle(el);
-                return display === 'none'
-                  ? scrollHeight
-                  : scrollHeight - el.offsetHeight - +marginTop.slice(0, -2) - +marginBottom.slice(0, -2);
-              }, viewer.scrollHeight - viewer.offsetHeight)
-            / (editor.scrollHeight - editor.offsetHeight)),
+          top: Math.sign(delta) * Math.ceil(
+            + Math.abs(delta)
+            * (viewer_scrollHeight - viewer.clientHeight)
+            / (editor.scrollHeight - editor.clientHeight)),
         });
     }
   }, { passive: true }));
