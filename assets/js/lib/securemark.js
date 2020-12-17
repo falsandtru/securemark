@@ -8040,8 +8040,9 @@ require = function () {
             const cancellation_1 = _dereq_('spica/cancellation');
             const typed_dom_1 = _dereq_('typed-dom');
             function sync(editor, viewer, footnotes) {
+                var _a, _b;
                 const cancellation = new cancellation_1.Cancellation();
-                let hover = false;
+                let hover = (_b = (_a = global_1.document.activeElement) === null || _a === void 0 ? void 0 : _a.contains(editor)) !== null && _b !== void 0 ? _b : true;
                 cancellation.register(typed_dom_1.bind(editor, 'mouseenter', () => {
                     hover = true;
                 }));

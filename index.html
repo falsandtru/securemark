@@ -565,6 +565,7 @@
     el?.scrollIntoView({ block: 'nearest' });
   });
   viewer.addEventListener('click', ev => {
+    if (!window.getSelection().isCollapsed) return;
     if (ev.target.matches('a, a *')) return;
     let target = ev.target;
     while (target.parentNode !== viewer) {
