@@ -542,7 +542,7 @@
   const editor = document.getElementById('editor');
   const viewer = document.getElementById('viewer');
   const { bind, render, sync, caches } = require('securemark');
-  const { parse, nearest } = bind(viewer, {
+  const { parse, nearest, position } = bind(viewer, {
     caches,
     footnotes: {
       annotation: document.getElementById('annotation'),
@@ -558,23 +558,36 @@
   }, {
     rootMargin: '100px',
   });
-  sync(editor, viewer, [
-    document.getElementById('annotation'),
-    document.getElementById('reference'),
-  ]);
   editor.addEventListener('click', () => {
     const el = nearest(editor.selectionStart);
     el?.scrollIntoView({ block: 'start' });
     viewer.scrollBy({ top: -viewer.clientHeight / 9 });
     el?.scrollIntoView({ block: 'nearest' });
   });
+  viewer.addEventListener('click', ev => {
+    if (ev.target.tagName === 'A') return;
+    let target = ev.target;
+    while (target.parentNode !== viewer) {
+      target = target.parentNode;
+    }
+    const pos = position(target);
+    if (pos === -1) return;
+    editor.setSelectionRange(pos, pos);
+    editor.focus();
+  });
+  sync(editor, viewer, [
+    document.getElementById('annotation'),
+    document.getElementById('reference'),
+  ]);
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   document.getElementById('chars').textContent = editor.value.length;
   let wait;
   (async () => {
-    let timer = 0;
     log(await display());
+    let timer = 0;
+    editor.addEventListener('input', run);
+    editor.addEventListener('change', run);
     function run() {
       clearTimeout(timer);
       wait = wait || new Promise(requestAnimationFrame);
@@ -586,8 +599,6 @@
         share();
       }, 500);
     }
-    editor.addEventListener('input', run);
-    editor.addEventListener('change', run);
   })();
   async function display() {
     const { Date } = global;
