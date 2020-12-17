@@ -8039,7 +8039,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const cancellation_1 = _dereq_('spica/cancellation');
             const typed_dom_1 = _dereq_('typed-dom');
-            function sync(editor, viewer, footnotes) {
+            function sync(editor, viewer, bottom = viewer.firstElementChild) {
                 var _a, _b;
                 const cancellation = new cancellation_1.Cancellation();
                 let hover = (_b = (_a = global_1.document.activeElement) === null || _a === void 0 ? void 0 : _a.contains(editor)) !== null && _b !== void 0 ? _b : true;
@@ -8058,12 +8058,8 @@ require = function () {
                     case 0:
                         return void viewer.scrollTo({ top: 0 });
                     default:
-                        return void viewer.scrollBy({
-                            top: global_1.Math.round(+delta * footnotes.reduce((scrollHeight, el) => {
-                                const {marginTop, marginBottom, display} = global_1.window.getComputedStyle(el);
-                                return display === 'none' ? scrollHeight : scrollHeight - el.offsetHeight - +marginTop.slice(0, -2) - +marginBottom.slice(0, -2);
-                            }, viewer.scrollHeight - viewer.offsetHeight) / (editor.scrollHeight - editor.offsetHeight))
-                        });
+                        const viewer_scrollHeight = (bottom === null || bottom === void 0 ? void 0 : bottom.offsetTop) ? bottom.offsetTop - +global_1.window.getComputedStyle(bottom).marginTop.slice(0, -2) : viewer.scrollHeight;
+                        return void viewer.scrollBy({ top: global_1.Math.sign(delta) * global_1.Math.ceil(+global_1.Math.abs(delta) * (viewer_scrollHeight - viewer.clientHeight) / (editor.scrollHeight - editor.clientHeight)) });
                     }
                 }, { passive: true }));
                 return cancellation.cancel;

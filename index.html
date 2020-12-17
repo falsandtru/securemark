@@ -577,10 +577,7 @@
     editor.setSelectionRange(pos, pos);
     editor.focus();
   });
-  sync(editor, viewer, [
-    document.getElementById('annotation'),
-    document.getElementById('reference'),
-  ]);
+  sync(editor, viewer);
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   document.getElementById('chars').textContent = editor.value.length;
