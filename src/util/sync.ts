@@ -1,4 +1,4 @@
-import { window } from 'spica/global';
+import { Math, window } from 'spica/global';
 import { Cancellation } from 'spica/cancellation';
 import { bind } from 'typed-dom';
 
@@ -12,7 +12,7 @@ export function sync(editor: HTMLElement, viewer: HTMLElement, footnotes: readon
   cancellation.register(bind(editor, 'scroll', () => {
     if (!active) return;
     return void viewer.scrollTo({
-      top:
+      top: Math.round(
         + editor.scrollTop
         * footnotes.reduce((height, el) => {
             const { marginTop, marginBottom } = window.getComputedStyle(el);
@@ -21,7 +21,7 @@ export function sync(editor: HTMLElement, viewer: HTMLElement, footnotes: readon
               - +marginTop.slice(0, -2)
               - +marginBottom.slice(0, -2);
           }, viewer.scrollHeight)
-        / editor.scrollHeight,
+        / editor.scrollHeight),
     });
   }, { passive: true }));
   return cancellation.cancel;
