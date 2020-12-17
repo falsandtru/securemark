@@ -1,10 +1,10 @@
-import { Math, window } from 'spica/global';
+import { Math, window, document } from 'spica/global';
 import { Cancellation } from 'spica/cancellation';
 import { bind } from 'typed-dom';
 
 export function sync(editor: HTMLElement, viewer: HTMLElement, footnotes: readonly HTMLOListElement[]): () => void {
   const cancellation = new Cancellation();
-  let hover = false;
+  let hover = document.activeElement?.contains(editor) ?? true;
   cancellation.register(bind(editor, 'mouseenter', () => {
     hover = true;
   }));
