@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.192.0
+
+- Add position function.
+
 ## 0.191.0
 
 - Refine bind function.

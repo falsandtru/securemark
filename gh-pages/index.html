@@ -542,7 +542,7 @@
   const editor = document.getElementById('editor');
   const viewer = document.getElementById('viewer');
   const { bind, render, sync, caches } = require('securemark');
-  const { parse, nearest } = bind(viewer, {
+  const { parse, nearest, position } = bind(viewer, {
     caches,
     footnotes: {
       annotation: document.getElementById('annotation'),
@@ -563,6 +563,17 @@
     el?.scrollIntoView({ block: 'start' });
     viewer.scrollBy({ top: -viewer.clientHeight / 9 });
     el?.scrollIntoView({ block: 'nearest' });
+  });
+  viewer.addEventListener('click', ev => {
+    if (ev.target.tagName === 'A') return;
+    let target = ev.target;
+    while (target.parentNode !== viewer) {
+      target = target.parentNode;
+    }
+    const pos = position(target);
+    if (pos === -1) return;
+    editor.setSelectionRange(pos, pos);
+    editor.focus();
   });
   sync(editor, viewer, [
     document.getElementById('annotation'),

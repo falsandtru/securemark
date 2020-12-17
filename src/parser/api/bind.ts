@@ -19,6 +19,7 @@ interface Settings extends ParserSettings {
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): {
   parse: (source: string) => Generator<Result, undefined, undefined>;
   nearest: (position: number) => HTMLElement | undefined;
+  position: (block: HTMLElement) => number;
 } {
   settings = !settings.host ? { ...settings, host: new URL(location.pathname, location.origin) } : settings;
   if (settings.host?.origin === 'null') throw new Error(`Invalid host: ${settings.host.href}`);
@@ -33,6 +34,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   return {
     parse,
     nearest,
+    position,
   };
 
   function* parse(source: string): Generator<Result, undefined, undefined> {
@@ -146,5 +148,15 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       if (len >= position) break;
     }
     return el;
+  }
+
+  function position(source: HTMLElement): number {
+    let len = 0;
+    for (let i = 0; i < blocks.length; ++i) {
+      const block = blocks[i];
+      if (block[1].includes(source)) return len;
+      len += block[0].length;
+    }
+    return -1;
   }
 }
