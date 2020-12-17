@@ -1,14 +1,14 @@
-import { ParserSettings, Result } from '../../..';
+import { ParserSettings, Progress } from '../../..';
 import { bind } from './bind';
 import { html } from 'typed-dom';
 import { Sequence } from 'spica/sequence';
 
 describe('Unit: parser/api/bind', () => {
   describe('bind', () => {
-    function inspect(iter: Iterable<Result>) {
+    function inspect(iter: Iterable<Progress>) {
       return [...iter].flatMap(s => 'value' in s && s.value instanceof HTMLElement && s.value.parentNode ? [s.value.outerHTML] : []);
     }
-    function inspectS(iter: IterableIterator<Result>, count: number) {
+    function inspectS(iter: IterableIterator<Progress>, count: number) {
       return Sequence.from(iter)
         .bind(result => {
           switch (result.type) {

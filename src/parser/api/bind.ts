@@ -1,6 +1,6 @@
 import { location } from 'spica/global';
 import { ObjectAssign, ObjectCreate } from 'spica/alias';
-import { ParserSettings, Result } from '../../..';
+import { ParserSettings, Progress } from '../../..';
 import { eval } from '../../combinator';
 import { header } from '../header';
 import { block } from '../block';
@@ -17,7 +17,7 @@ interface Settings extends ParserSettings {
 }
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): {
-  parse: (source: string) => Generator<Result, undefined, undefined>;
+  parse: (source: string) => Generator<Progress, undefined, undefined>;
   nearest: (position: number) => HTMLElement | undefined;
   position: (block: HTMLElement) => number;
 } {
@@ -37,7 +37,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     position,
   };
 
-  function* parse(source: string): Generator<Result, undefined, undefined> {
+  function* parse(source: string): Generator<Progress, undefined, undefined> {
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
     settings = url ? ObjectAssign(ObjectCreate(settings), { url: new URL(url, url) }) : settings;
