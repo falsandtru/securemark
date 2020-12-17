@@ -8041,20 +8041,29 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             function sync(editor, viewer, footnotes) {
                 const cancellation = new cancellation_1.Cancellation();
-                let active = true;
-                cancellation.register(typed_dom_1.bind(editor, 'focus', ev => {
-                    active = ev.defaultPrevented;
-                    setTimeout(() => active = true, 30);
+                let hover = false;
+                cancellation.register(typed_dom_1.bind(editor, 'mouseenter', () => {
+                    hover = true;
                 }));
+                cancellation.register(typed_dom_1.bind(editor, 'mouseleave', () => {
+                    hover = false;
+                }));
+                let scroll = editor.scrollTop;
                 cancellation.register(typed_dom_1.bind(editor, 'scroll', () => {
-                    if (!active)
+                    if (!hover)
                         return;
-                    return void viewer.scrollTo({
-                        top: global_1.Math.round(+editor.scrollTop * footnotes.reduce((height, el) => {
-                            const {marginTop, marginBottom} = global_1.window.getComputedStyle(el);
-                            return height - el.clientHeight - +marginTop.slice(0, -2) - +marginBottom.slice(0, -2);
-                        }, viewer.scrollHeight) / editor.scrollHeight)
-                    });
+                    const delta = editor.scrollTop - scroll;
+                    switch (scroll += delta) {
+                    case 0:
+                        return void viewer.scrollTo({ top: 0 });
+                    default:
+                        return void viewer.scrollBy({
+                            top: global_1.Math.round(+delta * footnotes.reduce((scrollHeight, el) => {
+                                const {marginTop, marginBottom, display} = global_1.window.getComputedStyle(el);
+                                return display === 'none' ? scrollHeight : scrollHeight - el.offsetHeight - +marginTop.slice(0, -2) - +marginBottom.slice(0, -2);
+                            }, viewer.scrollHeight - viewer.offsetHeight) / (editor.scrollHeight - editor.offsetHeight))
+                        });
+                    }
                 }, { passive: true }));
                 return cancellation.cancel;
             }
