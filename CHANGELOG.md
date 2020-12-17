@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.192.1
+
+- Improve sync function.
+
 ## 0.192.0
 
 - Add position function.
