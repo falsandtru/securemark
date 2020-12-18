@@ -14,7 +14,7 @@ import { push } from 'spica/array';
 import { frag } from 'typed-dom';
 
 interface Options extends ParserOptions {
-  readonly url?: global.URL;
+  readonly header?: boolean;
   readonly test?: boolean;
 }
 
@@ -26,7 +26,7 @@ export function parse(source: string, opts: Options = {}): DocumentFragment {
   //assert(Object.freeze(opts));
   const node = frag([...segment(normalize(source))]
     .reduce((acc, seg, i) =>
-      push(acc, eval(i === 0 && header(seg, opts) || block(seg, opts), []))
+      push(acc, eval(i === 0 && opts.header !== false && header(seg, opts) || block(seg, opts), []))
     , []));
   if (opts.test && opts.hasOwnProperty('test')) return node;
   for (const _ of footnote(node, opts.footnotes, opts));

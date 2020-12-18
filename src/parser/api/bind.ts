@@ -13,7 +13,6 @@ import { URL } from 'spica/url';
 import { push, splice } from 'spica/array';
 
 interface Settings extends ParserSettings {
-  readonly url?: global.URL;
 }
 
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): {
