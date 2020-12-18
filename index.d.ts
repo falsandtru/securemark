@@ -23,7 +23,7 @@ export function quote(address: string, range: Range): string;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
-export function sync(editor: HTMLElement, viewer: HTMLElement, bottom?: HTMLElement | null): () => void;
+export function sync(editor: HTMLElement, viewer: HTMLElement, bottom?: Element | null): () => void;
 
 export type ParserOptions = Partial<ParserSettings>;
 export interface ParserSettings {

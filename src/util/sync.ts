@@ -5,7 +5,7 @@ import { bind } from 'typed-dom';
 export function sync(
   editor: HTMLElement,
   viewer: HTMLElement,
-  bottom: HTMLElement | null = viewer.firstElementChild as HTMLElement,
+  bottom: Element | null = viewer.firstElementChild,
 ): () => void {
   const cancellation = new Cancellation();
   let hover = document.activeElement?.contains(editor) ?? true;
@@ -23,8 +23,9 @@ export function sync(
       case 0:
         return void viewer.scrollTo({ top: 0 });
       default:
-        const viewer_scrollHeight = bottom?.offsetTop
-          ? bottom.offsetTop - +window.getComputedStyle(bottom).marginTop.slice(0, -2)
+        const last = bottom?.previousElementSibling as HTMLElement | null;
+        const viewer_scrollHeight = last
+          ? last.offsetTop + last.offsetHeight + +window.getComputedStyle(last).marginBottom.slice(0, -2)
           : viewer.scrollHeight;
         return void viewer.scrollBy({
           top: Math.sign(delta) * Math.ceil(
