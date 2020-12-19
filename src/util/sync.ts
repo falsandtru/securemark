@@ -1,5 +1,5 @@
 import { undefined, Math, window, document } from 'spica/global';
-import { fanOut } from 'spica/arrow';
+import { aggregate } from 'spica/arrow';
 import { replaceReturn } from 'spica/function';
 import { bind } from 'typed-dom';
 
@@ -10,7 +10,7 @@ export function sync(
 ): () => void {
   let hover = document.activeElement?.contains(editor) ?? true;
   let scroll = editor.scrollTop;
-  return replaceReturn(fanOut(
+  return replaceReturn(aggregate(
     bind(editor, 'mouseenter', () => {
       hover = true;
     }),
