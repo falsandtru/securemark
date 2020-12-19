@@ -213,11 +213,15 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.fanOut = void 0;
-            function fanOut(...as) {
+            exports.aggregate = exports.bundle = void 0;
+            function bundle(...as) {
+                return (...bs) => as.map((f, i) => f(bs[i]));
+            }
+            exports.bundle = bundle;
+            function aggregate(...as) {
                 return b => as.map(f => f(b));
             }
-            exports.fanOut = fanOut;
+            exports.aggregate = aggregate;
         },
         {}
     ],
@@ -7523,7 +7527,7 @@ require = function () {
                 var _a, _b;
                 let hover = (_b = (_a = global_1.document.activeElement) === null || _a === void 0 ? void 0 : _a.contains(editor)) !== null && _b !== void 0 ? _b : true;
                 let scroll = editor.scrollTop;
-                return function_1.replaceReturn(arrow_1.fanOut(typed_dom_1.bind(editor, 'mouseenter', () => {
+                return function_1.replaceReturn(arrow_1.aggregate(typed_dom_1.bind(editor, 'mouseenter', () => {
                     hover = true;
                 }), typed_dom_1.bind(editor, 'mouseleave', () => {
                     hover = false;
