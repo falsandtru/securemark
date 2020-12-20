@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
-import { sequence, focus, creator, bind, surround, lazy, eval, exec } from '../../combinator';
+import { sequence, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { html } from 'typed-dom';

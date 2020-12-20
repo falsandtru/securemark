@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { MathBlockParser } from '../block';
-import { block, validate, fmap, clear, fence } from '../../combinator';
+import { block, validate, fence, clear, fmap } from '../../combinator';
 import { html } from 'typed-dom';
 
 const opener = /^(\$\$)(?!\$)([^\n]*)(?:$|\n)/;

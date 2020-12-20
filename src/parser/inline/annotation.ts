@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
-import { union, some, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
+import { union, some, validate, guard, context, creator, surround, lazy, bind } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';

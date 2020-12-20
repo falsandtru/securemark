@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { subsequence, some, focus, validate, guard, context, creator, bind, surround, lazy } from '../../combinator';
+import { subsequence, some, validate, focus, guard, context, creator, surround, lazy, bind } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag, stringify } from '../util';
 import { inline } from '../inline';
 import { html } from 'typed-dom';

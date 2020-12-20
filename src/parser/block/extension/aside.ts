@@ -1,6 +1,6 @@
 import { ObjectCreate, ObjectAssign } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { block, validate, creator, fmap, fence } from '../../../combinator';
+import { block, validate, fence, creator, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
 import { parse } from '../../api/parse';
 import { html } from 'typed-dom';

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
-import { Parser, Ctx, fmap, eval } from '../combinator';
+import { Parser, Ctx, eval, fmap } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { uuid } from 'spica/uuid';

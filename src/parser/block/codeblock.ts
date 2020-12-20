@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { CodeBlockParser } from '../block';
-import { some, block, validate, fmap, clear, fence, eval } from '../../combinator';
+import { some, block, validate, fence, clear, fmap, eval } from '../../combinator';
 import { defrag } from '../util';
 import { autolink } from '../autolink';
 import { escsource } from '../source';

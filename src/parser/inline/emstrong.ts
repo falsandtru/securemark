@@ -1,5 +1,5 @@
 import { EmStrongParser, inline } from '../inline';
-import { union, some, creator, bind, surround, lazy } from '../../combinator';
+import { union, some, creator, surround, lazy, bind } from '../../combinator';
 import { startTight, isEndTight, trimEnd, defrag } from '../util';
 import { str } from '../source';
 import { html } from 'typed-dom';

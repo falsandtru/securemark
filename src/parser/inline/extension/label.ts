@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../inline';
-import { union, validate, guard, creator, fmap, surround, clear } from '../../../combinator';
+import { union, validate, guard, creator, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
 import { html } from 'typed-dom';
 import { join } from 'spica/array';

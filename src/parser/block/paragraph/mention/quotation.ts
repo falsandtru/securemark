@@ -1,5 +1,5 @@
 import { ParagraphParser } from '../../../block';
-import { union, some, block, validate, rewrite, creator, fmap, convert, lazy, eval } from '../../../../combinator';
+import { union, some, block, validate, rewrite, creator, convert, lazy, fmap, eval } from '../../../../combinator';
 import { defrag } from '../../../util';
 import { math } from '../../../inline';
 import { autolink } from '../../../autolink';

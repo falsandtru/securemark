@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, some, block, line, focus, context, creator, fmap, match, memoize, convert, indent, trim, lazy } from '../../combinator';
+import { union, inits, some, block, line, indent, focus, context, creator, match, memoize, convert, trim, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';

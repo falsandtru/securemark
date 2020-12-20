@@ -1,6 +1,6 @@
 import { ObjectCreate, ObjectAssign } from 'spica/alias';
 import { BlockquoteParser } from '../block';
-import { union, some, block, validate, rewrite, creator, fmap, open, convert, lazy } from '../../combinator';
+import { union, some, block, validate, rewrite, creator, open, convert, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { autolink } from '../autolink';
 import { contentline } from '../source';

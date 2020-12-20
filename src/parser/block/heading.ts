@@ -1,5 +1,5 @@
 import { HeadingParser } from '../block';
-import { union, some, block, line, focus, validate, rewrite, context, fmap, open, trim } from '../../combinator';
+import { union, some, block, line, validate, focus, rewrite, context, open, trim, fmap } from '../../combinator';
 import { startTight, defrag } from '../util';
 import { inline, indexer, indexee } from '../inline';
 import { str } from '../source';
