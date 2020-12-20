@@ -1,6 +1,6 @@
-import { undefined, Math, window, document } from 'spica/global';
+import { Math, window, document } from 'spica/global';
 import { aggregate } from 'spica/arrow';
-import { replaceReturn } from 'spica/function';
+import { clear } from 'spica/function';
 import { bind } from 'typed-dom';
 
 export function sync(
@@ -10,7 +10,7 @@ export function sync(
 ): () => void {
   let hover = document.activeElement?.contains(editor) ?? true;
   let scroll = editor.scrollTop;
-  return replaceReturn(aggregate(
+  return clear(aggregate(
     bind(editor, 'mouseenter', () => {
       hover = true;
     }),
@@ -35,6 +35,5 @@ export function sync(
               / (editor.scrollHeight - editor.clientHeight)),
           });
       }
-    }, { passive: true })),
-    () => undefined);
+    }, { passive: true })));
 }
