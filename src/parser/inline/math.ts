@@ -9,5 +9,12 @@ export const math: MathParser = creator(fmap(
   ([source], _, { caches: { math: cache = undefined } = {} }) => [
     (source = `\${${source.trim()}}$`) && cache?.has(source)
       ? cache.get(source)!.cloneNode(true)
-      : html('span', { class: 'math notranslate', 'data-src': source }, source)
+      : source.indexOf('\\begin') === -1
+        ? html('span', { class: 'math notranslate', 'data-src': source }, source)
+        : html('span', {
+            class: 'notranslate invalid',
+            'data-invalid-syntax': 'math',
+            'data-invalid-type': 'content',
+            'data-invalid-message': 'Environments are disallowed with inline syntax.',
+          }, source)
   ]));
