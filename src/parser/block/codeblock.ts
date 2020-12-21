@@ -47,7 +47,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     else {
       define(el, defrag(eval(some(autolink)(el.textContent!, context), [])));
     }
-    path && el.setAttribute('data-file', path);
+    path && el.setAttribute('data-path', path);
     if (context.caches?.code?.has(`${lang}\n${el.textContent}`)) {
       define(el, context.caches.code.get(`${lang}\n${el.textContent}`)!.cloneNode(true).childNodes);
     }
