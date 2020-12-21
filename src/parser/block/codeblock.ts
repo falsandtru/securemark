@@ -32,7 +32,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
     const file = path.split('/').pop() || '';
-    const ext = file && file.includes('.') && file[0] !== '.'
+    const ext = file && file.indexOf('.') > -1 && file[0] !== '.'
       ? file.split('.').pop()!
       : '';
     lang = language.test(lang || ext)

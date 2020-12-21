@@ -84,7 +84,7 @@ export function resolve(uri: string, host: global.URL | Location, source: global
   switch (true) {
     case uri.slice(0, 2) === '^/':
       const filename = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-      return filename.includes('.')
+      return filename.indexOf('.') > -1
         ? `${host.pathname.slice(0, -filename.length)}${uri.slice(2)}`
         : `${fillTrailingSlash(host.pathname)}${uri.slice(2)}`;
     case host.origin === source.origin
