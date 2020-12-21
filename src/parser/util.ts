@@ -87,8 +87,8 @@ export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T
   }
 }
 
-export function trimEnd<T extends HTMLElement | string>(nodes: T[]): T[];
-export function trimEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+export function trimEndBR<T extends HTMLElement | string>(nodes: T[]): T[];
+export function trimEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
   if (nodes.length === 0) return nodes;
   const node = nodes[nodes.length - 1];
   return typeof node === 'object' && node.tagName === 'BR'

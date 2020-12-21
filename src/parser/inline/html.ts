@@ -3,7 +3,7 @@ import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototype
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
 import { union, some, validate, context, creator, surround, match, memoize, lazy } from '../../combinator';
-import { startTight, isEndTight, trimEnd, defrag, stringify } from '../util';
+import { startTight, isEndTight, trimEndBR, defrag, stringify } from '../util';
 import { str } from '../source';
 import { DeepImmutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';
@@ -65,7 +65,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         str(`</${tag}>`), false,
         ([as, bs, cs], rest, context) =>
           isEndTight(bs)
-            ? [[elem(tag, as, trimEnd(bs), cs, context)], rest]
+            ? [[elem(tag, as, trimEndBR(bs), cs, context)], rest]
             : undefined)))),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
@@ -78,7 +78,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
           isEndTight(bs)
-            ? [[elem(tag, as, trimEnd(bs), cs, {})], rest]
+            ? [[elem(tag, as, trimEndBR(bs), cs, {})], rest]
             : as.length === 1
               ? [push(unshift(as, bs), cs), rest]
               : undefined,

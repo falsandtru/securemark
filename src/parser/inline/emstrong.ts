@@ -1,6 +1,6 @@
 import { EmStrongParser, inline } from '../inline';
 import { union, some, creator, surround, lazy, bind } from '../../combinator';
-import { startTight, isEndTight, trimEnd, defrag } from '../util';
+import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { str } from '../source';
 import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
@@ -17,19 +17,19 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
           union([some(inline, '**')]),
           (ms, rest) =>
             rest.slice(0, 2) === '**' && isEndTight(ms)
-              ? [[html('strong', unshift([html('em', defrag(trimEnd(bs)))], defrag(trimEnd(ms))))], rest.slice(2)]
-              : [unshift(['**', html('em', defrag(trimEnd(bs)))], ms), rest])
-          (rest, context) || [['**', html('em', defrag(trimEnd(bs)))], rest];
+              ? [[html('strong', unshift([html('em', defrag(trimEndBR(bs)))], defrag(trimEndBR(ms))))], rest.slice(2)]
+              : [unshift(['**', html('em', defrag(trimEndBR(bs)))], ms), rest])
+          (rest, context) || [['**', html('em', defrag(trimEndBR(bs)))], rest];
       case '**':
         return bind<EmStrongParser>(
           union([some(inline, '*')]),
           (ms, rest) =>
             rest.slice(0, 1) === '*' && isEndTight(ms)
-              ? [[html('em', unshift([html('strong', defrag(trimEnd(bs)))], defrag(trimEnd(ms))))], rest.slice(1)]
-              : [unshift(['*', html('strong', defrag(trimEnd(bs)))], ms), rest])
-          (rest, context) || [['*', html('strong', defrag(trimEnd(bs)))], rest];
+              ? [[html('em', unshift([html('strong', defrag(trimEndBR(bs)))], defrag(trimEndBR(ms))))], rest.slice(1)]
+              : [unshift(['*', html('strong', defrag(trimEndBR(bs)))], ms), rest])
+          (rest, context) || [['*', html('strong', defrag(trimEndBR(bs)))], rest];
       case '***':
-        return [[html('em', [html('strong', defrag(trimEnd(bs)))])], rest];
+        return [[html('em', [html('strong', defrag(trimEndBR(bs)))])], rest];
     }
     assert(false);
   },

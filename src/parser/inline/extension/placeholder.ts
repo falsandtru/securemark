@@ -1,6 +1,6 @@
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, creator, surround, lazy } from '../../../combinator';
-import { startTight, isEndTight, trimEnd, defrag } from '../../util';
+import { startTight, isEndTight, trimEndBR, defrag } from '../../util';
 import { str } from '../../source';
 import { html } from 'typed-dom';
 import { unshift, push } from 'spica/array';
@@ -13,7 +13,7 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
   str(']'), false,
   ([as, bs, cs], rest) => [
     isEndTight(bs)
-      ? [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax', 'data-invalid-message': 'Invalid symbol.' }, defrag(trimEnd(bs)))]
+      ? [html('span', { class: 'invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax', 'data-invalid-message': 'Invalid symbol.' }, defrag(trimEndBR(bs)))]
       : push(unshift(as, bs), cs),
     rest
   ],
