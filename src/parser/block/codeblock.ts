@@ -32,7 +32,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
     const file = path.split('/').pop() || '';
-    const ext = file && file.indexOf('.') > -1 && file[0] !== '.'
+    const ext = file && file.indexOf('.') > 0
       ? file.split('.').pop()!
       : '';
     lang = language.test(lang || ext)
@@ -47,9 +47,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     else {
       define(el, defrag(eval(some(autolink)(el.textContent!, context), [])));
     }
-    if (path) {
-      el.setAttribute('data-file', path);
-    }
+    path && el.setAttribute('data-file', path);
     if (context.caches?.code?.has(`${lang}\n${el.textContent}`)) {
       define(el, context.caches.code.get(`${lang}\n${el.textContent}`)!.cloneNode(true).childNodes);
     }
