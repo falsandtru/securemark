@@ -54,10 +54,12 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('``` b c\n```')), [['<pre class="notranslate invalid">``` b c\n```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` b\\ c\n```')), [['<pre class="notranslate" data-path="b\\ c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` b.c\n```')), [['<pre class="notranslate code language-c" data-lang="c" data-path="b.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```  b.c \n```')), [['<pre class="notranslate code language-c" data-lang="c" data-path="b.c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('``` .b\n```')), [['<pre class="notranslate" data-path=".b"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```~/.c\n```')), [['<pre class="notranslate" data-path="~/.c"></pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('```~/b.c\n```')), [['<pre class="notranslate code language-c" data-lang="c" data-path="~/b.c"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```  b \n```')), [['<pre class="notranslate" data-path="b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` ~/.b\n```')), [['<pre class="notranslate" data-path="~/.b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('``` ~/b.c\n```')), [['<pre class="notranslate code language-c" data-lang="c" data-path="~/b.c"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```.b\n```')), [['<pre class="notranslate" data-path=".b"></pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```b.c\n```')), [['<pre class="notranslate code language-c" data-lang="c" data-path="b.c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```a b.c\n```')), [['<pre class="notranslate code language-a" data-lang="a" data-path="b.c"></pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```A b.c\n```')), [['<pre class="notranslate invalid">```A b.c\n```</pre>'], '']);
     });
