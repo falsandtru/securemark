@@ -1,7 +1,7 @@
 import { Math, window, document } from 'spica/global';
 import { aggregate } from 'spica/arrow';
 import { clear } from 'spica/function';
-import { bind } from 'typed-dom';
+import { bind, once } from 'typed-dom';
 
 export function sync(
   editor: HTMLElement,
@@ -11,12 +11,24 @@ export function sync(
   let hover = document.activeElement?.contains(editor) ?? true;
   let scroll = editor.scrollTop;
   return clear(aggregate(
+    once(viewer, 'mousemove', () => {
+      hover = false;
+    }, passive),
+    once(viewer, 'mousedown', () => {
+      hover = false;
+    }, passive),
+    once(viewer, 'wheel', () => {
+      hover = false;
+    }, passive),
+    once(viewer, 'scroll', () => {
+      hover = false;
+    }, passive),
     bind(editor, 'mouseenter', () => {
       hover = true;
-    }),
+    }, passive),
     bind(editor, 'mouseleave', () => {
       hover = false;
-    }),
+    }, passive),
     bind(editor, 'scroll', () => {
       if (!hover) return;
       const delta = editor.scrollTop - scroll;
@@ -35,5 +47,7 @@ export function sync(
               / (editor.scrollHeight - editor.clientHeight)),
           });
       }
-    }, { passive: true })));
+    }, passive)));
 }
+
+const passive = { passive: true };

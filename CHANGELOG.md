@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.192.5
+
+- Improve sync function.
+
 ## 0.192.4
 
 - Fix math parser to disallow environments to disallow linebreaks.
