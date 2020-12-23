@@ -1207,7 +1207,7 @@ require = function () {
             }
             exports.standardize = standardize;
             function encode(url) {
-                return url.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|%|[^=&]+/ig, str => str[0] === '%' && str.length === 3 ? str : encodeURIComponent(str))).replace(/%[0-9A-F]{2}/ig, str => str.toUpperCase()).replace(/#.+/, url.slice(url.indexOf('#')));
+                return url.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 2 ? str : '').replace(/%(?![0-9A-F]{2})|[^%\[\]]+/ig, global_1.encodeURI).replace(/\?[^#]+/, query => '?' + query.slice(1).replace(/%[0-9A-F]{2}|%|[^=&]+/ig, str => str[0] === '%' && str.length === 3 ? str : global_1.encodeURIComponent(str))).replace(/%[0-9A-F]{2}/ig, str => str.toUpperCase()).replace(/#.+/, url.slice(url.indexOf('#')));
             }
             exports._encode = encode;
             const internal = Symbol.for('spica/url::internal');
@@ -1317,25 +1317,47 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.uuid = void 0;
+            const global_1 = _dereq_('./global');
             const FORMAT_V4 = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
-            const {random} = Math;
             function uuid() {
                 let acc = '';
                 for (let i = 0; i < FORMAT_V4.length; ++i) {
-                    const c = FORMAT_V4[i];
-                    if (c === 'x' || c === 'y') {
-                        const r = random() * 16 | 0;
-                        const v = c == 'x' ? r : r & 3 | 8;
-                        acc += v.toString(16);
-                    } else {
-                        acc += c;
-                    }
+                    acc += calc(FORMAT_V4[i]);
                 }
                 return acc;
             }
             exports.uuid = uuid;
+            function calc(c) {
+                if (c === 'x' || c === 'y') {
+                    const r = rnd16();
+                    const v = c === 'x' ? r : r & 3 | 8;
+                    return hex[v];
+                } else {
+                    return c;
+                }
+            }
+            const buffer = new Uint16Array(256);
+            const scale = 1 << 16;
+            let index = buffer.length;
+            let denom = scale;
+            function rnd16() {
+                if (index === buffer.length) {
+                    global_1.crypto.getRandomValues(buffer);
+                    index = 0;
+                }
+                if (denom > 16) {
+                    denom = denom / 16;
+                    const rnd = buffer[index];
+                    buffer[index] = rnd % denom;
+                    return rnd / denom | 0;
+                } else {
+                    denom = scale;
+                    return buffer[index++] % 16;
+                }
+            }
+            const hex = [...Array(16)].map((_, i) => i.toString(16));
         },
-        {}
+        { './global': 14 }
     ],
     23: [
         function (_dereq_, module, exports) {
@@ -1542,14 +1564,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.uid = void 0;
+            exports.id = void 0;
             const uuid_1 = _dereq_('spica/uuid');
-            const id = uuid_1.uuid().split('-').pop();
+            const unique = uuid_1.uuid().split('-').pop();
             let counter = 0;
-            function uid() {
-                return `id-${ id }-${ ++counter }`;
+            function id() {
+                return `id-${ unique }-${ ++counter }`;
             }
-            exports.uid = uid;
+            exports.id = id;
         },
         { 'spica/uuid': 22 }
     ],
@@ -1631,7 +1653,7 @@ require = function () {
                     this.id_ = this.element.id.trim();
                     if (this.id_)
                         return this.id_;
-                    this.id_ = identity_1.uid();
+                    this.id_ = identity_1.id();
                     this.element.classList.add(this.id_);
                     return this.id_;
                 }
@@ -7563,11 +7585,19 @@ require = function () {
                 var _a, _b;
                 let hover = (_b = (_a = global_1.document.activeElement) === null || _a === void 0 ? void 0 : _a.contains(editor)) !== null && _b !== void 0 ? _b : true;
                 let scroll = editor.scrollTop;
-                return function_1.clear(arrow_1.aggregate(typed_dom_1.bind(editor, 'mouseenter', () => {
-                    hover = true;
-                }), typed_dom_1.bind(editor, 'mouseleave', () => {
+                return function_1.clear(arrow_1.aggregate(typed_dom_1.once(viewer, 'mousemove', () => {
                     hover = false;
-                }), typed_dom_1.bind(editor, 'scroll', () => {
+                }, passive), typed_dom_1.once(viewer, 'mousedown', () => {
+                    hover = false;
+                }, passive), typed_dom_1.once(viewer, 'wheel', () => {
+                    hover = false;
+                }, passive), typed_dom_1.once(viewer, 'scroll', () => {
+                    hover = false;
+                }, passive), typed_dom_1.bind(editor, 'mouseenter', () => {
+                    hover = true;
+                }, passive), typed_dom_1.bind(editor, 'mouseleave', () => {
+                    hover = false;
+                }, passive), typed_dom_1.bind(editor, 'scroll', () => {
                     if (!hover)
                         return;
                     const delta = editor.scrollTop - scroll;
@@ -7579,9 +7609,10 @@ require = function () {
                         const viewer_scrollHeight = last ? last.offsetTop + last.offsetHeight + +global_1.window.getComputedStyle(last).marginBottom.slice(0, -2) : viewer.scrollHeight;
                         return void viewer.scrollBy({ top: global_1.Math.sign(delta) * global_1.Math.ceil(+global_1.Math.abs(delta) * (viewer_scrollHeight - viewer.clientHeight) / (editor.scrollHeight - editor.clientHeight)) });
                     }
-                }, { passive: true })));
+                }, passive)));
             }
             exports.sync = sync;
+            const passive = { passive: true };
         },
         {
             'spica/arrow': 7,
