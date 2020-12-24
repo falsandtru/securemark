@@ -1,20 +1,21 @@
-import { undefined } from 'spica/global';
+import { undefined, Array } from 'spica/global';
 import { html } from 'typed-dom';
 import { push } from 'spica/array';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
-  const hs: HTMLHeadingElement[] = [];
   // Bug: Firefox
-  //for (let es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join()), i = 0, len = es.length; i < len; ++i) {
-  for (let es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${s}[id]`).join()), i = 0, len = es.length; i < len; ++i) {
+  //const es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join());
+  const es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${s}[id]`).join());
+  const hs: HTMLHeadingElement[] = Array(es.length);
+  for (let i = 0; i < hs.length; ++i) {
     const el = es[i];
     assert(el.parentNode === source);
     switch (el.tagName) {
       case 'ASIDE':
-        hs.push(html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes));
+        hs[i] = html(el.firstElementChild!.tagName.toLowerCase() as 'h1', { id: el.id, class: 'aside' }, el.firstElementChild!.cloneNode(true).childNodes);
         continue;
       default:
-        hs.push(el as HTMLHeadingElement);
+        hs[i] = el as HTMLHeadingElement;
         continue;
     }
   }

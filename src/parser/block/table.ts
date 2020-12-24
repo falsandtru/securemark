@@ -25,10 +25,10 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   })));
 
 function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: HTMLTableRowElement[]): void {
-  const as = [...alignment.children]
-    .reduce((acc, el) =>
-      push(acc, [el.textContent || acc.length > 0 && acc[acc.length - 1] || ''])
-    , []);
+  const as: string[] = Array(alignment.childElementCount);
+  for (let i = 0, es = alignment.children; i < as.length; ++i) {
+    as[i] = es[i].textContent || i > 0 && as[i - 1] || '';
+  }
   apply(head, as.slice(0, 2));
   for (let i = 0, len = rows.length; i < len; ++i) {
     apply(rows[i], as);

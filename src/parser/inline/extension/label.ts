@@ -1,3 +1,4 @@
+import { Array } from 'spica/global';
 import { ExtensionParser } from '../../inline';
 import { union, validate, guard, creator, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
@@ -36,16 +37,16 @@ function increment(number: string, position: number): string {
   assert(position > 0);
   if (number === '0' && position > 1) return increment('1', position);
   const ns = number.split('.');
-  const ms: number[] = [];
+  const ms: number[] = Array(position);
   for (let i = 0; i < position; ++i) {
-    ms.push(
+    ms[i] =
       i < ns.length
         ? i + 1 < position
           ? +ns[i]
           : +ns[i] + 1
         : i + 1 < position
           ? 0
-          : 1);
+          : 1;
   }
   return join(ms, '.');
 }
