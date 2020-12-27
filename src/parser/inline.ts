@@ -1,4 +1,4 @@
-import { MarkdownParser } from '../../markdown.d';
+import { MarkdownParser } from '../../markdown';
 import { union } from '../combinator';
 import { escape } from './inline/escape';
 import { annotation } from './inline/annotation';

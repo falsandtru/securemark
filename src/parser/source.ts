@@ -1,4 +1,4 @@
-import { MarkdownParser } from '../../markdown.d';
+import { MarkdownParser } from '../../markdown';
 
 import SourceParser = MarkdownParser.SourceParser;
 export import TextParser = SourceParser.TextParser;

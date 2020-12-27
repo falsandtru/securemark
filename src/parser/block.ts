@@ -1,5 +1,5 @@
 import { undefined } from 'spica/global';
-import { MarkdownParser } from '../../markdown.d';
+import { MarkdownParser } from '../../markdown';
 import { union, update, creator, recover } from '../combinator';
 import { emptyline } from './source/line';
 import { horizontalrule } from './block/horizontalrule';
