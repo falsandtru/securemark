@@ -3,7 +3,7 @@ import { isArray } from 'spica/alias';
 import { Parser, Ctx, eval, fmap } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
-import { uuid } from 'spica/uuid';
+import { rnd0Z } from 'spica/random';
 import { pop } from 'spica/array';
 import { define } from 'typed-dom';
 
@@ -142,7 +142,7 @@ export function error<T extends HTMLElement, D extends Parser<unknown>[]>(parser
     source[0] === '\0'
       ? fmap(parser, ([el]) => [
           define(el, {
-            id: `error:${uuid()}`,
+            id: `error:${rnd0Z(8)}`,
             class: 'error',
           })
         ])(source.slice(1), context)

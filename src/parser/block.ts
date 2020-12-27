@@ -16,8 +16,8 @@ import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
 import { localize } from './locale';
 import { error } from './util';
+import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom';
-import { uuid } from 'spica/uuid';
 
 export import BlockParser = MarkdownParser.BlockParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;
@@ -53,7 +53,7 @@ export const block: BlockParser = creator(recover(error(localize(
   (_, { id }, reason) => [
     [html('h1',
       {
-        id: id !== '' ? `error:${uuid()}` : undefined,
+        id: id !== '' ? `error:${rnd0Z(8)}` : undefined,
         class: 'error',
       },
       reason instanceof Error
