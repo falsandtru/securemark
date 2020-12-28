@@ -2,7 +2,7 @@ import { undefined, location, encodeURI, decodeURI, Location } from 'spica/globa
 import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, validate, guard, context, creator, surround, open, reverse, lazy, bind, eval } from '../../combinator';
-import { startTight, isEndTight, trimEndBR, dup, defrag, stringify } from '../util';
+import { startTight, isEndTight, dup, defrag, stringify } from '../util';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
@@ -58,7 +58,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
         rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
-        ? content = defrag(trimEndBR(content))
+        ? content = defrag(content)
         : decode(INSECURE_URI)
             .replace(/^tel:/, ''));
     if (!sanitize(new URL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
