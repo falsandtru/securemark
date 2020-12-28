@@ -20,9 +20,6 @@ export function sync(
     once(viewer, 'wheel', () => {
       hover = false;
     }, passive),
-    once(viewer, 'scroll', () => {
-      hover = false;
-    }, passive),
     bind(editor, 'mouseenter', () => {
       hover = true;
     }, passive),
