@@ -23,7 +23,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert.deepStrictEqual(inspect(parser('[^<# a #>]')), undefined);
       assert.deepStrictEqual(inspect(parser('[^<# a #>b]')), undefined);
       assert.deepStrictEqual(inspect(parser('[^ !http://host]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[^a')), [['[^', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('[^a')), undefined);
       assert.deepStrictEqual(inspect(parser('[^a  ]')), [['[^', 'a', '  ', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^a\\ \\ ]')), [['[^', 'a', ' ', ' ', ']'], '']);
       assert.deepStrictEqual(inspect(parser('[^a\n\n]')), [['[^', 'a', '<br>', '<br>', ']'], '']);

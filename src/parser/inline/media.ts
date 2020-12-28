@@ -11,7 +11,7 @@ import { html, define } from 'typed-dom';
 
 export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   '!',
-  validate(['[', '{'],
+  validate(['[', '{'], '}', '\n',
   validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
