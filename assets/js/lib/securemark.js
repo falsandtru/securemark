@@ -5393,19 +5393,19 @@ require = function () {
                 combinator_1.surround('[', body, ']'),
                 body
             ])));
-            exports.label = combinator_1.creator(combinator_1.fmap(combinator_1.validate([
+            exports.label = combinator_1.creator(combinator_1.validate([
                 '[$',
                 '$'
-            ], combinator_1.guard(context => {
+            ], combinator_1.fmap(combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.label) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.union([
                 combinator_1.surround('[', body, ']'),
                 body
-            ]))), ([text]) => [typed_dom_1.html('a', {
+            ])), ([text]) => [typed_dom_1.html('a', {
                     class: 'label',
                     'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase()
-                }, text)]));
+                }, text)])));
             function number(label, base) {
                 return isFixed(label) ? label.slice(label.lastIndexOf('-') + 1) : increment(base, base.split('.').length);
             }
@@ -5444,7 +5444,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str(/^\[[:^]/), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), source_1.str(']'), false, ([as, bs, cs], rest) => [
+            exports.placeholder = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('[', ']', combinator_1.surround(source_1.str(/^\[[:^]/), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), ']')), source_1.str(']'), false, ([as, bs, cs], rest) => [
                 util_1.isEndTight(bs) ? [typed_dom_1.html('span', {
                         class: 'invalid',
                         'data-invalid-syntax': 'extension',
@@ -5455,7 +5455,7 @@ require = function () {
             ], ([as, bs], rest) => [
                 array_1.unshift(as, bs),
                 rest
-            ])));
+            ]))));
         },
         {
             '../../../combinator': 30,
@@ -5686,7 +5686,7 @@ require = function () {
             exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.reverse(combinator_1.validate([
                 '[',
                 '{'
-            ], combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
+            ], '}', '\n', combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.link) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.tails([
@@ -5854,7 +5854,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.math = combinator_1.creator(combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'), ([source], _, {
+            exports.math = combinator_1.creator(combinator_1.validate('${', '}$', '\n', combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'), ([source], _, {
                 caches: {
                     math: cache = global_1.undefined
                 } = {}
@@ -5866,7 +5866,7 @@ require = function () {
                     'data-invalid-syntax': 'math',
                     'data-invalid-type': 'content',
                     'data-invalid-message': 'Environments are disallowed with inline syntax.'
-                }, source)]));
+                }, source)])));
         },
         {
             '../../combinator': 30,
@@ -5892,7 +5892,7 @@ require = function () {
             exports.media = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.validate([
                 '[',
                 '{'
-            ], combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
+            ], '}', '\n', combinator_1.validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/, combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.tails([
