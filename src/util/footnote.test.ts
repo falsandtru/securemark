@@ -19,7 +19,7 @@ describe('Unit: util/footnote', () => {
     });
 
     it('1', () => {
-      const target = parse('((a \n b))');
+      const target = parse('((a b))');
       const footnote = html('ol');
       for (let i = 0; i < 3; ++i) {
         assert.deepStrictEqual([...annotation(target, footnote)].length, i === 0 ? 3 : 2);
@@ -36,9 +36,7 @@ describe('Unit: util/footnote', () => {
           footnote.outerHTML,
           html('ol', [
             html('li', { id: 'annotation:def:1' }, [
-              'a',
-              html('br'),
-              ' b',
+              'a b',
               html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
             ]),
           ]).outerHTML);
@@ -156,7 +154,7 @@ describe('Unit: util/footnote', () => {
     });
 
     it('id', () => {
-      const target = parse('((a \n b))');
+      const target = parse('((a b))');
       const footnote = html('ol');
       for (let i = 0; i < 3; ++i) {
         assert.deepStrictEqual([...annotation(target, footnote, { id: '0' })].length, i === 0 ? 3 : 2);
@@ -173,9 +171,7 @@ describe('Unit: util/footnote', () => {
           footnote.outerHTML,
           html('ol', [
             html('li', { id: 'annotation:0:def:1' }, [
-              'a',
-              html('br'),
-              ' b',
+              'a b',
               html('sup', [html('a', { href: '#annotation:0:ref:1', rel: 'noopener' }, '~1')])
             ]),
           ]).outerHTML);

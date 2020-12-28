@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.192.5
+## 0.193.0
 
+- Change annotation syntax to disallow linebreaks.
 - Improve sync function.
 
 ## 0.192.4
