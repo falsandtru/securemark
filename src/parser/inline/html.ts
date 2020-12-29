@@ -175,7 +175,7 @@ export function attributes(
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = syntax === 'html'
       ? 'attribute'
-      : 'parameter';
+      : 'argument';
     attrs['data-invalid-message'] = `Invalid ${attrs['data-invalid-type']}.`;
   }
   return attrs;

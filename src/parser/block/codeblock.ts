@@ -28,8 +28,8 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     if (!closer || param !== path) return [html('pre', {
       class: `notranslate invalid`,
       'data-invalid-syntax': 'codeblock',
-      'data-invalid-type': closer ? 'parameter' : 'closer',
-      'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${delim}.`,
+      'data-invalid-type': closer ? 'argument' : 'closer',
+      'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
     const file = path.split('/').pop() || '';
     const ext = file && file.indexOf('.') > 0

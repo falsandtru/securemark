@@ -20,8 +20,8 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
     if (!closer || param.trimStart() !== '') return [html('pre', {
       class: 'notranslate invalid',
       'data-invalid-syntax': 'example',
-      'data-invalid-type': closer ? 'parameter' : 'closer',
-      'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${delim}.`,
+      'data-invalid-type': closer ? 'argument' : 'closer',
+      'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
     switch (type) {
       case 'markdown': {

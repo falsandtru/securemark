@@ -116,7 +116,7 @@ export function sanitize(uri: URL<string>, target: HTMLElement, text: string, or
     case 'https:': {
       uri.host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
       if (uri.host) return true;
-      type = 'parameter';
+      type = 'argument';
       message = 'Invalid host.';
       break;
     }
@@ -127,7 +127,7 @@ export function sanitize(uri: URL<string>, target: HTMLElement, text: string, or
       message = 'Invalid phone number.';
       break;
     default:
-      type = 'parameter';
+      type = 'argument';
       message = 'Invalid protocol.';
   }
   assert(!target.classList.contains('invalid'));
