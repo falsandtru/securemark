@@ -43,19 +43,19 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ]))))),
-  ([options, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
-    assert(options.every(p => typeof p === 'string'));
+  ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
+    assert(params.every(p => typeof p === 'string'));
     if (!isEndTight(content)) return;
     if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
-    const INSECURE_URI = options.shift()!;
+    const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const src = resolve(INSECURE_URI, context.host || location, context.url || location);
     const el = html('a',
       {
         href: src,
-        rel: `noopener${options.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
+        rel: `noopener${params.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
       },
       content.length > 0
         ? content = defrag(content)
@@ -64,7 +64,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     if (!sanitize(new URL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
     define(el, ObjectAssign(
-      attributes('link', optspec, options, []),
+      attributes('link', optspec, params, []),
       { nofollow: undefined }));
     return [[el], rest];
   })));
