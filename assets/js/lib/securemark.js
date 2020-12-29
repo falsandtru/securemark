@@ -5041,7 +5041,7 @@ require = function () {
             exports.code = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.code = combinator_1.creator(combinator_1.validate('`', combinator_1.match(/^(`+)(?!`)(?:([^\n]*?[^`\n])\1(?!`))?/, ([whole, , body]) => rest => body ? [
+            exports.code = combinator_1.creator(combinator_1.validate('`', '`', '\n', combinator_1.match(/^(`+)(?!`)(?:([^\n]*?[^`\n])\1(?!`))?/, ([whole, , body]) => rest => body ? [
                 [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
                 rest
             ] : [
@@ -6563,7 +6563,7 @@ require = function () {
             exports.nonAlphanumeric = /[^0-9A-Za-z]|$/;
             exports.nonWhitespace = /[\S\n]|$/;
             const repeat = str_1.str(/^(.)\1*/);
-            exports.text = combinator_1.creator(source => {
+            exports.text = combinator_1.creator((source, context) => {
                 if (source === '')
                     return;
                 const i = source.search(exports.separator);
@@ -6602,7 +6602,8 @@ require = function () {
                     case '+':
                     case '~':
                     case '=':
-                        return source[1] === source[0] ? repeat(source, {}) : [
+                    case '`':
+                        return source[1] === source[0] ? repeat(source, context) : [
                             [source[0]],
                             source.slice(1)
                         ];
