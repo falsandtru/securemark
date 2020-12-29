@@ -3653,8 +3653,8 @@ require = function () {
                     return [typed_dom_1.html('pre', {
                             class: `notranslate invalid`,
                             'data-invalid-syntax': 'codeblock',
-                            'data-invalid-type': closer ? 'parameter' : 'closer',
-                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
+                            'data-invalid-type': closer ? 'argument' : 'closer',
+                            'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
                 const file = path.split('/').pop() || '';
                 const ext = file && file.indexOf('.') > 0 ? file.split('.').pop() : '';
@@ -3775,8 +3775,8 @@ require = function () {
                     return [typed_dom_1.html('pre', {
                             class: `notranslate invalid`,
                             'data-invalid-syntax': 'aside',
-                            'data-invalid-type': closer ? 'parameter' : 'closer',
-                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
+                            'data-invalid-type': closer ? 'argument' : 'closer',
+                            'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
                 const annotation = typed_dom_1.html('ol', { class: 'annotation' });
                 const reference = typed_dom_1.html('ol', { class: 'reference' });
@@ -3831,8 +3831,8 @@ require = function () {
                     return [typed_dom_1.html('pre', {
                             class: 'notranslate invalid',
                             'data-invalid-syntax': 'example',
-                            'data-invalid-type': closer ? 'parameter' : 'closer',
-                            'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
+                            'data-invalid-type': closer ? 'argument' : 'closer',
+                            'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'markdown': {
@@ -4183,8 +4183,8 @@ require = function () {
             }) => [closer && param.trimStart() === '' ? (body = `$$\n${ body }$$`) && (cache === null || cache === void 0 ? void 0 : cache.has(body)) ? cache.get(body).cloneNode(true) : typed_dom_1.html('div', { class: `math notranslate` }, body) : typed_dom_1.html('pre', {
                     class: `math notranslate invalid`,
                     'data-invalid-syntax': 'mathblock',
-                    'data-invalid-type': closer ? 'parameter' : 'closer',
-                    'data-invalid-message': closer ? 'Invalid parameter.' : `Missing the closing delimiter ${ delim }.`
+                    'data-invalid-type': closer ? 'argument' : 'closer',
+                    'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
                 }, `${ opener }${ body }${ closer }`)])));
         },
         {
@@ -5601,7 +5601,7 @@ require = function () {
                     !classes.includes('invalid') && classes.push('invalid');
                     attrs.class = array_1.join(classes, ' ').trim();
                     attrs['data-invalid-syntax'] = syntax;
-                    attrs['data-invalid-type'] = syntax === 'html' ? 'attribute' : 'parameter';
+                    attrs['data-invalid-type'] = syntax === 'html' ? 'attribute' : 'argument';
                     attrs['data-invalid-message'] = `Invalid ${ attrs['data-invalid-type'] }.`;
                 }
                 return attrs;
@@ -5711,24 +5711,24 @@ require = function () {
                     exports.uri,
                     combinator_1.some(exports.option)
                 ]), /^ ?}/))
-            ]))))), ([options, content = []], rest, context) => {
+            ]))))), ([params, content = []], rest, context) => {
                 var _a, _b;
                 if (!util_1.isEndTight(content))
                     return;
                 if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
                     return;
-                const INSECURE_URI = options.shift();
+                const INSECURE_URI = params.shift();
                 const src = resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
                 const el = typed_dom_1.html('a', {
                     href: src,
-                    rel: `noopener${ options.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
+                    rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(content) : decode(INSECURE_URI).replace(/^tel:/, ''));
                 if (!sanitize(new url_1.URL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
                     return [
                         [el],
                         rest
                     ];
-                typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, options, []), { nofollow: global_1.undefined }));
+                typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, params, []), { nofollow: global_1.undefined }));
                 return [
                     [el],
                     rest
@@ -5766,7 +5766,7 @@ require = function () {
                         uri.host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
                         if (uri.host)
                             return true;
-                        type = 'parameter';
+                        type = 'argument';
                         message = 'Invalid host.';
                         break;
                     }
@@ -5777,7 +5777,7 @@ require = function () {
                     message = 'Invalid phone number.';
                     break;
                 default:
-                    type = 'parameter';
+                    type = 'argument';
                     message = 'Invalid protocol.';
                 }
                 typed_dom_1.define(target, {
@@ -5905,16 +5905,16 @@ require = function () {
                     combinator_1.some(link_1.option)
                 ]), /^ ?}/))
             ]))))), ([as, bs]) => bs ? [
-                [array_1.join(as)],
-                bs
+                bs,
+                [array_1.join(as)]
             ] : [
-                [''],
-                as
-            ]), ([[text], options], rest, context) => {
+                as,
+                ['']
+            ]), ([params, [text]], rest, context) => {
                 var _a, _b, _c, _d, _e, _f;
                 if (text.length > 0 && text.slice(-2).trimStart() === '')
                     return;
-                const INSECURE_URI = options.shift();
+                const INSECURE_URI = params.shift();
                 const src = link_1.resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
                 const url = new url_1.URL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
                 const cache = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.media;
@@ -5931,10 +5931,10 @@ require = function () {
                     ];
                 cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
                 typed_dom_1.define(el, {
-                    ...html_1.attributes('media', link_1.optspec, options, el.className.trim().split(/\s+/)),
+                    ...html_1.attributes('media', link_1.optspec, params, el.className.trim().split(/\s+/)),
                     nofollow: global_1.undefined
                 });
-                return ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.link) !== null && _f !== void 0 ? _f : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(options) } }${ rest }`, context) : [
+                return ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.link) !== null && _f !== void 0 ? _f : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context) : [
                     [el],
                     rest
                 ];
