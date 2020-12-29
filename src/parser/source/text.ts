@@ -9,7 +9,7 @@ export const nonAlphanumeric = /[^0-9A-Za-z]|$/;
 export const nonWhitespace = /[\S\n]|$/;
 const repeat = str(/^(.)\1*/);
 
-export const text: TextParser = creator(source => {
+export const text: TextParser = creator((source, context) => {
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {
@@ -33,7 +33,7 @@ export const text: TextParser = creator(source => {
         case '~':
         case '=':
           return source[1] === source[0]
-            ? repeat(source, {})
+            ? repeat(source, context)
             : [[source[0]], source.slice(1)];
         default:
           assert(source[0] !== '\n');
