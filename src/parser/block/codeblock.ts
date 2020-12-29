@@ -29,7 +29,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       class: `notranslate invalid`,
       'data-invalid-syntax': 'codeblock',
       'data-invalid-type': closer ? 'argument' : 'closer',
-      'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
+      'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
     const file = path.split('/').pop() || '';
     const ext = file && file.indexOf('.') > 0

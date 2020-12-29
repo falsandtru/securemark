@@ -128,12 +128,12 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
       return h(tag as 'span', attrs, defrag(bs));
   }
 }
-function invalid(type: string, message: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
+function invalid(type: string, description: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {
   return h('span', {
     class: 'invalid',
     'data-invalid-syntax': 'html',
     'data-invalid-type': type,
-    'data-invalid-message': message,
+    'data-invalid-description': description,
   }, defrag(push(unshift(as, bs), cs)));
 }
 
@@ -174,7 +174,7 @@ export function attributes(
     attrs['data-invalid-type'] = syntax === 'html'
       ? 'attribute'
       : 'argument';
-    attrs['data-invalid-message'] = `Invalid ${attrs['data-invalid-type']}.`;
+    attrs['data-invalid-description'] = `Invalid ${attrs['data-invalid-type']}.`;
   }
   return attrs;
 }

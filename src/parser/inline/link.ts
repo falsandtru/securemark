@@ -110,32 +110,32 @@ function fillTrailingSlash(pathname: string): string {
 
 export function sanitize(uri: URL<string>, target: HTMLElement, text: string, origin: string): boolean {
   let type: string;
-  let message: string;
+  let description: string;
   switch (uri.protocol) {
     case 'http:':
     case 'https:': {
       uri.host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
       if (uri.host) return true;
       type = 'argument';
-      message = 'Invalid host.';
+      description = 'Invalid host.';
       break;
     }
     case target.tagName === 'A'
       && 'tel:':
       if (`tel:${target.textContent!.replace(/-(?=[0-9])/g, '')}` === text) return true;
       type = 'content';
-      message = 'Invalid phone number.';
+      description = 'Invalid phone number.';
       break;
     default:
       type = 'argument';
-      message = 'Invalid protocol.';
+      description = 'Invalid protocol.';
   }
   assert(!target.classList.contains('invalid'));
   define(target, {
     class: `${target.className} invalid`.trim(),
     'data-invalid-syntax': 'link',
     'data-invalid-type': type,
-    'data-invalid-message': message,
+    'data-invalid-description': description,
     ...target.tagName === 'A'
       ? {
           href: null,

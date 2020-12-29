@@ -23,6 +23,6 @@ export const mathblock: MathBlockParser = block(validate('$$', fmap(
           class: `math notranslate invalid`,
           'data-invalid-syntax': 'mathblock',
           'data-invalid-type': closer ? 'argument' : 'closer',
-          'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
+          'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
         }, `${opener}${body}${closer}`),
   ])));

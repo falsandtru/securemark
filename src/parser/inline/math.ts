@@ -15,6 +15,6 @@ export const math: MathParser = creator(validate('${', '}$', '\n', fmap(
             class: 'notranslate invalid',
             'data-invalid-syntax': 'math',
             'data-invalid-type': 'content',
-            'data-invalid-message': 'Environments are disallowed with inline syntax.',
+            'data-invalid-description': 'Environments are disallowed with inline syntax.',
           }, source)
   ])));

@@ -93,7 +93,7 @@ describe('Unit: util/figure', () => {
             '<figure data-label="fig-a" data-group="fig" data-number="1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig 1. </span><figcaption></figcaption></figure>',
             '<p><a class="label" data-label="fig-2" href="#label:fig-2">Fig 2</a></p>',
             '<p><a class="label" data-label="$-4.1.1" href="#label:$-4.1.1">(4.1.1)</a></p>',
-            '<p><a class="label disabled invalid" data-label="fig-1" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-message="Missing the reference.">$fig-1</a></p>',
+            '<p><a class="label disabled invalid" data-label="fig-1" data-invalid-syntax="label" data-invalid-type="reference" data-invalid-description="Missing the reference.">$fig-1</a></p>',
           ]);
       }
     });

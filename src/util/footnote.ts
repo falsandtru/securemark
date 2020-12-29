@@ -65,7 +65,7 @@ function build(
             title,
             'data-invalid-syntax': null,
             'data-invalid-type': null,
-            'data-invalid-message': null,
+            'data-invalid-description': null,
           });
         }
       }
@@ -82,7 +82,7 @@ function build(
             : { class: void ref.classList.add('invalid'),
                 'data-invalid-syntax': syntax,
                 'data-invalid-type': 'content',
-                'data-invalid-message': 'Missing the content.',
+                'data-invalid-description': 'Missing the content.',
               }
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild?.textContent === marker(defIndex)

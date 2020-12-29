@@ -12,7 +12,7 @@ export function inspect(r: Result<HTMLElement | string>, until: number | string 
             define(el, {
               'data-invalid-syntax': null,
               'data-invalid-type': null,
-              'data-invalid-message': null,
+              'data-invalid-description': null,
             }));
           until = typeof until === 'number'
             ? until

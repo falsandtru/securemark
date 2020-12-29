@@ -21,7 +21,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
       class: 'notranslate invalid',
       'data-invalid-syntax': 'example',
       'data-invalid-type': closer ? 'argument' : 'closer',
-      'data-invalid-message': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
+      'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
     switch (type) {
       case 'markdown': {
@@ -55,7 +55,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
         return [html('pre', {
           class: 'notranslate invalid',
           'data-invalid-syntax': 'example',
-          'data-invalid-message': `Invalid example type.`,
+          'data-invalid-description': `Invalid example type.`,
         }, `${opener}${body}${closer}`)];
     }
   }))));

@@ -32,7 +32,7 @@ export const paragraph: ParagraphParser = block(fmap(
             class: 'invalid',
             'data-invalid-syntax': 'paragraph',
             'data-invalid-type': 'visibility',
-            'data-invalid-message': 'Paragraphs must have a visible content.',
+            'data-invalid-description': 'Paragraphs must have a visible content.',
           })
     ];
   }));
