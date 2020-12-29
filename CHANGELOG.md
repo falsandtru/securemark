@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.194.0
+
+- Update compile target to ES2019.
+
 ## 0.193.0
 
 - Change annotation syntax to disallow linebreaks.
