@@ -93,29 +93,27 @@ export const attribute: HTMLParser.TagParser.AttributeParser = union([
 ]);
 
 function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
-  if (!tags.includes(tag)) {
-    return invalid('tag', `Invalid HTML tag <${tag}>.`, as, bs, cs);
-  }
+  if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>.`, as, bs, cs);
   switch (tag) {
     case 'bdo':
     case 'bdi':
       switch (true) {
         case context.state?.in?.bdx:
-          return invalid('nest', `Unnestable HTML tag <${tag}>.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag can't be used in <bdo>/<bdi> HTML tags.`, as, bs, cs);
       }
       break;
     case 'sup':
     case 'sub':
       switch (true) {
         case context.state?.in?.supsub:
-          return invalid('nest', `Unnestable HTML tag <${tag}>.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag can't be used in <sup>/<sub> HTML tags.`, as, bs, cs);
       }
       break;
     case 'small':
       switch (true) {
         case context.state?.in?.supsub:
         case context.state?.in?.small:
-          return invalid('nest', `Unnestable HTML tag <${tag}>.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag can't be used in <sup>/<sub>/<small> HTML tags.`, as, bs, cs);
       }
       break;
   }
