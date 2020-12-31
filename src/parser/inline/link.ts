@@ -108,7 +108,7 @@ function fillTrailingSlash(pathname: string): string {
     : pathname + '/';
 }
 
-export function sanitize(uri: URL<string>, target: HTMLElement, text: string, origin: string): boolean {
+export function sanitize(uri: URL<string>, target: HTMLElement, source: string, origin: string): boolean {
   let type: string;
   let description: string;
   switch (uri.protocol) {
@@ -122,7 +122,7 @@ export function sanitize(uri: URL<string>, target: HTMLElement, text: string, or
     }
     case target.tagName === 'A'
       && 'tel:':
-      if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` === text.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '')) return true;
+      if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` === source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '')) return true;
       type = 'content';
       description = 'Invalid phone number.';
       break;
