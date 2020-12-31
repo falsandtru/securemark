@@ -609,7 +609,7 @@
       if (wait) throw new Error('Cancel.');
       switch (result.type) {
         case 'segment':
-          if (++count % 1000) continue;
+          if (++count % 100) continue;
           count = 0;
           break;
         case 'break':
