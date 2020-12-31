@@ -12,9 +12,8 @@ export function creator(cost: number | Parser<unknown>, parser?: Parser<unknown>
     if (result) {
       resources.budget -= cost;
       assert(Object.getPrototypeOf(resources).budget % 10 === 0);
+      if (resources.budget < 0) throw new Error('Too many creations.');
     }
-    assert(resources.budget !== undefined);
-    if (resources.budget < 0) throw new Error('Too many creations.');
     return result;
   };
 }
