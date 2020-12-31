@@ -14,7 +14,8 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', ')
     reference: false,
     media: false,
     // Redundant
-    //extension: true,
+    //index: true,
+    label: true,
     //link: true,
     //autolink: true,
   }}, state: undefined },
