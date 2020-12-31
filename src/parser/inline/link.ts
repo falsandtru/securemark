@@ -33,7 +33,8 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
           reference: false,
           index: false,
           label: false,
-          link: false,
+          // Redundant
+          //link: false,
           media: false,
           autolink: false,
         }}},
