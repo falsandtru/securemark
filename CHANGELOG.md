@@ -3,6 +3,7 @@
 ## 0.194.0
 
 - Update compile target to ES2019.
+- Fix account parser.
 
 ## 0.193.0
 
