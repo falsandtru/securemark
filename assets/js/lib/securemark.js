@@ -2396,7 +2396,8 @@ require = function () {
             }
             exports.guard = guard;
             function update(base, parser) {
-                return (source, context) => parser(source, inherit(alias_1.ObjectCreate(context), base));
+                const clone = memoize_1.memoize(context => alias_1.ObjectCreate(context), new global_1.WeakMap());
+                return (source, context) => parser(source, inherit(clone(context), base));
             }
             exports.update = update;
             function context(base, parser) {
@@ -2407,7 +2408,7 @@ require = function () {
             const inherit = assign_1.template((prop, target, source) => {
                 switch (prop) {
                 case 'resources':
-                    if (prop in target)
+                    if (prop in alias_1.ObjectGetPrototypeOf(target))
                         return;
                     return target[prop] = alias_1.ObjectCreate(source[prop]);
                 }
@@ -2627,9 +2628,9 @@ require = function () {
                     const result = parser(source, context);
                     if (result) {
                         resources.budget -= cost;
+                        if (resources.budget < 0)
+                            throw new Error('Too many creations.');
                     }
-                    if (resources.budget < 0)
-                        throw new Error('Too many creations.');
                     return result;
                 };
             }
@@ -4724,7 +4725,8 @@ require = function () {
                     inline: {
                         annotation: false,
                         reference: false,
-                        media: false
+                        media: false,
+                        label: true
                     }
                 },
                 state: global_1.undefined
@@ -4798,7 +4800,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.account = combinator_1.creator(combinator_1.rewrite(combinator_1.open('@', combinator_1.tails([
                 combinator_1.verify(source_1.str(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
-                combinator_1.verify(source_1.str(/^[A-Z-a-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 63)
+                combinator_1.verify(source_1.str(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 63)
             ])), (source, {host, url}) => [
                 [typed_dom_1.html('a', {
                         class: 'account',
@@ -5689,7 +5691,6 @@ require = function () {
                                 reference: false,
                                 index: false,
                                 label: false,
-                                link: false,
                                 media: false,
                                 autolink: false
                             }
@@ -5746,7 +5747,7 @@ require = function () {
             function fillTrailingSlash(pathname) {
                 return pathname[pathname.length - 1] === '/' ? pathname : pathname + '/';
             }
-            function sanitize(uri, target, text, origin) {
+            function sanitize(uri, target, source, origin) {
                 let type;
                 let description;
                 switch (uri.protocol) {
@@ -5760,7 +5761,7 @@ require = function () {
                         break;
                     }
                 case target.tagName === 'A' && 'tel:':
-                    if (`tel:${ target.textContent.replace(/-(?=[0-9])/g, '') }` === text)
+                    if (`tel:${ target.textContent.replace(/(?!^)-(?!-|$)/g, '') }` === source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, ''))
                         return true;
                     type = 'content';
                     description = 'Invalid phone number.';
@@ -5986,7 +5987,8 @@ require = function () {
                     inline: {
                         annotation: false,
                         reference: false,
-                        media: false
+                        media: false,
+                        label: true
                     }
                 },
                 state: global_1.undefined
