@@ -122,7 +122,7 @@ export function sanitize(uri: URL<string>, target: HTMLElement, text: string, or
     }
     case target.tagName === 'A'
       && 'tel:':
-      if (`tel:${target.textContent!.replace(/-(?=[0-9])/g, '')}` === text) return true;
+      if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` === text.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '')) return true;
       type = 'content';
       description = 'Invalid phone number.';
       break;
