@@ -1,5 +1,5 @@
 import { undefined, WeakMap } from 'spica/global';
-import { ObjectCreate } from 'spica/alias';
+import { ObjectCreate, ObjectGetPrototypeOf } from 'spica/alias';
 import { Parser, Ctx, Context } from '../../data/parser';
 import { template } from 'spica/assign';
 import { type, isPrimitive } from 'spica/type';
@@ -17,8 +17,9 @@ export function update<P extends Parser<unknown>>(context: Context<P>, parser: P
 export function update<T extends unknown, D extends Parser<unknown>[]>(base: Ctx, parser: Parser<T, D>): Parser<T, D> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
+  const clone = memoize<Ctx, Ctx>(context => ObjectCreate(context), new WeakMap());
   return (source, context) =>
-    parser(source, inherit(ObjectCreate(context), base));
+    parser(source, inherit(clone(context), base));
 }
 
 export function context<P extends Parser<unknown>>(context: Context<P>, parser: P): P;
@@ -33,14 +34,14 @@ export function context<T extends unknown, D extends Parser<unknown>[]>(base: Ct
 const inherit = template((prop, target, source) => {
   assert(!Object.isSealed(target));
   assert(Object.isExtensible(target));
-  assert(!target.hasOwnProperty(prop));
   //assert(Object.freeze(source));
   switch (prop) {
     case 'resources':
       assert(typeof source[prop] === 'object');
-      if (prop in target) return;
+      if (prop in ObjectGetPrototypeOf(target)) return;
       return target[prop] = ObjectCreate(source[prop]);
   }
+  assert(!target.hasOwnProperty(prop));
   switch (type(source[prop])) {
     case 'Object':
       assert(Object.getPrototypeOf(source[prop]) === Object.prototype);
