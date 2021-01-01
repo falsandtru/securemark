@@ -3170,12 +3170,13 @@ require = function () {
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
-                var _a;
-                settings = !settings.host ? {
-                    ...settings,
-                    host: new url_1.URL(global_1.location.pathname, global_1.location.origin)
-                } : settings;
-                if (((_a = settings.host) === null || _a === void 0 ? void 0 : _a.origin) === 'null')
+                var _a, _b;
+                const {footnotes} = settings;
+                settings = alias_1.ObjectAssign(alias_1.ObjectCreate(settings), {
+                    host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.URL(global_1.location.pathname, global_1.location.origin),
+                    footnotes: global_1.undefined
+                });
+                if (((_b = settings.host) === null || _b === void 0 ? void 0 : _b.origin) === 'null')
                     throw new Error(`Invalid host: ${ settings.host.href }`);
                 const blocks = [];
                 const adds = [];
@@ -3191,7 +3192,7 @@ require = function () {
                     var _a, _b;
                     const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
-                    settings = url ? alias_1.ObjectAssign(alias_1.ObjectCreate(settings), { url: new url_1.URL(url, url) }) : settings;
+                    const context = alias_1.ObjectAssign(settings, { url: url ? new url_1.URL(url, url) : global_1.undefined });
                     source = normalize_1.normalize(source);
                     const sourceSegments = [];
                     for (const seg of segment_1.segment(source)) {
@@ -3222,7 +3223,7 @@ require = function () {
                     let index = head;
                     for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
-                        const es = combinator_1.eval(index === 0 && header_1.header(seg, settings) || block_1.block(seg, settings), []);
+                        const es = combinator_1.eval(index === 0 && header_1.header(seg, context) || block_1.block(seg, context), []);
                         blocks.splice(index, 0, [
                             seg,
                             es,
@@ -3271,7 +3272,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of footnote_1.footnote(target, settings.footnotes, settings)) {
+                    for (const el of footnote_1.footnote(target, footnotes, context)) {
                         el ? yield {
                             type: 'footnote',
                             value: el
@@ -3279,7 +3280,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of figure_1.figure(target, settings.footnotes, settings)) {
+                    for (const el of figure_1.figure(target, footnotes, context)) {
                         el ? yield {
                             type: 'figure',
                             value: el
@@ -3420,24 +3421,30 @@ require = function () {
             const header_2 = _dereq_('../api/header');
             const figure_1 = _dereq_('../../util/figure');
             const footnote_1 = _dereq_('../../util/footnote');
+            const memoize_1 = _dereq_('spica/memoize');
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
-            function parse(source, opts = {}) {
-                var _a, _b, _c, _d;
-                opts = !opts.host ? {
-                    ...opts,
-                    host: new url_1.URL(global_1.location.pathname, global_1.location.origin)
-                } : opts;
-                if (((_a = opts.host) === null || _a === void 0 ? void 0 : _a.origin) === 'null')
-                    throw new Error(`Invalid host: ${ opts.host.href }`);
-                const url = ((_b = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _b === void 0 ? void 0 : _b.slice(4).trim()) || '';
-                opts = url ? alias_1.ObjectAssign(alias_1.ObjectCreate(opts), { url: new url_1.URL(url, url) }) : opts;
-                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && opts.header !== false && header_1.header(seg, opts) || block_1.block(seg, opts), [])), []));
-                if (opts.test && opts.hasOwnProperty('test'))
+            const inherit = memoize_1.memoize(context => alias_1.ObjectCreate(context), new WeakMap());
+            function parse(source, opts = {}, context) {
+                var _a, _b, _c, _d, _e, _f, _g;
+                const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
+                context = context ? inherit(context) : {};
+                context = alias_1.ObjectAssign(context, opts, {
+                    host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context.host) !== null && _c !== void 0 ? _c : new url_1.URL(global_1.location.pathname, global_1.location.origin),
+                    url: url ? new url_1.URL(url, url) : context.url,
+                    id: (_d = opts.id) !== null && _d !== void 0 ? _d : context.id,
+                    header: global_1.undefined,
+                    test: global_1.undefined,
+                    footnotes: global_1.undefined
+                });
+                if (((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) === 'null')
+                    throw new Error(`Invalid host: ${ context.host.href }`);
+                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && opts.header !== false && header_1.header(seg, context) || block_1.block(seg, context), [])), []));
+                if (opts.test)
                     return node;
-                for (const _ of footnote_1.footnote(node, opts.footnotes, opts));
-                for (const _ of figure_1.figure(node, opts.footnotes, opts));
+                for (const _ of footnote_1.footnote(node, opts.footnotes, context));
+                for (const _ of figure_1.figure(node, opts.footnotes, context));
                 return node;
             }
             exports.parse = parse;
@@ -3454,6 +3461,7 @@ require = function () {
             'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 14,
+            'spica/memoize': 15,
             'spica/url': 21,
             'typed-dom': 23
         }
@@ -3551,7 +3559,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.blockquote = exports.segment = void 0;
-            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const autolink_1 = _dereq_('../autolink');
@@ -3582,13 +3589,13 @@ require = function () {
                     const reference = typed_dom_1.html('ol', { class: 'reference' });
                     return [
                         [
-                            parse_1.parse(source, alias_1.ObjectAssign(alias_1.ObjectCreate(context), {
+                            parse_1.parse(source, {
                                 id: '',
                                 footnotes: {
                                     annotation,
                                     reference
                                 }
-                            })),
+                            }, context),
                             annotation,
                             reference
                         ],
@@ -3603,7 +3610,6 @@ require = function () {
             '../autolink': 63,
             '../source': 125,
             '../util': 132,
-            'spica/alias': 5,
             'typed-dom': 23
         }
     ],
@@ -3749,7 +3755,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.aside = void 0;
-            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../../combinator');
             const indexee_1 = _dereq_('../../inline/extension/indexee');
             const parse_1 = _dereq_('../../api/parse');
@@ -3765,13 +3770,13 @@ require = function () {
                         }, `${ opener }${ body }${ closer }`)];
                 const annotation = typed_dom_1.html('ol', { class: 'annotation' });
                 const reference = typed_dom_1.html('ol', { class: 'reference' });
-                const view = parse_1.parse(body.slice(0, -1), alias_1.ObjectAssign(alias_1.ObjectCreate(context), {
+                const view = parse_1.parse(body.slice(0, -1), {
                     id: '',
                     footnotes: {
                         annotation,
                         reference
                     }
-                }));
+                }, context);
                 const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes((_a = view.firstElementChild) === null || _a === void 0 ? void 0 : _a.tagName) && view.firstElementChild;
                 if (!heading)
                     return [typed_dom_1.html('pre', {
@@ -3794,7 +3799,6 @@ require = function () {
             '../../../combinator': 30,
             '../../api/parse': 62,
             '../../inline/extension/indexee': 106,
-            'spica/alias': 5,
             'typed-dom': 23
         }
     ],
@@ -3803,7 +3807,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.example = exports.segment_ = exports.segment = void 0;
-            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../../combinator');
             const parse_1 = _dereq_('../../api/parse');
             const mathblock_1 = _dereq_('../mathblock');
@@ -3823,13 +3826,13 @@ require = function () {
                 case 'markdown': {
                         const annotation = typed_dom_1.html('ol', { class: 'annotation' });
                         const reference = typed_dom_1.html('ol', { class: 'reference' });
-                        const view = parse_1.parse(body.slice(0, -1), alias_1.ObjectAssign(alias_1.ObjectCreate(context), {
+                        const view = parse_1.parse(body.slice(0, -1), {
                             id: '',
                             footnotes: {
                                 annotation,
                                 reference
                             }
-                        }));
+                        }, context);
                         return [typed_dom_1.html('aside', {
                                 class: 'example',
                                 'data-type': 'markdown'
@@ -3863,7 +3866,6 @@ require = function () {
             '../../../combinator': 30,
             '../../api/parse': 62,
             '../mathblock': 78,
-            'spica/alias': 5,
             'typed-dom': 23
         }
     ],
