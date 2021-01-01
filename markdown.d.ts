@@ -14,6 +14,7 @@ export namespace MarkdownParser {
   export interface Context extends Ctx {
     readonly host?: URL;
     readonly url?: URL;
+    readonly id?: string;
     readonly syntax?: {
       readonly inline?: {
         readonly annotation?: boolean;
@@ -25,7 +26,6 @@ export namespace MarkdownParser {
         readonly autolink?: boolean;
       };
     };
-    readonly id?: string;
     readonly state?: {
       readonly in?: {
         readonly bdx?: boolean;

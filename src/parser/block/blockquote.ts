@@ -1,4 +1,3 @@
-import { ObjectCreate, ObjectAssign } from 'spica/alias';
 import { BlockquoteParser } from '../block';
 import { union, some, block, validate, rewrite, creator, open, convert, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
@@ -48,7 +47,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
       convert(unindent, (source, context) => {
         const annotation = html('ol', { class: 'annotation' });
         const reference = html('ol', { class: 'reference' });
-        return [[parse(source, ObjectAssign(ObjectCreate(context), { id: '', footnotes: { annotation, reference } })), annotation, reference], ''];
+        return [[parse(source, { id: '', footnotes: { annotation, reference } }, context), annotation, reference], ''];
       }))),
   ]))),
   ns => [html('blockquote', ns)]));

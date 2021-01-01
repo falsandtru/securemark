@@ -1,4 +1,3 @@
-import { ObjectCreate, ObjectAssign } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { block, validate, fence, creator, fmap } from '../../../combinator';
 import { identity } from '../../inline/extension/indexee';
@@ -17,15 +16,13 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
     }, `${opener}${body}${closer}`)];
     const annotation = html('ol', { class: 'annotation' });
     const reference = html('ol', { class: 'reference' });
-    const view = parse(body.slice(0, -1), ObjectAssign(
-      ObjectCreate(context),
-      {
-        id: '',
-        footnotes: {
-          annotation,
-          reference,
-        },
-      }));
+    const view = parse(body.slice(0, -1), {
+      id: '',
+      footnotes: {
+        annotation,
+        reference,
+      },
+    }, context);
     assert(!view.querySelector('[id]'));
     // Bug: Firefox
     //const heading = view.querySelector(':scope > h1:first-child');
