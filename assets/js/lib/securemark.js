@@ -243,7 +243,7 @@ require = function () {
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[prop] = exports.clone(empty_(source[prop]), source[prop]);
+                        return target[prop] = exports.clone(empty(source[prop]), source[prop]);
                     default:
                         return target[prop] = source[prop];
                     }
@@ -260,7 +260,7 @@ require = function () {
                     case 'Object':
                         return target[prop] = exports.extend(target[prop], source[prop]);
                     default:
-                        return target[prop] = exports.extend(empty_(source[prop]), source[prop]);
+                        return target[prop] = exports.extend(empty(source[prop]), source[prop]);
                     }
                 default:
                     return target[prop] = source[prop];
@@ -280,7 +280,7 @@ require = function () {
                     case 'Object':
                         return target[prop] = exports.merge(target[prop], source[prop]);
                     default:
-                        return target[prop] = exports.merge(empty_(source[prop]), source[prop]);
+                        return target[prop] = exports.merge(empty(source[prop]), source[prop]);
                     }
                 default:
                     return target[prop] = source[prop];
@@ -293,7 +293,7 @@ require = function () {
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
-                        return target[prop] = isOwnProperty(target, prop) ? exports.inherit(target[prop], source[prop]) : exports.inherit(alias_1.ObjectCreate(target[prop]), source[prop]);
+                        return target[prop] = alias_1.hasOwnProperty(target, prop) ? exports.inherit(target[prop], source[prop]) : exports.inherit(alias_1.ObjectCreate(target[prop]), source[prop]);
                     default:
                         return target[prop] = alias_1.ObjectCreate(source[prop]);
                     }
@@ -301,34 +301,27 @@ require = function () {
                     return target[prop] = source[prop];
                 }
             });
-            const isOwnProperty = '__proto__' in {} ? (o, p) => !('__proto__' in o) || o[p] !== o['__proto__'][p] : alias_1.hasOwnProperty;
-            function template(strategy, empty = empty_) {
+            function template(strategy) {
                 return walk;
                 function walk(target, ...sources) {
-                    let isPrimitiveTarget = type_1.isPrimitive(target);
-                    for (const source of sources) {
-                        const isPrimitiveSource = type_1.isPrimitive(source);
-                        if (isPrimitiveSource) {
-                            target = source;
-                            isPrimitiveTarget = isPrimitiveSource;
-                        } else {
-                            if (isPrimitiveTarget) {
-                                target = empty(source);
-                                isPrimitiveTarget = isPrimitiveSource;
-                            }
-                            const keys = alias_1.ObjectKeys(source);
-                            for (let i = 0; i < keys.length; ++i) {
-                                if (keys[i] in {})
-                                    continue;
-                                void strategy(keys[i], target, source);
-                            }
+                    if (type_1.isPrimitive(target))
+                        return target;
+                    for (let i = 0; i < sources.length; ++i) {
+                        const source = sources[i];
+                        if (source === target)
+                            continue;
+                        if (type_1.isPrimitive(source))
+                            continue;
+                        const keys = alias_1.ObjectKeys(source);
+                        for (let i = 0; i < keys.length; ++i) {
+                            strategy(keys[i], target, source);
                         }
                     }
                     return target;
                 }
             }
             exports.template = template;
-            function empty_(source) {
+            function empty(source) {
                 switch (type_1.type(source)) {
                 case 'Array':
                     return [];
@@ -1130,51 +1123,46 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.isPrimitive = exports.isType = exports.type = void 0;
-            const toString = Object.prototype.toString.call.bind(Object.prototype.toString);
+            const global_1 = _dereq_('./global');
+            const alias_1 = _dereq_('./alias');
+            const toString = global_1.Object.prototype.toString.call.bind(global_1.Object.prototype.toString);
             function type(value) {
-                const t = value == null ? value : typeof value;
-                switch (t) {
-                case undefined:
-                case null:
-                    return `${ value }`;
-                case 'boolean':
-                case 'number':
-                case 'bigint':
-                case 'string':
-                case 'symbol':
-                    return t;
-                default:
+                if (value === global_1.undefined)
+                    return 'undefined';
+                if (value === null)
+                    return 'null';
+                const type = typeof value;
+                if (type === 'object') {
+                    const proto = alias_1.ObjectGetPrototypeOf(value);
+                    if (proto === global_1.Object.prototype || proto === null)
+                        return 'Object';
+                    if (proto === global_1.Array.prototype)
+                        return 'Array';
                     return toString(value).slice(8, -1);
                 }
+                if (type === 'function')
+                    return 'Function';
+                return type;
             }
             exports.type = type;
             function isType(value, name) {
-                switch (name) {
-                case 'function':
-                    return typeof value === 'function';
-                case 'object':
-                    return value !== null && typeof value === 'object';
-                default:
-                    return type(value) === name;
-                }
+                if (name === 'object')
+                    return value !== null && typeof value === name;
+                if (name === 'function')
+                    return typeof value === name;
+                return type(value) === name;
             }
             exports.isType = isType;
             function isPrimitive(value) {
-                switch (typeof value) {
-                case 'undefined':
-                case 'boolean':
-                case 'number':
-                case 'bigint':
-                case 'string':
-                case 'symbol':
-                    return true;
-                default:
-                    return value === null;
-                }
+                const type = typeof value;
+                return type === 'object' || type === 'function' ? value === null : true;
             }
             exports.isPrimitive = isPrimitive;
         },
-        {}
+        {
+            './alias': 5,
+            './global': 14
+        }
     ],
     21: [
         function (_dereq_, module, exports) {
@@ -2408,7 +2396,7 @@ require = function () {
             const inherit = assign_1.template((prop, target, source) => {
                 switch (prop) {
                 case 'resources':
-                    if (prop in alias_1.ObjectGetPrototypeOf(target))
+                    if (prop in (alias_1.ObjectGetPrototypeOf(target) || {}))
                         return;
                     return target[prop] = alias_1.ObjectCreate(source[prop]);
                 }
