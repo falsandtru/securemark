@@ -2539,7 +2539,7 @@ require = function () {
             exports.lazy = void 0;
             function lazy(builder) {
                 let parser;
-                return (source, context) => (parser = parser || builder())(source, context);
+                return (source, context) => (parser ? parser : parser = builder())(source, context);
             }
             exports.lazy = lazy;
         },
@@ -2610,11 +2610,11 @@ require = function () {
                 if (typeof cost === 'function')
                     return creator(1, cost);
                 return (source, context) => {
-                    const {resources} = context;
-                    if (!resources)
-                        return parser(source, context);
                     const result = parser(source, context);
-                    if (result) {
+                    if (!result)
+                        return;
+                    const {resources} = context;
+                    if (resources) {
                         resources.budget -= cost;
                         if (resources.budget < 0)
                             throw new Error('Too many creations.');
