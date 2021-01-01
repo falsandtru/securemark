@@ -2539,7 +2539,10 @@ require = function () {
             exports.lazy = void 0;
             function lazy(builder) {
                 let parser;
-                return (source, context) => (parser ? parser : parser = builder())(source, context);
+                return (source, context) => {
+                    parser ? parser : parser = builder();
+                    return parser(source, context);
+                };
             }
             exports.lazy = lazy;
         },
