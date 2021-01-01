@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.194.1
+
+- Refactoring.
+
 ## 0.194.0
 
 - Update compile target to ES2019.
