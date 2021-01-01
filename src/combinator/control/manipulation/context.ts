@@ -38,7 +38,7 @@ const inherit = template((prop, target, source) => {
   switch (prop) {
     case 'resources':
       assert(typeof source[prop] === 'object');
-      if (prop in ObjectGetPrototypeOf(target)) return;
+      if (prop in (ObjectGetPrototypeOf(target) || {})) return;
       return target[prop] = ObjectCreate(source[prop]);
   }
   assert(!target.hasOwnProperty(prop));
