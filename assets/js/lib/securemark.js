@@ -3175,7 +3175,7 @@ require = function () {
             function bind(target, settings) {
                 var _a, _b;
                 let context = alias_1.ObjectAssign({}, settings, {
-                    host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.URL(global_1.location.pathname, global_1.location.origin),
+                    host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
                     footnotes: global_1.undefined
                 });
                 if (((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) === 'null')
@@ -3194,7 +3194,7 @@ require = function () {
                     var _a, _b;
                     const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
-                    context = alias_1.ObjectAssign(context, { url: url ? new url_1.URL(url, url) : global_1.undefined });
+                    context = alias_1.ObjectAssign(context, { url: url ? new url_1.ReadonlyURL(url, url) : global_1.undefined });
                     source = normalize_1.normalize(source);
                     const sourceSegments = [];
                     for (const seg of segment_1.segment(source)) {
@@ -3432,8 +3432,8 @@ require = function () {
                 var _a, _b, _c, _d, _e, _f, _g;
                 const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                 context = context && url === '' && context.id === opts.id ? context : alias_1.ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
-                    host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context === null || context === void 0 ? void 0 : context.host) !== null && _c !== void 0 ? _c : new url_1.URL(global_1.location.pathname, global_1.location.origin),
-                    url: url ? new url_1.URL(url, url) : context === null || context === void 0 ? void 0 : context.url,
+                    host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context === null || context === void 0 ? void 0 : context.host) !== null && _c !== void 0 ? _c : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+                    url: url ? new url_1.ReadonlyURL(url, url) : context === null || context === void 0 ? void 0 : context.url,
                     id: (_d = opts.id) !== null && _d !== void 0 ? _d : context === null || context === void 0 ? void 0 : context.id,
                     header: global_1.undefined,
                     test: global_1.undefined,
@@ -5713,7 +5713,7 @@ require = function () {
                     href: src,
                     rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
                 }, content.length > 0 ? content = util_1.defrag(content) : decode(INSECURE_URI).replace(/^tel:/, ''));
-                if (!sanitize(new url_1.URL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
+                if (!sanitize(new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
                     return [
                         [el],
                         rest
@@ -5739,7 +5739,7 @@ require = function () {
                 case uri.slice(0, 2) === '//':
                     return uri;
                 default:
-                    const target = new url_1.URL(uri, source.href);
+                    const target = new url_1.ReadonlyURL(uri, source.href);
                     return target.origin === ((_a = uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)) === null || _a === void 0 ? void 0 : _a[0]) ? uri : target.origin === host.origin ? target.href.slice(target.origin.length) : target.href;
                 }
             }
@@ -5906,7 +5906,7 @@ require = function () {
                     return;
                 const INSECURE_URI = params.shift();
                 const src = link_1.resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
-                const url = new url_1.URL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
+                const url = new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
                 const cache = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.media;
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(url.href);
                 const el = cache && cached ? cache.get(url.href).cloneNode(true) : typed_dom_1.html('img', {
