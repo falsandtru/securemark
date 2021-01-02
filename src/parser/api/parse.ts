@@ -11,7 +11,7 @@ import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { memoize } from 'spica/memoize';
-import { URL } from 'spica/url';
+import { ReadonlyURL } from 'spica/url';
 import { frag } from 'typed-dom';
 
 interface Options extends ParserOptions {
@@ -27,8 +27,8 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   context = context && url === '' && context.id === opts.id
     ? context
     : ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
-        host: opts.host ?? context?.host ?? new URL(location.pathname, location.origin),
-        url: url ? new URL(url, url) : context?.url,
+        host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
+        url: url ? new ReadonlyURL(url, url) : context?.url,
         id: opts.id ?? context?.id,
         header: undefined,
         test: undefined,

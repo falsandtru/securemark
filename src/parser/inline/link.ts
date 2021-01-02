@@ -6,7 +6,7 @@ import { startTight, isEndTight, dup, defrag, stringify } from '../util';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { URL } from 'spica/url';
+import { ReadonlyURL } from 'spica/url';
 import { html, define } from 'typed-dom';
 
 export const optspec = {
@@ -62,7 +62,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
         ? content = defrag(content)
         : decode(INSECURE_URI)
             .replace(/^tel:/, ''));
-    if (!sanitize(new URL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
+    if (!sanitize(new ReadonlyURL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
     define(el, ObjectAssign(
       attributes('link', optspec, params, []),
@@ -79,7 +79,7 @@ export const option: LinkParser.ParameterParser.OptionParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 
-export function resolve(uri: string, host: global.URL | Location, source: global.URL | Location): string {
+export function resolve(uri: string, host: URL | Location, source: URL | Location): string {
   assert(uri);
   assert(uri === uri.trim());
   switch (true) {
@@ -93,7 +93,7 @@ export function resolve(uri: string, host: global.URL | Location, source: global
     case uri.slice(0, 2) === '//':
       return uri;
     default:
-      const target = new URL(uri, source.href);
+      const target = new ReadonlyURL(uri, source.href);
       return target.origin === uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)?.[0]
         ? uri
         : target.origin === host.origin
@@ -109,7 +109,7 @@ function fillTrailingSlash(pathname: string): string {
     : pathname + '/';
 }
 
-export function sanitize(uri: URL<string>, target: HTMLElement, source: string, origin: string): boolean {
+export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, origin: string): boolean {
   let type: string;
   let description: string;
   switch (uri.protocol) {

@@ -10,7 +10,7 @@ import { normalize } from './normalize';
 import { headers } from '../api/header';
 import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
-import { URL } from 'spica/url';
+import { ReadonlyURL } from 'spica/url';
 import { push, splice } from 'spica/array';
 
 interface Settings extends ParserSettings {
@@ -22,7 +22,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   position: (block: HTMLElement) => number;
 } {
   let context: MarkdownParser.Context = ObjectAssign({}, settings, {
-    host: settings.host ?? new URL(location.pathname, location.origin),
+    host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
     footnotes: undefined,
   });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
@@ -42,7 +42,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   function* parse(source: string): Generator<Progress, undefined, undefined> {
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
-    context = ObjectAssign(context, { url: url ? new URL(url, url) : undefined });
+    context = ObjectAssign(context, { url: url ? new ReadonlyURL(url, url) : undefined });
     source = normalize(source);
     const sourceSegments: string[] = [];
     for (const seg of segment(source)) {
