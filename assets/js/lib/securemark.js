@@ -3417,6 +3417,7 @@ require = function () {
             const footnote_1 = _dereq_('../../util/footnote');
             const memoize_1 = _dereq_('spica/memoize');
             const url_1 = _dereq_('spica/url');
+            const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             const inherit = memoize_1.memoize(context => alias_1.ObjectCreate(context), new WeakMap());
             const inherit2 = memoize_1.memoize(context => memoize_1.memoize(_ => alias_1.ObjectCreate(context)), new WeakMap());
@@ -3433,13 +3434,15 @@ require = function () {
                 });
                 if (((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) === 'null')
                     throw new Error(`Invalid host: ${ context.host.href }`);
-                const node = typed_dom_1.frag(function* () {
+                const node = typed_dom_1.frag(function () {
                     var _a;
+                    const acc = [];
                     let head = (_a = opts.header) !== null && _a !== void 0 ? _a : true;
                     for (const seg of segment_1.segment(normalize_1.normalize(source))) {
-                        yield* combinator_1.eval(head && header_1.header(seg, context) || block_1.block(seg, context), []);
+                        array_1.push(acc, combinator_1.eval(head && header_1.header(seg, context) || block_1.block(seg, context), []));
                         head = false;
                     }
+                    return acc;
                 }());
                 if (opts.test)
                     return node;
@@ -3459,6 +3462,7 @@ require = function () {
             '../segment': 124,
             './normalize': 61,
             'spica/alias': 5,
+            'spica/array': 6,
             'spica/global': 14,
             'spica/memoize': 15,
             'spica/url': 21,
