@@ -2280,14 +2280,12 @@ require = function () {
                     return validate(patterns, has, '', end);
                 if (!alias_1.isArray(patterns))
                     return validate([patterns], has, end, parser);
-                const matchers = patterns.map(pattern => typeof pattern === 'string' ? source => source.slice(0, pattern.length) === pattern : source => pattern.test(source));
-                const match = source => {
-                    for (let i = 0, len = matchers.length; i < len; ++i) {
-                        if (matchers[i](source))
-                            return true;
-                    }
-                    return false;
-                };
+                const match = global_1.Function('patterns', [
+                    '"use strict";',
+                    'return source =>',
+                    'false',
+                    ...patterns.map((pattern, i) => typeof pattern === 'string' ? `|| source.slice(0, patterns[${ i }].length) === patterns[${ i }]` : `|| patterns[${ i }].test(source)`)
+                ].join(''))(patterns);
                 const match2 = source => {
                     if (!has)
                         return true;
@@ -3040,7 +3038,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.union = void 0;
             const global_1 = _dereq_('spica/global');
-            const parser_1 = _dereq_('../parser');
             function union(parsers) {
                 switch (parsers.length) {
                 case 0:
@@ -3048,22 +3045,17 @@ require = function () {
                 case 1:
                     return parsers[0];
                 default:
-                    return (source, context) => {
-                        var _a;
-                        for (let i = 0, len = parsers.length; i < len; ++i) {
-                            const result = parsers[i](source, context);
-                            if (result)
-                                return result;
-                        }
-                    };
+                    return global_1.Function('parsers', [
+                        '"use strict";',
+                        'return (source, context) =>',
+                        '0',
+                        ...parsers.map((_, i) => `|| parsers[${ i }](source, context)`)
+                    ].join(''))(parsers);
                 }
             }
             exports.union = union;
         },
-        {
-            '../parser': 48,
-            'spica/global': 14
-        }
+        { 'spica/global': 14 }
     ],
     55: [
         function (_dereq_, module, exports) {
