@@ -23,7 +23,7 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
     'false',
     ...patterns.map((pattern, i) =>
       typeof pattern === 'string'
-        ? `|| source.slice(0, patterns[${i}].length) === patterns[${i}]`
+        ? `|| source.slice(0, ${pattern.length}) === '${pattern}'`
         : `|| patterns[${i}].test(source)`),
   ].join(''))(patterns);
   const match2 = (source: string): boolean => {
