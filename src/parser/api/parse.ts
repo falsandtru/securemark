@@ -36,15 +36,13 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
         footnotes: undefined,
       });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
-  const node = frag(function () {
-    const acc: HTMLElement[] = [];
-    let head = opts.header ?? true;
-    for (const seg of segment(normalize(source))) {
-      push(acc, eval(head && header(seg, context) || block(seg, context), []));
-      head = false;
-    }
-    return acc;
-  }());
+  const es: HTMLElement[] = [];
+  let head = opts.header ?? true;
+  for (const seg of segment(normalize(source))) {
+    push(es, eval(head && header(seg, context) || block(seg, context), []));
+    head = false;
+  }
+  const node = frag(es);
   if (opts.test) return node;
   for (const _ of footnote(node, opts.footnotes, context));
   for (const _ of figure(node, opts.footnotes, context));
