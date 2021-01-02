@@ -27,7 +27,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   assert(!settings.id);
-  type Block = readonly [string, readonly HTMLElement[], string];
+  type Block = readonly [segment: string, blocks: readonly HTMLElement[], url: string];
   const blocks: Block[] = [];
   const adds: [HTMLElement, Node | null][] = [];
   const dels: HTMLElement[] = [];
@@ -71,11 +71,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (; index < sourceSegments.length - last; ++index) {
       assert(rev === revision);
       const seg = sourceSegments[index];
-      const es = eval(
-        index === 0
-        && header(seg, context)
-        || block(seg, context),
-        []);
+      const es = eval(index === 0 && header(seg, context) || block(seg, context), []);
       blocks.splice(index, 0, [seg, es, url]);
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
