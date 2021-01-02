@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.195.0
+
+- Support chunked progressive rendering.
+  - Add chunk option.
+
 ## 0.194.2
 
 - Refactoring.

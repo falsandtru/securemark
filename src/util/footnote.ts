@@ -5,7 +5,7 @@ import { memoize } from 'spica/memoize';
 import { frag, html, define } from 'typed-dom';
 
 export function* footnote(
-  target: DocumentFragment | HTMLElement | ShadowRoot,
+  target: ParentNode & Node,
   footnotes?: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
   opts: Readonly<{
     id?: string;
@@ -26,12 +26,12 @@ const identify = memoize<HTMLElement, string>(
 function build(
   syntax: string,
   marker: (index: number) => string,
-): (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+): (target: ParentNode & Node, footnote?: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   assert(syntax.match(/^[a-z]+$/));
   const contentify = memoize<HTMLElement, DocumentFragment>(
     ref => frag(ref.childNodes),
     new WeakMap());
-  return function* (target: DocumentFragment | HTMLElement | ShadowRoot, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+  return function* (target: ParentNode & Node, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
     const refs = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();

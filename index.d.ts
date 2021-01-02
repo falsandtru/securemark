@@ -25,7 +25,7 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;
 export function sync(editor: HTMLElement, viewer: HTMLElement, bottom?: Element | null): () => void;
 
-export type ParserOptions = Partial<ParserSettings>;
+export type ParserOptions = Omit<Partial<ParserSettings>, 'chunk'>;
 export interface ParserSettings {
   // Host URL.
   readonly host?: URL;
@@ -37,6 +37,7 @@ export interface ParserSettings {
     readonly annotation: HTMLOListElement;
     readonly reference: HTMLOListElement;
   };
+  readonly chunk?: boolean;
 }
 
 export type Progress =

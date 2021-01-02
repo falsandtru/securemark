@@ -5,7 +5,7 @@ import { define } from 'typed-dom';
 import { join } from 'spica/array';
 
 export function* figure(
-  target: DocumentFragment | HTMLElement | ShadowRoot,
+  target: ParentNode & Node,
   footnotes?: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
   opts: Readonly<{
     id?: string;

@@ -1,6 +1,6 @@
 import { ParserSettings, Progress } from '../../..';
 import { bind } from './bind';
-import { html } from 'typed-dom';
+import { frag, html } from 'typed-dom';
 import { Sequence } from 'spica/sequence';
 
 describe('Unit: parser/api/bind', () => {
@@ -138,6 +138,67 @@ describe('Unit: parser/api/bind', () => {
       assert(el.innerHTML === '<h1 id="index:a">a</h1>');
       assert.deepStrictEqual(inspectS(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>', null]);
       assert(el.innerHTML === '<h1 id="index:a">a</h1><h1 id="index:b">b</h1>');
+    });
+
+    it('chunk', () => {
+      const el = html('div');
+      const chunk = frag();
+      const update = bind(chunk, { ...cfgs, chunk: true }).parse;
+      const iter = update([...Array(3)].map((_, i) => `((${i + 1}))`).join('\n\n'));
+
+      inspectS(iter, 2);
+      el.appendChild(chunk);
+      assert.deepStrictEqual(
+        [...el.children].map(el => el.outerHTML),
+        [
+          html('p', [html('sup', { class: "annotation" }, '1'),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, '2'),]).outerHTML,
+        ]);
+      inspectS(iter, 1);
+      el.appendChild(chunk);
+      assert.deepStrictEqual(
+        [...el.children].map(el => el.outerHTML),
+        [
+          html('p', [html('sup', { class: "annotation" }, '1'),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, '2'),]).outerHTML,
+          html('p', [html('sup', { class: "annotation" }, '3'),]).outerHTML,
+        ]);
+      inspect(iter);
+      assert.deepStrictEqual(
+        [...el.children].map(el => el.outerHTML),
+        [
+          html('p', [
+            html('sup', { class: "annotation", id: "annotation:ref:1", title: "1" }, [
+              html('a', { href: "#annotation:def:1", rel: "noopener" }, '*1')
+            ]),
+          ]).outerHTML,
+          html('p', [
+            html('sup', { class: "annotation", id: "annotation:ref:2", title: "2" }, [
+              html('a', { href: "#annotation:def:2", rel: "noopener" }, '*2')
+            ]),
+          ]).outerHTML,
+          html('p', [
+            html('sup', { class: "annotation", id: "annotation:ref:3", title: "3" }, [
+              html('a', { href: "#annotation:def:3", rel: "noopener" }, '*3')
+            ]),
+          ]).outerHTML,
+        ]);
+      assert.deepStrictEqual(
+        cfgs.footnotes.annotation.outerHTML,
+        html('ol', [
+          html('li', { id: 'annotation:def:1' }, [
+            '1',
+            html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
+          ]),
+          html('li', { id: 'annotation:def:2' }, [
+            '2',
+            html('sup', [html('a', { href: '#annotation:ref:2', rel: 'noopener' }, '~2')])
+          ]),
+          html('li', { id: 'annotation:def:3' }, [
+            '3',
+            html('sup', [html('a', { href: '#annotation:ref:3', rel: 'noopener' }, '~3')])
+          ]),
+        ]).outerHTML);
     });
 
   });

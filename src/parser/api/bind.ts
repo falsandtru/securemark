@@ -12,6 +12,7 @@ import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { ReadonlyURL } from 'spica/url';
 import { push, splice } from 'spica/array';
+import { define } from 'typed-dom';
 
 interface Settings extends ParserSettings {
 }
@@ -24,6 +25,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   let context: MarkdownParser.Context = ObjectAssign({}, settings, {
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
     footnotes: undefined,
+    chunk: undefined,
   });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   assert(!settings.id);
@@ -40,6 +42,12 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   };
 
   function* parse(source: string): Generator<Progress, undefined, undefined> {
+    if (settings.chunk) {
+      define(target, []);
+      splice(blocks, 0);
+      splice(adds, 0);
+      splice(dels, 0);
+    }
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
     context = ObjectAssign(context, { url: url ? new ReadonlyURL(url, url) : undefined });
@@ -109,14 +117,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       yield { type: 'block', value: el };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of footnote(target, settings.footnotes, context)) {
+    for (const el of footnote(next(0)?.parentNode || target, settings.footnotes, context)) {
       assert(rev === revision);
       el
         ? yield { type: 'footnote', value: el }
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of figure(target, settings.footnotes, context)) {
+    for (const el of figure(next(0)?.parentNode || target, settings.footnotes, context)) {
       assert(rev === revision);
       el
         ? yield { type: 'figure', value: el }
