@@ -3422,7 +3422,7 @@ require = function () {
             const inherit = memoize_1.memoize(context => alias_1.ObjectCreate(context), new WeakMap());
             const inherit2 = memoize_1.memoize(context => memoize_1.memoize(_ => alias_1.ObjectCreate(context)), new WeakMap());
             function parse(source, opts = {}, context) {
-                var _a, _b, _c, _d, _e, _f, _g;
+                var _a, _b, _c, _d, _e, _f, _g, _h;
                 const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                 context = context && url === '' && context.id === opts.id ? context : alias_1.ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
                     host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context === null || context === void 0 ? void 0 : context.host) !== null && _c !== void 0 ? _c : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
@@ -3434,16 +3434,13 @@ require = function () {
                 });
                 if (((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) === 'null')
                     throw new Error(`Invalid host: ${ context.host.href }`);
-                const node = typed_dom_1.frag(function () {
-                    var _a;
-                    const acc = [];
-                    let head = (_a = opts.header) !== null && _a !== void 0 ? _a : true;
-                    for (const seg of segment_1.segment(normalize_1.normalize(source))) {
-                        array_1.push(acc, combinator_1.eval(head && header_1.header(seg, context) || block_1.block(seg, context), []));
-                        head = false;
-                    }
-                    return acc;
-                }());
+                const es = [];
+                let head = (_f = opts.header) !== null && _f !== void 0 ? _f : true;
+                for (const seg of segment_1.segment(normalize_1.normalize(source))) {
+                    array_1.push(es, combinator_1.eval(head && header_1.header(seg, context) || block_1.block(seg, context), []));
+                    head = false;
+                }
+                const node = typed_dom_1.frag(es);
                 if (opts.test)
                     return node;
                 for (const _ of footnote_1.footnote(node, opts.footnotes, context));
