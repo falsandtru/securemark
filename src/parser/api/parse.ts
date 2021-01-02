@@ -12,6 +12,7 @@ import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { memoize } from 'spica/memoize';
 import { ReadonlyURL } from 'spica/url';
+import { push } from 'spica/array';
 import { frag } from 'typed-dom';
 
 interface Options extends ParserOptions {
@@ -35,12 +36,14 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
         footnotes: undefined,
       });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
-  const node = frag(function* () {
+  const node = frag(function () {
+    const acc: HTMLElement[] = [];
     let head = opts.header ?? true;
     for (const seg of segment(normalize(source))) {
-      yield* eval(head && header(seg, context) || block(seg, context), []);
+      push(acc, eval(head && header(seg, context) || block(seg, context), []));
       head = false;
     }
+    return acc;
   }());
   if (opts.test) return node;
   for (const _ of footnote(node, opts.footnotes, context));
