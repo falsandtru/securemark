@@ -3176,11 +3176,13 @@ require = function () {
             const footnote_1 = _dereq_('../../util/footnote');
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
+            const typed_dom_1 = _dereq_('typed-dom');
             function bind(target, settings) {
                 var _a, _b;
                 let context = alias_1.ObjectAssign({}, settings, {
                     host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
-                    footnotes: global_1.undefined
+                    footnotes: global_1.undefined,
+                    chunk: global_1.undefined
                 });
                 if (((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) === 'null')
                     throw new Error(`Invalid host: ${ context.host.href }`);
@@ -3195,7 +3197,13 @@ require = function () {
                     position
                 };
                 function* parse(source) {
-                    var _a, _b;
+                    var _a, _b, _c, _d;
+                    if (settings.chunk) {
+                        typed_dom_1.define(target, []);
+                        array_1.splice(blocks, 0);
+                        array_1.splice(adds, 0);
+                        array_1.splice(dels, 0);
+                    }
                     const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                     context = alias_1.ObjectAssign(context, { url: url ? new url_1.ReadonlyURL(url, url) : global_1.undefined });
@@ -3278,7 +3286,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of footnote_1.footnote(target, settings.footnotes, context)) {
+                    for (const el of footnote_1.footnote(((_c = next(0)) === null || _c === void 0 ? void 0 : _c.parentNode) || target, settings.footnotes, context)) {
                         el ? yield {
                             type: 'footnote',
                             value: el
@@ -3286,7 +3294,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of figure_1.figure(target, settings.footnotes, context)) {
+                    for (const el of figure_1.figure(((_d = next(0)) === null || _d === void 0 ? void 0 : _d.parentNode) || target, settings.footnotes, context)) {
                         el ? yield {
                             type: 'figure',
                             value: el
@@ -3340,7 +3348,8 @@ require = function () {
             'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 14,
-            'spica/url': 21
+            'spica/url': 21,
+            'typed-dom': 23
         }
     ],
     58: [
