@@ -1,4 +1,4 @@
-import { undefined } from 'spica/global';
+import { undefined, Function } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, Ctx, Data, Context, eval, exec, check } from '../../data/parser';
 
@@ -17,16 +17,15 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
   assert(patterns.length > 0);
   assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
   assert(parser);
-  const matchers = patterns.map<(source: string) => boolean>(pattern =>
-    typeof pattern === 'string'
-      ? source => source.slice(0, pattern.length) === pattern
-      : source => pattern.test(source));
-  const match = (source: string) => {
-    for (let i = 0, len = matchers.length; i < len; ++i) {
-      if (matchers[i](source)) return true;
-    }
-    return false;
-  };
+  const match: (source: string) => boolean = Function('patterns', [
+    '"use strict";',
+    "return source =>",
+    'false',
+    ...patterns.map((pattern, i) =>
+      typeof pattern === 'string'
+        ? `|| source.slice(0, patterns[${i}].length) === patterns[${i}]`
+        : `|| patterns[${i}].test(source)`),
+  ].join(''))(patterns);
   const match2 = (source: string): boolean => {
     if (!has) return true;
     const i = end ? source.indexOf(end, 1) : -1;
