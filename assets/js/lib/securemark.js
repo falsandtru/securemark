@@ -110,7 +110,7 @@ require = function () {
             }
             exports.shift = shift;
             function unshift(as, bs) {
-                if (alias_1.isArray(as)) {
+                if ('length' in as || alias_1.isArray(as)) {
                     for (let i = as.length - 1; i >= 0; --i) {
                         bs.unshift(as[i]);
                     }
@@ -133,12 +133,14 @@ require = function () {
             }
             exports.pop = pop;
             function push(as, bs) {
-                if (alias_1.isArray(bs)) {
-                    for (let i = 0; i < bs.length; ++i) {
+                if ('length' in bs || alias_1.isArray(bs)) {
+                    for (let i = 0, len = bs.length; i < len; ++i) {
                         as.push(bs[i]);
                     }
                 } else {
-                    as.push(...bs);
+                    for (const b of bs) {
+                        as.push(b);
+                    }
                 }
                 return as;
             }
@@ -1573,7 +1575,8 @@ require = function () {
                             throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
                         if (factory !== defaultFactory) {
                             if (attrs)
-                                for (const name of alias_1.ObjectKeys(attrs)) {
+                                for (let i = 0, names = alias_1.ObjectKeys(attrs); i < names.length; ++i) {
+                                    const name = names[i];
                                     const value = attrs[name];
                                     if (typeof value !== 'function')
                                         continue;
@@ -1901,6 +1904,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const memoize_1 = _dereq_('spica/memoize');
+            const array_1 = _dereq_('spica/array');
             var caches;
             (function (caches) {
                 caches.shadows = new WeakMap();
@@ -1950,7 +1954,8 @@ require = function () {
             function defineAttrs(el, attrs) {
                 if (!attrs)
                     return el;
-                for (const name of alias_1.ObjectKeys(attrs)) {
+                for (let i = 0, names = alias_1.ObjectKeys(attrs); i < names.length; ++i) {
+                    const name = names[i];
                     const value = attrs[name];
                     switch (typeof value) {
                     case 'string':
@@ -1989,30 +1994,30 @@ require = function () {
                     return defineChildren(node, [children]);
                 }
                 if (!('length' in children)) {
-                    if (!node.firstChild)
-                        return node.append(...children), node;
-                    const ns = global_1.Array();
-                    for (const node of children) {
-                        ns.push(node);
+                    if (node.firstChild)
+                        return defineChildren(node, array_1.push([], children));
+                    for (const child of children) {
+                        node.append(child);
                     }
-                    return defineChildren(node, ns);
+                    return node;
                 }
                 if (!alias_1.isArray(children)) {
-                    const ns = global_1.Array(children.length);
-                    for (let i = 0; i < ns.length; ++i) {
-                        ns[i] = children[i];
+                    if (node.firstChild)
+                        return defineChildren(node, array_1.push([], children));
+                    for (let i = children.length; i--;) {
+                        node.prepend(children[i]);
                     }
-                    return defineChildren(node, ns);
+                    return node;
                 }
                 const targetNodes = node.firstChild ? node.childNodes : [];
                 let targetLength = targetNodes.length;
                 if (targetLength === 0)
-                    return node.append(...children), node;
+                    return append(node, children);
                 let count = 0;
                 I:
                     for (let i = 0; i < children.length; ++i) {
                         if (count === targetLength)
-                            return node.append(...children.slice(i)), node;
+                            return append(node, children, i);
                         const newChild = children[i];
                         if (typeof newChild === 'object' && newChild.nodeType === 11) {
                             const sourceLength = newChild.childNodes.length;
@@ -2051,9 +2056,16 @@ require = function () {
             function equal(node, data) {
                 return typeof data === 'string' ? 'wholeText' in node && node.data === data : node === data;
             }
+            function append(node, children, i = 0) {
+                for (let len = children.length; i < len; ++i) {
+                    node.append(children[i]);
+                }
+                return node;
+            }
         },
         {
             'spica/alias': 5,
+            'spica/array': 6,
             'spica/global': 14,
             'spica/memoize': 15
         }
