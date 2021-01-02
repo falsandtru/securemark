@@ -43,6 +43,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     head = false;
   }
   const node = frag(es);
+  assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (opts.test) return node;
   for (const _ of footnote(node, opts.footnotes, context));
   for (const _ of figure(node, opts.footnotes, context));
