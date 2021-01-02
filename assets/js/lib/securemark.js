@@ -1988,9 +1988,16 @@ require = function () {
                 case 'string':
                     return defineChildren(node, [children]);
                 }
+                if (!('length' in children)) {
+                    if (!node.firstChild)
+                        return node.append(...children), node;
+                    const ns = global_1.Array();
+                    for (const node of children) {
+                        ns.push(node);
+                    }
+                    return defineChildren(node, ns);
+                }
                 if (!alias_1.isArray(children)) {
-                    if (!('length' in children))
-                        return defineChildren(node, [...children]);
                     const ns = global_1.Array(children.length);
                     for (let i = 0; i < ns.length; ++i) {
                         ns[i] = children[i];
@@ -1999,17 +2006,13 @@ require = function () {
                 }
                 const targetNodes = node.firstChild ? node.childNodes : [];
                 let targetLength = targetNodes.length;
-                if (targetLength === 0) {
-                    node.append(...children);
-                    return node;
-                }
+                if (targetLength === 0)
+                    return node.append(...children), node;
                 let count = 0;
                 I:
                     for (let i = 0; i < children.length; ++i) {
-                        if (count === targetLength) {
-                            node.append(...children.slice(i));
-                            return node;
-                        }
+                        if (count === targetLength)
+                            return node.append(...children.slice(i)), node;
                         const newChild = children[i];
                         if (typeof newChild === 'object' && newChild.nodeType === 11) {
                             const sourceLength = newChild.childNodes.length;
@@ -3171,13 +3174,12 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function bind(target, settings) {
                 var _a, _b;
-                const {footnotes} = settings;
-                settings = alias_1.ObjectAssign(alias_1.ObjectCreate(settings), {
+                let context = alias_1.ObjectAssign({}, settings, {
                     host: (_a = settings.host) !== null && _a !== void 0 ? _a : new url_1.URL(global_1.location.pathname, global_1.location.origin),
                     footnotes: global_1.undefined
                 });
-                if (((_b = settings.host) === null || _b === void 0 ? void 0 : _b.origin) === 'null')
-                    throw new Error(`Invalid host: ${ settings.host.href }`);
+                if (((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) === 'null')
+                    throw new Error(`Invalid host: ${ context.host.href }`);
                 const blocks = [];
                 const adds = [];
                 const dels = [];
@@ -3192,7 +3194,7 @@ require = function () {
                     var _a, _b;
                     const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
-                    const context = alias_1.ObjectAssign(settings, { url: url ? new url_1.URL(url, url) : global_1.undefined });
+                    context = alias_1.ObjectAssign(context, { url: url ? new url_1.URL(url, url) : global_1.undefined });
                     source = normalize_1.normalize(source);
                     const sourceSegments = [];
                     for (const seg of segment_1.segment(source)) {
@@ -3272,7 +3274,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of footnote_1.footnote(target, footnotes, context)) {
+                    for (const el of footnote_1.footnote(target, settings.footnotes, context)) {
                         el ? yield {
                             type: 'footnote',
                             value: el
@@ -3280,7 +3282,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of figure_1.figure(target, footnotes, context)) {
+                    for (const el of figure_1.figure(target, settings.footnotes, context)) {
                         el ? yield {
                             type: 'figure',
                             value: el
@@ -3423,24 +3425,30 @@ require = function () {
             const footnote_1 = _dereq_('../../util/footnote');
             const memoize_1 = _dereq_('spica/memoize');
             const url_1 = _dereq_('spica/url');
-            const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             const inherit = memoize_1.memoize(context => alias_1.ObjectCreate(context), new WeakMap());
+            const inherit2 = memoize_1.memoize(context => memoize_1.memoize(_ => alias_1.ObjectCreate(context)), new WeakMap());
             function parse(source, opts = {}, context) {
                 var _a, _b, _c, _d, _e, _f, _g;
                 const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
-                context = context ? inherit(context) : {};
-                context = alias_1.ObjectAssign(context, opts, {
-                    host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context.host) !== null && _c !== void 0 ? _c : new url_1.URL(global_1.location.pathname, global_1.location.origin),
-                    url: url ? new url_1.URL(url, url) : context.url,
-                    id: (_d = opts.id) !== null && _d !== void 0 ? _d : context.id,
+                context = context && url === '' && context.id === opts.id ? context : alias_1.ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
+                    host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context === null || context === void 0 ? void 0 : context.host) !== null && _c !== void 0 ? _c : new url_1.URL(global_1.location.pathname, global_1.location.origin),
+                    url: url ? new url_1.URL(url, url) : context === null || context === void 0 ? void 0 : context.url,
+                    id: (_d = opts.id) !== null && _d !== void 0 ? _d : context === null || context === void 0 ? void 0 : context.id,
                     header: global_1.undefined,
                     test: global_1.undefined,
                     footnotes: global_1.undefined
                 });
                 if (((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) === 'null')
                     throw new Error(`Invalid host: ${ context.host.href }`);
-                const node = typed_dom_1.frag([...segment_1.segment(normalize_1.normalize(source))].reduce((acc, seg, i) => array_1.push(acc, combinator_1.eval(i === 0 && opts.header !== false && header_1.header(seg, context) || block_1.block(seg, context), [])), []));
+                const node = typed_dom_1.frag(function* () {
+                    var _a;
+                    let head = (_a = opts.header) !== null && _a !== void 0 ? _a : true;
+                    for (const seg of segment_1.segment(normalize_1.normalize(source))) {
+                        yield* combinator_1.eval(head && header_1.header(seg, context) || block_1.block(seg, context), []);
+                        head = false;
+                    }
+                }());
                 if (opts.test)
                     return node;
                 for (const _ of footnote_1.footnote(node, opts.footnotes, context));
@@ -3459,7 +3467,6 @@ require = function () {
             '../segment': 124,
             './normalize': 61,
             'spica/alias': 5,
-            'spica/array': 6,
             'spica/global': 14,
             'spica/memoize': 15,
             'spica/url': 21,
