@@ -6245,7 +6245,6 @@ require = function () {
             exports.localize = void 0;
             const combinator_1 = _dereq_('../combinator');
             const ja_1 = _dereq_('./locale/ja');
-            const typed_dom_1 = _dereq_('typed-dom');
             function localize(block) {
                 return combinator_1.fmap(block, es => {
                     for (let i = 0, len = es.length; i < len; ++i) {
@@ -6256,7 +6255,7 @@ require = function () {
                                 continue;
                             if (!check(el))
                                 continue;
-                            el.replaceChild(typed_dom_1.html('wbr'), el.firstChild);
+                            el.firstChild.remove();
                         }
                     }
                     return es;
@@ -6301,8 +6300,7 @@ require = function () {
         },
         {
             '../combinator': 30,
-            './locale/ja': 123,
-            'typed-dom': 23
+            './locale/ja': 123
         }
     ],
     123: [
@@ -6559,7 +6557,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const str_1 = _dereq_('./str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.separator = /[\s\x00-\x7F]|[^\x00-\x7F\s]#/;
+            exports.separator = /[\s\x00-\x7F]|[^\x00-\x7F\s]#|[、。！？][^\S\n]*(?=\\\n)/;
             exports.nonAlphanumeric = /[^0-9A-Za-z]|$/;
             exports.nonWhitespace = /[\S\n]|$/;
             const repeat = str_1.str(/^(.)\1*/);
@@ -6607,6 +6605,20 @@ require = function () {
                             [source[0]],
                             source.slice(1)
                         ];
+                    case '\u3001':
+                    case '\u3002':
+                    case '\uFF01':
+                    case '\uFF1F': {
+                            const i = source.slice(1).search(exports.nonWhitespace) + 1;
+                            if (i > 0 && source.slice(i, i + 2) === '\\\n')
+                                return [
+                                    [
+                                        source[0],
+                                        typed_dom_1.html('span', { class: 'linebreak' })
+                                    ],
+                                    source.slice(i + 2)
+                                ];
+                        }
                     default:
                         const b = source[0].trimStart() === '';
                         const i = b || isAlphanumeric(source[0]) ? source.search(b ? exports.nonWhitespace : exports.nonAlphanumeric) : 1;
