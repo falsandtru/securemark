@@ -12,7 +12,6 @@ import { figure } from '../../util/figure';
 import { footnote } from '../../util/footnote';
 import { ReadonlyURL } from 'spica/url';
 import { push, splice } from 'spica/array';
-import { define } from 'typed-dom';
 
 interface Settings extends ParserSettings {
 }
@@ -34,7 +33,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   const adds: [HTMLElement, Node | null][] = [];
   const dels: HTMLElement[] = [];
   const bottom = target.firstChild;
-  let revision: symbol;
+  let revision: symbol | undefined;
   return {
     parse,
     nearest,
@@ -42,12 +41,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   };
 
   function* parse(source: string): Generator<Progress, undefined, undefined> {
-    if (settings.chunk) {
-      define(target, []);
-      splice(blocks, 0);
-      splice(adds, 0);
-      splice(dels, 0);
-    }
+    if (settings.chunk && revision) throw new Error('Chunks cannot be updated.');
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
     context = ObjectAssign(context, { url: url ? new ReadonlyURL(url, url) : undefined });

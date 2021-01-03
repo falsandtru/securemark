@@ -199,6 +199,7 @@ describe('Unit: parser/api/bind', () => {
             html('sup', [html('a', { href: '#annotation:ref:3', rel: 'noopener' }, '~3')])
           ]),
         ]).outerHTML);
+      assert.throws(() => update('').next());
     });
 
   });
