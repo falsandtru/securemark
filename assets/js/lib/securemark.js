@@ -3176,7 +3176,6 @@ require = function () {
             const footnote_1 = _dereq_('../../util/footnote');
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
-            const typed_dom_1 = _dereq_('typed-dom');
             function bind(target, settings) {
                 var _a, _b;
                 let context = alias_1.ObjectAssign({}, settings, {
@@ -3198,12 +3197,8 @@ require = function () {
                 };
                 function* parse(source) {
                     var _a, _b, _c, _d;
-                    if (settings.chunk) {
-                        typed_dom_1.define(target, []);
-                        array_1.splice(blocks, 0);
-                        array_1.splice(adds, 0);
-                        array_1.splice(dels, 0);
-                    }
+                    if (settings.chunk && revision)
+                        throw new Error('Chunks cannot be updated.');
                     const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                     context = alias_1.ObjectAssign(context, { url: url ? new url_1.ReadonlyURL(url, url) : global_1.undefined });
@@ -3348,8 +3343,7 @@ require = function () {
             'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 14,
-            'spica/url': 21,
-            'typed-dom': 23
+            'spica/url': 21
         }
     ],
     58: [
