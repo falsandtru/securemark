@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.195.1
+
+- Improve localization.
+
 ## 0.195.0
 
 - Support chunked progressive rendering.

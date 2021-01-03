@@ -1,7 +1,6 @@
 import { BlockParser } from './block';
 import { fmap } from '../combinator';
 import { japanese } from './locale/ja';
-import { html } from 'typed-dom';
 
 export function localize(block: BlockParser): BlockParser {
   return fmap(block, es => {
@@ -12,7 +11,7 @@ export function localize(block: BlockParser): BlockParser {
         if (!el.firstChild || el.firstElementChild) continue;
         if (!check(el)) continue;
         assert(el.firstChild.textContent === ' ');
-        el.replaceChild(html('wbr'), el.firstChild);
+        el.firstChild.remove();
       }
     }
     return es;

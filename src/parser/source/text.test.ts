@@ -101,6 +101,13 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('##0')), [['#', '#', '0'], '']);
     });
 
+    it('localize', () => {
+      assert.deepStrictEqual(inspect(parser('.\\\n0')), [['.', '<span class="linebreak"> </span>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('。\\\n0')), [['。', '<span class="linebreak"></span>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('。 \\\n0')), [['。', '<span class="linebreak"></span>', '0'], '']);
+      assert.deepStrictEqual(inspect(parser('。。\\\n0')), [['。', '。', '<span class="linebreak"></span>', '0'], '']);
+    });
+
   });
 
 });
