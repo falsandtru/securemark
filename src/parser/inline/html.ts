@@ -7,8 +7,8 @@ import { startTight, isEndTight, trimEndBR, defrag, stringify } from '../util';
 import { str } from '../source';
 import { DeepImmutable } from 'spica/type';
 import { memoize as memo } from 'spica/memoize';
-import { html as h } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
+import { html as h } from 'typed-dom';
 
 const tags = ObjectFreeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {

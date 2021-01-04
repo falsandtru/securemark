@@ -4,8 +4,8 @@ import { some, block, validate, fence, clear, fmap, eval } from '../../combinato
 import { defrag } from '../util';
 import { autolink } from '../autolink';
 import { escsource } from '../source';
-import { html, define } from 'typed-dom';
 import { join } from 'spica/array';
+import { html, define } from 'typed-dom';
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;

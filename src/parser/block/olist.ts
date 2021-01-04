@@ -5,8 +5,8 @@ import { defrag } from '../util';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { html, define } from 'typed-dom';
 import { shift } from 'spica/array';
+import { html, define } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(match(
   /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/,

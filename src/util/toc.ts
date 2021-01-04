@@ -1,6 +1,6 @@
 import { undefined, Array } from 'spica/global';
-import { html } from 'typed-dom';
 import { push } from 'spica/array';
+import { html } from 'typed-dom';
 
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
   // Bug: Firefox

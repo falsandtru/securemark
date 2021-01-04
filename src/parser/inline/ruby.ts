@@ -3,8 +3,8 @@ import { RubyParser } from '../inline';
 import { sequence, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
-import { html } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
+import { html } from 'typed-dom';
 
 export const ruby: RubyParser = lazy(() => creator(bind(
   sequence([

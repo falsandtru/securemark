@@ -1,8 +1,8 @@
 import { Infinity, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../parser/inline/extension/label';
 import { MultiMap } from 'spica/multimap';
-import { define } from 'typed-dom';
 import { join } from 'spica/array';
+import { define } from 'typed-dom';
 
 export function* figure(
   target: ParentNode & Node,

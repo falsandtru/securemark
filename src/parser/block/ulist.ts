@@ -4,8 +4,8 @@ import { defrag } from '../util';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
+import { html } from 'typed-dom';
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
   /^-(?=[^\S\n]|\n[^\S\n]*\S)/,

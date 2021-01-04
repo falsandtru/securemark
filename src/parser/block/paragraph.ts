@@ -5,8 +5,8 @@ import { mention } from './paragraph/mention';
 import { syntax as delimiter } from './paragraph/mention/quotation';
 import { inline } from '../inline';
 import { anyline } from '../source';
-import { html, define } from 'typed-dom';
 import { pop, push } from 'spica/array';
+import { html, define } from 'typed-dom';
 
 export const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
 

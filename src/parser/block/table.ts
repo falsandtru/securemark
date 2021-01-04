@@ -3,8 +3,8 @@ import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, context, creator, surround, open, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { inline } from '../inline';
-import { html } from 'typed-dom';
 import { shift, push } from 'spica/array';
+import { html } from 'typed-dom';
 
 import RowParser = TableParser.RowParser;
 import CellParser = RowParser.CellParser;

@@ -2,8 +2,8 @@ import { EmStrongParser, inline } from '../inline';
 import { union, some, creator, surround, lazy, bind } from '../../combinator';
 import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { str } from '../source';
-import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
+import { html } from 'typed-dom';
 
 export const emstrong: EmStrongParser = lazy(() => creator(surround(
   str('***'),

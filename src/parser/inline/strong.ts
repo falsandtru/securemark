@@ -3,8 +3,8 @@ import { union, some, creator, surround, lazy } from '../../combinator';
 import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { emphasis } from './emphasis';
 import { str } from '../source';
-import { html } from 'typed-dom';
 import { unshift } from 'spica/array';
+import { html } from 'typed-dom';
 
 export const strong: StrongParser = lazy(() => creator(surround(
   str('**', '*'),
