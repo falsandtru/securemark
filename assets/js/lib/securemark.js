@@ -1042,7 +1042,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.unique = exports.rnd0Z = exports.rnd0z = exports.rnd0f = exports.rnd62 = exports.rnd36 = exports.rnd32 = exports.rnd16 = void 0;
+            exports.unique = exports.rnd0Z = exports.rnd0z = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd36 = exports.rnd32 = exports.rnd16 = void 0;
             const global_1 = _dereq_('./global');
             const bases = [...Array(7)].map((_, i) => 1 << i);
             const dict = [
@@ -1053,6 +1053,7 @@ require = function () {
             exports.rnd32 = cons(32);
             exports.rnd36 = cons(36);
             exports.rnd62 = cons(62);
+            exports.rnd64 = cons(64);
             exports.rnd0f = conv(exports.rnd16);
             exports.rnd0z = conv(exports.rnd36);
             exports.rnd0Z = conv(exports.rnd62);
