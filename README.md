@@ -1,7 +1,6 @@
 # Securemark
 
-[![Build Status](https://travis-ci.org/falsandtru/securemark.svg?branch=master)](https://travis-ci.org/falsandtru/securemark)
-[![Coverage Status](https://coveralls.io/repos/falsandtru/securemark/badge.svg?branch=master&service=github)](https://coveralls.io/github/falsandtru/securemark?branch=master)
+![CI](https://github.com/falsandtru/securemark/workflows/CI/badge.svg)
 
 Secure markdown renderer working on browsers for user input data.
 
