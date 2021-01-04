@@ -8,7 +8,7 @@ import { push } from 'spica/array';
 import { html } from 'typed-dom';
 
 export const dlist: DListParser = lazy(() => block(fmap(validate(
-  /^~(?=[^\S\n])/,
+  /^~[^\S\n]/,
   convert(source => source.replace(blankline, ''),
   context({ syntax: { inline: { media: false } } },
   some(inits([
@@ -22,16 +22,16 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
 
 const term: DListParser.TermParser = creator(line(indexee(fmap(
   open(
-    /^~(?=[^\S\n])/,
+    /^~[^\S\n]/,
     trim(some(union([indexer, inline]))),
     true),
   ns => [html('dt', defrag(ns))]))));
 
 const desc: DListParser.DescriptionParser = creator(block(fmap(
   open(
-    /^:(?=[^\S\n])|/,
+    /^:[^\S\n]|/,
     rewrite(
-      some(anyline, /^[~:](?=[^\S\n])/),
+      some(anyline, /^[~:][^\S\n]/),
       trim(some(union([inline])))),
     true),
   ns => [html('dd', defrag(ns))]),
