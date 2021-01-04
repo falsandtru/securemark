@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.196.0
+
+- Refine table parser's alignment representation.
+
 ## 0.195.1
 
 - Improve localization.

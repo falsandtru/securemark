@@ -43,7 +43,7 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
     assert(aligns.every(align => ['left', 'center', 'right', ''].includes(align)));
     for (let i = 0; i < len; ++i) {
       if (!aligns[i]) continue;
-      cols[i].setAttribute('style', `text-align: ${aligns[i]};`);
+      cols[i].setAttribute('align', aligns[i]);
     }
   }
 
