@@ -40,7 +40,7 @@ function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: 
     const len = cols.length;
     extend(aligns, len);
     assert(len <= aligns.length);
-    assert(aligns.every(align => ['left', 'center', 'right', ''].includes(align)));
+    assert(aligns.every(align => ['start', 'center', 'end', ''].includes(align)));
     for (let i = 0; i < len; ++i) {
       if (!aligns[i]) continue;
       cols[i].setAttribute('align', aligns[i]);
@@ -74,7 +74,7 @@ const alignment: CellParser.AlignmentParser = open(
   '|',
   union([
     focus(/^:-+:/, () => [['center'], '']),
-    focus(/^:-+/, () => [['left'], '']),
-    focus(/^-+:/, () => [['right'], '']),
+    focus(/^:-+/, () => [['start'], '']),
+    focus(/^-+:/, () => [['end'], '']),
     focus(/^-+/, () => [[''], '']),
   ]));
