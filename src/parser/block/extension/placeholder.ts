@@ -9,5 +9,11 @@ export const segment: ExtensionParser.PlaceholderParser.SegmentParser = block(va
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(validate('~~~', fmap(
   fence(opener, 300),
-  ([body, closer, opener]) =>
-    [html('pre', { class: 'notranslate invalid', 'data-invalid-syntax': 'extension', 'data-invalid-type': 'syntax', 'data-invalid-description': 'Invalid syntax.' }, `${opener}${body}${closer}`)])));
+  ([body, closer, opener, delim]) => [
+    html('pre', {
+      class: 'notranslate invalid',
+      'data-invalid-syntax': 'extension',
+      'data-invalid-type': closer ? 'syntax' : 'closer',
+      'data-invalid-description': closer ? 'Invalid syntax.' : `Missing the closing delimiter ${delim}.`,
+    }, `${opener}${body}${closer}`)
+  ])));
