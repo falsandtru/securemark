@@ -202,7 +202,7 @@ export namespace MarkdownParser {
       export namespace RowParser {
         export interface CellParser<P extends CellParser.ContentParser> extends
           Block<'table/row/cell'>,
-          Parser<HTMLTableDataCellElement, [
+          Parser<HTMLTableCellElement, [
             P,
           ], Context> {
         }
