@@ -5,6 +5,7 @@
 - Refine table parser's alignment representation.
 - Change table syntax to allow media syntax.
 - Change table parser not to align headers.
+- Change example syntax to increase the maximum number of contained lines to 300.
 
 ## 0.195.1
 

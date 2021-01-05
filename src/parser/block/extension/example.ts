@@ -1,19 +1,13 @@
 import { ExtensionParser } from '../../block';
-import { block, validate, fence, creator, clear, fmap, eval } from '../../../combinator';
+import { block, validate, fence, creator, fmap, eval } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { html } from 'typed-dom';
 
 const opener = /^(~{3,})example\/(\S+)([^\n]*)(?:$|\n)/;
 
-export const segment: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 100))));
-
-export const segment_: ExtensionParser.ExampleParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 100, false))), false);
-
 export const example: ExtensionParser.ExampleParser = creator(100, block(validate('~~~', fmap(
-  fence(opener, 100),
+  fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type, param]: string[], _, context) => {
     if (!closer || param.trimStart() !== '') return [html('pre', {
