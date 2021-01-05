@@ -7,6 +7,9 @@ const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
 export const segment: ExtensionParser.PlaceholderParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 300))));
 
+export const segment_: ExtensionParser.PlaceholderParser.SegmentParser = block(validate('~~~',
+  clear(fence(opener, 300, false))), false);
+
 export const placeholder: ExtensionParser.PlaceholderParser = block(validate('~~~', fmap(
   fence(opener, 300),
   ([body, closer, opener, delim]) => [

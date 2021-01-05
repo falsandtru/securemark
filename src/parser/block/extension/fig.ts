@@ -5,8 +5,9 @@ import { figure } from './figure';
 import { segment as seg_label } from '../../inline/extension/label';
 import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
-import { segment as seg_example } from '../extension/example';
 import { segment as seg_blockquote } from '../blockquote';
+import { segment as seg_example } from './example';
+import { segment as seg_placeholder } from './placeholder';
 
 import FigParser = ExtensionParser.FigParser;
 
@@ -16,8 +17,9 @@ export const segment: FigParser.SegmentParser = block(validate(['[$', '$'],
     union([
       seg_code,
       seg_math,
-      seg_example,
       seg_blockquote,
+      seg_example,
+      seg_placeholder,
       some(contentline),
     ]),
   ])));

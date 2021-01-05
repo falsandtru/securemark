@@ -7,8 +7,9 @@ import { label, segment as seg_label } from '../../inline/extension/label';
 import { table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
-import { example, segment_ as seg_example } from './example';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
+import { example, segment_ as seg_example } from './example';
+import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { blankline } from '../paragraph';
 import { inline, media, shortmedia } from '../../inline';
 import { memoize } from 'spica/memoize';
@@ -28,8 +29,9 @@ export const segment: FigureParser.SegmentParser = block(match(
           union([
             seg_code,
             seg_math,
-            seg_example,
             seg_blockquote,
+            seg_example,
+            seg_placeholder,
             some(contentline, closer),
           ]),
           emptyline,
@@ -51,8 +53,9 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
         table,
         codeblock,
         mathblock,
-        example,
         blockquote,
+        example,
+        placeholder,
         line(media),
         line(shortmedia),
       ])),

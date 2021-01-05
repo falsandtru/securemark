@@ -295,7 +295,6 @@ export namespace MarkdownParser {
         Parser<never, [
           FigParser.SegmentParser,
           FigureParser.SegmentParser,
-          ExampleParser.SegmentParser,
           PlaceholderParser.SegmentParser,
         ], Context> {
       }
@@ -313,8 +312,9 @@ export namespace MarkdownParser {
               TableParser,
               CodeBlockParser,
               MathBlockParser,
-              ExampleParser,
               BlockquoteParser,
+              ExampleParser,
+              PlaceholderParser,
               InlineParser.MediaParser,
               InlineParser.ShortmediaParser,
             ], Context>,
@@ -332,8 +332,9 @@ export namespace MarkdownParser {
               Parser<never, [
                 CodeBlockParser.SegmentParser,
                 MathBlockParser.SegmentParser,
-                ExampleParser.SegmentParser,
                 BlockquoteParser.SegmentParser,
+                ExampleParser.SegmentParser,
+                PlaceholderParser.SegmentParser,
                 SourceParser.ContentLineParser,
               ], Context>,
               SourceParser.EmptyLineParser,
@@ -361,8 +362,9 @@ export namespace MarkdownParser {
             Parser<never, [
               CodeBlockParser.SegmentParser,
               MathBlockParser.SegmentParser,
-              ExampleParser.SegmentParser,
               BlockquoteParser.SegmentParser,
+              ExampleParser.SegmentParser,
+              PlaceholderParser.SegmentParser,
               SourceParser.ContentLineParser,
             ], Context>,
           ], Context> {
