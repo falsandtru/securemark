@@ -20,20 +20,18 @@ export const dlist: DListParser = lazy(() => block(fmap(validate(
   ]))))),
   es => [html('dl', fillTrailingDescription(es))])));
 
-const term: DListParser.TermParser = creator(line(indexee(fmap(
-  open(
-    /^~[^\S\n]/,
-    trim(some(union([indexer, inline]))),
-    true),
+const term: DListParser.TermParser = creator(line(indexee(fmap(open(
+  /^~[^\S\n]/,
+  trim(some(union([indexer, inline]))),
+  true),
   ns => [html('dt', defrag(ns))]))));
 
-const desc: DListParser.DescriptionParser = creator(block(fmap(
-  open(
-    /^:[^\S\n]|/,
-    rewrite(
-      some(anyline, /^[~:][^\S\n]/),
-      trim(some(union([inline])))),
-    true),
+const desc: DListParser.DescriptionParser = creator(block(fmap(open(
+  /^:[^\S\n]|/,
+  rewrite(
+    some(anyline, /^[~:][^\S\n]/),
+    trim(some(union([inline])))),
+  true),
   ns => [html('dd', defrag(ns))]),
   false));
 
