@@ -17,44 +17,39 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     some(row(cell(data), true)),
   ])),
   rows => {
-    const [head, alignment] = shift(rows, 2)[0];
-    assert(alignment.children.length > 0);
-    align(head, alignment, rows);
-    return [html('table', [html('thead', [head]), html('tbody', rows)])];
-  })));
-
-function align(head: HTMLTableRowElement, alignment: HTMLTableRowElement, rows: HTMLTableRowElement[]): void {
-  const as: string[] = Array(alignment.childElementCount);
-  for (let i = 0, es = alignment.children; i < as.length; ++i) {
-    as[i] = es[i].textContent || i > 0 && as[i - 1] || '';
-  }
-  apply(head, as.slice(0, 2));
-  for (let i = 0, len = rows.length; i < len; ++i) {
-    apply(rows[i], as);
-  }
-  return;
-
-  function apply(row: HTMLElement, aligns: string[]): void {
-    const cols = row.children;
-    const len = cols.length;
-    extend(aligns, len);
-    assert(len <= aligns.length);
-    assert(aligns.every(align => ['start', 'center', 'end', ''].includes(align)));
-    for (let i = 0; i < len; ++i) {
-      if (!aligns[i]) continue;
-      cols[i].setAttribute('align', aligns[i]);
+    const [head, align] = shift(rows, 2)[0];
+    const aligns: string[] = [];
+    for (let cs = align.children, i = 0, len = cs.length; i < len; ++i) {
+      aligns[i] = cs[i].textContent || i > 0 && aligns[i - 1] || '';
     }
-  }
+    assert(aligns.length > 0);
+    apply(head, aligns.slice(0, 2));
+    for (let i = 0, len = rows.length; i < len; ++i) {
+      apply(rows[i], aligns);
+    }
+    return [html('table', [html('thead', [head]), html('tbody', rows)])];
 
-  function extend(aligns: string[], size: number): void {
-    return size > aligns.length
-      ? void push(
-          aligns,
-          Array(size - aligns.length)
-            .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
-      : undefined;
-  }
-}
+    function apply(row: HTMLElement, aligns: string[]): void {
+      const cols = row.children;
+      const len = cols.length;
+      extend(aligns, len);
+      assert(len <= aligns.length);
+      assert(aligns.every(align => ['center', 'start', 'end', ''].includes(align)));
+      for (let i = 0; i < len; ++i) {
+        if (!aligns[i]) continue;
+        cols[i].setAttribute('align', aligns[i]);
+      }
+    }
+
+    function extend(aligns: string[], size: number): void {
+      return size > aligns.length
+        ? void push(
+            aligns,
+            Array(size - aligns.length)
+              .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
+        : undefined;
+    }
+  })));
 
 const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, optional: boolean): RowParser<P> => fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional)),
