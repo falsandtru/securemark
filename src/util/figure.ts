@@ -107,7 +107,7 @@ export function* figure(
 function increment(bases: readonly string[], el: HTMLHeadingElement): string {
   const index = (+el.tagName[1] - 1 || 1) - 1;
   assert(index >= 0);
-  return index < bases.length - 1
+  return index + 1 < bases.length
     ? join(
         bases.slice(0, index + 2).map((v, i) => {
           switch (true) {

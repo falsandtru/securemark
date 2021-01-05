@@ -11,12 +11,12 @@ import { define } from 'typed-dom';
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   //assert(isVisible(nodes[0], 'start'));
-  const end = nodes.length - 1;
-  return typeof nodes[end] === 'string' && (nodes[end] as string).length > 1
-    ? isVisible(nodes[end], 'end', 0) ||
-      isVisible(nodes[end], 'end', 1)
-    : isVisible(nodes[end], 'end') || end === 0 ||
-      isVisible(nodes[end - 1], 'end');
+  const last = nodes.length - 1;
+  return typeof nodes[last] === 'string' && (nodes[last] as string).length > 1
+    ? isVisible(nodes[last], 'end', 0) ||
+      isVisible(nodes[last], 'end', 1)
+    : isVisible(nodes[last], 'end') || last === 0 ||
+      isVisible(nodes[last - 1], 'end');
 }
 function isVisible(node: HTMLElement | string | undefined, dir: 'start' | 'end', offset = 0): boolean {
   assert(offset >= 0);
