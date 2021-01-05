@@ -11,9 +11,9 @@ import CellParser = TableParser.CellParser;
 export const table: TableParser = lazy(() => block(fmap(validate(
   /^\|[^\n]*(?:\n\|[^\n]*){2,}/,
   sequence([
-    row(cell(data), true),
-    row(cell(align), false),
-    some(row(cell(data), true)),
+    row(some(data), true),
+    row(some(align), false),
+    some(row(some(data), true)),
   ])),
   rows => {
     const [head, align] = shift(rows, 2)[0];
@@ -33,24 +33,22 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     return [html('table', [html('thead', [head]), html('tbody', rows)])];
   })));
 
-const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, optional: boolean): RowParser<P> => fmap(
+const row = <P extends CellParser>(parser: P, optional: boolean): RowParser<P> => creator(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional)),
-  es => [html('tr', es)]);
+  es => [html('tr', es)]));
 
-const cell = <P extends CellParser.ContentParser>(parser: P): CellParser<P> => creator(fmap(
-  union([parser]),
-  ns => [html('td', defrag(ns))]));
-
-const data: CellParser.DataParser = surround(
+const data: CellParser.DataParser = creator(fmap(surround(
   /^\|(?:\\?\s)*(?=\S)/,
   some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
-  /^[^|]*/, true);
+  /^[^|]*/, true),
+  ns => [html('td', defrag(ns))]));
 
-const align: CellParser.AlignParser = open(
+const align: CellParser.AlignParser = creator(fmap(open(
   '|',
   union([
     focus(/^:-+:/, () => [['center'], '']),
     focus(/^:-+/, () => [['start'], '']),
     focus(/^-+:/, () => [['end'], '']),
     focus(/^-+/, () => [[''], '']),
-  ]));
+  ])),
+  ns => [html('td', defrag(ns))]));

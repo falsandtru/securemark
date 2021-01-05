@@ -193,29 +193,25 @@ export namespace MarkdownParser {
       ], Context> {
     }
     export namespace TableParser {
-      export interface RowParser<P extends CellParser.ContentParser> extends
+      export interface RowParser<P extends CellParser> extends
         Block<'table/row'>,
         Parser<HTMLTableRowElement, [
-          CellParser<P>,
-        ], Context> {
-      }
-      export interface CellParser<P extends CellParser.ContentParser> extends
-        Block<'table/row/cell'>,
-        Parser<HTMLTableCellElement, [
           P,
         ], Context> {
       }
+      export type CellParser
+        = CellParser.DataParser
+        | CellParser.AlignParser;
       export namespace CellParser {
-        export type ContentParser = DataParser | AlignParser;
         export interface DataParser extends
           Block<'table/cell/data'>,
-          Parser<HTMLElement | string, [
+          Parser<HTMLTableCellElement, [
             InlineParser,
           ], Context> {
         }
         export interface AlignParser extends
           Block<'table/cell/align'>,
-          Parser<string, [
+          Parser<HTMLTableCellElement, [
             SourceParser.StrParser,
             SourceParser.StrParser,
             SourceParser.StrParser,
