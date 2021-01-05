@@ -9,11 +9,9 @@ export const figbase: ExtensionParser.FigbaseParser = block(fmap(
   ([el]) => {
     const label = el.getAttribute('data-label')!;
     const group = label.split('-', 1)[0];
-    return [
-      html('figure', {
-        'data-label': label,
-        'data-group': group,
-        style: 'display: none;',
-      }),
-    ];
+    return [html('figure', {
+      'data-label': label,
+      'data-group': group,
+      style: 'display: none;',
+    })];
   }));
