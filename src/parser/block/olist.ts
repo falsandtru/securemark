@@ -12,36 +12,40 @@ import { html } from 'typed-dom';
 export const olist: OListParser = lazy(() => block(match(
   /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/,
   memoize(
-  (ms, ty = type(ms[1] || ms[3]), delim = ms[2] || ms[4]) =>
-    fmap(
-      context({ syntax: { inline: { media: false } } },
-      some(creator(union([
-        fmap(
-          inits([
-            line(inits([
-              focus(
-                delim === '.'
-                  ? /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/
-                  : /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/,
-                delim === '.'
-                  ? source => [[`${source.split('.', 1)[0]}.`], '']
-                  : source => [[source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')], '']),
-              trim(some(inline)),
-            ])),
-            indent(union([ulist_, olist_, ilist_]))
-          ]),
-          (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
-      ])))),
-      es => [
-        html('ol',
-          {
-            type: ty || undefined,
-            'data-format': delim === '.' ? undefined : 'paren',
-            'data-type': style(ty) || undefined,
-          },
-          format(es, ty)),
-      ]),
+  ms => list(type(ms[1] || ms[3]), ms[2] || ms[4]),
   ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
+
+const list = (type: string, delim: string): OListParser => fmap(
+  context({ syntax: { inline: { media: false } } },
+  some(creator(union([
+    fmap(
+      inits([
+        line(inits([
+          item[delim],
+          trim(some(inline)),
+        ])),
+        indent(union([ulist_, olist_, ilist_]))
+      ]),
+      (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
+  ])))),
+  es => [
+    html('ol',
+      {
+        type: type || undefined,
+        'data-format': delim === '.' ? undefined : 'paren',
+        'data-type': style(type) || undefined,
+      },
+      format(es, type)),
+  ]);
+
+const item = {
+  '.': focus(
+    /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/,
+    (source: string) => [[`${source.split('.', 1)[0]}.`], '']),
+  ')': focus(
+    /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/,
+    (source: string) => [[source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')], '']),
+} as const;
 
 export const olist_: OListParser = convert(
   source =>
