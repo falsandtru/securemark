@@ -76,7 +76,7 @@ export namespace MarkdownParser {
     ], Context> {
   }
   export namespace BlockParser {
-    interface Block<T> extends Markdown<['block', T]> { }
+    interface Block<T extends string> extends Markdown<`block/${T}`> { }
     export interface HorizontalRuleParser extends
       // ---
       Block<'horizontalrule'>,
@@ -503,7 +503,7 @@ export namespace MarkdownParser {
     ], Context> {
   }
   export namespace InlineParser {
-    interface Inline<T> extends Markdown<['inline', T]> { }
+    interface Inline<T extends string> extends Markdown<`inline/${T}`> { }
     export interface AnnotationParser extends
       // ((abc))
       Inline<'annotation'>,
@@ -941,7 +941,7 @@ export namespace MarkdownParser {
     ], Context> {
   }
   export namespace SourceParser {
-    interface Source<T> extends Markdown<['source', T]> { }
+    interface Source<T extends string> extends Markdown<`source/${T}`> { }
     export interface TextParser extends
       // abc
       Source<'text'>,
