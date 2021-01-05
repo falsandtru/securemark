@@ -12,7 +12,7 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   /^\|[^\n]*(?:\n\|[^\n]*){2,}/,
   sequence([
     row(cell(data), true),
-    row(cell(alignment), false),
+    row(cell(align), false),
     some(row(cell(data), true)),
   ])),
   rows => {
@@ -46,7 +46,7 @@ const data: CellParser.DataParser = surround(
   some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
   /^[^|]*/, true);
 
-const alignment: CellParser.AlignmentParser = open(
+const align: CellParser.AlignParser = open(
   '|',
   union([
     focus(/^:-+:/, () => [['center'], '']),

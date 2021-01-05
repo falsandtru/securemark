@@ -188,7 +188,7 @@ export namespace MarkdownParser {
       Block<'table'>,
       Parser<HTMLTableElement, [
         TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>,
-        TableParser.RowParser<TableParser.RowParser.CellParser.AlignmentParser>,
+        TableParser.RowParser<TableParser.RowParser.CellParser.AlignParser>,
         TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>,
       ], Context> {
     }
@@ -207,15 +207,15 @@ export namespace MarkdownParser {
           ], Context> {
         }
         export namespace CellParser {
-          export type ContentParser = DataParser | AlignmentParser;
+          export type ContentParser = DataParser | AlignParser;
           export interface DataParser extends
             Block<'table/row/cell/data'>,
             Parser<HTMLElement | string, [
               InlineParser,
             ], Context> {
           }
-          export interface AlignmentParser extends
-            Block<'table/row/cell/alignment'>,
+          export interface AlignParser extends
+            Block<'table/row/cell/align'>,
             Parser<string, [
               SourceParser.StrParser,
               SourceParser.StrParser,
