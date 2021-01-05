@@ -2520,12 +2520,13 @@ require = function () {
             const bind_1 = _dereq_('../monad/bind');
             const match_1 = _dereq_('./match');
             const surround_1 = _dereq_('./surround');
+            const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
             function indent(parser) {
-                return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, match_1.memoize(([, indent]) => indent, indent => some_1.some(line_1.line(surround_1.open(indent, source => [
+                return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, memoize_1.memoize(([, indent]) => some_1.some(line_1.line(surround_1.open(indent, source => [
                     [line_1.firstline(source, false)],
                     ''
-                ]))))), (rs, rest, context) => {
+                ]))), ([, indent]) => indent)), (rs, rest, context) => {
                     const result = parser(array_1.join(rs, '\n'), context);
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
@@ -2543,7 +2544,8 @@ require = function () {
             './match': 39,
             './surround': 44,
             'spica/array': 6,
-            'spica/global': 14
+            'spica/global': 14,
+            'spica/memoize': 15
         }
     ],
     38: [
@@ -2566,10 +2568,9 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.memoize = exports.match = void 0;
+            exports.match = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../../data/parser');
-            const memoize_1 = _dereq_('spica/memoize');
             function match(pattern, f) {
                 return (source, context) => {
                     if (source === '')
@@ -2585,19 +2586,10 @@ require = function () {
                 };
             }
             exports.match = match;
-            function memoize(f, g) {
-                const h = memoize_1.memoize(g);
-                return a => {
-                    const b = f(a);
-                    return b.length <= 20 ? h(b) : g(b);
-                };
-            }
-            exports.memoize = memoize;
         },
         {
             '../../data/parser': 48,
-            'spica/global': 14,
-            'spica/memoize': 15
+            'spica/global': 14
         }
     ],
     40: [
@@ -3744,7 +3736,6 @@ require = function () {
             ], combinator_1.validate(/^~{3,}|^\[?\$[a-z-]\S+[^\S\n]*(?:$|\n)/, combinator_1.union([
                 fig_1.segment,
                 figure_1.segment,
-                example_1.segment,
                 placeholder_1.segment
             ])));
             exports.extension = combinator_1.union([
@@ -3896,8 +3887,9 @@ require = function () {
             const label_1 = _dereq_('../../inline/extension/label');
             const codeblock_1 = _dereq_('../codeblock');
             const mathblock_1 = _dereq_('../mathblock');
-            const example_1 = _dereq_('../extension/example');
             const blockquote_1 = _dereq_('../blockquote');
+            const example_1 = _dereq_('./example');
+            const placeholder_1 = _dereq_('./placeholder');
             exports.segment = combinator_1.block(combinator_1.validate([
                 '[$',
                 '$'
@@ -3906,8 +3898,9 @@ require = function () {
                 combinator_1.union([
                     codeblock_1.segment,
                     mathblock_1.segment,
-                    example_1.segment,
                     blockquote_1.segment,
+                    example_1.segment,
+                    placeholder_1.segment,
                     combinator_1.some(source_1.contentline)
                 ])
             ])));
@@ -3922,9 +3915,10 @@ require = function () {
             '../../source': 125,
             '../blockquote': 65,
             '../codeblock': 66,
-            '../extension/example': 70,
             '../mathblock': 78,
-            './figure': 73
+            './example': 70,
+            './figure': 73,
+            './placeholder': 74
         }
     ],
     72: [
@@ -3964,19 +3958,22 @@ require = function () {
             const table_1 = _dereq_('../table');
             const codeblock_1 = _dereq_('../codeblock');
             const mathblock_1 = _dereq_('../mathblock');
-            const example_1 = _dereq_('./example');
             const blockquote_1 = _dereq_('../blockquote');
+            const example_1 = _dereq_('./example');
+            const placeholder_1 = _dereq_('./placeholder');
             const paragraph_1 = _dereq_('../paragraph');
             const inline_1 = _dereq_('../../inline');
+            const memoize_1 = _dereq_('spica/memoize');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, combinator_1.memoize(([, fence]) => fence, (fence, closer = new global_1.RegExp(`^${ fence }[^\\S\\n]*(?:$|\\n)`)) => combinator_1.close(combinator_1.sequence([
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, memoize_1.memoize(([, fence], closer = new global_1.RegExp(`^${ fence }[^\\S\\n]*(?:$|\\n)`)) => combinator_1.close(combinator_1.sequence([
                 combinator_1.line(label_1.segment),
                 combinator_1.inits([
                     combinator_1.union([
                         codeblock_1.segment_,
                         mathblock_1.segment_,
-                        example_1.segment_,
                         blockquote_1.segment,
+                        example_1.segment_,
+                        placeholder_1.segment_,
                         combinator_1.some(source_1.contentline, closer)
                     ]),
                     source_1.emptyline,
@@ -3985,7 +3982,7 @@ require = function () {
                         combinator_1.some(source_1.contentline, closer)
                     ])
                 ])
-            ]), closer))));
+            ]), closer), ([, fence]) => fence)));
             exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/\s/) + 1, source.trimEnd().lastIndexOf('\n')), combinator_1.sequence([
                 combinator_1.line(label_1.label),
                 combinator_1.inits([
@@ -3993,8 +3990,9 @@ require = function () {
                         table_1.table,
                         codeblock_1.codeblock,
                         mathblock_1.mathblock,
-                        example_1.example,
                         blockquote_1.blockquote,
+                        example_1.example,
+                        placeholder_1.placeholder,
                         combinator_1.line(inline_1.media),
                         combinator_1.line(inline_1.shortmedia)
                     ])),
@@ -4039,7 +4037,9 @@ require = function () {
             '../paragraph': 80,
             '../table': 84,
             './example': 70,
+            './placeholder': 74,
             'spica/global': 14,
+            'spica/memoize': 15,
             'typed-dom': 23
         }
     ],
@@ -4047,11 +4047,12 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.placeholder = exports.segment = void 0;
+            exports.placeholder = exports.segment_ = exports.segment = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
             exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 300))));
+            exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 300, false))), false);
             exports.placeholder = combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300), ([body, closer, opener, delim]) => [typed_dom_1.html('pre', {
                     class: 'notranslate invalid',
                     'data-invalid-syntax': 'extension',
@@ -4207,17 +4208,13 @@ require = function () {
             const ulist_1 = _dereq_('./ulist');
             const ilist_1 = _dereq_('./ilist');
             const inline_1 = _dereq_('../inline');
+            const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.match(/^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/, combinator_1.memoize(ms => type(ms[1] || ms[ms.length - 2]) + (ms[2] || ms[ms.length - 1]), (_, type = _.slice(0, -1), delim = _[_.length - 1]) => combinator_1.fmap(combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.creator(combinator_1.union([combinator_1.fmap(combinator_1.inits([
+            exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.match(/^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/, memoize_1.memoize(ms => list(type(ms[1] || ms[3]), ms[2] || ms[4]), ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
+            const list = (type, delim) => combinator_1.fmap(combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.creator(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.inits([
-                        combinator_1.focus(delim === '.' ? /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/ : /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/, delim === '.' ? source => [
-                            [`${ source.split('.', 1)[0] }.`],
-                            ''
-                        ] : source => [
-                            [source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')],
-                            ''
-                        ]),
+                        item[delim],
                         combinator_1.trim(combinator_1.some(inline_1.inline))
                     ])),
                     combinator_1.indent(combinator_1.union([
@@ -4229,7 +4226,17 @@ require = function () {
                     type: type || global_1.undefined,
                     'data-format': delim === '.' ? global_1.undefined : 'paren',
                     'data-type': style(type) || global_1.undefined
-                }, format(es, type))])))));
+                }, format(es, type))]);
+            const item = {
+                '.': combinator_1.focus(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/, source => [
+                    [`${ source.split('.', 1)[0] }.`],
+                    ''
+                ]),
+                ')': combinator_1.focus(/^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/, source => [
+                    [source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')],
+                    ''
+                ])
+            };
             exports.olist_ = combinator_1.convert(source => source[0] === '(' ? source.replace(/^\(((?:[0-9]+|[a-z]+))\)?(?:-[0-9]*)?(?=$|\n)/, `($1) `).replace(/^\(\)?(?=$|\n)/, `(1) `) : source.replace(/^((?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?)\.?(?=$|\n)/, `$1. `), exports.olist);
             function type(index) {
                 switch (index) {
@@ -4293,6 +4300,7 @@ require = function () {
             './ulist': 85,
             'spica/array': 6,
             'spica/global': 14,
+            'spica/memoize': 15,
             'typed-dom': 23
         }
     ],
@@ -4457,9 +4465,11 @@ require = function () {
                 row(combinator_1.some(data), true),
                 row(combinator_1.some(align), false),
                 combinator_1.some(row(combinator_1.some(data), true))
-            ])), rows => {
-                const [head, align] = array_1.shift(rows, 2)[0];
-                const aligns = array_1.push([], align.children).map(el => el.textContent);
+            ])), rows => [typed_dom_1.html('table', [
+                    typed_dom_1.html('thead', [rows.shift()]),
+                    typed_dom_1.html('tbody', format(rows, array_1.push([], rows.shift().children).map(el => el.textContent)))
+                ])])));
+            function format(rows, aligns) {
                 for (let i = 0, len = rows.length; i < len; ++i) {
                     const row = rows[i];
                     const cols = row.children;
@@ -4472,11 +4482,8 @@ require = function () {
                         cols[i].setAttribute('align', aligns[i]);
                     }
                 }
-                return [typed_dom_1.html('table', [
-                        typed_dom_1.html('thead', [head]),
-                        typed_dom_1.html('tbody', rows)
-                    ])];
-            })));
+                return rows;
+            }
             const row = (parser, optional) => combinator_1.creator(combinator_1.fmap(combinator_1.line(combinator_1.surround(/^(?=\|)/, combinator_1.some(combinator_1.union([parser])), /^\|?\s*$/, optional)), es => [typed_dom_1.html('tr', es)]));
             const data = combinator_1.creator(combinator_1.fmap(combinator_1.surround(/^\|(?:\\?\s)*(?=\S)/, combinator_1.some(combinator_1.union([inline_1.inline]), /^(?:\\?\s)*(?=\||\\?$)/), /^[^|]*/, true), ns => [typed_dom_1.html('td', util_1.defrag(ns))]));
             const align = combinator_1.creator(combinator_1.fmap(combinator_1.open('|', combinator_1.union([
@@ -5484,11 +5491,11 @@ require = function () {
             alias_1.ObjectSetPrototypeOf(attrspec, null);
             alias_1.ObjectValues(attrspec).forEach(o => alias_1.ObjectSetPrototypeOf(o, null));
             exports.html = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('<', combinator_1.union([
-                combinator_1.match(/^(?=<(wbr)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), source_1.str('>'), true, ([, as = []], rest) => [
+                combinator_1.match(/^(?=<(wbr)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), source_1.str('>'), true, ([, as = []], rest) => [
                     [typed_dom_1.html(tag, attributes('html', attrspec[tag], as, []))],
                     rest
-                ]))),
-                combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, combinator_1.memoize(([, tag]) => tag, tag => combinator_1.validate(new global_1.RegExp(`^<${ tag }[^\\n>]*>\\S[\\s\\S]*?</${ tag }>`), combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
+                ]), ([, tag]) => tag)),
+                combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.validate(new global_1.RegExp(`^<${ tag }[^\\n>]*>\\S[\\s\\S]*?</${ tag }>`), combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
                     switch (tag) {
                     case 'bdo':
                     case 'bdi':
@@ -5511,7 +5518,7 @@ require = function () {
                 })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest, context) => util_1.isEndTight(bs) ? [
                     [elem(tag, as, util_1.trimEndBR(bs), cs, context)],
                     rest
-                ] : global_1.undefined)))),
+                ] : global_1.undefined)), ([, tag]) => tag)),
                 combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                     [elem(tag, as, util_1.trimEndBR(bs), cs, {})],
                     rest
@@ -6689,8 +6696,8 @@ require = function () {
             function isEndTight(nodes) {
                 if (nodes.length === 0)
                     return true;
-                const end = nodes.length - 1;
-                return typeof nodes[end] === 'string' && nodes[end].length > 1 ? isVisible(nodes[end], 'end', 0) || isVisible(nodes[end], 'end', 1) : isVisible(nodes[end], 'end') || end === 0 || isVisible(nodes[end - 1], 'end');
+                const last = nodes.length - 1;
+                return typeof nodes[last] === 'string' && nodes[last].length > 1 ? isVisible(nodes[last], 'end', 0) || isVisible(nodes[last], 'end', 1) : isVisible(nodes[last], 'end') || last === 0 || isVisible(nodes[last - 1], 'end');
             }
             exports.isEndTight = isEndTight;
             function isVisible(node, dir, offset = 0) {
@@ -7375,7 +7382,7 @@ require = function () {
             exports.figure = figure;
             function increment(bases, el) {
                 const index = (+el.tagName[1] - 1 || 1) - 1;
-                return index < bases.length - 1 ? array_1.join(bases.slice(0, index + 2).map((v, i) => {
+                return index + 1 < bases.length ? array_1.join(bases.slice(0, index + 2).map((v, i) => {
                     switch (true) {
                     case i < index:
                         return v;
