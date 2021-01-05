@@ -6,7 +6,7 @@ import { shift, push } from 'spica/array';
 import { html } from 'typed-dom';
 
 import RowParser = TableParser.RowParser;
-import CellParser = RowParser.CellParser;
+import CellParser = TableParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
   /^\|[^\n]*(?:\n\|[^\n]*){2,}/,

@@ -187,42 +187,40 @@ export namespace MarkdownParser {
       // |data|
       Block<'table'>,
       Parser<HTMLTableElement, [
-        TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>,
-        TableParser.RowParser<TableParser.RowParser.CellParser.AlignParser>,
-        TableParser.RowParser<TableParser.RowParser.CellParser.DataParser>,
+        TableParser.RowParser<TableParser.CellParser.DataParser>,
+        TableParser.RowParser<TableParser.CellParser.AlignParser>,
+        TableParser.RowParser<TableParser.CellParser.DataParser>,
       ], Context> {
     }
     export namespace TableParser {
-      export interface RowParser<P extends RowParser.CellParser.ContentParser> extends
+      export interface RowParser<P extends CellParser.ContentParser> extends
         Block<'table/row'>,
         Parser<HTMLTableRowElement, [
-          RowParser.CellParser<P>,
+          CellParser<P>,
         ], Context> {
       }
-      export namespace RowParser {
-        export interface CellParser<P extends CellParser.ContentParser> extends
-          Block<'table/row/cell'>,
-          Parser<HTMLTableCellElement, [
-            P,
+      export interface CellParser<P extends CellParser.ContentParser> extends
+        Block<'table/row/cell'>,
+        Parser<HTMLTableCellElement, [
+          P,
+        ], Context> {
+      }
+      export namespace CellParser {
+        export type ContentParser = DataParser | AlignParser;
+        export interface DataParser extends
+          Block<'table/cell/data'>,
+          Parser<HTMLElement | string, [
+            InlineParser,
           ], Context> {
         }
-        export namespace CellParser {
-          export type ContentParser = DataParser | AlignParser;
-          export interface DataParser extends
-            Block<'table/row/cell/data'>,
-            Parser<HTMLElement | string, [
-              InlineParser,
-            ], Context> {
-          }
-          export interface AlignParser extends
-            Block<'table/row/cell/align'>,
-            Parser<string, [
-              SourceParser.StrParser,
-              SourceParser.StrParser,
-              SourceParser.StrParser,
-              SourceParser.StrParser,
-            ], Context> {
-          }
+        export interface AlignParser extends
+          Block<'table/cell/align'>,
+          Parser<string, [
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+          ], Context> {
         }
       }
     }
