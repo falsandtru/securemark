@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { Parser, Ctx, eval, fmap } from '../combinator';
+import { Data, SubParsers, Context } from '../combinator/data/parser';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { rnd0Z } from 'spica/random';
@@ -96,6 +97,8 @@ export function trimEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | strin
     : nodes;
 }
 
+export function dup<P extends Parser<unknown[]>>(parser: Parser<Data<P>[number], SubParsers<P>, Context<P>>): P;
+export function dup<T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>): Parser<T[], D, C>;
 export function dup<T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>): Parser<T[], D, C> {
   return fmap(parser, ns => [ns]);
 }
