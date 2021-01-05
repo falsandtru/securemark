@@ -1,12 +1,12 @@
+import { DeepImmutable } from 'spica/type';
 import { undefined, RegExp } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
-import { union, some, validate, context, creator, surround, match, memoize, lazy } from '../../combinator';
+import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
 import { startTight, isEndTight, trimEndBR, defrag, stringify } from '../util';
 import { str } from '../source';
-import { DeepImmutable } from 'spica/type';
-import { memoize as memo } from 'spica/memoize';
+import { memoize } from 'spica/memoize';
 import { unshift, push, join } from 'spica/array';
 import { html as h } from 'typed-dom';
 
@@ -22,18 +22,19 @@ ObjectValues(attrspec).forEach(o => ObjectSetPrototypeOf(o, null));
 export const html: HTMLParser = lazy(() => creator(validate('<', union([
   match(
     /^(?=<(wbr)(?=[ >]))/,
-    memoize(([, tag]) => tag,
-    tag =>
+    memoize(
+    ([, tag]) =>
       surround(
         str(`<${tag}`), some(union([attribute])), str('>'), true,
         ([, as = []], rest) => [
           [h(tag as 'span', attributes('html', attrspec[tag], as, []))],
           rest
-        ]))),
+        ]),
+    ([, tag]) => tag)),
   match(
     /^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/,
-    memoize(([, tag]) => tag,
-    tag =>
+    memoize(
+    ([, tag]) =>
       validate(new RegExp(`^<${tag}[^\\n>]*>\\S[\\s\\S]*?</${tag}>`),
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
@@ -66,7 +67,8 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         ([as, bs, cs], rest, context) =>
           isEndTight(bs)
             ? [[elem(tag, as, trimEndBR(bs), cs, context)], rest]
-            : undefined)))),
+            : undefined)),
+      ([, tag]) => tag)),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
     // Don't memoize this function because this key size is unlimited
@@ -137,7 +139,7 @@ function invalid(type: string, description: string, as: (HTMLElement | string)[]
   }, defrag(push(unshift(as, bs), cs)));
 }
 
-const requiredAttributes = memo(
+const requiredAttributes = memoize(
   (spec: DeepImmutable<Record<string, Array<string | undefined>>>) =>
     ObjectEntries(spec).filter(([, v]) => isFrozen(v)),
   new WeakMap());

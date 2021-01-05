@@ -1,17 +1,18 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, some, block, line, indent, focus, context, creator, match, memoize, convert, trim, lazy, fmap } from '../../combinator';
+import { union, inits, some, block, line, indent, focus, context, creator, match, convert, trim, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
+import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
 import { html } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(match(
   /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/,
-  memoize(ms => type(ms[1] || ms[ms.length - 2]) + (ms[2] || ms[ms.length - 1]),
-  (_, type = _.slice(0, -1), delim = _[_.length - 1]) =>
+  memoize(
+  (ms, ty = type(ms[1] || ms[3]), delim = ms[2] || ms[4]) =>
     fmap(
       context({ syntax: { inline: { media: false } } },
       some(creator(union([
@@ -34,12 +35,13 @@ export const olist: OListParser = lazy(() => block(match(
       es => [
         html('ol',
           {
-            type: type || undefined,
+            type: ty || undefined,
             'data-format': delim === '.' ? undefined : 'paren',
-            'data-type': style(type) || undefined,
+            'data-type': style(ty) || undefined,
           },
-          format(es, type)),
-      ])))));
+          format(es, ty)),
+      ]),
+  ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
 
 export const olist_: OListParser = convert(
   source =>

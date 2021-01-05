@@ -1,6 +1,6 @@
 import { undefined, RegExp } from 'spica/global';
 import { ExtensionParser } from '../../block';
-import { union, sequence, inits, some, block, line, rewrite, context, close, match, memoize, convert, trim, fmap } from '../../../combinator';
+import { union, sequence, inits, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
 import { defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
@@ -11,14 +11,15 @@ import { example, segment_ as seg_example } from './example';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { blankline } from '../paragraph';
 import { inline, media, shortmedia } from '../../inline';
+import { memoize } from 'spica/memoize';
 import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
-  memoize(([, fence]) => fence,
-  (fence, closer = new RegExp(`^${fence}[^\\S\\n]*(?:$|\\n)`)) =>
+  memoize(
+  ([, fence], closer = new RegExp(`^${fence}[^\\S\\n]*(?:$|\\n)`)) =>
     close(
       sequence([
         line(seg_label),
@@ -38,7 +39,8 @@ export const segment: FigureParser.SegmentParser = block(match(
           ]),
         ]),
       ]),
-      closer))));
+      closer),
+  ([, fence]) => fence)));
 
 export const figure: FigureParser = block(rewrite(segment, fmap(
   convert(source => source.slice(source.search(/\s/) + 1, source.trimEnd().lastIndexOf('\n')),
