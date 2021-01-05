@@ -3,6 +3,7 @@
 ## 0.196.0
 
 - Refine table parser's alignment representation.
+- Change table syntax to allow media syntax.
 
 ## 0.195.1
 
