@@ -1,4 +1,3 @@
-import { undefined, Array } from 'spica/global';
 import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, creator, surround, open, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
@@ -18,36 +17,20 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   ])),
   rows => {
     const [head, align] = shift(rows, 2)[0];
-    const aligns: string[] = [];
-    for (let cs = align.children, i = 0, len = cs.length; i < len; ++i) {
-      aligns[i] = cs[i].textContent || i > 0 && aligns[i - 1] || '';
-    }
+    const aligns = push([], align.children).map(el => el.textContent!);
     assert(aligns.length > 0);
     for (let i = 0, len = rows.length; i < len; ++i) {
-      apply(rows[i], aligns);
-    }
-    return [html('table', [html('thead', [head]), html('tbody', rows)])];
-
-    function apply(row: HTMLElement, aligns: string[]): void {
+      const row = rows[i];
       const cols = row.children;
-      const len = cols.length;
-      extend(aligns, len);
-      assert(len <= aligns.length);
-      assert(aligns.every(align => ['center', 'start', 'end', ''].includes(align)));
-      for (let i = 0; i < len; ++i) {
+      for (let i = 0, len = cols.length; i < len; ++i) {
+        if (i > 0 && !aligns[i]) {
+          aligns[i] = aligns[i - 1];
+        }
         if (!aligns[i]) continue;
         cols[i].setAttribute('align', aligns[i]);
       }
     }
-
-    function extend(aligns: string[], size: number): void {
-      return size > aligns.length
-        ? void push(
-            aligns,
-            Array(size - aligns.length)
-              .fill(aligns.length > 0 ? aligns[aligns.length - 1] : ''))
-        : undefined;
-    }
+    return [html('table', [html('thead', [head]), html('tbody', rows)])];
   })));
 
 const row = <P extends CellParser.ContentParser>(parser: CellParser<P>, optional: boolean): RowParser<P> => fmap(
