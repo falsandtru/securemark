@@ -45,7 +45,7 @@ function parse(node: Tree, index: string = ''): HTMLUListElement {
 function cons(hs: HTMLHeadingElement[]): Tree {
   return hs
     .reduce<HTMLHeadingElement[][]>((hss, h) => {
-      const hs = hss.pop() || [];
+      const hs = hss.pop() ?? [];
       return hs.length === 0 || level(h) > level(hs[0])
         ? push(hss, [push(hs, [h])])
         : push(hss, [hs, [h]]);

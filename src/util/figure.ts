@@ -14,8 +14,8 @@ export function* figure(
   const refs = new MultiMap<string, HTMLAnchorElement>(
     [
       ...target.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)[data-label]'),
-      ...footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') || [],
-      ...footnotes?.reference.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') || [],
+      ...footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [],
+      ...footnotes?.reference.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [],
     ]
       .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
