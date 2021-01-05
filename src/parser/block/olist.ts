@@ -6,7 +6,7 @@ import { ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
 import { shift } from 'spica/array';
-import { html, define } from 'typed-dom';
+import { html } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(match(
   /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/,
@@ -87,7 +87,7 @@ function format(es: HTMLElement[], type: string): HTMLElement[] {
   for (let i = 0; i < es.length; ++i) {
     const el = es[i];
     if (el.getAttribute('data-value') !== value) break;
-    define(el, { 'data-value': null });
+    el.removeAttribute('data-value');
   }
   return es;
 }
