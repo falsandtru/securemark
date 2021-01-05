@@ -4,6 +4,7 @@
 
 - Refine table parser's alignment representation.
 - Change table syntax to allow media syntax.
+- Change table parser not to align headers.
 
 ## 0.195.1
 

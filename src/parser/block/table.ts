@@ -23,7 +23,6 @@ export const table: TableParser = lazy(() => block(fmap(validate(
       aligns[i] = cs[i].textContent || i > 0 && aligns[i - 1] || '';
     }
     assert(aligns.length > 0);
-    apply(head, aligns.slice(0, 2));
     for (let i = 0, len = rows.length; i < len; ++i) {
       apply(rows[i], aligns);
     }
