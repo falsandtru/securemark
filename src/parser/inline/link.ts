@@ -133,7 +133,7 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
   }
   assert(!target.classList.contains('invalid'));
   define(target, {
-    class: `${target.className} invalid`.trim(),
+    class: void target.classList.add('invalid'),
     'data-invalid-syntax': 'link',
     'data-invalid-type': type,
     'data-invalid-description': description,

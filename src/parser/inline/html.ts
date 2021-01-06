@@ -171,7 +171,7 @@ export function attributes(
   invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
   if (invalid) {
     !classes.includes('invalid') && classes.push('invalid');
-    attrs.class = join(classes, ' ').trim();
+    attrs.class = join(classes, ' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = syntax === 'html'
       ? 'attribute'
