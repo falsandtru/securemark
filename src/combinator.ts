@@ -1,9 +1,9 @@
 export { Parser, Result, Ctx, eval, exec } from './combinator/data/parser';
 export * from './combinator/data/parser/union';
-export * from './combinator/data/parser/sequence';
-export * from './combinator/data/parser/subsequence';
 export * from './combinator/data/parser/inits';
 export * from './combinator/data/parser/tails';
+export * from './combinator/data/parser/sequence';
+export * from './combinator/data/parser/subsequence';
 export * from './combinator/data/parser/some';
 export * from './combinator/control/constraint/block';
 export * from './combinator/control/constraint/line';
