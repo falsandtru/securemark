@@ -3,7 +3,7 @@ import { Parser, Context, eval, exec, check } from '../../data/parser';
 
 export function focus<P extends Parser<unknown>>(scope: string | RegExp, parser: P): P;
 export function focus<T, D extends Parser<unknown>[]>(scope: string | RegExp, parser: Parser<T, D>): Parser<T, D> {
-  assert(scope instanceof RegExp ? !scope.global && scope.source.startsWith('^') : true);
+  assert(scope instanceof RegExp ? !scope.global && scope.source.startsWith('^') : scope);
   assert(parser);
   const match: (source: string) => string = typeof scope === 'string'
     ? source => source.slice(0, scope.length) === scope ? scope : ''

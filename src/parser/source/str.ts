@@ -4,6 +4,7 @@ import { Parser, creator } from '../../combinator';
 
 export function str(pattern: string | RegExp, not?: string): StrParser;
 export function str(pattern: string | RegExp, not?: string): Parser<string, []> {
+  assert(pattern);
   return typeof pattern === 'string'
     ? creator(source => {
         if (source === '') return;
