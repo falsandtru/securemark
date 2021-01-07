@@ -43,7 +43,7 @@ export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until
     memory = rest || memory;
     assert(rest.length <= source.length);
     return rest.length < source.length
-      ? [data || [], rest]
+      ? [data ?? [], rest]
       : undefined;
   };
 }

@@ -58,7 +58,7 @@ export function surround<T, D extends Parser<unknown>[]>(
     return rr
       ? f
         ? f([rl, rm!, rr], rest, context)
-        : [push(unshift(rl, rm || []), rr), rest]
+        : [push(unshift(rl, rm ?? []), rr), rest]
       : g
         ? g([rl, rm!], rest, context)
         : undefined;
