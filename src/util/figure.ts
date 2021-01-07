@@ -73,13 +73,13 @@ export function* figure(
       base = number;
       bases = index = base.split('.');
       numbers.clear();
-      assert(def.tagName !== 'FIGURE' || !void def.setAttribute('data-number', number));
+      assert(def.tagName !== 'FIGURE' || !+def.setAttribute('data-number', number));
       continue;
     }
     assert(def.matches('figure:not([style])'));
     assert(number.split('.').pop() !== '0');
     !isFixed(label) && numbers.set(group, number);
-    assert(!void def.setAttribute('data-number', number));
+    assert(!+def.setAttribute('data-number', number));
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
     const figindex = group === '$' ? `(${number})` : `${capitalize(group)} ${number}`;
     define(
