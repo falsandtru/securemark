@@ -292,6 +292,7 @@ export namespace MarkdownParser {
         ExtensionParser.FigureParser,
         ExtensionParser.ExampleParser,
         ExtensionParser.AsideParser,
+        ExtensionParser.TableParser,
         ExtensionParser.PlaceholderParser,
       ], Context> {
     }
@@ -301,6 +302,7 @@ export namespace MarkdownParser {
         Parser<never, [
           FigParser.SegmentParser,
           FigureParser.SegmentParser,
+          TableParser.SegmentParser,
           PlaceholderParser.SegmentParser,
         ], Context> {
       }
@@ -315,11 +317,12 @@ export namespace MarkdownParser {
           InlineParser.ExtensionParser.LabelParser,
           Parser<HTMLElement | string, [
             Parser<HTMLElement | string, [
-              TableParser,
+              BlockParser.TableParser,
               CodeBlockParser,
               MathBlockParser,
               BlockquoteParser,
               ExampleParser,
+              TableParser,
               PlaceholderParser,
               InlineParser.MediaParser,
               InlineParser.ShortmediaParser,
@@ -339,6 +342,7 @@ export namespace MarkdownParser {
                 CodeBlockParser.SegmentParser,
                 MathBlockParser.SegmentParser,
                 BlockquoteParser.SegmentParser,
+                TableParser.SegmentParser,
                 PlaceholderParser.SegmentParser,
                 SourceParser.ContentLineParser,
               ], Context>,
@@ -368,6 +372,7 @@ export namespace MarkdownParser {
               CodeBlockParser.SegmentParser,
               MathBlockParser.SegmentParser,
               BlockquoteParser.SegmentParser,
+              TableParser.SegmentParser,
               PlaceholderParser.SegmentParser,
               SourceParser.ContentLineParser,
             ], Context>,
@@ -410,6 +415,54 @@ export namespace MarkdownParser {
         Parser<HTMLElement, [
           MarkdownParser,
         ], Context> {
+      }
+      export interface TableParser extends
+        // ~~~table
+        // ~~~
+        Block<'extension/table'>,
+        Parser<HTMLElement, [
+          TableParser.RowParser,
+        ], Context> {
+      }
+      export namespace TableParser {
+        export interface SegmentParser extends
+          Block<'extension/table/segment'>,
+          Parser<never, [], Context> {
+        }
+        export interface RowParser extends
+          Block<'extension/table/row'>,
+          Parser<[[string[], string[]?], ...HTMLTableCellElement[]], [
+            Parser<[string[], string[]?], [
+              AlignParser,
+            ], Context>,
+            Parser<HTMLTableCellElement, [
+              CellParser.HeadParser,
+              CellParser.DataParser,
+              CellParser.DataParser,
+              SourceParser.EmptyLineParser,
+            ], Context>,
+          ], Context> {
+        }
+        export interface AlignParser extends
+          Block<'extension/table/align'>,
+          Parser<string[], [
+            SourceParser.StrParser,
+          ], Context> {
+        }
+        export namespace CellParser {
+          export interface HeadParser extends
+            Block<'extension/table/cell/head'>,
+            Parser<HTMLTableCellElement, [
+              InlineParser,
+            ], Context> {
+          }
+          export interface DataParser extends
+            Block<'extension/table/cell/data'>,
+            Parser<HTMLTableCellElement, [
+              InlineParser,
+            ], Context> {
+          }
+        }
       }
       export interface PlaceholderParser extends
         Block<'extension/placeholder'>,

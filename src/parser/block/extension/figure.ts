@@ -9,6 +9,7 @@ import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { example } from './example';
+import { table as smart_table, segment_ as seg_table } from './table';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { blankline } from '../paragraph';
 import { inline, media, shortmedia } from '../../inline';
@@ -30,6 +31,7 @@ export const segment: FigureParser.SegmentParser = block(match(
             seg_code,
             seg_math,
             seg_blockquote,
+            seg_table,
             seg_placeholder,
             some(contentline, closer),
           ]),
@@ -54,6 +56,7 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
         mathblock,
         blockquote,
         example,
+        smart_table,
         placeholder,
         line(media),
         line(shortmedia),

@@ -2,6 +2,7 @@
 
 ## 0.196.0
 
+- Add smart table syntax.
 - Refine table parser's alignment representation.
 - Change table syntax to allow media syntax.
 - Change table parser not to align headers.
