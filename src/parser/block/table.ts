@@ -6,12 +6,13 @@ import { push } from 'spica/array';
 import { html } from 'typed-dom';
 
 import RowParser = TableParser.RowParser;
+import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
   /^\|[^\n]*(?:\n\|[^\n]*){2,}/,
   sequence([
-    row(some(data), true),
+    row(some(head), true),
     row(some(align), false),
     some(row(some(data), true)),
   ])),
@@ -38,17 +39,24 @@ function format(rows: HTMLTableRowElement[], aligns: string[]): HTMLTableRowElem
   return rows;
 }
 
-const row = <P extends CellParser>(parser: P, optional: boolean): RowParser<P> => creator(fmap(
+const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creator(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional)),
   es => [html('tr', es)]));
 
-const data: CellParser.DataParser = creator(fmap(surround(
+const cell: CellParser = surround(
   /^\|(?:\\?\s)*(?=\S)/,
   some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
-  /^[^|]*/, true),
+  /^[^|]*/, true);
+
+const head: CellParser.HeadParser = creator(fmap(
+  cell,
+  ns => [html('th', defrag(ns))]));
+
+const data: CellParser.DataParser = creator(fmap(
+  cell,
   ns => [html('td', defrag(ns))]));
 
-const align: CellParser.AlignParser = creator(fmap(open(
+const align: AlignParser = creator(fmap(open(
   '|',
   union([
     focus(/^:-+:/, () => [['center'], '']),

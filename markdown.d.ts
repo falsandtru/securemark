@@ -187,35 +187,41 @@ export namespace MarkdownParser {
       // |data|
       Block<'table'>,
       Parser<HTMLTableElement, [
-        TableParser.RowParser<TableParser.CellParser.DataParser>,
-        TableParser.RowParser<TableParser.CellParser.AlignParser>,
+        TableParser.RowParser<TableParser.CellParser.HeadParser>,
+        TableParser.RowParser<TableParser.AlignParser>,
         TableParser.RowParser<TableParser.CellParser.DataParser>,
       ], Context> {
     }
     export namespace TableParser {
-      export interface RowParser<P extends CellParser> extends
+      export interface RowParser<P extends CellParser | AlignParser> extends
         Block<'table/row'>,
         Parser<HTMLTableRowElement, [
           P,
         ], Context> {
       }
+      export interface AlignParser extends
+        Block<'table/align'>,
+        Parser<HTMLTableCellElement, [
+          SourceParser.StrParser,
+          SourceParser.StrParser,
+          SourceParser.StrParser,
+          SourceParser.StrParser,
+        ], Context> {
+      }
       export type CellParser
-        = CellParser.DataParser
-        | CellParser.AlignParser;
+        = CellParser.HeadParser
+        | CellParser.DataParser;
       export namespace CellParser {
-        export interface DataParser extends
-          Block<'table/cell/data'>,
+        export interface HeadParser extends
+          Block<'table/cell/head'>,
           Parser<HTMLTableCellElement, [
             InlineParser,
           ], Context> {
         }
-        export interface AlignParser extends
-          Block<'table/cell/align'>,
+        export interface DataParser extends
+          Block<'table/cell/data'>,
           Parser<HTMLTableCellElement, [
-            SourceParser.StrParser,
-            SourceParser.StrParser,
-            SourceParser.StrParser,
-            SourceParser.StrParser,
+            InlineParser,
           ], Context> {
         }
       }
