@@ -23,6 +23,33 @@ export const table: TableParser = lazy(() => block(fmap(validate(
     ]),
   ])));
 
+const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creator(fmap(
+  line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional)),
+  es => [html('tr', es)]));
+
+const align: AlignParser = creator(fmap(open(
+  '|',
+  union([
+    focus(/^:-+:/, () => [['center'], '']),
+    focus(/^:-+/, () => [['start'], '']),
+    focus(/^-+:/, () => [['end'], '']),
+    focus(/^-+/, () => [[''], '']),
+  ])),
+  ns => [html('td', defrag(ns))]));
+
+const cell: CellParser = surround(
+  /^\|(?:\\?\s)*(?=\S)/,
+  some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
+  /^[^|]*/, true);
+
+const head: CellParser.HeadParser = creator(fmap(
+  cell,
+  ns => [html('th', defrag(ns))]));
+
+const data: CellParser.DataParser = creator(fmap(
+  cell,
+  ns => [html('td', defrag(ns))]));
+
 function format(rows: HTMLTableRowElement[], aligns: string[]): HTMLTableRowElement[] {
   assert(aligns.length > 0);
   for (let i = 0, len = rows.length; i < len; ++i) {
@@ -38,30 +65,3 @@ function format(rows: HTMLTableRowElement[], aligns: string[]): HTMLTableRowElem
   }
   return rows;
 }
-
-const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creator(fmap(
-  line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional)),
-  es => [html('tr', es)]));
-
-const cell: CellParser = surround(
-  /^\|(?:\\?\s)*(?=\S)/,
-  some(union([inline]), /^(?:\\?\s)*(?=\||\\?$)/),
-  /^[^|]*/, true);
-
-const head: CellParser.HeadParser = creator(fmap(
-  cell,
-  ns => [html('th', defrag(ns))]));
-
-const data: CellParser.DataParser = creator(fmap(
-  cell,
-  ns => [html('td', defrag(ns))]));
-
-const align: AlignParser = creator(fmap(open(
-  '|',
-  union([
-    focus(/^:-+:/, () => [['center'], '']),
-    focus(/^:-+/, () => [['start'], '']),
-    focus(/^-+:/, () => [['end'], '']),
-    focus(/^-+/, () => [[''], '']),
-  ])),
-  ns => [html('td', defrag(ns))]));
