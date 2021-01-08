@@ -20,7 +20,10 @@ export function sync(
     once(viewer, 'wheel', () => {
       hover = false;
     }, passive),
-    bind(editor, 'focus', () => {
+    bind(editor, 'input', () => {
+      hover = true;
+    }, passive),
+    bind(editor, 'keydown', () => {
       hover = true;
     }, passive),
     bind(editor, 'mouseenter', () => {
