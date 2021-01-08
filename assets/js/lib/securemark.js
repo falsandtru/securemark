@@ -173,13 +173,7 @@ require = function () {
                     break;
                 case -1:
                 case as.length - 1:
-                case global_1.Infinity:
                     switch (count) {
-                    case 0:
-                        return [
-                            [],
-                            push(as, inserts)
-                        ][0];
                     case 1:
                         return as.length === 0 ? [
                             [],
@@ -194,6 +188,12 @@ require = function () {
                         return as.length === 0 ? [] : splice(as, index, 1);
                     }
                     break;
+                case as.length:
+                case global_1.Infinity:
+                    return [
+                        [],
+                        push(as, inserts)
+                    ][0];
                 }
                 return arguments.length > 2 ? as.splice(index, count, ...inserts) : as.splice(index);
             }
@@ -2199,10 +2199,10 @@ require = function () {
                 }
             });
             __exportStar(_dereq_('./combinator/data/parser/union'), exports);
-            __exportStar(_dereq_('./combinator/data/parser/sequence'), exports);
-            __exportStar(_dereq_('./combinator/data/parser/subsequence'), exports);
             __exportStar(_dereq_('./combinator/data/parser/inits'), exports);
             __exportStar(_dereq_('./combinator/data/parser/tails'), exports);
+            __exportStar(_dereq_('./combinator/data/parser/sequence'), exports);
+            __exportStar(_dereq_('./combinator/data/parser/subsequence'), exports);
             __exportStar(_dereq_('./combinator/data/parser/some'), exports);
             __exportStar(_dereq_('./combinator/control/constraint/block'), exports);
             __exportStar(_dereq_('./combinator/control/constraint/line'), exports);
@@ -2743,7 +2743,7 @@ require = function () {
                         rm,
                         rr
                     ], rest, context) : [
-                        array_1.push(array_1.unshift(rl, rm || []), rr),
+                        array_1.push(array_1.unshift(rl, rm !== null && rm !== void 0 ? rm : []), rr),
                         rest
                     ] : g ? g([
                         rl,
@@ -2888,7 +2888,7 @@ require = function () {
                         rest = parser_1.exec(result);
                     }
                     return rest.length < source.length ? [
-                        data || [],
+                        data !== null && data !== void 0 ? data : [],
                         rest
                     ] : global_1.undefined;
                 };
@@ -2924,7 +2924,7 @@ require = function () {
                         rest = parser_1.exec(result);
                     }
                     return rest.length < source.length ? [
-                        data || [],
+                        data !== null && data !== void 0 ? data : [],
                         rest
                     ] : global_1.undefined;
                 };
@@ -2976,7 +2976,7 @@ require = function () {
                     }
                     memory = rest || memory;
                     return rest.length < source.length ? [
-                        data || [],
+                        data !== null && data !== void 0 ? data : [],
                         rest
                     ] : global_1.undefined;
                 };
@@ -3813,15 +3813,13 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.example = exports.segment_ = exports.segment = void 0;
+            exports.example = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const parse_1 = _dereq_('../../api/parse');
             const mathblock_1 = _dereq_('../mathblock');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})example\/(\S+)([^\n]*)(?:$|\n)/;
-            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100))));
-            exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 100, false))), false);
-            exports.example = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 100), ([body, closer, opener, delim, type, param], _, context) => {
+            exports.example = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300), ([body, closer, opener, delim, type, param], _, context) => {
                 if (!closer || param.trimStart() !== '')
                     return [typed_dom_1.html('pre', {
                             class: 'notranslate invalid',
@@ -3888,7 +3886,6 @@ require = function () {
             const codeblock_1 = _dereq_('../codeblock');
             const mathblock_1 = _dereq_('../mathblock');
             const blockquote_1 = _dereq_('../blockquote');
-            const example_1 = _dereq_('./example');
             const placeholder_1 = _dereq_('./placeholder');
             exports.segment = combinator_1.block(combinator_1.validate([
                 '[$',
@@ -3899,7 +3896,6 @@ require = function () {
                     codeblock_1.segment,
                     mathblock_1.segment,
                     blockquote_1.segment,
-                    example_1.segment,
                     placeholder_1.segment,
                     combinator_1.some(source_1.contentline)
                 ])
@@ -3916,7 +3912,6 @@ require = function () {
             '../blockquote': 65,
             '../codeblock': 66,
             '../mathblock': 78,
-            './example': 70,
             './figure': 73,
             './placeholder': 74
         }
@@ -3972,7 +3967,6 @@ require = function () {
                         codeblock_1.segment_,
                         mathblock_1.segment_,
                         blockquote_1.segment,
-                        example_1.segment_,
                         placeholder_1.segment_,
                         combinator_1.some(source_1.contentline, closer)
                     ]),
@@ -5143,6 +5137,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.emstrong = combinator_1.lazy(() => combinator_1.creator(combinator_1.surround(source_1.str('***'), util_1.startTight(combinator_1.union([combinator_1.some(inline_1.inline, '*')])), source_1.str(/^\*{1,3}/), false, ([as, bs, cs], rest, context) => {
+                var _a, _b;
                 if (!util_1.isEndTight(bs))
                     return [
                         array_1.unshift(as, bs),
@@ -5150,7 +5145,7 @@ require = function () {
                     ];
                 switch (cs[0]) {
                 case '*':
-                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '**')]), (ds, rest) => rest.slice(0, 2) === '**' && util_1.isEndTight(ds) ? [
+                    return (_a = combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '**')]), (ds, rest) => rest.slice(0, 2) === '**' && util_1.isEndTight(ds) ? [
                         [typed_dom_1.html('strong', array_1.unshift([typed_dom_1.html('em', util_1.defrag(util_1.trimEndBR(bs)))], util_1.defrag(util_1.trimEndBR(ds))))],
                         rest.slice(2)
                     ] : [
@@ -5159,7 +5154,7 @@ require = function () {
                             typed_dom_1.html('em', util_1.defrag(util_1.trimEndBR(bs)))
                         ], ds),
                         rest
-                    ])(rest, context) || [
+                    ])(rest, context)) !== null && _a !== void 0 ? _a : [
                         [
                             '**',
                             typed_dom_1.html('em', util_1.defrag(util_1.trimEndBR(bs)))
@@ -5167,7 +5162,7 @@ require = function () {
                         rest
                     ];
                 case '**':
-                    return combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '*')]), (ds, rest) => rest.slice(0, 1) === '*' && util_1.isEndTight(ds) ? [
+                    return (_b = combinator_1.bind(combinator_1.union([combinator_1.some(inline_1.inline, '*')]), (ds, rest) => rest.slice(0, 1) === '*' && util_1.isEndTight(ds) ? [
                         [typed_dom_1.html('em', array_1.unshift([typed_dom_1.html('strong', util_1.defrag(util_1.trimEndBR(bs)))], util_1.defrag(util_1.trimEndBR(ds))))],
                         rest.slice(1)
                     ] : [
@@ -5176,7 +5171,7 @@ require = function () {
                             typed_dom_1.html('strong', util_1.defrag(util_1.trimEndBR(bs)))
                         ], ds),
                         rest
-                    ])(rest, context) || [
+                    ])(rest, context)) !== null && _b !== void 0 ? _b : [
                         [
                             '*',
                             typed_dom_1.html('strong', util_1.defrag(util_1.trimEndBR(bs)))
@@ -5591,7 +5586,7 @@ require = function () {
                 invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
                 if (invalid) {
                     !classes.includes('invalid') && classes.push('invalid');
-                    attrs.class = array_1.join(classes, ' ').trim();
+                    attrs.class = array_1.join(classes, ' ');
                     attrs['data-invalid-syntax'] = syntax;
                     attrs['data-invalid-type'] = syntax === 'html' ? 'attribute' : 'argument';
                     attrs['data-invalid-description'] = `Invalid ${ attrs['data-invalid-type'] }.`;
@@ -5772,7 +5767,7 @@ require = function () {
                     description = 'Invalid protocol.';
                 }
                 typed_dom_1.define(target, {
-                    class: `${ target.className } invalid`.trim(),
+                    class: void target.classList.add('invalid'),
                     'data-invalid-syntax': 'link',
                     'data-invalid-type': type,
                     'data-invalid-description': description,
@@ -7307,11 +7302,11 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             function* figure(target, footnotes, opts = {}) {
-                var _a;
+                var _a, _b, _c;
                 const refs = new multimap_1.MultiMap([
                     ...target.querySelectorAll('a.label:not(.disabled)[data-label]'),
-                    ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label:not(.disabled)')) || [],
-                    ...(footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label:not(.disabled)')) || []
+                    ...(_a = footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label:not(.disabled)')) !== null && _a !== void 0 ? _a : [],
+                    ...(_b = footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label:not(.disabled)')) !== null && _b !== void 0 ? _b : []
                 ].map(el => [
                     el.getAttribute('data-label'),
                     el
@@ -7333,7 +7328,7 @@ require = function () {
                     if (label.endsWith('-0'))
                         continue;
                     if (def.tagName === 'FIGURE' && label.endsWith('.0')) {
-                        if (label.lastIndexOf('.', label.length - 3) < 0 && !(+((_a = def.previousElementSibling) === null || _a === void 0 ? void 0 : _a.tagName[1]) <= 2))
+                        if (label.lastIndexOf('.', label.length - 3) < 0 && !(+((_c = def.previousElementSibling) === null || _c === void 0 ? void 0 : _c.tagName[1]) <= 2))
                             continue;
                         if (label.lastIndexOf('.', label.length - 3) > 0)
                             continue;
@@ -7732,7 +7727,8 @@ require = function () {
             }
             function cons(hs) {
                 return hs.reduce((hss, h) => {
-                    const hs = hss.pop() || [];
+                    var _a;
+                    const hs = (_a = hss.pop()) !== null && _a !== void 0 ? _a : [];
                     return hs.length === 0 || level(h) > level(hs[0]) ? array_1.push(hss, [array_1.push(hs, [h])]) : array_1.push(hss, [
                         hs,
                         [h]
