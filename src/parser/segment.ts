@@ -19,7 +19,7 @@ const parser: SegmentParser = union([
 
 export function* segment(source: string): Generator<string, undefined, undefined> {
   assert(!source.includes('\0'));
-  if (source.length > 1000 * 1000) return yield `\0# Error: Too large input over length 1,000,000.`;
+  if (source.length > 1000 * 1000) return yield `\0Too large input of length over 1,000,000.\n${source.slice(0, 10001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
     const result = parser(source, {})!;
@@ -33,7 +33,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
       // Limit the size of a segment not to block user operations
       // bacause of a long process caused by a huge segment.
       seg.length > 10 * 1000
-        ? yield `\0# Error: Too large block over length 10,000.`
+        ? yield `\0Too large block of length over 10,000.\n${seg}`
         : yield seg;
     }
     source = rest;

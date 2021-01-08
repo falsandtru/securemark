@@ -4,9 +4,7 @@ import { Parser, Ctx, eval, fmap } from '../combinator';
 import { Data, SubParsers, Context } from '../combinator/data/parser';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
-import { rnd0Z } from 'spica/random';
 import { pop } from 'spica/array';
-import { define } from 'typed-dom';
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
@@ -137,17 +135,4 @@ export function stringify(nodes: HTMLElement | string | readonly (HTMLElement | 
         : node.innerText;
   }
   return acc;
-}
-
-export function error<P extends Parser<HTMLElement>>(parser: P): P;
-export function error<T extends HTMLElement, D extends Parser<unknown>[]>(parser: Parser<T, D>): Parser<T, D> {
-  return (source, context) =>
-    source[0] === '\0'
-      ? fmap(parser, ([el]) => [
-          define(el, {
-            id: `error:${rnd0Z(8)}`,
-            class: 'error',
-          })
-        ])(source.slice(1), context)
-      : parser(source, context);
 }

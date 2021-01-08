@@ -1,7 +1,26 @@
 import { segment } from './segment';
+import { parse } from './api/parse';
 
 describe('Unit: parser/segment', () => {
   describe('segment', () => {
+    it('error', () => {
+      assert.deepStrictEqual(
+        [...parse(`${'\n'.repeat(1000 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
+        [
+          '<h1 class="error">Error: Too large input of length over 1,000,000.</h1>',
+          `<pre>${'\n'.repeat(9997)}...</pre>`,
+        ]);
+      assert.deepStrictEqual(
+        [...parse(`${' '.repeat(10 * 1000)}`, { id: '' }).children].map(el => el.outerHTML),
+        []);
+      assert.deepStrictEqual(
+        [...parse(`${'\n'.repeat(10 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
+        [
+          '<h1 class="error">Error: Too large block of length over 10,000.</h1>',
+          `<pre>${'\n'.repeat(9997)}...</pre>`,
+        ]);
+    });
+
     it('basic', () => {
       assert.deepStrictEqual([...segment('')], []);
       assert.deepStrictEqual([...segment('a')], ['a']);

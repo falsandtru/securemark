@@ -174,63 +174,6 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
-    it('error', () => {
-      const a = parse(`${'a'.repeat(1000)}\n\n`.repeat(1000));
-      assert(a.firstElementChild?.matches('h1.error[id^="error:"]'));
-      const b = parse(`${'a'.repeat(10 * 1000 + 1)}`);
-      assert(b.firstElementChild?.matches('h1.error[id^="error:"]'));
-    });
-
-/*
-    it('stress bracket', function () {
-      assert.deepStrictEqual(
-        [...parse(`${'('.repeat(500)}`).children].map(el => el.innerHTML[0]),
-        ['(']);
-    });
-
-    it('stress link', function () {
-      assert.deepStrictEqual(
-        [...parse(`${'['.repeat(500)}](`).children].map(el => el.innerHTML[0]),
-        ['[']);
-    });
-
-    it('stress media', function () {
-      assert.deepStrictEqual(
-        [...parse(`${'!['.repeat(500)}](`).children].map(el => el.innerHTML[0]),
-        ['!']);
-    });
-
-    it('stress ruby', function () {
-      assert.deepStrictEqual(
-        [...parse(`${'[a](b\n'.repeat(50)}`).children].map(el => el.innerHTML[0]),
-        ['[']);
-    });
-
-    it('stress math', function () {
-      assert.deepStrictEqual(
-        [...parse(`${'${'.repeat(500)}a`).children].map(el => el.innerHTML[0]),
-        ['$']);
-    });
-
-    it('stress comment', function () {
-      assert.deepStrictEqual(
-        [...parse(`${'<# '.repeat(500)}`).children].map(el => el.innerHTML[0]),
-        ['<']);
-    });
-
-    it('stress parser', function () {
-      assert.deepStrictEqual(
-        [...parse(`!${'!{a}'.repeat(2000)}}`).children].map(el => el.innerHTML[0]),
-        ['!']);
-    });
-
-    it('recursion', function () {
-      assert.deepStrictEqual(
-        [...parse(`${'('.repeat(9000)}${'{a}'})\n\na`).children].map(el => el.textContent!.includes('Error:')),
-        [true, false]);
-    });
-*/
-
   });
 
 });
