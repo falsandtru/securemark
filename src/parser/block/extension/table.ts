@@ -97,8 +97,8 @@ function attributes(source: string) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!)?/) ?? [];
   rowspan === '1' ? rowspan = undefined : undefined;
   colspan === '1' ? colspan = undefined : undefined;
-  rowspan = rowspan && Math.max(0, Math.min(+rowspan, 65534)) + '';
-  colspan = colspan && Math.max(0, Math.min(+colspan, 1000)) + '';
+  rowspan &&= Math.max(0, Math.min(+rowspan, 65534)) + '';
+  colspan &&= Math.max(0, Math.min(+colspan, 1000)) + '';
   highlight &&= 'highlight';
   return {
     class: highlight,
