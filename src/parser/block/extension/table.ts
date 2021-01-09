@@ -1,9 +1,9 @@
 import { undefined, Math, Array } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, trim, lazy, fmap, bind } from '../../../combinator';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, trim, recover, lazy, fmap, bind } from '../../../combinator';
 import { Data } from '../../../combinator/data/parser';
-import { defrag, dup } from '../../util';
+import { dup, defrag } from '../../util';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { unshift, splice } from 'spica/array';
@@ -22,7 +22,7 @@ export const segment: TableParser.SegmentParser = block(validate('~~~',
 export const segment_: TableParser.SegmentParser = block(validate('~~~',
   clear(fence(opener, 1000, false))), false);
 
-export const table: TableParser = block(validate('~~~', bind(
+export const table: TableParser = block(validate('~~~', recover(bind(
   fence(opener, 1000),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
@@ -33,7 +33,18 @@ export const table: TableParser = block(validate('~~~', bind(
       'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)], ''];
     return parser(body, context) ?? [[html('table')], ''];
-  })));
+  }),
+  (source, _, reason) =>
+    reason instanceof Error && reason.message === 'Number of columns must be 32 or less.'
+      ? [[
+          html('pre', {
+            class: `notranslate invalid`,
+            'data-invalid-syntax': 'table',
+            'data-invalid-type': 'content',
+            'data-invalid-description': reason.message,
+          }, source),
+        ], '']
+      : (() => { throw reason; })())));
 
 const parser: TableParser = lazy(() => block(fmap(
   some(union([row])),
@@ -242,7 +253,7 @@ function format(rows: Data<RowParser>[]): HTMLTableSectionElement[] {
       aligns[j] && cell.setAttribute('align', aligns[j]);
       valigns[j] && cell.setAttribute('valign', valigns[j]);
     }
-    if (cells.length > 32) throw new Error('Columns over 32 are not supported.');
+    if (cells.length > 32) throw new Error('Number of columns must be 32 or less.');
     target.appendChild(row);
     switch (target) {
       case thead:

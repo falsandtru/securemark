@@ -10,6 +10,20 @@ describe('Unit: parser/block/extension/table', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~')), [['<pre class="notranslate invalid">~~~table a\n-\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser(`~~~table\n${'\n'.repeat(1001)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
+      assert.deepStrictEqual(
+        inspect(parser([
+          '~~~table\n',
+          `${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}\n`,
+          '~~~'
+        ].join(''))),
+        [[`<pre class="notranslate invalid">~~~table\n${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}\n~~~</pre>`], '']);
+      assert.deepStrictEqual(
+        inspect(parser([
+          '~~~table\n',
+          '::33 1\n',
+          '~~~'
+        ].join(''))),
+        [[`<pre class="notranslate invalid">~~~table\n::33 1\n~~~</pre>`], '']);
     });
 
     it('data', () => {
