@@ -10,9 +10,9 @@ export function normalize(source: string): string {
       assert(!char.match(/^[\n\t]$/));
       switch (char) {
         case '\0':
-        case '\r':
         case '\v':
         case '\f':
+        case '\r':
         case '\r\n':
           return '\n';
         default:
