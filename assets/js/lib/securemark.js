@@ -2217,8 +2217,8 @@ require = function () {
             __exportStar(_dereq_('./combinator/control/manipulation/convert'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/trim'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/reverse'), exports);
-            __exportStar(_dereq_('./combinator/control/manipulation/lazy'), exports);
             __exportStar(_dereq_('./combinator/control/manipulation/recovery'), exports);
+            __exportStar(_dereq_('./combinator/control/manipulation/lazy'), exports);
             __exportStar(_dereq_('./combinator/control/monad/fmap'), exports);
             __exportStar(_dereq_('./combinator/control/monad/bind'), exports);
         },
@@ -4093,7 +4093,7 @@ require = function () {
             const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
             exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 1000))));
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 1000, false))), false);
-            exports.table = combinator_1.block(combinator_1.validate('~~~', combinator_1.bind(combinator_1.fence(opener, 1000), ([body, closer, opener, delim, param], _, context) => {
+            exports.table = combinator_1.block(combinator_1.validate('~~~', combinator_1.recover(combinator_1.bind(combinator_1.fence(opener, 1000), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
                 if (!closer || param.trimStart() !== '')
                     return [
@@ -4109,7 +4109,17 @@ require = function () {
                     [typed_dom_1.html('table')],
                     ''
                 ];
-            })));
+            }), (source, _, reason) => reason instanceof Error && reason.message === 'Number of columns must be 32 or less.' ? [
+                [typed_dom_1.html('pre', {
+                        class: `notranslate invalid`,
+                        'data-invalid-syntax': 'table',
+                        'data-invalid-type': 'content',
+                        'data-invalid-description': reason.message
+                    }, source)],
+                ''
+            ] : (() => {
+                throw reason;
+            })())));
             const parser = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.union([row])), rows => [typed_dom_1.html('table', format(rows))])));
             const row = combinator_1.lazy(() => util_1.dup(combinator_1.fmap(combinator_1.subsequence([
                 util_1.dup(combinator_1.union([align])),
@@ -4137,8 +4147,8 @@ require = function () {
                 let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!)?/)) !== null && _a !== void 0 ? _a : [];
                 rowspan === '1' ? rowspan = global_1.undefined : global_1.undefined;
                 colspan === '1' ? colspan = global_1.undefined : global_1.undefined;
-                rowspan = rowspan && global_1.Math.max(0, global_1.Math.min(+rowspan, 65534)) + '';
-                colspan = colspan && global_1.Math.max(0, global_1.Math.min(+colspan, 1000)) + '';
+                rowspan && (rowspan = global_1.Math.max(0, global_1.Math.min(+rowspan, 65534)) + '');
+                colspan && (colspan = global_1.Math.max(0, global_1.Math.min(+colspan, 1000)) + '');
                 highlight && (highlight = 'highlight');
                 return {
                     class: highlight,
@@ -4263,7 +4273,7 @@ require = function () {
                             valigns[j] && cell.setAttribute('valign', valigns[j]);
                         }
                         if (cells.length > 32)
-                            throw new Error('Columns over 32 are not supported.');
+                            throw new Error('Number of columns must be 32 or less.');
                         target.appendChild(row);
                         switch (target) {
                         case thead:
