@@ -1,8 +1,9 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { subsequence, some, validate, focus, guard, context, creator, surround, lazy, bind } from '../../combinator';
+import { union, subsequence, some, validate, guard, context, creator, surround, lazy, fmap, bind } from '../../combinator';
 import { startTight, isEndTight, defrag, stringify } from '../util';
 import { inline } from '../inline';
+import { str } from '../source';
 import { html } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', bind(surround(
@@ -26,9 +27,11 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
       ? [[html('sup', { class: 'reference', ...attributes(ns) }, defrag(ns))], rest]
       : undefined))));
 
-const alias: ReferenceParser.AliasParser = creator(focus(
-  /^\^[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*(?:(?=]])|\|[^\S\n]?)/,
-  source => [[html('abbr', source.split('|', 1)[0].slice(1))], '']));
+const alias: ReferenceParser.AliasParser = creator(fmap(surround(
+  '^',
+  union([str(/^[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]),
+  /^\|?(?=]])|^\|[^\S\n]?/),
+  ([source]) => [html('abbr', source)]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   return {
