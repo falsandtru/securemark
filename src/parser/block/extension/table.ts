@@ -67,9 +67,7 @@ const row: RowParser = lazy(() => dup(fmap(
 const alignment = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
 
 const align: AlignParser = line(fmap(
-  union([
-    str(alignment),
-  ]),
+  union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
 const delimiter = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!?(?=[^\S\n])/;
