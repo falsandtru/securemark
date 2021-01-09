@@ -126,6 +126,8 @@ export namespace MarkdownParser {
     }
     export interface OListParser extends
       // 0. item
+      // 1-1. item
+      // (a)-1 item
       Block<'olist'>,
       Parser<HTMLOListElement, [
         OListParser.ListItemParser,
@@ -149,6 +151,7 @@ export namespace MarkdownParser {
     }
     export interface IListParser extends
       // + item
+      // * item
       Block<'ilist'>,
       Parser<HTMLUListElement, [
         IListParser.ListItemParser,
@@ -228,6 +231,7 @@ export namespace MarkdownParser {
     }
     export interface BlockquoteParser extends
       // > abc
+      // !> *abc*
       Block<'blockquote'>,
       Parser<HTMLQuoteElement, [
         BlockquoteParser.SourceParser,
@@ -257,7 +261,7 @@ export namespace MarkdownParser {
       }
     }
     export interface CodeBlockParser extends
-      // ```
+      // ```js index.js
       // abc
       // ```
       Block<'codeblock'>,
@@ -410,6 +414,7 @@ export namespace MarkdownParser {
       }
       export interface AsideParser extends
         // ~~~aside
+        // ## title
         // ~~~
         Block<'extension/aside'>,
         Parser<HTMLElement, [
@@ -418,6 +423,9 @@ export namespace MarkdownParser {
       }
       export interface TableParser extends
         // ~~~table
+        // -/-
+        // # header
+        // : data
         // ~~~
         Block<'extension/table'>,
         Parser<HTMLElement, [
@@ -465,6 +473,8 @@ export namespace MarkdownParser {
         }
       }
       export interface PlaceholderParser extends
+        // ~~~abc
+        // ~~~
         Block<'extension/placeholder'>,
         Parser<HTMLElement, [], Context> {
       }
@@ -485,7 +495,8 @@ export namespace MarkdownParser {
     }
     export namespace ParagraphParser {
       export interface MentionParser extends
-        // abc
+        // >>1
+        // > text
         Block<'paragraph/mention'>,
         Parser<HTMLSpanElement, [
           ParagraphParser.MentionParser.AddressParser,
@@ -494,7 +505,6 @@ export namespace MarkdownParser {
       }
       export namespace MentionParser {
         export interface AddressParser extends
-          // >>1
           Block<'paragraph/mention/address'>,
           Parser<HTMLSpanElement, [
             SourceParser.StrParser,
@@ -502,7 +512,6 @@ export namespace MarkdownParser {
           ], Context> {
         }
         export interface QuotationParser extends
-          // > text
           Block<'paragraph/mention/quotation'>,
           Parser<HTMLSpanElement, [
             QuotationParser.BlockParser,
@@ -576,6 +585,8 @@ export namespace MarkdownParser {
     }
     export interface ReferenceParser extends
       // [[abc]]
+      // [[^alias]]
+      // [[^alias| abc]]
       Inline<'reference'>,
       Parser<HTMLElement, [
         ReferenceParser.AliasParser,
@@ -584,8 +595,8 @@ export namespace MarkdownParser {
     }
     export namespace ReferenceParser {
       export interface AliasParser extends
-        // ^Xyz2020:
-        // ^X, 2020, p1-2:
+        // ^Xyz2020
+        // ^X, 2020, p1-2
         // ^X. Y., Z et al., 2020, p1-2
         Inline<'reference/alias'>,
         Parser<HTMLElement, [
@@ -686,8 +697,8 @@ export namespace MarkdownParser {
       }
     }
     export interface LinkParser extends
-      // {uri}
-      // [abc]{uri}
+      // { uri }
+      // [abc]{uri nofollow}
       Inline<'link'>,
       Parser<HTMLElement, [
         LinkParser.ContentParser,
@@ -727,8 +738,8 @@ export namespace MarkdownParser {
       }
     }
     export interface MediaParser extends
-      // !{uri}
-      // ![abc]{uri}
+      // !{ uri }
+      // ![abc]{uri nofollow}
       Inline<'media'>,
       Parser<HTMLElement, [
         MediaParser.TextParser,
@@ -772,6 +783,7 @@ export namespace MarkdownParser {
       }
     }
     export interface HTMLParser extends
+      // Allow: sup, sub, small, bdo, bdi
       // <small>abc</small>
       Inline<'html'>,
       Parser<HTMLElement | string, [
@@ -1001,6 +1013,7 @@ export namespace MarkdownParser {
       Parser<HTMLBRElement | HTMLSpanElement | string, [], Context> {
     }
     export interface LinebreakParser extends
+      // \n
       Source<'linebreak'>,
       Parser<HTMLBRElement, [TextParser], Context> {
     }
