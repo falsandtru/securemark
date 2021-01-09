@@ -92,7 +92,6 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.join = exports.splice = exports.push = exports.pop = exports.unshift = exports.shift = exports.indexOf = void 0;
             const global_1 = _dereq_('./global');
-            const alias_1 = _dereq_('./alias');
             function indexOf(as, a) {
                 return a === a ? as.indexOf(a) : as.findIndex(a => a !== a);
             }
@@ -110,7 +109,7 @@ require = function () {
             }
             exports.shift = shift;
             function unshift(as, bs) {
-                if ('length' in as || alias_1.isArray(as)) {
+                if ('length' in as) {
                     for (let i = as.length - 1; i >= 0; --i) {
                         bs.unshift(as[i]);
                     }
@@ -133,7 +132,7 @@ require = function () {
             }
             exports.pop = pop;
             function push(as, bs) {
-                if ('length' in bs || alias_1.isArray(bs)) {
+                if ('length' in bs) {
                     for (let i = 0, len = bs.length; i < len; ++i) {
                         as.push(bs[i]);
                     }
@@ -207,10 +206,7 @@ require = function () {
             }
             exports.join = join;
         },
-        {
-            './alias': 5,
-            './global': 14
-        }
+        { './global': 14 }
     ],
     7: [
         function (_dereq_, module, exports) {
@@ -3394,9 +3390,9 @@ require = function () {
                 return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : str).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
                     switch (char) {
                     case '\0':
-                    case '\r':
                     case '\x0B':
                     case '\f':
+                    case '\r':
                     case '\r\n':
                         return '\n';
                     default:
@@ -6236,6 +6232,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
+            const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('[[', ']]', '\n', combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
                 var _a, _b, _c;
@@ -6260,10 +6257,7 @@ require = function () {
                     }, util_1.defrag(ns))],
                 rest
             ] : global_1.undefined))));
-            const alias = combinator_1.creator(combinator_1.focus(/^\^[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*(?:(?=]])|\|[^\S\n]?)/, source => [
-                [typed_dom_1.html('abbr', source.split('|', 1)[0].slice(1))],
-                ''
-            ]));
+            const alias = combinator_1.creator(combinator_1.fmap(combinator_1.surround('^', combinator_1.union([source_1.str(/^[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]), /^\|?(?=]])|^\|[^\S\n]?/), ([source]) => [typed_dom_1.html('abbr', source)]));
             function attributes(ns) {
                 return { 'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? util_1.stringify(ns.shift()) : global_1.undefined };
             }
@@ -6271,6 +6265,7 @@ require = function () {
         {
             '../../combinator': 30,
             '../inline': 88,
+            '../source': 126,
             '../util': 133,
             'spica/global': 14,
             'typed-dom': 23
