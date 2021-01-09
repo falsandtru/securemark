@@ -4970,7 +4970,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.annotation = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('((', '))', '\n', combinator_1.bind(combinator_1.surround('((', combinator_1.guard(context => {
+            exports.annotation = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('((', '))', '\n', combinator_1.surround('((', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.annotation) !== null && _c !== void 0 ? _c : true;
             }, util_1.startTight(combinator_1.context({
@@ -4983,7 +4983,7 @@ require = function () {
                     }
                 },
                 state: global_1.undefined
-            }, combinator_1.union([combinator_1.some(inline_1.inline, ')', /^\\?\n/)])))), '))'), (ns, rest) => util_1.isEndTight(ns) ? [
+            }, combinator_1.union([combinator_1.some(inline_1.inline, ')', /^\\?\n/)])))), '))', false, ([, ns], rest) => util_1.isEndTight(ns) ? [
                 [typed_dom_1.html('sup', { class: 'annotation' }, util_1.defrag(ns))],
                 rest
             ] : global_1.undefined))));
@@ -6234,7 +6234,7 @@ require = function () {
             const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('[[', ']]', '\n', combinator_1.bind(combinator_1.surround('[[', combinator_1.guard(context => {
+            exports.reference = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('[[', ']]', '\n', combinator_1.surround('[[', combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
             }, util_1.startTight(combinator_1.context({
@@ -6250,7 +6250,7 @@ require = function () {
             }, combinator_1.subsequence([
                 alias,
                 util_1.startTight(combinator_1.some(inline_1.inline, ']', /^\\?\n/))
-            ])))), ']]'), (ns, rest) => util_1.isEndTight(ns) ? [
+            ])))), ']]', false, ([, ns], rest) => util_1.isEndTight(ns) ? [
                 [typed_dom_1.html('sup', {
                         class: 'reference',
                         ...attributes(ns)
