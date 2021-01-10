@@ -446,8 +446,8 @@ export namespace MarkdownParser {
             Parser<HTMLTableCellElement, [
               CellParser.HeadParser,
               CellParser.DataParser,
-              CellParser.DataParser,
               SourceParser.EmptyLineParser,
+              CellParser.DatalineParser,
             ], Context>,
           ], Context> {
         }
@@ -468,6 +468,13 @@ export namespace MarkdownParser {
             Block<'extension/table/cell/data'>,
             Parser<HTMLTableCellElement, [
               InlineParser,
+            ], Context> {
+          }
+          export interface DatalineParser extends
+            Block<'extension/table/cell/dataline'>,
+            Parser<HTMLTableCellElement, [
+              DataParser,
+              DataParser,
             ], Context> {
           }
         }

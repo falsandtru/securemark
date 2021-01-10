@@ -1,7 +1,7 @@
 import { undefined, Math, Array } from 'spica/global';
 import { isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, trim, recover, lazy, fmap, bind } from '../../../combinator';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, recover, lazy, fmap, bind } from '../../../combinator';
 import { Data } from '../../../combinator/data/parser';
 import { dup, defrag } from '../../util';
 import { inline } from '../../inline';
@@ -58,9 +58,9 @@ const row: RowParser = lazy(() => dup(fmap(
     some(union([
       head,
       data,
-      dataline,
       emptyline,
-    ]), alignment),
+      some(dataline, alignment),
+    ])),
   ]),
   ns => !isArray(ns[0]) ? unshift([[[]]], ns) : ns)));
 
@@ -96,11 +96,11 @@ const data: CellParser.DataParser = creator(block(fmap(open(
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
   false));
 
-const dataline: CellParser.DataParser = creator(line(fmap(
-  rewrite(
-    contentline,
-    trim(some(union([inline])))),
-  ns => [html('td', defrag(ns))])));
+const dataline: CellParser.DatalineParser = creator(line(
+  union([
+    validate(/^!+[^\S\n]/, convert(s => `:${s}`, data)),
+    trim(convert(s => `: ${s}`, data)),
+  ])));
 
 function attributes(source: string) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];

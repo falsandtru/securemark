@@ -113,11 +113,11 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n-\n1.1\n: 1.2\n~~~')),
+        inspect(parser('~~~table\n-\n1.1\n: 1.2\n\n1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
-            html('tr', [html('td', '1.1'), html('td', '1.2')]),
+            html('tr', [html('td', '1.1'), html('td', ': 1.2'), html('td', '1.3')]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
@@ -574,6 +574,19 @@ describe('Unit: parser/block/extension/table', () => {
               html('th', { class: 'highlight' }, '1'),
               html('td', { class: 'highlight', highlight: 'h' }, '2'),
               html('td', { class: 'highlight', highlight: 'h c' }, '3'),
+            ]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n! 1.1\n!!!!! 1.2\n!!!!!! 1.3\n~~~')),
+        [[html('table', [
+          html('thead'),
+          html('tbody', [
+            html('tr', [
+              html('td', { class: 'highlight', highlight: 'c' }, '1.1'),
+              html('td', { class: 'highlight', 'data-highlight-level': '5', highlight: 'c' }, '1.2'),
+              html('td', { class: 'invalid' }, '1.3'),
             ]),
           ]),
           html('tfoot'),
