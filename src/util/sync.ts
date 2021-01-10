@@ -1,4 +1,4 @@
-import { Math, window, document } from 'spica/global';
+import { undefined, Math, window, document } from 'spica/global';
 import { aggregate } from 'spica/arrow';
 import { clear } from 'spica/function';
 import { bind, once } from 'typed-dom';
@@ -33,7 +33,7 @@ export function sync(
       hover = false;
     }, passive),
     bind(editor, 'scroll', () => {
-      if (!hover) return;
+      if (!hover) return scroll = editor.scrollTop, undefined;
       const delta = editor.scrollTop - scroll;
       switch (scroll += delta) {
         case 0:
