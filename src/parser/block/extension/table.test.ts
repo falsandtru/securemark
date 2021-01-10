@@ -171,6 +171,32 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
+        inspect(parser('~~~table\n=<\n=\n2.1\n2.2\n2.3\n~~~')),
+        [[html('table', [
+          html('thead', [html('tr')]),
+          html('tbody', [
+            html('tr', [
+              html('td', { align: 'center' }, '2.1'),
+              html('td', { align: 'center' }, '2.2'),
+              html('td', { align: 'center' }, '2.3'),
+            ]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n=<\n=-\n2.1\n2.2\n2.3\n~~~')),
+        [[html('table', [
+          html('thead', [html('tr')]),
+          html('tbody', [
+            html('tr', [
+              html('td', { align: 'center' }, '2.1'),
+              html('td', { align: 'start' }, '2.2'),
+              html('td', { align: 'start' }, '2.3'),
+            ]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
         inspect(parser('~~~table\n/=-^v\n1.1\n1.2\n1.3\n1.4\n1.5\n1.6\n~~~')),
         [[html('table', [
           html('thead'),

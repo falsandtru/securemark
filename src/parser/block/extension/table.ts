@@ -64,13 +64,13 @@ const row: RowParser = lazy(() => dup(fmap(
   ]),
   ns => !isArray(ns[0]) ? unshift([[[]]], ns) : ns)));
 
-const alignment = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
+const alignment = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
 
 const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
-const delimiter = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!*(?=[^\S\n])/;
+const delimiter = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!*(?=[^\S\n])/;
 
 const head: CellParser.HeadParser = creator(block(fmap(open(
   str(/^#(?:\d*:\d*)?!*(?=[^\S\n])/),
@@ -151,45 +151,61 @@ function format(rows: Data<RowParser>[]): HTMLTableSectionElement[] {
         ? false
         : undefined;
     as.length === 0 && as.push('-');
-    for (let j = 0; j < as.length; ++j) {
+    ALIGN_H:
+    for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {
       switch (as[j]) {
         case '=':
+          update = true;
           aligns[j] = 'center';
           continue;
         case '<':
+          update = true;
           aligns[j] = 'start';
           continue;
         case '>':
+          update = true;
           aligns[j] = 'end';
           continue;
         case '-':
-          aligns[j] = j === 0
-            ? aligns[j] ?? ''
-            : aligns[j] ?? aligns[j - 1];
+          update = false;
+          aligns[j] ??= j === 0
+            ? ''
+            : aligns[j - 1];
+          continue;
+        default:
+          if (!update) break ALIGN_H;
+          aligns[j] = aligns[j - 1];
           continue;
       }
-      assert(false);
     }
     assert(aligns.length > 0);
     vs.length === 0 && vs.push('-');
-    for (let j = 0; j < vs.length; ++j) {
+    ALIGN_V:
+    for (let j = 0, update = false; j < vs.length || j < valigns.length; ++j) {
       switch (vs[j]) {
         case '=':
+          update = true;
           valigns[j] = 'middle';
           continue;
         case '^':
+          update = true;
           valigns[j] = 'top';
           continue;
         case 'v':
+          update = true;
           valigns[j] = 'bottom';
           continue;
         case '-':
-          valigns[j] = j === 0
-            ? valigns[j] ?? ''
-            : valigns[j] ?? valigns[j - 1];
+          update = false;
+          valigns[j] ??= j === 0
+            ? ''
+            : valigns[j - 1];
+          continue;
+        default:
+          if (!update) break ALIGN_V;
+          aligns[j] = aligns[j - 1];
           continue;
       }
-      assert(false);
     }
     assert(valigns.length > 0);
     const row = html('tr');
