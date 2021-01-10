@@ -506,6 +506,33 @@ describe('Unit: parser/block/extension/table', () => {
             ]),
           ]),
           html('tfoot')]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n:! 1.1\n:!! 1.2\n:!!! 1.3\n:!!!! 1.4\n~~~')),
+        [[html('table', [
+          html('thead'),
+          html('tbody', [
+            html('tr', [
+              html('td', { class: 'highlight', highlight: 'c' }, '1.1'),
+              html('td', { class: 'highlight', 'data-highlight-level': '2', highlight: 'c' }, '1.2'),
+              html('td', { class: 'highlight', 'data-highlight-level': '3', highlight: 'c' }, '1.3'),
+              html('td', { class: 'highlight', 'data-highlight-level': '4', highlight: 'c' }, '1.4'),
+            ]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n#!! 1.1\n: 1.2\n:!! 1.3\n~~~')),
+        [[html('table', [
+          html('thead'),
+          html('tbody', [
+            html('tr', [
+              html('th', { class: 'highlight' }, '1.1'),
+              html('td', { class: 'highlight', highlight: 'h' }, '1.2'),
+              html('td', { class: 'highlight', 'data-highlight-level': '2', highlight: 'h c' }, '1.3'),
+            ]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
     });
 
     it('merge', () => {

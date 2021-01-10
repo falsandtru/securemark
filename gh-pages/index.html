@@ -234,8 +234,18 @@
     vertical-align: middle;
   }
   th.highlight,
-  td.highlight {
+  td.highlight,
+  td.highlight[data-highlight-level="1"] {
     background-color: yellow;
+  }
+  td.highlight[data-highlight-level="2"] {
+    background-color: orange;
+  }
+  td.highlight[data-highlight-level="3"] {
+    background-color: red;
+  }
+  td.highlight[data-highlight-level="4"] {
+    background-color: dimgray;
   }
   .quotation {
     white-space: pre-wrap;
