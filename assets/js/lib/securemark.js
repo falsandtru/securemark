@@ -4128,28 +4128,29 @@ require = function () {
             ]), ns => !alias_1.isArray(ns[0]) ? array_1.unshift([[[]]], ns) : ns)));
             const alignment = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
             const align = combinator_1.line(combinator_1.fmap(combinator_1.union([source_1.str(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
-            const delimiter = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!?(?=[^\S\n])/;
-            const head = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^#(?:\d*:\d*)?!?(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
+            const delimiter = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!{0,4}(?=[^\S\n])/;
+            const head = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^#(?:\d*:\d*)?!{0,4}(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('th', attributes(ns.shift()), util_1.defrag(ns))]), false));
-            const data = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^:(?:\d*:\d*)?!?(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
+            const data = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^:(?:\d*:\d*)?!{0,4}(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), util_1.defrag(ns))]), false));
             const dataline = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.rewrite(source_1.contentline, combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), ns => [typed_dom_1.html('td', util_1.defrag(ns))])));
             function attributes(source) {
                 var _a;
-                let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!)?/)) !== null && _a !== void 0 ? _a : [];
+                let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!{1,4})?/)) !== null && _a !== void 0 ? _a : [];
                 rowspan === '1' ? rowspan = global_1.undefined : global_1.undefined;
                 colspan === '1' ? colspan = global_1.undefined : global_1.undefined;
                 rowspan && (rowspan = global_1.Math.max(0, global_1.Math.min(+rowspan, 65534)) + '');
                 colspan && (colspan = global_1.Math.max(0, global_1.Math.min(+colspan, 1000)) + '');
-                highlight && (highlight = 'highlight');
+                highlight && (highlight = highlight.length > 0 ? highlight.length + '' : global_1.undefined);
                 return {
-                    class: highlight,
+                    class: highlight && 'highlight',
                     rowspan,
-                    colspan
+                    colspan,
+                    'data-highlight-level': source[0] === ':' && +highlight > 1 ? highlight : global_1.undefined
                 };
             }
             function format(rows) {
