@@ -507,28 +507,47 @@ describe('Unit: parser/block/extension/table', () => {
           ]),
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n:! 1.1\n:!! 1.2\n:!!! 1.3\n:!!!! 1.4\n~~~')),
+        inspect(parser([
+          '~~~table\n',
+          `${[...Array(6)].map((_, i) => `#${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
+          '~~~'
+        ].join(''))),
+        [[html('table', [
+          html('thead', [
+            html('tr', [
+              html('th', { class: 'highlight' }, '1'),
+              ...[...Array(5)].map((_, i) => html('th', { class: 'invalid' }, `${i + 2}`)),
+            ]),
+          ]),
+          html('tbody'),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser([
+          '~~~table\n',
+          `${[...Array(6)].map((_, i) => `:${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
+          '~~~'
+        ].join(''))),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
-              html('td', { class: 'highlight', highlight: 'c' }, '1.1'),
-              html('td', { class: 'highlight', 'data-highlight-level': '2', highlight: 'c' }, '1.2'),
-              html('td', { class: 'highlight', 'data-highlight-level': '3', highlight: 'c' }, '1.3'),
-              html('td', { class: 'highlight', 'data-highlight-level': '4', highlight: 'c' }, '1.4'),
+              html('td', { class: 'highlight', highlight: 'c' }, '1'),
+              ...[...Array(4)].map((_, i) => html('td', { class: 'highlight', 'data-highlight-level': `${i + 2}`, highlight: 'c' }, `${i + 2}`)),
+              html('td', { class: 'invalid' }, '6'),
             ]),
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n#!! 1.1\n: 1.2\n:!! 1.3\n~~~')),
+        inspect(parser('~~~table\n#! 1\n: 2\n:! 3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
-              html('th', { class: 'highlight' }, '1.1'),
-              html('td', { class: 'highlight', highlight: 'h' }, '1.2'),
-              html('td', { class: 'highlight', 'data-highlight-level': '2', highlight: 'h c' }, '1.3'),
+              html('th', { class: 'highlight' }, '1'),
+              html('td', { class: 'highlight', highlight: 'h' }, '2'),
+              html('td', { class: 'highlight', highlight: 'h c' }, '3'),
             ]),
           ]),
           html('tfoot'),

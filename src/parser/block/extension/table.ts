@@ -70,10 +70,10 @@ const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
-const delimiter = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!{0,4}(?=[^\S\n])/;
+const delimiter = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!*(?=[^\S\n])/;
 
 const head: CellParser.HeadParser = creator(block(fmap(open(
-  str(/^#(?:\d*:\d*)?!{0,4}(?=[^\S\n])/),
+  str(/^#(?:\d*:\d*)?!*(?=[^\S\n])/),
   rewrite(
     inits([
       anyline,
@@ -85,7 +85,7 @@ const head: CellParser.HeadParser = creator(block(fmap(open(
   false));
 
 const data: CellParser.DataParser = creator(block(fmap(open(
-  str(/^:(?:\d*:\d*)?!{0,4}(?=[^\S\n])/),
+  str(/^:(?:\d*:\d*)?!*(?=[^\S\n])/),
   rewrite(
     inits([
       anyline,
@@ -103,19 +103,26 @@ const dataline: CellParser.DataParser = creator(line(fmap(
   ns => [html('td', defrag(ns))])));
 
 function attributes(source: string) {
-  let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!{1,4})?/) ?? [];
+  let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
   rowspan === '1' ? rowspan = undefined : undefined;
   colspan === '1' ? colspan = undefined : undefined;
   rowspan &&= Math.max(0, Math.min(+rowspan, 65534)) + '';
   colspan &&= Math.max(0, Math.min(+colspan, 1000)) + '';
   highlight &&= highlight.length > 0 ? highlight.length + '' : undefined;
+  const valid = !highlight ||
+    source[0] === '#' && +highlight <= 1 ||
+    source[0] === ':' && +highlight <= 5;
   return {
-    class: highlight && 'highlight',
+    class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
     colspan,
-    'data-highlight-level': source[0] === ':' && +highlight! > 1
-      ? highlight
-      : undefined,
+    ...valid
+      ? { 'data-highlight-level': +highlight! > 1 ? highlight : undefined }
+      : {
+          'data-invalid-syntax': 'table',
+          'data-invalid-type': 'highlight',
+          'data-invalid-description': `Too much highlight level`,
+        },
   };
 }
 
