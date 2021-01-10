@@ -4126,35 +4126,40 @@ require = function () {
                     source_1.emptyline
                 ]), alignment)
             ]), ns => !alias_1.isArray(ns[0]) ? array_1.unshift([[[]]], ns) : ns)));
-            const alignment = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
+            const alignment = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
             const align = combinator_1.line(combinator_1.fmap(combinator_1.union([source_1.str(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
-            const delimiter = /^#?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!{0,4}(?=[^\S\n])/;
-            const head = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^#(?:\d*:\d*)?!{0,4}(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
+            const delimiter = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!*(?=[^\S\n])/;
+            const head = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^#(?:\d*:\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('th', attributes(ns.shift()), util_1.defrag(ns))]), false));
-            const data = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^:(?:\d*:\d*)?!{0,4}(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
+            const data = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^:(?:\d*:\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), util_1.defrag(ns))]), false));
             const dataline = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.rewrite(source_1.contentline, combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), ns => [typed_dom_1.html('td', util_1.defrag(ns))])));
             function attributes(source) {
                 var _a;
-                let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!{1,4})?/)) !== null && _a !== void 0 ? _a : [];
+                let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/)) !== null && _a !== void 0 ? _a : [];
                 rowspan === '1' ? rowspan = global_1.undefined : global_1.undefined;
                 colspan === '1' ? colspan = global_1.undefined : global_1.undefined;
                 rowspan && (rowspan = global_1.Math.max(0, global_1.Math.min(+rowspan, 65534)) + '');
                 colspan && (colspan = global_1.Math.max(0, global_1.Math.min(+colspan, 1000)) + '');
                 highlight && (highlight = highlight.length > 0 ? highlight.length + '' : global_1.undefined);
+                const valid = !highlight || source[0] === '#' && +highlight <= 1 || source[0] === ':' && +highlight <= 5;
                 return {
-                    class: highlight && 'highlight',
+                    class: valid ? highlight && 'highlight' : 'invalid',
                     rowspan,
                     colspan,
-                    'data-highlight-level': source[0] === ':' && +highlight > 1 ? highlight : global_1.undefined
+                    ...valid ? { 'data-highlight-level': +highlight > 1 ? highlight : global_1.undefined } : {
+                        'data-invalid-syntax': 'table',
+                        'data-invalid-type': 'highlight',
+                        'data-invalid-description': `Too much highlight level`
+                    }
                 };
             }
             function format(rows) {
-                var _a, _b, _c, _d, _e, _f, _g, _h;
+                var _a, _b, _c, _d, _e, _f;
                 const thead = typed_dom_1.html('thead');
                 const tbody = typed_dom_1.html('tbody');
                 const tfoot = typed_dom_1.html('tfoot');
@@ -4171,39 +4176,59 @@ require = function () {
                             vs[0] === '#' && !!vs.shift()
                         ].reduce((a, b) => a || b) ? false : target === tfoot ? false : global_1.undefined;
                         as.length === 0 && as.push('-');
-                        for (let j = 0; j < as.length; ++j) {
-                            switch (as[j]) {
-                            case '=':
-                                aligns[j] = 'center';
-                                continue;
-                            case '<':
-                                aligns[j] = 'start';
-                                continue;
-                            case '>':
-                                aligns[j] = 'end';
-                                continue;
-                            case '-':
-                                aligns[j] = j === 0 ? (_c = aligns[j]) !== null && _c !== void 0 ? _c : '' : (_d = aligns[j]) !== null && _d !== void 0 ? _d : aligns[j - 1];
-                                continue;
+                        ALIGN_H:
+                            for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {
+                                switch (as[j]) {
+                                case '=':
+                                    update = true;
+                                    aligns[j] = 'center';
+                                    continue;
+                                case '<':
+                                    update = true;
+                                    aligns[j] = 'start';
+                                    continue;
+                                case '>':
+                                    update = true;
+                                    aligns[j] = 'end';
+                                    continue;
+                                case '-':
+                                    update = false;
+                                    (_c = aligns[j]) !== null && _c !== void 0 ? _c : aligns[j] = j === 0 ? '' : aligns[j - 1];
+                                    continue;
+                                default:
+                                    if (!update)
+                                        break ALIGN_H;
+                                    aligns[j] = aligns[j - 1];
+                                    continue;
+                                }
                             }
-                        }
                         vs.length === 0 && vs.push('-');
-                        for (let j = 0; j < vs.length; ++j) {
-                            switch (vs[j]) {
-                            case '=':
-                                valigns[j] = 'middle';
-                                continue;
-                            case '^':
-                                valigns[j] = 'top';
-                                continue;
-                            case 'v':
-                                valigns[j] = 'bottom';
-                                continue;
-                            case '-':
-                                valigns[j] = j === 0 ? (_e = valigns[j]) !== null && _e !== void 0 ? _e : '' : (_f = valigns[j]) !== null && _f !== void 0 ? _f : valigns[j - 1];
-                                continue;
+                        ALIGN_V:
+                            for (let j = 0, update = false; j < vs.length || j < valigns.length; ++j) {
+                                switch (vs[j]) {
+                                case '=':
+                                    update = true;
+                                    valigns[j] = 'middle';
+                                    continue;
+                                case '^':
+                                    update = true;
+                                    valigns[j] = 'top';
+                                    continue;
+                                case 'v':
+                                    update = true;
+                                    valigns[j] = 'bottom';
+                                    continue;
+                                case '-':
+                                    update = false;
+                                    (_d = valigns[j]) !== null && _d !== void 0 ? _d : valigns[j] = j === 0 ? '' : valigns[j - 1];
+                                    continue;
+                                default:
+                                    if (!update)
+                                        break ALIGN_V;
+                                    aligns[j] = aligns[j - 1];
+                                    continue;
+                                }
                             }
-                        }
                         const row = typed_dom_1.html('tr');
                         let heads = 0;
                         let highlights = 0;
@@ -4211,7 +4236,7 @@ require = function () {
                         let lHeadCellIdx;
                         let rHeadCellIdx;
                         for (let j = 0; j < cells.length && cells.length <= 32; ++j) {
-                            const isVirtual = !!((_g = ranges[i]) === null || _g === void 0 ? void 0 : _g[j]);
+                            const isVirtual = !!((_e = ranges[i]) === null || _e === void 0 ? void 0 : _e[j]);
                             const cell = isVirtual ? array_1.splice(cells, j, 0, global_1.undefined) && ranges[i][j] : cells[j];
                             const isHeadCell = cell.tagName === 'TH';
                             heads |= +isHeadCell << j;
@@ -4227,7 +4252,7 @@ require = function () {
                             if (rowSpan > 1 && !isVirtual) {
                                 const virtual = cell.cloneNode();
                                 for (let k = i + 1; k < i + rowSpan && k < rows.length; ++k) {
-                                    (_h = ranges[k]) !== null && _h !== void 0 ? _h : ranges[k] = [];
+                                    (_f = ranges[k]) !== null && _f !== void 0 ? _f : ranges[k] = [];
                                     ranges[k][j] = virtual;
                                 }
                             }
