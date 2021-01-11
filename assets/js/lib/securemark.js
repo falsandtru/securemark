@@ -4138,8 +4138,8 @@ require = function () {
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), util_1.defrag(ns))]), false));
             const dataline = combinator_1.creator(combinator_1.line(combinator_1.union([
-                combinator_1.validate(/^!+[^\S\n]/, combinator_1.convert(s => `:${ s }`, data)),
-                combinator_1.trim(combinator_1.convert(s => `: ${ s }`, data))
+                combinator_1.validate(/^!+[^\S\n]/, combinator_1.convert(source => `:${ source }`, data)),
+                combinator_1.trim(combinator_1.convert(source => `: ${ source }`, data))
             ])));
             function attributes(source) {
                 var _a;
@@ -4149,7 +4149,7 @@ require = function () {
                 rowspan && (rowspan = global_1.Math.max(0, global_1.Math.min(+rowspan, 65534)) + '');
                 colspan && (colspan = global_1.Math.max(0, global_1.Math.min(+colspan, 1000)) + '');
                 highlight && (highlight = highlight.length > 0 ? highlight.length + '' : global_1.undefined);
-                const valid = !highlight || source[0] === '#' && +highlight <= 1 || source[0] === ':' && +highlight <= 5;
+                const valid = !highlight || source[0] === '#' && +highlight <= 1 || source[0] === ':' && +highlight <= 6;
                 return {
                     class: valid ? highlight && 'highlight' : 'invalid',
                     rowspan,

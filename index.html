@@ -245,9 +245,12 @@
     background-color: orange;
   }
   td.highlight[data-highlight-level="4"] {
-    background-color: #f33;
+    background-color: #f50;
   }
   td.highlight[data-highlight-level="5"] {
+    background-color: #f33;
+  }
+  td.highlight[data-highlight-level="6"] {
     background-color: gray;
   }
   .quotation {
@@ -525,18 +528,32 @@
     '',
     '~~~table',
     '# Level',
-    '# 1',
-    '# 2',
-    '# 3',
-    '# 4',
-    '# 5',
-    '-',
     '# Color',
+    '# Signification',
+    '=<',
+    '# 1',
     ':! ',
+    ': Highlight',
+    '-',
+    '# 2',
     ':!! ',
+    ': Highlight on highlights',
+    '-',
+    '# 3',
     ':!!! ',
+    ': Turning point',
+    '-',
+    '# 4',
     ':!!!! ',
+    ': Warning',
+    '-',
+    '# 5',
     ':!!!!! ',
+    ': Danger',
+    '-',
+    '# 6',
+    ':!!!!!! ',
+    ': Dead',
     '~~~',
     '',
     '### Cell',
