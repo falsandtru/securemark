@@ -142,14 +142,12 @@ function format(rows: Data<RowParser>[]): HTMLTableSectionElement[] {
     assert(as !== rows[i][0]?.[0]);
     assert(vs !== rows[i][0]?.[1]);
     assert(cells !== rows[i]);
-    let isBody = [
-      as[0] === '#' && !!as.shift(),
-      vs[0] === '#' && !!vs.shift(),
-    ].reduce((a, b) => a || b)
+    let isBody = target === tfoot
       ? false
-      : target === tfoot
-        ? false
-        : undefined;
+      : [
+          as[0] === '#' ? !as.shift() : undefined,
+          as[0] === ':' ? !!as.shift() : undefined,
+        ].reduce((a, b) => a ?? b);
     as.length === 0 && as.push('-');
     ALIGN_H:
     for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {
@@ -247,7 +245,7 @@ function format(rows: Data<RowParser>[]): HTMLTableSectionElement[] {
         j += colSpan - 1;
       }
       if (target === thead) {
-        if (!isHeadCell && isBody !== false) {
+        if (!isHeadCell && isBody !== false || isBody) {
           isBody = true;
           target = tbody;
           ranges = {};

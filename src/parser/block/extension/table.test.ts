@@ -260,6 +260,14 @@ describe('Unit: parser/block/extension/table', () => {
             html('tr', [html('th', '1.1'), html('td', '1.2')]),
           ]),
           html('tfoot')]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n:-\n# 1.1\n~~~')),
+        [[html('table', [
+          html('thead'),
+          html('tbody', [
+            html('tr', [html('th', '1.1')]),
+          ]),
+          html('tfoot')]).outerHTML], '']);
     });
 
     it('foot', () => {
