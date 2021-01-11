@@ -4122,9 +4122,9 @@ require = function () {
                 combinator_1.some(combinator_1.union([
                     head,
                     data,
-                    dataline,
-                    source_1.emptyline
-                ]), alignment)
+                    source_1.emptyline,
+                    combinator_1.some(dataline, alignment)
+                ]))
             ]), ns => !alias_1.isArray(ns[0]) ? array_1.unshift([[[]]], ns) : ns)));
             const alignment = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
             const align = combinator_1.line(combinator_1.fmap(combinator_1.union([source_1.str(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
@@ -4137,7 +4137,10 @@ require = function () {
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), util_1.defrag(ns))]), false));
-            const dataline = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.rewrite(source_1.contentline, combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), ns => [typed_dom_1.html('td', util_1.defrag(ns))])));
+            const dataline = combinator_1.creator(combinator_1.line(combinator_1.union([
+                combinator_1.validate(/^!+[^\S\n]/, combinator_1.convert(s => `:${ s }`, data)),
+                combinator_1.trim(combinator_1.convert(s => `: ${ s }`, data))
+            ])));
             function attributes(source) {
                 var _a;
                 let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/)) !== null && _a !== void 0 ? _a : [];
@@ -7937,7 +7940,7 @@ require = function () {
                     hover = false;
                 }, passive), typed_dom_1.bind(editor, 'scroll', () => {
                     if (!hover)
-                        return;
+                        return scroll = editor.scrollTop, global_1.undefined;
                     const delta = editor.scrollTop - scroll;
                     switch (scroll += delta) {
                     case 0:
