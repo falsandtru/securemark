@@ -4174,10 +4174,10 @@ require = function () {
                 ROW:
                     for (let i = 0; i < rows.length; ++i) {
                         const [[[...as], [...vs] = []], ...cells] = rows[i];
-                        let isBody = [
-                            as[0] === '#' && !!as.shift(),
-                            vs[0] === '#' && !!vs.shift()
-                        ].reduce((a, b) => a || b) ? false : target === tfoot ? false : global_1.undefined;
+                        let isBody = target === tfoot ? false : [
+                            as[0] === '#' ? !as.shift() : global_1.undefined,
+                            as[0] === ':' ? !!as.shift() : global_1.undefined
+                        ].reduce((a, b) => a !== null && a !== void 0 ? a : b);
                         as.length === 0 && as.push('-');
                         ALIGN_H:
                             for (let j = 0, update = false; j < as.length || j < aligns.length; ++j) {
@@ -4267,7 +4267,7 @@ require = function () {
                                 j += colSpan - 1;
                             }
                             if (target === thead) {
-                                if (!isHeadCell && isBody !== false) {
+                                if (!isHeadCell && isBody !== false || isBody) {
                                     isBody = true;
                                     target = tbody;
                                     ranges = {};
