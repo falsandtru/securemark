@@ -789,7 +789,7 @@
   ].join('\n');
   const editor = document.getElementById('editor');
   const viewer = document.getElementById('viewer');
-  const { bind, render, caches, sync } = require('securemark');
+  const { bind, render, caches } = require('securemark');
   const { parse, nearest, position } = bind(viewer, {
     caches,
     footnotes: {
@@ -825,7 +825,6 @@
     editor.setSelectionRange(pos, pos);
     editor.focus();
   });
-  sync(editor, viewer);
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   document.getElementById('chars').textContent = editor.value.length;
