@@ -543,14 +543,14 @@ describe('Unit: parser/block/extension/table', () => {
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table\n',
-          `${[...Array(6)].map((_, i) => `#${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
+          `${[...Array(7)].map((_, i) => `#${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
           '~~~'
         ].join(''))),
         [[html('table', [
           html('thead', [
             html('tr', [
               html('th', { class: 'highlight' }, '1'),
-              ...[...Array(5)].map((_, i) => html('th', { class: 'invalid' }, `${i + 2}`)),
+              ...[...Array(6)].map((_, i) => html('th', { class: 'invalid' }, `${i + 2}`)),
             ]),
           ]),
           html('tbody'),
@@ -559,7 +559,7 @@ describe('Unit: parser/block/extension/table', () => {
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table\n',
-          `${[...Array(6)].map((_, i) => `:${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
+          `${[...Array(7)].map((_, i) => `:${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
           '~~~'
         ].join(''))),
         [[html('table', [
@@ -567,8 +567,8 @@ describe('Unit: parser/block/extension/table', () => {
           html('tbody', [
             html('tr', [
               html('td', { class: 'highlight', highlight: 'c' }, '1'),
-              ...[...Array(4)].map((_, i) => html('td', { class: 'highlight', 'data-highlight-level': `${i + 2}`, highlight: 'c' }, `${i + 2}`)),
-              html('td', { class: 'invalid' }, '6'),
+              ...[...Array(5)].map((_, i) => html('td', { class: 'highlight', 'data-highlight-level': `${i + 2}`, highlight: 'c' }, `${i + 2}`)),
+              html('td', { class: 'invalid' }, '7'),
             ]),
           ]),
           html('tfoot'),
@@ -587,13 +587,13 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n! 1.1\n!!!!! 1.2\n!!!!!! 1.3\n~~~')),
+        inspect(parser('~~~table\n! 1.1\n!!!!!! 1.2\n!!!!!!! 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [
             html('tr', [
               html('td', { class: 'highlight', highlight: 'c' }, '1.1'),
-              html('td', { class: 'highlight', 'data-highlight-level': '5', highlight: 'c' }, '1.2'),
+              html('td', { class: 'highlight', 'data-highlight-level': '6', highlight: 'c' }, '1.2'),
               html('td', { class: 'invalid' }, '1.3'),
             ]),
           ]),

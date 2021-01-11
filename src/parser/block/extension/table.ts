@@ -98,8 +98,8 @@ const data: CellParser.DataParser = creator(block(fmap(open(
 
 const dataline: CellParser.DatalineParser = creator(line(
   union([
-    validate(/^!+[^\S\n]/, convert(s => `:${s}`, data)),
-    trim(convert(s => `: ${s}`, data)),
+    validate(/^!+[^\S\n]/, convert(source => `:${source}`, data)),
+    trim(convert(source => `: ${source}`, data)),
   ])));
 
 function attributes(source: string) {
@@ -111,7 +111,7 @@ function attributes(source: string) {
   highlight &&= highlight.length > 0 ? highlight.length + '' : undefined;
   const valid = !highlight ||
     source[0] === '#' && +highlight <= 1 ||
-    source[0] === ':' && +highlight <= 5;
+    source[0] === ':' && +highlight <= 6;
   return {
     class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
