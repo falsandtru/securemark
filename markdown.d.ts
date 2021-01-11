@@ -659,7 +659,7 @@ export namespace MarkdownParser {
       export interface IndexerParser extends
         // [#index]
         Inline<'extension/indexer'>,
-        Parser<HTMLElement | string, [
+        Parser<HTMLElement, [
           IndexParser,
         ], Context> {
       }
