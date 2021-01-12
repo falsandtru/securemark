@@ -577,7 +577,7 @@
     '# Symbol',
     '# Align',
     '=<',
-    '# <none>',
+    '# (none)',
     ': Previous column',
     '-',
     '# -',
@@ -806,12 +806,8 @@
   }, {
     rootMargin: '100px',
   });
-  editor.addEventListener('click', () => {
-    const el = nearest(editor.selectionStart);
-    el?.scrollIntoView({ block: 'start' });
-    viewer.scrollBy({ top: -viewer.clientHeight / 9 });
-    el?.scrollIntoView({ block: 'nearest' });
-  });
+  editor.addEventListener('click', () =>
+    nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' }));
   viewer.addEventListener('click', ev => {
     if (!window.getSelection().isCollapsed) return;
     if (ev.target.matches('a, a *')) return;
