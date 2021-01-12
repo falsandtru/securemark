@@ -5633,19 +5633,14 @@ require = function () {
             exports.indexer = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const index_1 = _dereq_('./index');
-            const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.indexer = combinator_1.creator(combinator_1.surround(source_1.str(/^\s+(?=\[#[^\s\]])/), combinator_1.context({ syntax: { inline: { index: true } } }, combinator_1.union([index_1.index])), /^\s*$/, false, ([, [el]], rest) => [
-                [typed_dom_1.html('span', {
-                        class: 'indexer',
-                        'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
-                    })],
-                rest
-            ]));
+            exports.indexer = combinator_1.creator(combinator_1.fmap(combinator_1.open(/^\s+(?=\[#[^\s\]])/, combinator_1.context({ syntax: { inline: { index: true } } }, combinator_1.line(combinator_1.union([index_1.index])))), ([el]) => [typed_dom_1.html('span', {
+                    class: 'indexer',
+                    'data-index': el.getAttribute('href').slice(el.hash.indexOf(':') + 1)
+                })]));
         },
         {
             '../../../combinator': 30,
-            '../../source': 126,
             './index': 106,
             'typed-dom': 23
         }
