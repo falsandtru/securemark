@@ -31,7 +31,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   type Block = readonly [segment: string, blocks: readonly HTMLElement[], url: string];
   const blocks: Block[] = [];
   const adds: [HTMLElement, Node | null][] = [];
-  const dels: HTMLElement[] = [];
+  const dels: [HTMLElement][] = [];
   const bottom = target.firstChild;
   let revision: symbol | undefined;
   return {
@@ -78,7 +78,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       if (es.length === 0) continue;
       // All deletion processes always run after all addition processes have done.
       // Therefore any `base` node will never be unavailable by deletions until all the dependent `el` nodes are added.
-      push(adds, es.map<typeof adds[number]>(el => [el, base]));
+      push(adds, es.map(el => [el, base] as const));
       while (adds.length > 0) {
         assert(rev === revision);
         const [el, base] = adds.shift()!;
@@ -92,7 +92,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       assert(rev === revision);
       const es = refuse[i][1];
       if (es.length === 0) continue;
-      push(dels, es);
+      push(dels, es.map(el => [el]));
     }
     assert(blocks.length === sourceSegments.length);
     while (adds.length > 0) {
@@ -105,7 +105,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     }
     while (dels.length > 0) {
       assert(rev === revision);
-      const el = dels.shift()!;
+      const [el] = dels.shift()!;
       el.parentNode?.removeChild(el);
       assert(!el.parentNode);
       yield { type: 'block', value: el };
