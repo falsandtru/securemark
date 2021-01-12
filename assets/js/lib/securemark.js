@@ -3248,7 +3248,7 @@ require = function () {
                         const es = refuse[i][1];
                         if (es.length === 0)
                             continue;
-                        array_1.push(dels, es);
+                        array_1.push(dels, es.map(el => [el]));
                     }
                     while (adds.length > 0) {
                         const [el, base] = adds.shift();
@@ -3261,7 +3261,7 @@ require = function () {
                             return yield { type: 'cancel' };
                     }
                     while (dels.length > 0) {
-                        const el = dels.shift();
+                        const [el] = dels.shift();
                         (_b = el.parentNode) === null || _b === void 0 ? void 0 : _b.removeChild(el);
                         yield {
                             type: 'block',
