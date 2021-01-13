@@ -18,8 +18,8 @@ describe('Unit: parser/api/header', () => {
       assert.deepStrictEqual(headers('---\n \n---'), []);
       assert.deepStrictEqual(headers('---\n-\n---'), []);
       assert.deepStrictEqual(headers('---\na: b\n---'), ['a: b']);
-      assert.deepStrictEqual(headers('---\na: b\nC: d\n---\n'), ['a: b', 'C: d']);
-      assert.deepStrictEqual(headers('--- \r\na: b \r\n--- \r\n \r\n'), ['a: b \r']);
+      assert.deepStrictEqual(headers('---\na: b\nC: d e\n---\n'), ['a: b', 'C: d e']);
+      assert.deepStrictEqual(headers('--- \r\na: b \r\n--- \r\n \r\n'), ['a: b']);
     });
 
   });

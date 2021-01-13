@@ -45,9 +45,8 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
     context = ObjectAssign(context, { url: url ? new ReadonlyURL(url) : undefined });
-    source = normalize(source);
     const sourceSegments: string[] = [];
-    for (const seg of segment(source)) {
+    for (const seg of segment(normalize(source))) {
       sourceSegments.push(seg);
       yield { type: 'segment', value: seg };
     }

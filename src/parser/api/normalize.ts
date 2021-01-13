@@ -9,13 +9,14 @@ export function normalize(source: string): string {
     .replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
       assert(!char.match(/^[\n\t]$/));
       switch (char) {
-        case '\0':
         case '\v':
         case '\f':
         case '\r':
         case '\r\n':
+          assert(char.trim() === '');
           return '\n';
         default:
+          assert(char.trim() !== '');
           return UNICODE_REPLACEMENT_CHARACTER;
       }
     });

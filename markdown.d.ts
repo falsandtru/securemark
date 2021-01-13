@@ -55,7 +55,10 @@ export namespace MarkdownParser {
     // url: https://host/path
     // ---
     Markdown<'header'>,
-    Parser<HTMLDetailsElement, [], Context> {
+    Parser<HTMLDetailsElement, [
+      Parser<HTMLDetailsElement, [], Context>,
+      SourceParser.EmptyLineParser,
+    ], Context> {
   }
   export interface BlockParser extends
     Markdown<'block'>,

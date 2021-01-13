@@ -1,10 +1,13 @@
-// Must ensure that the next line is blank.
-export const syntax = /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?:[^\S\v\f\r\n]*(?:$|\r?\n)))/;
+import { eval, exec } from '../../combinator';
+import { header as h } from '../header';
 
 export function header(source: string): string {
-  return source.match(syntax)?.[0] || '';
+  return source.slice(0, source.length - exec(h(source, {}), source).length);
 }
 
 export function headers(source: string): string[] {
-  return header(source).trimEnd().split('\n').slice(1, -1);
+  const [el] = eval(h(source, {}), []);
+  return el && el.childNodes.length > 1
+    ? el.lastChild!.textContent!.split(/[^\S\n]*\n/)
+    : [];
 }

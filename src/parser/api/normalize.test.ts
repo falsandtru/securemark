@@ -2,10 +2,6 @@ import { normalize } from './normalize';
 
 describe('Unit: parser/normalize', () => {
   describe('normalize', () => {
-    it('insecure characters', () => {
-      assert(normalize('\0\0') === '\n\n');
-    });
-
     it('invalid surrogate pairs', () => {
       assert(normalize('\uDC00\uD800') === '\uFFFD\uFFFD');
     });
@@ -16,7 +12,7 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\r') === '\n');
       assert(normalize('\r\n') === '\n');
       assert(normalize('\n\r') === '\n\n');
-      assert(normalize('\x00') === '\n');
+      assert(normalize('\x00') === '\uFFFD');
       assert(normalize('\x01') === '\uFFFD');
       assert(normalize('\x02') === '\uFFFD');
       assert(normalize('\x03') === '\uFFFD');
@@ -57,7 +53,7 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('---\na: b\x01\n---\n\x01\n\n') === '---\na: b\uFFFD\n---\n\uFFFD\n\n');
       assert(normalize('---\na: b\x01\n---') === '---\na: b\uFFFD\n---');
       assert(normalize(' ---\na: b\x01\n---') === ' ---\na: b\uFFFD\n---');
-      assert(normalize('\0---\na: b\x01\n---') === '\n---\na: b\uFFFD\n---');
+      assert(normalize('\0---\na: b\x01\n---') === '\uFFFD---\na: b\uFFFD\n---');
       assert(normalize('\x01---\na: b\x01\n---') === '\uFFFD---\na: b\uFFFD\n---');
       assert(normalize('\x01---\na: b\x01\n---\n\n!> \x01---\na: b\x01\n---') === '\uFFFD---\na: b\uFFFD\n---\n\n!> \uFFFD---\na: b\uFFFD\n---');
     });

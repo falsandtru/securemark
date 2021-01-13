@@ -170,7 +170,7 @@ describe('Unit: parser/api/parse', () => {
 
     it('normalize', () => {
       assert.deepStrictEqual(
-        [...parse('\0a\\\r\nb').children].map(el => el.outerHTML),
+        [...parse('a\\\r\nb').children].map(el => el.outerHTML),
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
