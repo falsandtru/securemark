@@ -3182,7 +3182,7 @@ require = function () {
                 return {
                     parse,
                     nearest,
-                    position
+                    index
                 };
                 function* parse(source) {
                     var _a, _b, _c, _d;
@@ -3190,10 +3190,9 @@ require = function () {
                         throw new Error('Chunks cannot be updated.');
                     const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
-                    context = alias_1.ObjectAssign(context, { url: url ? new url_1.ReadonlyURL(url, url) : global_1.undefined });
-                    source = normalize_1.normalize(source);
+                    context = alias_1.ObjectAssign(context, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
                     const sourceSegments = [];
-                    for (const seg of segment_1.segment(source)) {
+                    for (const seg of segment_1.segment(normalize_1.normalize(source))) {
                         sourceSegments.push(seg);
                         yield {
                             type: 'segment',
@@ -3307,7 +3306,7 @@ require = function () {
                     }
                     return el;
                 }
-                function position(source) {
+                function index(source) {
                     let len = 0;
                     for (let i = 0; i < blocks.length; ++i) {
                         const block = blocks[i];
@@ -3366,19 +3365,23 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.headers = exports.header = exports.syntax = void 0;
-            exports.syntax = /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n(?:[^\S\v\f\r\n]*(?:$|\r?\n)))/;
+            exports.headers = exports.header = void 0;
+            const combinator_1 = _dereq_('../../combinator');
+            const header_1 = _dereq_('../header');
             function header(source) {
-                var _a;
-                return ((_a = source.match(exports.syntax)) === null || _a === void 0 ? void 0 : _a[0]) || '';
+                return source.slice(0, source.length - combinator_1.exec(header_1.header(source, {}), source).length);
             }
             exports.header = header;
             function headers(source) {
-                return header(source).trimEnd().split('\n').slice(1, -1);
+                const [el] = combinator_1.eval(header_1.header(source, {}), []);
+                return el && el.childNodes.length > 1 ? el.lastChild.textContent.split(/[^\S\n]*\n/) : [];
             }
             exports.headers = headers;
         },
-        {}
+        {
+            '../../combinator': 30,
+            '../header': 87
+        }
     ],
     61: [
         function (_dereq_, module, exports) {
@@ -3389,7 +3392,6 @@ require = function () {
             function normalize(source) {
                 return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : str).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
                     switch (char) {
-                    case '\0':
                     case '\x0B':
                     case '\f':
                     case '\r':
@@ -3430,7 +3432,7 @@ require = function () {
                 const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                 context = context && url === '' && context.id === opts.id ? context : alias_1.ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
                     host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context === null || context === void 0 ? void 0 : context.host) !== null && _c !== void 0 ? _c : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
-                    url: url ? new url_1.ReadonlyURL(url, url) : context === null || context === void 0 ? void 0 : context.url,
+                    url: url ? new url_1.ReadonlyURL(url) : context === null || context === void 0 ? void 0 : context.url,
                     id: (_d = opts.id) !== null && _d !== void 0 ? _d : context === null || context === void 0 ? void 0 : context.id,
                     header: global_1.undefined,
                     test: global_1.undefined,
@@ -4838,20 +4840,37 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.header = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../combinator');
-            const header_1 = _dereq_('./api/header');
+            const util_1 = _dereq_('./util');
+            const segment_1 = _dereq_('./segment');
+            const normalize_1 = _dereq_('./api/normalize');
+            const line_1 = _dereq_('./source/line');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.header = combinator_1.validate('---', combinator_1.focus(header_1.syntax, source => [
-                [typed_dom_1.html('details', { class: 'header' }, [
-                        typed_dom_1.html('summary', 'Header'),
-                        source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))
-                    ])],
-                ''
-            ]));
+            exports.header = combinator_1.inits([
+                combinator_1.rewrite(source => {
+                    const seg = combinator_1.firstline(source).trimEnd() === '---' && segment_1.segment(source).next().value || '';
+                    return seg ? [
+                        [],
+                        source.slice(seg.length)
+                    ] : global_1.undefined;
+                }, combinator_1.block(combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){0,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
+                    [typed_dom_1.html('details', { class: 'header' }, util_1.defrag([
+                            typed_dom_1.html('summary', 'Header'),
+                            normalize_1.normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).trimEnd()
+                        ]))],
+                    ''
+                ]))),
+                line_1.emptyline
+            ]);
         },
         {
             '../combinator': 30,
-            './api/header': 60,
+            './api/normalize': 61,
+            './segment': 125,
+            './source/line': 128,
+            './util': 133,
+            'spica/global': 14,
             'typed-dom': 23
         }
     ],
