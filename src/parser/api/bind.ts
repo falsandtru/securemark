@@ -44,7 +44,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated.');
     const rev = revision = Symbol();
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
-    context = ObjectAssign(context, { url: url ? new ReadonlyURL(url, url) : undefined });
+    context = ObjectAssign(context, { url: url ? new ReadonlyURL(url) : undefined });
     source = normalize(source);
     const sourceSegments: string[] = [];
     for (const seg of segment(source)) {

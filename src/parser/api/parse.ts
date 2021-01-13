@@ -29,7 +29,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
     ? context
     : ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
         host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
-        url: url ? new ReadonlyURL(url, url) : context?.url,
+        url: url ? new ReadonlyURL(url) : context?.url,
         id: opts.id ?? context?.id,
         header: undefined,
         test: undefined,
