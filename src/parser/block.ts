@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { union, update, creator, recover } from '../combinator';
-import { emptyline } from './source/line';
+import { emptyline } from './source';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
 import { ulist } from './block/ulist';

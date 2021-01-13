@@ -4,7 +4,7 @@ import { inits, block, firstline, focus, rewrite } from '../combinator';
 import { defrag } from './util';
 import { segment } from './segment';
 import { normalize } from './api/normalize';
-import { emptyline } from './source/line';
+import { emptyline } from './source';
 import { html } from 'typed-dom';
 
 export const header: MarkdownParser.HeaderParser = inits([
