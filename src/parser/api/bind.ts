@@ -19,7 +19,7 @@ interface Settings extends ParserSettings {
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: Settings): {
   parse: (source: string) => Generator<Progress, undefined, undefined>;
   nearest: (position: number) => HTMLElement | undefined;
-  position: (block: HTMLElement) => number;
+  index: (block: HTMLElement) => number;
 } {
   let context: MarkdownParser.Context = ObjectAssign({}, settings, {
     host: settings.host ?? new ReadonlyURL(location.pathname, location.origin),
@@ -37,7 +37,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   return {
     parse,
     nearest,
-    position,
+    index,
   };
 
   function* parse(source: string): Generator<Progress, undefined, undefined> {
@@ -148,7 +148,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     return el;
   }
 
-  function position(source: HTMLElement): number {
+  function index(source: HTMLElement): number {
     let len = 0;
     for (let i = 0; i < blocks.length; ++i) {
       const block = blocks[i];

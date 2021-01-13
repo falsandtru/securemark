@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.197.0
+
+- Change position method to index.
+
 ## 0.196.0
 
 - Add smart table syntax.

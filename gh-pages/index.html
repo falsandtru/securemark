@@ -806,7 +806,7 @@
   });
   const viewer = document.getElementById('viewer');
   const { bind, render, caches } = require('securemark');
-  const { parse, nearest, position } = bind(viewer, {
+  const { parse, nearest, index } = bind(viewer, {
     caches,
     footnotes: {
       annotation: document.getElementById('annotation'),
@@ -836,9 +836,9 @@
       target = target.parentNode;
       if (!target) return;
     }
-    const pos = position(target);
-    if (pos === -1) return;
-    editor.setCursor(editor.doc.posFromIndex(pos));
+    const idx = index(target);
+    if (idx === -1) return;
+    editor.setCursor(editor.doc.posFromIndex(idx));
     editor.scrollIntoView(editor.cursorCoords(true, 'local'));
     editor.focus();
   });

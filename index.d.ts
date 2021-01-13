@@ -11,7 +11,7 @@ export function parse(source: string, options?: ParserOptions): DocumentFragment
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): {
   parse: (source: string) => Generator<Progress, undefined, undefined>;
   nearest: (position: number) => HTMLElement | undefined;
-  position: (block: HTMLElement) => number;
+  index: (block: HTMLElement) => number;
 };
 export function render(target: HTMLElement, options?: RenderingOptions): void;
 export const caches: Caches;
