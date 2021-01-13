@@ -10,7 +10,7 @@ import { Collection } from 'spica/collection';
 export function parse(source: string, options?: ParserOptions): DocumentFragment;
 export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settings: ParserSettings): {
   parse: (source: string) => Generator<Progress, undefined, undefined>;
-  nearest: (position: number) => HTMLElement | undefined;
+  nearest: (index: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 };
 export function render(target: HTMLElement, options?: RenderingOptions): void;

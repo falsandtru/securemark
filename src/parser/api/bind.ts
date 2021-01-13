@@ -136,14 +136,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     return bottom;
   }
 
-  function nearest(position: number): HTMLElement | undefined {
+  function nearest(index: number): HTMLElement | undefined {
     let el: HTMLElement | undefined;
     let len = 0;
     for (let i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       len += block[0].length;
       el = block[1][0] || el;
-      if (len >= position) break;
+      if (len >= index) break;
     }
     return el;
   }
