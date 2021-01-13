@@ -828,6 +828,8 @@
     rootMargin: '100px',
   });
   editor.setOption('vimMode', true);
+  //editor.addEventListener('click', () =>
+  //  nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' }));
   editor.on('mousedown', () =>
     nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' }));
   editor.on('cursorActivity', () =>
@@ -842,6 +844,7 @@
     }
     const idx = index(target);
     if (idx === -1) return;
+    //editor.setSelectionRange(idx, idx);
     editor.setCursor(editor.doc.posFromIndex(idx));
     editor.scrollIntoView(editor.cursorCoords(true, 'local'));
     editor.focus();
@@ -861,6 +864,7 @@
         await wait;
         wait = undefined;
         log(await display());
+        //nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' });
         nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
         share();
       }, 500);
