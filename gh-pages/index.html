@@ -11,11 +11,18 @@
 <!-- Bootstrap -->
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.1/codemirror.min.css" integrity="sha512-MWdvo/Qqcf4pY1ecQUB1uBn0qLp19U/qJ1Rpp2BDZeuBA7YsFEwkvqR/+aG4BroPiAYDunKJ6X8R/Pmdt3p7oA==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" />
 <style>
-  body,
-  textarea {
+  body {
     background-color: #fdfdfd;
+  }
+  .CodeMirror {
+    font-family: Monaco, 'Andale Mono', 'Lucida Console', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+    font-size: small;
+  }
+  .CodeMirror-cursor {
+    background-color: #d5d5d5 !important;
   }
   #viewer {
     overflow: auto;
@@ -429,6 +436,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js" integrity="sha512-7yA/d79yIhHPvcrSiB8S/7TyX0OxlccU8F/kuB8mHYjLlF1MInPbEohpoqfz0AILoq5hoD7lELZAYYHbyeEjag==" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.1/codemirror.min.js" integrity="sha512-9fASXXoC6x4BKdqe6IcEYZnt4KPMiQx5YJIsiWevf2QpSXfPcXMj4MTzIbwQuKJRysBlRh1LGHIaQm/415WyEA==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.1/keymap/vim.min.js" integrity="sha512-g2nzBS/fBHxdSRXaDcYGHVg2Rjk7+3gITKVMv1q/ylh2izUiw1AZ50urelrhy7I6EYLQi5RM8FFj3rdATH5wIg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.min.js" integrity="sha512-9+422Bs3A87UkWfp+qV80Nfv9arhbCXKY1rxrF2seorI36mIIstMiuBfyKLF1yH1nnzQkEWq2xrzT4XU3Z+vrA==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-Q3qGP1uJL/B0sEmu57PKXjCirgPKMbg73OLRbTJ6lfHCVU5zkHqmcTI5EV2fSoPV1MHdKsCBE7m/aS6q0pPjRQ==" crossorigin="anonymous"></script>
 <script>
@@ -466,8 +475,6 @@
 <script src="/securemark/assets/js/lib/securemark.js"></script>
 
 <script>
-  document.getElementById('editor').style.height = window.innerHeight * 0.7 + 'px';
-  document.getElementById('viewer').style.height = window.innerHeight * 0.7 + 'px';
   document.getElementById('editor').value = decodeURIComponent(location.hash.replace(/^#?/, '')) || [
     '---',
     'url: https://falsandtru.github.io/securemark',
@@ -787,7 +794,14 @@
     '',
     ''
   ].join('\n');
-  const editor = document.getElementById('editor');
+  const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+    lineNumbers: true,
+    indentUnit: 2,
+    keyMap: "vim",
+    matchBrackets: true,
+    showCursorWhenSelecting: true,
+    viewportMargin: Infinity,
+  });
   const viewer = document.getElementById('viewer');
   const { bind, render, caches } = require('securemark');
   const { parse, nearest, position } = bind(viewer, {
@@ -806,8 +820,12 @@
   }, {
     rootMargin: '100px',
   });
-  editor.addEventListener('click', () =>
-    nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' }));
+  editor.setSize(null, window.innerHeight * 0.7 + 'px');
+  viewer.style.height = window.innerHeight * 0.7 + 'px';
+  editor.on('mousedown', () =>
+    nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' }));
+  editor.on('cursorActivity', () =>
+    nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' }));
   viewer.addEventListener('click', ev => {
     if (!window.getSelection().isCollapsed) return;
     if (ev.target.matches('a, a *')) return;
@@ -818,18 +836,18 @@
     }
     const pos = position(target);
     if (pos === -1) return;
-    editor.setSelectionRange(pos, pos);
+    editor.setCursor(editor.doc.posFromIndex(pos));
+    editor.scrollIntoView(editor.cursorCoords(true, 'local'));
     editor.focus();
   });
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
-  document.getElementById('chars').textContent = editor.value.length;
+  document.getElementById('chars').textContent = editor.getValue().length;
   let wait;
   (async () => {
     log(await display());
     let timer = 0;
-    editor.addEventListener('input', run);
-    editor.addEventListener('change', run);
+    editor.on('change', run);
     function run() {
       clearTimeout(timer);
       wait = wait || new Promise(requestAnimationFrame);
@@ -837,7 +855,7 @@
         await wait;
         wait = undefined;
         log(await display());
-        nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' });
+        nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
         share();
       }, 500);
     }
@@ -848,7 +866,7 @@
     let start = Date.now();
     let count = 0;
     let resource = 100;
-    for (const result of parse(editor.value)) {
+    for (const result of parse(editor.getValue())) {
       if (wait) throw new Error('Cancel.');
       switch (result.type) {
         case 'segment':
@@ -889,9 +907,9 @@
     document.getElementById('time').textContent = time;
   }
   function share() {
-    document.getElementById('chars').textContent = editor.value.length;
-    if (editor.value.length > 10000) return;
-    document.getElementById('share').href = '#' + encodeURIComponent(editor.value);
+    document.getElementById('chars').textContent = editor.getValue().length;
+    if (editor.getValue().length > 10000) return;
+    document.getElementById('share').href = '#' + encodeURIComponent(editor.getValue());
     document.getElementById('share').textContent = document.getElementById('share').href;
   }
 </script>
