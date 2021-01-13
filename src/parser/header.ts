@@ -11,6 +11,7 @@ export const header: MarkdownParser.HeaderParser = inits([
   rewrite(
     source => {
       const seg = firstline(source).trimEnd() === '---' && segment(source).next().value || '';
+      assert(source.startsWith(seg));
       return seg
         ? [[], source.slice(seg.length)]
         : undefined;
@@ -20,7 +21,7 @@ export const header: MarkdownParser.HeaderParser = inits([
       source => [[
         html('details', { class: 'header' }, defrag([
           html('summary', 'Header'),
-          normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).trimEnd(),
+          normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''),
         ]))
       ], '']))),
   emptyline,
