@@ -3294,14 +3294,14 @@ require = function () {
                     }
                     return bottom;
                 }
-                function nearest(position) {
+                function nearest(index) {
                     let el;
                     let len = 0;
                     for (let i = 0; i < blocks.length; ++i) {
                         const block = blocks[i];
                         len += block[0].length;
                         el = block[1][0] || el;
-                        if (len >= position)
+                        if (len >= index)
                             break;
                     }
                     return el;
@@ -3499,7 +3499,7 @@ require = function () {
             exports.error = exports.block = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../combinator');
-            const line_1 = _dereq_('./source/line');
+            const source_1 = _dereq_('./source');
             const horizontalrule_1 = _dereq_('./block/horizontalrule');
             const heading_1 = _dereq_('./block/heading');
             const ulist_1 = _dereq_('./block/ulist');
@@ -3516,7 +3516,7 @@ require = function () {
             const random_1 = _dereq_('spica/random');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.block = combinator_1.creator(error(locale_1.localize(combinator_1.update({ resources: { budget: 100 * 1000 } }, combinator_1.union([
-                line_1.emptyline,
+                source_1.emptyline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
                 ulist_1.ulist,
@@ -3561,7 +3561,7 @@ require = function () {
             './block/table': 85,
             './block/ulist': 86,
             './locale': 123,
-            './source/line': 128,
+            './source': 126,
             'spica/global': 14,
             'spica/random': 19,
             'typed-dom': 23
@@ -4657,17 +4657,17 @@ require = function () {
             exports.address = void 0;
             const combinator_1 = _dereq_('../../../../combinator');
             const inline_1 = _dereq_('../../../inline');
-            const str_1 = _dereq_('../../../source/str');
+            const source_1 = _dereq_('../../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.address = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.tails([
-                str_1.str(/^>*(?=>)/),
+                source_1.str(/^>*(?=>)/),
                 inline_1.address
             ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)])));
         },
         {
             '../../../../combinator': 30,
             '../../../inline': 88,
-            '../../../source/str': 130,
+            '../../../source': 126,
             'typed-dom': 23
         }
     ],
@@ -4845,7 +4845,7 @@ require = function () {
             const util_1 = _dereq_('./util');
             const segment_1 = _dereq_('./segment');
             const normalize_1 = _dereq_('./api/normalize');
-            const line_1 = _dereq_('./source/line');
+            const source_1 = _dereq_('./source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.header = combinator_1.inits([
                 combinator_1.rewrite(source => {
@@ -4857,18 +4857,18 @@ require = function () {
                 }, combinator_1.block(combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){0,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
                     [typed_dom_1.html('details', { class: 'header' }, util_1.defrag([
                             typed_dom_1.html('summary', 'Header'),
-                            normalize_1.normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).trimEnd()
+                            normalize_1.normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, '')
                         ]))],
                     ''
                 ]))),
-                line_1.emptyline
+                combinator_1.clear(source_1.str(/^[^\S\v\f\r\n]*\r?\n/))
             ]);
         },
         {
             '../combinator': 30,
             './api/normalize': 61,
             './segment': 125,
-            './source/line': 128,
+            './source': 126,
             './util': 133,
             'spica/global': 14,
             'typed-dom': 23
