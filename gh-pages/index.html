@@ -18,6 +18,7 @@
     background-color: #fdfdfd;
   }
   .CodeMirror {
+    height: 100%;
     font-family: Monaco, 'Andale Mono', 'Lucida Console', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
     font-size: small;
   }
@@ -418,8 +419,8 @@
 <!-- ----- PRIMARY ------------------------------------------------------------ -->
 <div id="primary" class="col-12">
 <article id="content" class="row">
-  <div class="col-6"><textarea id="editor" class="w-100" spellcheck="false"></textarea></div>
-  <div id="viewer" class="col-6"><ol id="annotation" class="footnote"></ol><ol id="reference" class="footnote"></ol></div>
+  <div class="col-6 w-100 h-100"><textarea id="editor" spellcheck="false"></textarea></div>
+  <div id="viewer" class="col-6 w-100 h-100"><ol id="annotation" class="footnote"></ol><ol id="reference" class="footnote"></ol></div>
 </article>
 <aside></aside>
 </div>
@@ -821,8 +822,8 @@
   }, {
     rootMargin: '100px',
   });
-  editor.setSize(null, window.innerHeight * 0.7 + 'px');
-  viewer.style.height = window.innerHeight * 0.7 + 'px';
+  editor.setOption('vimMode', true);
+  document.getElementById('content').style.height = window.innerHeight * 0.7 + 'px';
   editor.on('mousedown', () =>
     nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' }));
   editor.on('cursorActivity', () =>
