@@ -57,7 +57,7 @@ export namespace MarkdownParser {
     Markdown<'header'>,
     Parser<HTMLDetailsElement, [
       Parser<HTMLDetailsElement, [], Context>,
-      SourceParser.EmptyLineParser,
+      Parser<never, [], Context>,
     ], Context> {
   }
   export interface BlockParser extends

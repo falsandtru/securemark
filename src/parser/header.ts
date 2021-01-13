@@ -1,10 +1,10 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { inits, block, firstline, focus, rewrite } from '../combinator';
+import { inits, block, firstline, focus, rewrite, clear } from '../combinator';
 import { defrag } from './util';
 import { segment } from './segment';
 import { normalize } from './api/normalize';
-import { emptyline } from './source';
+import { str } from './source';
 import { html } from 'typed-dom';
 
 export const header: MarkdownParser.HeaderParser = inits([
@@ -24,5 +24,5 @@ export const header: MarkdownParser.HeaderParser = inits([
           normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''),
         ]))
       ], '']))),
-  emptyline,
+  clear(str(/^[^\S\v\f\r\n]*\r?\n/)),
 ]);
