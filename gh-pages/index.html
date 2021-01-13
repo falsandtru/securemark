@@ -439,7 +439,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.1/codemirror.min.js" integrity="sha512-9fASXXoC6x4BKdqe6IcEYZnt4KPMiQx5YJIsiWevf2QpSXfPcXMj4MTzIbwQuKJRysBlRh1LGHIaQm/415WyEA==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.1/keymap/vim.min.js" integrity="sha512-g2nzBS/fBHxdSRXaDcYGHVg2Rjk7+3gITKVMv1q/ylh2izUiw1AZ50urelrhy7I6EYLQi5RM8FFj3rdATH5wIg==" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.1/addon/display/autorefresh.min.js" integrity="sha512-vAsKB7xXQAWMn5kcwda0HkFVKUxSYwrmrGprVhmbGFNAG1Ij+2epT3zzdwjHTJyDsKXsiEdrUdhIxh7loHyX+A==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.59.1/addon/display/autorefresh.js" integrity="sha512-dNtxiW2lFCFqFAn65Y6TXnFqg85+GVQB2dYjrbnfnB4OVROB2MQ1+z12IVsaoemLmgyliocD0uQ95iltV4Azzw==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.min.js" integrity="sha512-9+422Bs3A87UkWfp+qV80Nfv9arhbCXKY1rxrF2seorI36mIIstMiuBfyKLF1yH1nnzQkEWq2xrzT4XU3Z+vrA==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-Q3qGP1uJL/B0sEmu57PKXjCirgPKMbg73OLRbTJ6lfHCVU5zkHqmcTI5EV2fSoPV1MHdKsCBE7m/aS6q0pPjRQ==" crossorigin="anonymous"></script>
 <script>
@@ -796,6 +796,7 @@
     '',
     ''
   ].join('\n');
+  document.getElementById('content').style.height = window.innerHeight * 0.7 + 'px';
   const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     lineNumbers: true,
     lineWrapping: true,
@@ -825,7 +826,6 @@
     rootMargin: '100px',
   });
   editor.setOption('vimMode', true);
-  document.getElementById('content').style.height = window.innerHeight * 0.7 + 'px';
   editor.on('mousedown', () =>
     nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' }));
   editor.on('cursorActivity', () =>
