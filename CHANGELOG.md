@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.197.1
+
+- Refactoring.
+
 ## 0.197.0
 
 - Change position method to index.
