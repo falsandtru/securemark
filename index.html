@@ -837,13 +837,19 @@
     rootMargin: '100px',
   });
   editor.setOption('vimMode', true);
+  let hover = true;
   //editor.addEventListener('click', () =>
   //  nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' }));
-  editor.on('mousedown', () =>
-    nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' }));
-  editor.on('cursorActivity', () =>
-    nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' }));
+  editor.on('mousedown', () => {
+    hover && nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
+    hover = true;
+  });
+  editor.on('cursorActivity', () => {
+    hover && nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
+    hover = true;
+  });
   viewer.addEventListener('click', ev => {
+    hover = false;
     if (!window.getSelection().isCollapsed) return;
     if (ev.target.matches('a, a *')) return;
     let target = ev.target;
