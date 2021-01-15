@@ -10,6 +10,7 @@ export const code: CodeParser = creator(validate('`', '`', '\n', match(
 function format(text: string): string {
   assert(text.length > 0);
   return `${text[0]}${text[text.length - 1]}` === '  '
-    ? text.trim() || text
+      && text.trimStart()
+    ? text.slice(1, -1)
     : text;
 }
