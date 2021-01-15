@@ -41,8 +41,13 @@
   h1 {
     margin-bottom: 1rem;
   }
-  ol:empty {
-    display: none;
+  li > .checkbox {
+    display: inline-block;
+    margin-inline-end: .3em;
+    line-height: 0;
+    vertical-align: middle;
+    font-family: initial;
+    font-size: x-large;
   }
   ol {
     display: table;
@@ -90,6 +95,9 @@
   }
   ol > li[data-value]::before {
     content: attr(data-value) " " !important;
+  }
+  ol:empty {
+    display: none;
   }
   blockquote {
     padding-inline-start: .3em;
