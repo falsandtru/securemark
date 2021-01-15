@@ -41,6 +41,26 @@
   h1 {
     margin-bottom: 1rem;
   }
+  ul {
+    margin-inline-start: 1.7em;
+    padding: 0;
+  }
+  ol {
+    margin-inline-start: .5em;
+    padding: 0;
+  }
+  ol[data-format="paren"] {
+    margin-inline-start: 0;
+  }
+  .checklist > li > ul,
+  .checklist > li > ol {
+    padding-inline-start: 2em;
+  }
+  ul.checklist {
+    list-style-type: none;
+    margin-inline-start: 0;
+    padding: 0;
+  }
   li > .checkbox {
     display: inline-block;
     margin-inline-end: .3em;
@@ -53,7 +73,6 @@
     counter-reset: counter;
     list-style-type: none;
     display: table;
-    padding: 0;
   }
   ol > li {
     counter-increment: counter;
@@ -528,15 +547,19 @@
     '',
     '*Branch number* is supported.',
     '',
-    '- Number',
+    '- [X] Dot',
+    '  - 1',
+    '  - 2',
+    '  - 3',
+    '- [X] Number',
     '  1. a',
     '  1. b',
     '  1. c',
-    '- Alphabet',
+    '- [X] Alphabet',
     '  a. 4',
     '  a. 5',
     '  a. 6',
-    '- Branch number',
+    '- [X] Branch number',
     '  (7) d',
     '  (7)-1 e',
     '  (8) f',
@@ -811,6 +834,7 @@
   const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     lineNumbers: true,
     lineWrapping: true,
+    tabSize: 2,
     indentUnit: 2,
     keyMap: "vim",
     matchBrackets: true,

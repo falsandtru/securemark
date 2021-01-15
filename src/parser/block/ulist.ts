@@ -18,7 +18,7 @@ export const ulist: UListParser = lazy(() => block(fmap(validate(
       ]),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
   ]))))),
-  es => [html('ul', es)])));
+  es => [format(html('ul', es))])));
 
 export const checkbox = focus(
   /^\[[xX\s]\](?=$|\s)/,
@@ -34,4 +34,11 @@ export function fillFirstLine(ns: (HTMLElement | string)[]): (HTMLElement | stri
   return typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName)
     ? unshift([html('br')], ns)
     : ns;
+}
+
+function format(el: HTMLUListElement): HTMLUListElement {
+  if (el.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+    el.setAttribute('class', 'checklist');
+  }
+  return el;
 }

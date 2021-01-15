@@ -7,7 +7,7 @@ import { ilist_ } from './ilist';
 import { inline } from '../inline';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, define } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(match(
   /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/,
@@ -25,15 +25,7 @@ const list = (type: string, delim: string): OListParser => fmap(
       ]),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
   ])))),
-  es => [
-    html('ol',
-      {
-        type: type || undefined,
-        'data-format': delim === '.' ? undefined : 'paren',
-        'data-type': style(type) || undefined,
-      },
-      format(es, type)),
-  ]);
+  es => [format(html('ol', es), type, delim)]);
 
 const items = {
   '.': focus(
@@ -84,17 +76,6 @@ function style(type: string): string {
   }
 }
 
-function format(es: HTMLElement[], type: string): HTMLElement[] {
-  assert(es.length > 0);
-  const value = es[0].getAttribute('data-value')!.match(initial(type))?.[0] || '';
-  for (let i = 0; i < es.length; ++i) {
-    const el = es[i];
-    if (el.getAttribute('data-value') !== value) break;
-    el.removeAttribute('data-value');
-  }
-  return es;
-}
-
 function initial(type: string): RegExp {
   switch (type) {
     case 'i':
@@ -108,4 +89,22 @@ function initial(type: string): RegExp {
     default:
       return /^\(?[01][).]?$/;
   }
+}
+
+function format(el: HTMLOListElement, type: string, delim: string): HTMLOListElement {
+  if (el.firstElementChild?.firstElementChild?.classList.contains('checkbox')) {
+    el.setAttribute('class', 'checklist');
+  }
+  define(el, {
+    type: type || undefined,
+    'data-format': delim === '.' ? undefined : 'paren',
+    'data-type': style(type) || undefined,
+  });
+  const value = el.firstElementChild?.getAttribute('data-value')!.match(initial(type))?.[0] || '';
+  for (let es = el.children, i = 0; i < es.length; ++i) {
+    const el = es[i];
+    if (el.getAttribute('data-value') !== value) break;
+    el.removeAttribute('data-value');
+  }
+  return el;
 }

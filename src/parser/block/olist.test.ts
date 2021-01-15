@@ -107,10 +107,10 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('checkbox', () => {
-      assert.deepStrictEqual(inspect(parser('1. [ ]')), [['<ol><li><span class="checkbox">☐</span></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1. [x]')), [['<ol><li><span class="checkbox">☑</span></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1. [X]')), [['<ol><li><span class="checkbox">☑</span></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('1. [X] 1')), [['<ol><li><span class="checkbox">☑</span>1</li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [ ]')), [['<ol class="checklist"><li><span class="checkbox">☐</span></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [x]')), [['<ol class="checklist"><li><span class="checkbox">☑</span></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [X]')), [['<ol class="checklist"><li><span class="checkbox">☑</span></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [X] 1')), [['<ol class="checklist"><li><span class="checkbox">☑</span>1</li></ol>'], '']);
     });
 
   });
