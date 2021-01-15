@@ -50,20 +50,19 @@
     font-size: x-large;
   }
   ol {
-    display: table;
     counter-reset: counter;
     list-style-type: none;
-    padding-inline-start: 0;
+    display: table;
+    padding: 0;
   }
   ol > li {
-    display: table-row;
     counter-increment: counter;
+    display: table-row;
   }
   ol > li::before {
     content: counter(counter) ". ";
     display: table-cell;
     width: 1px;
-    text-align: start;
     white-space: pre;
     font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
   }
