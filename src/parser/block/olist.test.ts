@@ -106,6 +106,13 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('a.\n0.\nc')), [['<ol type="a" data-type="lower-alpha"><li></li><li data-value="0."></li><li data-value="c."></li></ol>'], '']);
     });
 
+    it('checkbox', () => {
+      assert.deepStrictEqual(inspect(parser('1. [ ]')), [['<ol><li><span class="checkbox">☐</span></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [x]')), [['<ol><li><span class="checkbox">☑</span></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [X]')), [['<ol><li><span class="checkbox">☑</span></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. [X] 1')), [['<ol><li><span class="checkbox">☑</span>1</li></ol>'], '']);
+    });
+
   });
 
 });

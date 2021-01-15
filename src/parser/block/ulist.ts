@@ -1,5 +1,5 @@
 import { UListParser } from '../block';
-import { union, inits, some, block, line, validate, context, indent, creator, open, convert, trim, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, block, line, validate, indent, focus, context, creator, open, convert, trim, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
@@ -13,12 +13,18 @@ export const ulist: UListParser = lazy(() => block(fmap(validate(
   some(creator(union([
     fmap(
       inits([
-        line(open(/^-(?:$|\s)/, trim(some(inline)), true)),
+        line(open(/^-(?:$|\s)/, trim(subsequence([checkbox, trim(some(inline))])), true)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
   ]))))),
   es => [html('ul', es)])));
+
+export const checkbox = focus(
+  /^\[[xX\s]\](?=$|\s)/,
+  source => [[
+    html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
+  ], '']);
 
 export const ulist_: UListParser = convert(
   source => source.replace(/^-(?=$|\n)/, `$& `),

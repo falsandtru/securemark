@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, some, block, line, indent, focus, context, creator, match, convert, trim, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, block, line, indent, focus, context, creator, open, match, convert, trim, lazy, fmap } from '../../combinator';
 import { defrag } from '../util';
-import { ulist_, fillFirstLine } from './ulist';
+import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
 import { memoize } from 'spica/memoize';
@@ -20,10 +20,7 @@ const list = (type: string, delim: string): OListParser => fmap(
   some(creator(union([
     fmap(
       inits([
-        line(inits([
-          item[delim],
-          trim(some(inline)),
-        ])),
+        line(open(items[delim], trim(subsequence([checkbox, trim(some(inline))])), true)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
@@ -38,7 +35,7 @@ const list = (type: string, delim: string): OListParser => fmap(
       format(es, type)),
   ]);
 
-const item = {
+const items = {
   '.': focus(
     /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/,
     (source: string) => [[`${source.split('.', 1)[0]}.`], '']),

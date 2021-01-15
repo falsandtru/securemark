@@ -58,6 +58,13 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('- 1\n 0. 2')), [['<ul><li>1<ol><li>2</li></ol></li></ul>'], '']);
     });
 
+    it('checkbox', () => {
+      assert.deepStrictEqual(inspect(parser('- [ ]')), [['<ul><li><span class="checkbox">☐</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- [x]')), [['<ul><li><span class="checkbox">☑</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- [X]')), [['<ul><li><span class="checkbox">☑</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- [X] 1')), [['<ul><li><span class="checkbox">☑</span>1</li></ul>'], '']);
+    });
+
   });
 
 });
