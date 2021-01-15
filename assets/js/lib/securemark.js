@@ -5349,9 +5349,12 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.code = combinator_1.creator(combinator_1.validate('`', '`', '\n', combinator_1.match(/^(`+)(?!`)([^\n]*?[^`\n])\1(?!`)/, ([whole, , body]) => rest => [
-                [typed_dom_1.html('code', { 'data-src': whole }, body.trim() || body)],
+                [typed_dom_1.html('code', { 'data-src': whole }, format(body))],
                 rest
             ])));
+            function format(text) {
+                return `${ text[0] }${ text[text.length - 1] }`.trim() ? text : text.trim() || text;
+            }
         },
         {
             '../../combinator': 30,
