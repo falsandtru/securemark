@@ -5353,7 +5353,7 @@ require = function () {
                 rest
             ])));
             function format(text) {
-                return `${ text[0] }${ text[text.length - 1] }`.trim() ? text : text.trim() || text;
+                return `${ text[0] }${ text[text.length - 1] }` === '  ' ? text.trim() || text : text;
             }
         },
         {
