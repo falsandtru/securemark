@@ -2870,6 +2870,8 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const array_1 = _dereq_('spica/array');
             function inits(parsers) {
+                if (parsers.length === 1)
+                    return parsers[0];
                 return (source, context) => {
                     var _a;
                     let rest = source;
@@ -2906,6 +2908,8 @@ require = function () {
             const parser_1 = _dereq_('../parser');
             const array_1 = _dereq_('spica/array');
             function sequence(parsers) {
+                if (parsers.length === 1)
+                    return parsers[0];
                 return (source, context) => {
                     var _a;
                     let rest = source;
@@ -4494,10 +4498,10 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.olist = combinator_1.lazy(() => combinator_1.block(combinator_1.match(/^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/, memoize_1.memoize(ms => list(type(ms[1] || ms[3]), ms[2] || ms[4]), ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
             const list = (type, delim) => combinator_1.fmap(combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.creator(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.inits([
-                        item[delim],
+                    combinator_1.line(combinator_1.open(items[delim], combinator_1.trim(combinator_1.subsequence([
+                        ulist_1.checkbox,
                         combinator_1.trim(combinator_1.some(inline_1.inline))
-                    ])),
+                    ])), true)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist_,
                         exports.olist_,
@@ -4508,7 +4512,7 @@ require = function () {
                     'data-format': delim === '.' ? global_1.undefined : 'paren',
                     'data-type': style(type) || global_1.undefined
                 }, format(es, type))]);
-            const item = {
+            const items = {
                 '.': combinator_1.focus(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/, source => [
                     [`${ source.split('.', 1)[0] }.`],
                     ''
@@ -4800,7 +4804,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.fillFirstLine = exports.ulist_ = exports.ulist = void 0;
+            exports.fillFirstLine = exports.ulist_ = exports.checkbox = exports.ulist = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const olist_1 = _dereq_('./olist');
@@ -4809,13 +4813,20 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.creator(combinator_1.union([combinator_1.fmap(combinator_1.inits([
-                    combinator_1.line(combinator_1.open(/^-(?:$|\s)/, combinator_1.trim(combinator_1.some(inline_1.inline)), true)),
+                    combinator_1.line(combinator_1.open(/^-(?:$|\s)/, combinator_1.trim(combinator_1.subsequence([
+                        exports.checkbox,
+                        combinator_1.trim(combinator_1.some(inline_1.inline))
+                    ])), true)),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist_,
                         olist_1.olist_,
                         ilist_1.ilist_
                     ]))
                 ]), ns => [typed_dom_1.html('li', util_1.defrag(fillFirstLine(ns)))])]))))), es => [typed_dom_1.html('ul', es)])));
+            exports.checkbox = combinator_1.focus(/^\[[xX\s]\](?=$|\s)/, source => [
+                [typed_dom_1.html('span', { class: 'checkbox' }, source[1].trimStart() ? '\u2611' : '\u2610')],
+                ''
+            ]);
             exports.ulist_ = combinator_1.convert(source => source.replace(/^-(?=$|\n)/, `$& `), exports.ulist);
             function fillFirstLine(ns) {
                 return typeof ns[0] === 'object' && [
