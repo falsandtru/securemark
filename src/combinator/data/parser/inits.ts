@@ -5,6 +5,7 @@ import { push } from 'spica/array';
 export function inits<P extends Parser<unknown>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : Parser<SubData<P>, SubParsers<P>, Context<P>>;
 export function inits<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
+  if (parsers.length === 1) return parsers[0];
   return (source, context) => {
     let rest = source;
     let data: T[] | undefined;
