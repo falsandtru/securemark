@@ -63,8 +63,8 @@
     content: counter(counter) ". ";
     display: table-cell;
     width: 1px;
-    white-space: pre;
     text-align: start;
+    white-space: pre;
     font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
   }
   /*
@@ -96,9 +96,6 @@
   ol > li[data-value]::before {
     content: attr(data-value) " " !important;
   }
-  ol:empty {
-    display: none;
-  }
   blockquote {
     padding-inline-start: .3em;
     border-inline-start: .2em solid #eee;
@@ -108,11 +105,11 @@
   }
   pre:not(.notranslate) {
     all: unset;
-    white-space: pre-wrap;
     display: block;
     margin-inline-start: .5em;
     margin-top: 0;
     margin-bottom: 1rem;
+    white-space: pre-wrap;
   }
   pre,
   pre.code {
@@ -363,6 +360,9 @@
     font-style: italic;
     font-weight: bold;
     color: red;
+  }
+  ol:empty {
+    display: none;
   }
   ol#annotation,
   ol.annotation,
