@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.198.1
+
+- Refactoring.
+
 ## 0.198.0
 
 - Add checkbox syntax to ulist and olist syntax.
