@@ -4507,11 +4507,7 @@ require = function () {
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', { 'data-value': ns[0] }, util_1.defrag(ulist_1.fillFirstLine(array_1.shift(ns)[1])))])])))), es => [typed_dom_1.html('ol', {
-                    type: type || global_1.undefined,
-                    'data-format': delim === '.' ? global_1.undefined : 'paren',
-                    'data-type': style(type) || global_1.undefined
-                }, format(es, type))]);
+                ]), ns => [typed_dom_1.html('li', { 'data-value': ns[0] }, util_1.defrag(ulist_1.fillFirstLine(array_1.shift(ns)[1])))])])))), es => [format(typed_dom_1.html('ol', es), type, delim)]);
             const items = {
                 '.': combinator_1.focus(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/, source => [
                     [`${ source.split('.', 1)[0] }.`],
@@ -4551,17 +4547,6 @@ require = function () {
                     return '';
                 }
             }
-            function format(es, type) {
-                var _a;
-                const value = ((_a = es[0].getAttribute('data-value').match(initial(type))) === null || _a === void 0 ? void 0 : _a[0]) || '';
-                for (let i = 0; i < es.length; ++i) {
-                    const el = es[i];
-                    if (el.getAttribute('data-value') !== value)
-                        break;
-                    el.removeAttribute('data-value');
-                }
-                return es;
-            }
             function initial(type) {
                 switch (type) {
                 case 'i':
@@ -4575,6 +4560,25 @@ require = function () {
                 default:
                     return /^\(?[01][).]?$/;
                 }
+            }
+            function format(el, type, delim) {
+                var _a, _b, _c, _d;
+                if ((_b = (_a = el.firstElementChild) === null || _a === void 0 ? void 0 : _a.firstElementChild) === null || _b === void 0 ? void 0 : _b.classList.contains('checkbox')) {
+                    el.setAttribute('class', 'checklist');
+                }
+                typed_dom_1.define(el, {
+                    type: type || global_1.undefined,
+                    'data-format': delim === '.' ? global_1.undefined : 'paren',
+                    'data-type': style(type) || global_1.undefined
+                });
+                const value = ((_d = (_c = el.firstElementChild) === null || _c === void 0 ? void 0 : _c.getAttribute('data-value').match(initial(type))) === null || _d === void 0 ? void 0 : _d[0]) || '';
+                for (let es = el.children, i = 0; i < es.length; ++i) {
+                    const el = es[i];
+                    if (el.getAttribute('data-value') !== value)
+                        break;
+                    el.removeAttribute('data-value');
+                }
+                return el;
             }
         },
         {
@@ -4822,7 +4826,7 @@ require = function () {
                         olist_1.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [typed_dom_1.html('li', util_1.defrag(fillFirstLine(ns)))])]))))), es => [typed_dom_1.html('ul', es)])));
+                ]), ns => [typed_dom_1.html('li', util_1.defrag(fillFirstLine(ns)))])]))))), es => [format(typed_dom_1.html('ul', es))])));
             exports.checkbox = combinator_1.focus(/^\[[xX\s]\](?=$|\s)/, source => [
                 [typed_dom_1.html('span', { class: 'checkbox' }, source[1].trimStart() ? '\u2611' : '\u2610')],
                 ''
@@ -4835,6 +4839,13 @@ require = function () {
                 ].includes(ns[0].tagName) ? array_1.unshift([typed_dom_1.html('br')], ns) : ns;
             }
             exports.fillFirstLine = fillFirstLine;
+            function format(el) {
+                var _a, _b;
+                if ((_b = (_a = el.firstElementChild) === null || _a === void 0 ? void 0 : _a.firstElementChild) === null || _b === void 0 ? void 0 : _b.classList.contains('checkbox')) {
+                    el.setAttribute('class', 'checklist');
+                }
+                return el;
+            }
         },
         {
             '../../combinator': 30,
