@@ -5080,7 +5080,7 @@ require = function () {
             const hashref_1 = _dereq_('./autolink/hashref');
             const address_1 = _dereq_('./autolink/address');
             const source_1 = _dereq_('../source');
-            exports.autolink = combinator_1.fmap(combinator_1.validate(/^(?:[@#>0-9A-Za-z]|[^\x00-\x7F\s]#)/, combinator_1.guard(context => {
+            exports.autolink = combinator_1.fmap(combinator_1.validate(/^(?:[@#>0-9A-Za-z]|[^\x00-\x7F\s])/, combinator_1.guard(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.autolink) !== null && _c !== void 0 ? _c : true;
             }, combinator_1.some(combinator_1.union([
@@ -5091,7 +5091,7 @@ require = function () {
                 channel_1.channel,
                 account_1.account,
                 source_1.str(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
-                source_1.str(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s](?=#)/),
+                source_1.str(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s]+(?=#)/),
                 hashtag_1.hashtag,
                 hashref_1.hashref,
                 source_1.str(/^#(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/),
@@ -6867,14 +6867,14 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.isAlphanumeric = exports.text = exports.nonWhitespace = exports.nonAlphanumeric = exports.separator = void 0;
+            exports.isAlphanumeric = exports.text = exports.nonAlphanumeric = exports.nonWhitespace = exports.separator = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const str_1 = _dereq_('./str');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.separator = /[\s\x00-\x7F]|[^\x00-\x7F\s]#|[、。！？][^\S\n]*(?=\\\n)/;
-            exports.nonAlphanumeric = /[^0-9A-Za-z]|$/;
+            exports.separator = /[\s\x00-\x7F]|[、。！？][^\S\n]*(?=\\\n)/;
             exports.nonWhitespace = /[\S\n]|$/;
+            exports.nonAlphanumeric = /[^0-9A-Za-z]|$/;
             const repeat = str_1.str(/^(.)\1*/);
             exports.text = combinator_1.creator((source, context) => {
                 if (source === '')
