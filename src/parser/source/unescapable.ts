@@ -1,6 +1,6 @@
 import { UnescapableSourceParser } from '../source';
 import { creator } from '../../combinator';
-import { separator, nonAlphanumeric, nonWhitespace, isAlphanumeric } from './text';
+import { separator, nonWhitespace, nonAlphanumeric, isAlphanumeric } from './text';
 
 export const unescsource: UnescapableSourceParser = creator(source => {
   if (source === '') return;
