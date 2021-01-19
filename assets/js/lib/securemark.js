@@ -1071,8 +1071,7 @@ require = function () {
             }
             exports.unique = unique;
             function cons(radix) {
-                var _a;
-                const base = (_a = bases.find(base => base >= radix)) !== null && _a !== void 0 ? _a : bases[bases.length - 1];
+                const base = bases.find(base => base >= radix);
                 const len = bases.indexOf(base);
                 return () => {
                     while (true) {
@@ -1692,6 +1691,26 @@ require = function () {
                         return this.query_ = `.${ this.id }`;
                     }
                 }
+                scope(child) {
+                    const style = child.element;
+                    switch (false) {
+                    case 'type' in style:
+                    case 'media' in style:
+                    case style.tagName === 'STYLE':
+                        return;
+                    }
+                    const target = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
+                    const html = style.innerHTML;
+                    if (html.search(target) === -1)
+                        return;
+                    const query = this.query;
+                    style.innerHTML = html.replace(target, `$1$2${ query }`);
+                    if (!style.firstElementChild)
+                        return;
+                    for (let es = style.children, i = 0, len = es.length; i < len; ++i) {
+                        es[0].remove();
+                    }
+                }
                 observe(children) {
                     const descs = {};
                     for (const name of alias_1.ObjectKeys(children)) {
@@ -1731,26 +1750,6 @@ require = function () {
                     }
                     return alias_1.ObjectDefineProperties(children, descs);
                 }
-                scope(child) {
-                    const style = child.element;
-                    switch (false) {
-                    case 'type' in style:
-                    case 'media' in style:
-                    case style.tagName === 'STYLE':
-                        return;
-                    }
-                    const target = /(^|[,}])(\s*)\$scope(?![\w-])(?=[^;{}]*{)/g;
-                    const html = style.innerHTML;
-                    if (html.search(target) === -1)
-                        return;
-                    const query = this.query;
-                    style.innerHTML = html.replace(target, (_, frag, space) => `${ frag }${ space }${ query }`);
-                    if (!style.firstElementChild)
-                        return;
-                    for (let es = style.children, i = 0, len = es.length; i < len; ++i) {
-                        es[0].remove();
-                    }
-                }
                 get children() {
                     switch (this.type) {
                     case 1:
@@ -1772,7 +1771,7 @@ require = function () {
                 set children(children) {
                     const removedChildren = [];
                     const addedChildren = [];
-                    let isChanged = false;
+                    let isMutated = false;
                     switch (this.type) {
                     case 0:
                         return;
@@ -1785,7 +1784,7 @@ require = function () {
                             targetChildren.data = newText;
                             if (newText === oldText)
                                 return;
-                            this.element.dispatchEvent(new global_1.Event('change', {
+                            this.element.dispatchEvent(new global_1.Event('mutate', {
                                 bubbles: false,
                                 cancelable: true
                             }));
@@ -1808,7 +1807,7 @@ require = function () {
                                         addedChildren.push(newChild);
                                     }
                                     this.container.insertBefore(newChild.element, el);
-                                    isChanged = true;
+                                    isMutated = true;
                                 }
                                 targetChildren.push(newChild);
                             }
@@ -1817,7 +1816,7 @@ require = function () {
                                 if (!proxies.has(el))
                                     continue;
                                 removedChildren.push(proxy(this.container.removeChild(el)));
-                                isChanged = true;
+                                isMutated = true;
                             }
                             break;
                         }
@@ -1847,7 +1846,7 @@ require = function () {
                                 this.isPartialUpdate = true;
                                 targetChildren[name] = sourceChildren[name];
                                 this.isPartialUpdate = false;
-                                isChanged = true;
+                                isMutated = true;
                             }
                             break;
                         }
@@ -1870,8 +1869,8 @@ require = function () {
                             element.dispatchEvent(ev);
                         }
                     }
-                    if (isChanged) {
-                        this.element.dispatchEvent(new global_1.Event('change', {
+                    if (isMutated) {
+                        this.element.dispatchEvent(new global_1.Event('mutate', {
                             bubbles: false,
                             cancelable: true
                         }));
@@ -6166,19 +6165,22 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.math = combinator_1.creator(combinator_1.validate('${', '}$', '\n', combinator_1.fmap(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'), ([source], _, {
+            exports.math = combinator_1.creator(combinator_1.validate('${', '}$', '\n', combinator_1.rewrite(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'), (source, {
                 caches: {
                     math: cache = global_1.undefined
                 } = {}
-            }) => [(source = `\${${ source.trim() }}$`) && (cache === null || cache === void 0 ? void 0 : cache.has(source)) ? cache.get(source).cloneNode(true) : source.indexOf('\\begin') === -1 ? typed_dom_1.html('span', {
-                    class: 'math notranslate',
-                    'data-src': source
-                }, source) : typed_dom_1.html('span', {
-                    class: 'notranslate invalid',
-                    'data-invalid-syntax': 'math',
-                    'data-invalid-type': 'content',
-                    'data-invalid-description': 'Environments are disallowed with inline syntax.'
-                }, source)])));
+            }) => [
+                [(cache === null || cache === void 0 ? void 0 : cache.has(source)) ? cache.get(source).cloneNode(true) : source.indexOf('\\begin') === -1 ? typed_dom_1.html('span', {
+                        class: 'math notranslate',
+                        'data-src': source
+                    }, source) : typed_dom_1.html('span', {
+                        class: 'notranslate invalid',
+                        'data-invalid-syntax': 'math',
+                        'data-invalid-type': 'content',
+                        'data-invalid-description': 'Environments are disallowed with inline syntax.'
+                    }, source)],
+                ''
+            ])));
         },
         {
             '../../combinator': 30,
