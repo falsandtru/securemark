@@ -1,4 +1,3 @@
-import { undefined } from 'spica/global';
 import { MathParser } from '../inline';
 import { union, validate, rewrite, creator, surround } from '../../combinator';
 import { str } from '../source';
@@ -6,7 +5,7 @@ import { html } from 'typed-dom';
 
 export const math: MathParser = creator(validate('${', '}$', '\n', rewrite(
   surround('${', union([str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'),
-  (source, { caches: { math: cache = undefined } = {} }) => [[
+  (source, { caches: { math: cache } = {} }) => [[
     cache?.has(source)
       ? cache.get(source)!.cloneNode(true)
       : source.indexOf('\\begin') === -1
