@@ -1,13 +1,13 @@
 import { undefined } from 'spica/global';
 import { MathParser } from '../inline';
-import { union, validate, creator, surround, fmap } from '../../combinator';
+import { union, validate, rewrite, creator, surround } from '../../combinator';
 import { str } from '../source';
 import { html } from 'typed-dom';
 
-export const math: MathParser = creator(validate('${', '}$', '\n', fmap(
+export const math: MathParser = creator(validate('${', '}$', '\n', rewrite(
   surround('${', union([str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'),
-  ([source], _, { caches: { math: cache = undefined } = {} }) => [
-    (source = `\${${source}}$`) && cache?.has(source)
+  (source, { caches: { math: cache = undefined } = {} }) => [[
+    cache?.has(source)
       ? cache.get(source)!.cloneNode(true)
       : source.indexOf('\\begin') === -1
         ? html('span', { class: 'math notranslate', 'data-src': source }, source)
@@ -17,4 +17,4 @@ export const math: MathParser = creator(validate('${', '}$', '\n', fmap(
             'data-invalid-type': 'content',
             'data-invalid-description': 'Environments are disallowed with inline syntax.',
           }, source)
-  ])));
+  ], ''])));
