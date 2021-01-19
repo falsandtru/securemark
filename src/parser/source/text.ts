@@ -40,7 +40,7 @@ export const text: TextParser = creator((source, context) => {
         case '。':
         case '！':
         // @ts-ignore
-        case '？':{
+        case '？': {
           const i = source.slice(1).search(nonWhitespace) + 1;
           if (i > 0 && source.slice(i, i + 2) === '\\\n') return [[source[0], html('span', { class: 'linebreak' })], source.slice(i + 2)];
         }
@@ -65,6 +65,7 @@ export const text: TextParser = creator((source, context) => {
 
 export function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
+  if (char < '0' || '\x7F' < char) return false;
   return '0' <= char && char <= '9'
       || 'a' <= char && char <= 'z'
       || 'A' <= char && char <= 'Z';
