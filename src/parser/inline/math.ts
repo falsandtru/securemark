@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 export const math: MathParser = creator(validate('${', '}$', '\n', fmap(
   surround('${', union([str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'),
   ([source], _, { caches: { math: cache = undefined } = {} }) => [
-    (source = `\${${source.trim()}}$`) && cache?.has(source)
+    (source = `\${${source}}$`) && cache?.has(source)
       ? cache.get(source)!.cloneNode(true)
       : source.indexOf('\\begin') === -1
         ? html('span', { class: 'math notranslate', 'data-src': source }, source)
