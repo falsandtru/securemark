@@ -4,12 +4,12 @@ import { union, inits, sequence, some, block, line, rewrite, context, close, mat
 import { defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
-import { table } from '../table';
+import { table as styled_table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
 import { mathblock, segment_ as seg_math } from '../mathblock';
 import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { example } from './example';
-import { table as smart_table, segment_ as seg_table } from './table';
+import { table, segment_ as seg_table } from './table';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { blankline } from '../paragraph';
 import { inline, media, shortmedia } from '../../inline';
@@ -51,12 +51,12 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
     line(label),
     inits([
       block(union([
-        table,
+        styled_table,
         codeblock,
         mathblock,
         blockquote,
         example,
-        smart_table,
+        table,
         placeholder,
         line(media),
         line(shortmedia),
