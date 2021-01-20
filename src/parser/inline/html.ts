@@ -151,7 +151,6 @@ export function attributes(
   remap: Readonly<Record<string, (value: string | undefined, name: string) => readonly [string, string] | undefined>> = {},
 ): Record<string, string | undefined> {
   assert(spec instanceof Object === false);
-  assert(params.every(param => param.match(/^ \w+(=".*?")?$/)));
   let invalid = false;
   const attrs = params
     .reduce<Record<string, string | undefined>>((attrs, param) => {
@@ -163,7 +162,7 @@ export function attributes(
         ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
         : undefined;
       invalid = invalid || !spec || key in attrs;
-      if (spec?.[key]?.includes(val)) {
+      if (spec?.[key]?.length === 0 && val || spec?.[key]?.includes(val)) {
         attrs[key] ??= undefined;
         [key, val] = remap[key]
           ? remap[key](val, key) ?? [key, undefined]

@@ -1,14 +1,20 @@
 import { undefined, location } from 'spica/global';
+import { ObjectSetPrototypeOf } from 'spica/alias';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, surround, open, lazy, fmap, bind } from '../../combinator';
 import { dup } from '../util';
-import { link, optspec, uri, option, resolve, sanitize } from './link';
+import { link, optspec as linkoptspec, uri, option, resolve, sanitize } from './link';
 import { attributes } from './html';
 import { text, str } from '../source';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
 import { html, define } from 'typed-dom';
 
+const optspec = {
+  'aspect-ratio': [],
+  ...linkoptspec,
+} as const;
+ObjectSetPrototypeOf(optspec, null);
 const remap = {
   nofollow: () => undefined,
 } as const;
@@ -38,6 +44,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
     define(el, attributes('media', push([], el.classList), optspec, params, remap));
+    params = params.filter(p => !p.startsWith(' aspect-ratio'));
     return (context.syntax?.inline?.link ?? true)
         && (!cached || el.tagName === 'IMG')
       ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])

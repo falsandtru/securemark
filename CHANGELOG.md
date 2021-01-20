@@ -2,6 +2,7 @@
 
 ## 0.199.0
 
+- Extend media syntax to add aspect-ratio option.
 - Change address syntax to anchor syntax.
 - Change quotation syntax to quote syntax.
 
