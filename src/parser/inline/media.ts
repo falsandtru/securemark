@@ -3,11 +3,15 @@ import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, surround, open, lazy, fmap, bind } from '../../combinator';
 import { dup } from '../util';
 import { link, optspec, uri, option, resolve, sanitize } from './link';
-import { text, str } from '../source';
 import { attributes } from './html';
+import { text, str } from '../source';
 import { ReadonlyURL } from 'spica/url';
-import { unshift, join } from 'spica/array';
+import { unshift, push, join } from 'spica/array';
 import { html, define } from 'typed-dom';
+
+const remap = {
+  nofollow: () => undefined,
+} as const;
 
 export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   '!',
@@ -33,10 +37,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
       : html('img', { class: 'media', 'data-src': src, alt: text.trim() });
     if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
-    define(el, {
-      ...attributes('media', optspec, params, el.className.trim().split(/\s+/)),
-      nofollow: undefined,
-    });
+    define(el, attributes('media', push([], el.classList), optspec, params, remap));
     return (context.syntax?.inline?.link ?? true)
         && (!cached || el.tagName === 'IMG')
       ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])

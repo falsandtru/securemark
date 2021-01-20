@@ -1,4 +1,3 @@
-import { DeepImmutable } from 'spica/type';
 import { undefined, RegExp } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
@@ -27,7 +26,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
       surround(
         str(`<${tag}`), some(union([attribute])), str('>'), true,
         ([, as = []], rest) => [
-          [h(tag as 'span', attributes('html', attrspec[tag], as, []))],
+          [h(tag as 'span', attributes('html', [], attrspec[tag], as))],
           rest
         ]),
     ([, tag]) => tag)),
@@ -122,7 +121,7 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
   let attrs: Record<string, string | undefined> | undefined;
   switch (true) {
     case as[as.length - 1] !== '>'
-      || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(stringify), [])):
+      || 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1).map(stringify))):
       return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
     case cs.length === 0:
       return invalid('closer', `Missing the closing HTML tag <${tag}>.`, as, bs, cs);
@@ -140,35 +139,43 @@ function invalid(type: string, description: string, as: (HTMLElement | string)[]
 }
 
 const requiredAttributes = memoize(
-  (spec: DeepImmutable<Record<string, Array<string | undefined>>>) =>
-    ObjectEntries(spec).filter(([, v]) => isFrozen(v)),
+  (spec: Readonly<Record<string, readonly (string | undefined)[]>>) =>
+    ObjectEntries(spec).flatMap(([k, v]) => isFrozen(v) ? [k] : []),
   new WeakMap());
 
 export function attributes(
   syntax: string,
-  spec: DeepImmutable<Record<string, Array<string | undefined>>> | undefined,
-  params: string[],
   classes: string[],
+  spec: Readonly<Record<string, readonly (string | undefined)[]>> | undefined,
+  params: string[],
+  remap: Readonly<Record<string, (value: string | undefined, name: string) => readonly [string, string] | undefined>> = {},
 ): Record<string, string | undefined> {
   assert(spec instanceof Object === false);
   assert(params.every(param => param.match(/^ \w+(=".*?")?$/)));
   let invalid = false;
   const attrs = params
-    .reduce<Record<string, string>>((attrs, param) => {
+    .reduce<Record<string, string | undefined>>((attrs, param) => {
       assert(attrs instanceof Object === false);
       assert(param[0] === ' ');
       param = param.slice(1);
-      const key = param.split('=', 1)[0];
-      const val = param !== key
+      let key = param.split('=', 1)[0];
+      let val = param !== key
         ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
         : undefined;
       invalid = invalid || !spec || key in attrs;
-      spec?.[key]?.includes(val)
-        ? attrs[key] = val || ''
-        : invalid = invalid || !!spec;
+      if (spec?.[key]?.includes(val)) {
+        attrs[key] ??= undefined;
+        [key, val] = remap[key]
+          ? remap[key](val, key) ?? [key, undefined]
+          : [key, val];
+        attrs[key] = val;
+      }
+      else {
+        invalid = invalid || !!spec;
+      }
       return attrs;
     }, ObjectCreate(null));
-  invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
+  invalid = invalid || !!spec && !requiredAttributes(spec).every(k => k in attrs);
   if (invalid) {
     !classes.includes('invalid') && classes.push('invalid');
     attrs.class = join(classes, ' ');

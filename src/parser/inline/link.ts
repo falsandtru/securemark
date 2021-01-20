@@ -1,5 +1,5 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
-import { ObjectAssign, ObjectSetPrototypeOf } from 'spica/alias';
+import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, validate, guard, context, creator, surround, open, reverse, lazy, bind, eval } from '../../combinator';
 import { startTight, isEndTight, dup, defrag, stringify } from '../util';
@@ -13,6 +13,9 @@ export const optspec = {
   nofollow: [undefined],
 } as const;
 ObjectSetPrototypeOf(optspec, null);
+const remap = {
+  nofollow: () => ['rel', 'nofollow noreferrer'] as const,
+} as const;
 
 export const link: LinkParser = lazy(() => creator(10, bind(reverse(
   validate(['[', '{'], '}', '\n',
@@ -56,7 +59,6 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     const el = html('a',
       {
         href: src,
-        rel: params.includes(' nofollow') ? 'nofollow noreferrer' : undefined,
       },
       content.length > 0
         ? content = defrag(content)
@@ -64,9 +66,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
             .replace(/^tel:/, ''));
     if (!sanitize(new ReadonlyURL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
-    define(el, ObjectAssign(
-      attributes('link', optspec, params, []),
-      { nofollow: undefined }));
+    define(el, attributes('link', [], optspec, params, remap));
     return [[el], rest];
   })));
 
