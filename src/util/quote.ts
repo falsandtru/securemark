@@ -2,7 +2,7 @@ import { location } from 'spica/global';
 import { ReadonlyURL } from 'spica/url';
 import { define } from 'typed-dom';
 
-export function quote(address: string, range: Range): string {
+export function quote(anchor: string, range: Range): string {
   let expansion = expand(range);
   const node = range.cloneContents();
   const base = location.href;
@@ -29,7 +29,7 @@ export function quote(address: string, range: Range): string {
     add = true;
   }
   else {
-    node.prepend(`>>${address}\n> `);
+    node.prepend(`>>${anchor}\n> `);
     add = false;
   }
   for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
@@ -40,17 +40,17 @@ export function quote(address: string, range: Range): string {
       add = add || i < len - 1;
     }
     else {
-      el.replaceWith(add ? `\n>>${address}\n> ` : '\n> ');
+      el.replaceWith(add ? `\n>>${anchor}\n> ` : '\n> ');
       add = false;
     }
   }
-  add && node.append(`\n>>${address}`);
+  add && node.append(`\n>>${anchor}`);
   return node.textContent!;
 }
 
 function expand(range: Range): boolean {
   const node = range.startContainer;
-  if (node.parentElement?.matches('.quote > .address:first-child')) {
+  if (node.parentElement?.matches('.quote > .anchor:first-child')) {
     range.setStart(node.parentElement.previousSibling!, 0);
     return true;
   }

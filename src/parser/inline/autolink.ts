@@ -7,7 +7,7 @@ import { channel } from './autolink/channel';
 import { account } from './autolink/account';
 import { hashtag } from './autolink/hashtag';
 import { hashref } from './autolink/hashref';
-import { address } from './autolink/address';
+import { anchor } from './autolink/anchor';
 import { str } from '../source';
 
 export const autolink: AutolinkParser = fmap(
@@ -30,6 +30,6 @@ export const autolink: AutolinkParser = fmap(
     hashref,
     // Escape unmatched hashtag-like strings.
     str(/^#(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/),
-    address,
+    anchor,
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);

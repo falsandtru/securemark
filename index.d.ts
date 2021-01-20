@@ -19,7 +19,7 @@ export function header(source: string): string;
 export function headers(source: string): string[];
 export function body(source: string): string;
 export function normalize(source: string): string;
-export function quote(address: string, range: Range): string;
+export function quote(anchor: string, range: Range): string;
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement;
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info;
 export function context(base: DocumentFragment | HTMLElement | ShadowRoot, bound?: string): (el: Element) => boolean;

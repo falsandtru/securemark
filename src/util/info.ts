@@ -8,10 +8,10 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
     hashref: find('a.hashref[href]'),
     channel: find('a.channel[href]'),
     account: find('a.account[href]'),
-    mention: find('a.address[href]'),
-    url: find<HTMLAnchorElement>('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.address)')
+    mention: find('a.anchor[href]'),
+    url: find<HTMLAnchorElement>('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)')
       .filter(el => ['http:', 'https:'].includes(el.protocol)),
-    tel: find<HTMLAnchorElement>('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.address)')
+    tel: find<HTMLAnchorElement>('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)')
       .filter(el => el.protocol === 'tel:'),
     email: find('a.email[href]'),
     media: find('.media[data-src]'),

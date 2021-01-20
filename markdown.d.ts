@@ -522,16 +522,16 @@ export namespace MarkdownParser {
         // > text
         Block<'paragraph/mention'>,
         Parser<HTMLSpanElement, [
-          ParagraphParser.MentionParser.AddressParser,
+          ParagraphParser.MentionParser.AnchorParser,
           ParagraphParser.MentionParser.QuoteParser,
         ], Context> {
       }
       export namespace MentionParser {
-        export interface AddressParser extends
-          Block<'paragraph/mention/address'>,
+        export interface AnchorParser extends
+          Block<'paragraph/mention/anchor'>,
           Parser<HTMLSpanElement, [
             SourceParser.StrParser,
-            InlineParser.AutolinkParser.AddressParser,
+            InlineParser.AutolinkParser.AnchorParser,
           ], Context> {
         }
         export interface QuoteParser extends
@@ -927,7 +927,7 @@ export namespace MarkdownParser {
         AutolinkParser.HashtagParser,
         AutolinkParser.HashrefParser,
         SourceParser.StrParser,
-        AutolinkParser.AddressParser,
+        AutolinkParser.AnchorParser,
       ], Context> {
     }
     export namespace AutolinkParser {
@@ -998,9 +998,9 @@ export namespace MarkdownParser {
           SourceParser.StrParser,
         ], Context> {
       }
-      export interface AddressParser extends
+      export interface AnchorParser extends
         // >>1
-        Inline<'address'>,
+        Inline<'anchor'>,
         Parser<HTMLAnchorElement, [
           SourceParser.StrParser,
         ], Context> {

@@ -2,6 +2,7 @@
 
 ## 0.199.0
 
+- Change address syntax to anchor syntax.
 - Change quotation syntax to quote syntax.
 
 ## 0.198.2

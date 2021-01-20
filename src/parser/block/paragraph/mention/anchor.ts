@@ -1,12 +1,12 @@
 import { ParagraphParser } from '../../../block';
 import { tails, line, creator, fmap } from '../../../../combinator';
-import { address as addr } from '../../../inline';
+import { anchor as anch } from '../../../inline';
 import { str } from '../../../source';
 import { html } from 'typed-dom';
 
-export const address: ParagraphParser.MentionParser.AddressParser = creator(line(fmap(
+export const anchor: ParagraphParser.MentionParser.AnchorParser = creator(line(fmap(
   tails([
     str(/^>*(?=>)/),
-    addr,
+    anch,
   ]),
   ns => [html('span', { class: 'quote' }, ns)])));

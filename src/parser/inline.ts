@@ -78,6 +78,6 @@ export { media } from './inline/media';
 export { math } from './inline/math';
 export { shortmedia } from './inline/shortmedia';
 export { autolink } from './inline/autolink';
-export { address } from './inline/autolink/address';
+export { anchor } from './inline/autolink/anchor';
 export { indexer } from './inline/extension/indexer';
 export { indexee } from './inline/extension/indexee';
