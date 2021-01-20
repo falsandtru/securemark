@@ -9,4 +9,4 @@ export const address: ParagraphParser.MentionParser.AddressParser = creator(line
     str(/^>*(?=>)/),
     addr,
   ]),
-  ns => [html('span', { class: 'quotation' }, ns)])));
+  ns => [html('span', { class: 'quote' }, ns)])));

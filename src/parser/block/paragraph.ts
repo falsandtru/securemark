@@ -2,7 +2,7 @@ import { ParagraphParser } from '../block';
 import { subsequence, some, block, rewrite, convert, trim, fmap } from '../../combinator';
 import { defrag } from '../util';
 import { mention } from './paragraph/mention';
-import { syntax as delimiter } from './paragraph/mention/quotation';
+import { syntax as delimiter } from './paragraph/mention/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { pop, push } from 'spica/array';

@@ -8,7 +8,7 @@ import { html } from 'typed-dom';
 
 export const syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
 
-export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() => creator(block(fmap(
+export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(
   union([
     rewrite(
       some(validate(/^>+(?:$|\s)/, contentline)),
@@ -17,10 +17,10 @@ export const quotation: ParagraphParser.MentionParser.QuotationParser = lazy(() 
       some(validate(syntax, contentline)),
       convert(source => source.replace(/\n$/, ''), block_)),
   ]),
-  ns => [html('span', { class: 'quotation' }, ns)]),
+  ns => [html('span', { class: 'quote' }, ns)]),
   false)));
 
-const block_: ParagraphParser.MentionParser.QuotationParser.BlockParser = (source, context) => {
+const block_: ParagraphParser.MentionParser.QuoteParser.BlockParser = (source, context) => {
   const lines = source.match(/^.*\n?/mg)!;
   assert(lines);
   const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg)!;
@@ -43,7 +43,7 @@ const block_: ParagraphParser.MentionParser.QuotationParser.BlockParser = (sourc
       ++i;
       continue;
     }
-    if (child.classList.contains('quotation')) {
+    if (child.classList.contains('quote')) {
       context.resources && (context.resources.budget -= child.childNodes.length);
       nodes.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
       --i;
@@ -55,7 +55,7 @@ const block_: ParagraphParser.MentionParser.QuotationParser.BlockParser = (sourc
   return [defrag(nodes), ''];
 };
 
-const text: ParagraphParser.MentionParser.QuotationParser.TextParser = union([
+const text: ParagraphParser.MentionParser.QuoteParser.TextParser = union([
   math,
   autolink,
 ]);

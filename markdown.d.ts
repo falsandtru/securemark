@@ -523,7 +523,7 @@ export namespace MarkdownParser {
         Block<'paragraph/mention'>,
         Parser<HTMLSpanElement, [
           ParagraphParser.MentionParser.AddressParser,
-          ParagraphParser.MentionParser.QuotationParser,
+          ParagraphParser.MentionParser.QuoteParser,
         ], Context> {
       }
       export namespace MentionParser {
@@ -534,22 +534,22 @@ export namespace MarkdownParser {
             InlineParser.AutolinkParser.AddressParser,
           ], Context> {
         }
-        export interface QuotationParser extends
-          Block<'paragraph/mention/quotation'>,
+        export interface QuoteParser extends
+          Block<'paragraph/mention/quote'>,
           Parser<HTMLSpanElement, [
-            QuotationParser.BlockParser,
-            QuotationParser.BlockParser,
+            QuoteParser.BlockParser,
+            QuoteParser.BlockParser,
           ], Context> {
         }
-        export namespace QuotationParser {
+        export namespace QuoteParser {
           export interface BlockParser extends
-            Block<'paragraph/mention/quotation/block'>,
+            Block<'paragraph/mention/quote/block'>,
             Parser<string | HTMLElement, [
               TextParser,
             ], Context> {
           }
           export interface TextParser extends
-            Block<'paragraph/mention/quotation/text'>,
+            Block<'paragraph/mention/quote/text'>,
             Parser<string | HTMLElement, [
               InlineParser.MathParser,
               AutolinkParser,

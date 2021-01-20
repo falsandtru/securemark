@@ -8,6 +8,6 @@ export const bracket: BracketParser = lazy(() => union([
   surround(str('('), some(inline, ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(inline, ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(inline, '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  // Control media blinking in editing rather than control confusion of pairs of quotation marks
+  // Control media blinking in editing rather than control confusion of pairs of quote marks
   surround(str('"'), some(inline, '"', '"'), str('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ]));
