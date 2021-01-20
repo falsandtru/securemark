@@ -289,13 +289,17 @@
   td.highlight[data-highlight-level="6"] {
     background-color: gray;
   }
-  .quotation {
+  .quote {
     white-space: pre-wrap;
     color: hsl(130 50% 50% / 1);
   }
   .media {
     display: block;
+    min-width: 1em;
     min-height: 3em;
+  }
+  .media[aspect-ratio] {
+    aspect-ratio: attr(aspect-ratio);
   }
   /*
   img.media {

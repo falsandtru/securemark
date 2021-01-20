@@ -4600,7 +4600,7 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const mention_1 = _dereq_('./paragraph/mention');
-            const quotation_1 = _dereq_('./paragraph/mention/quotation');
+            const quote_1 = _dereq_('./paragraph/mention/quote');
             const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
             const array_1 = _dereq_('spica/array');
@@ -4611,7 +4611,7 @@ require = function () {
                     el,
                     typed_dom_1.html('br')
                 ]), [])),
-                combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, quotation_1.syntax), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
+                combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, quote_1.syntax), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
             ]))), ns => {
                 if (ns.length === 0)
                     return [];
@@ -4633,7 +4633,7 @@ require = function () {
             '../source': 126,
             '../util': 133,
             './paragraph/mention': 82,
-            './paragraph/mention/quotation': 84,
+            './paragraph/mention/quote': 84,
             'spica/array': 6,
             'typed-dom': 23
         }
@@ -4644,32 +4644,32 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.mention = void 0;
             const combinator_1 = _dereq_('../../../combinator');
-            const address_1 = _dereq_('./mention/address');
-            const quotation_1 = _dereq_('./mention/quotation');
+            const anchor_1 = _dereq_('./mention/anchor');
+            const quote_1 = _dereq_('./mention/quote');
             exports.mention = combinator_1.block(combinator_1.subsequence([
-                combinator_1.some(address_1.address),
-                quotation_1.quotation
+                combinator_1.some(anchor_1.anchor),
+                quote_1.quote
             ]), false);
         },
         {
             '../../../combinator': 30,
-            './mention/address': 83,
-            './mention/quotation': 84
+            './mention/anchor': 83,
+            './mention/quote': 84
         }
     ],
     83: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.address = void 0;
+            exports.anchor = void 0;
             const combinator_1 = _dereq_('../../../../combinator');
             const inline_1 = _dereq_('../../../inline');
             const source_1 = _dereq_('../../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.tails([
+            exports.anchor = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.tails([
                 source_1.str(/^>*(?=>)/),
-                inline_1.address
-            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)])));
+                inline_1.anchor
+            ]), ns => [typed_dom_1.html('span', { class: 'quote' }, ns)])));
         },
         {
             '../../../../combinator': 30,
@@ -4682,7 +4682,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.quotation = exports.syntax = void 0;
+            exports.quote = exports.syntax = void 0;
             const combinator_1 = _dereq_('../../../../combinator');
             const util_1 = _dereq_('../../../util');
             const inline_1 = _dereq_('../../../inline');
@@ -4690,10 +4690,10 @@ require = function () {
             const source_1 = _dereq_('../../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
-            exports.quotation = combinator_1.lazy(() => combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.union([
+            exports.quote = combinator_1.lazy(() => combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.union([
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(/^>+(?:$|\s)/, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), block_)),
                 combinator_1.rewrite(combinator_1.some(combinator_1.validate(exports.syntax, source_1.contentline)), combinator_1.convert(source => source.replace(/\n$/, ''), block_))
-            ]), ns => [typed_dom_1.html('span', { class: 'quotation' }, ns)]), false)));
+            ]), ns => [typed_dom_1.html('span', { class: 'quote' }, ns)]), false)));
             const block_ = (source, context) => {
                 const lines = source.match(/^.*\n?/mg);
                 const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg);
@@ -4713,7 +4713,7 @@ require = function () {
                         ++i;
                         continue;
                     }
-                    if (child.classList.contains('quotation')) {
+                    if (child.classList.contains('quote')) {
                         context.resources && (context.resources.budget -= child.childNodes.length);
                         nodes.splice(i, 1, ...child.childNodes);
                         --i;
@@ -4899,7 +4899,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.indexee = exports.indexer = exports.address = exports.autolink = exports.shortmedia = exports.math = exports.media = exports.inline = void 0;
+            exports.indexee = exports.indexer = exports.anchor = exports.autolink = exports.shortmedia = exports.math = exports.media = exports.inline = void 0;
             const combinator_1 = _dereq_('../combinator');
             const escape_1 = _dereq_('./inline/escape');
             const annotation_1 = _dereq_('./inline/annotation');
@@ -4977,11 +4977,11 @@ require = function () {
                     return autolink_2.autolink;
                 }
             });
-            var address_1 = _dereq_('./inline/autolink/address');
-            Object.defineProperty(exports, 'address', {
+            var anchor_1 = _dereq_('./inline/autolink/anchor');
+            Object.defineProperty(exports, 'anchor', {
                 enumerable: true,
                 get: function () {
-                    return address_1.address;
+                    return anchor_1.anchor;
                 }
             });
             var indexer_1 = _dereq_('./inline/extension/indexer');
@@ -5003,7 +5003,7 @@ require = function () {
             '../combinator': 30,
             './inline/annotation': 89,
             './inline/autolink': 90,
-            './inline/autolink/address': 92,
+            './inline/autolink/anchor': 92,
             './inline/bracket': 98,
             './inline/code': 99,
             './inline/comment': 100,
@@ -5078,7 +5078,7 @@ require = function () {
             const account_1 = _dereq_('./autolink/account');
             const hashtag_1 = _dereq_('./autolink/hashtag');
             const hashref_1 = _dereq_('./autolink/hashref');
-            const address_1 = _dereq_('./autolink/address');
+            const anchor_1 = _dereq_('./autolink/anchor');
             const source_1 = _dereq_('../source');
             exports.autolink = combinator_1.fmap(combinator_1.validate(/^(?:[@#>0-9A-Za-z]|[^\x00-\x7F\s])/, combinator_1.guard(context => {
                 var _a, _b, _c;
@@ -5095,7 +5095,7 @@ require = function () {
                 hashtag_1.hashtag,
                 hashref_1.hashref,
                 source_1.str(/^#(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/),
-                address_1.address
+                anchor_1.anchor
             ])))), ns => ns.length === 1 ? ns : [util_1.stringify(ns)]);
         },
         {
@@ -5103,7 +5103,7 @@ require = function () {
             '../source': 126,
             '../util': 133,
             './autolink/account': 91,
-            './autolink/address': 92,
+            './autolink/anchor': 92,
             './autolink/channel': 93,
             './autolink/email': 94,
             './autolink/hashref': 95,
@@ -5127,7 +5127,6 @@ require = function () {
                 [typed_dom_1.html('a', {
                         class: 'account',
                         href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/${ source }`,
-                        rel: 'noopener',
                         target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
                     }, source)],
                 ''
@@ -5144,14 +5143,13 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.address = void 0;
+            exports.anchor = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.address = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>>?[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, source => [
+            exports.anchor = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>>?[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, source => [
                 [typed_dom_1.html('a', {
-                        class: 'address',
-                        href: `?res=${ source.slice(source.lastIndexOf('>') + 1) }`,
-                        rel: 'noopener'
+                        class: 'anchor',
+                        href: `?res=${ source.slice(source.lastIndexOf('>') + 1) }`
                     }, source)],
                 ''
             ])));
@@ -5211,8 +5209,7 @@ require = function () {
             ]), source => [
                 [typed_dom_1.html('a', {
                         class: 'email',
-                        href: `mailto:${ source }`,
-                        rel: 'noopener'
+                        href: `mailto:${ source }`
                     }, source)],
                 ''
             ]));
@@ -5234,7 +5231,6 @@ require = function () {
             exports.hashref = combinator_1.creator(combinator_1.rewrite(combinator_1.open('#', source_1.str(/^[0-9]{1,16}(?![0-9A-Za-z]|[^\x00-\x7F\s])/)), (source, {host, url}) => [
                 [typed_dom_1.html('a', {
                         class: 'hashref',
-                        rel: 'noopener',
                         target: url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : undefined
                     }, source)],
                 ''
@@ -5261,7 +5257,6 @@ require = function () {
                 [typed_dom_1.html('a', {
                         class: 'hashtag',
                         href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ source.slice(1) }`,
-                        rel: 'noopener',
                         target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : undefined
                     }, source)],
                 ''
@@ -5812,7 +5807,7 @@ require = function () {
             alias_1.ObjectValues(attrspec).forEach(o => alias_1.ObjectSetPrototypeOf(o, null));
             exports.html = combinator_1.lazy(() => combinator_1.creator(combinator_1.validate('<', combinator_1.union([
                 combinator_1.match(/^(?=<(wbr)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(combinator_1.union([exports.attribute])), source_1.str('>'), true, ([, as = []], rest) => [
-                    [typed_dom_1.html(tag, attributes('html', attrspec[tag], as, []))],
+                    [typed_dom_1.html(tag, attributes('html', [], attrspec[tag], as))],
                     rest
                 ]), ([, tag]) => tag)),
                 combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.validate(new global_1.RegExp(`^<${ tag }[^\\n>]*>\\S[\\s\\S]*?</${ tag }>`), combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
@@ -5880,7 +5875,7 @@ require = function () {
                 }
                 let attrs;
                 switch (true) {
-                case as[as.length - 1] !== '>' || 'data-invalid-syntax' in (attrs = attributes('html', attrspec[tag], as.slice(1, -1).map(util_1.stringify), [])):
+                case as[as.length - 1] !== '>' || 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1).map(util_1.stringify))):
                     return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
                 case cs.length === 0:
                     return invalid('closer', `Missing the closing HTML tag <${ tag }>.`, as, bs, cs);
@@ -5896,19 +5891,31 @@ require = function () {
                     'data-invalid-description': description
                 }, util_1.defrag(array_1.push(array_1.unshift(as, bs), cs)));
             }
-            const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).filter(([, v]) => alias_1.isFrozen(v)), new WeakMap());
-            function attributes(syntax, spec, params, classes) {
+            const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).flatMap(([k, v]) => alias_1.isFrozen(v) ? [k] : []), new WeakMap());
+            function attributes(syntax, classes, spec, params, remap = {}) {
                 let invalid = false;
                 const attrs = params.reduce((attrs, param) => {
-                    var _a;
+                    var _a, _b, _c, _d;
                     param = param.slice(1);
-                    const key = param.split('=', 1)[0];
-                    const val = param !== key ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1') : global_1.undefined;
+                    let key = param.split('=', 1)[0];
+                    let val = param !== key ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1') : global_1.undefined;
                     invalid = invalid || !spec || key in attrs;
-                    ((_a = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _a === void 0 ? void 0 : _a.includes(val)) ? attrs[key] = val || '' : invalid = invalid || !!spec;
+                    if (((_a = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _a === void 0 ? void 0 : _a.length) === 0 && val || ((_b = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _b === void 0 ? void 0 : _b.includes(val))) {
+                        (_c = attrs[key]) !== null && _c !== void 0 ? _c : attrs[key] = global_1.undefined;
+                        [key, val] = remap[key] ? (_d = remap[key](val, key)) !== null && _d !== void 0 ? _d : [
+                            key,
+                            global_1.undefined
+                        ] : [
+                            key,
+                            val
+                        ];
+                        attrs[key] = val;
+                    } else {
+                        invalid = invalid || !!spec;
+                    }
                     return attrs;
                 }, alias_1.ObjectCreate(null));
-                invalid = invalid || !!spec && !requiredAttributes(spec).every(([k]) => k in attrs);
+                invalid = invalid || !!spec && !requiredAttributes(spec).every(k => k in attrs);
                 if (invalid) {
                     !classes.includes('invalid') && classes.push('invalid');
                     attrs.class = array_1.join(classes, ' ');
@@ -5995,6 +6002,12 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.optspec = { nofollow: [global_1.undefined] };
             alias_1.ObjectSetPrototypeOf(exports.optspec, null);
+            const remap = {
+                nofollow: () => [
+                    'rel',
+                    'nofollow noreferrer'
+                ]
+            };
             exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.reverse(combinator_1.validate([
                 '[',
                 '{'
@@ -6030,16 +6043,13 @@ require = function () {
                     return;
                 const INSECURE_URI = params.shift();
                 const src = resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
-                const el = typed_dom_1.html('a', {
-                    href: src,
-                    rel: `noopener${ params.includes(' nofollow') ? ' nofollow noreferrer' : '' }`
-                }, content.length > 0 ? content = util_1.defrag(content) : decode(INSECURE_URI).replace(/^tel:/, ''));
+                const el = typed_dom_1.html('a', { href: src }, content.length > 0 ? content = util_1.defrag(content) : decode(INSECURE_URI).replace(/^tel:/, ''));
                 if (!sanitize(new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
                     return [
                         [el],
                         rest
                     ];
-                typed_dom_1.define(el, alias_1.ObjectAssign(html_1.attributes('link', exports.optspec, params, []), { nofollow: global_1.undefined }));
+                typed_dom_1.define(el, html_1.attributes('link', [], exports.optspec, params, remap));
                 return [
                     [el],
                     rest
@@ -6161,14 +6171,11 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.math = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.math = combinator_1.creator(combinator_1.validate('${', '}$', '\n', combinator_1.rewrite(combinator_1.surround('${', combinator_1.union([source_1.str(/^[^\S\n]*(?!}\$)\S[^\n]*?(?=}\$)/)]), '}$'), (source, {
-                caches: {
-                    math: cache = global_1.undefined
-                } = {}
+                caches: {math: cache} = {}
             }) => [
                 [(cache === null || cache === void 0 ? void 0 : cache.has(source)) ? cache.get(source).cloneNode(true) : source.indexOf('\\begin') === -1 ? typed_dom_1.html('span', {
                         class: 'math notranslate',
@@ -6185,7 +6192,6 @@ require = function () {
         {
             '../../combinator': 30,
             '../source': 126,
-            'spica/global': 14,
             'typed-dom': 23
         }
     ],
@@ -6195,14 +6201,21 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.media = void 0;
             const global_1 = _dereq_('spica/global');
+            const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../../combinator');
             const util_1 = _dereq_('../util');
             const link_1 = _dereq_('./link');
-            const source_1 = _dereq_('../source');
             const html_1 = _dereq_('./html');
+            const source_1 = _dereq_('../source');
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
+            const optspec = {
+                'aspect-ratio': [],
+                ...link_1.optspec
+            };
+            alias_1.ObjectSetPrototypeOf(optspec, null);
+            const remap = { nofollow: () => global_1.undefined };
             exports.media = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.validate([
                 '[',
                 '{'
@@ -6244,10 +6257,8 @@ require = function () {
                         rest
                     ];
                 cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
-                typed_dom_1.define(el, {
-                    ...html_1.attributes('media', link_1.optspec, params, el.className.trim().split(/\s+/)),
-                    nofollow: global_1.undefined
-                });
+                typed_dom_1.define(el, html_1.attributes('media', array_1.push([], el.classList), optspec, params, remap));
+                params = params.filter(p => !p.startsWith(' aspect-ratio'));
                 return ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.link) !== null && _f !== void 0 ? _f : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context) : [
                     [el],
                     rest
@@ -6287,6 +6298,7 @@ require = function () {
             '../util': 133,
             './html': 111,
             './link': 114,
+            'spica/alias': 5,
             'spica/array': 6,
             'spica/global': 14,
             'spica/url': 21,
@@ -6953,6 +6965,8 @@ require = function () {
                 }
             });
             function isAlphanumeric(char) {
+                if (char < '0' || '\x7F' < char)
+                    return false;
                 return '0' <= char && char <= '9' || 'a' <= char && char <= 'z' || 'A' <= char && char <= 'Z';
             }
             exports.isAlphanumeric = isAlphanumeric;
@@ -7782,13 +7796,9 @@ require = function () {
                                 'data-invalid-type': 'content',
                                 'data-invalid-description': 'Missing the content.'
                             }
-                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && (refChild === null || refChild === void 0 ? void 0 : refChild.textContent) === marker(defIndex) ? global_1.undefined : [typed_dom_1.html('a', {
-                                href: refId && defId && `#${ defId }`,
-                                rel: 'noopener'
-                            }, marker(defIndex))]).firstChild;
+                        }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && (refChild === null || refChild === void 0 ? void 0 : refChild.textContent) === marker(defIndex) ? global_1.undefined : [typed_dom_1.html('a', { href: refId && defId && `#${ defId }` }, marker(defIndex))]).firstChild;
                         def.lastChild.appendChild(typed_dom_1.html('a', {
                             href: refId && `#${ refId }`,
-                            rel: 'noopener',
                             title: content.firstChild && ref.hasAttribute('data-alias') ? title : global_1.undefined
                         }, `~${ refIndex }`));
                     }
@@ -7845,12 +7855,12 @@ require = function () {
                     hashref: find('a.hashref[href]'),
                     channel: find('a.channel[href]'),
                     account: find('a.account[href]'),
-                    mention: find('a.address[href]'),
-                    url: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.address)').filter(el => [
+                    mention: find('a.anchor[href]'),
+                    url: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)').filter(el => [
                         'http:',
                         'https:'
                     ].includes(el.protocol)),
-                    tel: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.address)').filter(el => el.protocol === 'tel:'),
+                    tel: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)').filter(el => el.protocol === 'tel:'),
                     email: find('a.email[href]'),
                     media: find('.media[data-src]')
                 };
@@ -7877,7 +7887,7 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const url_1 = _dereq_('spica/url');
             const typed_dom_1 = _dereq_('typed-dom');
-            function quote(address, range) {
+            function quote(anchor, range) {
                 var _a;
                 let expansion = expand(range);
                 const node = range.cloneContents();
@@ -7897,7 +7907,7 @@ require = function () {
                         continue;
                     }
                 }
-                expansion = expansion || !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.quotation'));
+                expansion = expansion || !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.quote'));
                 if (!node.firstChild)
                     return '';
                 let add;
@@ -7905,33 +7915,33 @@ require = function () {
                     node.prepend('>');
                     add = true;
                 } else {
-                    node.prepend(`>>${ address }\n> `);
+                    node.prepend(`>>${ anchor }\n> `);
                     add = false;
                 }
                 for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     const target = el.nextSibling;
-                    if (target && 'id' in target && target.matches('.quotation')) {
+                    if (target && 'id' in target && target.matches('.quote')) {
                         el.replaceWith('\n>');
                         add = add || i < len - 1;
                     } else {
-                        el.replaceWith(add ? `\n>>${ address }\n> ` : '\n> ');
+                        el.replaceWith(add ? `\n>>${ anchor }\n> ` : '\n> ');
                         add = false;
                     }
                 }
-                add && node.append(`\n>>${ address }`);
+                add && node.append(`\n>>${ anchor }`);
                 return node.textContent;
             }
             exports.quote = quote;
             function expand(range) {
                 var _a, _b;
                 const node = range.startContainer;
-                if ((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.quotation > .address:first-child')) {
+                if ((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.quote > .anchor:first-child')) {
                     range.setStart(node.parentElement.previousSibling, 0);
                     return true;
                 }
                 const offset = range.startOffset;
-                if (((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.quotation')) && node.textContent.slice(0, offset) === '>'.repeat(offset)) {
+                if (((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.quote')) && node.textContent.slice(0, offset) === '>'.repeat(offset)) {
                     range.setStart(node, 0);
                     return true;
                 }
@@ -8038,7 +8048,6 @@ require = function () {
                     const idx = isHeading ? index === '' ? `${ ++i }` : `${ index }.${ ++i }` : index === '' ? `${ i }` : `${ index }.${ i }`;
                     return typed_dom_1.html('li', array_1.push([typed_dom_1.html('a', {
                             href: `#${ el.id }`,
-                            rel: 'noopener',
                             'data-index': isHeading ? idx : global_1.undefined
                         }, fix(el))], cs.length > 0 ? [parse(cs, idx)] : []));
                 }));
