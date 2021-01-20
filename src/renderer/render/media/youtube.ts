@@ -23,7 +23,7 @@ export function youtube(url: URL, cache?: Collection<string, HTMLElement>): HTML
         src: `https://www.youtube.com/embed/${id}`,
         allowfullscreen: '',
         frameborder: '0',
-        style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;',
+        style: 'display: block; aspect-ratio: 16/9; position: absolute; top: 0; right: 0; width: 100%; height: 100%;',
       }),
     ]),
   ]);

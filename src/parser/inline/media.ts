@@ -44,7 +44,6 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
     define(el, attributes('media', push([], el.classList), optspec, params, remap));
-    params = params.filter(p => !p.startsWith(' aspect-ratio'));
     return (context.syntax?.inline?.link ?? true)
         && (!cached || el.tagName === 'IMG')
       ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])

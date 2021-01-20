@@ -60,7 +60,6 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![]{\\}')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{\\ }')), [['<a href="\\" target="_blank"><img class="media" data-src="\\" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{\\b}')), [['<a href="\\b" target="_blank"><img class="media" data-src="\\b" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{a b}')), [['<a href="a" class="invalid" target="_blank"><img class="media invalid" data-src="a" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{./b}')), [['<a href="./b" target="_blank"><img class="media" data-src="./b" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{^/b}')), [[`<a href="/b" target="_blank"><img class="media" data-src="/b" alt=""></a>`], '']);
       assert.deepStrictEqual(inspect(parser('![a ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
@@ -82,11 +81,11 @@ describe('Unit: parser/inline/media', () => {
     });
 
     it('attribute', () => {
-      assert.deepStrictEqual(inspect(parser('![]{/ nofollow}')), [['<a href="/" rel="nofollow noreferrer" target="_blank"><img class="media" data-src="/" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ constructor}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio}')), [['<a href="/" target="_blank"><img class="media invalid" data-src="/" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('![]{/ constructor}')), [['<a href="/" class="invalid" target="_blank"><img class="media invalid" data-src="/" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!{/ nofollow}')), [['<a href="/" rel="nofollow noreferrer" target="_blank"><img class="media" data-src="/" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('!{/ aspect-ratio="4/3"}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ nofollow}')), [['<a href="/" rel="nofollow noreferrer" target="_blank"><img class="media" data-src="/" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3"}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3" nofollow}')), [['<a href="/" rel="nofollow noreferrer" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3"></a>'], '']);
     });
 
   });

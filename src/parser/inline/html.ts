@@ -6,7 +6,7 @@ import { union, some, validate, context, creator, surround, match, lazy } from '
 import { startTight, isEndTight, trimEndBR, defrag, stringify } from '../util';
 import { str } from '../source';
 import { memoize } from 'spica/memoize';
-import { unshift, push, join } from 'spica/array';
+import { unshift, push, splice, join } from 'spica/array';
 import { html as h } from 'typed-dom';
 
 const tags = ObjectFreeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
@@ -148,32 +148,36 @@ export function attributes(
   classes: string[],
   spec: Readonly<Record<string, readonly (string | undefined)[]>> | undefined,
   params: string[],
-  remap: Readonly<Record<string, (value: string | undefined, name: string) => readonly [string, string] | undefined>> = {},
+  remap: Readonly<Record<string, (name: string, value: string | undefined) => readonly [string, string] | undefined>> = {},
 ): Record<string, string | undefined> {
   assert(spec instanceof Object === false);
   let invalid = false;
-  const attrs = params
-    .reduce<Record<string, string | undefined>>((attrs, param) => {
-      assert(attrs instanceof Object === false);
-      assert(param[0] === ' ');
-      param = param.slice(1);
-      let key = param.split('=', 1)[0];
-      let val = param !== key
-        ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
-        : undefined;
-      invalid = invalid || !spec || key in attrs;
-      if (spec?.[key]?.length === 0 && val || spec?.[key]?.includes(val)) {
+  const attrs: Record<string, string | undefined> = ObjectCreate(null);
+  for (let i = 0; i < params.length; ++i) {
+    assert(params[i][0] === ' ');
+    const param = params[i].slice(1);
+    assert(attrs instanceof Object === false);
+    let key = param.split('=', 1)[0];
+    let val = param !== key
+      ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
+      : undefined;
+    invalid = invalid || !spec || key in attrs;
+    if (val && spec?.[key]?.length === 0 || spec?.[key]?.includes(val)) {
+      if (remap[key]) {
         attrs[key] ??= undefined;
-        [key, val] = remap[key]
-          ? remap[key](val, key) ?? [key, undefined]
-          : [key, val];
-        attrs[key] = val;
+        [key, val] = remap[key](key, val) ?? [key, undefined];
+        val !== undefined && splice(params, i--, 1);
       }
       else {
-        invalid = invalid || !!spec;
+        splice(params, i--, 1);
       }
-      return attrs;
-    }, ObjectCreate(null));
+      attrs[key] = val;
+    }
+    else {
+      invalid = invalid || !!spec;
+      splice(params, i--, 1);
+    }
+  }
   invalid = invalid || !!spec && !requiredAttributes(spec).every(k => k in attrs);
   if (invalid) {
     !classes.includes('invalid') && classes.push('invalid');
