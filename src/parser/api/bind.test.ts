@@ -169,17 +169,17 @@ describe('Unit: parser/api/bind', () => {
         [
           html('p', [
             html('sup', { class: "annotation", id: "annotation:ref:1", title: "1" }, [
-              html('a', { href: "#annotation:def:1", rel: "noopener" }, '*1')
+              html('a', { href: "#annotation:def:1" }, '*1')
             ]),
           ]).outerHTML,
           html('p', [
             html('sup', { class: "annotation", id: "annotation:ref:2", title: "2" }, [
-              html('a', { href: "#annotation:def:2", rel: "noopener" }, '*2')
+              html('a', { href: "#annotation:def:2" }, '*2')
             ]),
           ]).outerHTML,
           html('p', [
             html('sup', { class: "annotation", id: "annotation:ref:3", title: "3" }, [
-              html('a', { href: "#annotation:def:3", rel: "noopener" }, '*3')
+              html('a', { href: "#annotation:def:3" }, '*3')
             ]),
           ]).outerHTML,
         ]);
@@ -188,15 +188,15 @@ describe('Unit: parser/api/bind', () => {
         html('ol', [
           html('li', { id: 'annotation:def:1' }, [
             '1',
-            html('sup', [html('a', { href: '#annotation:ref:1', rel: 'noopener' }, '~1')])
+            html('sup', [html('a', { href: '#annotation:ref:1' }, '~1')])
           ]),
           html('li', { id: 'annotation:def:2' }, [
             '2',
-            html('sup', [html('a', { href: '#annotation:ref:2', rel: 'noopener' }, '~2')])
+            html('sup', [html('a', { href: '#annotation:ref:2' }, '~2')])
           ]),
           html('li', { id: 'annotation:def:3' }, [
             '3',
-            html('sup', [html('a', { href: '#annotation:ref:3', rel: 'noopener' }, '~3')])
+            html('sup', [html('a', { href: '#annotation:ref:3' }, '~3')])
           ]),
         ]).outerHTML);
       assert.throws(() => update('').next());

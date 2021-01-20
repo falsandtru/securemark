@@ -9,7 +9,6 @@ export const hashref: AutolinkParser.HashrefParser = creator(rewrite(
     html('a',
       {
         class: 'hashref',
-        rel: 'noopener',
         target: url && url.origin !== host?.origin
           ? '_blank'
           : undefined,

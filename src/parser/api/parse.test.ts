@@ -85,30 +85,30 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
           '<details class="header"><summary>Header</summary>URL: https://source/x/y</details>',
-          '<p><a class="account" href="https://source/@a" rel="noopener" target="_blank">@a</a></p>',
-          '<p><a class="account" href="https://domain/@a" rel="noopener" target="_blank">@domain/a</a></p>',
-          '<p><a class="channel" href="https://source/@a?ch=b" rel="noopener" target="_blank">@a#b</a></p>',
-          '<p><a class="channel" href="https://domain/@a?ch=b" rel="noopener" target="_blank">@domain/a#b</a></p>',
-          '<p><a class="hashtag" href="https://source/hashtags/a" rel="noopener" target="_blank">#a</a></p>',
-          '<p><a class="hashtag" href="https://domain/hashtags/a" rel="noopener" target="_blank">#domain/a</a></p>',
+          '<p><a class="account" href="https://source/@a" target="_blank">@a</a></p>',
+          '<p><a class="account" href="https://domain/@a" target="_blank">@domain/a</a></p>',
+          '<p><a class="channel" href="https://source/@a?ch=b" target="_blank">@a#b</a></p>',
+          '<p><a class="channel" href="https://domain/@a?ch=b" target="_blank">@domain/a#b</a></p>',
+          '<p><a class="hashtag" href="https://source/hashtags/a" target="_blank">#a</a></p>',
+          '<p><a class="hashtag" href="https://domain/hashtags/a" target="_blank">#domain/a</a></p>',
           '<p><a class="index" href="#index:a">a</a></p>',
           '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
           '<p><a class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
-          '<p><sup class="annotation" id="annotation:ref:1" title="a"><a href="#annotation:def:1" rel="noopener">*1</a></sup></p>',
-          '<p><a href="https://source/x/a" rel="noopener" target="_blank">a</a></p>',
-          '<p><a href="https://source/a" rel="noopener" target="_blank">/a</a></p>',
-          '<p><a href="/z/a" rel="noopener">^/a</a></p>',
-          '<p><a href="/z/a/.." rel="noopener">^/a/..</a></p>',
-          '<p><a href="/z/a/../" rel="noopener">^/a/../</a></p>',
-          '<p><a href="/z/a?/../" rel="noopener">^/a?/../</a></p>',
-          '<p><a href="/z/a#/../" rel="noopener">^/a#/../</a></p>',
-          '<p><a href="https://source/x/a" rel="noopener" target="_blank">./a</a></p>',
-          '<p><a href="https://source/a" rel="noopener" target="_blank">../a</a></p>',
-          '<p><a href="https://source/a" rel="noopener" target="_blank">../../a</a></p>',
-          '<p><a href="//domain/a" rel="noopener" target="_blank">//domain/a</a></p>',
-          '<p><a href="https://source/x/a" rel="noopener" target="_blank"><img class="media" data-src="https://source/x/a" alt=""></a></p>',
-          '<p><a href="/z/a" rel="noopener" target="_blank"><img class="media" data-src="/z/a" alt=""></a></p>',
-          '<p><a href="https://source/a" rel="noopener" target="_blank"><img class="media" data-src="https://source/a" alt=""></a></p>',
+          '<p><sup class="annotation" id="annotation:ref:1" title="a"><a href="#annotation:def:1">*1</a></sup></p>',
+          '<p><a href="https://source/x/a" target="_blank">a</a></p>',
+          '<p><a href="https://source/a" target="_blank">/a</a></p>',
+          '<p><a href="/z/a">^/a</a></p>',
+          '<p><a href="/z/a/..">^/a/..</a></p>',
+          '<p><a href="/z/a/../">^/a/../</a></p>',
+          '<p><a href="/z/a?/../">^/a?/../</a></p>',
+          '<p><a href="/z/a#/../">^/a#/../</a></p>',
+          '<p><a href="https://source/x/a" target="_blank">./a</a></p>',
+          '<p><a href="https://source/a" target="_blank">../a</a></p>',
+          '<p><a href="https://source/a" target="_blank">../../a</a></p>',
+          '<p><a href="//domain/a" target="_blank">//domain/a</a></p>',
+          '<p><a href="https://source/x/a" target="_blank"><img class="media" data-src="https://source/x/a" alt=""></a></p>',
+          '<p><a href="/z/a" target="_blank"><img class="media" data-src="/z/a" alt=""></a></p>',
+          '<p><a href="https://source/a" target="_blank"><img class="media" data-src="https://source/a" alt=""></a></p>',
         ]);
       assert.deepStrictEqual(
         [...parse([
@@ -122,8 +122,8 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/index.md`) }).children].map(el => el.outerHTML),
         [
           '<details class="header"><summary>Header</summary>URL: https://source/x/y</details>',
-          '<p><a href="/a" rel="noopener">^/a</a></p>',
-          '<p><a href="https://source/x/a" rel="noopener" target="_blank">./a</a></p>',
+          '<p><a href="/a">^/a</a></p>',
+          '<p><a href="https://source/x/a" target="_blank">./a</a></p>',
         ]);
       assert.deepStrictEqual(
         [...parse([
@@ -137,8 +137,8 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
           `<details class="header"><summary>Header</summary>URL: ${location.origin}/x/y</details>`,
-          '<p><a href="/z/a" rel="noopener">^/a</a></p>',
-          '<p><a href="/x/a" rel="noopener">./a</a></p>',
+          '<p><a href="/z/a">^/a</a></p>',
+          '<p><a href="/x/a">./a</a></p>',
         ]);
     });
 
@@ -163,8 +163,8 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
           `<details class="header"><summary>Header</summary>URL: https://example/x</details>`,
-          '<aside class="example" data-type="markdown"><pre>---\nURL: https://example/y\n---\n\n{#}</pre><hr><div><details class="header"><summary>Header</summary>URL: https://example/y</details><p><a href="https://example/y#" rel="noopener" target="_blank">#</a></p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>',
-          '<p><a href="https://example/x#" rel="noopener" target="_blank">#</a></p>',
+          '<aside class="example" data-type="markdown"><pre>---\nURL: https://example/y\n---\n\n{#}</pre><hr><div><details class="header"><summary>Header</summary>URL: https://example/y</details><p><a href="https://example/y#" target="_blank">#</a></p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>',
+          '<p><a href="https://example/x#" target="_blank">#</a></p>',
         ]);
     });
 

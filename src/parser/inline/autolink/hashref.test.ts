@@ -36,13 +36,13 @@ describe('Unit: parser/inline/autolink/hashref', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashref" rel="noopener">#1</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('#1 ')), [['<a class="hashref" rel="noopener">#1</a>'], ' ']);
-      assert.deepStrictEqual(inspect(parser('#1\n')), [['<a class="hashref" rel="noopener">#1</a>'], '\n']);
-      assert.deepStrictEqual(inspect(parser('#1\\')), [['<a class="hashref" rel="noopener">#1</a>'], '\\']);
-      assert.deepStrictEqual(inspect(parser('#1\\ ')), [['<a class="hashref" rel="noopener">#1</a>'], '\\ ']);
-      assert.deepStrictEqual(inspect(parser('#1\\\n')), [['<a class="hashref" rel="noopener">#1</a>'], '\\\n']);
-      assert.deepStrictEqual(inspect(parser('#1234567890123456')), [['<a class="hashref" rel="noopener">#1234567890123456</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#1')), [['<a class="hashref">#1</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('#1 ')), [['<a class="hashref">#1</a>'], ' ']);
+      assert.deepStrictEqual(inspect(parser('#1\n')), [['<a class="hashref">#1</a>'], '\n']);
+      assert.deepStrictEqual(inspect(parser('#1\\')), [['<a class="hashref">#1</a>'], '\\']);
+      assert.deepStrictEqual(inspect(parser('#1\\ ')), [['<a class="hashref">#1</a>'], '\\ ']);
+      assert.deepStrictEqual(inspect(parser('#1\\\n')), [['<a class="hashref">#1</a>'], '\\\n']);
+      assert.deepStrictEqual(inspect(parser('#1234567890123456')), [['<a class="hashref">#1234567890123456</a>'], '']);
     });
 
   });

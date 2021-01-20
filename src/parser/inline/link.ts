@@ -56,7 +56,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     const el = html('a',
       {
         href: src,
-        rel: `noopener${params.includes(' nofollow') ? ' nofollow noreferrer' : ''}`,
+        rel: params.includes(' nofollow') ? 'nofollow noreferrer' : undefined,
       },
       content.length > 0
         ? content = defrag(content)

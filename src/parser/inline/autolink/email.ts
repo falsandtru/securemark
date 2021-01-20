@@ -14,4 +14,4 @@ export const email: AutolinkParser.EmailParser = creator(rewrite(
       str(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*/),
       ([source]) => source.length <= 256 - 63 - 1),
   ]),
-  source => [[html('a', { class: 'email', href: `mailto:${source}`, rel: 'noopener' }, source)], '']));
+  source => [[html('a', { class: 'email', href: `mailto:${source}` }, source)], '']));

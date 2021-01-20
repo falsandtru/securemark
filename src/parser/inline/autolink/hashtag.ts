@@ -23,7 +23,6 @@ export const hashtag: AutolinkParser.HashtagParser = creator(rewrite(
         href: source.indexOf('/') > -1
           ? `https://${source.slice(1).replace('/', '/hashtags/')}`
           : `${url?.origin || ''}/hashtags/${source.slice(1)}`,
-        rel: 'noopener',
         target: source.indexOf('/') > -1 || url && url.origin !== host?.origin
           ? '_blank'
           : undefined,

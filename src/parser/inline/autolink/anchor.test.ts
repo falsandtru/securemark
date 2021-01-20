@@ -14,8 +14,8 @@ describe('Unit: parser/inline/autolink/anchor', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('>0')), [['<a class="anchor" href="?res=0" rel="noopener">&gt;0</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>0aA')), [['<a class="anchor" href="?res=0aA" rel="noopener">&gt;0aA</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0')), [['<a class="anchor" href="?res=0">&gt;0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0aA')), [['<a class="anchor" href="?res=0aA">&gt;0aA</a>'], '']);
     });
 
   });

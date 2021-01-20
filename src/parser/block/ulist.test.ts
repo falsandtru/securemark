@@ -21,7 +21,7 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('-\n0')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n -\n 0')), undefined);
       assert.deepStrictEqual(inspect(parser('- 0\n  - 0\n - 0')), undefined);
-      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li>!<a href="http://host" rel="noopener" target="_blank">http://host</a></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li>!<a href="http://host" target="_blank">http://host</a></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser(' -')), undefined);
       assert.deepStrictEqual(inspect(parser('+')), undefined);
       assert.deepStrictEqual(inspect(parser('*')), undefined);

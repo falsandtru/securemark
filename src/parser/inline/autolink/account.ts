@@ -24,7 +24,6 @@ export const account: AutolinkParser.AccountParser = creator(rewrite(
         href: source.indexOf('/') > -1
           ? `https://${source.slice(1).replace('/', '/@')}`
           : `${url?.origin || ''}/${source}`,
-        rel: 'noopener',
         target: source.indexOf('/') > -1 || url && url.origin !== host?.origin
           ? '_blank'
           : undefined,
