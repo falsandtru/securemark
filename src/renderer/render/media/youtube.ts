@@ -17,7 +17,7 @@ export function youtube(url: URL, cache?: Collection<string, HTMLElement>): HTML
   }
   if (url.pathname.split('/').pop()!.indexOf('.') > -1) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLElement;
-  const el = html('div', { class: 'media', style: 'position: relative;' }, [
+  const el = html('div', { class: 'media' }, [
     html('div', { style: 'position: relative; padding-top: 56.25%;' }, [
       html('iframe', {
         src: `https://www.youtube.com/embed/${id}`,

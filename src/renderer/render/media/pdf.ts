@@ -9,7 +9,7 @@ const extensions = [
 export function pdf(url: URL, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLAudioElement;
-  const el = html('div', { class: 'media', style: 'position: relative;' }, [
+  const el = html('div', { class: 'media' }, [
     html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [
       html('object', {
         type: 'application/pdf',
