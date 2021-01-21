@@ -6,7 +6,6 @@ import { HTML, define } from 'typed-dom';
 declare global {
   interface Window {
     twttr?: {
-      ready: (f: () => void) => unknown;
       widgets: {
         load: (el: HTMLElement) => void;
       };
