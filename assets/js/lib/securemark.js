@@ -1557,33 +1557,32 @@ require = function () {
                             return build(global_1.undefined, global_1.undefined, attrs);
                         if (typeof children === 'function')
                             return build(attrs, global_1.undefined, children);
-                        if (attrs !== global_1.undefined && isChildren(attrs))
+                        if (attrs !== global_1.undefined && isElChildren(attrs))
                             return build(global_1.undefined, attrs, factory);
-                        const node = formatter(elem(factory || defaultFactory, attrs, children));
+                        const node = formatter(elem(factory, attrs, children));
                         return node.nodeType === 1 ? new proxy_1.Elem(node, children) : new proxy_1.Elem(node.host, children, node);
                     };
-                    function isChildren(children) {
-                        return typeof children !== 'object' || alias_1.ObjectValues(children).slice(-1).every(val => typeof val === 'object');
+                    function isElChildren(children) {
+                        if (typeof children !== 'object')
+                            return true;
+                        for (const i in children) {
+                            if (!alias_1.hasOwnProperty(children, i))
+                                continue;
+                            return typeof children[i] === 'object';
+                        }
+                        return true;
                     }
                     function elem(factory, attrs, children) {
-                        const el = factory(baseFactory, tag, attrs || {}, children);
+                        const el = factory ? factory(defaultFactory, tag, attrs || {}, children) : baseFactory(tag, attrs);
                         if (tag !== el.tagName.toLowerCase())
                             throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
-                        if (factory !== defaultFactory) {
-                            if (attrs)
-                                for (let i = 0, names = alias_1.ObjectKeys(attrs); i < names.length; ++i) {
-                                    const name = names[i];
-                                    const value = attrs[name];
-                                    if (typeof value !== 'function')
-                                        continue;
-                                    el.removeEventListener(name, value);
-                                }
-                            dom_1.define(el, attrs);
-                        }
                         return el;
-                    }
-                    function defaultFactory(factory, tag, attrs) {
-                        return factory(tag, attrs);
+                        function defaultFactory(tag, as, children, ...args) {
+                            return dom_1.isChildren(as) ? baseFactory(tag, attrs || {}, as, ...args) : baseFactory(tag, {
+                                ...as,
+                                ...attrs
+                            }, children, ...args);
+                        }
                     }
                 }
             }
@@ -1896,7 +1895,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
+            exports.isChildren = exports.define = exports.element = exports.text = exports.svg = exports.html = exports.frag = exports.shadow = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const memoize_1 = _dereq_('spica/memoize');
@@ -2049,6 +2048,7 @@ require = function () {
             function isChildren(o) {
                 return !!(o === null || o === void 0 ? void 0 : o[global_1.Symbol.iterator]);
             }
+            exports.isChildren = isChildren;
             function equal(node, data) {
                 return typeof data === 'string' ? 'wholeText' in node && node.data === data : node === data;
             }
