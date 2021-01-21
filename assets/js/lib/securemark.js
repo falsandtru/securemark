@@ -5893,28 +5893,31 @@ require = function () {
             }
             const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).flatMap(([k, v]) => alias_1.isFrozen(v) ? [k] : []), new WeakMap());
             function attributes(syntax, classes, spec, params, remap = {}) {
+                var _a, _b, _c, _d;
                 let invalid = false;
-                const attrs = params.reduce((attrs, param) => {
-                    var _a, _b, _c, _d;
-                    param = param.slice(1);
+                const attrs = alias_1.ObjectCreate(null);
+                for (let i = 0; i < params.length; ++i) {
+                    const param = params[i].slice(1);
                     let key = param.split('=', 1)[0];
                     let val = param !== key ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1') : global_1.undefined;
                     invalid = invalid || !spec || key in attrs;
-                    if (((_a = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _a === void 0 ? void 0 : _a.length) === 0 && val || ((_b = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _b === void 0 ? void 0 : _b.includes(val))) {
-                        (_c = attrs[key]) !== null && _c !== void 0 ? _c : attrs[key] = global_1.undefined;
-                        [key, val] = remap[key] ? (_d = remap[key](val, key)) !== null && _d !== void 0 ? _d : [
-                            key,
-                            global_1.undefined
-                        ] : [
-                            key,
-                            val
-                        ];
+                    if (val && ((_a = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _a === void 0 ? void 0 : _a.length) === 0 || ((_b = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _b === void 0 ? void 0 : _b.includes(val))) {
+                        if (remap[key]) {
+                            (_c = attrs[key]) !== null && _c !== void 0 ? _c : attrs[key] = global_1.undefined;
+                            [key, val] = (_d = remap[key](key, val)) !== null && _d !== void 0 ? _d : [
+                                key,
+                                global_1.undefined
+                            ];
+                            val !== global_1.undefined && array_1.splice(params, i--, 1);
+                        } else {
+                            array_1.splice(params, i--, 1);
+                        }
                         attrs[key] = val;
                     } else {
                         invalid = invalid || !!spec;
+                        array_1.splice(params, i--, 1);
                     }
-                    return attrs;
-                }, alias_1.ObjectCreate(null));
+                }
                 invalid = invalid || !!spec && !requiredAttributes(spec).every(k => k in attrs);
                 if (invalid) {
                     !classes.includes('invalid') && classes.push('invalid');
@@ -6258,7 +6261,6 @@ require = function () {
                     ];
                 cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
                 typed_dom_1.define(el, html_1.attributes('media', array_1.push([], el.classList), optspec, params, remap));
-                params = params.filter(p => !p.startsWith(' aspect-ratio'));
                 return ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.link) !== null && _f !== void 0 ? _f : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context) : [
                     [el],
                     rest
@@ -7397,10 +7399,7 @@ require = function () {
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
-                const el = typed_dom_1.html('div', {
-                    class: 'media',
-                    style: 'position: relative;'
-                }, [
+                const el = typed_dom_1.html('div', { class: 'media' }, [
                     typed_dom_1.html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.html('object', {
                             type: 'application/pdf',
                             data: url.href,
@@ -7437,10 +7436,7 @@ require = function () {
                             return;
                         if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                             return;
-                        return typed_dom_1.HTML.div({
-                            class: 'media',
-                            style: 'position: relative;'
-                        }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
+                        return typed_dom_1.HTML.div({ class: 'media' }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
                             const outer = h(tag);
                             $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                                 dataType: 'jsonp',
@@ -7531,14 +7527,11 @@ require = function () {
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
-                const el = typed_dom_1.html('div', {
-                    class: 'media',
-                    style: 'position: relative;'
-                }, [typed_dom_1.html('div', { style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.html('iframe', {
+                const el = typed_dom_1.html('div', { class: 'media' }, [typed_dom_1.html('div', { style: 'position: relative; padding-top: 56.25%;' }, [typed_dom_1.html('iframe', {
                             src: `https://www.youtube.com/embed/${ id }`,
                             allowfullscreen: '',
                             frameborder: '0',
-                            style: 'position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
+                            style: 'display: block; aspect-ratio: 16/9; position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
                         })])]);
                 cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;

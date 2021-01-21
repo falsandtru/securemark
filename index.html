@@ -904,6 +904,7 @@
   document.getElementById('chars').textContent = editor.getValue().length;
   let wait;
   (async () => {
+    await new Promise(requestAnimationFrame);
     log(await display());
     let timer = 0;
     editor.on('change', run);
