@@ -347,6 +347,7 @@ require = function () {
             const array_1 = _dereq_('./array');
             class Cache {
                 constructor(capacity, callback = () => global_1.undefined, opts = {}) {
+                    var _a;
                     this.capacity = capacity;
                     this.callback = callback;
                     this.settings = {
@@ -373,11 +374,15 @@ require = function () {
                         LRU,
                         LFU
                     };
-                    this.store = new global_1.Map(entries);
+                    this.store = new global_1.Map();
+                    for (const [key, value] of entries) {
+                        value === global_1.undefined ? (_a = this.nullish) !== null && _a !== void 0 ? _a : this.nullish = true : global_1.undefined;
+                        this.store.set(key, value);
+                    }
                     if (!opts.data)
                         return;
-                    for (const k of array_1.push(stats[1].slice(LFU.length), stats[0].slice(LRU.length))) {
-                        this.store.delete(k);
+                    for (const key of array_1.push(stats[1].slice(LFU.length), stats[0].slice(LRU.length))) {
+                        this.store.delete(key);
                     }
                     if (this.store.size !== LFU.length + LRU.length)
                         throw new Error(`Spica: Cache: Size of stats and entries is not matched.`);
@@ -388,7 +393,8 @@ require = function () {
                         throw new Error(`Spica: Cache: Keys of stats and entries is not matched.`);
                 }
                 put(key, value) {
-                    !this.nullish && value === global_1.undefined ? this.nullish = true : global_1.undefined;
+                    var _a;
+                    value === global_1.undefined ? (_a = this.nullish) !== null && _a !== void 0 ? _a : this.nullish = true : global_1.undefined;
                     const hit = this.store.has(key);
                     if (hit && this.access(key))
                         return this.store.set(key, value), true;
@@ -2516,12 +2522,13 @@ require = function () {
             const match_1 = _dereq_('./match');
             const surround_1 = _dereq_('./surround');
             const memoize_1 = _dereq_('spica/memoize');
+            const cache_1 = _dereq_('spica/cache');
             const array_1 = _dereq_('spica/array');
             function indent(parser) {
                 return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, memoize_1.memoize(([, indent]) => some_1.some(line_1.line(surround_1.open(indent, source => [
                     [line_1.firstline(source, false)],
                     ''
-                ]))), ([, indent]) => indent)), (rs, rest, context) => {
+                ]))), ([, indent]) => indent, new cache_1.Cache(9))), (rs, rest, context) => {
                     const result = parser(array_1.join(rs, '\n'), context);
                     return result && parser_1.exec(result) === '' ? [
                         parser_1.eval(result),
@@ -2539,6 +2546,7 @@ require = function () {
             './match': 39,
             './surround': 44,
             'spica/array': 6,
+            'spica/cache': 9,
             'spica/global': 14,
             'spica/memoize': 15
         }
@@ -5786,6 +5794,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const source_1 = _dereq_('../source');
             const memoize_1 = _dereq_('spica/memoize');
+            const cache_1 = _dereq_('spica/cache');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             const tags = alias_1.ObjectFreeze([
@@ -5810,7 +5819,7 @@ require = function () {
                     [typed_dom_1.html(tag, attributes('html', [], attrspec[tag], as))],
                     rest
                 ]), ([, tag]) => tag)),
-                combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.validate(new global_1.RegExp(`^<${ tag }[^\\n>]*>\\S[\\s\\S]*?</${ tag }>`), combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
+                combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.validate(`<${ tag }`, `</${ tag }>`, combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
                     switch (tag) {
                     case 'bdo':
                     case 'bdi':
@@ -5834,7 +5843,7 @@ require = function () {
                     [elem(tag, as, util_1.trimEndBR(bs), cs, context)],
                     rest
                 ] : global_1.undefined)), ([, tag]) => tag)),
-                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, ([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
+                combinator_1.match(/^(?=<([a-z]+)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`)), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest) => util_1.isEndTight(bs) ? [
                     [elem(tag, as, util_1.trimEndBR(bs), cs, {})],
                     rest
                 ] : as.length === 1 ? [
@@ -5843,7 +5852,7 @@ require = function () {
                 ] : global_1.undefined, ([as, bs], rest) => as.length === 1 ? [
                     array_1.unshift(as, bs),
                     rest
-                ] : global_1.undefined))
+                ] : global_1.undefined), new cache_1.Cache(9)))
             ]))));
             exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]);
             function elem(tag, as, bs, cs, context) {
@@ -5937,6 +5946,7 @@ require = function () {
             '../util': 133,
             'spica/alias': 5,
             'spica/array': 6,
+            'spica/cache': 9,
             'spica/global': 14,
             'spica/memoize': 15,
             'typed-dom': 23
