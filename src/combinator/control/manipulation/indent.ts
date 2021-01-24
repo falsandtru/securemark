@@ -6,6 +6,7 @@ import { bind } from '../monad/bind';
 import { match } from './match';
 import { open } from './surround';
 import { memoize } from 'spica/memoize';
+import { Cache } from 'spica/cache';
 import { join } from 'spica/array';
 
 export function indent<P extends Parser<unknown>>(parser: P): P;
@@ -16,7 +17,8 @@ export function indent<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): Pa
     memoize(
     ([, indent]) =>
       some(line(open(indent, source => [[firstline(source, false)], '']))),
-    ([, indent]) => indent)),
+    ([, indent]) => indent,
+    new Cache<string>(9))),
     (rs, rest, context) => {
       const result = parser(join(rs, '\n'), context);
       return result && exec(result) === ''

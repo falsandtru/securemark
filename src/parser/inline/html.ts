@@ -6,6 +6,7 @@ import { union, some, validate, context, creator, surround, match, lazy } from '
 import { startTight, isEndTight, trimEndBR, defrag, stringify } from '../util';
 import { str } from '../source';
 import { memoize } from 'spica/memoize';
+import { Cache } from 'spica/cache';
 import { unshift, push, splice, join } from 'spica/array';
 import { html as h } from 'typed-dom';
 
@@ -70,8 +71,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
       ([, tag]) => tag)),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
-    // Don't memoize this function because this key size is unlimited
-    // and it makes a vulnerability of memory leaks.
+    memoize(
     ([, tag]) =>
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
@@ -86,7 +86,8 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         ([as, bs], rest) =>
           as.length === 1
             ? [unshift(as, bs), rest]
-            : undefined)),
+            : undefined),
+      new Cache(9))),
 ]))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
