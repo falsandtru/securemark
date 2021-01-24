@@ -1,4 +1,4 @@
-import { undefined, RegExp } from 'spica/global';
+import { undefined } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
@@ -34,7 +34,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     /^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/,
     memoize(
     ([, tag]) =>
-      validate(new RegExp(`^<${tag}[^\\n>]*>\\S[\\s\\S]*?</${tag}>`),
+      validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
         startTight(
