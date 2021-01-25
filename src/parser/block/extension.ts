@@ -3,9 +3,9 @@ import { union, validate } from '../../combinator';
 import { figbase } from './extension/figbase';
 import { fig, segment as seg_fig } from './extension/fig';
 import { figure, segment as seg_figure } from './extension/figure';
-import { example } from './extension/example';
-import { aside } from './extension/aside';
 import { table, segment as seg_table } from './extension/table';
+import { aside } from './extension/aside';
+import { example } from './extension/example';
 import { placeholder, segment as seg_placeholder } from './extension/placeholder';
 
 export const segment: ExtensionParser.SegmentParser = validate(['~~~', '[$', '$'], validate(/^~{3,}|^\[?\$[a-z-]\S+[^\S\n]*(?:$|\n)/, union([
@@ -19,8 +19,8 @@ export const extension: ExtensionParser = union([
   figbase,
   fig,
   figure,
-  example,
-  aside,
   table,
+  aside,
+  example,
   placeholder,
 ]);

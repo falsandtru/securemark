@@ -310,9 +310,9 @@ export namespace MarkdownParser {
         ExtensionParser.FigbaseParser,
         ExtensionParser.FigParser,
         ExtensionParser.FigureParser,
-        ExtensionParser.ExampleParser,
-        ExtensionParser.AsideParser,
         ExtensionParser.TableParser,
+        ExtensionParser.AsideParser,
+        ExtensionParser.ExampleParser,
         ExtensionParser.PlaceholderParser,
       ], Context> {
     }
@@ -414,29 +414,6 @@ export namespace MarkdownParser {
           ], Context> {
         }
       }
-      export interface ExampleParser extends
-        // ~~~example
-        // ~~~
-        Block<'extension/example'>,
-        Parser<HTMLElement, [
-          MarkdownParser,
-        ], Context> {
-      }
-      export namespace ExampleParser {
-        export interface SegmentParser extends
-          Block<'extension/example/segment'>,
-          Parser<never, [], Context> {
-        }
-      }
-      export interface AsideParser extends
-        // ~~~aside
-        // ## title
-        // ~~~
-        Block<'extension/aside'>,
-        Parser<HTMLElement, [
-          MarkdownParser,
-        ], Context> {
-      }
       export interface TableParser extends
         // ~~~table
         // -/-
@@ -494,6 +471,23 @@ export namespace MarkdownParser {
             ], Context> {
           }
         }
+      }
+      export interface AsideParser extends
+        // ~~~aside
+        // ## title
+        // ~~~
+        Block<'extension/aside'>,
+        Parser<HTMLElement, [
+          MarkdownParser,
+        ], Context> {
+      }
+      export interface ExampleParser extends
+        // ~~~example
+        // ~~~
+        Block<'extension/example'>,
+        Parser<HTMLElement, [
+          MarkdownParser,
+        ], Context> {
       }
       export interface PlaceholderParser extends
         // ~~~abc
