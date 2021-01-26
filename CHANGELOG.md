@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.200.0
+
+- Add message syntax.
+
 ## 0.199.1
 
 - Refactoring.

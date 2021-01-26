@@ -311,6 +311,7 @@ export namespace MarkdownParser {
         ExtensionParser.FigParser,
         ExtensionParser.FigureParser,
         ExtensionParser.TableParser,
+        ExtensionParser.MessageParser,
         ExtensionParser.AsideParser,
         ExtensionParser.ExampleParser,
         ExtensionParser.PlaceholderParser,
@@ -470,6 +471,31 @@ export namespace MarkdownParser {
               DataParser,
             ], Context> {
           }
+        }
+      }
+      export interface MessageParser extends
+        // ~~~message/note
+        // Message
+        // ~~~
+        Block<'extension/message'>,
+        Parser<HTMLElement, [
+          MessageParser.ContentParser,
+        ], Context> {
+      }
+      export namespace MessageParser {
+        export interface ContentParser extends
+          Block<'extension/message/content'>,
+          Parser<HTMLElement, [
+            SourceParser.EmptyLineParser,
+            BlockParser.UListParser,
+            BlockParser.OListParser,
+            BlockParser.IListParser,
+            BlockParser.TableParser,
+            BlockParser.CodeBlockParser,
+            BlockParser.MathBlockParser,
+            BlockParser.BlockquoteParser,
+            BlockParser.ParagraphParser,
+          ], Context> {
         }
       }
       export interface AsideParser extends
