@@ -1,11 +1,8 @@
-import { location } from 'spica/global';
-import { ReadonlyURL } from 'spica/url';
 import { define } from 'typed-dom';
 
 export function quote(anchor: string, range: Range): string {
   let expansion = expand(range);
   const node = range.cloneContents();
-  const base = location.href;
   for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (true) {
@@ -14,7 +11,7 @@ export function quote(anchor: string, range: Range): string {
         define(el, el.getAttribute('data-src')!);
         continue;
       case el.matches('.media'):
-        el.replaceWith(`!{ ${new ReadonlyURL(el.getAttribute('data-src')!, base).href} }`);
+        el.replaceWith(`!{${el.getAttribute('data-src')!.replace(/^.*?[\s{}].*$/, ' $& ')}}`);
         continue;
       case el.matches('rt, rp'):
         el.remove();
