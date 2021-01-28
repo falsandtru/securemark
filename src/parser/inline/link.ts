@@ -116,10 +116,8 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
     case 'http:':
     case 'https:':
       uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
-      if (uri.host) return true;
-      type = 'argument';
-      description = 'Invalid host.';
-      break;
+      assert(uri.host);
+      return true;
     case 'tel:':
       if (target.tagName !== 'A') break;
       if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` === source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '')) return true;
