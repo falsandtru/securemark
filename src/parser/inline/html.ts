@@ -48,11 +48,15 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
                 syntax: { inline: {
                   annotation: false,
                   reference: false,
+                  media: false,
                 }},
               };
             case 'small':
               return {
-                state: { in: { small: true } }
+                state: { in: { small: true } },
+                syntax: { inline: {
+                  media: false,
+                }},
               };
             default:
               return {};
