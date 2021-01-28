@@ -628,20 +628,20 @@ export namespace MarkdownParser {
     }
     export interface ReferenceParser extends
       // [[abc]]
-      // [[^alias]]
-      // [[^alias| abc]]
+      // [[^abbr]]
+      // [[^abbr| abc]]
       Inline<'reference'>,
       Parser<HTMLElement, [
-        ReferenceParser.AliasParser,
+        ReferenceParser.AbbrParser,
         InlineParser,
       ], Context> {
     }
     export namespace ReferenceParser {
-      export interface AliasParser extends
+      export interface AbbrParser extends
         // ^Xyz2020
         // ^X, 2020, p1-2
         // ^X. Y., Z et al., 2020, p1-2
-        Inline<'reference/alias'>,
+        Inline<'reference/abbr'>,
         Parser<HTMLElement, [
           SourceParser.StrParser,
         ], Context> {

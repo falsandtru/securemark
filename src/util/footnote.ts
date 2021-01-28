@@ -17,15 +17,15 @@ export function* footnote(
 }
 
 export const annotation = build('annotation', n => `*${n}`);
-export const reference = build('reference', n => `[${n}]`);
+export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 
 const identify = memoize<HTMLElement, string>(
-  ref => ref.getAttribute('data-alias') || ref.innerHTML,
+  ref => ref.getAttribute('data-abbr') || ref.innerHTML,
   new WeakMap());
 
 function build(
   syntax: string,
-  marker: (index: number) => string,
+  marker: (index: number, abbr: string | undefined) => string,
 ): (target: ParentNode & Node, footnote?: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   assert(syntax.match(/^[a-z]+$/));
   const contentify = memoize<HTMLElement, DocumentFragment>(
@@ -41,6 +41,7 @@ function build(
       const ref = es[i];
       ++count;
       const identifier = identify(ref);
+      const abbr = ref.getAttribute('data-abbr') || undefined;
       const title = ref.classList.contains('invalid')
         ? undefined
         : titles.get(identifier) || ref.title || text(ref) || undefined;
@@ -85,9 +86,9 @@ function build(
                 'data-invalid-description': 'Missing the content.',
               }
         },
-        refChild?.getAttribute('href')?.slice(1) === defId && refChild?.textContent === marker(defIndex)
+        refChild?.getAttribute('href')?.slice(1) === defId && refChild?.textContent === marker(defIndex, abbr)
           ? undefined
-          : [html('a', { href: refId && defId && `#${defId}` }, marker(defIndex))])
+          : [html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr))])
         .firstChild as HTMLAnchorElement;
       assert(ref.title || ref.matches('.invalid'));
       assert(ref.firstChild);
@@ -95,7 +96,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: content.firstChild && ref.hasAttribute('data-alias')
+            title: content.firstChild && abbr
               ? title
               : undefined,
           },

@@ -20,22 +20,22 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
     //link: true,
     //autolink: true,
   }}, state: undefined },
-  subsequence([alias, startTight(some(inline, ']', /^\\?\n/))])))),
+  subsequence([abbr, startTight(some(inline, ']', /^\\?\n/))])))),
   ']]', false,
   ([, ns], rest) =>
     isEndTight(ns)
       ? [[html('sup', { class: 'reference', ...attributes(ns) }, defrag(ns))], rest]
       : undefined))));
 
-const alias: ReferenceParser.AliasParser = creator(fmap(surround(
+const abbr: ReferenceParser.AbbrParser = creator(fmap(surround(
   '^',
-  union([str(/^[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]),
+  union([str(/^[A-Za-z][0-9A-Za-z]*(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]),
   /^\|?(?=]])|^\|[^\S\n]?/),
   ([source]) => [html('abbr', source)]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   return {
-    'data-alias': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
+    'data-abbr': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
       ? stringify(ns.shift()!)
       : undefined
   };

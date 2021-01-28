@@ -206,7 +206,7 @@ describe('Unit: util/footnote', () => {
       }
     });
 
-    it('alias', () => {
+    it('abbr', () => {
       const target = parse('[[^a]][[^a| b]][[^a]]');
       const footnote = html('ol');
       for (let i = 0; i < 3; ++i) {
@@ -215,14 +215,14 @@ describe('Unit: util/footnote', () => {
           [...target.children].map(el => el.outerHTML),
           [
             html('p', [
-              html('sup', { class: "reference", 'data-alias': "a", id: "reference:ref:1", title: "b" }, [
-                html('a', { href: "#reference:def:1" }, '[1]')
+              html('sup', { class: "reference", 'data-abbr': "a", id: "reference:ref:1", title: "b" }, [
+                html('a', { href: "#reference:def:1" }, '[a]')
               ]),
-              html('sup', { class: "reference", 'data-alias': "a", id: "reference:ref:2", title: "b" }, [
-                html('a', { href: "#reference:def:1" }, '[1]')
+              html('sup', { class: "reference", 'data-abbr': "a", id: "reference:ref:2", title: "b" }, [
+                html('a', { href: "#reference:def:1" }, '[a]')
               ]),
-              html('sup', { class: "reference", 'data-alias': "a", id: "reference:ref:3", title: "b" }, [
-                html('a', { href: "#reference:def:1" }, '[1]')
+              html('sup', { class: "reference", 'data-abbr': "a", id: "reference:ref:3", title: "b" }, [
+                html('a', { href: "#reference:def:1" }, '[a]')
               ]),
             ]).outerHTML,
           ]);

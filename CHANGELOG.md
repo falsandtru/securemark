@@ -3,6 +3,7 @@
 ## 0.200.0
 
 - Add message syntax.
+- Change alias syntax to abbr syntax.
 
 ## 0.199.1
 
