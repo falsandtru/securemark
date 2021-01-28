@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.200.1
+
+- Fix HTML parser to allow `bdo` and `bdi` HTML tags to be nested.
+
 ## 0.200.0
 
 - Add message syntax.

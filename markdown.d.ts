@@ -28,7 +28,6 @@ export namespace MarkdownParser {
     };
     readonly state?: {
       readonly in?: {
-        readonly bdx?: boolean;
         readonly supsub?: boolean;
         readonly small?: boolean;
       };
