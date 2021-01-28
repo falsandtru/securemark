@@ -38,7 +38,17 @@
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
-  h1 {
+  .header + h1,
+  h1:first-child {
+    margin-top: 0;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 1.5rem;
     margin-bottom: 1rem;
   }
   ul {
@@ -222,6 +232,35 @@
   }
   aside.aside {
     padding: .5em;
+  }
+  .message {
+    margin-bottom: 1rem;
+    border: solid 1px;
+    border-radius: 5px;
+    padding: .5em;
+  }
+  .message.type-note {
+    background-image: linear-gradient(to bottom,#dff0d8 0,#c8e5bc 100%);
+    background-repeat: repeat-x;
+    border-color: #b2dba1;
+    color: #3c763d;
+  }
+  .message.type-caution {
+    background-image: linear-gradient(to bottom,#fcf8e3 0,#f8efc0 100%);
+    background-repeat: repeat-x;
+    border-color: #f5e79e;
+    color: #8a6d3b;
+  }
+  .message.type-warning {
+    background-image: linear-gradient(to bottom,#f2dede 0,#e7c3c3 100%);
+    background-repeat: repeat-x;
+    border-color: #dca7a7;
+    color: #a94442;
+  }
+  .message > h6 {
+    margin-top: 0;
+    font-size: 1rem;
+    font-weight: bold;
   }
   table {
     margin-bottom: 1rem;
@@ -455,7 +494,7 @@
 <!-- ----- PRIMARY ------------------------------------------------------------ -->
 <div id="primary" class="col-12">
 <article id="content" class="row">
-  <div class="col-6 w-100 h-100"><textarea id="editor" spellcheck="false"></textarea></div>
+  <div class="col-6 w-100 h-100 notranslate"><textarea id="editor" spellcheck="false"></textarea></div>
   <div id="viewer" class="col-6 w-100 h-100"><ol id="annotation" class="footnote"></ol><ol id="reference" class="footnote"></ol></div>
 </article>
 <aside></aside>
@@ -804,7 +843,7 @@
     '',
     '## Annotation and Reference',
     '',
-    'Annotation and Reference syntax generate footnotes((*without manual numbering*.))((Another annotation.))[[^alias]][[^alias|A reference.]].',
+    'Annotation and Reference syntax generate footnotes((*without manual numbering*.))((Another annotation.))[[^abbr]][[^abbr|A reference.]].',
     '',
     '## Link',
     '',
