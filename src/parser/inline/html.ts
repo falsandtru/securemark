@@ -120,6 +120,7 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
     case cs.length === 0:
       return invalid('closer', `Missing the closing HTML tag <${tag}>.`, as, bs, cs);
     default:
+      assert(attrs);
       return h(tag as 'span', attrs, defrag(bs));
   }
 }
