@@ -2,10 +2,12 @@ import { undefined, Array } from 'spica/global';
 import { push } from 'spica/array';
 import { html } from 'typed-dom';
 
+// Bug: Firefox
+//const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join();
+const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${s}[id]`).join();
+
 export function toc(source: DocumentFragment | HTMLElement | ShadowRoot): HTMLUListElement {
-  // Bug: Firefox
-  //const es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `:scope > ${s}[id]`).join());
-  const es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${s}[id]`).join());
+  const es = source.querySelectorAll(selector);
   const hs: HTMLHeadingElement[] = Array(es.length);
   for (let i = 0; i < hs.length; ++i) {
     const el = es[i];
