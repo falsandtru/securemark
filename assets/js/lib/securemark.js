@@ -364,6 +364,7 @@ require = function () {
                         }
                     };
                     this.nullish = false;
+                    this.store = new global_1.Map();
                     if (capacity > 0 === false)
                         throw new Error(`Spica: Cache: Cache capacity must be greater than 0.`);
                     assign_1.extend(this.settings, opts);
@@ -374,7 +375,6 @@ require = function () {
                         LRU,
                         LFU
                     };
-                    this.store = new global_1.Map();
                     for (const [key, value] of entries) {
                         value === global_1.undefined ? (_a = this.nullish) !== null && _a !== void 0 ? _a : this.nullish = true : global_1.undefined;
                         this.store.set(key, value);
@@ -5902,9 +5902,6 @@ require = function () {
                 ]), ([, tag]) => tag)),
                 combinator_1.match(/^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/, memoize_1.memoize(([, tag]) => combinator_1.validate(`<${ tag }`, `</${ tag }>`, combinator_1.surround(combinator_1.surround(source_1.str(`<${ tag }`), combinator_1.some(exports.attribute), source_1.str('>'), true), util_1.startTight(combinator_1.context((() => {
                     switch (tag) {
-                    case 'bdo':
-                    case 'bdi':
-                        return { state: { in: { bdx: true } } };
                     case 'sup':
                     case 'sub':
                         return {
@@ -5912,13 +5909,18 @@ require = function () {
                             syntax: {
                                 inline: {
                                     annotation: false,
-                                    reference: false
+                                    reference: false,
+                                    media: false
                                 }
                             }
                         };
                     case 'small':
+                        return {
+                            state: { in: { small: true } },
+                            syntax: { inline: { media: false } }
+                        };
                     default:
-                        return { state: { in: { small: true } } };
+                        return {};
                     }
                 })(), combinator_1.some(combinator_1.union([inline_1.inline]), `</${ tag }>`))), source_1.str(`</${ tag }>`), false, ([as, bs, cs], rest, context) => util_1.isEndTight(bs) ? [
                     [elem(tag, as, util_1.trimEndBR(bs), cs, context)],
@@ -5937,28 +5939,21 @@ require = function () {
             ]))));
             exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]);
             function elem(tag, as, bs, cs, context) {
-                var _a, _b, _c, _d, _e, _f, _g, _h;
+                var _a, _b, _c, _d, _e, _f;
                 if (!tags.includes(tag))
                     return invalid('tag', `Invalid HTML tag <${ tag }>.`, as, bs, cs);
                 switch (tag) {
-                case 'bdo':
-                case 'bdi':
-                    switch (true) {
-                    case (_b = (_a = context.state) === null || _a === void 0 ? void 0 : _a.in) === null || _b === void 0 ? void 0 : _b.bdx:
-                        return invalid('nest', `<${ tag }> HTML tag can't be used in <bdo>/<bdi> HTML tags.`, as, bs, cs);
-                    }
-                    break;
                 case 'sup':
                 case 'sub':
                     switch (true) {
-                    case (_d = (_c = context.state) === null || _c === void 0 ? void 0 : _c.in) === null || _d === void 0 ? void 0 : _d.supsub:
+                    case (_b = (_a = context.state) === null || _a === void 0 ? void 0 : _a.in) === null || _b === void 0 ? void 0 : _b.supsub:
                         return invalid('nest', `<${ tag }> HTML tag can't be used in <sup>/<sub> HTML tags.`, as, bs, cs);
                     }
                     break;
                 case 'small':
                     switch (true) {
-                    case (_f = (_e = context.state) === null || _e === void 0 ? void 0 : _e.in) === null || _f === void 0 ? void 0 : _f.supsub:
-                    case (_h = (_g = context.state) === null || _g === void 0 ? void 0 : _g.in) === null || _h === void 0 ? void 0 : _h.small:
+                    case (_d = (_c = context.state) === null || _c === void 0 ? void 0 : _c.in) === null || _d === void 0 ? void 0 : _d.supsub:
+                    case (_f = (_e = context.state) === null || _e === void 0 ? void 0 : _e.in) === null || _f === void 0 ? void 0 : _f.small:
                         return invalid('nest', `<${ tag }> HTML tag can't be used in <sup>/<sub>/<small> HTML tags.`, as, bs, cs);
                     }
                     break;
@@ -6177,24 +6172,24 @@ require = function () {
                 let description;
                 switch (uri.protocol) {
                 case 'http:':
-                case 'https:': {
-                        uri.host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
-                        if (uri.host)
-                            return true;
-                        type = 'argument';
-                        description = 'Invalid host.';
+                case 'https:':
+                    uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
+                    if (uri.host)
+                        return true;
+                    type = 'argument';
+                    description = 'Invalid host.';
+                    break;
+                case 'tel:':
+                    if (target.tagName !== 'A')
                         break;
-                    }
-                case target.tagName === 'A' && 'tel:':
                     if (`tel:${ target.textContent.replace(/(?!^)-(?!-|$)/g, '') }` === source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, ''))
                         return true;
                     type = 'content';
                     description = 'Invalid phone number.';
                     break;
-                default:
-                    type = 'argument';
-                    description = 'Invalid protocol.';
                 }
+                type !== null && type !== void 0 ? type : type = 'argument';
+                description !== null && description !== void 0 ? description : description = 'Invalid protocol.';
                 typed_dom_1.define(target, {
                     class: void target.classList.add('invalid'),
                     'data-invalid-syntax': 'link',
@@ -6203,7 +6198,7 @@ require = function () {
                     ...target.tagName === 'A' ? {
                         href: null,
                         rel: null
-                    } : { 'data-src': null }
+                    } : global_1.undefined
                 });
                 return false;
             }
@@ -7969,14 +7964,11 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.quote = void 0;
-            const global_1 = _dereq_('spica/global');
-            const url_1 = _dereq_('spica/url');
             const typed_dom_1 = _dereq_('typed-dom');
             function quote(anchor, range) {
                 var _a;
                 let expansion = expand(range);
                 const node = range.cloneContents();
-                const base = global_1.location.href;
                 for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     switch (true) {
@@ -7985,7 +7977,7 @@ require = function () {
                         typed_dom_1.define(el, el.getAttribute('data-src'));
                         continue;
                     case el.matches('.media'):
-                        el.replaceWith(`!{ ${ new url_1.ReadonlyURL(el.getAttribute('data-src'), base).href } }`);
+                        el.replaceWith(`!{${ el.getAttribute('data-src').replace(/^.*?[\s{}].*$/, ' $& ') }}`);
                         continue;
                     case el.matches('rt, rp'):
                         el.remove();
@@ -8041,11 +8033,7 @@ require = function () {
                 return node;
             }
         },
-        {
-            'spica/global': 14,
-            'spica/url': 21,
-            'typed-dom': 23
-        }
+        { 'typed-dom': 23 }
     ],
     152: [
         function (_dereq_, module, exports) {
@@ -8106,8 +8094,9 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
+            const selector = 'h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${ s }[id]`).join();
             function toc(source) {
-                const es = source.querySelectorAll('h1 h2 h3 h4 h5 h6 aside.aside'.split(' ').map(s => `${ s }[id]`).join());
+                const es = source.querySelectorAll(selector);
                 const hs = global_1.Array(es.length);
                 for (let i = 0; i < hs.length; ++i) {
                     const el = es[i];
