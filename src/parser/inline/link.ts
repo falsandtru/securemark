@@ -140,9 +140,7 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
           href: null,
           rel: null,
         }
-      : {
-          'data-src': null,
-        },
+      : undefined,
   });
   return false;
 }
