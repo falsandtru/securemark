@@ -114,23 +114,21 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
   let description: string;
   switch (uri.protocol) {
     case 'http:':
-    case 'https:': {
-      uri.host && uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
+    case 'https:':
+      uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
       if (uri.host) return true;
       type = 'argument';
       description = 'Invalid host.';
       break;
-    }
-    case target.tagName === 'A'
-      && 'tel:':
+    case 'tel:':
+      if (target.tagName !== 'A') break;
       if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` === source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '')) return true;
       type = 'content';
       description = 'Invalid phone number.';
       break;
-    default:
-      type = 'argument';
-      description = 'Invalid protocol.';
   }
+  type ??= 'argument';
+  description ??= 'Invalid protocol.';
   assert(!target.classList.contains('invalid'));
   define(target, {
     class: void target.classList.add('invalid'),
