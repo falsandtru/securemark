@@ -31,7 +31,7 @@ export const paragraph: ParagraphParser = block(fmap(
         : define(el, {
             class: 'invalid',
             'data-invalid-syntax': 'paragraph',
-            'data-invalid-type': 'visibility',
+            'data-invalid-type': 'content',
             'data-invalid-description': 'Paragraphs must have a visible content.',
           })
     ];
