@@ -8,7 +8,8 @@ import { html } from 'typed-dom';
 
 export const syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
 
-export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(
+export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
+  '>',
   union([
     rewrite(
       some(validate(/^>+(?:$|\s)/, contentline)),
@@ -16,7 +17,7 @@ export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creat
     rewrite(
       some(validate(syntax, contentline)),
       convert(source => source.replace(/\n$/, ''), block_)),
-  ]),
+  ])),
   ns => [html('span', { class: 'quote' }, ns)]),
   false)));
 

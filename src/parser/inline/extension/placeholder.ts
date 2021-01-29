@@ -7,7 +7,7 @@ import { html } from 'typed-dom';
 
 // Don't use the symbols already used: !#$@&*+~=
 
-export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(validate('[', ']', surround(
+export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator(validate(['[:', '[^'], ']', surround(
   str(/^\[[:^]/),
   startTight(some(union([inline]), ']')),
   str(']'), false,

@@ -19,7 +19,6 @@ const remap = {
 
 export const link: LinkParser = lazy(() => creator(10, bind(reverse(
   validate(['[', '{'], '}', '\n',
-  validate(/^(?:\[[^\n]*?\])?\{[^\n]+?\}/,
   guard(context => context.syntax?.inline?.link ?? true,
   tails([
     context({ syntax: { inline: {
@@ -46,7 +45,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
         true),
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
-  ]))))),
+  ])))),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
     if (!isEndTight(content)) return;

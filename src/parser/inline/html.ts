@@ -19,7 +19,7 @@ const attrspec = {
 ObjectSetPrototypeOf(attrspec, null);
 ObjectValues(attrspec).forEach(o => ObjectSetPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => creator(validate('<', union([
+export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-z]+[ >]/, union([
   match(
     /^(?=<(wbr)(?=[ >]))/,
     memoize(
@@ -73,6 +73,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
     /^(?=<([a-z]+)(?=[ >]))/,
     memoize(
     ([, tag]) =>
+      validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
         startTight(some(union([inline]), `</${tag}>`)),
@@ -86,9 +87,9 @@ export const html: HTMLParser = lazy(() => creator(validate('<', union([
         ([as, bs], rest) =>
           as.length === 1
             ? [unshift(as, bs), rest]
-            : undefined),
+            : undefined)),
       new Cache(9))),
-]))));
+])))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/),
