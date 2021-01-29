@@ -1,4 +1,4 @@
-import { undefined, RegExp } from 'spica/global';
+import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, inits, sequence, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
 import { justify, defrag } from '../../util';
@@ -20,7 +20,7 @@ import FigureParser = ExtensionParser.FigureParser;
 export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
   memoize(
-  ([, fence], closer = new RegExp(`^${fence}[^\\S\\n]*(?:$|\\n)`)) =>
+  ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) =>
     close(
       sequence([
         line(seg_label),
