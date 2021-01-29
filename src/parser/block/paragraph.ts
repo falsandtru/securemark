@@ -20,7 +20,7 @@ export const paragraph: ParagraphParser = block(justify(fmap(
       ns => push(ns, [html('br')])),
   ])),
   ns => {
-    if (ns.length === 0) return [];
+    assert(ns.length > 0);
     const el = html('p', defrag(pop(ns)[0]));
     return [
       isVisible(el)
