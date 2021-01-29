@@ -1,6 +1,6 @@
 import { ParagraphParser } from '../block';
-import { subsequence, some, block, rewrite, convert, trim, fmap } from '../../combinator';
-import { defrag } from '../util';
+import { subsequence, some, block, rewrite, trim, fmap } from '../../combinator';
+import { justify, defrag } from '../util';
 import { mention } from './paragraph/mention';
 import { syntax as delimiter } from './paragraph/mention/quote';
 import { inline } from '../inline';
@@ -8,10 +8,7 @@ import { anyline } from '../source';
 import { pop, push } from 'spica/array';
 import { html, define } from 'typed-dom';
 
-export const blankline = /^(?:\\?\s)*\\?(?:\n|$)/gm;
-
-export const paragraph: ParagraphParser = block(fmap(
-  convert(source => source.replace(blankline, ''),
+export const paragraph: ParagraphParser = block(justify(fmap(
   some(subsequence([
     fmap(
       some(mention),
@@ -21,7 +18,7 @@ export const paragraph: ParagraphParser = block(fmap(
         some(anyline, delimiter),
         trim(some(inline))),
       ns => push(ns, [html('br')])),
-  ]))),
+  ])),
   ns => {
     if (ns.length === 0) return [];
     const el = html('p', defrag(pop(ns)[0]));
@@ -35,7 +32,7 @@ export const paragraph: ParagraphParser = block(fmap(
             'data-invalid-description': 'Paragraphs must have a visible content.',
           })
     ];
-  }));
+  })));
 
 function isVisible(node: HTMLElement): boolean {
   return node.innerText.trimStart() !== ''

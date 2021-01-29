@@ -1,10 +1,50 @@
 import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
-import { Parser, Ctx, eval, fmap } from '../combinator';
+import { Parser, Ctx, convert, eval, fmap } from '../combinator';
 import { Data, SubParsers, Context } from '../combinator/data/parser';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { pop } from 'spica/array';
+
+export function justify<P extends Parser<unknown>>(parser: P): P;
+export function justify<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
+  const entities = [
+    'Tab',
+    'NewLine',
+    'nbsp',
+    'NonBreakingSpace',
+    'shy',
+    'ensp',
+    'emsp',
+    'emsp13',
+    'emsp14',
+    'numsp',
+    'puncsp',
+    'thinsp',
+    'ThinSpace',
+    'hairsp',
+    'VeryThinSpace',
+    'ZeroWidthSpace',
+    'NegativeVeryThinSpace',
+    'NegativeThinSpace',
+    'NegativeMediumSpace',
+    'NegativeThickSpace',
+    'zwnj',
+    'zwj',
+    'lrm',
+    'rlm',
+    'MediumSpace',
+    'NoBreak',
+    'ApplyFunction',
+    'af',
+    'InvisibleTimes',
+    'it',
+    'InvisibleComma',
+    'ic',
+  ];
+  const blankline = new RegExp(String.raw`^(?:\\?\s|&(?:${entities.join('|')});)*\\?(?:\n|$)`, 'gm');
+  return convert(source => source.replace(blankline, ''), parser);
+}
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;

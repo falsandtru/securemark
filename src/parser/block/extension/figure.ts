@@ -1,7 +1,7 @@
 import { undefined, RegExp } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, inits, sequence, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
-import { defrag } from '../../util';
+import { justify, defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
 import { table as styled_table } from '../table';
@@ -11,7 +11,6 @@ import { blockquote, segment as seg_blockquote } from '../blockquote';
 import { example } from './example';
 import { table, segment_ as seg_table } from './table';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
-import { blankline } from '../paragraph';
 import { inline, media, shortmedia } from '../../inline';
 import { memoize } from 'spica/memoize';
 import { html } from 'typed-dom';
@@ -63,9 +62,8 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
       ])),
       emptyline,
       block(
-        convert(source => source.replace(blankline, ''),
         context({ syntax: { inline: { media: false } } },
-        trim(some(inline))))),
+        justify(trim(some(inline))))),
     ]),
   ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [

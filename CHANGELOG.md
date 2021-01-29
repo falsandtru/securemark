@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.200.2
+
+- Fix removal of blank lines.
+
 ## 0.200.1
 
 - Fix html parser to disable media syntax in `sup`, `sub`, and `small` HTML tags.
