@@ -10,7 +10,7 @@ import { Cache } from 'spica/cache';
 import { join } from 'spica/array';
 
 export function indent<P extends Parser<unknown>>(parser: P): P;
-export function indent<T, D extends Parser<unknown>[]>(parser: Parser<T, D>): Parser<T, D> {
+export function indent<T>(parser: Parser<T>): Parser<T> {
   assert(parser);
   return bind(match(
     /^(?=(([^\S\n])\2*))/,

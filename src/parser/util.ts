@@ -7,7 +7,7 @@ import { htmlentity } from './inline/htmlentity';
 import { pop } from 'spica/array';
 
 export function justify<P extends Parser<unknown>>(parser: P): P;
-export function justify<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
+export function justify<T>(parser: Parser<T>): Parser<T> {
   const entities = [
     'Tab',
     'NewLine',
@@ -88,7 +88,7 @@ function isVisible(node: HTMLElement | string | undefined, dir: 'start' | 'end',
 }
 
 export function startTight<P extends Parser<unknown>>(parser: P): P;
-export function startTight<T, D extends Parser<unknown, any>[]>(parser: Parser<T, D>): Parser<T, D> {
+export function startTight<T>(parser: Parser<T>): Parser<T> {
   return (source, context) => {
     if (source === '') return;
     switch (source[0]) {
@@ -137,7 +137,7 @@ export function trimEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | strin
 
 export function dup<P extends Parser<unknown[]>>(parser: Parser<Data<P>[number], SubParsers<P>, Context<P>>): P;
 export function dup<T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>): Parser<T[], D, C>;
-export function dup<T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>): Parser<T[], D, C> {
+export function dup<T>(parser: Parser<T>): Parser<T[]> {
   return fmap(parser, ns => [ns]);
 }
 

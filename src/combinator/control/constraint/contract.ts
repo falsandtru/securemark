@@ -3,14 +3,14 @@ import { isArray } from 'spica/alias';
 import { Parser, Ctx, Data, Context, eval, exec, check } from '../../data/parser';
 
 //export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
-//export function contract<T, D extends Parser<unknown>[]>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T, D>, cond: (results: readonly T[], rest: string) => boolean): Parser<T, D> {
+//export function contract<T>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T>, cond: (results: readonly T[], rest: string) => boolean): Parser<T> {
 //  return verify(validate(patterns, parser), cond);
 //}
 
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P): P;
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], has: string, parser: P): P;
 export function validate<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], has: string, end: string, parser: P): P;
-export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegExp | (string | RegExp)[], has: string | Parser<T, D>, end?: string | Parser<T, D>, parser?: Parser<T, D>): Parser<T, D> {
+export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has: string | Parser<T>, end?: string | Parser<T>, parser?: Parser<T>): Parser<T> {
   if (typeof has === 'function') return validate(patterns, '', '', has);
   if (typeof end === 'function') return validate(patterns, has, '', end);
   if (!isArray(patterns)) return validate([patterns], has, end!, parser!);
@@ -48,7 +48,7 @@ export function validate<T, D extends Parser<unknown>[]>(patterns: string | RegE
 }
 
 export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Data<P>[], rest: string, context: Context<P>) => boolean): P;
-export function verify<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, cond: (results: readonly T[], rest: string, context: Ctx) => boolean): Parser<T, D> {
+export function verify<T>(parser: Parser<T>, cond: (results: readonly T[], rest: string, context: Ctx) => boolean): Parser<T> {
   assert(parser);
   return (source, context) => {
     if (source === '') return;

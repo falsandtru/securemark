@@ -5,6 +5,6 @@ export function fmap<P extends Parser<unknown>>(parser: IntermediateParser<P>, f
 export function fmap<P extends Parser<unknown>>(parser: P, f: (rs: Data<P>[], rest: string, context: Context<P>) => Data<P>[]): P;
 export function fmap<T, P extends Parser<unknown>>(parser: Parser<T, SubParsers<P>, Context<P>>, f: (rs: T[], rest: string, context: Context<P>) => Data<P>[]): P;
 export function fmap<U, P extends Parser<unknown>>(parser: P, f: (rs: Data<P>[], rest: string, context: Context<P>) => U[]): Parser<U, SubParsers<P>, Context<P>>;
-export function fmap<T, U, D extends Parser<unknown>[]>(parser: Parser<T, D>, f: (rs: T[], rest: string, context: Ctx) => U[]): Parser<U, D> {
+export function fmap<T, U>(parser: Parser<T>, f: (rs: T[], rest: string, context: Ctx) => U[]): Parser<U> {
   return bind(parser, (rs, r, context) => [f(rs, r, context), r]);
 }

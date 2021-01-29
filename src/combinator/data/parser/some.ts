@@ -3,7 +3,7 @@ import { Parser, eval, exec, check } from '../parser';
 import { push } from 'spica/array';
 
 export function some<P extends Parser<unknown>>(parser: P, until?: string | RegExp, deep?: string | RegExp): P;
-export function some<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, until?: string | RegExp, deep?: string | RegExp): Parser<T, D> {
+export function some<T>(parser: Parser<T>, until?: string | RegExp, deep?: string | RegExp): Parser<T> {
   assert(parser);
   assert(until instanceof RegExp ? !until.global && until.source.startsWith('^') : true);
   const match: (source: string) => boolean = typeof until === 'string' && until !== undefined

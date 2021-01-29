@@ -23,11 +23,11 @@ export function surround<P extends Parser<unknown>, S = string>(
   f?: (rss: [S[], Data<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
   g?: (rss: [S[], Data<P>[] | undefined], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
 ): P;
-export function surround<T, D extends Parser<unknown>[]>(
-  opener: string | RegExp | Parser<T>, parser: Parser<T, D>, closer: string | RegExp | Parser<T>, optional: boolean = false,
-  f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T, D>,
-  g?: (rss: [T[], T[]], rest: string, context: Ctx) => Result<T, D>,
-): Parser<T, D> {
+export function surround<T>(
+  opener: string | RegExp | Parser<T>, parser: Parser<T>, closer: string | RegExp | Parser<T>, optional: boolean = false,
+  f?: (rss: [T[], T[], T[]], rest: string, context: Ctx) => Result<T>,
+  g?: (rss: [T[], T[]], rest: string, context: Ctx) => Result<T>,
+): Parser<T> {
   switch (typeof opener) {
     case 'string':
     case 'object':
@@ -80,11 +80,11 @@ function match(pattern: string | RegExp): (source: string, context: Ctx) => [nev
 }
 
 export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Data<P>, any, Context<P>>, parser: P, optional?: boolean): P;
-export function open<T, D extends Parser<unknown>[]>(opener: string | RegExp | Parser<T>, parser: Parser<T, D>, optional = false): Parser<T, D> {
+export function open<T>(opener: string | RegExp | Parser<T>, parser: Parser<T>, optional = false): Parser<T> {
   return surround(opener, parser, '', optional);
 }
 export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Data<P>, any, Context<P>>, optional?: boolean): P;
-export function close<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, closer: string | RegExp | Parser<T>, optional: boolean = false): Parser<T, D> {
+export function close<T>(parser: Parser<T>, closer: string | RegExp | Parser<T>, optional: boolean = false): Parser<T> {
   return surround('', parser, closer, optional);
 }
 

@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { Parser, eval, exec, check } from '../../data/parser';
 
 export function line<P extends Parser<unknown>>(parser: P, allowTrailingWhitespace?: boolean): P;
-export function line<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, allowTrailingWhitespace = true): Parser<T, D> {
+export function line<T>(parser: Parser<T>, allowTrailingWhitespace = true): Parser<T> {
   assert(parser);
   return (source, context) => {
     if (source === '') return;

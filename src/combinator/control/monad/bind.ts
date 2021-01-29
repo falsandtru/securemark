@@ -5,7 +5,7 @@ export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f
 export function bind<P extends Parser<unknown>>(parser: P, f: (rs: Data<P>[], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>): P;
 export function bind<T, P extends Parser<unknown>>(parser: Parser<T, SubParsers<P>, Context<P>>, f: (rs: T[], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>): P;
 export function bind<U, P extends Parser<unknown>>(parser: P, f: (rs: Data<P>[], rest: string, context: Context<P>) => Result<U, SubParsers<P>, Context<P>>): Parser<U, SubParsers<P>, Context<P>>;
-export function bind<T, U, D extends Parser<unknown, any>[]>(parser: Parser<T, D>, f: (rs: T[], rest: string, context: Ctx) => Result<U, D>): Parser<U, D> {
+export function bind<T, U>(parser: Parser<T>, f: (rs: T[], rest: string, context: Ctx) => Result<U>): Parser<U> {
   assert(parser);
   return (source, context) => {
     if (source === '') return;

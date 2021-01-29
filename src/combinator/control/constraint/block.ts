@@ -3,7 +3,7 @@ import { Parser, exec } from '../../data/parser';
 import { firstline, isEmpty } from './line';
 
 export function block<P extends Parser<unknown>>(parser: P, separation?: boolean): P;
-export function block<T, D extends Parser<unknown>[]>(parser: Parser<T, D>, separation = true): Parser<T, D> {
+export function block<T>(parser: Parser<T>, separation = true): Parser<T> {
   assert(parser);
   return (source, context) => {
     if (source === '') return;
