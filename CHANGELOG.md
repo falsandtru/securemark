@@ -2,8 +2,8 @@
 
 ## 0.200.1
 
-- Fix HTML parser to disable media syntax in `sup`, `sub`, and `small` HTML tags.
-- Fix HTML parser to allow `bdo` and `bdi` HTML tags to be nested.
+- Fix html parser to disable media syntax in `sup`, `sub`, and `small` HTML tags.
+- Fix html parser to allow `bdo` and `bdi` HTML tags to be nested.
 
 ## 0.200.0
 
@@ -493,8 +493,8 @@
 
 ## 0.147.1
 
-- Fix HTML parser to disallow annotation and reference parsers in `sup` or `sub` HTML tag.
-- Fix annotation and reference parsers to reset the state of HTML parser.
+- Fix html parser to disallow annotation and reference parsers in `sup` or `sub` HTML tag.
+- Fix annotation and reference parsers to reset the state of html parser.
 
 ## 0.147.0
 
@@ -673,9 +673,9 @@
 
 ## 0.134.0
 
-- Change HTML parser to allow any size of leading and trailing whitespace.
-- Change HTML parser not to remove leading and trailing whitespace.
-- Fix HTML parser to parse entire invalid HTML syntax including closing tags.
+- Change html parser to allow any size of leading and trailing whitespace.
+- Change html parser not to remove leading and trailing whitespace.
+- Fix html parser to parse entire invalid html syntax including closing tags.
 
 ## 0.133.1
 
@@ -1126,7 +1126,7 @@
 
 ## 0.88.2
 
-- Enable HTML entity syntax with ruby part of ruby syntax.
+- Enable htmlentity syntax with ruby part of ruby syntax.
 
 ## 0.88.1
 
@@ -1241,11 +1241,11 @@
 
 ## 0.79.4
 
-- Mark the missing of required attributes with link, media, and HTML syntax.
+- Mark the missing of required attributes with link, media, and html syntax.
 
 ## 0.79.3
 
-- Allow tailing whitespace in HTML tag of HTML syntax.
+- Allow tailing whitespace in HTML tag of html syntax.
 
 ## 0.79.2
 
@@ -1334,7 +1334,7 @@
 ## 0.72.0
 
 - Remove `mark` HTML tag.
-- Parse HTML syntax of invalid tags using another parser.
+- Parse html syntax of invalid tags using another parser.
 - Parse invalid index and label syntax using another parser.
 - Set index number of headings for TOC.
 - Remove some trailing symbols in references of figures.
@@ -1840,7 +1840,7 @@
 - Add superscript syntax.
 - Add subscript syntax.
 - Remove `u` HTML tag.
-- Improve HTML parser.
+- Improve html parser.
 - Fix code parser.
 
 ## 0.6.0
