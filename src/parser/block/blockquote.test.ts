@@ -66,8 +66,8 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('!')), undefined);
       assert.deepStrictEqual(inspect(parser('!>')), undefined);
       assert.deepStrictEqual(inspect(parser('!> ')), [['<blockquote></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> \\')), [['<blockquote><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> \\\n')), [['<blockquote><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> \\')), [['<blockquote><p>\\</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> \\\n')), [['<blockquote><p>\\</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> a')), [['<blockquote><p>a</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> a\n')), [['<blockquote><p>a</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> a\\\nb')), [['<blockquote><p>a<span class="linebreak"> </span>b</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);

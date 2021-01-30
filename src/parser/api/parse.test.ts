@@ -24,7 +24,10 @@ describe('Unit: parser/api/parse', () => {
         []);
       assert.deepStrictEqual(
         [...parse('\\').children].map(el => el.outerHTML),
-        []);
+        ['<p>\\</p>']);
+      assert.deepStrictEqual(
+        [...parse('&Tab;').children].map(el => el.outerHTML),
+        ['<p>&amp;Tab;</p>']);
     });
 
     it('linebreak', () => {
@@ -32,10 +35,10 @@ describe('Unit: parser/api/parse', () => {
       assert(!parse('*a\n*\nb').textContent?.match(/^\s*$/m));
       assert.deepStrictEqual(
         [...parse('\\ ').children].map(el => el.outerHTML),
-        []);
+        ['<p>\\</p>']);
       assert.deepStrictEqual(
         [...parse('\\\n').children].map(el => el.outerHTML),
-        []);
+        ['<p>\\</p>']);
       assert.deepStrictEqual(
         [...parse('a\\ \nb').children].map(el => el.outerHTML),
         ['<p>a <br>b</p>']);
@@ -44,10 +47,10 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
       assert.deepStrictEqual(
         [...parse('a\n\\ \nb').children].map(el => el.outerHTML),
-        ['<p>a<br>b</p>']);
+        ['<p>a<br>\\<br>b</p>']);
       assert.deepStrictEqual(
         [...parse('a\n\\\nb').children].map(el => el.outerHTML),
-        ['<p>a<br>b</p>']);
+        ['<p>a<br>\\<br>b</p>']);
     });
 
     it('url', () => {

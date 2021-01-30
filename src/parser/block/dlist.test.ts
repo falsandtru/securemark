@@ -39,7 +39,7 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a\nb')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\nb\n')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\nb\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a\nb\n\\\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a\nb\n\\\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>\\<br>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n~')), [['<dl><dt id="index:a">a</dt><dd>~</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n~b')), [['<dl><dt id="index:a">a</dt><dd>~b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n~ b')), [['<dl><dt id="index:a">a</dt><dt id="index:b">b</dt><dd></dd></dl>'], '']);
@@ -48,7 +48,7 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~ a\n: b')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\n')), [['<dl><dt id="index:a">a</dt><dd>b</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a\n: b\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
-      assert.deepStrictEqual(inspect(parser('~ a\n: b\n\\\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);
+      assert.deepStrictEqual(inspect(parser('~ a\n: b\n\\\nc')), [['<dl><dt id="index:a">a</dt><dd>b<br>\\<br>c</dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a~ b')), [['<dl><dt id="index:a~_b">a~ b</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a: b')), [['<dl><dt id="index:a:_b">a: b</dt><dd></dd></dl>'], '']);
       assert.deepStrictEqual(inspect(parser('~ a \n: b \nc ')), [['<dl><dt id="index:a">a</dt><dd>b<br>c</dd></dl>'], '']);

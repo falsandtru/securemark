@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.200.3
+
+- Improve processing of blank lines to visualize them.
+
 ## 0.200.2
 
 - Fix removal of blank lines.

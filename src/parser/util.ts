@@ -43,7 +43,17 @@ export function justify<T>(parser: Parser<T>): Parser<T> {
     'ic',
   ];
   const blankline = new RegExp(String.raw`^(?:\\?\s|&(?:${entities.join('|')});)*\\?(?:\n|$)`, 'gm');
-  return convert(source => source.replace(blankline, ''), parser);
+  return convert(source => source.replace(blankline, visualize), parser);
+
+  function visualize(line: string): string {
+    switch (line) {
+      case '':
+      case '\n':
+        return '';
+      default:
+        return line.replace(/[\\&]/g, '\\$&');
+    }
+  }
 }
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
