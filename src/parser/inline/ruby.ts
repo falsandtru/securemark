@@ -42,7 +42,7 @@ const text: RubyParser.TextParser = creator((source, context) => {
   const { resources } = context;
   const next = /[\s\\&]/;
   const acc = [''];
-  let printable = false;
+  let visible = false;
   while (source !== '') {
     assert(source[0] !== '\n');
     resources && --resources.budget;
@@ -50,21 +50,21 @@ const text: RubyParser.TextParser = creator((source, context) => {
     switch (i) {
       case -1:
         acc[acc.length - 1] += source;
-        printable = printable || !!source.trimStart();
+        visible = visible || !!source.trimStart();
         source = '';
         continue;
       case 0:
         switch (source[0]) {
           case '\\':
             acc[acc.length - 1] += source[i + 1] || '';
-            printable = printable || !!source[i + 1]?.trimStart();
+            visible = visible || !!source[i + 1]?.trimStart();
             source = source.slice(2);
             continue;
           case '&': {
             const result = htmlentity(source, context);
             const str = eval(result, [])[0] || source[0];
             acc[acc.length - 1] += str;
-            printable = printable || !!str.trimStart();
+            visible = visible || !!str.trimStart();
             source = exec(result, source.slice(str.length));
             continue;
           }
@@ -72,19 +72,19 @@ const text: RubyParser.TextParser = creator((source, context) => {
             source[0].trimStart()
               ? acc[acc.length - 1] += source[0]
               : acc.push('');
-            printable = printable || !!source[0].trimStart();
+            visible = visible || !!source[0].trimStart();
             source = source.slice(1);
             continue;
         }
       default:
         acc[acc.length - 1] += source.slice(0, i);
-        printable = printable || !!source.slice(0, i).trimStart();
+        visible = visible || !!source.slice(0, i).trimStart();
         source = source.slice(i);
         continue;
     }
   }
-  assert(printable === !!acc.join('').trimStart());
-  return printable
+  assert(visible === !!acc.join('').trimStart());
+  return visible
     ? [[acc], '']
     : undefined;
 });
