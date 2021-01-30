@@ -31,7 +31,9 @@ export const ulist_: UListParser = convert(
   ulist);
 
 export function fillFirstLine(ns: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  return typeof ns[0] === 'object' && ['UL', 'OL'].includes(ns[0].tagName)
+  return ns.length === 1
+      && typeof ns[0] === 'object'
+      && ['UL', 'OL'].includes(ns[0].tagName)
     ? unshift([html('br')], ns)
     : ns;
 }
