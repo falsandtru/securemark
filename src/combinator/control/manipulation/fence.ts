@@ -23,7 +23,7 @@ export function fence<D extends Parser<unknown, any, C>[], C extends Ctx>(opener
           line.slice(0, delim.length) === delim &&
           line.trimEnd() === delim &&
           (!separation || (next = firstline(rest.slice(line.length))).trimStart() === '')) {
-        assert(line.slice(0, delim.length) === delim);
+        assert(line.trimEnd() === delim);
         closer = delim;
         rest = rest.slice(line.length);
         break;
