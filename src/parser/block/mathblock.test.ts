@@ -19,6 +19,7 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<pre class="math notranslate invalid">$$latex\n$$</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('$$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$$\n$$$')), undefined);
+      assert.deepStrictEqual(inspect(parser(' $$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser(`$$\n${'\n'.repeat(101)}$$`), '>'), [['<pre class="math notranslate invalid">'], '']);
     });
 

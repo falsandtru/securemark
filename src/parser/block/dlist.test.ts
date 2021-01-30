@@ -24,7 +24,7 @@ describe('Unit: parser/block/dlist', () => {
       assert.deepStrictEqual(inspect(parser('~\n~\n:')), undefined);
       assert.deepStrictEqual(inspect(parser('~\n:\n:')), undefined);
       assert.deepStrictEqual(inspect(parser('~\na')), undefined);
-      assert.deepStrictEqual(inspect(parser(' ~')), undefined);
+      assert.deepStrictEqual(inspect(parser(' ~ ')), undefined);
     });
 
     it('single', () => {

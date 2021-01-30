@@ -18,6 +18,7 @@ describe('Unit: parser/block/codeblock', () => {
       assert.deepStrictEqual(inspect(parser('```\na\n```\nb')), [['<pre class="notranslate invalid">```\na\n```\nb</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n````')), [['<pre class="notranslate invalid">```\n````</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('````\n```')), [['<pre class="notranslate invalid">````\n```</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser(' ```\n```')), undefined);
       assert.deepStrictEqual(inspect(parser(`\`\`\`\n${'\n'.repeat(301)}\`\`\``), '>'), [['<pre class="notranslate invalid">'], '']);
     });
 

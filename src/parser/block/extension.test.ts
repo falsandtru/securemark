@@ -19,6 +19,7 @@ describe('Unit: parser/block/extension', () => {
       assert(parser('~~~a\n'));
       assert(parser('~~~a\n\n'));
       assert(parser('~~~a\nb~~~'));
+      assert(!parser(' ~~~a\n~~~'));
       assert(!parser('$-name'));
       assert(!parser('$-name-0'));
       assert(!parser('$group-0'));

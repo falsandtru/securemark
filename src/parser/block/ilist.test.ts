@@ -9,6 +9,7 @@ describe('Unit: parser/block/ilist', () => {
       assert(!parser('-'));
       assert(!parser('+'));
       assert(!parser('*'));
+      assert(!parser(' * '));
       assert(parser('- '));
       assert(parser('+ '));
       assert(parser('* '));
