@@ -1,4 +1,5 @@
-import { undefined, Math, window, document } from 'spica/global';
+import { undefined, window, document } from 'spica/global';
+import { abs, ceil, sign } from 'spica/alias';
 import { aggregate } from 'spica/arrow';
 import { clear } from 'spica/function';
 import { bind, once } from 'typed-dom';
@@ -44,8 +45,8 @@ export function sync(
             ? last.offsetTop + last.offsetHeight + +window.getComputedStyle(last).marginBottom.slice(0, -2)
             : viewer.scrollHeight;
           return void viewer.scrollBy({
-            top: Math.sign(delta) * Math.ceil(
-              + Math.abs(delta)
+            top: sign(delta) * ceil(
+              + abs(delta)
               * (viewer_scrollHeight - viewer.clientHeight)
               / (editor.scrollHeight - editor.clientHeight)),
           });

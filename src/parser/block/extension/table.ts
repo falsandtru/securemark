@@ -1,5 +1,5 @@
-import { undefined, Math, Array } from 'spica/global';
-import { isArray } from 'spica/alias';
+import { undefined, Array } from 'spica/global';
+import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, recover, lazy, fmap, bind } from '../../../combinator';
 import { Data } from '../../../combinator/data/parser';
@@ -106,8 +106,8 @@ function attributes(source: string) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
   rowspan === '1' ? rowspan = undefined : undefined;
   colspan === '1' ? colspan = undefined : undefined;
-  rowspan &&= Math.max(0, Math.min(+rowspan, 65534)) + '';
-  colspan &&= Math.max(0, Math.min(+colspan, 1000)) + '';
+  rowspan &&= max(0, min(+rowspan, 65534)) + '';
+  colspan &&= max(0, min(+colspan, 1000)) + '';
   highlight &&= highlight.length > 0 ? highlight.length + '' : undefined;
   const valid = !highlight ||
     source[0] === '#' && +highlight <= 1 ||
