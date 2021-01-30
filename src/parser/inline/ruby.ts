@@ -42,7 +42,6 @@ const text: RubyParser.TextParser = creator((source, context) => {
   const { resources } = context;
   const next = /[\s\\&]/;
   const acc = [''];
-  let visible = false;
   while (source !== '') {
     assert(source[0] !== '\n');
     resources && --resources.budget;
@@ -50,21 +49,18 @@ const text: RubyParser.TextParser = creator((source, context) => {
     switch (i) {
       case -1:
         acc[acc.length - 1] += source;
-        visible = visible || !!source.trimStart();
         source = '';
         continue;
       case 0:
         switch (source[0]) {
           case '\\':
             acc[acc.length - 1] += source[i + 1] || '';
-            visible = visible || !!source[i + 1]?.trimStart();
             source = source.slice(2);
             continue;
           case '&': {
             const result = htmlentity(source, context);
             const str = eval(result, [])[0] || source[0];
             acc[acc.length - 1] += str;
-            visible = visible || !!str.trimStart();
             source = exec(result, source.slice(str.length));
             continue;
           }
@@ -72,19 +68,16 @@ const text: RubyParser.TextParser = creator((source, context) => {
             source[0].trimStart()
               ? acc[acc.length - 1] += source[0]
               : acc.push('');
-            visible = visible || !!source[0].trimStart();
             source = source.slice(1);
             continue;
         }
       default:
         acc[acc.length - 1] += source.slice(0, i);
-        visible = visible || !!source.slice(0, i).trimStart();
         source = source.slice(i);
         continue;
     }
   }
-  assert(visible === !!acc.join('').trimStart());
-  return visible
+  return join(acc).trimStart()
     ? [[acc], '']
     : undefined;
 });
