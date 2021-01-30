@@ -2473,7 +2473,7 @@ require = function () {
                     if (!matches)
                         return;
                     const delim = matches[1];
-                    if (matches[0].slice(delim.length).indexOf(delim) > -1)
+                    if (matches[0].indexOf(delim, delim.length) > -1)
                         return;
                     let rest = source.slice(matches[0].length);
                     let block = '';
