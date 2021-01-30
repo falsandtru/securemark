@@ -4697,8 +4697,6 @@ require = function () {
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, quote_1.syntax), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
             ])), ns => {
-                if (ns.length === 0)
-                    return [];
                 const el = typed_dom_1.html('p', util_1.defrag(array_1.pop(ns)[0]));
                 return [isVisible(el) ? el : typed_dom_1.define(el, {
                         class: 'invalid',
@@ -7145,7 +7143,16 @@ require = function () {
                     'ic'
                 ];
                 const blankline = new RegExp(String.raw`^(?:\\?\s|&(?:${ entities.join('|') });)*\\?(?:\n|$)`, 'gm');
-                return combinator_1.convert(source => source.replace(blankline, ''), parser);
+                return combinator_1.convert(source => source.replace(blankline, visualize), parser);
+                function visualize(line) {
+                    switch (line) {
+                    case '':
+                    case '\n':
+                        return '';
+                    default:
+                        return line.replace(/[\\&]/g, '\\$&');
+                    }
+                }
             }
             exports.justify = justify;
             function isEndTight(nodes) {
