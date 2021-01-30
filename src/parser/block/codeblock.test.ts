@@ -9,13 +9,13 @@ describe('Unit: parser/block/codeblock', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('```a```\n```')), undefined);
       assert.deepStrictEqual(inspect(parser('```')), [['<pre class="notranslate invalid">```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\n')), [['<pre class="notranslate invalid">```\n</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\na')), [['<pre class="notranslate invalid">```\na</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\na```')), [['<pre class="notranslate invalid">```\na```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\na\n```b')), [['<pre class="notranslate invalid">```\na\n```b</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('```\na\n```\nb')), [['<pre class="notranslate invalid">```\na\n```\nb</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('```a ```\n```')), undefined);
       assert.deepStrictEqual(inspect(parser('```\n````')), [['<pre class="notranslate invalid">```\n````</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('````\n```')), [['<pre class="notranslate invalid">````\n```</pre>'], '']);
       assert.deepStrictEqual(inspect(parser(' ```\n```')), undefined);

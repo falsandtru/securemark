@@ -8,9 +8,9 @@ describe('Unit: parser/block/extension/placeholder', () => {
     it('invalid', () => {
       assert(!parser(''));
       assert(!parser('\n'));
-      assert(!parser('~~~a~~~\n~~~'));
       assert(parser('~~~'));
       assert(parser('~~~\n'));
+      assert(!parser('~~~a ~~~\n~~~'));
     });
 
     it('valid', () => {
