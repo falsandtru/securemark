@@ -1,16 +1,17 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
-import { sequence, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
+import { sequence, validate, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
 import { defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { unshift, push, join } from 'spica/array';
 import { html } from 'typed-dom';
 
 export const ruby: RubyParser = lazy(() => creator(bind(
+  validate('[', ')', '\n',
   sequence([
     surround('[', focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+(?=]\()/, text), ']'),
     surround('(', focus(/^(?:\\[^\n]|[^\)\n])+(?=\))/, text), ')'),
-  ]),
+  ])),
   ([texts, rubies], rest) => {
     switch (true) {
       case rubies.length <= texts.length:
