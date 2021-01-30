@@ -4,10 +4,8 @@ import { url } from './autolink/url';
 import { media } from './media';
 
 export const shortmedia: ShortmediaParser = rewrite(
-  open(
-    '!',
-    guard(context => context.syntax?.inline?.media ?? true,
-    url)),
+  guard(context => context.syntax?.inline?.media ?? true,
+  open('!', url)),
   convert(
     source => `!{ ${source.slice(1)} }`,
     union([media])));
