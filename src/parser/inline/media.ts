@@ -5,6 +5,7 @@ import { union, inits, tails, some, validate, guard, creator, surround, open, la
 import { isEndTight, dup } from '../util';
 import { link, optspec as linkoptspec, uri, option, resolve, sanitize } from './link';
 import { attributes } from './html';
+import { htmlentity } from './htmlentity';
 import { text, str } from '../source';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
@@ -24,11 +25,12 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround(/^\[(?!\\?\s)/, some(union([bracket, text]), ']', /^\\?\n/), ']', true)),
+    dup(surround(/^\[(?!\\?\s)/, some(union([htmlentity, bracket, text]), ']', /^\\?\n/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ])))),
   ([as, bs]) => bs ? [bs, [join(as)]] : [as, ['']]),
   ([params, [text]], rest, context) => {
+    if (text.length > 0 && text[0].trimStart() === '') return;
     if (!isEndTight([text])) return;
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
@@ -51,8 +53,8 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
-  surround(str('('), some(union([bracket, text]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('['), some(union([bracket, text]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('{'), some(union([bracket, text]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('"'), some(text, '"'), str('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('('), some(union([htmlentity, bracket, text]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('['), some(union([htmlentity, bracket, text]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('{'), some(union([htmlentity, bracket, text]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('"'), some(union([htmlentity, text]), '"'), str('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
 ])));

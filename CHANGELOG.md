@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.201.0
+
+- Enhance media parser to parse htmlentity syntax.
+
 ## 0.200.3
 
 - Improve processing of blank lines to visualize them.

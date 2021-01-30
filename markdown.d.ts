@@ -792,6 +792,7 @@ export namespace MarkdownParser {
       export interface TextParser extends
         Inline<'media/text'>,
         Parser<string[], [
+          HTMLEntityParser,
           TextParser.BracketParser,
           SourceParser.TextParser,
         ], Context> {
@@ -801,18 +802,24 @@ export namespace MarkdownParser {
           Inline<'media/text/bracket'>,
           Parser<HTMLElement | string, [
             Parser<HTMLElement | string, [
+              HTMLEntityParser,
               BracketParser,
               SourceParser.TextParser,
             ], Context>,
             Parser<HTMLElement | string, [
+              HTMLEntityParser,
               BracketParser,
               SourceParser.TextParser,
             ], Context>,
             Parser<HTMLElement | string, [
+              HTMLEntityParser,
               BracketParser,
               SourceParser.TextParser,
             ], Context>,
-            SourceParser.TextParser,
+            Parser<HTMLElement | string, [
+              HTMLEntityParser,
+              SourceParser.TextParser,
+            ], Context>,
           ], Context> {
         }
       }
