@@ -5361,7 +5361,10 @@ require = function () {
             const link_1 = _dereq_('../link');
             const source_1 = _dereq_('../../source');
             const closer = /^[-+*=~^,.;:!?]*(?=["`|\[\](){}<>]|\\?$)/;
-            exports.url = combinator_1.lazy(() => combinator_1.validate('http', '://', '\n', combinator_1.rewrite(combinator_1.open(/^https?:\/\/(?=[\x21-\x7E])/, combinator_1.focus(/^[\x21-\x7E]+/, combinator_1.some(combinator_1.union([
+            exports.url = combinator_1.lazy(() => combinator_1.validate([
+                'http://',
+                'https://'
+            ], combinator_1.rewrite(combinator_1.open(/^https?:\/\/(?=[\x21-\x7E])/, combinator_1.focus(/^[\x21-\x7E]+/, combinator_1.some(combinator_1.union([
                 bracket,
                 combinator_1.some(source_1.unescsource, closer)
             ])))), combinator_1.convert(url => `{ ${ url } }`, combinator_1.context({ syntax: { inline: { link: global_1.undefined } } }, combinator_1.union([link_1.link]))))));
@@ -5378,10 +5381,6 @@ require = function () {
                     bracket,
                     source_1.unescsource
                 ]), '}'), '}', true),
-                combinator_1.surround('<', combinator_1.some(combinator_1.union([
-                    bracket,
-                    source_1.unescsource
-                ]), '>'), '>', true),
                 combinator_1.surround('"', combinator_1.some(source_1.unescsource, '"'), '"', true)
             ])));
         },
