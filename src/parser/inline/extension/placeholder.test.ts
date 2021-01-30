@@ -35,6 +35,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert.deepStrictEqual(inspect(parser('[[]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[ ]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a]]')), undefined);
+      assert.deepStrictEqual(inspect(parser(' [^a]')), undefined);
     });
 
     it('valid', () => {

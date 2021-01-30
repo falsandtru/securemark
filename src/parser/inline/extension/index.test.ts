@@ -22,6 +22,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#a')), undefined);
       assert.deepStrictEqual(inspect(parser('[#<# a #>]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#*a\nb*]')), undefined);
+      assert.deepStrictEqual(inspect(parser(' [#a]')), undefined);
     });
 
     it('basic', () => {

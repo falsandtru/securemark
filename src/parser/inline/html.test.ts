@@ -56,6 +56,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small a b="*" *c*>d</small>z')), undefined);
       assert.deepStrictEqual(inspect(parser('<small a b="*" *>*c*')), undefined);
       assert.deepStrictEqual(inspect(parser('<small a b="*" *>*c*</small>z')), undefined);
+      assert.deepStrictEqual(inspect(parser(' <small>a</small>')), undefined);
     });
 
     it('basic', () => {

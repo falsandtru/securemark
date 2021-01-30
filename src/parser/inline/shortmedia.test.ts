@@ -12,6 +12,7 @@ describe('Unit: parser/inline/shortmedia', () => {
       assert.deepStrictEqual(inspect(parser('!ttp')), undefined);
       assert.deepStrictEqual(inspect(parser('!http://')), undefined);
       assert.deepStrictEqual(inspect(parser('!Http://host')), undefined);
+      assert.deepStrictEqual(inspect(parser(' !http://host')), undefined);
     });
 
     it('basic', () => {

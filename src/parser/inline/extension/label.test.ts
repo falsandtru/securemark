@@ -18,6 +18,7 @@ describe('Unit: parser/inline/extension/label', () => {
       assert.deepStrictEqual(inspect(parser('$a-0b')), undefined);
       assert.deepStrictEqual(inspect(parser('$$a-b')), undefined);
       assert.deepStrictEqual(inspect(parser('$$$-b')), undefined);
+      assert.deepStrictEqual(inspect(parser(' $a-b')), undefined);
     });
 
     it('basic', () => {

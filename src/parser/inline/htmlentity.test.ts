@@ -30,6 +30,7 @@ describe('Unit: parser/inline/htmlentity', () => {
       assert.deepStrictEqual(inspect(parser('&#X22;')), undefined);
       assert.deepStrictEqual(inspect(parser('&#XD06;')), undefined);
       assert.deepStrictEqual(inspect(parser('&#xcab;')), undefined);
+      assert.deepStrictEqual(inspect(parser(' &amp;')), undefined);
     });
 
     it('entity', () => {
