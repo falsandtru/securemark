@@ -3,7 +3,7 @@ import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototype
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
 import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
-import { startTight, isEndTight, trimEndBR, defrag, stringify } from '../util';
+import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { str } from '../source';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
@@ -116,7 +116,7 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
   let attrs: Record<string, string | undefined> | undefined;
   switch (true) {
     case as[as.length - 1] !== '>'
-      || 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1).map(stringify))):
+      || 'data-invalid-syntax' in (attrs = attributes('html', [], attrspec[tag], as.slice(1, -1) as string[])):
       return invalid('attribute', 'Invalid HTML attribute.', as, bs, cs);
     case cs.length === 0:
       return invalid('closer', `Missing the closing HTML tag <${tag}>.`, as, bs, cs);
