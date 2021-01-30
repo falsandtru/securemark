@@ -19,6 +19,5 @@ const bracket: AutolinkParser.UrlParser.BracketParser = lazy(() => creator(union
   surround('(', some(union([bracket, unescsource]), ')'), ')', true),
   surround('[', some(union([bracket, unescsource]), ']'), ']', true),
   surround('{', some(union([bracket, unescsource]), '}'), '}', true),
-  surround('<', some(union([bracket, unescsource]), '>'), '>', true),
   surround('"', some(unescsource, '"'), '"', true),
 ])));

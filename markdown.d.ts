@@ -980,10 +980,6 @@ export namespace MarkdownParser {
               BracketParser,
               SourceParser.UnescapableSourceParser,
             ], Context>,
-            Parser<string, [
-              BracketParser,
-              SourceParser.UnescapableSourceParser,
-            ], Context>,
             SourceParser.UnescapableSourceParser,
           ], Context> {
         }
