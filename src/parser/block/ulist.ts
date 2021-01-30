@@ -21,7 +21,7 @@ export const ulist: UListParser = lazy(() => block(fmap(validate(
   es => [format(html('ul', es))])));
 
 export const checkbox = focus(
-  /^\[[xX\s]\](?=$|\s)/,
+  /^\[[xX ]\](?=$|\s)/,
   source => [[
     html('span', { class: 'checkbox' }, source[1].trimStart() ? '☑' : '☐'),
   ], '']);
