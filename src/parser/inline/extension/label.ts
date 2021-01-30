@@ -7,12 +7,12 @@ import { html } from 'typed-dom';
 
 const body = str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*(?![0-9A-Za-z]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[0-9A-Za-z]))/);
 
-export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate(['[$', '$'], union([
+export const segment: ExtensionParser.LabelParser.SegmentParser = clear(validate(['[$', '$'], '-', '\n', union([
   surround('[', body, ']'),
   body,
 ])));
 
-export const label: ExtensionParser.LabelParser = creator(validate(['[$', '$'], fmap(
+export const label: ExtensionParser.LabelParser = creator(validate(['[$', '$'], '-', '\n', fmap(
   guard(context => context.syntax?.inline?.label ?? true,
   union([
     surround('[', body, ']'),

@@ -4,6 +4,6 @@ import { html } from 'typed-dom';
 
 const parser = html('textarea');
 
-export const htmlentity: HTMLEntityParser = creator(validate('&', focus(
+export const htmlentity: HTMLEntityParser = creator(validate('&', ';', '\n', focus(
   /^&[0-9A-Za-z]+;/,
   entity => [[(parser.innerHTML = entity, parser.value)], ''])));

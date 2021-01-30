@@ -19,7 +19,7 @@ const attrspec = {
 ObjectSetPrototypeOf(attrspec, null);
 ObjectValues(attrspec).forEach(o => ObjectSetPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => creator(validate('<', validate(/^<[a-z]+[ >]/, union([
+export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', validate(/^<[a-z]+[ >]/, union([
   match(
     /^(?=<(wbr)(?=[ >]))/,
     memoize(
