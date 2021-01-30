@@ -1,8 +1,9 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { sequence, validate, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
-import { defrag } from '../util';
+import { isEndTight, defrag } from '../util';
 import { htmlentity } from './htmlentity';
+import { text as txt } from '../source';
 import { unshift, push, join } from 'spica/array';
 import { html } from 'typed-dom';
 
@@ -13,6 +14,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(
     surround('(', focus(/^(?:\\[^\n]|[^\)\n])+(?=\))/, text), ')'),
   ])),
   ([texts, rubies], rest) => {
+    if (!isEndTight(texts)) return;
     switch (true) {
       case rubies.length <= texts.length:
         return [[html('ruby', defrag(texts
@@ -40,42 +42,29 @@ export const ruby: RubyParser = lazy(() => creator(bind(
   })));
 
 const text: RubyParser.TextParser = creator((source, context) => {
-  const { resources } = context;
-  const next = /[\s\\&]/;
   const acc = [''];
   while (source !== '') {
     assert(source[0] !== '\n');
-    resources && --resources.budget;
-    const i = source.search(next);
-    switch (i) {
-      case -1:
-        acc[acc.length - 1] += source;
-        source = '';
+    switch (source[0]) {
+      case ' ':
+      case '　':
+        acc.push('');
+        source = source.slice(1);
         continue;
-      case 0:
-        switch (source[0]) {
-          case '\\':
-            acc[acc.length - 1] += source[i + 1] || '';
-            source = source.slice(2);
-            continue;
-          case '&': {
-            const result = htmlentity(source, context);
-            const str = eval(result, [])[0] || source[0];
-            acc[acc.length - 1] += str;
-            source = exec(result, source.slice(str.length));
-            continue;
-          }
-          default:
-            source[0].trimStart()
-              ? acc[acc.length - 1] += source[0]
-              : acc.push('');
-            source = source.slice(1);
-            continue;
-        }
-      default:
-        acc[acc.length - 1] += source.slice(0, i);
-        source = source.slice(i);
+      case '&': {
+        const result = htmlentity(source, context);
+        const str = eval(result, [])[0] ?? source[0];
+        acc[acc.length - 1] += str;
+        source = exec(result) ?? source.slice(1);
         continue;
+      }
+      default: {
+        const result = txt(source, context)!;
+        assert(result);
+        acc[acc.length - 1] += eval(result)[0] ?? source.slice(0, source.length - exec(result).length);
+        source = exec(result);
+        continue;
+      }
     }
   }
   return join(acc).trimStart()
