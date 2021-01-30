@@ -10,6 +10,7 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[#a  ]')), undefined);
       assert.deepStrictEqual(inspect(parser('[# ]')), undefined);
       assert.deepStrictEqual(inspect(parser('[# a]')), undefined);
       assert.deepStrictEqual(inspect(parser('[# a ]')), undefined);

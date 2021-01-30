@@ -20,6 +20,7 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[\na]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\\ a]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[\\\na]]')), undefined);
+      assert.deepStrictEqual(inspect(parser('[[a  ]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a\n]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a\\\n]]')), undefined);
       assert.deepStrictEqual(inspect(parser('[[a\nb]]')), undefined);

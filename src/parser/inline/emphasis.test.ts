@@ -9,6 +9,7 @@ describe('Unit: parser/inline/emphasis', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('*')), undefined);
       assert.deepStrictEqual(inspect(parser('*a')), [['*', 'a'], '']);
+      assert.deepStrictEqual(inspect(parser('*a  *')), [['*', 'a', '  '], '*']);
       assert.deepStrictEqual(inspect(parser('*a**b')), [['*', 'a', '**', 'b'], '']);
       assert.deepStrictEqual(inspect(parser('*a**b*')), [['*', 'a', '**', 'b', '*'], '']);
       assert.deepStrictEqual(inspect(parser('* *')), undefined);
