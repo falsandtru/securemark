@@ -2,7 +2,7 @@ import { undefined, location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, surround, open, lazy, fmap, bind } from '../../combinator';
-import { dup } from '../util';
+import { isEndTight, dup } from '../util';
 import { link, optspec as linkoptspec, uri, option, resolve, sanitize } from './link';
 import { attributes } from './html';
 import { text, str } from '../source';
@@ -29,7 +29,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   ])))),
   ([as, bs]) => bs ? [bs, [join(as)]] : [as, ['']]),
   ([params, [text]], rest, context) => {
-    if (text.length > 0 && text.slice(-2).trimStart() === '') return;
+    if (!isEndTight([text])) return;
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
