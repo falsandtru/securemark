@@ -56,5 +56,5 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
   surround(str('('), some(union([htmlentity, bracket, text]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(union([htmlentity, bracket, text]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(union([htmlentity, bracket, text]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('"'), some(union([htmlentity, text]), '"'), str('"'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('"'), some(union([htmlentity, text]), '"'), str('"'), true),
 ])));
