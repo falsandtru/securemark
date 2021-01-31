@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, inits, sequence, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
-import { justify, defrag } from '../../util';
+import { justify, visualize, defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
 import { table as styled_table } from '../table';
@@ -63,7 +63,7 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
       emptyline,
       block(
         context({ syntax: { inline: { media: false } } },
-        justify(trim(some(inline))))),
+        justify(trim(visualize(some(inline)))))),
     ]),
   ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [

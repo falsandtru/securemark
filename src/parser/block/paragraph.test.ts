@@ -51,7 +51,7 @@ describe('Unit: parser/block/paragraph', () => {
     });
 
     it('comment', () => {
-      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<p class="invalid"><sup class="comment" title="a"></sup></p>'], '']);
+      assert.deepStrictEqual(inspect(parser('<# a #>')), [['<p>&lt;# a #&gt;</p>'], '']);
       assert.deepStrictEqual(inspect(parser('<# a #>b')), [['<p><sup class="comment" title="a"></sup>b</p>'], '']);
     });
 

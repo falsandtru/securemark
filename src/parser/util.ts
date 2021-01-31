@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
 import { isArray } from 'spica/alias';
-import { Parser, Ctx, convert, eval, fmap } from '../combinator';
+import { MarkdownParser } from '../../markdown';
+import { Parser, Ctx, union, verify, convert, eval, fmap } from '../combinator';
 import { Data, SubParsers, Context } from '../combinator/data/parser';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
@@ -54,6 +55,30 @@ export function justify<T>(parser: Parser<T>): Parser<T> {
         return line.replace(/[\\&]/g, '\\$&');
     }
   }
+}
+
+export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+  return union([
+    verify(parser, (ns, _, context) => hasVisible(ns, context)),
+    (source: string) => [[source], ''],
+  ]);
+}
+function hasVisible(
+  nodes: readonly (HTMLElement | string)[],
+  { syntax: { inline: { media = true } = {} } = {} }: MarkdownParser.Context
+): boolean {
+  for (let i = 0; i < nodes.length; ++i) {
+    const node = nodes[i];
+    if (typeof node === 'string') {
+      if (node && node.trimStart()) return true;
+    }
+    else {
+      if (node.innerText.trimStart()) return true;
+      if (media && node.getElementsByClassName('media').length > 0) return true;
+    }
+  }
+  return false;
 }
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
