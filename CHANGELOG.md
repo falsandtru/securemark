@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.201.2
+
+- Fix dlist parser not to create invisible elements.
+
 ## 0.201.1
 
 - Refactoring.
