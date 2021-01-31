@@ -58,7 +58,6 @@ export function justify<T>(parser: Parser<T>): Parser<T> {
 
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
-  //assert(isVisible(nodes[0], 'start'));
   const last = nodes.length - 1;
   return typeof nodes[last] === 'string' && (nodes[last] as string).length > 1
     ? isVisible(nodes[last], 'end', 0) ||
