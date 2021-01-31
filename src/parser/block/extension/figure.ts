@@ -63,7 +63,7 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
       emptyline,
       block(
         context({ syntax: { inline: { media: false } } },
-        justify(trim(visualize(some(inline)))))),
+        justify(visualize(trim(some(inline)))))),
     ]),
   ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [

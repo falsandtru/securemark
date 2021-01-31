@@ -16,7 +16,7 @@ export const paragraph: ParagraphParser = block(justify(fmap(
     fmap(
       rewrite(
         some(anyline, delimiter),
-        trim(visualize(some(inline)))),
+        visualize(trim(some(inline)))),
       ns => push(ns, [html('br')])),
   ])),
   ns => [html('p', defrag(pop(ns)[0]))])));
