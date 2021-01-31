@@ -1580,16 +1580,10 @@ require = function () {
                         return true;
                     }
                     function elem(factory, attrs, children) {
-                        const el = factory ? factory(defaultFactory, tag, attrs || {}, children) : baseFactory(tag, attrs);
+                        const el = factory ? dom_1.define(factory(baseFactory, tag, attrs || {}, children), attrs) : baseFactory(tag, attrs);
                         if (tag !== el.tagName.toLowerCase())
                             throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
                         return el;
-                        function defaultFactory(tag, as, children, ...args) {
-                            return dom_1.isChildren(as) ? baseFactory(tag, attrs || {}, as, ...args) : baseFactory(tag, {
-                                ...as,
-                                ...attrs
-                            }, children, ...args);
-                        }
                     }
                 }
             }
@@ -3710,10 +3704,10 @@ require = function () {
             const source_1 = _dereq_('../source');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~[^\S\n]+(?=\S)/, combinator_1.context({ syntax: { inline: { media: false } } }, util_1.justify(combinator_1.some(combinator_1.inits([
+            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~[^\S\n]+(?=\S)/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.inits([
                 combinator_1.context({ syntax: { inline: { label: false } } }, combinator_1.some(term)),
                 combinator_1.some(desc)
-            ]))))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
+            ])))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
             const term = combinator_1.creator(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~[^\S\n]+(?=\S)/, util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
@@ -4018,7 +4012,7 @@ require = function () {
                         combinator_1.line(inline_1.shortmedia)
                     ])),
                     source_1.emptyline,
-                    combinator_1.block(combinator_1.context({ syntax: { inline: { media: false } } }, util_1.justify(util_1.visualize(combinator_1.trim(combinator_1.some(inline_1.inline))))))
+                    combinator_1.block(combinator_1.context({ syntax: { inline: { media: false } } }, util_1.visualize(combinator_1.trim(combinator_1.some(inline_1.inline)))))
                 ])
             ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attributes(label.getAttribute('data-label'), content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
@@ -4691,13 +4685,13 @@ require = function () {
             const source_1 = _dereq_('../source');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.paragraph = combinator_1.block(util_1.justify(combinator_1.fmap(combinator_1.some(combinator_1.subsequence([
+            exports.paragraph = combinator_1.block(combinator_1.fmap(combinator_1.some(combinator_1.subsequence([
                 combinator_1.fmap(combinator_1.some(mention_1.mention), es => es.reduce((acc, el) => array_1.push(acc, [
                     el,
                     typed_dom_1.html('br')
                 ]), [])),
                 combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, quote_1.syntax), util_1.visualize(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
-            ])), ns => [typed_dom_1.html('p', util_1.defrag(array_1.pop(ns)[0]))])));
+            ])), ns => [typed_dom_1.html('p', util_1.defrag(array_1.pop(ns)[0]))]));
         },
         {
             '../../combinator': 30,
@@ -7082,7 +7076,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.defrag = exports.dup = exports.trimEndBR = exports.startTight = exports.isEndTight = exports.visualize = exports.justify = void 0;
+            exports.stringify = exports.defrag = exports.dup = exports.trimEndBR = exports.startTight = exports.isEndTight = exports.visualize = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../combinator');
@@ -7136,15 +7130,14 @@ require = function () {
                     }
                 }
             }
-            exports.justify = justify;
             function visualize(parser, message = '(Empty)') {
-                return combinator_1.union([
+                return justify(combinator_1.union([
                     combinator_1.verify(parser, (ns, _, context) => hasVisible(ns, context)),
                     source => [
                         [source.trim() || message],
                         ''
                     ]
-                ]);
+                ]));
             }
             exports.visualize = visualize;
             function hasVisible(nodes, {

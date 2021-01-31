@@ -404,6 +404,11 @@
   .media .comment::before {
     all: unset;
   }
+  h1.error {
+    font-style: italic;
+    font-weight: bold;
+    color: red;
+  }
   .invalid::before {
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-description);
     font-style: italic;
@@ -418,10 +423,17 @@
     display: block;
     margin-bottom: 1em;
   }
-  h1.error {
+  table:empty::before {
+    content: "(Empty table)";
     font-style: italic;
     font-weight: bold;
-    color: red;
+    color: gray;
+  }
+  tr:empty::before {
+    content: "(Empty table row)";
+    font-style: italic;
+    font-weight: bold;
+    color: gray;
   }
   ol:empty {
     display: none;
