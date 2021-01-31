@@ -34,4 +34,6 @@ export const heading: HeadingParser = block(rewrite(segment,
       }}},
       trim(some(union([indexer, inline])))), true),
   ]),
-  (ns: [string, ...(HTMLElement | string)[]]) => [html(`h${ns[0].length}` as 'h1', defrag(shift(ns)[1]))]))))));
+  (ns: [string, ...(HTMLElement | string)[]]) => [
+    html(`h${shift(ns)[0].length}` as 'h1', defrag(ns))
+  ]))))));
