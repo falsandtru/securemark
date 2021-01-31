@@ -41,9 +41,9 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     const cached = cache?.has(url.href);
     const el = cache && cached
       ? cache.get(url.href)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': src, alt: text.trim() });
+      : html('img', { class: 'media', 'data-src': src, alt: text.trimEnd() });
     if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
-    cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
+    cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
     define(el, attributes('media', push([], el.classList), optspec, params, remap));
     return (context.syntax?.inline?.link ?? true)
         && (!cached || el.tagName === 'IMG')

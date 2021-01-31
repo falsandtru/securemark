@@ -31,8 +31,9 @@ export function text(source: HTMLElement): string {
 
 function identify(index: string): string {
   assert(!index.includes('\n'));
+  assert(index === index.trim());
   return index
-    ? `index:${index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`
+    ? `index:${index.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...')}`
     : '';
 }
 assert(identify('0'.repeat(100)).slice(6) === '0'.repeat(100));
