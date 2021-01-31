@@ -14,7 +14,10 @@ export const ruby: RubyParser = lazy(() => creator(bind(
     surround('(', focus(/^(?:\\[^\n]|[^\)\n])+(?=\))/, text), ')'),
   ])),
   ([texts, rubies], rest) => {
+    if (!texts[0][0].trimStart()) return;
     if (!isEndTight(texts)) return;
+    texts[texts.length - 1] || texts.pop();
+    assert(texts[texts.length - 1].trim());
     switch (true) {
       case rubies.length <= texts.length:
         return [[html('ruby', defrag(texts
@@ -35,7 +38,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(
       default:
         assert(rubies.length > 0);
         return [[html('ruby', defrag(unshift<HTMLElement | string>(
-          [join(texts, ' ').trim()],
+          [join(texts, ' ')],
           [html('rp', '('), html('rt', join(rubies, ' ').trim()), html('rp', ')')])))
         ], rest];
     }
