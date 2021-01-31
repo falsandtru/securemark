@@ -57,11 +57,12 @@ export function justify<T>(parser: Parser<T>): Parser<T> {
   }
 }
 
-export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+export function visualize<P extends Parser<HTMLElement | string>>(parser: P, message?: string): P;
+export function visualize<T extends HTMLElement | string>(parser: Parser<T>, message = '(Empty)'): Parser<T> {
+  assert(message.trim());
   return union([
     verify(parser, (ns, _, context) => hasVisible(ns, context)),
-    (source: string) => [[source], ''],
+    (source: string) => [[source.trim() || message], ''],
   ]);
 }
 function hasVisible(
