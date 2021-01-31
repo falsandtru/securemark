@@ -1,6 +1,6 @@
 import { HeadingParser } from '../block';
 import { union, some, block, line, validate, focus, rewrite, context, open, trim, fmap } from '../../combinator';
-import { defrag } from '../util';
+import { visualize, defrag } from '../util';
 import { inline, indexer, indexee } from '../inline';
 import { str } from '../source';
 import { shift } from 'spica/array';
@@ -18,7 +18,7 @@ export const heading: HeadingParser = block(rewrite(segment,
   line(indexee(fmap(union([
     open(
       str(/^##+/),
-      trim(some(union([indexer, inline]))), true),
+      visualize(trim(some(union([indexer, inline])))), true),
     open(
       str('#'),
       context({ syntax: { inline: {
@@ -32,7 +32,7 @@ export const heading: HeadingParser = block(rewrite(segment,
         //media: false,
         autolink: false,
       }}},
-      trim(some(union([indexer, inline])))), true),
+      visualize(trim(some(union([indexer, inline]))))), true),
   ]),
   (ns: [string, ...(HTMLElement | string)[]]) => [
     html(`h${shift(ns)[0].length}` as 'h1', defrag(ns))

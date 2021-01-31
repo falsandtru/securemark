@@ -1,21 +1,14 @@
 import { heading, segment } from './heading';
-import { eval, exec } from '../../combinator';
+import { some, eval, exec } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/heading', () => {
   describe('heading', () => {
     const parser = (source: string) => {
       const result = segment(source, {});
-      if (!result) return;
-      return [
-        eval(result).map(seg => {
-          const result = heading(seg, {});
-          return result
-            ? eval(result, [])[0]
-            : seg;
-        }),
-        exec(result),
-      ] as const;
+      return result
+        ? [eval(result).flatMap(seg => eval<HTMLElement | string>(heading(seg, {}), [seg])), exec(result)] as const
+        : some(heading)(source, {});
     };
 
     it('invalid', () => {
@@ -45,6 +38,8 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# *a*`b`${c}$')), [['<h1 id="index:a`b`${c}$"><em>a</em><code data-src="`b`">b</code><span class="math notranslate" data-src="${c}$">${c}$</span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\\')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\\\n')), [['<h1 id="index:a">a</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# \\')), [['<h1 id="index:\\">\\</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('## \\')), [['<h2 id="index:\\">\\</h2>'], '']);
       assert.deepStrictEqual(inspect(parser('# @a')), [['<h1 id="index:@a">@a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## @a')), [['<h2 id="index:@a"><a class="account" href="/@a">@a</a></h2>'], '']);
       assert.deepStrictEqual(inspect(parser('# http://host')), [['<h1 id="index:http://host">http://host</h1>'], '']);

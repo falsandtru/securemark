@@ -2,6 +2,7 @@
 
 ## 0.201.2
 
+- Fix heading parser not to create invisible elements.
 - Fix dlist parser not to create invisible elements.
 
 ## 0.201.1
