@@ -3710,15 +3710,15 @@ require = function () {
             const source_1 = _dereq_('../source');
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~[^\S\n]/, combinator_1.context({ syntax: { inline: { media: false } } }, util_1.justify(combinator_1.some(combinator_1.inits([
+            exports.dlist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^~[^\S\n]+(?=\S)/, combinator_1.context({ syntax: { inline: { media: false } } }, util_1.justify(combinator_1.some(combinator_1.inits([
                 combinator_1.context({ syntax: { inline: { label: false } } }, combinator_1.some(term)),
                 combinator_1.some(desc)
             ]))))), es => [typed_dom_1.html('dl', fillTrailingDescription(es))])));
-            const term = combinator_1.creator(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~[^\S\n]/, combinator_1.trim(combinator_1.some(combinator_1.union([
+            const term = combinator_1.creator(combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.open(/^~[^\S\n]+(?=\S)/, util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([
                 inline_1.indexer,
                 inline_1.inline
-            ]))), true), ns => [typed_dom_1.html('dt', util_1.defrag(ns))]))));
-            const desc = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(/^:[^\S\n]|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:][^\S\n]/), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('dd', util_1.defrag(ns))]), false));
+            ])))), true), ns => [typed_dom_1.html('dt', util_1.defrag(ns))]))));
+            const desc = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(/^:[^\S\n]+(?=\S)|/, combinator_1.rewrite(combinator_1.some(source_1.anyline, /^[~:][^\S\n]+\S/), util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))))), true), ns => [typed_dom_1.html('dd', util_1.defrag(ns))]), false));
             function fillTrailingDescription(es) {
                 return es.length > 0 && es[es.length - 1].tagName === 'DT' ? array_1.push(es, [typed_dom_1.html('dd')]) : es;
             }
@@ -4018,7 +4018,7 @@ require = function () {
                         combinator_1.line(inline_1.shortmedia)
                     ])),
                     source_1.emptyline,
-                    combinator_1.block(combinator_1.context({ syntax: { inline: { media: false } } }, util_1.justify(combinator_1.trim(combinator_1.some(inline_1.inline)))))
+                    combinator_1.block(combinator_1.context({ syntax: { inline: { media: false } } }, util_1.justify(util_1.visualize(combinator_1.trim(combinator_1.some(inline_1.inline))))))
                 ])
             ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attributes(label.getAttribute('data-label'), content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
@@ -4458,10 +4458,10 @@ require = function () {
                     }
                 }
             }, combinator_1.line(inline_1.indexee(combinator_1.fmap(combinator_1.union([
-                combinator_1.open(source_1.str(/^##+/), combinator_1.trim(combinator_1.some(combinator_1.union([
+                combinator_1.open(source_1.str(/^##+/), util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([
                     inline_1.indexer,
                     inline_1.inline
-                ]))), true),
+                ])))), true),
                 combinator_1.open(source_1.str('#'), combinator_1.context({
                     syntax: {
                         inline: {
@@ -4472,11 +4472,11 @@ require = function () {
                             autolink: false
                         }
                     }
-                }, combinator_1.trim(combinator_1.some(combinator_1.union([
+                }, util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([
                     inline_1.indexer,
                     inline_1.inline
-                ])))), true)
-            ]), ns => [typed_dom_1.html(`h${ ns[0].length }`, util_1.defrag(array_1.shift(ns)[1]))]))))));
+                ]))))), true)
+            ]), ns => [typed_dom_1.html(`h${ array_1.shift(ns)[0].length }`, util_1.defrag(ns))]))))));
         },
         {
             '../../combinator': 30,
@@ -4696,19 +4696,8 @@ require = function () {
                     el,
                     typed_dom_1.html('br')
                 ]), [])),
-                combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, quote_1.syntax), combinator_1.trim(combinator_1.some(inline_1.inline))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
-            ])), ns => {
-                const el = typed_dom_1.html('p', util_1.defrag(array_1.pop(ns)[0]));
-                return [isVisible(el) ? el : typed_dom_1.define(el, {
-                        class: 'invalid',
-                        'data-invalid-syntax': 'paragraph',
-                        'data-invalid-type': 'content',
-                        'data-invalid-description': 'Paragraphs must have a visible content.'
-                    })];
-            })));
-            function isVisible(node) {
-                return node.innerText.trimStart() !== '' || node.getElementsByClassName('media').length > 0;
-            }
+                combinator_1.fmap(combinator_1.rewrite(combinator_1.some(source_1.anyline, quote_1.syntax), util_1.visualize(combinator_1.trim(combinator_1.some(inline_1.inline)))), ns => array_1.push(ns, [typed_dom_1.html('br')]))
+            ])), ns => [typed_dom_1.html('p', util_1.defrag(array_1.pop(ns)[0]))])));
         },
         {
             '../../combinator': 30,
@@ -6465,7 +6454,7 @@ require = function () {
                 switch (true) {
                 case rubies.length <= texts.length:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag(texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() ? [
+                        [typed_dom_1.html('ruby', util_1.defrag(texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i] ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -6474,7 +6463,7 @@ require = function () {
                     ];
                 case texts.length === 1 && [...texts[0]].length >= rubies.length:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag([...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() ? [
+                        [typed_dom_1.html('ruby', util_1.defrag([...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i] ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -7093,7 +7082,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.defrag = exports.dup = exports.trimEndBR = exports.startTight = exports.isEndTight = exports.justify = void 0;
+            exports.stringify = exports.defrag = exports.dup = exports.trimEndBR = exports.startTight = exports.isEndTight = exports.visualize = exports.justify = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const combinator_1 = _dereq_('../combinator');
@@ -7148,6 +7137,37 @@ require = function () {
                 }
             }
             exports.justify = justify;
+            function visualize(parser, message = '(Empty)') {
+                return combinator_1.union([
+                    combinator_1.verify(parser, (ns, _, context) => hasVisible(ns, context)),
+                    source => [
+                        [source.trim() || message],
+                        ''
+                    ]
+                ]);
+            }
+            exports.visualize = visualize;
+            function hasVisible(nodes, {
+                syntax: {
+                    inline: {
+                        media = true
+                    } = {}
+                } = {}
+            }) {
+                for (let i = 0; i < nodes.length; ++i) {
+                    const node = nodes[i];
+                    if (typeof node === 'string') {
+                        if (node && node.trimStart())
+                            return true;
+                    } else {
+                        if (node.innerText.trimStart())
+                            return true;
+                        if (media && node.getElementsByClassName('media').length > 0)
+                            return true;
+                    }
+                }
+                return false;
+            }
             function isEndTight(nodes) {
                 if (nodes.length === 0)
                     return true;
