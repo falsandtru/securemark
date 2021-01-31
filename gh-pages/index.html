@@ -404,6 +404,11 @@
   .media .comment::before {
     all: unset;
   }
+  h1.error {
+    font-style: italic;
+    font-weight: bold;
+    color: red;
+  }
   .invalid::before {
     content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-description);
     font-style: italic;
@@ -417,11 +422,6 @@
   p.invalid::before {
     display: block;
     margin-bottom: 1em;
-  }
-  h1.error {
-    font-style: italic;
-    font-weight: bold;
-    color: red;
   }
   ol:empty {
     display: none;
