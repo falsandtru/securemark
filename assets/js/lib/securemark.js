@@ -3790,7 +3790,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.aside = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(/^(~{3,})aside(?!\S)([^\n]*)(?:$|\n)/, 300), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
-                if (!closer || param.trimStart() !== '')
+                if (!closer || param.trimStart())
                     return [typed_dom_1.html('pre', {
                             class: `notranslate invalid`,
                             'data-invalid-syntax': 'aside',
@@ -3842,7 +3842,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})example\/(\S+)([^\n]*)(?:$|\n)/;
             exports.example = combinator_1.creator(100, combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300), ([body, closer, opener, delim, type, param], _, context) => {
-                if (!closer || param.trimStart() !== '')
+                if (!closer || param.trimStart())
                     return [typed_dom_1.html('pre', {
                             class: 'notranslate invalid',
                             'data-invalid-syntax': 'example',
@@ -4083,7 +4083,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.message = combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300), ([body, closer, opener, delim, type, param], _, context) => {
-                if (!closer || param.trimStart() !== '')
+                if (!closer || param.trimStart())
                     return [typed_dom_1.html('pre', {
                             class: `notranslate invalid`,
                             'data-invalid-syntax': 'message',
@@ -4182,7 +4182,7 @@ require = function () {
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 1000, false))), false);
             exports.table = combinator_1.block(combinator_1.validate('~~~', combinator_1.recover(combinator_1.bind(combinator_1.fence(opener, 1000), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
-                if (!closer || param.trimStart() !== '')
+                if (!closer || param.trimStart())
                     return [
                         [typed_dom_1.html('pre', {
                                 class: `notranslate invalid`,
@@ -5737,7 +5737,7 @@ require = function () {
             }
             exports.text = text;
             function identify(index) {
-                return index ? `index:${ index.trim().replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }` : '';
+                return index ? `index:${ index.replace(/\s+/g, '_').slice(0, 101).replace(/^(.{97}).{4}$/, '$1...') }` : '';
             }
         },
         {
@@ -6334,14 +6334,14 @@ require = function () {
                 const el = cache && cached ? cache.get(url.href).cloneNode(true) : typed_dom_1.html('img', {
                     class: 'media',
                     'data-src': src,
-                    alt: text.trim()
+                    alt: text.trimEnd()
                 });
                 if (!cached && !link_1.sanitize(url, el, INSECURE_URI, ((_c = context.host) === null || _c === void 0 ? void 0 : _c.origin) || global_1.location.origin))
                     return [
                         [el],
                         rest
                     ];
-                cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trim());
+                cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
                 typed_dom_1.define(el, html_1.attributes('media', array_1.push([], el.classList), optspec, params, remap));
                 return ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.link) !== null && _f !== void 0 ? _f : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context) : [
                     [el],
@@ -6457,12 +6457,15 @@ require = function () {
                 combinator_1.surround('[', combinator_1.focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+(?=]\()/, text), ']'),
                 combinator_1.surround('(', combinator_1.focus(/^(?:\\[^\n]|[^\)\n])+(?=\))/, text), ')')
             ])), ([texts, rubies], rest) => {
+                if (!texts[0][0].trimStart())
+                    return;
                 if (!util_1.isEndTight(texts))
                     return;
+                texts[texts.length - 1] || texts.pop();
                 switch (true) {
                 case rubies.length <= texts.length:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag(texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() !== '' ? [
+                        [typed_dom_1.html('ruby', util_1.defrag(texts.reduce((acc, _, i) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -6471,7 +6474,7 @@ require = function () {
                     ];
                 case texts.length === 1 && [...texts[0]].length >= rubies.length:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag([...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() !== '' ? [
+                        [typed_dom_1.html('ruby', util_1.defrag([...texts[0]].reduce((acc, _, i, texts) => array_1.push(acc, array_1.unshift([texts[i]], i < rubies.length && rubies[i].trimStart() ? [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', rubies[i]),
                                 typed_dom_1.html('rp', ')')
@@ -6480,7 +6483,7 @@ require = function () {
                     ];
                 default:
                     return [
-                        [typed_dom_1.html('ruby', util_1.defrag(array_1.unshift([array_1.join(texts, ' ').trim()], [
+                        [typed_dom_1.html('ruby', util_1.defrag(array_1.unshift([array_1.join(texts, ' ')], [
                                 typed_dom_1.html('rp', '('),
                                 typed_dom_1.html('rt', array_1.join(rubies, ' ').trim()),
                                 typed_dom_1.html('rp', ')')
@@ -6501,8 +6504,7 @@ require = function () {
                         continue;
                     case '&': {
                             const result = htmlentity_1.htmlentity(source, context);
-                            const str = (_a = combinator_1.eval(result, [])[0]) !== null && _a !== void 0 ? _a : source[0];
-                            acc[acc.length - 1] += str;
+                            acc[acc.length - 1] += (_a = combinator_1.eval(result, [])[0]) !== null && _a !== void 0 ? _a : source[0];
                             source = (_b = combinator_1.exec(result)) !== null && _b !== void 0 ? _b : source.slice(1);
                             continue;
                         }
