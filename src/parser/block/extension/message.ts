@@ -19,7 +19,7 @@ export const message: MessageParser = block(validate('~~~', fmap(
   fence(/^(~{3,})message\/(\S+)([^\n]*)(?:$|\n)/, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type, param]: string[], _, context) => {
-    if (!closer || param.trimStart() !== '') return [html('pre', {
+    if (!closer || param.trimStart()) return [html('pre', {
       class: `notranslate invalid`,
       'data-invalid-syntax': 'message',
       'data-invalid-type': closer ? 'argument' : 'closer',

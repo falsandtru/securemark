@@ -26,7 +26,7 @@ export const table: TableParser = block(validate('~~~', recover(bind(
   fence(opener, 1000),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
-    if (!closer || param.trimStart() !== '') return [[html('pre', {
+    if (!closer || param.trimStart()) return [[html('pre', {
       class: `notranslate invalid`,
       'data-invalid-syntax': 'table',
       'data-invalid-type': closer ? 'argument' : 'closer',

@@ -10,7 +10,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type, param]: string[], _, context) => {
-    if (!closer || param.trimStart() !== '') return [html('pre', {
+    if (!closer || param.trimStart()) return [html('pre', {
       class: 'notranslate invalid',
       'data-invalid-syntax': 'example',
       'data-invalid-type': closer ? 'argument' : 'closer',

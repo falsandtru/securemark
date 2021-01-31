@@ -23,7 +23,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(
         return [[html('ruby', defrag(texts
           .reduce((acc, _, i) =>
             push(acc, unshift<HTMLElement | string>([texts[i]],
-              i < rubies.length && rubies[i].trimStart() !== ''
+              i < rubies.length && rubies[i].trimStart()
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')]))
           , [])))], rest];
@@ -31,7 +31,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(
         return [[html('ruby', defrag([...texts[0]]
           .reduce((acc, _, i, texts) =>
             push(acc, unshift<HTMLElement | string>([texts[i]],
-              i < rubies.length && rubies[i].trimStart() !== ''
+              i < rubies.length && rubies[i].trimStart()
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')]))
           , [])))], rest];
