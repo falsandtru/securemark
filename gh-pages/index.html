@@ -423,6 +423,18 @@
     display: block;
     margin-bottom: 1em;
   }
+  table:empty::before {
+    content: "(Empty table)";
+    font-style: italic;
+    font-weight: bold;
+    color: gray;
+  }
+  tr:empty::before {
+    content: "(Empty table row)";
+    font-style: italic;
+    font-weight: bold;
+    color: gray;
+  }
   ol:empty {
     display: none;
   }
