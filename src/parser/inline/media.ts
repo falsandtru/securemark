@@ -3,7 +3,7 @@ import { ObjectSetPrototypeOf } from 'spica/alias';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, surround, open, lazy, fmap, bind } from '../../combinator';
 import { isEndTight, dup } from '../util';
-import { link, optspec as linkoptspec, uri, option, resolve, sanitize } from './link';
+import { link, optspec as linkoptspec, uri, resolve, sanitize } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { text, str } from '../source';
@@ -58,3 +58,8 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
   surround(str('{'), some(union([htmlentity, bracket, text]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('"'), some(union([htmlentity, text]), '"'), str('"'), true),
 ])));
+
+const option: MediaParser.ParameterParser.OptionParser = union([
+  fmap(str(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
+  str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
+]);

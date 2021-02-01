@@ -827,8 +827,17 @@ export namespace MarkdownParser {
         Inline<'media/parameter'>,
         Parser<string[], [
           LinkParser.ParameterParser.UriParser,
-          LinkParser.ParameterParser.OptionParser,
+          ParameterParser.OptionParser,
         ], Context> {
+      }
+      export namespace ParameterParser {
+        export interface OptionParser extends
+          Inline<'media/parameter/option'>,
+          Parser<string, [
+            SourceParser.StrParser,
+            SourceParser.StrParser,
+          ], Context> {
+        }
       }
     }
     export interface HTMLParser extends

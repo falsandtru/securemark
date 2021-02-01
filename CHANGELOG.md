@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.202.0
+
+- Extend aspect-ratio option of media syntax to add alias syntax.
+
 ## 0.201.2
 
 - Fix heading parser not to create invisible elements.

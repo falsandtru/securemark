@@ -89,6 +89,7 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![]{/ nofollow}')), [['<a href="/" rel="nofollow noreferrer" target="_blank"><img class="media" data-src="/" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3"}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{/ aspect-ratio="4/3" nofollow}')), [['<a href="/" rel="nofollow noreferrer" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![]{/ 4:3}')), [['<a href="/" target="_blank"><img class="media" data-src="/" alt="" aspect-ratio="4/3"></a>'], '']);
     });
 
   });

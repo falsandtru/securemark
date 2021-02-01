@@ -155,6 +155,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{/ =}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{/  name}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]{/\nname}')), undefined);
+      assert.deepStrictEqual(inspect(parser('[]{/ 4:3}')), undefined);
     });
 
     it('nofollow', () => {
