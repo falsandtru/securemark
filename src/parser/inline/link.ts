@@ -1,7 +1,7 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
-import { union, inits, tails, some, validate, guard, context, creator, surround, open, reverse, lazy, bind, eval } from '../../combinator';
+import { union, inits, tails, some, validate, guard, context, creator, surround, open, reverse, lazy, fmap, bind, eval } from '../../combinator';
 import { startTight, isEndTight, dup, defrag, stringify } from '../util';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -9,13 +9,10 @@ import { str } from '../source';
 import { ReadonlyURL } from 'spica/url';
 import { html, define } from 'typed-dom';
 
-export const optspec = {
-  nofollow: [undefined],
+const optspec = {
+  rel: ['nofollow noreferrer'],
 } as const;
 ObjectSetPrototypeOf(optspec, null);
-const remap = {
-  nofollow: () => ['rel', 'nofollow noreferrer'] as const,
-} as const;
 
 export const link: LinkParser = lazy(() => creator(10, bind(reverse(
   validate(['[', '{'], '}', '\n',
@@ -65,7 +62,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
             .replace(/^tel:/, ''));
     if (!sanitize(new ReadonlyURL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
-    define(el, attributes('link', [], optspec, params, remap));
+    define(el, attributes('link', [], optspec, params));
     return [[el], rest];
   })));
 
@@ -75,6 +72,7 @@ export const uri: LinkParser.ParameterParser.UriParser = union([
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
+  fmap(str(/^ nofollow(?=[ }])/), () => [` rel="nofollow noreferrer"`]),
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
 ]);
 

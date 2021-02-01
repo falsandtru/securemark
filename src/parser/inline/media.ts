@@ -3,7 +3,7 @@ import { ObjectSetPrototypeOf } from 'spica/alias';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, guard, creator, surround, open, lazy, fmap, bind } from '../../combinator';
 import { isEndTight, dup } from '../util';
-import { link, optspec as linkoptspec, uri, resolve, sanitize } from './link';
+import { link, uri, option as linkoption, resolve, sanitize } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { text, str } from '../source';
@@ -13,12 +13,9 @@ import { html, define } from 'typed-dom';
 
 const optspec = {
   'aspect-ratio': [],
-  ...linkoptspec,
+  rel: undefined,
 } as const;
 ObjectSetPrototypeOf(optspec, null);
-const remap = {
-  nofollow: () => undefined,
-} as const;
 
 export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
   '!',
@@ -44,7 +41,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
       : html('img', { class: 'media', 'data-src': src, alt: text.trimEnd() });
     if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
-    define(el, attributes('media', push([], el.classList), optspec, params, remap));
+    define(el, attributes('media', push([], el.classList), optspec, params));
     return (context.syntax?.inline?.link ?? true)
         && (!cached || el.tagName === 'IMG')
       ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])
@@ -61,5 +58,5 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
 
 const option: MediaParser.ParameterParser.OptionParser = union([
   fmap(str(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
-  str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
+  linkoption,
 ]);

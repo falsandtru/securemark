@@ -135,16 +135,15 @@ function invalid(type: string, description: string, as: (HTMLElement | string)[]
 }
 
 const requiredAttributes = memoize(
-  (spec: Readonly<Record<string, readonly (string | undefined)[]>>) =>
-    ObjectEntries(spec).flatMap(([k, v]) => isFrozen(v) ? [k] : []),
+  (spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>>) =>
+    ObjectEntries(spec).flatMap(([k, v]) => v && isFrozen(v) ? [k] : []),
   new WeakMap());
 
 export function attributes(
   syntax: string,
   classes: string[],
-  spec: Readonly<Record<string, readonly (string | undefined)[]>> | undefined,
+  spec: Readonly<Record<string, readonly (string | undefined)[] | undefined>> | undefined,
   params: string[],
-  remap: Readonly<Record<string, (name: string, value: string | undefined) => readonly [string, string] | undefined>> = {},
 ): Record<string, string | undefined> {
   assert(spec instanceof Object === false);
   let invalid = false;
@@ -153,36 +152,28 @@ export function attributes(
     assert(params[i][0] === ' ');
     const param = params[i].slice(1);
     assert(attrs instanceof Object === false);
-    let key = param.split('=', 1)[0];
-    let val = param !== key
+    const key = param.split('=', 1)[0];
+    const val = param !== key
       ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;
-    invalid = invalid || !spec || key in attrs;
-    if (val && spec?.[key]?.length === 0 || spec?.[key]?.includes(val)) {
-      if (remap[key]) {
-        attrs[key] ??= undefined;
-        [key, val] = remap[key](key, val) ?? [key, undefined];
-        val !== undefined && splice(params, i--, 1);
-      }
-      else {
-        splice(params, i--, 1);
-      }
+    invalid ||= !spec || key in attrs;
+    if (spec && !spec[key] && key in spec) continue;
+    if (spec?.[key]?.includes(val) || val !== undefined && spec?.[key]?.length === 0) {
+      splice(params, i--, 1);
       attrs[key] = val;
     }
     else {
-      invalid = invalid || !!spec;
+      invalid ||= !!spec;
       splice(params, i--, 1);
     }
   }
-  invalid = invalid || !!spec && !requiredAttributes(spec).every(k => k in attrs);
+  invalid ||= !!spec && !requiredAttributes(spec).every(k => k in attrs);
   if (invalid) {
     !classes.includes('invalid') && classes.push('invalid');
     attrs.class = join(classes, ' ');
     attrs['data-invalid-syntax'] = syntax;
-    attrs['data-invalid-type'] = syntax === 'html'
-      ? 'attribute'
-      : 'argument';
-    attrs['data-invalid-description'] = `Invalid ${attrs['data-invalid-type']}.`;
+    attrs['data-invalid-type'] = 'argument';
+    attrs['data-invalid-description'] = 'Invalid argument.';
   }
   return attrs;
 }

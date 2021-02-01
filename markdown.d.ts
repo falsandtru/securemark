@@ -775,6 +775,7 @@ export namespace MarkdownParser {
           Inline<'link/parameter/option'>,
           Parser<string, [
             SourceParser.StrParser,
+            SourceParser.StrParser,
           ], Context> {
         }
       }
@@ -835,7 +836,7 @@ export namespace MarkdownParser {
           Inline<'media/parameter/option'>,
           Parser<string, [
             SourceParser.StrParser,
-            SourceParser.StrParser,
+            LinkParser.ParameterParser.OptionParser,
           ], Context> {
         }
       }
