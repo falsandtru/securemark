@@ -4213,12 +4213,12 @@ require = function () {
             ]), ns => !alias_1.isArray(ns[0]) ? array_1.unshift([[[]]], ns) : ns)));
             const alignment = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)/;
             const align = combinator_1.line(combinator_1.fmap(combinator_1.union([source_1.str(alignment)]), ([s]) => s.split('/').map(s => s.split(''))));
-            const delimiter = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!*(?=[^\S\n])/;
-            const head = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^#(?:\d*:\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
+            const delimiter = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
+            const head = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^#(?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('th', attributes(ns.shift()), util_1.defrag(ns))]), false));
-            const data = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^:(?:\d*:\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
+            const data = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^:(?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), util_1.defrag(ns))]), false));
@@ -6061,7 +6061,7 @@ require = function () {
             const source_1 = _dereq_('../source');
             const url_1 = _dereq_('spica/url');
             const typed_dom_1 = _dereq_('typed-dom');
-            const optspec = { rel: ['nofollow noreferrer'] };
+            const optspec = { rel: ['nofollow'] };
             alias_1.ObjectSetPrototypeOf(optspec, null);
             exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.reverse(combinator_1.validate([
                 '[',
@@ -6100,7 +6100,7 @@ require = function () {
                 if (INSECURE_URI[0] === ' ')
                     return;
                 const src = resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
-                const el = typed_dom_1.html('a', { href: src }, content.length > 0 ? content = util_1.defrag(content) : decode(INSECURE_URI).replace(/^tel:/, ''));
+                const el = typed_dom_1.html('a', { href: src }, content.length > 0 ? content = util_1.defrag(content) : decode(INSECURE_URI.replace(/^tel:/i, '')));
                 if (!sanitize(new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
                     return [
                         [el],
@@ -6118,7 +6118,7 @@ require = function () {
                 source_1.str(' ')
             ]);
             exports.option = combinator_1.union([
-                combinator_1.fmap(source_1.str(/^ nofollow(?=[ }])/), () => [` rel="nofollow noreferrer"`]),
+                combinator_1.fmap(source_1.str(/^ nofollow(?=[ }])/), () => [` rel="nofollow"`]),
                 source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
                 combinator_1.fmap(source_1.str(/^ [^\n{}]+/), opt => [` \\${ opt.slice(1) }`])
             ]);
@@ -6151,7 +6151,8 @@ require = function () {
                 case 'tel:':
                     if (target.tagName !== 'A')
                         break;
-                    if (`tel:${ target.textContent.replace(/(?!^)-(?!-|$)/g, '') }` === source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, ''))
+                    const pattern = /^tel:(?:\+(?!0))?\d+(?:-\d+)*$/i;
+                    if (pattern.test(source) && pattern.test(`tel:${ target.textContent }`) && source.replace(/[^+\d]/g, '') === target.textContent.replace(/[^+\d]/g, ''))
                         return true;
                     type = 'content';
                     description = 'Invalid phone number.';
@@ -6173,6 +6174,8 @@ require = function () {
             }
             exports.sanitize = sanitize;
             function decode(uri) {
+                if (uri.indexOf('%') === -1)
+                    return uri;
                 try {
                     uri = global_1.decodeURI(uri);
                 } finally {
@@ -7133,7 +7136,7 @@ require = function () {
             }
             function visualize(parser, message = '(Empty)') {
                 return justify(combinator_1.union([
-                    combinator_1.verify(parser, (ns, _, context) => hasVisible(ns, context)),
+                    combinator_1.verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
                     source => [
                         [source.trim() || message],
                         ''
@@ -7488,7 +7491,8 @@ require = function () {
                     src: url.href,
                     alt,
                     controls: '',
-                    style: 'width: 100%;'
+                    style: 'width: 100%;',
+                    loading: 'lazy'
                 });
                 cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
@@ -7510,7 +7514,8 @@ require = function () {
                     class: 'media',
                     src: url.href,
                     alt,
-                    style: 'max-width: 100%;'
+                    style: 'max-width: 100%;',
+                    loading: 'lazy'
                 });
                 cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
@@ -7536,7 +7541,8 @@ require = function () {
                     typed_dom_1.html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [typed_dom_1.html('object', {
                             type: 'application/pdf',
                             data: url.href,
-                            style: 'width: 100%; height: 100%; min-height: 400px;'
+                            style: 'width: 100%; height: 100%; min-height: 400px;',
+                            loading: 'lazy'
                         })]),
                     typed_dom_1.html('div', { style: 'word-wrap: break-word;' }, parser_1.parse(`**{ ${ url.href } }**`).firstElementChild.childNodes)
                 ]);
@@ -7625,7 +7631,8 @@ require = function () {
                     alt,
                     muted: '',
                     controls: '',
-                    style: 'max-width: 100%;'
+                    style: 'max-width: 100%;',
+                    loading: 'lazy'
                 });
                 cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
@@ -7664,7 +7671,8 @@ require = function () {
                             src: `https://www.youtube.com/embed/${ id }`,
                             allowfullscreen: '',
                             frameborder: '0',
-                            style: 'display: block; aspect-ratio: 16/9; position: absolute; top: 0; right: 0; width: 100%; height: 100%;'
+                            style: 'display: block; aspect-ratio: 16/9; position: absolute; top: 0; right: 0; width: 100%; height: 100%;',
+                            loading: 'lazy'
                         })])]);
                 cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
