@@ -34,8 +34,6 @@ export function* segment(source: string): Generator<string, undefined, undefined
     assert(segs.join('') === source.slice(0, source.length - rest.length));
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
-      // Limit the size of a segment not to block user operations
-      // bacause of a long process caused by a huge segment.
       seg.length > SEGMENT_SIZE_LIMIT
         ? yield `\0Too large block of length over 10,000.\n${seg}`
         : yield seg;
