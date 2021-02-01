@@ -60,7 +60,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
       content.length > 0
         ? content = defrag(content)
         : decode(INSECURE_URI)
-            .replace(/^tel:/, ''));
+            .replace(/^tel:/i, ''));
     if (!sanitize(new ReadonlyURL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
     define(el, attributes('link', [], optspec, params));
@@ -120,7 +120,8 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
       return true;
     case 'tel:':
       if (target.tagName !== 'A') break;
-      if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` === source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '')) return true;
+      if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` ===
+          source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '').toLowerCase()) return true;
       type = 'content';
       description = 'Invalid phone number.';
       break;
