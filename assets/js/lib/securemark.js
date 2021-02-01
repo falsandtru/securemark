@@ -5955,40 +5955,33 @@ require = function () {
                     'data-invalid-description': description
                 }, util_1.defrag(array_1.push(array_1.unshift(as, bs), cs)));
             }
-            const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).flatMap(([k, v]) => alias_1.isFrozen(v) ? [k] : []), new WeakMap());
-            function attributes(syntax, classes, spec, params, remap = {}) {
-                var _a, _b, _c, _d;
+            const requiredAttributes = memoize_1.memoize(spec => alias_1.ObjectEntries(spec).flatMap(([k, v]) => v && alias_1.isFrozen(v) ? [k] : []), new WeakMap());
+            function attributes(syntax, classes, spec, params) {
+                var _a, _b;
                 let invalid = false;
                 const attrs = alias_1.ObjectCreate(null);
                 for (let i = 0; i < params.length; ++i) {
                     const param = params[i].slice(1);
-                    let key = param.split('=', 1)[0];
-                    let val = param !== key ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1') : global_1.undefined;
-                    invalid = invalid || !spec || key in attrs;
-                    if (val && ((_a = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _a === void 0 ? void 0 : _a.length) === 0 || ((_b = spec === null || spec === void 0 ? void 0 : spec[key]) === null || _b === void 0 ? void 0 : _b.includes(val))) {
-                        if (remap[key]) {
-                            (_c = attrs[key]) !== null && _c !== void 0 ? _c : attrs[key] = global_1.undefined;
-                            [key, val] = (_d = remap[key](key, val)) !== null && _d !== void 0 ? _d : [
-                                key,
-                                global_1.undefined
-                            ];
-                            val !== global_1.undefined && array_1.splice(params, i--, 1);
-                        } else {
-                            array_1.splice(params, i--, 1);
-                        }
-                        attrs[key] = val;
+                    const name = param.split('=', 1)[0];
+                    const value = param !== name ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1') : global_1.undefined;
+                    invalid || (invalid = !spec || name in attrs);
+                    if (spec && !spec[name] && name in spec)
+                        continue;
+                    if (((_a = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _a === void 0 ? void 0 : _a.includes(value)) || value !== global_1.undefined && ((_b = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _b === void 0 ? void 0 : _b.length) === 0) {
+                        array_1.splice(params, i--, 1);
+                        attrs[name] = value;
                     } else {
-                        invalid = invalid || !!spec;
+                        invalid || (invalid = !!spec);
                         array_1.splice(params, i--, 1);
                     }
                 }
-                invalid = invalid || !!spec && !requiredAttributes(spec).every(k => k in attrs);
+                invalid || (invalid = !!spec && !requiredAttributes(spec).every(name => name in attrs));
                 if (invalid) {
                     !classes.includes('invalid') && classes.push('invalid');
                     attrs.class = array_1.join(classes, ' ');
                     attrs['data-invalid-syntax'] = syntax;
-                    attrs['data-invalid-type'] = syntax === 'html' ? 'attribute' : 'argument';
-                    attrs['data-invalid-description'] = `Invalid ${ attrs['data-invalid-type'] }.`;
+                    attrs['data-invalid-type'] = 'argument';
+                    attrs['data-invalid-description'] = 'Invalid argument.';
                 }
                 return attrs;
             }
@@ -6057,7 +6050,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.sanitize = exports.resolve = exports.option = exports.uri = exports.link = exports.optspec = void 0;
+            exports.sanitize = exports.resolve = exports.option = exports.uri = exports.link = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const inline_1 = _dereq_('../inline');
@@ -6068,14 +6061,8 @@ require = function () {
             const source_1 = _dereq_('../source');
             const url_1 = _dereq_('spica/url');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.optspec = { nofollow: [global_1.undefined] };
-            alias_1.ObjectSetPrototypeOf(exports.optspec, null);
-            const remap = {
-                nofollow: () => [
-                    'rel',
-                    'nofollow noreferrer'
-                ]
-            };
+            const optspec = { rel: ['nofollow noreferrer'] };
+            alias_1.ObjectSetPrototypeOf(optspec, null);
             exports.link = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.reverse(combinator_1.validate([
                 '[',
                 '{'
@@ -6110,6 +6097,8 @@ require = function () {
                 if (combinator_1.eval(combinator_1.some(autolink_1.autolink)(util_1.stringify(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
+                if (INSECURE_URI[0] === ' ')
+                    return;
                 const src = resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
                 const el = typed_dom_1.html('a', { href: src }, content.length > 0 ? content = util_1.defrag(content) : decode(INSECURE_URI).replace(/^tel:/, ''));
                 if (!sanitize(new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
@@ -6117,7 +6106,7 @@ require = function () {
                         [el],
                         rest
                     ];
-                typed_dom_1.define(el, html_1.attributes('link', [], exports.optspec, params, remap));
+                typed_dom_1.define(el, html_1.attributes('link', [], optspec, params));
                 return [
                     [el],
                     rest
@@ -6125,9 +6114,14 @@ require = function () {
             })));
             exports.uri = combinator_1.union([
                 combinator_1.open(' ', source_1.str(/^\S+/)),
-                source_1.str(/^[^\s{}]+/)
+                source_1.str(/^[^\s{}]+/),
+                source_1.str(' ')
             ]);
-            exports.option = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/)]);
+            exports.option = combinator_1.union([
+                combinator_1.fmap(source_1.str(/^ nofollow(?=[ }])/), () => [` rel="nofollow noreferrer"`]),
+                source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
+                combinator_1.fmap(source_1.str(/^ [^\n{}]+/), opt => [` \\${ opt.slice(1) }`])
+            ]);
             function resolve(uri, host, source) {
                 var _a;
                 switch (true) {
@@ -6277,10 +6271,9 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const optspec = {
                 'aspect-ratio': [],
-                ...link_1.optspec
+                rel: global_1.undefined
             };
             alias_1.ObjectSetPrototypeOf(optspec, null);
-            const remap = { nofollow: () => global_1.undefined };
             exports.media = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.validate([
                 '[',
                 '{'
@@ -6295,7 +6288,7 @@ require = function () {
                 ]), ']', /^\\?\n/), ']', true)),
                 util_1.dup(combinator_1.surround(/^{(?![{}])/, combinator_1.inits([
                     link_1.uri,
-                    combinator_1.some(link_1.option)
+                    combinator_1.some(option)
                 ]), /^ ?}/))
             ])))), ([as, bs]) => bs ? [
                 bs,
@@ -6304,12 +6297,14 @@ require = function () {
                 as,
                 ['']
             ]), ([params, [text]], rest, context) => {
-                var _a, _b, _c, _d, _e, _f;
+                var _a, _b, _c, _d, _e;
                 if (text.length > 0 && text[0].trimStart() === '')
                     return;
                 if (!util_1.isEndTight([text]))
                     return;
                 const INSECURE_URI = params.shift();
+                if (INSECURE_URI[0] === ' ')
+                    return;
                 const src = link_1.resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
                 const url = new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
                 const cache = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.media;
@@ -6325,11 +6320,13 @@ require = function () {
                         rest
                     ];
                 cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
-                typed_dom_1.define(el, html_1.attributes('media', array_1.push([], el.classList), optspec, params, remap));
-                return ((_f = (_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.link) !== null && _f !== void 0 ? _f : true) && (!cached || el.tagName === 'IMG') ? combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context) : [
-                    [el],
-                    rest
-                ];
+                typed_dom_1.define(el, html_1.attributes('media', array_1.push([], el.classList), optspec, params));
+                if (((_e = (_d = context.syntax) === null || _d === void 0 ? void 0 : _d.inline) === null || _e === void 0 ? void 0 : _e.link) === false || cached && el.tagName !== 'IMG')
+                    return [
+                        [el],
+                        rest
+                    ];
+                return combinator_1.fmap(link_1.link, ([link]) => [typed_dom_1.define(link, { target: '_blank' }, [el])])(`{ ${ INSECURE_URI }${ array_1.join(params) } }${ rest }`, context);
             })));
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround(source_1.str('('), combinator_1.some(combinator_1.union([
@@ -6361,6 +6358,10 @@ require = function () {
                     source_1.text
                 ]), '"'), source_1.str('"'), true)
             ])));
+            const option = combinator_1.union([
+                combinator_1.fmap(source_1.str(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${ opt.slice(1).split(':').join('/') }"`]),
+                link_1.option
+            ]);
         },
         {
             '../../combinator': 30,
