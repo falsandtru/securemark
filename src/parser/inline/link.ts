@@ -59,8 +59,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
       },
       content.length > 0
         ? content = defrag(content)
-        : decode(INSECURE_URI)
-            .replace(/^tel:/i, ''));
+        : decode(INSECURE_URI.replace(/^tel:/i, '')));
     if (!sanitize(new ReadonlyURL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
     define(el, attributes('link', [], optspec, params));
@@ -145,11 +144,11 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
 }
 
 function decode(uri: string): string {
+  if (uri.indexOf('%') === -1) return uri;
   try {
     uri = decodeURI(uri);
   }
   finally {
-    return uri
-      .replace(/\s+/g, encodeURI);
+    return uri.replace(/\s+/g, encodeURI);
   }
 }
