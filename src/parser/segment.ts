@@ -1,3 +1,4 @@
+import { Blob } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { union, some, eval, exec } from '../combinator';
 import { segment as heading } from './block/heading';
@@ -19,7 +20,7 @@ const parser: SegmentParser = union([
 
 export function* segment(source: string): Generator<string, undefined, undefined> {
   assert(!source.includes('\0'));
-  if (source.length > 1000 * 1000) return yield `\0Too large input of length over 1,000,000.\n${source.slice(0, 10001)}`;
+  if (new Blob([source]).size > 1000 * 1000) return yield `\0Too large input over 1,000,000 bytes.\n${source.slice(0, 10001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
     const result = parser(source, {})!;

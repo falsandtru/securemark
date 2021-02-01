@@ -16,7 +16,7 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(
         [...parse(`${'\n'.repeat(1000 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
         [
-          '<h1 class="error">Error: Too large input of length over 1,000,000.</h1>',
+          '<h1 class="error">Error: Too large input over 1,000,000 bytes.</h1>',
           `<pre>${'\n'.repeat(9997)}...</pre>`,
         ]);
     });
