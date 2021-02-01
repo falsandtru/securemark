@@ -212,8 +212,8 @@ function format(rows: Data<RowParser>[]): HTMLTableSectionElement[] {
     let heads = 0;
     let highlights = 0;
     let hasDataCell = false;
-    let lHeadCellIdx: number | undefined;
-    let rHeadCellIdx: number | undefined;
+    let lHeadCellIdx: number;
+    let rHeadCellIdx: number;
     for (let j = 0; j < cells.length && cells.length <= 32; ++j) {
       const isVirtual = !!ranges[i]?.[j];
       const cell = isVirtual
