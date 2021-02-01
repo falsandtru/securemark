@@ -154,23 +154,23 @@ export function attributes(
   for (let i = 0; i < params.length; ++i) {
     assert(params[i][0] === ' ');
     const param = params[i].slice(1);
-    const key = param.split('=', 1)[0];
-    assert(key !== '__proto__');
-    const val = param !== key
-      ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
+    const name = param.split('=', 1)[0];
+    assert(name !== '__proto__');
+    const value = param !== name
+      ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;
-    invalid ||= !spec || key in attrs;
-    if (spec && !spec[key] && key in spec) continue;
-    if (spec?.[key]?.includes(val) || val !== undefined && spec?.[key]?.length === 0) {
+    invalid ||= !spec || name in attrs;
+    if (spec && !spec[name] && name in spec) continue;
+    if (spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0) {
       splice(params, i--, 1);
-      attrs[key] = val;
+      attrs[name] = value;
     }
     else {
       invalid ||= !!spec;
       splice(params, i--, 1);
     }
   }
-  invalid ||= !!spec && !requiredAttributes(spec).every(k => k in attrs);
+  invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
   if (invalid) {
     !classes.includes('invalid') && classes.push('invalid');
     attrs.class = join(classes, ' ');
