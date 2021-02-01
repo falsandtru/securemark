@@ -119,8 +119,10 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
       return true;
     case 'tel:':
       if (target.tagName !== 'A') break;
-      if (`tel:${target.textContent!.replace(/(?!^)-(?!-|$)/g, '')}` ===
-          source.replace(/^tel:[0-9-]*[^0-9-]\w*/i, '').toLowerCase()) return true;
+      const pattern = /^tel:(?:\+(?!0))?\d+(?:-\d+)*$/i;
+      if (pattern.test(source) &&
+          pattern.test(`tel:${target.textContent}`) &&
+          source.replace(/[^+\d]/g, '') === target.textContent!.replace(/[^+\d]/g, '')) return true;
       type = 'content';
       description = 'Invalid phone number.';
       break;

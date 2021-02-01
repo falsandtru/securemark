@@ -114,8 +114,11 @@ describe('Unit: parser/inline/link', () => {
     it('tel', () => {
       assert.deepStrictEqual(inspect(parser('{tel:1234567890}')), [[`<a href="tel:1234567890">1234567890</a>`], '']);
       assert.deepStrictEqual(inspect(parser('{Tel:1234567890}')), [[`<a href="Tel:1234567890">1234567890</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('{tel:+1234567890}')), [[`<a href="tel:+1234567890">+1234567890</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('{tel:+12-345-67-890}')), [[`<a href="tel:+12-345-67-890">+12-345-67-890</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[1234567890]{tel:1234567890}')), [[`<a href="tel:1234567890">1234567890</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[12-3456-7890]{tel:1234567890}')), [[`<a href="tel:1234567890">12-3456-7890</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[+12-34567-890]{tel:+12-345-67890}')), [[`<a href="tel:+12-345-67890">+12-34567-890</a>`], '']);
     });
 
     it('media', () => {
