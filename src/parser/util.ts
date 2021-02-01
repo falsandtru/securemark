@@ -61,7 +61,7 @@ export function visualize<P extends Parser<HTMLElement | string>>(parser: P, mes
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>, message = '(Empty)'): Parser<T> {
   assert(message.trim());
   return justify(union([
-    verify(parser, (ns, _, context) => hasVisible(ns, context)),
+    verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
     (source: string) => [[source.trim() || message], ''],
   ]));
 }
