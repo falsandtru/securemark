@@ -18,7 +18,7 @@ export function quote(anchor: string, range: Range): string {
         continue;
     }
   }
-  expansion = expansion || !!trim(node).firstElementChild?.matches('.quote');
+  expansion ||= !!trim(node).firstElementChild?.matches('.quote');
   if (!node.firstChild) return '';
   let add: boolean;
   if (expansion) {
@@ -34,7 +34,7 @@ export function quote(anchor: string, range: Range): string {
     const target = el.nextSibling as Node | Element;
     if (target && 'id' in target && target.matches('.quote')) {
       el.replaceWith('\n>');
-      add = add || i < len - 1;
+      add ||= i < len - 1;
     }
     else {
       el.replaceWith(add ? `\n>>${anchor}\n> ` : '\n> ');
