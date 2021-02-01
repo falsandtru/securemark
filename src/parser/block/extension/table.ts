@@ -70,10 +70,10 @@ const align: AlignParser = line(fmap(
   union([str(alignment)]),
   ([s]) => s.split('/').map(s => s.split(''))));
 
-const delimiter = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:\d*:\d*)?!*(?=[^\S\n])/;
+const delimiter = /^[#:]?(?:[-=<>]+(?:\/[-=^v]*)?|\/[-=^v]+)(?=[^\S\n]*\n)|^[#:](?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/;
 
 const head: CellParser.HeadParser = creator(block(fmap(open(
-  str(/^#(?:\d*:\d*)?!*(?=[^\S\n])/),
+  str(/^#(?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/),
   rewrite(
     inits([
       anyline,
@@ -85,7 +85,7 @@ const head: CellParser.HeadParser = creator(block(fmap(open(
   false));
 
 const data: CellParser.DataParser = creator(block(fmap(open(
-  str(/^:(?:\d*:\d*)?!*(?=[^\S\n])/),
+  str(/^:(?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/),
   rewrite(
     inits([
       anyline,
@@ -104,6 +104,8 @@ const dataline: CellParser.DatalineParser = creator(line(
 
 function attributes(source: string) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
+  assert(rowspan?.[0] !== '0');
+  assert(colspan?.[0] !== '0');
   rowspan === '1' ? rowspan = undefined : undefined;
   colspan === '1' ? colspan = undefined : undefined;
   rowspan &&= max(0, min(+rowspan, 65534)) + '';
