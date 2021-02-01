@@ -10,7 +10,7 @@ import { ReadonlyURL } from 'spica/url';
 import { html, define } from 'typed-dom';
 
 const optspec = {
-  rel: ['nofollow noreferrer'],
+  rel: ['nofollow'],
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
@@ -73,7 +73,7 @@ export const uri: LinkParser.ParameterParser.UriParser = union([
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([
-  fmap(str(/^ nofollow(?=[ }])/), () => [` rel="nofollow noreferrer"`]),
+  fmap(str(/^ nofollow(?=[ }])/), () => [` rel="nofollow"`]),
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
   fmap(str(/^ [^\n{}]+/), opt => [` \\${opt.slice(1)}`]),
 ]);
