@@ -161,14 +161,10 @@ export function attributes(
       : undefined;
     invalid ||= !spec || name in attrs;
     if (spec && !spec[name] && name in spec) continue;
-    if (spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0) {
-      splice(params, i--, 1);
-      attrs[name] = value;
-    }
-    else {
-      invalid ||= !!spec;
-      splice(params, i--, 1);
-    }
+    spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0
+      ? attrs[name] = value
+      : invalid ||= !!spec;
+    splice(params, i--, 1);
   }
   invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
   if (invalid) {
