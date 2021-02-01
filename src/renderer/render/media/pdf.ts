@@ -15,6 +15,7 @@ export function pdf(url: URL, cache?: Collection<string, HTMLElement>): HTMLElem
         type: 'application/pdf',
         data: url.href,
         style: 'width: 100%; height: 100%; min-height: 400px;',
+        loading: 'lazy',
       }),
     ]),
     html('div', { style: 'word-wrap: break-word;' },

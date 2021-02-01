@@ -15,6 +15,7 @@ export function audio(url: URL, alt: string, cache?: Collection<string, HTMLElem
     alt,
     controls: '',
     style: 'width: 100%;',
+    loading: 'lazy',
   });
   cache?.set(url.href, el.cloneNode(true));
   return el;

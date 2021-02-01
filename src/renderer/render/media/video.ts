@@ -16,6 +16,7 @@ export function video(url: URL, alt: string, cache?: Collection<string, HTMLElem
     muted: '',
     controls: '',
     style: 'max-width: 100%;',
+    loading: 'lazy',
   });
   cache?.set(url.href, el.cloneNode(true));
   return el;

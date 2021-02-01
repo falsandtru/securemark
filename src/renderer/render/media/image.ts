@@ -8,6 +8,7 @@ export function image(url: URL, alt: string, cache?: Collection<string, HTMLElem
     src: url.href,
     alt,
     style: 'max-width: 100%;',
+    loading: 'lazy',
   });
   cache?.set(url.href, el.cloneNode(true));
   return el;
