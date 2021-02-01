@@ -30,6 +30,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     if (text.length > 0 && text[0].trimStart() === '') return;
     if (!isEndTight([text])) return;
     const INSECURE_URI = params.shift()!;
+    if (INSECURE_URI[0] === ' ') return;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const src = resolve(INSECURE_URI, context.host || location, context.url || location);

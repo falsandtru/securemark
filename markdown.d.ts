@@ -769,11 +769,13 @@ export namespace MarkdownParser {
           Parser<string, [
             SourceParser.StrParser,
             SourceParser.StrParser,
+            SourceParser.StrParser,
           ], Context> {
         }
         export interface OptionParser extends
           Inline<'link/parameter/option'>,
           Parser<string, [
+            SourceParser.StrParser,
             SourceParser.StrParser,
             SourceParser.StrParser,
           ], Context> {

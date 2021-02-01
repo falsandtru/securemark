@@ -146,13 +146,16 @@ export function attributes(
   params: string[],
 ): Record<string, string | undefined> {
   assert(spec instanceof Object === false);
+  assert(!spec?.__proto__);
+  assert(!spec?.toString);
   let invalid = false;
   const attrs: Record<string, string | undefined> = ObjectCreate(null);
+  assert(attrs instanceof Object === false);
   for (let i = 0; i < params.length; ++i) {
     assert(params[i][0] === ' ');
     const param = params[i].slice(1);
-    assert(attrs instanceof Object === false);
     const key = param.split('=', 1)[0];
+    assert(key !== '__proto__');
     const val = param !== key
       ? param.slice(key.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;

@@ -88,6 +88,7 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small toString>a</small>z')), undefined);
       assert.deepStrictEqual(inspect(parser('<bdo>a</bdo>z')), [['<span class="invalid">&lt;bdo&gt;a&lt;/bdo&gt;</span>'], 'z']);
       assert.deepStrictEqual(inspect(parser('<bdo >a</bdo>z')), undefined);
+      assert.deepStrictEqual(inspect(parser('<bdo __proto__>a</bdo>z')), undefined);
       assert.deepStrictEqual(inspect(parser('<bdo constructor>a</bdo>z')), [['<span class="invalid">&lt;bdo constructor&gt;a&lt;/bdo&gt;</span>'], 'z']);
       assert.deepStrictEqual(inspect(parser('<bdo toString>a</bdo>z')), undefined);
       assert.deepStrictEqual(inspect(parser('<bdo dir>a</bdo>z')), [['<span class="invalid">&lt;bdo dir&gt;a&lt;/bdo&gt;</span>'], 'z']);
