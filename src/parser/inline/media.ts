@@ -43,11 +43,12 @@ export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
     if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
     define(el, attributes('media', push([], el.classList), optspec, params));
-    return (context.syntax?.inline?.link ?? true)
-        && (!cached || el.tagName === 'IMG')
-      ? fmap(link as MediaParser, ([link]) => [define(link, { target: '_blank' }, [el])])
-          (`{ ${INSECURE_URI}${join(params)} }${rest}`, context)
-      : [[el], rest];
+    assert(el.matches('img') || !el.matches('.invalid'));
+    if (context.syntax?.inline?.link === false || cached && el.tagName !== 'IMG') return [[el], rest];
+    return fmap(
+      link as MediaParser,
+      ([link]) => [define(link, { target: '_blank' }, [el])])
+      (`{ ${INSECURE_URI}${join(params)} }${rest}`, context);
   })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
