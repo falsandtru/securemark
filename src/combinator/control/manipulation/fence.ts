@@ -12,6 +12,8 @@ export function fence<D extends Parser<unknown, any, C>[], C extends Ctx>(opener
     const delim = matches[1];
     if (matches[0].indexOf(delim, delim.length) > -1) return;
     let rest = source.slice(matches[0].length);
+    // Prevent annoying parsing in editing.
+    if (firstline(rest).trimStart() === '' && firstline(rest.slice(firstline(rest).length)).trimEnd() !== delim) return;
     let block = '';
     let closer = '';
     for (let count = 1, next: string | undefined; ; ++count) {

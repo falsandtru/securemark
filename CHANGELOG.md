@@ -3,6 +3,7 @@
 ## 0.202.0
 
 - Increase the max length of segments to 100,000.
+- Improve fenced block parser to disallow contents starting with an empty line.
 
 ## 0.201.3
 

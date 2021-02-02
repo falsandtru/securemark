@@ -61,26 +61,35 @@ describe('Unit: parser/segment', () => {
     it('codeblock', () => {
       assert.deepStrictEqual([...segment('```')], ['```']);
       assert.deepStrictEqual([...segment('```\n```')], ['```\n```']);
-      assert.deepStrictEqual([...segment('```\n\n\n```')], ['```\n\n\n```']);
+      assert.deepStrictEqual([...segment('```\n\n```')], ['```\n\n```']);
+      assert.deepStrictEqual([...segment('```\n\n\n```')], ['```\n', '\n\n', '```']);
+      assert.deepStrictEqual([...segment('```\n\n0\n```')], ['```\n', '\n', '0\n```']);
+      assert.deepStrictEqual([...segment('```\n0\n\n```')], ['```\n0\n\n```']);
       assert.deepStrictEqual([...segment('```\n````\n```')], ['```\n````\n```']);
       assert.deepStrictEqual([...segment('````\n```\n````')], ['````\n```\n````']);
-      assert.deepStrictEqual([...segment('```\n\n\n```\n\n')], ['```\n\n\n```\n', '\n']);
+      assert.deepStrictEqual([...segment('```\n\n```\n\n')], ['```\n\n```\n', '\n']);
     });
 
     it('mathblock', () => {
       assert.deepStrictEqual([...segment('$$')], ['$$']);
       assert.deepStrictEqual([...segment('$$\n$$')], ['$$\n$$']);
-      assert.deepStrictEqual([...segment('$$\n\n\n$$')], ['$$\n\n\n$$']);
-      assert.deepStrictEqual([...segment('$$\n\n\n$$\n\n')], ['$$\n\n\n$$\n', '\n']);
+      assert.deepStrictEqual([...segment('$$\n\n$$')], ['$$\n\n$$']);
+      assert.deepStrictEqual([...segment('$$\n\n\n$$')], ['$$\n', '\n\n', '$$']);
+      assert.deepStrictEqual([...segment('$$\n\n0\n$$')], ['$$\n', '\n', '0\n$$']);
+      assert.deepStrictEqual([...segment('$$\n0\n\n$$')], ['$$\n0\n\n$$']);
+      assert.deepStrictEqual([...segment('$$\n\n$$\n\n')], ['$$\n\n$$\n', '\n']);
     });
 
     it('extension', () => {
       assert.deepStrictEqual([...segment('~~~')], ['~~~']);
       assert.deepStrictEqual([...segment('~~~\n~~~')], ['~~~\n~~~']);
-      assert.deepStrictEqual([...segment('~~~\n\n\n~~~')], ['~~~\n\n\n~~~']);
+      assert.deepStrictEqual([...segment('~~~\n\n~~~')], ['~~~\n\n~~~']);
+      assert.deepStrictEqual([...segment('~~~\n\n\n~~~')], ['~~~\n', '\n\n', '~~~']);
+      assert.deepStrictEqual([...segment('~~~\n\n0\n~~~')], ['~~~\n', '\n', '0\n~~~']);
+      assert.deepStrictEqual([...segment('~~~\n0\n\n~~~')], ['~~~\n0\n\n~~~']);
       assert.deepStrictEqual([...segment('~~~\n~~~~\n~~~')], ['~~~\n~~~~\n~~~']);
       assert.deepStrictEqual([...segment('~~~~\n~~~\n~~~~')], ['~~~~\n~~~\n~~~~']);
-      assert.deepStrictEqual([...segment('~~~\n\n\n~~~\n\n')], ['~~~\n\n\n~~~\n', '\n']);
+      assert.deepStrictEqual([...segment('~~~\n\n~~~\n\n')], ['~~~\n\n~~~\n', '\n']);
       assert.deepStrictEqual([...segment('~~~\n```\n~~~\n```\n~~~')], ['~~~\n```\n~~~\n```\n~~~']);
       assert.deepStrictEqual([...segment('~~~\ninvalid\n~~~')], ['~~~\ninvalid\n~~~']);
       assert.deepStrictEqual([...segment('~~~\ninvalid\n\ncaption\n~~~')], ['~~~\ninvalid\n\ncaption\n~~~']);
@@ -88,19 +97,19 @@ describe('Unit: parser/segment', () => {
     });
 
     it('mixed', () => {
-      assert.deepStrictEqual([...segment('```\n\n\n')], ['```\n\n\n']);
-      assert.deepStrictEqual([...segment('~~~\n\n\n')], ['~~~\n\n\n']);
-      assert.deepStrictEqual([...segment('```\n\n\n~~~\n\n\n```')], ['```\n\n\n~~~\n\n\n```']);
-      assert.deepStrictEqual([...segment('~~~\n\n\n```\n\n\n~~~')], ['~~~\n\n\n```\n\n\n~~~']);
+      assert.deepStrictEqual([...segment('```\n\n\n')], ['```\n', '\n\n']);
+      assert.deepStrictEqual([...segment('~~~\n\n\n')], ['~~~\n', '\n\n']);
+      assert.deepStrictEqual([...segment('```\n~~~\n```')], ['```\n~~~\n```']);
+      assert.deepStrictEqual([...segment('~~~\n```\n~~~')], ['~~~\n```\n~~~']);
       assert.deepStrictEqual([...segment('```\n```\n\n~~~\n~~~')], ['```\n```\n', '\n', '~~~\n~~~']);
       assert.deepStrictEqual([...segment('~~~\n~~~\n\n```\n```')], ['~~~\n~~~\n', '\n', '```\n```']);
-      assert.deepStrictEqual([...segment(' ```\n\n\n```')], [' ```\n', '\n\n', '```']);
-      assert.deepStrictEqual([...segment(' ~~~\n\n\n~~~')], [' ~~~\n', '\n\n', '~~~']);
+      assert.deepStrictEqual([...segment(' ```\n\n```')], [' ```\n', '\n', '```']);
+      assert.deepStrictEqual([...segment(' ~~~\n\n~~~')], [' ~~~\n', '\n', '~~~']);
     });
 
     it('blockquote', () => {
-      assert.deepStrictEqual([...segment('> ```\n\n\n```')], ['> ```\n', '\n\n', '```']);
-      assert.deepStrictEqual([...segment('!> ```\n\n\n```')], ['!> ```\n', '\n\n', '```']);
+      assert.deepStrictEqual([...segment('> ```\n\n```')], ['> ```\n', '\n', '```']);
+      assert.deepStrictEqual([...segment('!> ```\n\n```')], ['!> ```\n', '\n', '```']);
     });
 
     it('heading', () => {

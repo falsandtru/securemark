@@ -9,7 +9,7 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~')), [['<pre class="notranslate invalid">~~~table a\n-\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser(`~~~table\n${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
+      assert.deepStrictEqual(inspect(parser(`~~~table\n0${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table\n',
@@ -34,22 +34,13 @@ describe('Unit: parser/block/extension/table', () => {
         inspect(parser('~~~table\n\n~~~\n')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n\n\n~~~\n')),
-        [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
-      assert.deepStrictEqual(
         inspect(parser('~~~table\n-\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser('~~~table\n-\n\n~~~')),
         [[html('table', [html('thead', [html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n\n-\n~~~')),
-        [[html('table', [html('thead', [html('tr'), html('tr')]), html('tbody'), html('tfoot')]).outerHTML], '']);
-      assert.deepStrictEqual(
         inspect(parser('~~~table\n0\n\n~~~')),
-        [[html('table', [html('thead'), html('tbody', [html('tr', [html('td', '0')])]), html('tfoot')]).outerHTML], '']);
-      assert.deepStrictEqual(
-        inspect(parser('~~~table\n\n0\n~~~')),
         [[html('table', [html('thead'), html('tbody', [html('tr', [html('td', '0')])]), html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser('~~~table\n#\n~~~')),

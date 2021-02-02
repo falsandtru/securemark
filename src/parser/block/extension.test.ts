@@ -8,16 +8,16 @@ describe('Unit: parser/block/extension', () => {
     it('invalid', () => {
       assert(!parser(''));
       assert(!parser('\n'));
-      assert(parser('~~~'));
-      assert(parser('~~~\n'));
-      assert(parser('~~~\n\n'));
+      assert(!parser('~~~'));
+      assert(!parser('~~~\n'));
+      assert(!parser('~~~\n\n'));
       assert(parser('~~~\na~~~'));
       assert(parser('~~~\n~~~'));
       assert(parser('~~~\na\n~~~'));
-      assert(parser('~~~a'));
+      assert(!parser('~~~a'));
       assert(!parser('~~~a ~~~\n~~~'));
-      assert(parser('~~~a\n'));
-      assert(parser('~~~a\n\n'));
+      assert(!parser('~~~a\n'));
+      assert(!parser('~~~a\n\n'));
       assert(parser('~~~a\nb~~~'));
       assert(!parser(' ~~~a\n~~~'));
       assert(!parser('$-name'));
