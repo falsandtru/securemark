@@ -23,7 +23,7 @@ const SEGMENT_SIZE_LIMIT = 10 * 1000;
 
 export function* segment(source: string): Generator<string, undefined, undefined> {
   assert(!source.includes('\0'));
-  if (new Blob([source]).size > INPUT_SIZE_LIMIT) return yield `\0Too large input over 1,000,000 bytes.\n${source.slice(0, 10001)}`;
+  if (new Blob([source]).size > INPUT_SIZE_LIMIT) return yield `\0Too large input over ${INPUT_SIZE_LIMIT.toLocaleString('en-US')} bytes.\n${source.slice(0, 10001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
     const result = parser(source, {})!;
@@ -35,7 +35,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
       seg.length > SEGMENT_SIZE_LIMIT
-        ? yield `\0Too large block of length over 10,000.\n${seg}`
+        ? yield `\0Too large block of length over ${SEGMENT_SIZE_LIMIT.toLocaleString('en-US')}.\n${seg}`
         : yield seg;
     }
     source = rest;
