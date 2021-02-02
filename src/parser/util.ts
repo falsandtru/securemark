@@ -81,6 +81,45 @@ function hasVisible(
   return false;
 }
 
+export function startTight<P extends Parser<unknown>>(parser: P): P;
+export function startTight<T>(parser: Parser<T>): Parser<T> {
+  return (source, context) => {
+    if (source === '') return;
+    switch (source[0]) {
+      case ' ':
+      case '　':
+      case '\t':
+      case '\n':
+        return;
+      case '&':
+        switch (true) {
+          case source.length > 2
+            && source[1] !== ' '
+            && eval(htmlentity(source, context))?.[0].trimStart() == '':
+            return;
+        }
+        break;
+      case '<':
+        switch (true) {
+          case source.length >= 7
+            && source[1] === '#'
+            && !!comment(source, context):
+          case source.length >= 5
+            && source[1] === 'w'
+            && source.slice(0, 5) === '<wbr>':
+          case source.length >= 4
+            && source[1] === 'b'
+            && source.slice(0, 4) === '<br>':
+            return;
+        }
+        break;
+    }
+    return (source[0] === '\\' ? source[1] : source[0])?.trimStart()
+      ? parser(source, context)
+      : undefined;
+  }
+}
+
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   const last = nodes.length - 1;
@@ -118,45 +157,6 @@ function isVisible(node: HTMLElement | string | undefined, dir: 'start' | 'end',
         default:
           return true;
       }
-  }
-}
-
-export function startTight<P extends Parser<unknown>>(parser: P): P;
-export function startTight<T>(parser: Parser<T>): Parser<T> {
-  return (source, context) => {
-    if (source === '') return;
-    switch (source[0]) {
-      case ' ':
-      case '　':
-      case '\t':
-      case '\n':
-        return;
-      case '&':
-        switch (true) {
-          case source.length > 2
-            && source[1] !== ' '
-            && eval(htmlentity(source, context))?.[0].trimStart() == '':
-            return;
-        }
-        break;
-      case '<':
-        switch (true) {
-          case source.length >= 7
-            && source[1] === '#'
-            && !!comment(source, context):
-          case source.length >= 5
-            && source[1] === 'w'
-            && source.slice(0, 5) === '<wbr>':
-          case source.length >= 4
-            && source[1] === 'b'
-            && source.slice(0, 4) === '<br>':
-            return;
-        }
-        break;
-    }
-    return (source[0] === '\\' ? source[1] : source[0])?.trimStart()
-      ? parser(source, context)
-      : undefined;
   }
 }
 
