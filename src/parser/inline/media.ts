@@ -7,9 +7,9 @@ import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { text, str } from '../source';
 import { isEndTight, dup } from '../util';
+import { html, define } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
-import { html, define } from 'typed-dom';
 
 const optspec = {
   'aspect-ratio': [],

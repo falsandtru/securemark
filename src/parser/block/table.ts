@@ -1,8 +1,8 @@
 import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, creator, surround, open, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
-import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom';
+import { push } from 'spica/array';
 
 import RowParser = TableParser.RowParser;
 import AlignParser = TableParser.AlignParser;

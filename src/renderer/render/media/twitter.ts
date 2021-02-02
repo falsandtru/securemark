@@ -1,7 +1,7 @@
 import { window, document } from 'spica/global';
 import { parse } from '../../../parser';
-import { sanitize } from 'dompurify';
 import { HTML, define } from 'typed-dom';
+import { sanitize } from 'dompurify';
 
 declare global {
   interface Window {

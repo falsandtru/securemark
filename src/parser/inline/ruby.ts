@@ -4,8 +4,8 @@ import { sequence, validate, focus, creator, surround, lazy, bind, eval, exec } 
 import { htmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { isEndTight } from '../util';
-import { unshift, push, join } from 'spica/array';
 import { html, defrag } from 'typed-dom';
+import { unshift, push, join } from 'spica/array';
 
 export const ruby: RubyParser = lazy(() => creator(bind(
   validate('[', ')', '\n',

@@ -3,8 +3,8 @@ import { CodeBlockParser } from '../block';
 import { some, block, validate, fence, clear, fmap, eval } from '../../combinator';
 import { autolink } from '../autolink';
 import { escsource } from '../source';
-import { join } from 'spica/array';
 import { html, define, defrag } from 'typed-dom';
+import { join } from 'spica/array';
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
 const language = /^[0-9a-z]+(?:-[a-z][0-9a-z]*)*$/;

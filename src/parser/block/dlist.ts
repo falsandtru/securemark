@@ -4,8 +4,8 @@ import { localize } from '../locale';
 import { inline, indexer, indexee } from '../inline';
 import { anyline } from '../source';
 import { visualize } from '../util';
-import { push } from 'spica/array';
 import { html, defrag } from 'typed-dom';
+import { push } from 'spica/array';
 
 export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
   /^~[^\S\n]+(?=\S)/,

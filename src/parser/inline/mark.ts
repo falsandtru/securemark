@@ -2,8 +2,8 @@ import { MarkParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
 import { str } from '../source';
 import { startTight, isEndTight, trimEndBR } from '../util';
-import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom';
+import { unshift } from 'spica/array';
 
 export const mark: MarkParser = lazy(() => creator(surround(
   str('=='),

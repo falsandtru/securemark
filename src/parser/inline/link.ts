@@ -6,8 +6,8 @@ import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
 import { startTight, isEndTight, dup, stringify } from '../util';
-import { ReadonlyURL } from 'spica/url';
 import { html, define, defrag } from 'typed-dom';
+import { ReadonlyURL } from 'spica/url';
 
 const optspec = {
   rel: ['nofollow'],

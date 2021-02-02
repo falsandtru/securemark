@@ -2,8 +2,8 @@ import { Array } from 'spica/global';
 import { ExtensionParser } from '../../inline';
 import { union, validate, guard, creator, surround, clear, fmap } from '../../../combinator';
 import { str } from '../../source';
-import { join } from 'spica/array';
 import { html } from 'typed-dom';
+import { join } from 'spica/array';
 
 const body = str(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*(?![0-9A-Za-z]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[0-9A-Za-z]))/);
 

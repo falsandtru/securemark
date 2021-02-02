@@ -6,8 +6,8 @@ import { syntax as delimiter } from './paragraph/mention/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
 import { visualize } from '../util';
-import { push, pop } from 'spica/array';
 import { html, defrag } from 'typed-dom';
+import { push, pop } from 'spica/array';
 
 export const paragraph: ParagraphParser = block(localize(fmap(
   some(subsequence([

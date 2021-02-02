@@ -10,8 +10,8 @@ import { codeblock } from '../codeblock';
 import { mathblock } from '../mathblock';
 import { blockquote } from '../blockquote';
 import { paragraph } from '../paragraph';
-import { unshift, push } from 'spica/array';
 import { html } from 'typed-dom';
+import { unshift, push } from 'spica/array';
 
 import MessageParser = ExtensionParser.MessageParser;
 

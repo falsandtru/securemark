@@ -3,8 +3,8 @@ import { union, some, block, line, validate, focus, rewrite, context, open, trim
 import { inline, indexer, indexee } from '../inline';
 import { str } from '../source';
 import { visualize } from '../util';
-import { shift } from 'spica/array';
 import { html, defrag } from 'typed-dom';
+import { shift } from 'spica/array';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
   /^#{1,6}[^\S\n]+\S[^\n]*(?:\n#{1,6}(?!\S)[^\n]*)*(?:$|\n)/,

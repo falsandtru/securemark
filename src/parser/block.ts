@@ -14,8 +14,8 @@ import { codeblock } from './block/codeblock';
 import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
-import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom';
+import { rnd0Z } from 'spica/random';
 
 export import BlockParser = MarkdownParser.BlockParser;
 export import HorizontalRuleParser = BlockParser.HorizontalRuleParser;

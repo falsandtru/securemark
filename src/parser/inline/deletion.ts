@@ -1,8 +1,8 @@
 import { DeletionParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
 import { str } from '../source';
-import { unshift } from 'spica/array';
 import { html, defrag } from 'typed-dom';
+import { unshift } from 'spica/array';
 
 export const deletion: DeletionParser = lazy(() => creator(surround(
   str('~~'),
