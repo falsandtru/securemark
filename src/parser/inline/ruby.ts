@@ -22,7 +22,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(
       case rubies.length <= texts.length:
         return [[html('ruby', defrag(texts
           .reduce((acc, _, i) =>
-            push(acc, unshift<HTMLElement | string>([texts[i]],
+            push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i]
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')]))
@@ -30,14 +30,14 @@ export const ruby: RubyParser = lazy(() => creator(bind(
       case texts.length === 1 && [...texts[0]].length >= rubies.length:
         return [[html('ruby', defrag([...texts[0]]
           .reduce((acc, _, i, texts) =>
-            push(acc, unshift<HTMLElement | string>([texts[i]],
+            push(acc, unshift([texts[i]],
               i < rubies.length && rubies[i]
                 ? [html('rp', '('), html('rt', rubies[i]), html('rp', ')')]
                 : [html('rt')]))
           , [])))], rest];
       default:
         assert(rubies.length > 0);
-        return [[html('ruby', defrag(unshift<HTMLElement | string>(
+        return [[html('ruby', defrag(unshift(
           [join(texts, ' ')],
           [html('rp', '('), html('rt', join(rubies, ' ').trim()), html('rp', ')')])))
         ], rest];

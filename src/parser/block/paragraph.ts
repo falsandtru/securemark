@@ -5,7 +5,7 @@ import { mention } from './paragraph/mention';
 import { syntax as delimiter } from './paragraph/mention/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
-import { pop, push } from 'spica/array';
+import { push, pop } from 'spica/array';
 import { html } from 'typed-dom';
 
 export const paragraph: ParagraphParser = block(fmap(

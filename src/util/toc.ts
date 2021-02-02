@@ -38,7 +38,7 @@ function parse(node: Tree, index: string = ''): HTMLUListElement {
         ? `${i}`
         : `${index}.${i}`;
     return html('li',
-      push<HTMLElement>(
+      push(
         [html('a', { href: `#${el.id}`, 'data-index': isHeading ? idx : undefined }, fix(el))],
         cs.length > 0 ? [parse(cs, idx)] : []));
   }));
