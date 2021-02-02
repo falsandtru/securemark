@@ -7,6 +7,14 @@ import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { pop } from 'spica/array';
 
+export function visualize<P extends Parser<HTMLElement | string>>(parser: P, message?: string): P;
+export function visualize<T extends HTMLElement | string>(parser: Parser<T>, message = '(Empty)'): Parser<T> {
+  assert(message.trim());
+  return justify(union([
+    verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
+    (source: string) => [[source.trim() || message], ''],
+  ]));
+}
 function justify<P extends Parser<unknown>>(parser: P): P;
 function justify<T>(parser: Parser<T>): Parser<T> {
   const entities = [
@@ -55,15 +63,6 @@ function justify<T>(parser: Parser<T>): Parser<T> {
         return line.replace(/[\\&]/g, '\\$&');
     }
   }
-}
-
-export function visualize<P extends Parser<HTMLElement | string>>(parser: P, message?: string): P;
-export function visualize<T extends HTMLElement | string>(parser: Parser<T>, message = '(Empty)'): Parser<T> {
-  assert(message.trim());
-  return justify(union([
-    verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
-    (source: string) => [[source.trim() || message], ''],
-  ]));
 }
 function hasVisible(
   nodes: readonly (HTMLElement | string)[],
