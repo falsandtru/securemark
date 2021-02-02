@@ -12,11 +12,16 @@ describe('Unit: parser/locale', () => {
       assert.deepStrictEqual(inspect(parser('*。*\\\n0')), [['<p><em>。</em><span class="linebreak"></span>0</p>'], '']);
       assert.deepStrictEqual(inspect(parser('!> 。\\\n0')), [['<blockquote><p>。<span class="linebreak"></span>0</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('[。](a)\\\n0')), [['<p><ruby>。<rp>(</rp><rt>a</rt><rp>)</rp></ruby><span class="linebreak"></span>0</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('[。　](a )\\\n0')), [['<p><ruby>。<rp>(</rp><rt>a</rt><rp>)</rp></ruby><span class="linebreak"></span>0</p>'], '']);
       assert.deepStrictEqual(inspect(parser('。<wbr>\\\n0')), [['<p>。<wbr><span class="linebreak"></span>0</p>'], '']);
     });
 
     it('ja', () => {
+      assert.deepStrictEqual(inspect(parser('、\\\n0')), [['<p>、<span class="linebreak"></span>0</p>'], '']);
       assert.deepStrictEqual(inspect(parser('。\\\n0')), [['<p>。<span class="linebreak"></span>0</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('！\\\n0')), [['<p>！<span class="linebreak"></span>0</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('？\\\n0')), [['<p>？<span class="linebreak"></span>0</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('\\。\\\n0')), [['<p>。<span class="linebreak"></span>0</p>'], '']);
     });
 
   });
