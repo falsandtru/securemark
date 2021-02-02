@@ -1,5 +1,5 @@
 import { ExtensionParser } from '../../block';
-import { union, some, block, validate, fence, fmap, eval } from '../../../combinator';
+import { union, block, validate, fence, fmap, eval } from '../../../combinator';
 import { segment } from '../../segment';
 import { emptyline } from '../../source';
 import { ulist } from '../ulist';
@@ -10,7 +10,7 @@ import { codeblock } from '../codeblock';
 import { mathblock } from '../mathblock';
 import { blockquote } from '../blockquote';
 import { paragraph } from '../paragraph';
-import { unshift } from 'spica/array';
+import { unshift, push } from 'spica/array';
 import { html } from 'typed-dom';
 
 import MessageParser = ExtensionParser.MessageParser;
@@ -39,7 +39,7 @@ export const message: MessageParser = block(validate('~~~', fmap(
     }
     return [html('div', { class: `message type-${type}` }, unshift(
       [html('h6', title(type))],
-      [...segment(body)].flatMap(seg => eval(content(seg, context), []))))
+      [...segment(body)].reduce((acc, seg) => push(acc, eval(content(seg, context), [])), [])))
     ];
   })));
 
@@ -55,7 +55,7 @@ function title(type: string): string {
 }
 
 // Must not have indexed blocks.
-const content: MessageParser.ContentParser = some(union([
+const content: MessageParser.ContentParser = union([
   emptyline,
   ulist,
   olist,
@@ -65,4 +65,4 @@ const content: MessageParser.ContentParser = some(union([
   mathblock,
   blockquote,
   paragraph,
-]));
+]);
