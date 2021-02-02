@@ -1,6 +1,6 @@
 import { ParagraphParser } from '../../../block';
 import { tails, line, validate, creator, fmap } from '../../../../combinator';
-import { anchor as anch } from '../../../inline';
+import { anchor as anch } from '../../../inline/autolink/anchor';
 import { str } from '../../../source';
 import { html } from 'typed-dom';
 
