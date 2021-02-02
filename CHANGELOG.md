@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.202.1
+
+- Refactoring.
+
 ## 0.202.0
 
 - Increase the max length of segments to 100,000.
