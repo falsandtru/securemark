@@ -1,5 +1,6 @@
-import { MarkParser, inline } from '../inline';
+import { MarkParser } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
+import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, isEndTight, trimEndBR } from '../util';
 import { html, defrag } from 'typed-dom';

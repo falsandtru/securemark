@@ -1,8 +1,9 @@
 import { undefined } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
-import { HTMLParser, inline } from '../inline';
+import { HTMLParser } from '../inline';
 import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
+import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, isEndTight, trimEndBR } from '../util';
 import { html as h, defrag } from 'typed-dom';

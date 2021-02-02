@@ -1,5 +1,6 @@
-import { ExtensionParser, inline } from '../../inline';
+import { ExtensionParser } from '../../inline';
 import { union, some, validate, creator, surround, lazy } from '../../../combinator';
+import { inline } from '../../inline';
 import { str } from '../../source';
 import { startTight, isEndTight, trimEndBR } from '../../util';
 import { html, defrag } from 'typed-dom';

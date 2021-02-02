@@ -1,5 +1,6 @@
-import { StrongParser, inline } from '../inline';
+import { StrongParser } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
+import { inline } from '../inline';
 import { emphasis } from './emphasis';
 import { str } from '../source';
 import { startTight, isEndTight, trimEndBR } from '../util';

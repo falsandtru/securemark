@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
-import { ExtensionParser, inline } from '../../inline';
+import { ExtensionParser } from '../../inline';
 import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../../combinator';
+import { inline } from '../../inline';
 import { indexee } from './indexee';
 import { startTight, isEndTight } from '../../util';
 import { html, define, defrag } from 'typed-dom';

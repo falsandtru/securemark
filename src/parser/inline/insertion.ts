@@ -1,5 +1,6 @@
-import { InsertionParser, inline } from '../inline';
+import { InsertionParser } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
+import { inline } from '../inline';
 import { str } from '../source';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';

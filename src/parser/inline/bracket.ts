@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
-import { BracketParser, inline } from '../inline';
+import { BracketParser } from '../inline';
 import { union, some, surround, lazy } from '../../combinator';
+import { inline } from '../inline';
 import { str } from '../source';
 import { unshift } from 'spica/array';
 
