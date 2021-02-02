@@ -11,12 +11,12 @@ import { example } from './example';
 import { table, segment_ as seg_table } from './table';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
+import { localize } from '../../locale';
 import { visualize } from '../../util';
 import { html, defrag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
 
 import FigureParser = ExtensionParser.FigureParser;
-import { localize } from '../../locale';
 
 export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
