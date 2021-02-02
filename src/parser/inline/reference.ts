@@ -36,7 +36,7 @@ const abbr: ReferenceParser.AbbrParser = creator(fmap(surround(
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
   return {
     'data-abbr': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR'
-      ? stringify(ns.shift()!)
+      ? stringify([ns.shift()!])
       : undefined
   };
 }

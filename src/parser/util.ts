@@ -1,5 +1,4 @@
 import { undefined } from 'spica/global';
-import { isArray } from 'spica/alias';
 import { MarkdownParser } from '../../markdown';
 import { Parser, Ctx, union, verify, convert, eval, fmap } from '../combinator';
 import { Data, SubParsers, Context } from '../combinator/data/parser';
@@ -175,11 +174,7 @@ export function dup<T>(parser: Parser<T>): Parser<T[]> {
   return fmap(parser, ns => [ns]);
 }
 
-export function stringify(node: HTMLElement | string): string;
-export function stringify(nodes: readonly (HTMLElement | string)[]): string;
-export function stringify(nodes: HTMLElement | string | readonly (HTMLElement | string)[]): string {
-  if (typeof nodes === 'string') return nodes;
-  if (!isArray(nodes)) return nodes.innerText;
+export function stringify(nodes: readonly (HTMLElement | string)[]): string {
   let acc = '';
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
