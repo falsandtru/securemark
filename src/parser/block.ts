@@ -49,7 +49,7 @@ export const block: BlockParser = creator(error(
     paragraph
   ]))));
 
-export function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
+function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
   return recover((source, context) =>
     source[0] === '\0'
       ? (() => { throw new Error(source.slice(1, 1000).split('\n', 1)[0]); })()
