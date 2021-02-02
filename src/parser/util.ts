@@ -67,7 +67,7 @@ export function visualize<T extends HTMLElement | string>(parser: Parser<T>, mes
 }
 function hasVisible(
   nodes: readonly (HTMLElement | string)[],
-  { syntax: { inline: { media = true } = {} } = {} }: MarkdownParser.Context
+  { syntax: { inline: { media = true } = {} } = {} }: MarkdownParser.Context,
 ): boolean {
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
