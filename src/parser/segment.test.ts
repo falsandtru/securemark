@@ -20,7 +20,7 @@ describe('Unit: parser/segment', () => {
       assert.deepStrictEqual(
         [...parse(`${'\n'.repeat(10 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
         [
-          '<h1 class="error">Error: Too large segment of length over 10,000.</h1>',
+          '<h1 class="error">Error: Too large segment over 100,000 in length.</h1>',
           `<pre>${'\n'.repeat(9997)}...</pre>`,
         ]);
     });

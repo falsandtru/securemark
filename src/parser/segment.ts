@@ -35,7 +35,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
       seg.length > SEGMENT_SIZE_LIMIT
-        ? yield `\0Too large segment of length over ${SEGMENT_SIZE_LIMIT.toLocaleString('en-US')}.\n${seg}`
+        ? yield `\0Too large segment over ${SEGMENT_SIZE_LIMIT.toLocaleString('en-US')} in length.\n${seg}`
         : yield seg;
     }
     source = rest;
