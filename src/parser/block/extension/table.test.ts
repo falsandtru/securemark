@@ -9,7 +9,7 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~')), [['<pre class="notranslate invalid">~~~table a\n-\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser(`~~~table\n${'\n'.repeat(1001)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
+      assert.deepStrictEqual(inspect(parser(`~~~table\n${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table\n',

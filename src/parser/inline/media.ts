@@ -17,7 +17,7 @@ const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => creator(10, bind(fmap(open(
+export const media: MediaParser = lazy(() => creator(100, bind(fmap(open(
   '!',
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.media ?? true,

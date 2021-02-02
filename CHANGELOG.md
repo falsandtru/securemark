@@ -2,6 +2,10 @@
 
 ## 0.202.0
 
+- Increase the max length of segments to 100,000.
+
+## 0.201.3
+
 - Extend aspect-ratio option of media syntax to add alias syntax.
 
 ## 0.201.2

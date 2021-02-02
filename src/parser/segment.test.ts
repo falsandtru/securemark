@@ -13,12 +13,11 @@ describe('Unit: parser/segment', () => {
         ]);
     });
 
-    it('huge segment', () => {
+    it('huge segment', function () {
+      this.timeout(5 * 1000);
+
       assert.deepStrictEqual(
-        [...parse(`${' '.repeat(10 * 1000)}`, { id: '' }).children].map(el => el.outerHTML),
-        []);
-      assert.deepStrictEqual(
-        [...parse(`${'\n'.repeat(10 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
+        [...parse(`${'\n'.repeat(100 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
         [
           '<h1 class="error">Error: Too large segment over 100,000 in length.</h1>',
           `<pre>${'\n'.repeat(9997)}...</pre>`,

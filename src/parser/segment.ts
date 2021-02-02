@@ -19,7 +19,7 @@ const parser: SegmentParser = union([
 ]);
 
 const INPUT_SIZE_LIMIT = 1000 ** 2;
-const SEGMENT_SIZE_LIMIT = 10 * 1000;
+const SEGMENT_SIZE_LIMIT = 100 * 1000;
 
 export function* segment(source: string): Generator<string, undefined, undefined> {
   assert(!source.includes('\0'));

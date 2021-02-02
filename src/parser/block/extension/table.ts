@@ -17,13 +17,13 @@ import CellParser = TableParser.CellParser;
 const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
 
 export const segment: TableParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 1000))));
+  clear(fence(opener, 10000))));
 
 export const segment_: TableParser.SegmentParser = block(validate('~~~',
-  clear(fence(opener, 1000, false))), false);
+  clear(fence(opener, 10000, false))), false);
 
 export const table: TableParser = block(validate('~~~', recover(bind(
-  fence(opener, 1000),
+  fence(opener, 10000),
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
     if (!closer || param.trimStart()) return [[html('pre', {
