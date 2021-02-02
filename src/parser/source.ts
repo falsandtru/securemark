@@ -10,8 +10,7 @@ export import ContentLineParser = SourceParser.ContentLineParser;
 export import EmptyLineParser = SourceParser.EmptyLineParser;
 export import AnyLineParser = SourceParser.AnyLineParser;
 
-export { text } from './source/text';
-export { linebreak } from './source/linebreak';
+export { text, linebreak } from './source/text';
 export { escsource } from './source/escapable';
 export { unescsource } from './source/unescapable';
 export { str } from './source/str';
