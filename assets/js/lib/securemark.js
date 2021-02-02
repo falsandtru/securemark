@@ -579,7 +579,7 @@ require = function () {
             exports.curry = f => curry_(f, f.length);
             function curry_(f, arity, ...xs) {
                 let g;
-                return xs.length < arity ? (...ys) => curry_(g = g || xs.length && f.bind(global_1.undefined, ...xs) || f, arity - xs.length, ...ys) : f(...xs);
+                return xs.length < arity ? (...ys) => curry_(g !== null && g !== void 0 ? g : g = xs.length && f.bind(global_1.undefined, ...xs) || f, arity - xs.length, ...ys) : f(...xs);
             }
             const uncurry = f => uncurry_(f);
             exports.uncurry = uncurry;
@@ -687,7 +687,7 @@ require = function () {
                     if (z !== global_1.undefined || nullish && memory.has(b))
                         return z;
                     z = f(...as);
-                    nullish = nullish || z === global_1.undefined;
+                    nullish || (nullish = z === global_1.undefined);
                     memory.set(b, z);
                     return z;
                 };
@@ -1254,7 +1254,9 @@ require = function () {
                     return this[internal].url.fragment;
                 }
                 get searchParams() {
-                    return this[internal].searchParams === global_1.undefined ? this[internal].searchParams = new global_1.URLSearchParams(this.search) : this[internal].searchParams;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal]).searchParams) !== null && _a !== void 0 ? _a : _b.searchParams = new global_1.URLSearchParams(this.search);
                 }
                 toString() {
                     return this.href;
@@ -1310,52 +1312,84 @@ require = function () {
                     };
                 }
                 get href() {
-                    return this[internal].share.href === global_1.undefined ? this[internal].share.href = this[internal].share.url.href : this[internal].share.href;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).href) !== null && _a !== void 0 ? _a : _b.href = this[internal].share.url.href;
                 }
                 get resource() {
-                    return this[internal].share.resource === global_1.undefined ? this[internal].share.resource = this.href.slice(0, -this.fragment.length - this.query.length || this.href.length) + this.search : this[internal].share.resource;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).resource) !== null && _a !== void 0 ? _a : _b.resource = this.href.slice(0, -this.fragment.length - this.query.length || this.href.length) + this.search;
                 }
                 get origin() {
-                    return this[internal].share.origin === global_1.undefined ? this[internal].share.origin = this[internal].share.url.origin : this[internal].share.origin;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).origin) !== null && _a !== void 0 ? _a : _b.origin = this[internal].share.url.origin;
                 }
                 get protocol() {
-                    return this[internal].share.protocol === global_1.undefined ? this[internal].share.protocol = this[internal].share.url.protocol : this[internal].share.protocol;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).protocol) !== null && _a !== void 0 ? _a : _b.protocol = this[internal].share.url.protocol;
                 }
                 get username() {
-                    return this[internal].share.username === global_1.undefined ? this[internal].share.username = this[internal].share.url.username : this[internal].share.username;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).username) !== null && _a !== void 0 ? _a : _b.username = this[internal].share.url.username;
                 }
                 get password() {
-                    return this[internal].share.password === global_1.undefined ? this[internal].share.password = this[internal].share.url.password : this[internal].share.password;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).password) !== null && _a !== void 0 ? _a : _b.password = this[internal].share.url.password;
                 }
                 get host() {
-                    return this[internal].share.host === global_1.undefined ? this[internal].share.host = this[internal].share.url.host : this[internal].share.host;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).host) !== null && _a !== void 0 ? _a : _b.host = this[internal].share.url.host;
                 }
                 get hostname() {
-                    return this[internal].share.hostname === global_1.undefined ? this[internal].share.hostname = this[internal].share.url.hostname : this[internal].share.hostname;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).hostname) !== null && _a !== void 0 ? _a : _b.hostname = this[internal].share.url.hostname;
                 }
                 get port() {
-                    return this[internal].share.port === global_1.undefined ? this[internal].share.port = this[internal].share.url.port : this[internal].share.port;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).port) !== null && _a !== void 0 ? _a : _b.port = this[internal].share.url.port;
                 }
                 get path() {
-                    return this[internal].share.path === global_1.undefined ? this[internal].share.path = `${ this.pathname }${ this.search }` : this[internal].share.path;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).path) !== null && _a !== void 0 ? _a : _b.path = `${ this.pathname }${ this.search }`;
                 }
                 get pathname() {
-                    return this[internal].share.pathname === global_1.undefined ? this[internal].share.pathname = this[internal].share.url.pathname : this[internal].share.pathname;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).pathname) !== null && _a !== void 0 ? _a : _b.pathname = this[internal].share.url.pathname;
                 }
                 get search() {
-                    return this[internal].share.search === global_1.undefined ? this[internal].share.search = this[internal].share.url.search : this[internal].share.search;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).search) !== null && _a !== void 0 ? _a : _b.search = this[internal].share.url.search;
                 }
                 get query() {
-                    return this[internal].share.query === global_1.undefined ? this[internal].share.query = this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '' : this[internal].share.query;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).query) !== null && _a !== void 0 ? _a : _b.query = this.search || this.href[this.href.length - this.fragment.length - 1] === '?' && '?' || '';
                 }
                 get hash() {
-                    return this[internal].share.hash === global_1.undefined ? this[internal].share.hash = this[internal].share.url.hash : this[internal].share.hash;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).hash) !== null && _a !== void 0 ? _a : _b.hash = this[internal].share.url.hash;
                 }
                 get fragment() {
-                    return this[internal].share.fragment === global_1.undefined ? this[internal].share.fragment = this.hash || this.href[this.href.length - 1] === '#' && '#' || '' : this[internal].share.fragment;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal].share).fragment) !== null && _a !== void 0 ? _a : _b.fragment = this.hash || this.href[this.href.length - 1] === '#' && '#' || '';
                 }
                 get searchParams() {
-                    return this[internal].searchParams === global_1.undefined ? this[internal].searchParams = new global_1.URLSearchParams(this.search) : this[internal].searchParams;
+                    var _a;
+                    var _b;
+                    return (_a = (_b = this[internal]).searchParams) !== null && _a !== void 0 ? _a : _b.searchParams = new global_1.URLSearchParams(this.search);
                 }
                 toString() {
                     return this.href;
@@ -2470,6 +2504,8 @@ require = function () {
                     if (matches[0].indexOf(delim, delim.length) > -1)
                         return;
                     let rest = source.slice(matches[0].length);
+                    if (line_1.firstline(rest).trimStart() === '' && line_1.firstline(rest.slice(line_1.firstline(rest).length)).trimEnd() !== delim)
+                        return;
                     let block = '';
                     let closer = '';
                     for (let count = 1, next;; ++count) {
@@ -2553,10 +2589,7 @@ require = function () {
             exports.lazy = void 0;
             function lazy(builder) {
                 let parser;
-                return (source, context) => {
-                    parser ? parser : parser = builder();
-                    return parser(source, context);
-                };
+                return (source, context) => (parser !== null && parser !== void 0 ? parser : parser = builder())(source, context);
             }
             exports.lazy = lazy;
         },
@@ -4172,9 +4205,9 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             const typed_dom_1 = _dereq_('typed-dom');
             const opener = /^(~{3,})table(?!\S)([^\n]*)(?:$|\n)/;
-            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 1000))));
-            exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 1000, false))), false);
-            exports.table = combinator_1.block(combinator_1.validate('~~~', combinator_1.recover(combinator_1.bind(combinator_1.fence(opener, 1000), ([body, closer, opener, delim, param], _, context) => {
+            exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 10000))));
+            exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 10000, false))), false);
+            exports.table = combinator_1.block(combinator_1.validate('~~~', combinator_1.recover(combinator_1.bind(combinator_1.fence(opener, 10000), ([body, closer, opener, delim, param], _, context) => {
                 var _a;
                 if (!closer || param.trimStart())
                     return [
@@ -5967,13 +6000,8 @@ require = function () {
                     invalid || (invalid = !spec || name in attrs);
                     if (spec && !spec[name] && name in spec)
                         continue;
-                    if (((_a = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _a === void 0 ? void 0 : _a.includes(value)) || value !== global_1.undefined && ((_b = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _b === void 0 ? void 0 : _b.length) === 0) {
-                        array_1.splice(params, i--, 1);
-                        attrs[name] = value;
-                    } else {
-                        invalid || (invalid = !!spec);
-                        array_1.splice(params, i--, 1);
-                    }
+                    ((_a = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _a === void 0 ? void 0 : _a.includes(value)) || value !== global_1.undefined && ((_b = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _b === void 0 ? void 0 : _b.length) === 0 ? attrs[name] = value : invalid || (invalid = !!spec);
+                    array_1.splice(params, i--, 1);
                 }
                 invalid || (invalid = !!spec && !requiredAttributes(spec).every(name => name in attrs));
                 if (invalid) {
@@ -6277,7 +6305,7 @@ require = function () {
                 rel: global_1.undefined
             };
             alias_1.ObjectSetPrototypeOf(optspec, null);
-            exports.media = combinator_1.lazy(() => combinator_1.creator(10, combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.validate([
+            exports.media = combinator_1.lazy(() => combinator_1.creator(100, combinator_1.bind(combinator_1.fmap(combinator_1.open('!', combinator_1.validate([
                 '[',
                 '{'
             ], '}', '\n', combinator_1.guard(context => {
@@ -6715,6 +6743,7 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.segment = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../combinator');
             const heading_1 = _dereq_('./block/heading');
             const codeblock_1 = _dereq_('./block/codeblock');
@@ -6729,16 +6758,18 @@ require = function () {
                 combinator_1.some(source_1.contentline),
                 combinator_1.some(source_1.emptyline)
             ]);
+            const INPUT_SIZE_LIMIT = 1000 ** 2;
+            const SEGMENT_SIZE_LIMIT = 100 * 1000;
             function* segment(source) {
-                if (source.length > 1000 * 1000)
-                    return yield `\0Too large input of length over 1,000,000.\n${ source.slice(0, 10001) }`;
+                if (new global_1.Blob([source]).size > INPUT_SIZE_LIMIT)
+                    return yield `\0Too large input over ${ INPUT_SIZE_LIMIT.toLocaleString('en') } bytes.\n${ source.slice(0, 10001) }`;
                 while (source !== '') {
                     const result = parser(source, {});
                     const rest = combinator_1.exec(result);
                     const segs = combinator_1.eval(result).length ? combinator_1.eval(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        seg.length > 10 * 1000 ? yield `\0Too large block of length over 10,000.\n${ seg }` : yield seg;
+                        seg.length > SEGMENT_SIZE_LIMIT ? yield `\0Too large segment over ${ SEGMENT_SIZE_LIMIT.toLocaleString('en') } in length.\n${ seg }` : yield seg;
                     }
                     source = rest;
                 }
@@ -6751,7 +6782,8 @@ require = function () {
             './block/extension': 68,
             './block/heading': 77,
             './block/mathblock': 80,
-            './source': 127
+            './source': 127,
+            'spica/global': 14
         }
     ],
     127: [
@@ -8039,7 +8071,7 @@ require = function () {
                         continue;
                     }
                 }
-                expansion = expansion || !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.quote'));
+                expansion || (expansion = !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.quote')));
                 if (!node.firstChild)
                     return '';
                 let add;
@@ -8055,7 +8087,7 @@ require = function () {
                     const target = el.nextSibling;
                     if (target && 'id' in target && target.matches('.quote')) {
                         el.replaceWith('\n>');
-                        add = add || i < len - 1;
+                        add || (add = i < len - 1);
                     } else {
                         el.replaceWith(add ? `\n>>${ anchor }\n> ` : '\n> ');
                         add = false;
