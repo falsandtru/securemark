@@ -3,6 +3,7 @@ import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, recover, lazy, fmap, bind } from '../../../combinator';
 import { Data } from '../../../combinator/data/parser';
+import { localize } from '../../locale';
 import { dup, defrag } from '../../util';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
@@ -46,9 +47,9 @@ export const table: TableParser = block(validate('~~~', recover(bind(
         ], '']
       : (() => { throw reason; })())));
 
-const parser: TableParser = lazy(() => block(fmap(
+const parser: TableParser = lazy(() => block(localize(fmap(
   some(union([row])),
-  rows => [html('table', format(rows))])));
+  rows => [html('table', format(rows))]))));
 
 const row: RowParser = lazy(() => dup(fmap(
   subsequence([

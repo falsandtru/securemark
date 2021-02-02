@@ -1,24 +1,23 @@
-import { BlockParser } from './block';
-import { fmap } from '../combinator';
+import { Parser, fmap } from '../combinator';
 import { japanese } from './locale/ja';
+import { html } from 'typed-dom';
 
-const memory = new WeakSet<Element>();
-
-export function localize(block: BlockParser): BlockParser {
-  return fmap(block, es => {
+export function localize<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function localize(parser: Parser<HTMLElement | string>): Parser<HTMLElement | string> {
+  return fmap(parser, ns => {
+    if (ns.length === 0) return ns;
+    const el = ns.length === 1 && typeof ns[0] === 'object'
+      ? ns[0]
+      : html('div', ns);
+    const es = el.getElementsByClassName('linebreak');
     for (let i = 0, len = es.length; i < len; ++i) {
-      const bs = es[i].getElementsByClassName('linebreak');
-      for (let i = 0, len = bs.length; i < len; ++i) {
-        const el = bs[i];
-        if (memory.has(el)) continue;
-        memory.add(el);
-        if (!el.firstChild) continue;
-        if (!check(el)) continue;
-        assert(el.firstChild.textContent === ' ');
-        el.firstChild.remove();
-      }
+      const sb = es[i];
+      if (!sb.firstChild) continue;
+      if (!check(sb)) continue;
+      assert(sb.firstChild.textContent === ' ');
+      sb.firstChild.remove();
     }
-    return es;
+    return ns;
   });
 }
 

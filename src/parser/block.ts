@@ -14,7 +14,6 @@ import { codeblock } from './block/codeblock';
 import { mathblock } from './block/mathblock';
 import { extension } from './block/extension';
 import { paragraph } from './block/paragraph';
-import { localize } from './locale';
 import { rnd0Z } from 'spica/random';
 import { html } from 'typed-dom';
 
@@ -32,7 +31,7 @@ export import ExtensionParser = BlockParser.ExtensionParser;
 export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
-export const block: BlockParser = creator(error(localize(
+export const block: BlockParser = creator(error(
   update({ resources: { budget: 100 * 1000 } },
   union([
     emptyline,
@@ -48,7 +47,7 @@ export const block: BlockParser = creator(error(localize(
     extension,
     blockquote,
     paragraph
-  ])))));
+  ]))));
 
 export function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
   return recover((source, context) =>

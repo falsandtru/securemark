@@ -16,6 +16,7 @@ import { memoize } from 'spica/memoize';
 import { html } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
+import { localize } from '../../locale';
 
 export const segment: FigureParser.SegmentParser = block(match(
   /^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
@@ -61,9 +62,9 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
         line(shortmedia),
       ])),
       emptyline,
-      block(
+      block(localize(
         context({ syntax: { inline: { media: false } } },
-        visualize(trim(some(inline))))),
+        visualize(trim(some(inline)))))),
     ]),
   ])),
   ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
