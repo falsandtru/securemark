@@ -4,10 +4,9 @@ import { union, inits, subsequence, some, block, line, indent, focus, context, c
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { defrag } from '../util';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
-import { html, define } from 'typed-dom';
+import { html, define, defrag } from 'typed-dom';
 
 export const olist: OListParser = lazy(() => block(match(
   /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/,

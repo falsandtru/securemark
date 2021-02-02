@@ -3,8 +3,7 @@ import { union, some, block, validate, rewrite, creator, convert, lazy, fmap, ev
 import { math } from '../../../inline';
 import { autolink } from '../../../autolink';
 import { contentline } from '../../../source';
-import { defrag } from '../../../util';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
 

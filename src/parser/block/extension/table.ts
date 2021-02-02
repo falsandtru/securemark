@@ -6,9 +6,9 @@ import { Data } from '../../../combinator/data/parser';
 import { localize } from '../../locale';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
-import { dup, defrag } from '../../util';
+import { dup } from '../../util';
 import { unshift, splice } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 import TableParser = ExtensionParser.TableParser;
 import RowParser = TableParser.RowParser;

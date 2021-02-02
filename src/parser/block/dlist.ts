@@ -3,9 +3,9 @@ import { union, inits, some, block, line, validate, rewrite, context, creator, o
 import { localize } from '../locale';
 import { inline, indexer, indexee } from '../inline';
 import { anyline } from '../source';
-import { visualize, defrag } from '../util';
+import { visualize } from '../util';
 import { push } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
   /^~[^\S\n]+(?=\S)/,

@@ -2,8 +2,8 @@ import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
 import { union, some, validate, guard, context, creator, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
-import { startTight, isEndTight, defrag } from '../util';
-import { html } from 'typed-dom';
+import { startTight, isEndTight } from '../util';
+import { html, defrag } from 'typed-dom';
 
 export const annotation: AnnotationParser = lazy(() => creator(validate('((', '))', '\n', surround(
   '((',

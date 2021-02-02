@@ -5,9 +5,9 @@ import { union, inits, tails, some, validate, guard, context, creator, surround,
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { startTight, isEndTight, dup, defrag, stringify } from '../util';
+import { startTight, isEndTight, dup, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
-import { html, define } from 'typed-dom';
+import { html, define, defrag } from 'typed-dom';
 
 const optspec = {
   rel: ['nofollow'],

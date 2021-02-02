@@ -4,11 +4,11 @@ import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
 import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
 import { str } from '../source';
-import { startTight, isEndTight, trimEndBR, defrag } from '../util';
+import { startTight, isEndTight, trimEndBR } from '../util';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice, join } from 'spica/array';
-import { html as h } from 'typed-dom';
+import { html as h, defrag } from 'typed-dom';
 
 const tags = ObjectFreeze(['sup', 'sub', 'small', 'bdo', 'bdi']);
 const attrspec = {

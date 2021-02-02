@@ -2,9 +2,9 @@ import { HeadingParser } from '../block';
 import { union, some, block, line, validate, focus, rewrite, context, open, trim, fmap } from '../../combinator';
 import { inline, indexer, indexee } from '../inline';
 import { str } from '../source';
-import { visualize, defrag } from '../util';
+import { visualize } from '../util';
 import { shift } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
   /^#{1,6}[^\S\n]+\S[^\n]*(?:\n#{1,6}(?!\S)[^\n]*)*(?:$|\n)/,

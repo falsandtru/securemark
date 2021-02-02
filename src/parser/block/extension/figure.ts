@@ -11,9 +11,9 @@ import { example } from './example';
 import { table, segment_ as seg_table } from './table';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
-import { visualize, defrag } from '../../util';
+import { visualize } from '../../util';
 import { memoize } from 'spica/memoize';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 import FigureParser = ExtensionParser.FigureParser;
 import { localize } from '../../locale';

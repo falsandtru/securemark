@@ -1,9 +1,9 @@
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, validate, creator, surround, lazy } from '../../../combinator';
 import { str } from '../../source';
-import { startTight, isEndTight, trimEndBR, defrag } from '../../util';
+import { startTight, isEndTight, trimEndBR } from '../../util';
 import { unshift, push } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 // Don't use the symbols already used: !#$@&*+~=
 

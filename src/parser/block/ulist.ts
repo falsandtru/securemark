@@ -3,9 +3,8 @@ import { union, inits, subsequence, some, block, line, validate, indent, focus, 
 import { olist_ } from './olist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
-import { defrag } from '../util';
 import { unshift } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const ulist: UListParser = lazy(() => block(fmap(validate(
   /^-(?=[^\S\n]|\n[^\S\n]*\S)/,

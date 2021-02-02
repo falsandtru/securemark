@@ -1,11 +1,10 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { inits, block, firstline, focus, rewrite, clear } from '../combinator';
-import { defrag } from './util';
 import { segment } from './segment';
 import { normalize } from './api/normalize';
 import { str } from './source';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const header: MarkdownParser.HeaderParser = inits([
   rewrite(

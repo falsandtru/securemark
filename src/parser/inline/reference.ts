@@ -3,8 +3,8 @@ import { ReferenceParser } from '../inline';
 import { union, subsequence, some, validate, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, isEndTight, defrag, stringify } from '../util';
-import { html } from 'typed-dom';
+import { startTight, isEndTight, stringify } from '../util';
+import { html, defrag } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', surround(
   '[[',

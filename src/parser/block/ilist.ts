@@ -3,8 +3,7 @@ import { union, inits, some, block, line, validate, indent, creator, open, conve
 import { ulist_, fillFirstLine } from './ulist';
 import { olist_ } from './olist';
 import { inline } from '../inline';
-import { defrag } from '../util';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const ilist: IListParser = lazy(() => block(fmap(validate(
   /^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/,

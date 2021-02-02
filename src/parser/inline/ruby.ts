@@ -3,9 +3,9 @@ import { RubyParser } from '../inline';
 import { sequence, validate, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text as txt } from '../source';
-import { isEndTight, defrag } from '../util';
+import { isEndTight } from '../util';
 import { unshift, push, join } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const ruby: RubyParser = lazy(() => creator(bind(
   validate('[', ')', '\n',

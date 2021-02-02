@@ -1,9 +1,8 @@
 import { InsertionParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
 import { str } from '../source';
-import { defrag } from '../util';
 import { unshift } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const insertion: InsertionParser = lazy(() => creator(surround(
   str('++'),

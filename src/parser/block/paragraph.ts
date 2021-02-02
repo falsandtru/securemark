@@ -5,9 +5,9 @@ import { mention } from './paragraph/mention';
 import { syntax as delimiter } from './paragraph/mention/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
-import { visualize, defrag } from '../util';
+import { visualize } from '../util';
 import { push, pop } from 'spica/array';
-import { html } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 
 export const paragraph: ParagraphParser = block(localize(fmap(
   some(subsequence([
