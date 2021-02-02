@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { union, update, creator, recover } from '../combinator';
+import { union, update, creator, open, recover } from '../combinator';
 import { emptyline } from './source';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -50,10 +50,11 @@ export const block: BlockParser = creator(error(
   ]))));
 
 function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
-  return recover((source, context) =>
-    source[0] === '\0'
-      ? (() => { throw new Error(source.slice(1, 1000).split('\n', 1)[0]); })()
-      : parser(source, context),
+  return recover(
+    union([
+      open('\0', source => { throw new Error(source.split('\n', 1)[0]); }),
+      parser,
+    ]),
     (source, { id }, reason) => [[
       html('h1',
         {
@@ -64,8 +65,9 @@ function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
           ? `${reason.name}: ${reason.message}`
           : `UnknownError: ${reason}`),
       html('pre',
-        source[0] === '\0'
-          ? source.slice(source.search(/\n|$/) + 1).slice(0, 10001).replace(/^(.{9997}).{4}$/s, '$1...') || undefined
-          : source || undefined),
+        source
+          .replace(/^\0.*\n/, '')
+          .slice(0, 10001)
+          .replace(/^(.{9997}).{4}$/s, '$1...') || undefined),
     ], '']);
 }
