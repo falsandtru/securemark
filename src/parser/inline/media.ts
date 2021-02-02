@@ -5,7 +5,7 @@ import { union, inits, tails, some, validate, guard, creator, surround, open, la
 import { link, uri, option as linkoption, resolve, sanitize } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
-import { text, str } from '../source';
+import { txt, str } from '../source';
 import { isEndTight, dup } from '../util';
 import { html, define } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
@@ -22,7 +22,7 @@ export const media: MediaParser = lazy(() => creator(100, bind(fmap(open(
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround(/^\[(?!\\?\s)/, some(union([htmlentity, bracket, text]), ']', /^\\?\n/), ']', true)),
+    dup(surround(/^\[(?!\\?\s)/, some(union([htmlentity, bracket, txt]), ']', /^\\?\n/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ])))),
   ([as, bs]) => bs ? [bs, [join(as)]] : [as, ['']]),
@@ -52,10 +52,10 @@ export const media: MediaParser = lazy(() => creator(100, bind(fmap(open(
   })));
 
 const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
-  surround(str('('), some(union([htmlentity, bracket, text]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('['), some(union([htmlentity, bracket, text]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('{'), some(union([htmlentity, bracket, text]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
-  surround(str('"'), some(union([htmlentity, text]), '"'), str('"'), true),
+  surround(str('('), some(union([htmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('['), some(union([htmlentity, bracket, txt]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('{'), some(union([htmlentity, bracket, txt]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('"'), some(union([htmlentity, txt]), '"'), str('"'), true),
 ])));
 
 const option: MediaParser.ParameterParser.OptionParser = union([

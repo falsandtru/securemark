@@ -797,31 +797,31 @@ export namespace MarkdownParser {
         Parser<string[], [
           HTMLEntityParser,
           TextParser.BracketParser,
-          SourceParser.TextParser,
+          SourceParser.TxtParser,
         ], Context> {
       }
       export namespace TextParser {
         export interface BracketParser extends
           Inline<'media/text/bracket'>,
-          Parser<HTMLElement | string, [
-            Parser<HTMLElement | string, [
+          Parser<string, [
+            Parser<string, [
               HTMLEntityParser,
               BracketParser,
-              SourceParser.TextParser,
+              SourceParser.TxtParser,
             ], Context>,
-            Parser<HTMLElement | string, [
+            Parser<string, [
               HTMLEntityParser,
               BracketParser,
-              SourceParser.TextParser,
+              SourceParser.TxtParser,
             ], Context>,
-            Parser<HTMLElement | string, [
+            Parser<string, [
               HTMLEntityParser,
               BracketParser,
-              SourceParser.TextParser,
+              SourceParser.TxtParser,
             ], Context>,
-            Parser<HTMLElement | string, [
+            Parser<string, [
               HTMLEntityParser,
-              SourceParser.TextParser,
+              SourceParser.TxtParser,
             ], Context>,
           ], Context> {
         }
@@ -1068,6 +1068,11 @@ export namespace MarkdownParser {
       // abc
       Source<'text'>,
       Parser<HTMLBRElement | HTMLSpanElement | string, [], Context> {
+    }
+    export interface TxtParser extends
+      // abc
+      Source<'txt'>,
+      Parser<string, [TextParser], Context> {
     }
     export interface LinebreakParser extends
       // \n
