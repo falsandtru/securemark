@@ -17,10 +17,7 @@ describe('Unit: parser/locale', () => {
     });
 
     it('ja', () => {
-      assert.deepStrictEqual(inspect(parser('、\\\n0')), [['<p>、<span class="linebreak"></span>0</p>'], '']);
       assert.deepStrictEqual(inspect(parser('。\\\n0')), [['<p>。<span class="linebreak"></span>0</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('！\\\n0')), [['<p>！<span class="linebreak"></span>0</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('？\\\n0')), [['<p>？<span class="linebreak"></span>0</p>'], '']);
       assert.deepStrictEqual(inspect(parser('\\。\\\n0')), [['<p>。<span class="linebreak"></span>0</p>'], '']);
     });
 
