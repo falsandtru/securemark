@@ -4,9 +4,9 @@ import { ExtensionParser } from '../../block';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, recover, lazy, fmap, bind } from '../../../combinator';
 import { Data } from '../../../combinator/data/parser';
 import { localize } from '../../locale';
-import { dup, defrag } from '../../util';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
+import { dup, defrag } from '../../util';
 import { unshift, splice } from 'spica/array';
 import { html } from 'typed-dom';
 

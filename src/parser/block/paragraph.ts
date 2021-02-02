@@ -1,11 +1,11 @@
 import { ParagraphParser } from '../block';
 import { subsequence, some, block, rewrite, trim, fmap } from '../../combinator';
 import { localize } from '../locale';
-import { visualize, defrag } from '../util';
 import { mention } from './paragraph/mention';
 import { syntax as delimiter } from './paragraph/mention/quote';
 import { inline } from '../inline';
 import { anyline } from '../source';
+import { visualize, defrag } from '../util';
 import { push, pop } from 'spica/array';
 import { html } from 'typed-dom';
 

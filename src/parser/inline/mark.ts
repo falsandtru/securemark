@@ -1,7 +1,7 @@
 import { MarkParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
-import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { str } from '../source';
+import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { unshift } from 'spica/array';
 import { html } from 'typed-dom';
 

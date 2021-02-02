@@ -1,8 +1,8 @@
 import { HeadingParser } from '../block';
 import { union, some, block, line, validate, focus, rewrite, context, open, trim, fmap } from '../../combinator';
-import { visualize, defrag } from '../util';
 import { inline, indexer, indexee } from '../inline';
 import { str } from '../source';
+import { visualize, defrag } from '../util';
 import { shift } from 'spica/array';
 import { html } from 'typed-dom';
 

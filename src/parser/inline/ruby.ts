@@ -1,9 +1,9 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { sequence, validate, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
-import { isEndTight, defrag } from '../util';
 import { htmlentity } from './htmlentity';
 import { text as txt } from '../source';
+import { isEndTight, defrag } from '../util';
 import { unshift, push, join } from 'spica/array';
 import { html } from 'typed-dom';
 

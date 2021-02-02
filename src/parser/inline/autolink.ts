@@ -1,6 +1,5 @@
 import { AutolinkParser } from '../inline';
 import { union, some, validate, guard, fmap } from '../../combinator';
-import { stringify } from '../util';
 import { url } from './autolink/url';
 import { email } from './autolink/email';
 import { channel } from './autolink/channel';
@@ -9,6 +8,7 @@ import { hashtag } from './autolink/hashtag';
 import { hashref } from './autolink/hashref';
 import { anchor } from './autolink/anchor';
 import { str } from '../source';
+import { stringify } from '../util';
 
 export const autolink: AutolinkParser = fmap(
   validate(/^(?:[@#>0-9A-Za-z]|[^\x00-\x7F\s])/,

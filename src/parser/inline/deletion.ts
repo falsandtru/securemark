@@ -1,7 +1,7 @@
 import { DeletionParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
-import { defrag } from '../util';
 import { str } from '../source';
+import { defrag } from '../util';
 import { unshift } from 'spica/array';
 import { html } from 'typed-dom';
 

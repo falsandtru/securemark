@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../../combinator';
-import { startTight, isEndTight, defrag } from '../../util';
 import { indexee } from './indexee';
+import { startTight, isEndTight, defrag } from '../../util';
 import { html, define } from 'typed-dom';
 
 export const index: ExtensionParser.IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(surround(

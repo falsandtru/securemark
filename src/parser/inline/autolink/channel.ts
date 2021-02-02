@@ -1,8 +1,8 @@
 import { AutolinkParser } from '../../inline';
 import { sequence, some, validate, bind } from '../../../combinator';
-import { stringify } from '../../util';
 import { account } from './account';
 import { hashtag } from './hashtag';
+import { stringify } from '../../util';
 import { define } from 'typed-dom';
 
 // https://example/@user?ch=a+b must be a user channel page or a redirect page going there.

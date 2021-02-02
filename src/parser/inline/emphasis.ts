@@ -1,8 +1,8 @@
 import { EmphasisParser, inline } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
-import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { strong } from './strong';
 import { str } from '../source';
+import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { unshift } from 'spica/array';
 import { html } from 'typed-dom';
 

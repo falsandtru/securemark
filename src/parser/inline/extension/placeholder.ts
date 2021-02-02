@@ -1,7 +1,7 @@
 import { ExtensionParser, inline } from '../../inline';
 import { union, some, validate, creator, surround, lazy } from '../../../combinator';
-import { startTight, isEndTight, trimEndBR, defrag } from '../../util';
 import { str } from '../../source';
+import { startTight, isEndTight, trimEndBR, defrag } from '../../util';
 import { unshift, push } from 'spica/array';
 import { html } from 'typed-dom';
 

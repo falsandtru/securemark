@@ -1,7 +1,7 @@
 import { TableParser } from '../block';
 import { union, sequence, some, block, line, validate, focus, creator, surround, open, lazy, fmap } from '../../combinator';
-import { defrag } from '../util';
 import { inline } from '../inline';
+import { defrag } from '../util';
 import { push } from 'spica/array';
 import { html } from 'typed-dom';
 

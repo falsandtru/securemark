@@ -1,7 +1,6 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, inits, sequence, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
-import { visualize, defrag } from '../../util';
 import { contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
 import { table as styled_table } from '../table';
@@ -12,6 +11,7 @@ import { example } from './example';
 import { table, segment_ as seg_table } from './table';
 import { placeholder, segment_ as seg_placeholder } from './placeholder';
 import { inline, media, shortmedia } from '../../inline';
+import { visualize, defrag } from '../../util';
 import { memoize } from 'spica/memoize';
 import { html } from 'typed-dom';
 

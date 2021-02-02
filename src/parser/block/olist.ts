@@ -1,10 +1,10 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
 import { union, inits, subsequence, some, block, line, indent, focus, context, creator, open, match, convert, trim, lazy, fmap } from '../../combinator';
-import { defrag } from '../util';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
+import { defrag } from '../util';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
 import { html, define } from 'typed-dom';

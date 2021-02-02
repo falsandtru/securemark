@@ -2,10 +2,10 @@ import { undefined, location, encodeURI, decodeURI, Location } from 'spica/globa
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser, inline, media, shortmedia } from '../inline';
 import { union, inits, tails, some, validate, guard, context, creator, surround, open, reverse, lazy, fmap, bind, eval } from '../../combinator';
-import { startTight, isEndTight, dup, defrag, stringify } from '../util';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
+import { startTight, isEndTight, dup, defrag, stringify } from '../util';
 import { ReadonlyURL } from 'spica/url';
 import { html, define } from 'typed-dom';
 

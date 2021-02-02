@@ -3,8 +3,8 @@ import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototype
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser, inline } from '../inline';
 import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
-import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { str } from '../source';
+import { startTight, isEndTight, trimEndBR, defrag } from '../util';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
 import { unshift, push, splice, join } from 'spica/array';
