@@ -19,7 +19,7 @@ describe('Unit: combinator/subsequence', () => {
         ? [['C'], source.slice(1)]
         : undefined;
     };
-    const abc = subsequence<Parser<string, [typeof a, typeof b, typeof c]>>([a, b, c]);
+    const abc = subsequence<Parser<string, {}, [typeof a, typeof b, typeof c]>>([a, b, c]);
 
     it('basic', () => {
       const parser = abc;

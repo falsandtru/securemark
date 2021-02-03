@@ -5,17 +5,17 @@ export interface Ctx {
   delimiters?: ((source: string) => boolean)[];
 }
 
-export type Parser<T, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>
-  = (source: string, context: C) => Result<T, D, C>;
-export type Result<T, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>
+export type Parser<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
+  = (source: string, context: C) => Result<T, C, D>;
+export type Result<T, C extends Ctx = Ctx, D extends Parser<unknown, C>[] = any>
   = readonly [T[], string]
   | readonly [T[], string, C, D]
   | undefined;
 export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
-export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, infer D> ? D : never;
-export type Context<P extends Parser<unknown>> = P extends Parser<unknown, any, infer C> ? C : never;
+export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, any, infer D> ? D : never;
+export type Context<P extends Parser<unknown>> = P extends Parser<unknown, infer C> ? C : never;
 export type SubTree<P extends Parser<unknown>> = ExtractSubTree<SubParsers<P>>;
-export type IntermediateParser<P extends Parser<unknown>> = Parser<SubTree<P>, SubParsers<P>, Context<P>>;
+export type IntermediateParser<P extends Parser<unknown>> = Parser<SubTree<P>, Context<P>, SubParsers<P>>;
 type ExtractSubTree<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer T ? T extends Parser<infer U> ? U : never : never;
 type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 

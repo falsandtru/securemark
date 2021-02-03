@@ -1,10 +1,10 @@
 import { undefined } from 'spica/global';
-import { Parser, Result, Ctx, Tree, SubParsers, Context, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
+import { Parser, Result, Ctx, Tree, Context, SubParsers, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
 
-export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (nodes: SubTree<P>[], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>): P;
-export function bind<P extends Parser<unknown>>(parser: P, f: (nodes: Tree<P>[], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>): P;
-export function bind<T, P extends Parser<unknown>>(parser: Parser<T, SubParsers<P>, Context<P>>, f: (nodes: T[], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>): P;
-export function bind<U, P extends Parser<unknown>>(parser: P, f: (nodes: Tree<P>[], rest: string, context: Context<P>) => Result<U, SubParsers<P>, Context<P>>): Parser<U, SubParsers<P>, Context<P>>;
+export function bind<P extends Parser<unknown>>(parser: IntermediateParser<P>, f: (nodes: SubTree<P>[], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>): P;
+export function bind<P extends Parser<unknown>>(parser: P, f: (nodes: Tree<P>[], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>): P;
+export function bind<T, P extends Parser<unknown>>(parser: Parser<T, Context<P>, SubParsers<P>>, f: (nodes: T[], rest: string, context: Context<P>) => Result<Tree<P>, Context<P>, SubParsers<P>>): P;
+export function bind<U, P extends Parser<unknown>>(parser: P, f: (nodes: Tree<P>[], rest: string, context: Context<P>) => Result<U, Context<P>, SubParsers<P>>): Parser<U, Context<P>, SubParsers<P>>;
 export function bind<T, U>(parser: Parser<T>, f: (nodes: T[], rest: string, context: Ctx) => Result<U>): Parser<U> {
   assert(parser);
   return (source, context) => {

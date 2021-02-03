@@ -1,9 +1,9 @@
 import { undefined } from 'spica/global';
-import { Parser, Tree, SubParsers, Context, SubTree, eval, exec, check } from '../parser';
+import { Parser, Ctx, Tree, Context, SubParsers, SubTree, eval, exec, check } from '../parser';
 import { push } from 'spica/array';
 
-export function sequence<P extends Parser<unknown>>(parsers: SubParsers<P>): SubTree<P> extends Tree<P> ? P : Parser<SubTree<P>, SubParsers<P>, Context<P>>;
-export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
+export function sequence<P extends Parser<unknown>>(parsers: SubParsers<P>): SubTree<P> extends Tree<P> ? P : Parser<SubTree<P>, Context<P>, SubParsers<P>>;
+export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, Ctx, D> {
   assert(parsers.every(f => f));
   if (parsers.length === 1) return parsers[0];
   return (source, context) => {

@@ -14,7 +14,7 @@ describe('Unit: combinator/sequence', () => {
         ? [['B'], source.slice(1)]
         : undefined;
     };
-    const ab = sequence<Parser<string, [typeof a, typeof b]>>([a, b]);
+    const ab = sequence<Parser<string, {}, [typeof a, typeof b]>>([a, b]);
 
     it('basic', () => {
       const parser = ab;
