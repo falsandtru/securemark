@@ -28,13 +28,6 @@ export function firstline(source: string): string {
   }
 }
 
-export function unline(line: string): string {
-  return line === ''
-      || line[line.length - 1] !== '\n'
-    ? line
-    : line.slice(0, -1);
-}
-
 export function isEmpty(line: string): boolean {
   return line === ''
       || line === '\n'

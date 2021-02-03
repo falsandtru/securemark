@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { Parser, eval, exec } from '../../data/parser';
 import { some } from '../../data/parser/some';
-import { line, unline } from '../constraint/line';
+import { line } from '../constraint/line';
 import { bind } from '../monad/bind';
 import { match } from './match';
 import { open } from './surround';
@@ -25,4 +25,11 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
         ? [eval(result), rest]
         : undefined;
     });
+}
+
+function unline(line: string): string {
+  return line === ''
+      || line[line.length - 1] !== '\n'
+    ? line
+    : line.slice(0, -1);
 }
