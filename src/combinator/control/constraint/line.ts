@@ -25,7 +25,7 @@ export function firstline(source: string, keepLinebreak = true): string {
     case 0:
       return keepLinebreak ? '\n' : '';
     default:
-      return source.slice(0, keepLinebreak ? i + 1 : i);
+      return source.slice(0, i + +keepLinebreak);
   }
 }
 
