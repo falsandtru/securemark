@@ -4279,11 +4279,11 @@ require = function () {
             const head = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^#(?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
-            ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('th', attributes(ns.shift()), typed_dom_1.defrag(ns))]), false));
+            ]), util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))), '')), true), ns => [typed_dom_1.html('th', attributes(ns.shift()), typed_dom_1.defrag(ns))]), false));
             const data = combinator_1.creator(combinator_1.block(combinator_1.fmap(combinator_1.open(source_1.str(/^:(?:(?!0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), combinator_1.rewrite(combinator_1.inits([
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
-            ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), typed_dom_1.defrag(ns))]), false));
+            ]), util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))), '')), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), typed_dom_1.defrag(ns))]), false));
             const dataline = combinator_1.creator(combinator_1.line(combinator_1.rewrite(source_1.contentline, combinator_1.union([
                 combinator_1.validate(/^!+[^\S\n]/, combinator_1.convert(source => `:${ source }`, data)),
                 combinator_1.trim(combinator_1.convert(source => `: ${ source }`, data))
@@ -7156,16 +7156,10 @@ require = function () {
                     'InvisibleComma',
                     'ic'
                 ];
-                const blankline = new RegExp(String.raw`^(?:\\?\s|&(?:${ entities.join('|') });)*\\?(?:\n|$)`, 'gm');
+                const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${ entities.join('|') });)*\\?(?:\n|$)`, 'gm');
                 return combinator_1.convert(source => source.replace(blankline, visualize), parser);
                 function visualize(line) {
-                    switch (line) {
-                    case '':
-                    case '\n':
-                        return '';
-                    default:
-                        return line.replace(/[\\&]/g, '\\$&');
-                    }
+                    return line.replace(/[\\&]/g, '\\$&');
                 }
             }
             function hasVisible(nodes, {
