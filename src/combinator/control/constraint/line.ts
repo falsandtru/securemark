@@ -6,13 +6,13 @@ export function line<T>(parser: Parser<T>, allowTrailingWhitespace = true): Pars
   assert(parser);
   return (source, context) => {
     if (source === '') return;
-    const fst = firstline(source);
-    const result = parser(fst, context);
-    assert(check(fst, result));
+    const line = firstline(source);
+    const result = parser(line, context);
+    assert(check(line, result));
     if (!result) return;
     //assert(exec(result) === '' || allowTrailingWhitespace && isEmpty(exec(result)));
     return exec(result) === '' || allowTrailingWhitespace && isEmpty(exec(result))
-      ? [eval(result), source.slice(fst.length)]
+      ? [eval(result), source.slice(line.length)]
       : undefined;
   };
 }
