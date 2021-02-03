@@ -19,8 +19,8 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
       some(line(open(indent, source => [[unline(source)], '']))),
     ([, indent]) => indent,
     new Cache<string>(9))),
-    (rs, rest, context) => {
-      const result = parser(join(rs, '\n'), context);
+    (nodes, rest, context) => {
+      const result = parser(join(nodes, '\n'), context);
       return result && exec(result) === ''
         ? [eval(result), rest]
         : undefined;

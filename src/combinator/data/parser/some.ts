@@ -16,7 +16,7 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp, deep?: strin
   return (source, context) => {
     if (source === memory) return;
     let rest = source;
-    let data: T[] | undefined;
+    let nodes: T[] | undefined;
     if (context && deep) {
       context.delimiters
         ? context.delimiters.push(delim)
@@ -30,8 +30,8 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp, deep?: strin
       const result = parser(rest, context);
       assert(check(rest, result));
       if (!result) break;
-      data = data
-        ? push(data, eval(result))
+      nodes = nodes
+        ? push(nodes, eval(result))
         : eval(result);
       rest = exec(result);
     }
@@ -42,8 +42,8 @@ export function some<T>(parser: Parser<T>, until?: string | RegExp, deep?: strin
     }
     memory = rest || memory;
     assert(rest.length <= source.length);
-    return rest.length < source.length
-      ? [data ?? [], rest]
+    return nodes && rest.length < source.length
+      ? [nodes, rest]
       : undefined;
   };
 }

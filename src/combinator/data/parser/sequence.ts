@@ -8,21 +8,21 @@ export function sequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   if (parsers.length === 1) return parsers[0];
   return (source, context) => {
     let rest = source;
-    let data: T[] | undefined;
+    let nodes: T[] | undefined;
     for (let i = 0, len = parsers.length; i < len; ++i) {
       if (rest === '') return;
       const result = parsers[i](rest, context);
       assert(check(rest, result));
       if (!result) return;
       assert(!context?.delimiters?.some(match => match(rest)));
-      data = data
-        ? push(data, eval(result))
+      nodes = nodes
+        ? push(nodes, eval(result))
         : eval(result);
       rest = exec(result);
     }
     assert(rest.length <= source.length);
-    return rest.length < source.length
-      ? [data ?? [], rest]
+    return nodes && rest.length < source.length
+      ? [nodes, rest]
       : undefined;
   };
 }
