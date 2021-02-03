@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, block, line, indent, focus, context, creator, open, match, convert, trim, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, block, line, indent, focus, context, creator, open, match, convert, trim, trimStart, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
@@ -19,7 +19,7 @@ const list = (type: string, delim: string): OListParser => fmap(
   some(creator(union([
     fmap(
       inits([
-        line(open(items[delim], trim(subsequence([checkbox, trim(some(inline))])), true)),
+        line(open(items[delim], trim(subsequence([checkbox, trimStart(some(inline))])), true)),
         indent(union([ulist_, olist_, ilist_]))
       ]),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
