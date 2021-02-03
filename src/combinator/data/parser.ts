@@ -5,13 +5,13 @@ export interface Ctx {
   delimiters?: ((source: string) => boolean)[];
 }
 
-export type Parser<R, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>
-  = (source: string, context: C) => Result<R, D, C>;
-export type Result<R, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>
-  = readonly [R[], string]
-  | readonly [R[], string, C, D]
+export type Parser<T, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>
+  = (source: string, context: C) => Result<T, D, C>;
+export type Result<T, D extends Parser<unknown, any, C>[] = any, C extends Ctx = Ctx>
+  = readonly [T[], string]
+  | readonly [T[], string, C, D]
   | undefined;
-export type Data<P extends Parser<unknown>> = P extends Parser<infer R> ? R : never;
+export type Data<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, infer D> ? D : never;
 export type Context<P extends Parser<unknown>> = P extends Parser<unknown, any, infer C> ? C : never;
 export type SubData<P extends Parser<unknown>> = ExtractData<SubParsers<P>>;
@@ -20,10 +20,10 @@ type ExtractData<D extends Parser<unknown>[]> = ExtractParser<D> extends infer T
 type ExtractParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
 export { eval_ as eval };
-function eval_<R>(result: NonNullable<Result<R>>, default_?: R[]): R[];
-function eval_<R>(result: Result<R>, default_: R[]): R[];
-function eval_<R>(result: Result<R>, default_?: undefined): R[] | undefined;
-function eval_<R>(result: Result<R>, default_?: R[]): R[] | undefined {
+function eval_<T>(result: NonNullable<Result<T>>, default_?: T[]): T[];
+function eval_<T>(result: Result<T>, default_: T[]): T[];
+function eval_<T>(result: Result<T>, default_?: undefined): T[] | undefined;
+function eval_<T>(result: Result<T>, default_?: T[]): T[] | undefined {
   return result
     ? result[0]
     : default_;
