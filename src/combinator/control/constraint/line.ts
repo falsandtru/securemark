@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { Parser, eval, exec, check } from '../../data/parser';
 
-export function line<P extends Parser<unknown>>(parser: P, allowTrailingWhitespace?: boolean): P;
-export function line<T>(parser: Parser<T>, allowTrailingWhitespace = true): Parser<T> {
+export function line<P extends Parser<unknown>>(parser: P): P;
+export function line<T>(parser: Parser<T>): Parser<T> {
   assert(parser);
   return (source, context) => {
     if (source === '') return;
@@ -10,7 +10,7 @@ export function line<T>(parser: Parser<T>, allowTrailingWhitespace = true): Pars
     const result = parser(line, context);
     assert(check(line, result));
     if (!result) return;
-    return exec(result) === '' || allowTrailingWhitespace && isEmpty(exec(result))
+    return isEmpty(exec(result))
       ? [eval(result), source.slice(line.length)]
       : undefined;
   };

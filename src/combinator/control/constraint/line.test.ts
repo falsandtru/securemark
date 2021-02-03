@@ -5,7 +5,6 @@ describe('Unit: combinator/line', () => {
   describe('line', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(line(_ => [[], ''])('')), undefined);
-      assert.deepStrictEqual(inspect(line(_ => [[], '\n'], false)(' \n')), undefined);
     });
 
     it('valid', () => {
@@ -14,9 +13,6 @@ describe('Unit: combinator/line', () => {
       assert.deepStrictEqual(inspect(line(_ => [[], ''])('\n\n')), [[], '\n']);
       assert.deepStrictEqual(inspect(line(_ => [[], ''])(' \n')), [[], '']);
       assert.deepStrictEqual(inspect(line(_ => [[], '\n'])(' \n')), [[], '']);
-      assert.deepStrictEqual(inspect(line(_ => [[], ''], false)(' ')), [[], '']);
-      assert.deepStrictEqual(inspect(line(_ => [[], ''], false)('\n')), [[], '']);
-      assert.deepStrictEqual(inspect(line(_ => [[], ''], false)(' \n')), [[], '']);
     });
 
   });
