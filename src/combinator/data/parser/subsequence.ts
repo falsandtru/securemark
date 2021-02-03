@@ -1,8 +1,8 @@
-import { Parser, Data, SubParsers, Context, SubData } from '../parser';
+import { Parser, Tree, SubParsers, Context, SubTree } from '../parser';
 import { union } from './union';
 import { inits } from './inits';
 
-export function subsequence<P extends Parser<unknown>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : Parser<SubData<P>, SubParsers<P>, Context<P>>;
+export function subsequence<P extends Parser<unknown>>(parsers: SubParsers<P>): SubTree<P> extends Tree<P> ? P : Parser<SubTree<P>, SubParsers<P>, Context<P>>;
 export function subsequence<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
   switch (parsers.length) {

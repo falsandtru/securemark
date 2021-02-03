@@ -1,6 +1,6 @@
 import { undefined, Function } from 'spica/global';
 import { isArray } from 'spica/alias';
-import { Parser, Ctx, Data, Context, eval, exec, check } from '../../data/parser';
+import { Parser, Ctx, Tree, Context, eval, exec, check } from '../../data/parser';
 
 //export function contract<P extends Parser<unknown>>(patterns: string | RegExp | (string | RegExp)[], parser: P, cond: (results: readonly Data<P>[], rest: string) => boolean): P;
 //export function contract<T>(patterns: string | RegExp | (string | RegExp)[], parser: Parser<T>, cond: (results: readonly T[], rest: string) => boolean): Parser<T> {
@@ -47,7 +47,7 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
   };
 }
 
-export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Data<P>[], rest: string, context: Context<P>) => boolean): P;
+export function verify<P extends Parser<unknown>>(parser: P, cond: (results: readonly Tree<P>[], rest: string, context: Context<P>) => boolean): P;
 export function verify<T>(parser: Parser<T>, cond: (results: readonly T[], rest: string, context: Ctx) => boolean): Parser<T> {
   assert(parser);
   return (source, context) => {

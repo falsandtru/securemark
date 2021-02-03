@@ -1,7 +1,7 @@
 import { undefined, Function } from 'spica/global';
-import { Parser, Data, SubParsers, Context, SubData } from '../parser';
+import { Parser, Tree, SubParsers, Context, SubTree } from '../parser';
 
-export function union<P extends Parser<unknown>>(parsers: SubParsers<P>): SubData<P> extends Data<P> ? P : Parser<SubData<P>, SubParsers<P>, Context<P>>;
+export function union<P extends Parser<unknown>>(parsers: SubParsers<P>): SubTree<P> extends Tree<P> ? P : Parser<SubTree<P>, SubParsers<P>, Context<P>>;
 export function union<T, D extends Parser<T>[]>(parsers: D): Parser<T, D> {
   assert(parsers.every(f => f));
   switch (parsers.length) {

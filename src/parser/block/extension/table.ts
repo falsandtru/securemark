@@ -2,7 +2,7 @@ import { undefined, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
 import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, recover, lazy, fmap, bind } from '../../../combinator';
-import { Data } from '../../../combinator/data/parser';
+import { Tree } from '../../../combinator/data/parser';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
@@ -131,7 +131,7 @@ function attributes(source: string) {
   };
 }
 
-function format(rows: Data<RowParser>[]): HTMLTableSectionElement[] {
+function format(rows: Tree<RowParser>[]): HTMLTableSectionElement[] {
   const thead = html('thead');
   const tbody = html('tbody');
   const tfoot = html('tfoot');

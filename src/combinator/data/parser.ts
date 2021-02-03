@@ -11,13 +11,13 @@ export type Result<T, D extends Parser<unknown, any, C>[] = any, C extends Ctx =
   = readonly [T[], string]
   | readonly [T[], string, C, D]
   | undefined;
-export type Data<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
+export type Tree<P extends Parser<unknown>> = P extends Parser<infer T> ? T : never;
 export type SubParsers<P extends Parser<unknown>> = P extends Parser<unknown, infer D> ? D : never;
 export type Context<P extends Parser<unknown>> = P extends Parser<unknown, any, infer C> ? C : never;
-export type SubData<P extends Parser<unknown>> = ExtractData<SubParsers<P>>;
-export type IntermediateParser<P extends Parser<unknown>> = Parser<SubData<P>, SubParsers<P>, Context<P>>;
-type ExtractData<D extends Parser<unknown>[]> = ExtractParser<D> extends infer T ? T extends Parser<infer U> ? U : never : never;
-type ExtractParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
+export type SubTree<P extends Parser<unknown>> = ExtractSubTree<SubParsers<P>>;
+export type IntermediateParser<P extends Parser<unknown>> = Parser<SubTree<P>, SubParsers<P>, Context<P>>;
+type ExtractSubTree<D extends Parser<unknown>[]> = ExtractSubParser<D> extends infer T ? T extends Parser<infer U> ? U : never : never;
+type ExtractSubParser<D extends Parser<unknown>[]> = D extends (infer P)[] ? P extends Parser<unknown> ? P : never : never;
 
 export { eval_ as eval };
 function eval_<T>(result: NonNullable<Result<T>>, default_?: T[]): T[];

@@ -1,27 +1,27 @@
 import { undefined } from 'spica/global';
-import { Parser, Result, Ctx, Data, SubParsers, Context, SubData, IntermediateParser, eval, exec, check } from '../../data/parser';
+import { Parser, Result, Ctx, Tree, SubParsers, Context, SubTree, IntermediateParser, eval, exec, check } from '../../data/parser';
 import { fmap } from '../monad/fmap';
 import { unshift, push } from 'spica/array';
 
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, any, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: false,
-  f?: (rss: [S[], SubData<P>[], S[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
-  g?: (rss: [S[], SubData<P>[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
+  f?: (rss: [S[], SubTree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
+  g?: (rss: [S[], SubTree<P>[]], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, any, Context<P>>, parser: IntermediateParser<P>, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: boolean,
-  f?: (rss: [S[], SubData<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
-  g?: (rss: [S[], SubData<P>[] | undefined], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
+  f?: (rss: [S[], SubTree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
+  g?: (rss: [S[], SubTree<P>[] | undefined], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, any, Context<P>>, parser: P, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: false,
-  f?: (rss: [S[], Data<P>[], S[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
-  g?: (rss: [S[], Data<P>[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
+  f?: (rss: [S[], Tree<P>[], S[]], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
+  g?: (rss: [S[], Tree<P>[]], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
 ): P;
 export function surround<P extends Parser<unknown>, S = string>(
   opener: string | RegExp | Parser<S, any, Context<P>>, parser: P, closer: string | RegExp | Parser<S, any, Context<P>>, optional?: boolean,
-  f?: (rss: [S[], Data<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
-  g?: (rss: [S[], Data<P>[] | undefined], rest: string, context: Context<P>) => Result<Data<P>, SubParsers<P>, Context<P>>,
+  f?: (rss: [S[], Tree<P>[] | undefined, S[]], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
+  g?: (rss: [S[], Tree<P>[] | undefined], rest: string, context: Context<P>) => Result<Tree<P>, SubParsers<P>, Context<P>>,
 ): P;
 export function surround<T>(
   opener: string | RegExp | Parser<T>, parser: Parser<T>, closer: string | RegExp | Parser<T>, optional: boolean = false,
@@ -79,11 +79,11 @@ function match(pattern: string | RegExp): (source: string, context: Ctx) => [nev
   }
 }
 
-export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Data<P>, any, Context<P>>, parser: P, optional?: boolean): P;
+export function open<P extends Parser<unknown>>(opener: string | RegExp | Parser<Tree<P>, any, Context<P>>, parser: P, optional?: boolean): P;
 export function open<T>(opener: string | RegExp | Parser<T>, parser: Parser<T>, optional = false): Parser<T> {
   return surround(opener, parser, '', optional);
 }
-export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Data<P>, any, Context<P>>, optional?: boolean): P;
+export function close<P extends Parser<unknown>>(parser: P, closer: string | RegExp | Parser<Tree<P>, any, Context<P>>, optional?: boolean): P;
 export function close<T>(parser: Parser<T>, closer: string | RegExp | Parser<T>, optional: boolean = false): Parser<T> {
   return surround('', parser, closer, optional);
 }
