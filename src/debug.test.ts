@@ -1,4 +1,4 @@
-import { Result, eval, exec } from './combinator';
+import { Result, eval, exec } from './combinator/data/parser';
 import { html, define } from 'typed-dom';
 
 export function inspect(r: Result<HTMLElement | string>, until: number | string = Infinity): [string[], string] | undefined {

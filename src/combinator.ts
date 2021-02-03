@@ -1,4 +1,4 @@
-export { Parser, Result, Ctx, eval, exec } from './combinator/data/parser';
+export { Parser, Ctx, Tree, Context, eval, exec } from './combinator/data/parser';
 export * from './combinator/data/parser/union';
 export * from './combinator/data/parser/inits';
 export * from './combinator/data/parser/tails';
