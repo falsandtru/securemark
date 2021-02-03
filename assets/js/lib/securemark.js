@@ -2393,30 +2393,30 @@ require = function () {
             exports.isEmpty = exports.firstline = exports.line = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../../data/parser');
-            function line(parser, allowTrailingWhitespace = true) {
+            function line(parser) {
                 return (source, context) => {
                     if (source === '')
                         return;
-                    const fst = firstline(source);
-                    const result = parser(fst, context);
+                    const line = firstline(source);
+                    const result = parser(line, context);
                     if (!result)
                         return;
-                    return parser_1.exec(result) === '' || allowTrailingWhitespace && isEmpty(parser_1.exec(result)) ? [
+                    return isEmpty(parser_1.exec(result)) ? [
                         parser_1.eval(result),
-                        source.slice(fst.length)
+                        source.slice(line.length)
                     ] : global_1.undefined;
                 };
             }
             exports.line = line;
-            function firstline(source, keepLinebreak = true) {
+            function firstline(source) {
                 const i = source.indexOf('\n');
                 switch (i) {
                 case -1:
                     return source;
                 case 0:
-                    return keepLinebreak ? '\n' : '';
+                    return '\n';
                 default:
-                    return source.slice(0, keepLinebreak ? i + 1 : i);
+                    return source.slice(0, i + 1);
                 }
             }
             exports.firstline = firstline;
@@ -2574,7 +2574,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function indent(parser) {
                 return bind_1.bind(match_1.match(/^(?=(([^\S\n])\2*))/, memoize_1.memoize(([, indent]) => some_1.some(line_1.line(surround_1.open(indent, source => [
-                    [line_1.firstline(source, false)],
+                    [unline(source)],
                     ''
                 ]))), ([, indent]) => indent, new cache_1.Cache(9))), (rs, rest, context) => {
                     const result = parser(array_1.join(rs, '\n'), context);
@@ -2585,6 +2585,9 @@ require = function () {
                 });
             }
             exports.indent = indent;
+            function unline(line) {
+                return line === '' || line[line.length - 1] !== '\n' ? line : line.slice(0, -1);
+            }
         },
         {
             '../../data/parser': 48,
@@ -2841,12 +2844,20 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.trim = void 0;
+            exports.trimEnd = exports.trimStart = exports.trim = void 0;
             const convert_1 = _dereq_('./convert');
             function trim(parser) {
                 return convert_1.convert(source => source.trim(), parser);
             }
             exports.trim = trim;
+            function trimStart(parser) {
+                return convert_1.convert(source => source.trimStart(), parser);
+            }
+            exports.trimStart = trimStart;
+            function trimEnd(parser) {
+                return convert_1.convert(source => source.trimEnd(), parser);
+            }
+            exports.trimEnd = trimEnd;
         },
         { './convert': 35 }
     ],
@@ -4273,10 +4284,10 @@ require = function () {
                 source_1.anyline,
                 combinator_1.some(source_1.contentline, delimiter)
             ]), combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline])))), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), typed_dom_1.defrag(ns))]), false));
-            const dataline = combinator_1.creator(combinator_1.line(combinator_1.union([
+            const dataline = combinator_1.creator(combinator_1.line(combinator_1.rewrite(source_1.contentline, combinator_1.union([
                 combinator_1.validate(/^!+[^\S\n]/, combinator_1.convert(source => `:${ source }`, data)),
                 combinator_1.trim(combinator_1.convert(source => `: ${ source }`, data))
-            ])));
+            ]))));
             function attributes(source) {
                 var _a;
                 let [, rowspan = global_1.undefined, colspan = global_1.undefined, highlight = global_1.undefined] = (_a = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/)) !== null && _a !== void 0 ? _a : [];
@@ -4628,7 +4639,7 @@ require = function () {
             const list = (type, delim) => combinator_1.fmap(combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.creator(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.open(items[delim], combinator_1.trim(combinator_1.subsequence([
                         ulist_1.checkbox,
-                        combinator_1.trim(combinator_1.some(inline_1.inline))
+                        combinator_1.trimStart(combinator_1.some(inline_1.inline))
                     ])), true)),
                     combinator_1.indent(combinator_1.union([
                         ulist_1.ulist_,
@@ -4929,7 +4940,7 @@ require = function () {
             exports.ulist = combinator_1.lazy(() => combinator_1.block(combinator_1.fmap(combinator_1.validate(/^-(?=[^\S\n]|\n[^\S\n]*\S)/, combinator_1.context({ syntax: { inline: { media: false } } }, combinator_1.some(combinator_1.creator(combinator_1.union([combinator_1.fmap(combinator_1.inits([
                     combinator_1.line(combinator_1.open(/^-(?:$|\s)/, combinator_1.trim(combinator_1.subsequence([
                         exports.checkbox,
-                        combinator_1.trim(combinator_1.some(inline_1.inline))
+                        combinator_1.trimStart(combinator_1.some(inline_1.inline))
                     ])), true)),
                     combinator_1.indent(combinator_1.union([
                         exports.ulist_,
@@ -6899,15 +6910,15 @@ require = function () {
             exports.anyline = combinator_1.line(() => [
                 [],
                 ''
-            ], false);
+            ]);
             exports.emptyline = combinator_1.line(s => combinator_1.isEmpty(s) ? [
                 [],
                 ''
-            ] : global_1.undefined, false);
+            ] : global_1.undefined);
             exports.contentline = combinator_1.line(s => !combinator_1.isEmpty(s) ? [
                 [],
                 ''
-            ] : global_1.undefined, false);
+            ] : global_1.undefined);
         },
         {
             '../../combinator': 30,
