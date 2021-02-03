@@ -1,7 +1,8 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser } from '../inline';
-import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind, eval } from '../../combinator';
+import { eval } from '../../combinator/data/parser';
+import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';

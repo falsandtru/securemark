@@ -1,5 +1,6 @@
 import { ExtensionParser } from '../../block';
-import { union, block, validate, fence, fmap, eval } from '../../../combinator';
+import { eval } from '../../../combinator/data/parser';
+import { union, block, validate, fence, fmap } from '../../../combinator';
 import { segment } from '../../segment';
 import { emptyline } from '../../source';
 import { ulist } from '../ulist';

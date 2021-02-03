@@ -1,4 +1,4 @@
-import { Parser, Ctx } from './src/combinator';
+import { Parser, Ctx } from './src/combinator/data/parser';
 import { Collection } from 'spica/collection';
 
 declare abstract class Markdown<T> {

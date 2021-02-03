@@ -1,4 +1,5 @@
-import { Parser, fmap } from '../combinator';
+import { Parser } from '../combinator/data/parser';
+import { fmap } from '../combinator';
 import { japanese } from './locale/ja';
 import { html } from 'typed-dom';
 

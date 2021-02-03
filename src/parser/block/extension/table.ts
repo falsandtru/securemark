@@ -1,7 +1,8 @@
 import { undefined, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { Tree, union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, recover, lazy, fmap, bind } from '../../../combinator';
+import { Tree } from '../../../combinator/data/parser';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, recover, lazy, fmap, bind } from '../../../combinator';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';

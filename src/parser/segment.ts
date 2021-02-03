@@ -1,6 +1,7 @@
 import { Blob } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { union, some, eval, exec } from '../combinator';
+import { eval, exec } from '../combinator/data/parser';
+import { union, some } from '../combinator';
 import { segment as heading } from './block/heading';
 import { segment as codeblock } from './block/codeblock';
 import { segment as mathblock } from './block/mathblock';

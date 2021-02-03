@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { Parser, union, verify, convert, eval } from '../combinator';
+import { Parser, eval } from '../combinator/data/parser';
+import { union, verify, convert } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { pop } from 'spica/array';

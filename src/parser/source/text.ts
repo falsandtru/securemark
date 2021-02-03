@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
 import { TextParser, TxtParser, LinebreakParser } from '../source';
-import { Parser, Context, union, focus, creator, fmap } from '../../combinator';
+import { Parser, Context } from '../../combinator/data/parser';
+import { union, focus, creator, fmap } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom';
 

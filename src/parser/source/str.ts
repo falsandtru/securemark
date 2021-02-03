@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
 import { StrParser } from '../source';
-import { Parser, Context, creator } from '../../combinator';
+import { Parser, Context } from '../../combinator/data/parser';
+import { creator } from '../../combinator';
 
 export function str(pattern: string | RegExp, not?: string): StrParser;
 export function str(pattern: string | RegExp, not?: string): Parser<string, Context<StrParser>, []> {

@@ -2,7 +2,7 @@ import { undefined, location } from 'spica/global';
 import { ObjectAssign, ObjectCreate } from 'spica/alias';
 import { ParserOptions } from '../../..';
 import { MarkdownParser } from '../../../markdown';
-import { eval } from '../../combinator';
+import { eval } from '../../combinator/data/parser';
 import { header } from '../header';
 import { block } from '../block';
 import { segment } from '../segment';

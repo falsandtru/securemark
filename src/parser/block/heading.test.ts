@@ -1,5 +1,6 @@
 import { heading, segment } from './heading';
-import { some, eval, exec } from '../../combinator';
+import { eval, exec } from '../../combinator/data/parser';
+import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
 
 describe('Unit: parser/block/heading', () => {

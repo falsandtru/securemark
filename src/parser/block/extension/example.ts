@@ -1,5 +1,6 @@
 import { ExtensionParser } from '../../block';
-import { block, validate, fence, creator, fmap, eval } from '../../../combinator';
+import { eval } from '../../../combinator/data/parser';
+import { block, validate, fence, creator, fmap } from '../../../combinator';
 import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { html } from 'typed-dom';

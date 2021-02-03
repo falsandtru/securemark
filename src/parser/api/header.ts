@@ -1,4 +1,4 @@
-import { eval, exec } from '../../combinator';
+import { eval, exec } from '../../combinator/data/parser';
 import { header as h } from '../header';
 
 export function header(source: string): string {

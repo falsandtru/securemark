@@ -1,6 +1,7 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
-import { sequence, validate, focus, creator, surround, lazy, bind, eval, exec } from '../../combinator';
+import { eval, exec } from '../../combinator/data/parser';
+import { sequence, validate, focus, creator, surround, lazy, bind } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text as txt } from '../source';
 import { isEndTight } from '../util';
