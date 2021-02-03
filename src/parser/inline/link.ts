@@ -1,12 +1,12 @@
 import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser } from '../inline';
-import { union, inits, tails, some, validate, guard, context, creator, surround, open, reverse, lazy, fmap, bind, eval } from '../../combinator';
+import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind, eval } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { startTight, isEndTight, dup, stringify } from '../util';
+import { startTight, isEndTight, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 

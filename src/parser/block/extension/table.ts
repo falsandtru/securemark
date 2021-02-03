@@ -1,12 +1,12 @@
 import { undefined, Array } from 'spica/global';
 import { max, min, isArray } from 'spica/alias';
 import { ExtensionParser } from '../../block';
-import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, recover, lazy, fmap, bind } from '../../../combinator';
+import { union, subsequence, inits, some, block, line, validate, fence, rewrite, creator, open, clear, convert, trim, dup, recover, lazy, fmap, bind } from '../../../combinator';
 import { Data } from '../../../combinator/data/parser';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
-import { visualize, dup } from '../../util';
+import { visualize } from '../../util';
 import { html, defrag } from 'typed-dom';
 import { unshift, splice } from 'spica/array';
 

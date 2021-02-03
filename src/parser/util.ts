@@ -1,7 +1,6 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { Parser, Ctx, union, verify, convert, eval, fmap } from '../combinator';
-import { Data, SubParsers, Context } from '../combinator/data/parser';
+import { Parser, union, verify, convert, eval } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { pop } from 'spica/array';
@@ -159,12 +158,6 @@ export function trimEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | strin
   return typeof node === 'object' && node.tagName === 'BR'
     ? pop(nodes)[0]
     : nodes;
-}
-
-export function dup<P extends Parser<unknown[]>>(parser: Parser<Data<P>[number], SubParsers<P>, Context<P>>): P;
-export function dup<T, D extends Parser<unknown, any, C>[], C extends Ctx>(parser: Parser<T, D, C>): Parser<T[], D, C>;
-export function dup<T>(parser: Parser<T>): Parser<T[]> {
-  return fmap(parser, ns => [ns]);
 }
 
 export function stringify(nodes: readonly (HTMLElement | string)[]): string {
