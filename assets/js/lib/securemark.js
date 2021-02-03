@@ -3586,15 +3586,18 @@ require = function () {
                 paragraph_1.paragraph
             ]))));
             function error(parser) {
-                return combinator_1.recover((source, context) => source[0] === '\0' ? (() => {
-                    throw new Error(source.slice(1, 1000).split('\n', 1)[0]);
-                })() : parser(source, context), (source, {id}, reason) => [
+                return combinator_1.recover(combinator_1.union([
+                    combinator_1.open('\0', source => {
+                        throw new Error(source.split('\n', 1)[0]);
+                    }),
+                    parser
+                ]), (source, {id}, reason) => [
                     [
                         typed_dom_1.html('h1', {
                             id: id !== '' ? `error:${ random_1.rnd0Z(8) }` : global_1.undefined,
                             class: 'error'
                         }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `UnknownError: ${ reason }`),
-                        typed_dom_1.html('pre', source[0] === '\0' ? source.slice(source.search(/\n|$/) + 1).slice(0, 10001).replace(/^(.{9997}).{4}$/s, '$1...') || global_1.undefined : source || global_1.undefined)
+                        typed_dom_1.html('pre', source.replace(/^\0.*\n/, '').slice(0, 10001).replace(/^(.{9997}).{4}$/s, '$1...') || global_1.undefined)
                     ],
                     ''
                 ]);

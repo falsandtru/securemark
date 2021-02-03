@@ -17,6 +17,10 @@
   body {
     background-color: #fdfdfd;
   }
+  #primary {
+    position: sticky;
+    top: 0;
+  }
   .CodeMirror {
     height: 100%;
     font-family: Monaco, 'Andale Mono', 'Lucida Console', 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
@@ -28,9 +32,6 @@
   .cm-animate-fat-cursor {
     display: inline-block;
     background-color: #bbb;
-  }
-  #viewer {
-    overflow: auto;
   }
   details.header {
     margin-top: 0;
@@ -486,13 +487,12 @@
 </style>
 
 </head>
-<body>
+<body id="container" class="container">
 <noscript><p class="browsehappy warning">Please enable <strong>JavaScript</strong></p></noscript>
 <!--[if lte IE 9]>
 <p class="alert alert-warning" role="alert">You are using an <strong>outdated</strong> browser. Please <a class="alert-link" href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
 
-<div id="container" class="container">
 <!-- ----- HEADER ------------------------------------------------------------- -->
 <header id="header" class="row">
 <h1 class="col-12">Securemark</h1>
@@ -504,22 +504,17 @@
 
 <div id="wrapper" class="row">
 <!-- ----- PRIMARY ------------------------------------------------------------ -->
-<div id="primary" class="col-12">
-<article id="content" class="row">
-  <div class="col-6 w-100 h-100 notranslate"><textarea id="editor" spellcheck="false"></textarea></div>
-  <div id="viewer" class="col-6 w-100 h-100"><ol id="annotation" class="footnote"></ol><ol id="reference" class="footnote"></ol></div>
-</article>
-<aside></aside>
+<div id="primary" class="col-6">
+  <div class="h-100 notranslate"><textarea id="editor" spellcheck="false"></textarea></div>
 </div>
-
+<div id="secondary" class="col-6">
+  <div id="viewer"><ol id="annotation" class="footnote"></ol><ol id="reference" class="footnote"></ol></div>
+</div>
 </div>
 
 <!-- ----- FOOTER ------------------------------------------------------------- -->
-<footer id="footer">
+<footer id="footer" class="row"></footer>
 
-</footer>
-
-</div>
 <script src="https://cdn.polyfill.io/v3/polyfill.js?flags=gated&features=default"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js" integrity="sha512-7yA/d79yIhHPvcrSiB8S/7TyX0OxlccU8F/kuB8mHYjLlF1MInPbEohpoqfz0AILoq5hoD7lELZAYYHbyeEjag==" crossorigin="anonymous"></script>
@@ -893,7 +888,6 @@
     '',
     ''
   ].join('\n');
-  document.getElementById('content').style.height = window.innerHeight * 0.7 + 'px';
   const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
     lineNumbers: true,
     lineWrapping: true,
@@ -912,15 +906,6 @@
       annotation: document.getElementById('annotation'),
       reference: document.getElementById('reference'),
     },
-  });
-  const observer = new IntersectionObserver(function (changes) {
-    changes
-      .forEach(function (change) {
-        observer.unobserve(change.target);
-        render(change.target, { caches });
-      });
-  }, {
-    rootMargin: '100px',
   });
   editor.setOption('vimMode', true);
   let hover = true;
@@ -953,6 +938,23 @@
   document.getElementById('share').href = location.href;
   document.getElementById('share').textContent = document.getElementById('share').href;
   document.getElementById('chars').textContent = editor.getValue().length;
+  new ResizeObserver(entries => {
+    const el = document.getElementById('primary');
+    el.style.height = document.documentElement.clientHeight - Math.max(el.offsetTop - window.scrollY, 0) + 'px';
+  }).observe(document.body);
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('primary');
+    el.style.height = document.documentElement.clientHeight - Math.max(el.offsetTop - window.scrollY, 0) + 'px';
+  }, { passive: true });
+  const intersection = new IntersectionObserver(function (changes) {
+    changes
+      .forEach(function (change) {
+        intersection.unobserve(change.target);
+        render(change.target, { caches });
+      });
+  }, {
+    rootMargin: '100px',
+  });
   let wait;
   (async () => {
     await new Promise(requestAnimationFrame);
@@ -994,8 +996,8 @@
         case 'block':
           const el = result.value;
           el.parentNode
-            ? observer.observe(el)
-            : observer.unobserve(el);
+            ? intersection.observe(el)
+            : intersection.unobserve(el);
           break;
         case 'cancel':
           throw new Error('Cancel.');
