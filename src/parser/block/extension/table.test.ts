@@ -104,7 +104,7 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot'),
         ]).outerHTML], '']);
       assert.deepStrictEqual(
-        inspect(parser('~~~table\n1.1\n: 1.2\n\n1.3\n~~~')),
+        inspect(parser('~~~table\n1.1\n: 1.2\n\n: 1.3\n~~~')),
         [[html('table', [
           html('thead'),
           html('tbody', [

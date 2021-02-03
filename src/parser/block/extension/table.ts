@@ -98,10 +98,12 @@ const data: CellParser.DataParser = creator(block(fmap(open(
   false));
 
 const dataline: CellParser.DatalineParser = creator(line(
-  union([
-    validate(/^!+[^\S\n]/, convert(source => `:${source}`, data)),
-    trim(convert(source => `: ${source}`, data)),
-  ])));
+  rewrite(
+    contentline,
+    union([
+      validate(/^!+[^\S\n]/, convert(source => `:${source}`, data)),
+      trim(convert(source => `: ${source}`, data)),
+    ]))));
 
 function attributes(source: string) {
   let [, rowspan = undefined, colspan = undefined, highlight = undefined] = source.match(/^.(?:(\d+)?:(\d+)?)?(!+)?$/) ?? [];
