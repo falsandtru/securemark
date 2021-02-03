@@ -10,7 +10,6 @@ export function line<T>(parser: Parser<T>, allowTrailingWhitespace = true): Pars
     const result = parser(line, context);
     assert(check(line, result));
     if (!result) return;
-    //assert(exec(result) === '' || allowTrailingWhitespace && isEmpty(exec(result)));
     return exec(result) === '' || allowTrailingWhitespace && isEmpty(exec(result))
       ? [eval(result), source.slice(line.length)]
       : undefined;
