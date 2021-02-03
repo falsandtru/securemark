@@ -25,15 +25,16 @@ const inherit2 = memoize<MarkdownParser.Context, (url: string) => MarkdownParser
 
 export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Context): DocumentFragment {
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
+  assert(!context?.delimiters);
   context = context && url === '' && context.id === opts.id
     ? context
     : ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
         host: opts.host ?? context?.host ?? new ReadonlyURL(location.pathname, location.origin),
         url: url ? new ReadonlyURL(url) : context?.url,
         id: opts.id ?? context?.id,
+        footnotes: undefined,
         header: undefined,
         test: undefined,
-        footnotes: undefined,
       });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const es: HTMLElement[] = [];
