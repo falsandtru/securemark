@@ -112,6 +112,24 @@ describe('Unit: parser/block/extension/table', () => {
           ]),
           html('tfoot'),
         ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n\\ \n\\ \n~~~')),
+        [[html('table', [
+          html('thead'),
+          html('tbody', [
+            html('tr', [html('td', '\\'), html('td', '\\')]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
+        inspect(parser('~~~table\n: \\ \n\\ \n0\n~~~')),
+        [[html('table', [
+          html('thead'),
+          html('tbody', [
+            html('tr', [html('td', ['\\', html('br'), '\\', html('br'), '0'])]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
     });
 
     it('align', () => {

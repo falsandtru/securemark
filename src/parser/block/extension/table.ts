@@ -6,7 +6,7 @@ import { Data } from '../../../combinator/data/parser';
 import { inline } from '../../inline';
 import { str, anyline, emptyline, contentline } from '../../source';
 import { localize } from '../../locale';
-import { dup } from '../../util';
+import { visualize, dup } from '../../util';
 import { html, defrag } from 'typed-dom';
 import { unshift, splice } from 'spica/array';
 
@@ -80,7 +80,7 @@ const head: CellParser.HeadParser = creator(block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    trim(some(union([inline])))),
+    visualize(trim(some(union([inline]))), '')),
   true),
   ns => [html('th', attributes(ns.shift()! as string), defrag(ns))]),
   false));
@@ -92,7 +92,7 @@ const data: CellParser.DataParser = creator(block(fmap(open(
       anyline,
       some(contentline, delimiter),
     ]),
-    trim(some(union([inline])))),
+    visualize(trim(some(union([inline]))), '')),
   true),
   ns => [html('td', attributes(ns.shift()! as string), defrag(ns))]),
   false));

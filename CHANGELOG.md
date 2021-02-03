@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.202.3
+
+- Fix table parser to visualize blank lines.
+
 ## 0.202.2
 
 - Fix table parser not to parse emptylines as datalines.
