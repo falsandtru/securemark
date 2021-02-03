@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { Parser, eval, exec } from '../../data/parser';
 import { some } from '../../data/parser/some';
-import { line, firstline } from '../constraint/line';
+import { line, unline } from '../constraint/line';
 import { bind } from '../monad/bind';
 import { match } from './match';
 import { open } from './surround';
@@ -16,7 +16,7 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
     /^(?=(([^\S\n])\2*))/,
     memoize(
     ([, indent]) =>
-      some(line(open(indent, source => [[firstline(source, false)], '']))),
+      some(line(open(indent, source => [[unline(source)], '']))),
     ([, indent]) => indent,
     new Cache<string>(9))),
     (rs, rest, context) => {

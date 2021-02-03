@@ -17,16 +17,23 @@ export function line<T>(parser: Parser<T>, allowTrailingWhitespace = true): Pars
   };
 }
 
-export function firstline(source: string, keepLinebreak = true): string {
+export function firstline(source: string): string {
   const i = source.indexOf('\n');
   switch (i) {
     case -1:
       return source;
     case 0:
-      return keepLinebreak ? '\n' : '';
+      return '\n';
     default:
-      return source.slice(0, i + +keepLinebreak);
+      return source.slice(0, i + 1);
   }
+}
+
+export function unline(line: string): string {
+  return line === ''
+      || line[line.length - 1] !== '\n'
+    ? line
+    : line.slice(0, -1);
 }
 
 export function isEmpty(line: string): boolean {
