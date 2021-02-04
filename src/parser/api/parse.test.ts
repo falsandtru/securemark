@@ -31,8 +31,9 @@ describe('Unit: parser/api/parse', () => {
     });
 
     it('linebreak', () => {
-      assert('a\n\nb'.match(/^\s*$/m));
-      assert(!parse('*a\n*\nb').textContent?.match(/^\s*$/m));
+      assert.deepStrictEqual(
+        [...parse('*a\n*\nb').children].map(el => el.outerHTML),
+        ['<p><em>a</em><br>b</p>']);
       assert.deepStrictEqual(
         [...parse('\\ ').children].map(el => el.outerHTML),
         ['<p>\\</p>']);
