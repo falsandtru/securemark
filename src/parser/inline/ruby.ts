@@ -57,8 +57,8 @@ const text: RubyParser.TextParser = creator((source, context) => {
         continue;
       case '&': {
         const result = htmlentity(source, context);
-        acc[acc.length - 1] += eval(result, [])[0] ?? source[0];
-        source = exec(result) ?? source.slice(1);
+        acc[acc.length - 1] += eval(result, [source[0]])[0];
+        source = exec(result, source.slice(1));
         continue;
       }
       default: {
