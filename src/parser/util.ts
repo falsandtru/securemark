@@ -6,6 +6,43 @@ import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { pop } from 'spica/array';
 
+// https://dev.w3.org/html5/html-author/charref
+const invisibleHTMLEntityNames = [
+  'Tab',
+  'NewLine',
+  'NonBreakingSpace',
+  'nbsp',
+  'shy',
+  'ensp',
+  'emsp',
+  'emsp13',
+  'emsp14',
+  'numsp',
+  'puncsp',
+  'ThinSpace',
+  'thinsp',
+  'VeryThinSpace',
+  'hairsp',
+  'ZeroWidthSpace',
+  'NegativeVeryThinSpace',
+  'NegativeThinSpace',
+  'NegativeMediumSpace',
+  'NegativeThickSpace',
+  'zwj',
+  'zwnj',
+  'lrm',
+  'rlm',
+  'MediumSpace',
+  'NoBreak',
+  'ApplyFunction',
+  'af',
+  'InvisibleTimes',
+  'it',
+  'InvisibleComma',
+  'ic',
+];
+const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});)*\\?(?:\n|$)`, 'gm');
+
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P, message?: string): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>, message = '(Empty)'): Parser<T> {
   return justify(union([
@@ -15,41 +52,6 @@ export function visualize<T extends HTMLElement | string>(parser: Parser<T>, mes
 }
 function justify<P extends Parser<unknown>>(parser: P): P;
 function justify<T>(parser: Parser<T>): Parser<T> {
-  const entities = [
-    'Tab',
-    'NewLine',
-    'nbsp',
-    'NonBreakingSpace',
-    'shy',
-    'ensp',
-    'emsp',
-    'emsp13',
-    'emsp14',
-    'numsp',
-    'puncsp',
-    'thinsp',
-    'ThinSpace',
-    'hairsp',
-    'VeryThinSpace',
-    'ZeroWidthSpace',
-    'NegativeVeryThinSpace',
-    'NegativeThinSpace',
-    'NegativeMediumSpace',
-    'NegativeThickSpace',
-    'zwnj',
-    'zwj',
-    'lrm',
-    'rlm',
-    'MediumSpace',
-    'NoBreak',
-    'ApplyFunction',
-    'af',
-    'InvisibleTimes',
-    'it',
-    'InvisibleComma',
-    'ic',
-  ];
-  const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${entities.join('|')});)*\\?(?:\n|$)`, 'gm');
   return convert(source => source.replace(blankline, visualize), parser);
 
   function visualize(line: string): string {

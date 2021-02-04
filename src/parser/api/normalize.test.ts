@@ -47,6 +47,22 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\x7F') === '\uFFFD');
     });
 
+    it('escape', () => {
+      assert(normalize('\u200B') === '&ZeroWidthSpace;');
+      assert(normalize('\u200D') === '&zwj;');
+    });
+
+    it('sanitize', () => {
+      assert(normalize('\u2006') === '\uFFFD');
+      assert(normalize('\u202A') === '\uFFFD');
+      assert(normalize('\u202F') === '\uFFFD');
+      assert(normalize('\uFEFF') === '\uFFFD');
+      assert(normalize('\u180E') === '\uFFFD');
+      assert(normalize('\u1820\u180E') === '\u1820\u180E');
+      assert(normalize('\u1821\u180E') === '\u1821\u180E');
+      assert(normalize('\u1822\u180E') === '\u1822\uFFFD');
+    });
+
     it('header', () => {
       assert(normalize('---\r\na: b \r\n---\r\n\r\nb\r\n') === '---\na: b \n---\n\nb\n');
       assert(normalize('---\na: b\x01\n---\n\n\x01\n') === '---\na: b\uFFFD\n---\n\n\uFFFD\n');

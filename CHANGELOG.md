@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.202.4
+
+- Fix normalization to sanitize unreadable characters.
+
 ## 0.202.3
 
 - Fix table parser to visualize blank lines.
