@@ -7,8 +7,6 @@ describe('Unit: parser/normalize', () => {
     });
 
     it('controls', () => {
-      assert(normalize('\v') === '\n');
-      assert(normalize('\f') === '\n');
       assert(normalize('\r') === '\n');
       assert(normalize('\r\n') === '\n');
       assert(normalize('\n\r') === '\n\n');
@@ -23,8 +21,8 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\x08') === '\uFFFD');
       assert(normalize('\x09') === '\t');
       assert(normalize('\x0A') === '\n');
-      assert(normalize('\x0B') === '\n');
-      assert(normalize('\x0C') === '\n');
+      assert(normalize('\x0B') === '\uFFFD');
+      assert(normalize('\x0C') === '\uFFFD');
       assert(normalize('\x0D') === '\n');
       assert(normalize('\x0E') === '\uFFFD');
       assert(normalize('\x0F') === '\uFFFD');

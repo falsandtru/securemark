@@ -91,14 +91,10 @@ export function normalize(source: string): string {
     .replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]|[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => {
       assert(!char.match(/^[\n\t]$/));
       switch (char) {
-        case '\v':
-        case '\f':
         case '\r':
         case '\r\n':
-          assert(char.trim() === '');
           return '\n';
         default:
-          assert(char.trim() !== '');
           return char.length > 1
             ? char
             : UNICODE_REPLACEMENT_CHARACTER;
