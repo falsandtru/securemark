@@ -78,7 +78,7 @@ const irregularInvisibleCharacters = [
   // ZERO WIDTH NON-BREAKING SPACE
   '\uFEFF',
 ];
-const irregularInvisibleCharacter = /[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]/g;
+const irregularInvisibleCharacter = /[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g;
 assert(irregularInvisibleCharacters.every(c => c.match(irregularInvisibleCharacter)));
 
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
@@ -88,11 +88,7 @@ export function normalize(source: string): string {
   return source
     .replace(validUnreadableCharacter, char =>
       `&${validUnreadableHTMLEntityNames[validUnreadableCharacters.indexOf(char)]};`)
-    .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char =>
-      char.length === 1
-        ? UNICODE_REPLACEMENT_CHARACTER
-        : char)
-    .replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
+    .replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]|[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => {
       assert(!char.match(/^[\n\t]$/));
       switch (char) {
         case '\v':
@@ -103,9 +99,10 @@ export function normalize(source: string): string {
           return '\n';
         default:
           assert(char.trim() !== '');
-          return UNICODE_REPLACEMENT_CHARACTER;
+          return char.length > 1
+            ? char
+            : UNICODE_REPLACEMENT_CHARACTER;
       }
     })
-    .replace(irregularInvisibleCharacter, UNICODE_REPLACEMENT_CHARACTER)
-    .replace(/(^|[^\u1820\u1821])\u180E/, `$1${UNICODE_REPLACEMENT_CHARACTER}`);
+    .replace(irregularInvisibleCharacter, `$1${UNICODE_REPLACEMENT_CHARACTER}`);
 }
