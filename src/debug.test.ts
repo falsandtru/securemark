@@ -1,13 +1,13 @@
 import { Result, eval, exec } from './combinator/data/parser';
 import { html, define } from 'typed-dom';
 
-export function inspect(r: Result<HTMLElement | string>, until: number | string = Infinity): [string[], string] | undefined {
-  return r && [
-    eval(r).map(n => {
-      if (typeof n === 'string') return n;
-      const m = html('div');
-      n = n.cloneNode(true);
-      [n, ...n.querySelectorAll('.invalid')].forEach(el =>
+export function inspect(result: Result<HTMLElement | string>, until: number | string = Infinity): Result<string> {
+  return result && [
+    eval(result).map(node => {
+      assert(node);
+      if (typeof node === 'string') return node;
+      node = node.cloneNode(true);
+      [node, ...node.querySelectorAll('.invalid')].forEach(el =>
         define(el, {
           'data-invalid-syntax': null,
           'data-invalid-type': null,
@@ -15,12 +15,13 @@ export function inspect(r: Result<HTMLElement | string>, until: number | string 
         }));
       until = typeof until === 'number'
         ? until
-        : ~(~n.outerHTML.indexOf(until) || -Infinity) + until.length;
-      m.innerHTML = n.outerHTML.slice(0, until);
-      assert(until === Infinity ? n.outerHTML === m.innerHTML : m.innerHTML.startsWith(n.outerHTML.slice(0, until)));
-      assert(until !== Infinity || n.childNodes.length === m.firstChild?.childNodes.length);
-      return n.outerHTML.slice(0, until);
+        : ~(~node.outerHTML.indexOf(until) || -Infinity) + until.length;
+      const el = html('div');
+      el.innerHTML = node.outerHTML.slice(0, until);
+      assert(until === Infinity ? node.outerHTML === el.innerHTML : el.innerHTML.startsWith(node.outerHTML.slice(0, until)));
+      assert(until !== Infinity || node.childNodes.length === el.firstChild?.childNodes.length);
+      return node.outerHTML.slice(0, until);
     }),
-    exec(r)
+    exec(result)
   ];
 }
