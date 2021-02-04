@@ -1,10 +1,10 @@
 import { annotation, reference } from './footnote';
-import { parse as parse_ } from '../parser';
+import { parse as parse_ } from '../../parser';
 import { html } from 'typed-dom';
 
 const parse = (s: string) => parse_(s, { test: true });
 
-describe('Unit: util/footnote', () => {
+describe('Unit: parser/footnote', () => {
   describe('annotation', () => {
     it('empty', () => {
       const target = parse('');

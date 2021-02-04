@@ -1,5 +1,5 @@
 import { undefined, Infinity, Map, WeakMap } from 'spica/global';
-import { text } from '../parser/inline/extension/indexee';
+import { text } from '../inline/extension/indexee';
 import { frag, html, define } from 'typed-dom';
 import { MultiMap } from 'spica/multimap';
 import { memoize } from 'spica/memoize';

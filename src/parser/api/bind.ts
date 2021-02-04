@@ -7,9 +7,9 @@ import { header } from '../header';
 import { block } from '../block';
 import { segment } from '../segment';
 import { normalize } from './normalize';
-import { headers } from '../api/header';
-import { figure } from '../../util/figure';
-import { footnote } from '../../util/footnote';
+import { headers } from './header';
+import { figure } from '../function/figure';
+import { footnote } from '../function/footnote';
 import { ReadonlyURL } from 'spica/url';
 import { push, splice } from 'spica/array';
 
