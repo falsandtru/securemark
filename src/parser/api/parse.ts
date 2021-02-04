@@ -25,6 +25,7 @@ const inherit2 = memoize<MarkdownParser.Context, (url: string) => MarkdownParser
 
 export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Context): DocumentFragment {
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
+  source = !context ? normalize(source) : source;
   assert(!context?.delimiters);
   context = context && url === '' && context.id === opts.id
     ? context
@@ -39,7 +40,7 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const es: HTMLElement[] = [];
   let head = opts.header ?? true;
-  for (const seg of segment(normalize(source))) {
+  for (const seg of segment(source)) {
     push(es, eval(head && header(seg, context) || block(seg, context), []));
     head = false;
   }
