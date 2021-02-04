@@ -12,17 +12,17 @@ describe('Unit: parser/block/extension/table', () => {
       assert.deepStrictEqual(inspect(parser(`~~~table\n0${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
       assert.deepStrictEqual(
         inspect(parser([
-          '~~~table\n',
-          `${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}\n`,
+          '~~~table',
+          `${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}`,
           '~~~'
-        ].join(''))),
+        ].join('\n'))),
         [[`<pre class="notranslate invalid">~~~table\n${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}\n~~~</pre>`], '']);
       assert.deepStrictEqual(
         inspect(parser([
-          '~~~table\n',
-          '::33 1\n',
+          '~~~table',
+          '::33 1',
           '~~~'
-        ].join(''))),
+        ].join('\n'))),
         [[`<pre class="notranslate invalid">~~~table\n::33 1\n~~~</pre>`], '']);
     });
 
@@ -490,11 +490,11 @@ describe('Unit: parser/block/extension/table', () => {
         ]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
-          '~~~table\n',
-          `-\n#  1\n${[...Array(31)].map((_, i) => `: ${i + 2}`).join('\n')}\n`,
-          `-\n#! 1\n${[...Array(31)].map((_, i) => `: ${i + 2}`).join('\n')}\n`,
+          '~~~table',
+          `-\n#  1\n${[...Array(31)].map((_, i) => `: ${i + 2}`).join('\n')}`,
+          `-\n#! 1\n${[...Array(31)].map((_, i) => `: ${i + 2}`).join('\n')}`,
           '~~~'
-        ].join(''))),
+        ].join('\n'))),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -510,11 +510,11 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
-          '~~~table\n',
-          `-\n${[...Array(31)].map((_, i) => `: ${i + 1}`).join('\n')}\n#  32\n`,
-          `-\n${[...Array(31)].map((_, i) => `: ${i + 1}`).join('\n')}\n#! 32\n`,
+          '~~~table',
+          `-\n${[...Array(31)].map((_, i) => `: ${i + 1}`).join('\n')}\n#  32`,
+          `-\n${[...Array(31)].map((_, i) => `: ${i + 1}`).join('\n')}\n#! 32`,
           '~~~'
-        ].join(''))),
+        ].join('\n'))),
         [[html('table', [
           html('thead'),
           html('tbody', [
@@ -530,11 +530,11 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
-          '~~~table\n',
-          `-\n${[...Array(31)].map((_, i) => `# ${i + 1}`).join('\n')}\n#! 32\n`,
-          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}\n`,
+          '~~~table',
+          `-\n${[...Array(31)].map((_, i) => `# ${i + 1}`).join('\n')}\n#! 32`,
+          `-\n${[...Array(32)].map((_, i) => `: ${i + 1}`).join('\n')}`,
           '~~~'
-        ].join(''))),
+        ].join('\n'))),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -551,10 +551,10 @@ describe('Unit: parser/block/extension/table', () => {
           html('tfoot')]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
-          '~~~table\n',
-          `${[...Array(7)].map((_, i) => `#${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
+          '~~~table',
+          `${[...Array(7)].map((_, i) => `#${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}`,
           '~~~'
-        ].join(''))),
+        ].join('\n'))),
         [[html('table', [
           html('thead', [
             html('tr', [
@@ -567,10 +567,10 @@ describe('Unit: parser/block/extension/table', () => {
         ]).outerHTML], '']);
       assert.deepStrictEqual(
         inspect(parser([
-          '~~~table\n',
-          `${[...Array(7)].map((_, i) => `:${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}\n`,
+          '~~~table',
+          `${[...Array(7)].map((_, i) => `:${'!'.repeat(i + 1)} ${i + 1}`).join('\n')}`,
           '~~~'
-        ].join(''))),
+        ].join('\n'))),
         [[html('table', [
           html('thead'),
           html('tbody', [
