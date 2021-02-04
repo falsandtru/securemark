@@ -1,6 +1,8 @@
 import { HeadingParser } from '../block';
 import { union, some, block, line, validate, focus, rewrite, context, open, trim, fmap } from '../../combinator';
-import { inline, indexer, indexee } from '../inline';
+import { inline } from '../inline';
+import { indexer } from '../inline/extension/indexer';
+import { indexee } from '../inline/extension/indexee';
 import { str } from '../source';
 import { visualize } from '../util';
 import { html, defrag } from 'typed-dom';

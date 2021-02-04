@@ -74,7 +74,5 @@ export const inline: InlineParser = union([
   text
 ]);
 
-export { indexer } from './inline/extension/indexer';
-export { indexee } from './inline/extension/indexee';
 export { media } from './inline/media';
 export { shortmedia } from './inline/shortmedia';

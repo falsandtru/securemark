@@ -1,6 +1,8 @@
 import { DListParser } from '../block';
 import { union, inits, some, block, line, validate, rewrite, context, creator, open, trim, lazy, fmap } from '../../combinator';
-import { inline, indexer, indexee } from '../inline';
+import { inline } from '../inline';
+import { indexer } from '../inline/extension/indexer';
+import { indexee } from '../inline/extension/indexee';
 import { anyline } from '../source';
 import { localize } from '../locale';
 import { visualize } from '../util';
