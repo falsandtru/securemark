@@ -38,12 +38,11 @@ const validUnreadableHTMLEntityNames = [
   'ic',
 ];
 const validUnreadableCharacters = validUnreadableHTMLEntityNames
-  .map(name => eval(htmlentity(`&${name};`, {})!)[0]);
+  .flatMap(name => eval(htmlentity(`&${name};`, {}), []));
 const validUnreadableCharacter = new RegExp(`[${
-  [...new Set<string>([
-    ...validUnreadableCharacters,
-  ])].join('')
+  [...new Set<string>(validUnreadableCharacters)].join('')
 }]`, 'g');
+assert(!validUnreadableCharacter.source.includes('&'));
 
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
