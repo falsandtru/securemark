@@ -3455,23 +3455,70 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.normalize = void 0;
+            const htmlentity_1 = _dereq_('../inline/htmlentity');
+            const parser_1 = _dereq_('../../combinator/data/parser');
+            const validUnreadableHTMLEntityNames = [
+                'shy',
+                'emsp13',
+                'emsp14',
+                'ThinSpace',
+                'thinsp',
+                'VeryThinSpace',
+                'hairsp',
+                'ZeroWidthSpace',
+                'NegativeVeryThinSpace',
+                'NegativeThinSpace',
+                'NegativeMediumSpace',
+                'NegativeThickSpace',
+                'zwj',
+                'zwnj',
+                'lrm',
+                'rlm',
+                'NoBreak',
+                'ApplyFunction',
+                'af',
+                'InvisibleTimes',
+                'it',
+                'InvisibleComma',
+                'ic'
+            ];
+            const validUnreadableCharacters = validUnreadableHTMLEntityNames.map(name => parser_1.eval(htmlentity_1.htmlentity(`&${ name };`, {}))[0]);
+            const validUnreadableCharacter = new RegExp(`[${ [...new Set([...validUnreadableCharacters])].join('') }]`, 'g');
+            const irregularInvisibleCharacters = [
+                '\u2006',
+                '\u200B',
+                '‌',
+                '‍',
+                '\u200E',
+                '\u200F',
+                '\u202A',
+                '\u202B',
+                '\u202C',
+                '\u202D',
+                '\u202E',
+                '\u202F',
+                '\u2060',
+                '\uFEFF'
+            ];
+            const irregularInvisibleCharacter = /[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g;
             const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
             function normalize(source) {
-                return source.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, str => str.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : str).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]/g, char => {
+                return source.replace(validUnreadableCharacter, char => `&${ validUnreadableHTMLEntityNames[validUnreadableCharacters.indexOf(char)] };`).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]|[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => {
                     switch (char) {
-                    case '\x0B':
-                    case '\f':
                     case '\r':
                     case '\r\n':
                         return '\n';
                     default:
-                        return UNICODE_REPLACEMENT_CHARACTER;
+                        return char.length > 1 ? char : UNICODE_REPLACEMENT_CHARACTER;
                     }
-                });
+                }).replace(irregularInvisibleCharacter, `$1${ UNICODE_REPLACEMENT_CHARACTER }`);
             }
             exports.normalize = normalize;
         },
-        {}
+        {
+            '../../combinator/data/parser': 49,
+            '../inline/htmlentity': 116
+        }
     ],
     63: [
         function (_dereq_, module, exports) {
@@ -3497,6 +3544,7 @@ require = function () {
             function parse(source, opts = {}, context) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
                 const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
+                source = !context ? normalize_1.normalize(source) : source;
                 context = context && url === '' && context.id === opts.id ? context : alias_1.ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
                     host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context === null || context === void 0 ? void 0 : context.host) !== null && _c !== void 0 ? _c : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
                     url: url ? new url_1.ReadonlyURL(url) : context === null || context === void 0 ? void 0 : context.url,
@@ -3509,7 +3557,7 @@ require = function () {
                     throw new Error(`Invalid host: ${ context.host.href }`);
                 const es = [];
                 let head = (_f = opts.header) !== null && _f !== void 0 ? _f : true;
-                for (const seg of segment_1.segment(normalize_1.normalize(source))) {
+                for (const seg of segment_1.segment(source)) {
                     array_1.push(es, parser_1.eval(head && header_1.header(seg, context) || block_1.block(seg, context), []));
                     head = false;
                 }
@@ -6727,7 +6775,7 @@ require = function () {
                 }
             })));
             const text = combinator_1.creator((source, context) => {
-                var _a, _b, _c;
+                var _a;
                 const acc = [''];
                 while (source !== '') {
                     switch (source[0]) {
@@ -6738,13 +6786,13 @@ require = function () {
                         continue;
                     case '&': {
                             const result = htmlentity_1.htmlentity(source, context);
-                            acc[acc.length - 1] += (_a = parser_1.eval(result, [])[0]) !== null && _a !== void 0 ? _a : source[0];
-                            source = (_b = parser_1.exec(result)) !== null && _b !== void 0 ? _b : source.slice(1);
+                            acc[acc.length - 1] += parser_1.eval(result, [source[0]])[0];
+                            source = parser_1.exec(result, source.slice(1));
                             continue;
                         }
                     default: {
                             const result = source_1.text(source, context);
-                            acc[acc.length - 1] += (_c = parser_1.eval(result)[0]) !== null && _c !== void 0 ? _c : source.slice(0, source.length - parser_1.exec(result).length);
+                            acc[acc.length - 1] += (_a = parser_1.eval(result)[0]) !== null && _a !== void 0 ? _a : source.slice(0, source.length - parser_1.exec(result).length);
                             source = parser_1.exec(result);
                             continue;
                         }
@@ -7340,6 +7388,41 @@ require = function () {
             const comment_1 = _dereq_('./inline/comment');
             const htmlentity_1 = _dereq_('./inline/htmlentity');
             const array_1 = _dereq_('spica/array');
+            const invisibleHTMLEntityNames = [
+                'Tab',
+                'NewLine',
+                'NonBreakingSpace',
+                'nbsp',
+                'shy',
+                'ensp',
+                'emsp',
+                'emsp13',
+                'emsp14',
+                'numsp',
+                'puncsp',
+                'ThinSpace',
+                'thinsp',
+                'VeryThinSpace',
+                'hairsp',
+                'ZeroWidthSpace',
+                'NegativeVeryThinSpace',
+                'NegativeThinSpace',
+                'NegativeMediumSpace',
+                'NegativeThickSpace',
+                'zwj',
+                'zwnj',
+                'lrm',
+                'rlm',
+                'MediumSpace',
+                'NoBreak',
+                'ApplyFunction',
+                'af',
+                'InvisibleTimes',
+                'it',
+                'InvisibleComma',
+                'ic'
+            ];
+            const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });)*\\?(?:\n|$)`, 'gm');
             function visualize(parser, message = '(Empty)') {
                 return justify(combinator_1.union([
                     combinator_1.verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
@@ -7351,41 +7434,6 @@ require = function () {
             }
             exports.visualize = visualize;
             function justify(parser) {
-                const entities = [
-                    'Tab',
-                    'NewLine',
-                    'nbsp',
-                    'NonBreakingSpace',
-                    'shy',
-                    'ensp',
-                    'emsp',
-                    'emsp13',
-                    'emsp14',
-                    'numsp',
-                    'puncsp',
-                    'thinsp',
-                    'ThinSpace',
-                    'hairsp',
-                    'VeryThinSpace',
-                    'ZeroWidthSpace',
-                    'NegativeVeryThinSpace',
-                    'NegativeThinSpace',
-                    'NegativeMediumSpace',
-                    'NegativeThickSpace',
-                    'zwnj',
-                    'zwj',
-                    'lrm',
-                    'rlm',
-                    'MediumSpace',
-                    'NoBreak',
-                    'ApplyFunction',
-                    'af',
-                    'InvisibleTimes',
-                    'it',
-                    'InvisibleComma',
-                    'ic'
-                ];
-                const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${ entities.join('|') });)*\\?(?:\n|$)`, 'gm');
                 return combinator_1.convert(source => source.replace(blankline, visualize), parser);
                 function visualize(line) {
                     return line.replace(/[\\&]/g, '\\$&');
