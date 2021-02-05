@@ -20,7 +20,7 @@ const parser: SegmentParser = union([
 ]);
 
 const INPUT_SIZE_LIMIT = 1000 ** 2;
-const SEGMENT_SIZE_LIMIT = 100 * 1000;
+const SEGMENT_LENGTH_LIMIT = 100 * 1000;
 
 export function* segment(source: string): Generator<string, undefined, undefined> {
   assert(!source.includes('\0'));
@@ -35,8 +35,8 @@ export function* segment(source: string): Generator<string, undefined, undefined
     assert(segs.join('') === source.slice(0, source.length - rest.length));
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
-      seg.length > SEGMENT_SIZE_LIMIT
-        ? yield `\0Too large segment over ${SEGMENT_SIZE_LIMIT.toLocaleString('en')} in length.\n${seg}`
+      seg.length > SEGMENT_LENGTH_LIMIT
+        ? yield `\0Too large segment over ${SEGMENT_LENGTH_LIMIT.toLocaleString('en')} in length.\n${seg}`
         : yield seg;
     }
     source = rest;
