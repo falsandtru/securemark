@@ -3,7 +3,7 @@ import { eval } from '../../combinator/data/parser';
 
 // https://dev.w3.org/html5/html-author/charref
 // https://en.wikipedia.org/wiki/Whitespace_character
-const validUnreadableHTMLEntityNames = [
+const unreadableHTMLEntityNames = [
   //'Tab',
   //'NewLine',
   //'NonBreakingSpace',
@@ -37,17 +37,17 @@ const validUnreadableHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ];
-const validUnreadableCharacters = validUnreadableHTMLEntityNames
+const unreadableEscapableCharacters = unreadableHTMLEntityNames
   .flatMap(name => eval(htmlentity(`&${name};`, {}), []));
-const validUnreadableCharacter = new RegExp(`[${
-  [...new Set<string>(validUnreadableCharacters)].join('')
+const unreadableEscapableCharacter = new RegExp(`[${
+  [...new Set<string>(unreadableEscapableCharacters)].join('')
 }]`, 'g');
-assert(!validUnreadableCharacter.source.includes('&'));
+assert(!unreadableEscapableCharacter.source.includes('&'));
 
 // https://www.pandanoir.info/entry/2018/03/11/193000
 // http://anti.rosx.net/etc/memo/002_space.html
 // http://nicowiki.com/%E7%A9%BA%E7%99%BD%E3%83%BB%E7%89%B9%E6%AE%8A%E8%A8%98%E5%8F%B7.html
-const irregularInvisibleCharacters = [
+const unreadableSpecialCharacters = [
   // SIX-PER-EM SPACE
   '\u2006',
   // ZERO WIDTH SPACE
@@ -77,11 +77,10 @@ const irregularInvisibleCharacters = [
   // ZERO WIDTH NON-BREAKING SPACE
   '\uFEFF',
 ];
-const irregularInvisibleCharacter = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g;
-assert(irregularInvisibleCharacters.every(c => c.match(irregularInvisibleCharacter)));
 
 const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
 assert(UNICODE_REPLACEMENT_CHARACTER.trim());
+assert(unreadableSpecialCharacters.every(c => sanitize(c) === UNICODE_REPLACEMENT_CHARACTER));
 
 export function normalize(source: string): string {
   return format(sanitize(escape(source)));
@@ -94,7 +93,7 @@ function format(source: string): string {
 
 function sanitize(source: string): string {
   return source
-    .replace(irregularInvisibleCharacter, `$1${UNICODE_REPLACEMENT_CHARACTER}`)
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g, `$1${UNICODE_REPLACEMENT_CHARACTER}`)
     .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char =>
       char.length === 1
         ? UNICODE_REPLACEMENT_CHARACTER
@@ -103,6 +102,6 @@ function sanitize(source: string): string {
 
 function escape(source: string): string {
   return source
-    .replace(validUnreadableCharacter, char =>
-      `&${validUnreadableHTMLEntityNames[validUnreadableCharacters.indexOf(char)]};`);
+    .replace(unreadableEscapableCharacter, char =>
+      `&${unreadableHTMLEntityNames[unreadableEscapableCharacters.indexOf(char)]};`);
 }
