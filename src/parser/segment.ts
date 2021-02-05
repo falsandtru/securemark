@@ -23,7 +23,7 @@ const parser: SegmentParser = union([
 ]);
 
 export function* segment(source: string): Generator<string, undefined, undefined> {
-  if (new Blob([source]).size > INPUT_SIZE_LIMIT) return yield `\0Too large input over ${INPUT_SIZE_LIMIT.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
+  if (!validate(source)) return yield `\0Too large input over ${INPUT_SIZE_LIMIT.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
     const result = parser(source, {})!;
@@ -42,9 +42,13 @@ export function* segment(source: string): Generator<string, undefined, undefined
   }
 }
 
+function validate(source: string): boolean {
+  return source.length <= INPUT_SIZE_LIMIT
+      && new Blob([source]).size <= INPUT_SIZE_LIMIT;
+}
+
 export function prepare(source: string): string {
-  const seg = segment(source).next().value;
-  return seg?.startsWith('\0Too large input')
-    ? source.slice(0, INPUT_SIZE_LIMIT + 1)
-    : source;
+  return validate(source)
+    ? source
+    : source.slice(0, INPUT_SIZE_LIMIT + 1);
 }
