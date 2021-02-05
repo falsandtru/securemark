@@ -1,32 +1,59 @@
 import { ParserSettings, Progress } from '../../..';
 import { bind } from './bind';
 import { frag, html } from 'typed-dom';
-import { Sequence } from 'spica/sequence';
 
 describe('Unit: parser/api/bind', () => {
   describe('bind', () => {
     function inspect(iter: Iterable<Progress>) {
       return [...iter].flatMap(s => 'value' in s && s.value instanceof HTMLElement && s.value.parentNode ? [s.value.outerHTML] : []);
     }
-    function inspectS(iter: IterableIterator<Progress>, count: number) {
-      return Sequence.from(iter)
-        .bind(result => {
-          switch (result.type) {
-            case 'segment':
-              return Sequence.from([]);
-            case 'block':
-              return Sequence.from([result.value.outerHTML]);
-            case 'break':
-              return Sequence.from([null]);
-            default:
-              return Sequence.from([undefined]);
-          }
-        })
-        .take(count)
-        .extract();
+    function inspectS(iter: IterableIterator<Progress>, count = Infinity) {
+      const acc: (string | null | undefined)[] = [];
+      for (let i = 0; i < count; ++i) {
+        const result = iter.next();
+        if (result.done) break;
+        switch (result.value.type) {
+          case 'segment':
+            --i;
+            continue;
+          case 'block':
+            acc.push(result.value.value.outerHTML);
+            continue;
+          case 'break':
+            acc.push(null);
+            continue;
+          default:
+            acc.push(undefined);
+            continue;
+        }
+      }
+      return acc;
     }
 
     const cfgs: ParserSettings = { footnotes: { annotation: html('ol'), reference: html('ol') } };
+
+    it('huge input', () => {
+      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(10 * 1000 ** 2 + 1)}`);
+      assert.deepStrictEqual(
+        inspect(iter),
+        [
+          '<h1 class="error">Error: Too large input over 1,000,000 bytes.</h1>',
+          `<pre>${'\n'.repeat(997)}...</pre>`,
+        ]);
+    });
+
+    it('huge segment', function () {
+      this.timeout(10 * 1000);
+
+      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(1000 ** 2 - 1)}`);
+      assert.deepStrictEqual(
+        inspectS(iter, 3),
+        [
+          '<h1 class="error">Error: Too large segment over 100,000 in length.</h1>',
+          `<pre>${'\n'.repeat(997)}...</pre>`,
+          '<h1 class="error">Error: Too large segment over 100,000 in length.</h1>',
+        ]);
+    });
 
     it('empty', () => {
       const el = html('div');

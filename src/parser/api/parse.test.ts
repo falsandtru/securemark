@@ -2,6 +2,16 @@ import { parse } from './parse';
 
 describe('Unit: parser/api/parse', () => {
   describe('parse', () => {
+    it('huge input', () => {
+      assert.throws(() =>
+        parse(`${'\n'.repeat(10 * 1000 ** 2 + 1)}`));
+    });
+
+    it('huge segment', () => {
+      assert.throws(() =>
+        parse(`${'\n'.repeat(100 * 1000 + 1)}`));
+    });
+
     it('result', () => {
       assert(parse('') instanceof DocumentFragment);
     });

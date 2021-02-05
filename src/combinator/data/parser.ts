@@ -39,6 +39,8 @@ export function exec(result: Result<unknown>, default_?: string): string | undef
 }
 
 export function check(source: string, result: Result<unknown>, mustConsume = true): true {
-  assert(source.slice(+mustConsume).slice(-exec(result, '').length || source.length) === exec(result, ''));
+  assert.doesNotThrow(() => {
+    if (source.slice(+mustConsume).slice(-exec(result, '').length || source.length) !== exec(result, '')) throw new Error();
+  });
   return true;
 }

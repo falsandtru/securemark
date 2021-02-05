@@ -10,21 +10,20 @@ import { contentline, emptyline } from './source';
 
 import SegmentParser = MarkdownParser.SegmentParser;
 
+const INPUT_SIZE_LIMIT = 1000 ** 2;
+export const SEGMENT_LENGTH_LIMIT = 100 * 1000;
+
 const parser: SegmentParser = union([
   heading,
   codeblock,
   mathblock,
   extension,
-  some(contentline),
-  some(emptyline),
+  some(contentline, SEGMENT_LENGTH_LIMIT),
+  some(emptyline, SEGMENT_LENGTH_LIMIT),
 ]);
 
-const INPUT_SIZE_LIMIT = 1000 ** 2;
-const SEGMENT_LENGTH_LIMIT = 100 * 1000;
-
 export function* segment(source: string): Generator<string, undefined, undefined> {
-  assert(!source.includes('\0'));
-  if (new Blob([source]).size > INPUT_SIZE_LIMIT) return yield `\0Too large input over ${INPUT_SIZE_LIMIT.toLocaleString('en')} bytes.\n${source.slice(0, 10001)}`;
+  if (new Blob([source]).size > INPUT_SIZE_LIMIT) return yield `\0Too large input over ${INPUT_SIZE_LIMIT.toLocaleString('en')} bytes.\n${source.slice(0, 1001)}`;
   assert(source.length < Number.MAX_SAFE_INTEGER);
   while (source !== '') {
     const result = parser(source, {})!;
@@ -41,4 +40,11 @@ export function* segment(source: string): Generator<string, undefined, undefined
     }
     source = rest;
   }
+}
+
+export function prepare(source: string): string {
+  const seg = segment(source).next().value;
+  return seg?.startsWith('\0Too large input')
+    ? source.slice(0, INPUT_SIZE_LIMIT + 1)
+    : source;
 }

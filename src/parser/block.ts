@@ -67,7 +67,7 @@ function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
       html('pre',
         source
           .replace(/^\0.*\n/, '')
-          .slice(0, 10001)
-          .replace(/^(.{9997}).{4}$/s, '$1...') || undefined),
+          .slice(0, 1001)
+          .replace(/^(.{997}).{4}$/s, '$1...') || undefined),
     ], '']);
 }

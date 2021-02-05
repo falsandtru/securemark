@@ -1,27 +1,15 @@
 import { segment } from './segment';
-import { parse } from './api/parse';
 
 describe('Unit: parser/segment', () => {
   describe('segment', () => {
     it('huge input', () => {
-      const result = [...parse(`${'\n'.repeat(1000 * 1000 + 1)}`, { id: '' }).children].slice(0, 3).map(el => el.outerHTML);
-      assert.deepStrictEqual(
-        result,
-        [
-          '<h1 class="error">Error: Too large input over 1,000,000 bytes.</h1>',
-          `<pre>${'\n'.repeat(9997)}...</pre>`,
-        ]);
+      const result = [...segment(`${'\n'.repeat(10 * 1000 ** 2 + 1)}`)].map(s => s.split('\n', 1)[0]);
+      assert(result[0].startsWith('\0Too large input'));
     });
 
-    it('huge segment', function () {
-      this.timeout(5 * 1000);
-
-      assert.deepStrictEqual(
-        [...parse(`${'\n'.repeat(100 * 1000 + 1)}`, { id: '' }).children].map(el => el.outerHTML),
-        [
-          '<h1 class="error">Error: Too large segment over 100,000 in length.</h1>',
-          `<pre>${'\n'.repeat(9997)}...</pre>`,
-        ]);
+    it('huge segment', () => {
+      const result = segment(`${'\n'.repeat(1000 ** 2 - 1)}`).next().value?.split('\n', 1)[0];
+      assert(result?.startsWith('\0Too large segment'));
     });
 
     it('basic', () => {
