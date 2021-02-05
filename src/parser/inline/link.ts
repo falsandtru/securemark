@@ -85,9 +85,9 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
   assert(uri === uri.trim());
   switch (true) {
     case uri.slice(0, 2) === '^/':
-      const filename = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-      return filename.indexOf('.') > -1
-        ? `${host.pathname.slice(0, -filename.length)}${uri.slice(2)}`
+      const file = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
+      return file.indexOf('.') > -1
+        ? `${host.pathname.slice(0, -file.length)}${uri.slice(2)}`
         : `${fillTrailingSlash(host.pathname)}${uri.slice(2)}`;
     case host.origin === source.origin
       && host.pathname === source.pathname:
