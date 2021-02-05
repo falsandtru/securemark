@@ -3008,7 +3008,9 @@ require = function () {
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../parser');
             const array_1 = _dereq_('spica/array');
-            function some(parser, until, deep) {
+            function some(parser, until, deep, limit = -1) {
+                if (typeof until === 'number')
+                    return some(parser, global_1.undefined, deep, until);
                 const match = typeof until === 'string' && until !== global_1.undefined ? source => source.slice(0, until.length) === until : source => !!until && until.test(source);
                 const delim = typeof deep === 'string' && deep !== global_1.undefined ? source => source.slice(0, deep.length) === deep : source => !!deep && deep.test(source);
                 let memory = '';
@@ -3033,11 +3035,13 @@ require = function () {
                             break;
                         nodes = nodes ? array_1.push(nodes, parser_1.eval(result)) : parser_1.eval(result);
                         rest = parser_1.exec(result);
+                        if (limit >= 0 && source.length - rest.length > limit)
+                            break;
                     }
                     if (context && deep) {
                         ((_b = context.delimiters) === null || _b === void 0 ? void 0 : _b.length) > 1 ? (_c = context.delimiters) === null || _c === void 0 ? void 0 : _c.pop() : context.delimiters = global_1.undefined;
                     }
-                    memory = rest || memory;
+                    memory = limit < 0 && rest || memory;
                     return nodes && rest.length < source.length ? [
                         nodes,
                         rest
@@ -3255,11 +3259,12 @@ require = function () {
                     var _a, _b, _c, _d;
                     if (settings.chunk && revision)
                         throw new Error('Chunks cannot be updated.');
-                    const rev = revision = Symbol();
                     const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
+                    source = normalize_1.normalize(segment_1.prepare(source));
                     context = alias_1.ObjectAssign(context, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
+                    const rev = revision = Symbol();
                     const sourceSegments = [];
-                    for (const seg of segment_1.segment(normalize_1.normalize(source))) {
+                    for (const seg of segment_1.segment(source)) {
                         sourceSegments.push(seg);
                         yield {
                             type: 'segment',
@@ -3457,7 +3462,7 @@ require = function () {
             exports.normalize = void 0;
             const htmlentity_1 = _dereq_('../inline/htmlentity');
             const parser_1 = _dereq_('../../combinator/data/parser');
-            const validUnreadableHTMLEntityNames = [
+            const unreadableHTMLEntityNames = [
                 'shy',
                 'emsp13',
                 'emsp14',
@@ -3482,9 +3487,9 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const validUnreadableCharacters = validUnreadableHTMLEntityNames.map(name => parser_1.eval(htmlentity_1.htmlentity(`&${ name };`, {}))[0]);
-            const validUnreadableCharacter = new RegExp(`[${ [...new Set([...validUnreadableCharacters])].join('') }]`, 'g');
-            const irregularInvisibleCharacters = [
+            const unreadableEscapableCharacters = unreadableHTMLEntityNames.flatMap(name => parser_1.eval(htmlentity_1.htmlentity(`&${ name };`, {}), []));
+            const unreadableEscapableCharacter = new RegExp(`[${ [...new Set(unreadableEscapableCharacters)].join('') }]`, 'g');
+            const unreadableSpecialCharacters = [
                 '\u2006',
                 '\u200B',
                 '‌',
@@ -3500,20 +3505,20 @@ require = function () {
                 '\u2060',
                 '\uFEFF'
             ];
-            const irregularInvisibleCharacter = /[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g;
             const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
             function normalize(source) {
-                return source.replace(validUnreadableCharacter, char => `&${ validUnreadableHTMLEntityNames[validUnreadableCharacters.indexOf(char)] };`).replace(/\r\n|[\x00-\x08\x0B-\x1F\x7F]|[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => {
-                    switch (char) {
-                    case '\r':
-                    case '\r\n':
-                        return '\n';
-                    default:
-                        return char.length > 1 ? char : UNICODE_REPLACEMENT_CHARACTER;
-                    }
-                }).replace(irregularInvisibleCharacter, `$1${ UNICODE_REPLACEMENT_CHARACTER }`);
+                return format(sanitize(escape(source)));
             }
             exports.normalize = normalize;
+            function format(source) {
+                return source.replace(/\r\n?/g, '\n');
+            }
+            function sanitize(source) {
+                return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g, `$1${ UNICODE_REPLACEMENT_CHARACTER }`).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
+            }
+            function escape(source) {
+                return source.replace(unreadableEscapableCharacter, char => `&${ unreadableHTMLEntityNames[unreadableEscapableCharacters.indexOf(char)] };`);
+            }
         },
         {
             '../../combinator/data/parser': 49,
@@ -3543,6 +3548,8 @@ require = function () {
             const inherit2 = memoize_1.memoize(context => memoize_1.memoize(_ => alias_1.ObjectCreate(context)), new WeakMap());
             function parse(source, opts = {}, context) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
+                if (source.length > segment_1.SEGMENT_LENGTH_LIMIT)
+                    throw new Error(`Too large input over ${ segment_1.SEGMENT_LENGTH_LIMIT.toLocaleString('en') } in length.`);
                 const url = ((_a = header_2.headers(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
                 source = !context ? normalize_1.normalize(source) : source;
                 context = context && url === '' && context.id === opts.id ? context : alias_1.ObjectAssign(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
@@ -3656,7 +3663,7 @@ require = function () {
                             id: id !== '' ? `error:${ random_1.rnd0Z(8) }` : global_1.undefined,
                             class: 'error'
                         }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `UnknownError: ${ reason }`),
-                        typed_dom_1.html('pre', source.replace(/^\0.*\n/, '').slice(0, 10001).replace(/^(.{9997}).{4}$/s, '$1...') || global_1.undefined)
+                        typed_dom_1.html('pre', source.replace(/^\0.*\n/, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || global_1.undefined)
                     ],
                     ''
                 ]);
@@ -7017,7 +7024,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.segment = void 0;
+            exports.prepare = exports.segment = exports.SEGMENT_LENGTH_LIMIT = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -7026,31 +7033,38 @@ require = function () {
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
+            const INPUT_SIZE_LIMIT = 1000 ** 2;
+            exports.SEGMENT_LENGTH_LIMIT = 100 * 1000;
             const parser = combinator_1.union([
                 heading_1.segment,
                 codeblock_1.segment,
                 mathblock_1.segment,
                 extension_1.segment,
-                combinator_1.some(source_1.contentline),
-                combinator_1.some(source_1.emptyline)
+                combinator_1.some(source_1.contentline, exports.SEGMENT_LENGTH_LIMIT),
+                combinator_1.some(source_1.emptyline, exports.SEGMENT_LENGTH_LIMIT)
             ]);
-            const INPUT_SIZE_LIMIT = 1000 ** 2;
-            const SEGMENT_SIZE_LIMIT = 100 * 1000;
             function* segment(source) {
-                if (new global_1.Blob([source]).size > INPUT_SIZE_LIMIT)
-                    return yield `\0Too large input over ${ INPUT_SIZE_LIMIT.toLocaleString('en') } bytes.\n${ source.slice(0, 10001) }`;
+                if (!validate(source))
+                    return yield `\0Too large input over ${ INPUT_SIZE_LIMIT.toLocaleString('en') } bytes.\n${ source.slice(0, 1001) }`;
                 while (source !== '') {
                     const result = parser(source, {});
                     const rest = parser_1.exec(result);
                     const segs = parser_1.eval(result).length ? parser_1.eval(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        seg.length > SEGMENT_SIZE_LIMIT ? yield `\0Too large segment over ${ SEGMENT_SIZE_LIMIT.toLocaleString('en') } in length.\n${ seg }` : yield seg;
+                        seg.length > exports.SEGMENT_LENGTH_LIMIT ? yield `\0Too large segment over ${ exports.SEGMENT_LENGTH_LIMIT.toLocaleString('en') } in length.\n${ seg }` : yield seg;
                     }
                     source = rest;
                 }
             }
             exports.segment = segment;
+            function validate(source) {
+                return source.length <= INPUT_SIZE_LIMIT && new global_1.Blob([source]).size <= INPUT_SIZE_LIMIT;
+            }
+            function prepare(source) {
+                return validate(source) ? source : source.slice(0, INPUT_SIZE_LIMIT + 1);
+            }
+            exports.prepare = prepare;
         },
         {
             '../combinator': 30,
