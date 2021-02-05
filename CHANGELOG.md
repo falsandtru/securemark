@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.202.5
+
+- Refactoring.
+
 ## 0.202.4
 
 - Fix normalization to sanitize unreadable characters.
