@@ -4,23 +4,20 @@ import { frag, html } from 'typed-dom';
 
 describe('Unit: parser/api/bind', () => {
   describe('bind', () => {
-    function inspect(iter: Iterable<Progress>) {
-      return [...iter].flatMap(s => 'value' in s && s.value instanceof HTMLElement && s.value.parentNode ? [s.value.outerHTML] : []);
-    }
-    function inspectS(iter: IterableIterator<Progress>, count = Infinity) {
-      const acc: (string | null | undefined)[] = [];
+    function inspect(iter: IterableIterator<Progress>, count = Infinity) {
+      const acc: (string | undefined)[] = [];
       for (let i = 0; i < count; ++i) {
         const result = iter.next();
         if (result.done) break;
         switch (result.value.type) {
+          case 'break':
           case 'segment':
             --i;
             continue;
           case 'block':
-            acc.push(result.value.value.outerHTML);
-            continue;
-          case 'break':
-            acc.push(null);
+            result.value.value.parentNode
+              ? acc.push(result.value.value.outerHTML)
+              : --i;
             continue;
           default:
             acc.push(undefined);
@@ -47,7 +44,7 @@ describe('Unit: parser/api/bind', () => {
 
       const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(1000 ** 2 - 1)}`);
       assert.deepStrictEqual(
-        inspectS(iter, 3),
+        inspect(iter, 3),
         [
           '<h1 class="error">Error: Too large segment over 100,000 in length.</h1>',
           `<pre>${'\n'.repeat(997)}...</pre>`,
@@ -137,13 +134,13 @@ describe('Unit: parser/api/bind', () => {
       const update = bind(el, cfgs).parse;
 
       const iter = update('0\n\n1\n');
-      assert.deepStrictEqual(inspectS(iter, 1), ['<p>0</p>']);
+      assert.deepStrictEqual(inspect(iter, 1), ['<p>0</p>']);
       assert.deepStrictEqual(inspect(update('0\n\n1\n\n2')), ['<p>1</p>', '<p>2</p>']);
       assert(el.innerHTML === '<p>0</p><p>1</p><p>2</p>');
       assert.deepStrictEqual(inspect(update('3\n')), ['<p>3</p>']);
       assert(el.innerHTML === '<p>3</p>');
-      assert.deepStrictEqual(inspectS(iter, 1), [undefined]);
-      assert.deepStrictEqual(inspectS(iter, 1), []);
+      assert.deepStrictEqual(inspect(iter, 1), [undefined]);
+      assert.deepStrictEqual(inspect(iter, 1), []);
       assert(el.innerHTML === '<p>3</p>');
       assert.deepStrictEqual(inspect(update('3\n\n4')), ['<p>4</p>']);
       assert(el.innerHTML === '<p>3</p><p>4</p>');
@@ -153,17 +150,17 @@ describe('Unit: parser/api/bind', () => {
       const el = html('div');
       const update = bind(el, cfgs).parse;
 
-      assert.deepStrictEqual(inspectS(update('1\n'), 1), ['<p>1</p>']);
+      assert.deepStrictEqual(inspect(update('1\n'), 1), ['<p>1</p>']);
       assert(el.innerHTML === '<p>1</p>');
-      assert.deepStrictEqual(inspectS(update('1\n\n3\n\n4'), 1), ['<p>3</p>']);
+      assert.deepStrictEqual(inspect(update('1\n\n3\n\n4'), 1), ['<p>3</p>']);
       assert(el.innerHTML === '<p>1</p><p>3</p>');
-      assert.deepStrictEqual(inspectS(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>', '<p>3</p>']);
+      assert.deepStrictEqual(inspect(update('1\n\n2\n\n4'), 4), ['<p>2</p>', '<p>4</p>']);
       assert(el.innerHTML === '<p>1</p><p>2</p><p>4</p>');
       [...update('')];
       assert(el.innerHTML === '');
-      assert.deepStrictEqual(inspectS(update('# a\n# b'), 1), ['<h1 id="index:a">a</h1>']);
+      assert.deepStrictEqual(inspect(update('# a\n# b'), 1), ['<h1 id="index:a">a</h1>']);
       assert(el.innerHTML === '<h1 id="index:a">a</h1>');
-      assert.deepStrictEqual(inspectS(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>', null]);
+      assert.deepStrictEqual(inspect(update('# a\n# b'), 2), ['<h1 id="index:b">b</h1>']);
       assert(el.innerHTML === '<h1 id="index:a">a</h1><h1 id="index:b">b</h1>');
     });
 
@@ -173,7 +170,7 @@ describe('Unit: parser/api/bind', () => {
       const update = bind(chunk, { ...cfgs, chunk: true }).parse;
       const iter = update([...Array(3)].map((_, i) => `((${i + 1}))`).join('\n\n'));
 
-      inspectS(iter, 2);
+      inspect(iter, 2);
       el.appendChild(chunk);
       assert.deepStrictEqual(
         [...el.children].map(el => el.outerHTML),
@@ -181,7 +178,7 @@ describe('Unit: parser/api/bind', () => {
           html('p', [html('sup', { class: "annotation" }, '1'),]).outerHTML,
           html('p', [html('sup', { class: "annotation" }, '2'),]).outerHTML,
         ]);
-      inspectS(iter, 1);
+      inspect(iter, 1);
       el.appendChild(chunk);
       assert.deepStrictEqual(
         [...el.children].map(el => el.outerHTML),
