@@ -102,7 +102,7 @@ const dataline: CellParser.DatalineParser = creator(line(
     contentline,
     union([
       validate(/^!+[^\S\n]/, convert(source => `:${source}`, data)),
-      trim(convert(source => `: ${source}`, data)),
+      convert(source => `: ${source}`, data),
     ]))));
 
 function attributes(source: string) {
