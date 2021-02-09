@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.202.6
+
+- Update dependencies.
+
 ## 0.202.5
 
 - Refactoring.
