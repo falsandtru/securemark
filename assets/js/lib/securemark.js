@@ -94,6 +94,8 @@ require = function () {
             exports.join = exports.splice = exports.pop = exports.push = exports.shift = exports.unshift = exports.indexOf = void 0;
             const global_1 = _dereq_('./global');
             function indexOf(as, a) {
+                if (as.length === 0)
+                    return -1;
                 return a === a ? as.indexOf(a) : as.findIndex(a => a !== a);
             }
             exports.indexOf = indexOf;
@@ -252,8 +254,10 @@ require = function () {
             });
             exports.extend = template((prop, target, source) => {
                 switch (type_1.type(source[prop])) {
+                case 'undefined':
+                    return;
                 case 'Array':
-                    return target[prop] = source[prop].slice();
+                    return target[prop] = source[prop];
                 case 'Object':
                     switch (type_1.type(target[prop])) {
                     case 'Object':
@@ -267,6 +271,8 @@ require = function () {
             });
             exports.merge = template((prop, target, source) => {
                 switch (type_1.type(source[prop])) {
+                case 'undefined':
+                    return;
                 case 'Array':
                     switch (type_1.type(target[prop])) {
                     case 'Array':
@@ -287,6 +293,8 @@ require = function () {
             });
             exports.inherit = template((prop, target, source) => {
                 switch (type_1.type(source[prop])) {
+                case 'undefined':
+                    return;
                 case 'Array':
                     return target[prop] = source[prop].slice();
                 case 'Object':
@@ -347,73 +355,58 @@ require = function () {
             const assign_1 = _dereq_('./assign');
             const array_1 = _dereq_('./array');
             class Cache {
-                constructor(capacity, callback = () => global_1.undefined, opts = {}) {
-                    var _a;
+                constructor(capacity, opts = {}) {
                     this.capacity = capacity;
-                    this.callback = callback;
                     this.settings = {
-                        ignore: {
-                            delete: false,
-                            clear: false
-                        },
-                        data: {
-                            stats: [
-                                [],
-                                []
-                            ],
-                            entries: []
+                        dispose: {
+                            delete: true,
+                            clear: true
                         }
                     };
                     this.nullish = false;
                     this.store = new global_1.Map();
+                    this.indexes = {
+                        LRU: [],
+                        LFU: []
+                    };
+                    this.stats = {
+                        LRU: [
+                            0,
+                            0
+                        ],
+                        LFU: [
+                            0,
+                            0
+                        ]
+                    };
+                    this.ratio = 50;
                     if (capacity > 0 === false)
                         throw new Error(`Spica: Cache: Cache capacity must be greater than 0.`);
                     assign_1.extend(this.settings, opts);
-                    const {stats, entries} = this.settings.data;
-                    const LFU = stats[1].slice(0, capacity);
-                    const LRU = stats[0].slice(0, capacity - LFU.length);
-                    this.stats = {
-                        LRU,
-                        LFU
-                    };
-                    for (const [key, value] of entries) {
-                        value === global_1.undefined ? (_a = this.nullish) !== null && _a !== void 0 ? _a : this.nullish = true : global_1.undefined;
-                        this.store.set(key, value);
-                    }
-                    if (!opts.data)
-                        return;
-                    for (const key of array_1.push(stats[1].slice(LFU.length), stats[0].slice(LRU.length))) {
-                        this.store.delete(key);
-                    }
-                    if (this.store.size !== LFU.length + LRU.length)
-                        throw new Error(`Spica: Cache: Size of stats and entries is not matched.`);
-                    if (![
-                            ...LFU,
-                            ...LRU
-                        ].every(k => this.store.has(k)))
-                        throw new Error(`Spica: Cache: Keys of stats and entries is not matched.`);
                 }
                 put(key, value) {
                     var _a;
                     value === global_1.undefined ? (_a = this.nullish) !== null && _a !== void 0 ? _a : this.nullish = true : global_1.undefined;
-                    const hit = this.store.has(key);
-                    if (hit && this.access(key))
+                    if (this.has(key))
                         return this.store.set(key, value), true;
-                    const {LRU, LFU} = this.stats;
-                    if (LRU.length + LFU.length === this.capacity && LRU.length < LFU.length) {
-                        const key = LFU.pop();
-                        const val = this.store.get(key);
-                        this.store.delete(key);
-                        this.callback(key, val);
+                    const {LRU, LFU} = this.indexes;
+                    if (this.size === this.capacity) {
+                        let key;
+                        if (LFU.length > this.capacity * this.ratio / 100 || LFU.length === this.capacity) {
+                            key = LFU.pop();
+                        } else {
+                            key = LRU.pop();
+                        }
+                        if (this.settings.disposer) {
+                            const val = this.store.get(key);
+                            this.store.delete(key);
+                            this.settings.disposer(key, val);
+                        } else {
+                            this.store.delete(key);
+                        }
                     }
                     LRU.unshift(key);
                     this.store.set(key, value);
-                    if (LRU.length + LFU.length > this.capacity) {
-                        const key = LRU.pop();
-                        const val = this.store.get(key);
-                        this.store.delete(key);
-                        this.callback(key, val);
-                    }
                     return false;
                 }
                 set(key, value) {
@@ -422,91 +415,135 @@ require = function () {
                 }
                 get(key) {
                     const val = this.store.get(key);
-                    const hit = val !== global_1.undefined || this.nullish && this.store.has(key);
+                    const hit = val !== global_1.undefined || this.nullish && this.has(key);
                     return hit && this.access(key) ? val : global_1.undefined;
                 }
                 has(key) {
                     return this.store.has(key);
                 }
                 delete(key) {
-                    if (!this.store.has(key))
+                    if (!this.has(key))
                         return false;
-                    const {LRU, LFU} = this.stats;
-                    for (const stat of [
+                    const {LRU, LFU} = this.indexes;
+                    for (const index of [
                             LFU,
                             LRU
                         ]) {
-                        const index = array_1.indexOf(stat, key);
-                        if (index === -1)
+                        const i = array_1.indexOf(index, key);
+                        if (i === -1)
                             continue;
-                        const val = this.store.get(key);
-                        this.store.delete(array_1.splice(stat, index, 1)[0]);
-                        if (this.settings.ignore.delete)
-                            return true;
-                        this.callback(key, val);
+                        if (!this.settings.disposer || !this.settings.dispose.delete) {
+                            this.store.delete(array_1.splice(index, i, 1)[0]);
+                        } else {
+                            const val = this.store.get(key);
+                            this.store.delete(array_1.splice(index, i, 1)[0]);
+                            this.settings.disposer(key, val);
+                        }
                         return true;
                     }
                     return false;
                 }
                 clear() {
+                    var _a;
                     const store = this.store;
                     this.store = new global_1.Map();
-                    this.stats = {
+                    this.indexes = {
                         LRU: [],
                         LFU: []
                     };
-                    if (this.settings.ignore.clear)
+                    this.stats = {
+                        LRU: [
+                            0,
+                            0
+                        ],
+                        LFU: [
+                            0,
+                            0
+                        ]
+                    };
+                    if (!this.settings.disposer || !((_a = this.settings.dispose) === null || _a === void 0 ? void 0 : _a.clear))
                         return;
-                    for (const kv of store) {
-                        this.callback(kv[0], kv[1]);
+                    for (const [key, value] of store) {
+                        this.settings.disposer(key, value);
                     }
                 }
                 get size() {
-                    return this.store.size;
+                    return this.indexes.LRU.length + this.indexes.LFU.length;
                 }
                 [Symbol.iterator]() {
                     return this.store[Symbol.iterator]();
                 }
-                export() {
-                    return {
-                        stats: [
-                            this.stats.LRU.slice(),
-                            this.stats.LFU.slice()
-                        ],
-                        entries: [...this]
-                    };
-                }
-                inspect() {
+                slide() {
+                    const step = 1;
                     const {LRU, LFU} = this.stats;
-                    return [
-                        LRU.slice(),
-                        LFU.slice()
-                    ];
+                    const capacity = this.capacity;
+                    const window = capacity;
+                    if (LFU.length > capacity * this.ratio)
+                        return;
+                    const rateR = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]);
+                    const rateF = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1]);
+                    const ratio = this.ratio;
+                    if (rateF > rateR && ratio < 90) {
+                        this.ratio += step;
+                    } else if (rateF < rateR && ratio > 50) {
+                        this.ratio -= step;
+                    }
+                    if (LRU[0] + LFU[0] === window) {
+                        this.stats = {
+                            LRU: [
+                                0,
+                                LRU[0]
+                            ],
+                            LFU: [
+                                0,
+                                LFU[0]
+                            ]
+                        };
+                    }
                 }
                 access(key) {
-                    return this.accessLFU(key) || this.accessLRU(key);
+                    const stats = this.stats;
+                    const hit = false || this.accessLFU(key, stats) || this.accessLRU(key, stats);
+                    hit && stats && this.slide();
+                    return hit;
                 }
-                accessLRU(key) {
-                    const {LRU} = this.stats;
+                accessLRU(key, stats) {
+                    const {LRU, LFU} = this.indexes;
                     const index = array_1.indexOf(LRU, key);
                     if (index === -1)
                         return false;
-                    const {LFU} = this.stats;
-                    LFU.unshift(array_1.splice(LRU, index, 1)[0]);
+                    stats && ++stats.LRU[0];
+                    if (index === 0)
+                        return LFU.unshift(LRU.shift()), true;
+                    [LRU[index - 1], LRU[index]] = [
+                        LRU[index],
+                        LRU[index - 1]
+                    ];
                     return true;
                 }
-                accessLFU(key) {
-                    const {LFU} = this.stats;
+                accessLFU(key, stats) {
+                    const {LFU} = this.indexes;
                     const index = array_1.indexOf(LFU, key);
                     if (index === -1)
                         return false;
+                    stats && ++stats.LFU[0];
                     if (index === 0)
                         return true;
-                    LFU.unshift(array_1.splice(LFU, index, 1)[0]);
+                    [LFU[index - 1], LFU[index]] = [
+                        LFU[index],
+                        LFU[index - 1]
+                    ];
                     return true;
                 }
             }
             exports.Cache = Cache;
+            function rate(window, currHits, currTotal, prevHits, prevTotal) {
+                const currRate = currHits * 100 / currTotal | 0;
+                const currRatio = currTotal / window;
+                const prevRate = prevHits * 100 / prevTotal | 0;
+                const prevRatio = 1 - currRatio;
+                return currRate * currRatio + prevRate * prevRatio | 0;
+            }
         },
         {
             './array': 6,
@@ -4351,7 +4388,7 @@ require = function () {
             ]), util_1.visualize(combinator_1.trim(combinator_1.some(combinator_1.union([inline_1.inline]))), '')), true), ns => [typed_dom_1.html('td', attributes(ns.shift()), typed_dom_1.defrag(ns))]), false));
             const dataline = combinator_1.creator(combinator_1.line(combinator_1.rewrite(source_1.contentline, combinator_1.union([
                 combinator_1.validate(/^!+[^\S\n]/, combinator_1.convert(source => `:${ source }`, data)),
-                combinator_1.trim(combinator_1.convert(source => `: ${ source }`, data))
+                combinator_1.convert(source => `: ${ source }`, data)
             ]))));
             function attributes(source) {
                 var _a;
@@ -6426,8 +6463,8 @@ require = function () {
                 var _a;
                 switch (true) {
                 case uri.slice(0, 2) === '^/':
-                    const filename = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-                    return filename.indexOf('.') > -1 ? `${ host.pathname.slice(0, -filename.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
+                    const file = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
+                    return file.indexOf('.') > -1 ? `${ host.pathname.slice(0, -file.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
                 case host.origin === source.origin && host.pathname === source.pathname:
                 case uri.slice(0, 2) === '//':
                     return uri;
