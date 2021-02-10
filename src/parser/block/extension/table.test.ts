@@ -612,6 +612,15 @@ describe('Unit: parser/block/extension/table', () => {
 
     it('merge', () => {
       assert.deepStrictEqual(
+        inspect(parser('~~~table\n:: 1.1\n~~~')),
+        [[html('table', [
+          html('thead'),
+          html('tbody', [
+            html('tr', [html('td', ':: 1.1')]),
+          ]),
+          html('tfoot'),
+        ]).outerHTML], '']);
+      assert.deepStrictEqual(
         inspect(parser('~~~table\n:0:0 1.1\n~~~')),
         [[html('table', [
           html('thead'),
