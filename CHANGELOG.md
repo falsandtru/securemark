@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.203.0
+
+- Extend table syntax to enable dataline syntax to parse data cell syntax.
+
 ## 0.202.6
 
 - Update dependencies.
