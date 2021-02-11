@@ -51,12 +51,12 @@ export const media: MediaParser = lazy(() => creator(100, bind(fmap(open(
       (`{ ${INSECURE_URI}${join(params)} }${rest}`, context);
   })));
 
-const bracket: MediaParser.TextParser.BracketParser = lazy(() => creator(union([
+const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
   surround(str('('), some(union([htmlentity, bracket, txt]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(union([htmlentity, bracket, txt]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(union([htmlentity, bracket, txt]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('"'), some(union([htmlentity, txt]), '"'), str('"'), true),
-])));
+]));
 
 const option: MediaParser.ParameterParser.OptionParser = union([
   fmap(str(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),

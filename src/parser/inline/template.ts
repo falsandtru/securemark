@@ -9,9 +9,9 @@ export const template: TemplateParser = lazy(() => creator(rewrite(
   surround('{{', some(union([bracket, escsource]), '}'), '}}', true),
   source => [[html('span', { class: 'template' }, source)], ''])));
 
-const bracket: TemplateParser.BracketParser = lazy(() => creator(union([
+const bracket: TemplateParser.BracketParser = lazy(() => union([
   surround(str('('), some(union([bracket, escsource]), ')'), str(')'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(union([bracket, escsource]), ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(union([bracket, escsource]), '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('"'), some(escsource, /^"|^\\?\n/), str('"'), true),
-])));
+]));
