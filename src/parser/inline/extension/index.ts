@@ -1,12 +1,16 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../../combinator';
+import { union, inits, some, validate, verify, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
-import { indexee } from './indexee';
+import { indexee, identify } from './indexee';
+import { txt, str } from '../../source';
 import { startTight, isEndTight } from '../../util';
 import { html, define, defrag } from 'typed-dom';
+import { join } from 'spica/array';
 
-export const index: ExtensionParser.IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(surround(
+import IndexParser = ExtensionParser.IndexParser;
+
+export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(surround(
   '[#',
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
@@ -19,7 +23,10 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(validate('[
     media: false,
     autolink: false,
   }}},
-  union([some(inline, ']', /^\\?\n/)])))),
+  inits([
+    some(inline, /^]|^\|#(?!]|\\?\s)/, /^\\?\n/),
+    indexer,
+  ])))),
   ']', false,
   ([, bs], rest) =>
     isEndTight(bs)
@@ -27,3 +34,18 @@ export const index: ExtensionParser.IndexParser = lazy(() => creator(validate('[
       : undefined)),
   ([el]: [HTMLAnchorElement]) =>
     [define(el, { id: el.id ? null : undefined, class: 'index', href: el.id ? `#${el.id}` : undefined }, el.childNodes)]))));
+
+const indexer: IndexParser.IndexerParser = lazy(() => creator(fmap(verify(open(
+  '|#',
+  some(union([bracket, txt]), ']', /^\\?\n/)),
+  ns => isEndTight(ns)),
+  ns => [
+    html('span', { class: 'indexer', 'data-index': identify(join(ns).trim()).slice(6) }),
+  ])));
+
+const bracket: IndexParser.IndexerParser.BracketParser = lazy(() => creator(union([
+  surround(str('('), some(union([bracket, txt]), ')'), str(')'), true),
+  surround(str('['), some(union([bracket, txt]), ']'), str(']'), true),
+  surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true),
+  surround(str('"'), some(txt, '"'), str('"'), true),
+])));

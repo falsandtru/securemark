@@ -3,6 +3,7 @@
 ## 0.203.0
 
 - Extend table syntax to enable dataline syntax to parse data cell syntax.
+- Extend index syntax to add indexer local syntax.
 
 ## 0.202.6
 

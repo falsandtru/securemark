@@ -30,7 +30,7 @@ export function text(source: HTMLElement): string {
   return target.innerText.trim();
 }
 
-function identify(index: string): string {
+export function identify(index: string): string {
   assert(!index.includes('\n'));
   assert(index === index.trim());
   return index

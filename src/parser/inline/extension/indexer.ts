@@ -10,5 +10,5 @@ export const indexer: ExtensionParser.IndexerParser = creator(fmap(open(
   }}},
   line(union([index])))),
   ([el]) => [
-    html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(el.hash.indexOf(':') + 1) }),
+    html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(7) }),
   ]));

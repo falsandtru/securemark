@@ -690,7 +690,37 @@ export namespace MarkdownParser {
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, Context, [
           InlineParser,
+          IndexParser.IndexerParser,
         ]> {
+      }
+      export namespace IndexParser {
+        export interface IndexerParser extends
+          Inline<'extension/index/indexer'>,
+          Parser<HTMLElement, Context, [
+            IndexerParser.BracketParser,
+            SourceParser.TxtParser,
+          ]> {
+        }
+        export namespace IndexerParser {
+          export interface BracketParser extends
+            Inline<'extension/index/indexer/bracket'>,
+            Parser<string, Context, [
+              Parser<string, Context, [
+                BracketParser,
+                SourceParser.TxtParser,
+              ]>,
+              Parser<string, Context, [
+                BracketParser,
+                SourceParser.TxtParser,
+              ]>,
+              Parser<string, Context, [
+                BracketParser,
+                SourceParser.TxtParser,
+              ]>,
+              SourceParser.TxtParser,
+            ]> {
+          }
+        }
       }
       export interface IndexerParser extends
         // [#index]
