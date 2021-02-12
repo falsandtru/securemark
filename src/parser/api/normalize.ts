@@ -39,6 +39,7 @@ const unreadableHTMLEntityNames = [
 ];
 const unreadableEscapableCharacters = unreadableHTMLEntityNames
   .flatMap(name => eval(htmlentity(`&${name};`, {}), []));
+assert(unreadableEscapableCharacters.length === unreadableHTMLEntityNames.length);
 const unreadableEscapableCharacter = new RegExp(`[${
   [...new Set<string>(unreadableEscapableCharacters)].join('')
 }]`, 'g');
