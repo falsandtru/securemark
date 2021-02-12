@@ -964,11 +964,21 @@ export namespace MarkdownParser {
       ]> {
     }
     export interface MathParser extends
+      // $expr$
       // ${expr}$
       Inline<'math'>,
       Parser<HTMLElement, Context, [
         SourceParser.StrParser,
       ]> {
+    }
+    export namespace MathParser {
+      export interface BracketParser extends
+        Inline<'math/bracket'>,
+        Parser<HTMLElement, Context, [
+          BracketParser,
+          SourceParser.EscapableSourceParser,
+        ]> {
+      }
     }
     export interface HTMLEntityParser extends
       // &copy;

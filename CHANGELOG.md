@@ -5,6 +5,7 @@
 - Extend example syntax to be possible to omit its own extension name.
 - Extend table syntax to enable dataline syntax to parse data cell syntax.
 - Extend index syntax to add indexer local syntax.
+- Extend math syntax to add `$expr$` syntax.
 - Fix math parser to disallow commands to change font size.
 
 ## 0.202.6
