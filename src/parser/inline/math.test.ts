@@ -28,6 +28,7 @@ describe('Unit: parser/inline/math', () => {
       assert.deepStrictEqual(inspect(parser('${a\nb}$')), undefined);
       assert.deepStrictEqual(inspect(parser('${a\\\nb}$')), undefined);
       assert.deepStrictEqual(inspect(parser('${\\begin}$')), [['<span class="notranslate invalid">${\\begin}$</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('${\\Huge}$')), [['<span class="notranslate invalid">${\\Huge}$</span>'], '']);
       assert.deepStrictEqual(inspect(parser('${a}b$')), undefined);
       assert.deepStrictEqual(inspect(parser(' ${a}$')), undefined);
     });
