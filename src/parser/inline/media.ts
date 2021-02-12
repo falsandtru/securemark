@@ -1,12 +1,12 @@
 import { undefined, location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { MediaParser } from '../inline';
-import { union, inits, tails, some, validate, guard, creator, surround, open, dup, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, validate, verify, guard, creator, surround, open, dup, lazy, fmap, bind } from '../../combinator';
 import { link, uri, option as linkoption, resolve, sanitize } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { txt, str } from '../source';
-import { isEndTight } from '../util';
+import { isStartTight, isEndTight } from '../util';
 import { html, define } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
@@ -17,7 +17,7 @@ const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const media: MediaParser = lazy(() => creator(100, bind(fmap(open(
+export const media: MediaParser = lazy(() => creator(100, bind(verify(fmap(open(
   '!',
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.media ?? true,
@@ -25,10 +25,9 @@ export const media: MediaParser = lazy(() => creator(100, bind(fmap(open(
     dup(surround(/^\[(?!\\?\s)/, some(union([htmlentity, bracket, txt]), ']', /^\\?\n/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ])))),
-  ([as, bs]) => bs ? [bs, [join(as)]] : [as, ['']]),
-  ([params, [text]], rest, context) => {
-    if (text.length > 0 && text[0].trimStart() === '') return;
-    if (!isEndTight([text])) return;
+  ([as, bs]) => bs ? [[join(as)], bs] : [[''], as]),
+  ([[text]]) => isStartTight([text || '-']) && isEndTight([text])),
+  ([[text], params], rest, context) => {
     const INSECURE_URI = params.shift()!;
     if (INSECURE_URI[0] === ' ') return;
     assert(INSECURE_URI === INSECURE_URI.trim());

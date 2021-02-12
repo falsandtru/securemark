@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser } from '../inline';
-import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
+import { union, some, validate, verify, context, creator, surround, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, isEndTight, trimEndBR } from '../util';
@@ -39,7 +39,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
       validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
-        startTight(
+        startTight(verify(
         context((() => {
           switch (tag) {
             case 'sup':
@@ -63,12 +63,11 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
               return {};
           }
         })(),
-        some(union([inline]), `</${tag}>`))),
+        some(union([inline]), `</${tag}>`)),
+        isEndTight)),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest, context) =>
-          isEndTight(bs)
-            ? [[elem(tag, as, trimEndBR(bs), cs, context)], rest]
-            : undefined)),
+          [[elem(tag, as, trimEndBR(bs), cs, context)], rest])),
       ([, tag]) => tag)),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,

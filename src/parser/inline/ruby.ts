@@ -1,22 +1,21 @@
 import { undefined } from 'spica/global';
 import { RubyParser } from '../inline';
 import { eval, exec } from '../../combinator/data/parser';
-import { sequence, validate, focus, creator, surround, lazy, bind } from '../../combinator';
+import { sequence, validate, verify, focus, creator, surround, lazy, bind } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text as txt } from '../source';
-import { isEndTight } from '../util';
+import { isStartTight, isEndTight } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
-export const ruby: RubyParser = lazy(() => creator(bind(
+export const ruby: RubyParser = lazy(() => creator(bind(verify(
   validate('[', ')', '\n',
   sequence([
-    surround('[', focus(/^(?!\\?\s)(?:\\[^\n]|[^\]\n])+(?=]\()/, text), ']'),
-    surround('(', focus(/^(?:\\[^\n]|[^\)\n])+(?=\))/, text), ')'),
+    surround('[', focus(/^(?:\\[^\n]|[^\[\]\n])+(?=]\()/, text), ']'),
+    surround('(', focus(/^(?:\\[^\n]|[^\(\)\n])+(?=\))/, text), ')'),
   ])),
+  ([texts]) => isStartTight(texts) && isEndTight(texts)),
   ([texts, rubies], rest) => {
-    if (!texts[0][0].trimStart()) return;
-    if (!isEndTight(texts)) return;
     texts[texts.length - 1] || texts.pop();
     assert(texts[texts.length - 1].trim());
     switch (true) {

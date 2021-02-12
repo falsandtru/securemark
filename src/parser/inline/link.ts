@@ -2,7 +2,7 @@ import { undefined, location, encodeURI, decodeURI, Location } from 'spica/globa
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser } from '../inline';
 import { eval } from '../../combinator/data/parser';
-import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, validate, verify, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
@@ -16,7 +16,7 @@ const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => creator(10, bind(reverse(
+export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.link ?? true,
   tails([
@@ -45,9 +45,9 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ])))),
+  ([, content = []]) => isEndTight(content)),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
-    if (!isEndTight(content)) return;
     if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const INSECURE_URI = params.shift()!;

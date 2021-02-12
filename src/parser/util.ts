@@ -114,6 +114,10 @@ export function startTight<T>(parser: Parser<T>): Parser<T> {
   }
 }
 
+export function isStartTight(nodes: readonly (HTMLElement | string)[]): boolean {
+  if (nodes.length === 0) return true;
+  return isVisible(nodes[0], 'start');
+}
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   const last = nodes.length - 1;

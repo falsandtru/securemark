@@ -10,7 +10,7 @@ import { join } from 'spica/array';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(surround(
+export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(fmap(verify(surround(
   '[#',
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
@@ -27,18 +27,19 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     some(inline, /^]|^\|#(?!]|\\?\s)/, /^\\?\n/),
     indexer,
   ])))),
-  ']', false,
-  ([, bs], rest) =>
-    isEndTight(bs)
-      ? [[html('a', defrag(bs))], rest]
-      : undefined)),
-  ([el]: [HTMLAnchorElement]) =>
-    [define(el, { id: el.id ? null : undefined, class: 'index', href: el.id ? `#${el.id}` : undefined }, el.childNodes)]))));
+  ']'),
+  isEndTight),
+  ns => [html('a', defrag(ns))])),
+  ([el]: [HTMLAnchorElement]) => [
+    define(el,
+      { id: el.id ? null : undefined, class: 'index', href: el.id ? `#${el.id}` : undefined },
+      el.childNodes),
+  ]))));
 
 const indexer: IndexParser.IndexerParser = lazy(() => creator(fmap(verify(open(
   '|#',
   some(union([bracket, txt]), ']', /^\\?\n/)),
-  ns => isEndTight(ns)),
+  isEndTight),
   ns => [
     html('span', { class: 'indexer', 'data-index': identify(join(ns).trim()).slice(6) }),
   ])));

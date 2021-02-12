@@ -1,12 +1,12 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, guard, context, creator, surround, lazy, fmap } from '../../combinator';
+import { union, subsequence, some, validate, verify, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { startTight, isEndTight, stringify } from '../util';
 import { html, defrag } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', surround(
+export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(verify(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   startTight(
@@ -21,11 +21,9 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
     //autolink: true,
   }}, state: undefined },
   subsequence([abbr, startTight(some(inline, ']', /^\\?\n/))])))),
-  ']]', false,
-  ([, ns], rest) =>
-    isEndTight(ns)
-      ? [[html('sup', { class: 'reference', ...attributes(ns) }, defrag(ns))], rest]
-      : undefined))));
+  ']]'),
+  isEndTight),
+  ns => [html('sup', { class: 'reference', ...attributes(ns) }, defrag(ns))]))));
 
 const abbr: ReferenceParser.AbbrParser = creator(fmap(surround(
   '^',

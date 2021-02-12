@@ -18,8 +18,9 @@ export const label: ExtensionParser.LabelParser = creator(validate(['[$', '$'], 
     surround('[', body, ']'),
     body,
   ])),
-  ([text]) =>
-    [html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase() }, text)])));
+  ([text]) => [
+    html('a', { class: 'label', 'data-label': text.slice(text[1] === '-' ? 0 : 1).toLowerCase() }, text),
+  ])));
 
 export function number(label: string, base: string): string {
   return isFixed(label)
