@@ -19,7 +19,7 @@ export function fence<D extends Parser<unknown, C>[], C extends Ctx>(opener: Reg
       if (rest === '') break;
       const line = next;
       next = firstline(rest.slice(line.length));
-      if (count > limit + 1 && (!separation || isEmpty(line))) break;
+      if (count > limit + 1 && isEmpty(line)) break;
       if (count <= limit + 1 &&
           line.slice(0, delim.length) === delim &&
           line.trimEnd() === delim &&
