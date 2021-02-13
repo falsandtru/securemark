@@ -7,7 +7,6 @@ describe('Unit: parser/block/extension/example', () => {
     const parser = (source: string) => some(example)(source, {});
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('~~~example\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~example/\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~example/a\n~~~')), [['<pre class="notranslate invalid">~~~example/a\n~~~</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown a\n~~~')), [['<pre class="notranslate invalid">~~~example/markdown a\n~~~</pre>'], '']);
@@ -15,6 +14,7 @@ describe('Unit: parser/block/extension/example', () => {
     });
 
     it('valid', () => {
+      assert.deepStrictEqual(inspect(parser('~~~\n~~~')), [['<aside class="example" data-type="markdown"><pre></pre><hr><div></div><ol class="annotation"></ol><ol class="reference"></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\n~~~')), [['<aside class="example" data-type="markdown"><pre></pre><hr><div></div><ol class="annotation"></ol><ol class="reference"></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\n\n~~~')), [['<aside class="example" data-type="markdown"><pre></pre><hr><div></div><ol class="annotation"></ol><ol class="reference"></ol></aside>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~example/markdown\na\n~~~')), [['<aside class="example" data-type="markdown"><pre>a</pre><hr><div><p>a</p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>'], '']);

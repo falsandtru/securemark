@@ -2,6 +2,7 @@
 
 ## 0.203.0
 
+- Extend example syntax to be possible to omit its own extension name.
 - Extend table syntax to enable dataline syntax to parse data cell syntax.
 - Extend index syntax to add indexer local syntax.
 

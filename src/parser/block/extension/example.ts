@@ -5,12 +5,12 @@ import { parse } from '../../api/parse';
 import { mathblock } from '../mathblock';
 import { html } from 'typed-dom';
 
-const opener = /^(~{3,})example\/(\S+)([^\n]*)(?:$|\n)/;
+const opener = /^(~{3,})(?:example\/(\S+)|(?!\S))([^\n]*)(?:$|\n)/;
 
 export const example: ExtensionParser.ExampleParser = creator(100, block(validate('~~~', fmap(
   fence(opener, 300),
   // Bug: Type mismatch between outer and inner.
-  ([body, closer, opener, delim, type, param]: string[], _, context) => {
+  ([body, closer, opener, delim, type = 'markdown', param]: string[], _, context) => {
     if (!closer || param.trimStart()) return [html('pre', {
       class: 'notranslate invalid',
       'data-invalid-syntax': 'example',
