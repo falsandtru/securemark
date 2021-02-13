@@ -1,6 +1,5 @@
-import { undefined } from 'spica/global';
 import { Parser, Ctx } from '../../data/parser';
-import { firstline } from '../constraint/line';
+import { firstline, isEmpty } from '../constraint/line';
 import { unshift } from 'spica/array';
 
 export function fence<D extends Parser<unknown, C>[], C extends Ctx>(opener: RegExp, limit: number, separation: boolean = true): Parser<string, C, D> {
@@ -13,18 +12,18 @@ export function fence<D extends Parser<unknown, C>[], C extends Ctx>(opener: Reg
     if (matches[0].indexOf(delim, delim.length) > -1) return;
     let rest = source.slice(matches[0].length);
     // Prevent annoying parsing in editing.
-    if (firstline(rest).trimStart() === '' && firstline(rest.slice(firstline(rest).length)).trimEnd() !== delim) return;
+    if (isEmpty(firstline(rest)) && firstline(rest.slice(firstline(rest).length)).trimEnd() !== delim) return;
     let block = '';
     let closer = '';
-    for (let count = 1, next: string | undefined; ; ++count) {
+    for (let count = 1, next = firstline(rest); ; ++count) {
       if (rest === '') break;
-      const line = next ?? firstline(rest);
-      next = undefined;
-      if (count > limit + 1 && (!separation || line.trimStart() === '')) break;
+      const line = next;
+      next = firstline(rest.slice(line.length));
+      if (count > limit + 1 && (!separation || isEmpty(line))) break;
       if (count <= limit + 1 &&
           line.slice(0, delim.length) === delim &&
           line.trimEnd() === delim &&
-          (!separation || (next = firstline(rest.slice(line.length))).trimStart() === '')) {
+          (!separation || isEmpty(next))) {
         assert(line.trimEnd() === delim);
         closer = delim;
         rest = rest.slice(line.length);
