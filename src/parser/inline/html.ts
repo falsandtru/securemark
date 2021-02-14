@@ -146,7 +146,7 @@ export function attributes(
   params: string[],
 ): Record<string, string | undefined> {
   assert(spec instanceof Object === false);
-  assert(!spec?.__proto__);
+  assert(!spec?.['__proto__']);
   assert(!spec?.toString);
   let invalid = false;
   const attrs: Record<string, string | undefined> = ObjectCreate(null);
@@ -169,7 +169,7 @@ export function attributes(
   invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
   if (invalid) {
     !classes.includes('invalid') && classes.push('invalid');
-    attrs.class = join(classes, ' ');
+    attrs['class'] = join(classes, ' ');
     attrs['data-invalid-syntax'] = syntax;
     attrs['data-invalid-type'] = 'argument';
     attrs['data-invalid-description'] = 'Invalid argument.';
