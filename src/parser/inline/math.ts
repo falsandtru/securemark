@@ -15,7 +15,7 @@ export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewr
         // Latex reserved characters: # $ % ^ & _ { } ~ \
         // $[0-9]+                    : Dollar
         // $[A-z]*-                   : Label
-        // $[A-z]+(?!-)               : Math
+        // $[A-z]*(?!-)               : Math
         // $[\^_[({|]                 : Math
         // $[#$%&]                    : Invalid first character in latex syntax
         // $[A-z]*[,.!?()]            : Incomplete syntax before texts
