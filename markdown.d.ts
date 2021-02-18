@@ -939,14 +939,6 @@ export namespace MarkdownParser {
         InlineParser,
       ]> {
     }
-    export interface EmphasisParser extends
-      // *abc*
-      Inline<'emphasis'>,
-      Parser<HTMLElement | string, Context, [
-        StrongParser,
-        InlineParser,
-      ]> {
-    }
     export interface StrongParser extends
       // **abc**
       Inline<'strong'>,
@@ -954,6 +946,14 @@ export namespace MarkdownParser {
         EmphasisParser,
         InlineParser,
         SourceParser.StrParser,
+      ]> {
+    }
+    export interface EmphasisParser extends
+      // *abc*
+      Inline<'emphasis'>,
+      Parser<HTMLElement | string, Context, [
+        StrongParser,
+        InlineParser,
       ]> {
     }
     export interface CodeParser extends
