@@ -1,4 +1,4 @@
-import { undefined, location, encodeURI, decodeURI, Location } from 'spica/global';
+import { location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser } from '../inline';
 import { eval } from '../../combinator/data/parser';
@@ -110,17 +110,17 @@ function fillTrailingSlash(pathname: string): string {
     : pathname + '/';
 }
 
-export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, origin: string): boolean {
+function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, origin: string): boolean {
+  assert(target.tagName === 'A');
   let type: string;
   let description: string;
   switch (uri.protocol) {
     case 'http:':
     case 'https:':
-      uri.origin !== origin && target.tagName === 'A' && target.setAttribute('target', '_blank');
+      uri.origin !== origin && target.setAttribute('target', '_blank');
       assert(uri.host);
       return true;
     case 'tel:':
-      if (target.tagName !== 'A') break;
       const pattern = /^tel:(?:\+(?!0))?\d+(?:-\d+)*$/i;
       if (pattern.test(source) &&
           pattern.test(`tel:${target.textContent}`) &&
@@ -137,12 +137,8 @@ export function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, 
     'data-invalid-syntax': 'link',
     'data-invalid-type': type,
     'data-invalid-description': description,
-    ...target.tagName === 'A'
-      ? {
-          href: null,
-          rel: null,
-        }
-      : undefined,
+    href: null,
+    rel: null,
   });
   return false;
 }

@@ -2,7 +2,7 @@ import { undefined, location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { MediaParser } from '../inline';
 import { union, inits, tails, some, validate, verify, guard, creator, surround, open, dup, lazy, fmap, bind } from '../../combinator';
-import { link, uri, option as linkoption, resolve, sanitize } from './link';
+import { link, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { txt, str } from '../source';
@@ -39,7 +39,7 @@ export const media: MediaParser = lazy(() => creator(100, bind(verify(fmap(open(
     const el = cache && cached
       ? cache.get(url.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': src, alt: text.trimEnd() });
-    if (!cached && !sanitize(url, el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
+    if (!cached && !sanitize(url, el)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
@@ -61,3 +61,21 @@ const option: MediaParser.ParameterParser.OptionParser = union([
   fmap(str(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
   linkoption,
 ]);
+
+function sanitize(uri: ReadonlyURL, target: HTMLElement): boolean {
+  assert(target.tagName === 'IMG');
+  switch (uri.protocol) {
+    case 'http:':
+    case 'https:':
+      assert(uri.host);
+      return true;
+  }
+  assert(!target.classList.contains('invalid'));
+  define(target, {
+    class: void target.classList.add('invalid'),
+    'data-invalid-syntax': 'media',
+    'data-invalid-type': 'argument',
+    'data-invalid-description': 'Invalid protocol.',
+  });
+  return false;
+}
