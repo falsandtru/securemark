@@ -1,5 +1,5 @@
 import { undefined, WeakMap } from 'spica/global';
-import { ObjectCreate, ObjectGetPrototypeOf } from 'spica/alias';
+import { hasOwnProperty, ObjectCreate } from 'spica/alias';
 import { Parser, Ctx, Context } from '../../data/parser';
 import { template } from 'spica/assign';
 import { type, isPrimitive } from 'spica/type';
@@ -38,7 +38,7 @@ const inherit = template((prop, target, source) => {
   switch (prop) {
     case 'resources':
       assert(typeof source[prop] === 'object');
-      if (prop in (ObjectGetPrototypeOf(target) || {})) return;
+      if (prop in target && !hasOwnProperty(target, prop)) return;
       return target[prop] = ObjectCreate(source[prop]);
   }
   assert(!target.hasOwnProperty(prop));
