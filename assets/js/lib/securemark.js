@@ -368,8 +368,8 @@ require = function () {
             exports.Cache = void 0;
             const global_1 = _dereq_('./global');
             const alias_1 = _dereq_('./alias');
-            const assign_1 = _dereq_('./assign');
             const olist_1 = _dereq_('./olist');
+            const assign_1 = _dereq_('./assign');
             const tuple_1 = _dereq_('./tuple');
             class Cache {
                 constructor(capacity, opts = {}) {
@@ -381,7 +381,7 @@ require = function () {
                         }
                     };
                     this.nullish = false;
-                    this.store = new global_1.Map();
+                    this.memory = new global_1.Map();
                     this.indexes = {
                         LRU: new olist_1.OList(this.capacity),
                         LFU: new olist_1.OList(this.capacity)
@@ -389,7 +389,7 @@ require = function () {
                     this.stats = {
                         LRU: tuple_1.tuple(0, 0),
                         LFU: tuple_1.tuple(0, 0),
-                        miss: 0
+                        total: tuple_1.tuple(0, 0)
                     };
                     this.ratio = 50;
                     if (capacity > 0 === false)
@@ -399,20 +399,20 @@ require = function () {
                 put(key, value) {
                     value === void 0 ? this.nullish || (this.nullish = true) : void 0;
                     if (this.has(key))
-                        return this.store.set(key, value), true;
+                        return this.memory.set(key, value), true;
                     const {LRU, LFU} = this.indexes;
                     if (this.size === this.capacity) {
                         const key = LFU.length === this.capacity || LFU.length > this.capacity * this.ratio / 100 ? LFU.pop().key : LRU.pop().key;
                         if (this.settings.disposer) {
-                            const val = this.store.get(key);
-                            this.store.delete(key);
+                            const val = this.memory.get(key);
+                            this.memory.delete(key);
                             this.settings.disposer(key, val);
                         } else {
-                            this.store.delete(key);
+                            this.memory.delete(key);
                         }
                     }
                     LRU.add(key);
-                    this.store.set(key, value);
+                    this.memory.set(key, value);
                     return false;
                 }
                 set(key, value) {
@@ -420,18 +420,19 @@ require = function () {
                     return this;
                 }
                 get(key) {
-                    const val = this.store.get(key);
+                    const val = this.memory.get(key);
                     if (val !== void 0 || this.nullish && this.has(key)) {
                         this.access(key);
+                        ++this.stats.total[0];
                         this.slide();
                     } else {
-                        ++this.stats.miss;
+                        ++this.stats.total[0];
                         this.slide();
                     }
                     return val;
                 }
                 has(key) {
-                    return this.store.has(key);
+                    return this.memory.has(key);
                 }
                 delete(key) {
                     var _a;
@@ -447,10 +448,10 @@ require = function () {
                             continue;
                         index.delete(key);
                         if (!this.settings.disposer || !this.settings.capture.delete) {
-                            this.store.delete(key);
+                            this.memory.delete(key);
                         } else {
-                            const val = this.store.get(key);
-                            this.store.delete(key);
+                            const val = this.memory.get(key);
+                            this.memory.delete(key);
                             this.settings.disposer(key, val);
                         }
                         return true;
@@ -474,13 +475,13 @@ require = function () {
                             0,
                             0
                         ],
-                        miss: 0
+                        total: tuple_1.tuple(0, 0)
                     };
-                    const store = this.store;
-                    this.store = new global_1.Map();
+                    const memory = this.memory;
+                    this.memory = new global_1.Map();
                     if (!this.settings.disposer || !((_a = this.settings.capture) === null || _a === void 0 ? void 0 : _a.clear))
                         return;
-                    for (const [key, value] of store) {
+                    for (const [key, value] of memory) {
                         this.settings.disposer(key, value);
                     }
                 }
@@ -488,27 +489,25 @@ require = function () {
                     return this.indexes.LRU.length + this.indexes.LFU.length;
                 }
                 [Symbol.iterator]() {
-                    return this.store[Symbol.iterator]();
+                    return this.memory[Symbol.iterator]();
                 }
                 slide() {
-                    const {LRU, LFU, miss} = this.stats;
+                    const {LRU, LFU, total} = this.stats;
                     const capacity = this.capacity;
                     const window = capacity;
                     const rateR = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]);
-                    const rateF = 100 - rateR;
+                    const rateF = 10000 - rateR;
                     const ratio = this.ratio;
                     const step = 1;
-                    if (ratio < 90 && rateF > rateR * 1.2) {
+                    if (ratio < 100 && rateF > rateR * 1.01) {
                         this.ratio += step;
-                    } else if (ratio > 50 && rateR > rateF * 1.2) {
+                    } else if (ratio > 50 && rateR > rateF * 1.01) {
                         this.ratio -= step;
-                    } else if (ratio <= 50 && rateR > rateF * 1.5 && this.indexes.LRU.length > capacity / 100 * (100 - ratio) - 1) {
-                        if (ratio > 10 && miss > capacity / 2) {
+                    } else if (ratio <= 50 && this.indexes.LRU.length >= capacity * (100 - ratio) / 100) {
+                        if (rateR > rateF * 5 && rate(window / 2 | 0, LRU[0], total[0], LRU[1], total[1]) < 1) {
                             this.ratio = 50;
-                        } else if (ratio > 10 && miss > 5 && this.indexes.LRU.length < miss * 5) {
+                        } else if (ratio > 10 && rateR > rateF * 20 && rate(window / 2 | 0, LFU[0], total[0], LFU[1], total[1]) * 1.01 < rate(window, LFU[0], total[0], LFU[1], total[1])) {
                             this.ratio -= step;
-                        } else if (ratio < 50) {
-                            this.ratio += step;
                         }
                     }
                     if (LRU[0] + LFU[0] === window) {
@@ -521,25 +520,27 @@ require = function () {
                                 0,
                                 LFU[0]
                             ],
-                            miss
+                            total: [
+                                0,
+                                total[0]
+                            ]
                         };
                     }
                 }
                 access(key) {
                     const stats = this.stats;
                     const hit = false || this.accessLFU(key, stats) || this.accessLRU(key, stats);
-                    stats.miss = 0;
                     return hit;
                 }
                 accessLRU(key, stats) {
                     var _a;
-                    const {LRU, LFU} = this.indexes;
+                    const {LRU} = this.indexes;
                     const index = (_a = LRU.findIndex(key)) !== null && _a !== void 0 ? _a : -1;
                     if (index === -1)
                         return false;
-                    stats && ++stats.LRU[0];
+                    ++stats.LRU[0];
                     if (index === LRU.peek().index)
-                        return LFU.add(LRU.shift().key), true;
+                        return !this.indexes.LFU.add(LRU.shift().key);
                     LRU.raiseToTop(index);
                     return true;
                 }
@@ -549,7 +550,7 @@ require = function () {
                     const index = (_a = LFU.findIndex(key)) !== null && _a !== void 0 ? _a : -1;
                     if (index === -1)
                         return false;
-                    stats && ++stats.LFU[0];
+                    ++stats.LFU[0];
                     if (index === LFU.peek().index)
                         return true;
                     LFU.raiseToTop(index);
@@ -560,9 +561,9 @@ require = function () {
             function rate(window, currHits, currTotal, prevHits, prevTotal) {
                 window = alias_1.min(currTotal + prevTotal, window);
                 const currRate = currHits * 100 / currTotal;
-                const currRatio = currTotal / window;
+                const currRatio = alias_1.min(currTotal * 100 / window, 100);
                 const prevRate = prevHits * 100 / prevTotal;
-                const prevRatio = 1 - currRatio;
+                const prevRatio = 100 - currRatio;
                 return currRate * currRatio + prevRate * prevRatio | 0;
             }
         },
@@ -579,45 +580,49 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.MultiMap = void 0;
+            const global_1 = _dereq_('../global');
             const array_1 = _dereq_('../array');
             class MultiMap {
-                constructor(entries = [], store = new Map()) {
-                    this.store = store;
+                constructor(entries = [], memory = new global_1.Map()) {
+                    this.memory = memory;
                     for (const [k, v] of entries) {
                         this.set(k, v);
                     }
                 }
                 get(key) {
                     var _a;
-                    return (_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a[0];
+                    return (_a = this.memory.get(key)) === null || _a === void 0 ? void 0 : _a[0];
                 }
                 set(key, val) {
                     var _a, _b;
-                    (_b = (_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a.push(val)) !== null && _b !== void 0 ? _b : this.store.set(key, [val]);
+                    (_b = (_a = this.memory.get(key)) === null || _a === void 0 ? void 0 : _a.push(val)) !== null && _b !== void 0 ? _b : this.memory.set(key, [val]);
                     return this;
                 }
                 has(key) {
                     var _a;
-                    return ((_a = this.store.get(key)) === null || _a === void 0 ? void 0 : _a.length) > 0;
+                    return ((_a = this.memory.get(key)) === null || _a === void 0 ? void 0 : _a.length) > 0;
                 }
                 delete(key) {
-                    return this.store.delete(key);
+                    return this.memory.delete(key);
+                }
+                clear() {
+                    'clear' in this.memory ? this.memory.clear() : this.memory = new global_1.Map();
                 }
                 take(key, count) {
                     var _a;
-                    const vs = (_a = this.store.get(key)) !== null && _a !== void 0 ? _a : [];
+                    const vs = (_a = this.memory.get(key)) !== null && _a !== void 0 ? _a : [];
                     return count === void 0 ? array_1.splice(vs, 0, 1)[0] : array_1.splice(vs, 0, count);
                 }
                 ref(key) {
-                    let vs = this.store.get(key);
+                    let vs = this.memory.get(key);
                     if (vs)
                         return vs;
                     vs = [];
-                    this.store.set(key, vs);
+                    this.memory.set(key, vs);
                     return vs;
                 }
                 *[Symbol.iterator]() {
-                    for (const [k, vs] of this.store) {
+                    for (const [k, vs] of this.memory) {
                         for (let i = 0; i < vs.length; ++i) {
                             yield [
                                 k,
@@ -630,7 +635,10 @@ require = function () {
             }
             exports.MultiMap = MultiMap;
         },
-        { '../array': 6 }
+        {
+            '../array': 6,
+            '../global': 15
+        }
     ],
     11: [
         function (_dereq_, module, exports) {
@@ -758,26 +766,34 @@ require = function () {
                     this.cursor = 0;
                     this.length = 0;
                 }
+                clear() {
+                    this.items = [];
+                    this.empties = [];
+                    this.index.clear();
+                    this.head = 0;
+                    this.cursor = 0;
+                    this.length = 0;
+                }
                 add(key, value) {
                     const items = this.items;
                     const head = items[this.head];
                     if (!head) {
                         const index = this.head = this.cursor = this.empties.length > 0 ? this.empties.shift() : this.length;
-                        this.length++;
+                        ++this.length;
                         this.index.set(key, index);
                         items[index] = new Item(index, key, value, head, head);
                         return false;
                     }
                     if (this.length < this.capacity) {
                         const index = this.head = this.cursor = this.empties.length > 0 ? this.empties.shift() : this.length;
-                        this.length++;
+                        ++this.length;
                         this.index.set(key, index);
                         items[index] = head.prev = head.prev.next = new Item(index, key, value, head, head.prev);
                         return false;
                     } else {
-                        const index = this.head = this.cursor = head.prev.index;
-                        const garbage = items[index];
+                        const garbage = items[head.prev.index];
                         this.index.take(garbage.key);
+                        const index = this.head = this.cursor = garbage.index;
                         this.index.set(key, index);
                         items[index] = head.prev = head.prev.prev.next = new Item(index, key, value, head, head.prev.prev);
                         garbage.prev = garbage.next = void 0;
@@ -920,33 +936,43 @@ require = function () {
                 }
                 raiseToTop(index) {
                     if (this.length <= 1)
-                        return;
+                        return false;
                     if (index === this.head)
-                        return;
+                        return false;
                     const item = this.items[index];
                     if (!item)
-                        return;
+                        return false;
                     this.insert(item, this.head);
                     this.head = index;
+                    return true;
                 }
                 raiseToPrev(index) {
                     if (this.length <= 1)
-                        return;
+                        return false;
+                    if (index === this.head)
+                        return false;
                     const item = this.items[index];
                     if (!item)
-                        return;
+                        return false;
                     this.insert(item, item.prev.index);
                     if (item.next.index === this.head) {
                         this.head = item.index;
                     }
+                    return true;
                 }
                 swap(index1, index2) {
                     if (this.length <= 1)
-                        return;
+                        return false;
+                    if (index1 === index2)
+                        return false;
                     const item1 = this.items[index1];
                     const item2 = this.items[index2];
                     if (!item1 || !item2)
-                        return;
+                        return false;
+                    if (item1.next === item2)
+                        return this.raiseToPrev(index2);
+                    if (item2.next === item1)
+                        return this.raiseToPrev(index1);
                     const item3 = item2.next;
                     this.insert(item2, item1.index);
                     this.insert(item1, item3.index);
@@ -958,24 +984,22 @@ require = function () {
                         this.head = item1.index;
                         break;
                     }
+                    return true;
                 }
             }
             exports.OList = OList;
             class Item {
                 constructor(index, key, value, next, prev) {
-                    var _a, _b;
                     this.index = index;
                     this.key = key;
                     this.value = value;
                     this.next = next;
                     this.prev = prev;
-                    (_a = this.next) !== null && _a !== void 0 ? _a : this.next = this;
-                    if ((next === null || next === void 0 ? void 0 : next.index) === index) {
-                        this.next = next.next === next ? this : next.next;
+                    if (!next || next.index === index) {
+                        this.next = this;
                     }
-                    (_b = this.prev) !== null && _b !== void 0 ? _b : this.prev = this;
-                    if ((prev === null || prev === void 0 ? void 0 : prev.index) === index) {
-                        this.prev = prev.prev === prev ? this : prev.prev;
+                    if (!prev || prev.index === index) {
+                        this.prev = this;
                     }
                 }
             }
@@ -1081,19 +1105,18 @@ require = function () {
     21: [
         function (_dereq_, module, exports) {
             'use strict';
-            var _a;
+            var _a, _b;
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.isPromiseLike = exports.Internal = exports.AtomicPromise = void 0;
             const global_1 = _dereq_('./global');
             const alias_1 = _dereq_('./alias');
-            const array_1 = _dereq_('./array');
             const internal = Symbol.for('spica/promise::internal');
             class AtomicPromise {
                 constructor(executor) {
-                    this[Symbol.toStringTag] = 'Promise';
-                    this[_a] = new Internal();
+                    this[_a] = 'Promise';
+                    this[_b] = new Internal();
                     try {
-                        executor(value => this[internal].resolve(value), reason => this[internal].reject(reason));
+                        executor(value => void this[internal].resolve(value), reason => void this[internal].reject(reason));
                     } catch (reason) {
                         this[internal].reject(reason);
                     }
@@ -1231,7 +1254,7 @@ require = function () {
                     return new AtomicPromise((_, reject) => reject(reason));
                 }
                 then(onfulfilled, onrejected) {
-                    return new AtomicPromise((resolve, reject) => this[internal].then(onfulfilled, onrejected, resolve, reject));
+                    return new AtomicPromise((resolve, reject) => this[internal].then(resolve, reject, onfulfilled, onrejected));
                 }
                 catch(onrejected) {
                     return this.then(void 0, onrejected);
@@ -1241,14 +1264,12 @@ require = function () {
                 }
             }
             exports.AtomicPromise = AtomicPromise;
-            _a = internal;
+            _a = Symbol.toStringTag, _b = internal;
             class Internal {
                 constructor() {
                     this.status = { state: 0 };
-                    this.reactable = true;
                     this.fulfillReactions = [];
                     this.rejectReactions = [];
-                    this.isHandled = false;
                 }
                 get isPending() {
                     return this.status.state === 0;
@@ -1263,6 +1284,17 @@ require = function () {
                         };
                         return this.resume();
                     }
+                    if (isAtomicPromiseLike(value)) {
+                        const core = value[internal];
+                        switch (core.status.state) {
+                        case 2:
+                        case 3:
+                            this.status = core.status;
+                            return this.resume();
+                        default:
+                            return core.then(() => (this.status = core.status, this.resume()), () => (this.status = core.status, this.resume()));
+                        }
+                    }
                     this.status = {
                         state: 1,
                         promise: value
@@ -1270,13 +1302,13 @@ require = function () {
                     return void value.then(value => {
                         this.status = {
                             state: 2,
-                            value: value
+                            value
                         };
                         this.resume();
                     }, reason => {
                         this.status = {
                             state: 3,
-                            reason: reason
+                            reason
                         };
                         this.resume();
                     });
@@ -1286,93 +1318,80 @@ require = function () {
                         return;
                     this.status = {
                         state: 3,
-                        reason: reason
+                        reason
                     };
                     return this.resume();
                 }
-                then(onfulfilled, onrejected, resolve, reject) {
+                then(resolve, reject, onfulfilled, onrejected) {
                     const {status, fulfillReactions, rejectReactions} = this;
                     switch (status.state) {
                     case 2:
                         if (fulfillReactions.length > 0)
                             break;
-                        try {
-                            return onfulfilled ? resolve(onfulfilled(status.value)) : resolve(status.value);
-                        } catch (reason) {
-                            return reject(reason);
-                        }
+                        return this.call(resolve, reject, resolve, onfulfilled, status.value);
                     case 3:
                         if (rejectReactions.length > 0)
                             break;
-                        try {
-                            return onrejected ? resolve(onrejected(status.reason)) : reject(status.reason);
-                        } catch (reason) {
-                            return reject(reason);
-                        }
-                    default:
-                        fulfillReactions.push(value => {
-                            try {
-                                onfulfilled ? resolve(onfulfilled(value)) : resolve(value);
-                            } catch (reason) {
-                                reject(reason);
-                            }
-                        });
-                        rejectReactions.push(reason => {
-                            try {
-                                onrejected ? resolve(onrejected(reason)) : reject(reason);
-                            } catch (reason) {
-                                reject(reason);
-                            }
-                        });
-                        return this.resume();
+                        return this.call(resolve, reject, reject, onrejected, status.reason);
                     }
+                    fulfillReactions.push([
+                        resolve,
+                        reject,
+                        resolve,
+                        onfulfilled
+                    ]);
+                    rejectReactions.push([
+                        resolve,
+                        reject,
+                        reject,
+                        onrejected
+                    ]);
                 }
                 resume() {
-                    if (!this.reactable)
-                        return;
                     const {status, fulfillReactions, rejectReactions} = this;
                     switch (status.state) {
                     case 0:
                     case 1:
                         return;
                     case 2:
-                        if (this.isHandled && rejectReactions.length > 0) {
-                            array_1.splice(rejectReactions, 0);
+                        if (rejectReactions.length > 0) {
+                            this.rejectReactions = [];
                         }
                         if (fulfillReactions.length === 0)
                             return;
-                        this.isHandled = true;
                         this.react(fulfillReactions, status.value);
+                        this.fulfillReactions = [];
                         return;
                     case 3:
-                        if (this.isHandled && fulfillReactions.length > 0) {
-                            array_1.splice(fulfillReactions, 0);
+                        if (fulfillReactions.length > 0) {
+                            this.fulfillReactions = [];
                         }
                         if (rejectReactions.length === 0)
                             return;
-                        this.isHandled = true;
                         this.react(rejectReactions, status.reason);
+                        this.rejectReactions = [];
                         return;
                     }
                 }
                 react(reactions, param) {
-                    this.reactable = false;
-                    if (reactions.length < 5) {
-                        while (reactions.length > 0) {
-                            reactions.shift()(param);
-                        }
-                    } else {
-                        for (let i = 0; i < reactions.length; ++i) {
-                            reactions[i](param);
-                        }
-                        array_1.splice(reactions, 0);
+                    for (let i = 0; i < reactions.length; ++i) {
+                        const reaction = reactions[i];
+                        this.call(reaction[0], reaction[1], reaction[2], reaction[3], param);
                     }
-                    this.reactable = true;
+                }
+                call(resolve, reject, cont, callback, param) {
+                    if (!callback)
+                        return cont(param);
+                    try {
+                        resolve(callback(param));
+                    } catch (reason) {
+                        reject(reason);
+                    }
                 }
             }
             exports.Internal = Internal;
             function isPromiseLike(value) {
-                return value !== null && typeof value === 'object' && 'then' in value && typeof value.then === 'function';
+                return value !== null && typeof value === 'object' && typeof value.then === 'function';
             }
             exports.isPromiseLike = isPromiseLike;
             function isAtomicPromiseLike(value) {
@@ -1381,7 +1400,6 @@ require = function () {
         },
         {
             './alias': 5,
-            './array': 6,
             './global': 15
         }
     ],
@@ -1483,9 +1501,10 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.isPrimitive = exports.isType = exports.type = void 0;
-            const global_1 = _dereq_('./global');
             const alias_1 = _dereq_('./alias');
-            const toString = global_1.Object.prototype.toString.call.bind(global_1.Object.prototype.toString);
+            const toString = Object.prototype.toString.call.bind(Object.prototype.toString);
+            const ObjectPrototype = Object.prototype;
+            const ArrayPrototype = Array.prototype;
             function type(value) {
                 if (value === void 0)
                     return 'undefined';
@@ -1494,9 +1513,9 @@ require = function () {
                 const type = typeof value;
                 if (type === 'object') {
                     const proto = alias_1.ObjectGetPrototypeOf(value);
-                    if (proto === global_1.Object.prototype || proto === null)
+                    if (proto === ObjectPrototype || proto === null)
                         return 'Object';
-                    if (proto === global_1.Array.prototype)
+                    if (proto === ArrayPrototype)
                         return 'Array';
                     return toString(value).slice(8, -1);
                 }
@@ -1519,10 +1538,7 @@ require = function () {
             }
             exports.isPrimitive = isPrimitive;
         },
-        {
-            './alias': 5,
-            './global': 15
-        }
+        { './alias': 5 }
     ],
     25: [
         function (_dereq_, module, exports) {
@@ -2795,7 +2811,7 @@ require = function () {
             const inherit = assign_1.template((prop, target, source) => {
                 switch (prop) {
                 case 'resources':
-                    if (prop in (alias_1.ObjectGetPrototypeOf(target) || {}))
+                    if (prop in target && !alias_1.hasOwnProperty(target, prop))
                         return;
                     return target[prop] = alias_1.ObjectCreate(source[prop]);
                 }
@@ -3775,9 +3791,9 @@ require = function () {
             exports.caches = void 0;
             const cache_1 = _dereq_('spica/cache');
             exports.caches = {
-                code: new cache_1.Cache(10),
-                math: new cache_1.Cache(20),
-                media: new cache_1.Cache(10)
+                code: new cache_1.Cache(100),
+                math: new cache_1.Cache(100),
+                media: new cache_1.Cache(100)
             };
         },
         { 'spica/cache': 9 }
@@ -6594,7 +6610,7 @@ require = function () {
                 ] : global_1.undefined, ([as, bs], rest) => as.length === 1 ? [
                     array_1.unshift(as, bs),
                     rest
-                ] : global_1.undefined)), new cache_1.Cache(10)))
+                ] : global_1.undefined)), ([, tag]) => tag, new cache_1.Cache(100)))
             ])))));
             exports.attribute = combinator_1.union([source_1.str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]);
             function elem(tag, as, bs, cs, context) {
