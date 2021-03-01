@@ -381,6 +381,7 @@ require = function () {
                         }
                     };
                     this.nullish = false;
+                    this.clock = 0;
                     this.memory = new global_1.Map();
                     this.indexes = {
                         LRU: new olist_1.OList(this.capacity),
@@ -389,7 +390,7 @@ require = function () {
                     this.stats = {
                         LRU: tuple_1.tuple(0, 0),
                         LFU: tuple_1.tuple(0, 0),
-                        total: tuple_1.tuple(0, 0)
+                        Total: tuple_1.tuple(0, 0)
                     };
                     this.ratio = 50;
                     if (capacity > 0 === false)
@@ -397,12 +398,13 @@ require = function () {
                     assign_1.extend(this.settings, opts);
                 }
                 put(key, value) {
+                    var _a;
                     value === void 0 ? this.nullish || (this.nullish = true) : void 0;
                     if (this.has(key))
                         return this.memory.set(key, value), true;
                     const {LRU, LFU} = this.indexes;
                     if (this.size === this.capacity) {
-                        const key = LFU.length === this.capacity || LFU.length > this.capacity * this.ratio / 100 ? LFU.pop().key : LRU.pop().key;
+                        const key = false || LFU.length === this.capacity || LFU.length > this.capacity * this.ratio / 100 || LFU.length > this.capacity / 2 && ((_a = LFU.pop(false)) === null || _a === void 0 ? void 0 : _a.value) < this.clock - this.capacity * 8 ? LFU.pop().key : LRU.pop().key;
                         if (this.settings.disposer) {
                             const val = this.memory.get(key);
                             this.memory.delete(key);
@@ -423,10 +425,10 @@ require = function () {
                     const val = this.memory.get(key);
                     if (val !== void 0 || this.nullish && this.has(key)) {
                         this.access(key);
-                        ++this.stats.total[0];
+                        ++this.stats.Total[0];
                         this.slide();
                     } else {
-                        ++this.stats.total[0];
+                        ++this.stats.Total[0];
                         this.slide();
                     }
                     return val;
@@ -462,10 +464,8 @@ require = function () {
                     var _a;
                     this.nullish = false;
                     this.ratio = 50;
-                    this.indexes = {
-                        LRU: new olist_1.OList(this.capacity),
-                        LFU: new olist_1.OList(this.capacity)
-                    };
+                    this.indexes.LRU.clear();
+                    this.indexes.LFU.clear();
                     this.stats = {
                         LRU: [
                             0,
@@ -475,7 +475,7 @@ require = function () {
                             0,
                             0
                         ],
-                        total: tuple_1.tuple(0, 0)
+                        Total: tuple_1.tuple(0, 0)
                     };
                     const memory = this.memory;
                     this.memory = new global_1.Map();
@@ -492,23 +492,19 @@ require = function () {
                     return this.memory[Symbol.iterator]();
                 }
                 slide() {
-                    const {LRU, LFU, total} = this.stats;
-                    const capacity = this.capacity;
+                    const {LRU, LFU, Total} = this.stats;
+                    const {capacity, ratio, indexes} = this;
                     const window = capacity;
                     const rateR = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]);
-                    const rateF = 10000 - rateR;
-                    const ratio = this.ratio;
+                    const rateF = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1]) * indexes.LRU.length / indexes.LFU.length | 0;
+                    const isCalculable = Total[1] > 0;
+                    const isLRUFilled = indexes.LRU.length >= capacity * (100 - ratio) / 100;
+                    const isLFUFilled = indexes.LFU.length >= capacity * ratio / 100;
                     const step = 1;
-                    if (ratio < 100 && rateF > rateR * 1.01) {
+                    if (isCalculable && ratio < 100 && isLFUFilled && rateF > rateR) {
                         this.ratio += step;
-                    } else if (ratio > 50 && rateR > rateF * 1.01) {
+                    } else if (isCalculable && ratio > 10 && isLRUFilled && rateR > rateF) {
                         this.ratio -= step;
-                    } else if (ratio <= 50 && this.indexes.LRU.length >= capacity * (100 - ratio) / 100) {
-                        if (rateR > rateF * 5 && rate(window / 2 | 0, LRU[0], total[0], LRU[1], total[1]) < 1) {
-                            this.ratio = 50;
-                        } else if (ratio > 10 && rateR > rateF * 20 && rate(window / 2 | 0, LFU[0], total[0], LFU[1], total[1]) * 1.01 < rate(window, LFU[0], total[0], LFU[1], total[1])) {
-                            this.ratio -= step;
-                        }
                     }
                     if (LRU[0] + LFU[0] === window) {
                         this.stats = {
@@ -520,49 +516,50 @@ require = function () {
                                 0,
                                 LFU[0]
                             ],
-                            total: [
+                            Total: [
                                 0,
-                                total[0]
+                                Total[0]
                             ]
                         };
                     }
                 }
                 access(key) {
-                    const stats = this.stats;
-                    const hit = false || this.accessLFU(key, stats) || this.accessLRU(key, stats);
+                    const hit = false || this.accessLFU(key) || this.accessLRU(key);
                     return hit;
                 }
-                accessLRU(key, stats) {
+                accessLRU(key) {
                     var _a;
-                    const {LRU} = this.indexes;
+                    const {LRU, LFU} = this.indexes;
                     const index = (_a = LRU.findIndex(key)) !== null && _a !== void 0 ? _a : -1;
                     if (index === -1)
                         return false;
-                    ++stats.LRU[0];
-                    if (index === LRU.peek().index)
-                        return !this.indexes.LFU.add(LRU.shift().key);
-                    LRU.raiseToTop(index);
+                    ++this.stats.LRU[0];
+                    ++this.clock;
+                    LRU.delete(key);
+                    LFU.add(key, this.clock);
                     return true;
                 }
-                accessLFU(key, stats) {
+                accessLFU(key) {
                     var _a;
                     const {LFU} = this.indexes;
                     const index = (_a = LFU.findIndex(key)) !== null && _a !== void 0 ? _a : -1;
                     if (index === -1)
                         return false;
-                    ++stats.LFU[0];
+                    ++this.stats.LFU[0];
+                    ++this.clock;
                     if (index === LFU.peek().index)
                         return true;
                     LFU.raiseToTop(index);
+                    LFU.put(key, this.clock);
                     return true;
                 }
             }
             exports.Cache = Cache;
             function rate(window, currHits, currTotal, prevHits, prevTotal) {
                 window = alias_1.min(currTotal + prevTotal, window);
-                const currRate = currHits * 100 / currTotal;
+                const currRate = currHits * 100 / currTotal | 0;
                 const currRatio = alias_1.min(currTotal * 100 / window, 100);
-                const prevRate = prevHits * 100 / prevTotal;
+                const prevRate = prevHits * 100 / prevTotal | 0;
                 const prevRatio = 100 - currRatio;
                 return currRate * currRatio + prevRate * prevRatio | 0;
             }
@@ -606,7 +603,7 @@ require = function () {
                     return this.memory.delete(key);
                 }
                 clear() {
-                    'clear' in this.memory ? this.memory.clear() : this.memory = new global_1.Map();
+                    this.memory.clear();
                 }
                 take(key, count) {
                     var _a;
@@ -759,7 +756,7 @@ require = function () {
             class OList {
                 constructor(capacity) {
                     this.capacity = capacity;
-                    this.items = [];
+                    this.nodes = [];
                     this.empties = [];
                     this.index = new multimap_1.MultiMap();
                     this.head = 0;
@@ -767,7 +764,7 @@ require = function () {
                     this.length = 0;
                 }
                 clear() {
-                    this.items = [];
+                    this.nodes = [];
                     this.empties = [];
                     this.index.clear();
                     this.head = 0;
@@ -775,72 +772,74 @@ require = function () {
                     this.length = 0;
                 }
                 add(key, value) {
-                    const items = this.items;
-                    const head = items[this.head];
+                    const nodes = this.nodes;
+                    const head = nodes[this.head];
                     if (!head) {
                         const index = this.head = this.cursor = this.empties.length > 0 ? this.empties.shift() : this.length;
                         ++this.length;
                         this.index.set(key, index);
-                        items[index] = new Item(index, key, value, head, head);
+                        nodes[index] = new Node(index, key, value, head, head);
                         return false;
                     }
                     if (this.length < this.capacity) {
                         const index = this.head = this.cursor = this.empties.length > 0 ? this.empties.shift() : this.length;
                         ++this.length;
                         this.index.set(key, index);
-                        items[index] = head.prev = head.prev.next = new Item(index, key, value, head, head.prev);
+                        nodes[index] = head.prev = head.prev.next = new Node(index, key, value, head, head.prev);
                         return false;
                     } else {
-                        const garbage = items[head.prev.index];
+                        const garbage = head.prev;
                         this.index.take(garbage.key);
                         const index = this.head = this.cursor = garbage.index;
                         this.index.set(key, index);
-                        items[index] = head.prev = head.prev.prev.next = new Item(index, key, value, head, head.prev.prev);
-                        garbage.prev = garbage.next = void 0;
+                        nodes[index] = head.prev = head.prev.prev.next = new Node(index, key, value, head, head.prev.prev);
+                        garbage.key = garbage.value = garbage.prev = garbage.next = void 0;
                         return false;
                     }
                 }
                 put(key, value, index) {
-                    const item = this.seek(key, index);
-                    if (!item)
+                    const node = this.seek(key, index);
+                    if (!node)
                         return this.add(key, value);
-                    this.head = item.index;
-                    item.value = value;
+                    this.head = node.index;
+                    node.value = value;
                     return true;
                 }
-                shift() {
-                    const item = this.items[this.head];
-                    if (!item)
+                shift(deletion = true) {
+                    const node = this.nodes[this.head];
+                    if (!node)
                         return;
-                    this.delete(item.key, item.index);
+                    const {index, key, value} = node;
+                    deletion && this.delete(key, index);
                     return {
-                        index: item.index,
-                        key: item.key,
-                        value: item.value
+                        index,
+                        key,
+                        value
                     };
                 }
-                pop() {
+                pop(deletion = true) {
                     var _a;
-                    const item = (_a = this.items[this.head]) === null || _a === void 0 ? void 0 : _a.prev;
-                    if (!item)
+                    const node = (_a = this.nodes[this.head]) === null || _a === void 0 ? void 0 : _a.prev;
+                    if (!node)
                         return;
-                    this.delete(item.key, item.index);
+                    const {index, key, value} = node;
+                    deletion && this.delete(key, index);
                     return {
-                        index: item.index,
-                        key: item.key,
-                        value: item.value
+                        index,
+                        key,
+                        value
                     };
                 }
                 delete(key, index) {
                     const cursor = this.cursor;
-                    const item = this.seek(key, index);
-                    if (!item)
+                    const node = this.seek(key, index);
+                    if (!node)
                         return;
                     this.cursor = cursor;
                     --this.length;
-                    this.empties.push(item.index);
-                    const indexes = this.index.ref(item.key);
-                    switch (item.index) {
+                    this.empties.push(node.index);
+                    const indexes = this.index.ref(node.key);
+                    switch (node.index) {
                     case indexes[0]:
                         indexes.shift();
                         break;
@@ -848,34 +847,35 @@ require = function () {
                         indexes.pop();
                         break;
                     default:
-                        array_1.splice(indexes, array_1.indexOf(indexes, item.index), 1);
+                        array_1.splice(indexes, array_1.indexOf(indexes, node.index), 1);
                     }
-                    const {prev, next} = item;
+                    indexes.length === 0 && this.index.delete(node.key);
+                    const {prev, next, value} = node;
                     prev.next = next;
                     next.prev = prev;
-                    this.items[item.index] = item.prev = item.next = void 0;
-                    if (this.head === item.index) {
+                    if (this.head === node.index) {
                         this.head = next.index;
                     }
-                    if (this.cursor === item.index) {
+                    if (this.cursor === node.index) {
                         this.cursor = next.index;
                     }
-                    return item.value;
+                    this.nodes[node.index] = node.key = node.value = node.prev = node.next = void 0;
+                    return value;
                 }
                 peek() {
-                    const item = this.items[this.head];
-                    return item && {
-                        index: item.index,
-                        key: item.key,
-                        value: item.value
+                    const node = this.nodes[this.head];
+                    return node && {
+                        index: node.index,
+                        key: node.key,
+                        value: node.value
                     };
                 }
-                item(index) {
-                    const item = index !== void 0 ? this.items[index] : void 0;
-                    return item && {
-                        index: this.cursor = item.index,
-                        key: item.key,
-                        value: item.value
+                node(index) {
+                    const node = index !== void 0 ? this.nodes[index] : void 0;
+                    return node && {
+                        index: this.cursor = node.index,
+                        key: node.key,
+                        value: node.value
                     };
                 }
                 find(key, index) {
@@ -890,36 +890,36 @@ require = function () {
                     return !!this.seek(key, index);
                 }
                 *[Symbol.iterator]() {
-                    for (let item = this.items[this.head], i = 0; item && i < this.length; (item = item.next) && ++i) {
+                    for (let node = this.nodes[this.head], i = 0; node && i < this.length; (node = node.next) && ++i) {
                         yield [
-                            item.key,
-                            item.value,
-                            item.index
+                            node.key,
+                            node.value,
+                            node.index
                         ];
                     }
                     return;
                 }
                 seek(key, cursor = this.cursor) {
                     var _a;
-                    let item;
-                    item = this.items[cursor = cursor < 0 ? this.head : cursor];
-                    if (!item)
+                    let node;
+                    node = this.nodes[cursor = cursor < 0 ? this.head : cursor];
+                    if (!node)
                         return;
-                    if (compare_1.equal(item.key, key))
-                        return this.cursor = cursor, item;
-                    item = this.items[cursor = (_a = this.index.get(key)) !== null && _a !== void 0 ? _a : this.capacity];
-                    if (!item)
+                    if (compare_1.equal(node.key, key))
+                        return this.cursor = cursor, node;
+                    node = this.nodes[cursor = (_a = this.index.get(key)) !== null && _a !== void 0 ? _a : this.capacity];
+                    if (!node)
                         return;
-                    if (compare_1.equal(item.key, key))
-                        return this.cursor = cursor, item;
+                    if (compare_1.equal(node.key, key))
+                        return this.cursor = cursor, node;
                 }
-                insert(item, before) {
-                    if (item.index === before)
+                insert(node, before) {
+                    if (node.index === before)
                         return;
-                    const a1 = this.items[before];
+                    const a1 = this.nodes[before];
                     if (!a1)
                         return;
-                    const b1 = item;
+                    const b1 = node;
                     if (a1 === b1)
                         return;
                     if (b1.next === a1)
@@ -939,10 +939,10 @@ require = function () {
                         return false;
                     if (index === this.head)
                         return false;
-                    const item = this.items[index];
-                    if (!item)
+                    const node = this.nodes[index];
+                    if (!node)
                         return false;
-                    this.insert(item, this.head);
+                    this.insert(node, this.head);
                     this.head = index;
                     return true;
                 }
@@ -951,12 +951,12 @@ require = function () {
                         return false;
                     if (index === this.head)
                         return false;
-                    const item = this.items[index];
-                    if (!item)
+                    const node = this.nodes[index];
+                    if (!node)
                         return false;
-                    this.insert(item, item.prev.index);
-                    if (item.next.index === this.head) {
-                        this.head = item.index;
+                    this.insert(node, node.prev.index);
+                    if (node.next.index === this.head) {
+                        this.head = node.index;
                     }
                     return true;
                 }
@@ -965,30 +965,30 @@ require = function () {
                         return false;
                     if (index1 === index2)
                         return false;
-                    const item1 = this.items[index1];
-                    const item2 = this.items[index2];
-                    if (!item1 || !item2)
+                    const node1 = this.nodes[index1];
+                    const node2 = this.nodes[index2];
+                    if (!node1 || !node2)
                         return false;
-                    if (item1.next === item2)
+                    if (node1.next === node2)
                         return this.raiseToPrev(index2);
-                    if (item2.next === item1)
+                    if (node2.next === node1)
                         return this.raiseToPrev(index1);
-                    const item3 = item2.next;
-                    this.insert(item2, item1.index);
-                    this.insert(item1, item3.index);
+                    const node3 = node2.next;
+                    this.insert(node2, node1.index);
+                    this.insert(node1, node3.index);
                     switch (this.head) {
-                    case item1.index:
-                        this.head = item2.index;
+                    case node1.index:
+                        this.head = node2.index;
                         break;
-                    case item2.index:
-                        this.head = item1.index;
+                    case node2.index:
+                        this.head = node1.index;
                         break;
                     }
                     return true;
                 }
             }
             exports.OList = OList;
-            class Item {
+            class Node {
                 constructor(index, key, value, next, prev) {
                     this.index = index;
                     this.key = key;
@@ -1433,6 +1433,7 @@ require = function () {
                             mem.add(r);
                             return r;
                         }
+                        mem.clear();
                         ++len;
                         limit = len < 3 ? limit : 3;
                     }
