@@ -382,6 +382,7 @@ require = function () {
                     };
                     this.nullish = false;
                     this.clock = 0;
+                    this.clockR = 0;
                     this.memory = new global_1.Map();
                     this.indexes = {
                         LRU: new olist_1.OList(this.capacity),
@@ -413,7 +414,7 @@ require = function () {
                             this.memory.delete(key);
                         }
                     }
-                    LRU.add(key);
+                    LRU.add(key, ++this.clockR);
                     this.memory.set(key, value);
                     return false;
                 }
@@ -535,6 +536,12 @@ require = function () {
                         return false;
                     ++this.stats.LRU[0];
                     ++this.clock;
+                    ++this.clockR;
+                    if (LRU.node(index).value + LRU.length / 3 > this.clockR) {
+                        LRU.put(key, this.clockR);
+                        LRU.raiseToTop(index);
+                        return true;
+                    }
                     LRU.delete(key);
                     LFU.add(key, this.clock);
                     return true;
@@ -549,8 +556,8 @@ require = function () {
                     ++this.clock;
                     if (index === LFU.peek().index)
                         return true;
-                    LFU.raiseToTop(index);
                     LFU.put(key, this.clock);
+                    LFU.raiseToTop(index);
                     return true;
                 }
             }
@@ -801,7 +808,6 @@ require = function () {
                     const node = this.seek(key, index);
                     if (!node)
                         return this.add(key, value);
-                    this.head = node.index;
                     node.value = value;
                     return true;
                 }
@@ -873,7 +879,7 @@ require = function () {
                 node(index) {
                     const node = index !== void 0 ? this.nodes[index] : void 0;
                     return node && {
-                        index: this.cursor = node.index,
+                        index: node.index,
                         key: node.key,
                         value: node.value
                     };
@@ -902,7 +908,7 @@ require = function () {
                 seek(key, cursor = this.cursor) {
                     var _a;
                     let node;
-                    node = this.nodes[cursor = cursor < 0 ? this.head : cursor];
+                    node = this.nodes[cursor];
                     if (!node)
                         return;
                     if (compare_1.equal(node.key, key))
