@@ -14,11 +14,11 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
   assert(parser);
   return bind(match(
     /^(?=(([^\S\n])\2*))/,
-    memoize(
+    memoize<string[], Parser<string>, string>(
     ([, indent]) =>
       some(line(open(indent, source => [[unline(source)], '']))),
     ([, indent]) => indent,
-    new Cache<string, Parser<string>>(10))),
+    new Cache(10))),
     (nodes, rest, context) => {
       const result = parser(join(nodes, '\n'), context);
       return result && exec(result) === ''
