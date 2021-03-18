@@ -4605,7 +4605,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
-            exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
+            exports.segment = (0, combinator_1.block)((0, combinator_1.match)(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, (0, memoize_1.memoize)(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => (0, combinator_1.close)((0, combinator_1.sequence)([
                 (0, combinator_1.line)(label_1.segment),
                 (0, combinator_1.inits)([
                     (0, combinator_1.union)([
@@ -4623,7 +4623,7 @@ require = function () {
                     ])
                 ])
             ]), closer), ([, fence]) => fence.length)));
-            exports.figure = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.search(/\s/) + 1, source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([
+            exports.figure = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.fmap)((0, combinator_1.convert)(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')), (0, combinator_1.sequence)([
                 (0, combinator_1.line)(label_1.label),
                 (0, combinator_1.inits)([
                     (0, combinator_1.block)((0, combinator_1.union)([
