@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.204.0
+
+- Extend figure syntax to be possible to omit its own extension name.
+
 ## 0.203.3
 
 - Update dependencies.

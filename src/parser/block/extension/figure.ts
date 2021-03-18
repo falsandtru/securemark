@@ -19,7 +19,7 @@ import { memoize } from 'spica/memoize';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
-  /^(~{3,})figure[^\S\n]+(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
+  /^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
   memoize(
   ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) =>
     close(
@@ -46,7 +46,7 @@ export const segment: FigureParser.SegmentParser = block(match(
   ([, fence]) => fence.length)));
 
 export const figure: FigureParser = block(rewrite(segment, fmap(
-  convert(source => source.slice(source.search(/\s/) + 1, source.trimEnd().lastIndexOf('\n')),
+  convert(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')),
   sequence([
     line(label),
     inits([
