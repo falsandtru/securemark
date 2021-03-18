@@ -114,6 +114,7 @@ function build(
         if (equal(node, def)) continue I;
         yield footnote.removeChild(node);
         --length;
+        assert(children.length === length);
       }
       const node = count <= length
         ? children[count - 1]
@@ -122,10 +123,12 @@ function build(
       assert(def.parentNode !== footnote);
       yield footnote.insertBefore(def, node);
       ++length;
+      assert(children.length === length);
     }
     while (length > defs.size) {
       yield footnote.removeChild(children[defs.size] as HTMLLIElement);
       --length;
+      assert(children.length === length);
     }
     return;
   }
