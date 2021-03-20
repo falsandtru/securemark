@@ -2,7 +2,7 @@ import { Infinity, Map } from 'spica/global';
 import { number as calculate, isFixed } from '../inline/extension/label';
 import { define } from 'typed-dom';
 import { MultiMap } from 'spica/multimap';
-import { join } from 'spica/array';
+import { push, join } from 'spica/array';
 
 export function* figure(
   target: ParentNode & Node,
@@ -11,13 +11,11 @@ export function* figure(
     id?: string;
   }> = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
-  const refs = new MultiMap<string, HTMLAnchorElement>(
-    [
-      ...target.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)[data-label]'),
-      ...footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [],
-      ...footnotes?.reference.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [],
-    ]
-      .map(el => [el.getAttribute('data-label')!, el]));
+  const refs = new MultiMap<string, HTMLAnchorElement>(push(push(push([],
+    target.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)[data-label]')),
+    footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? []),
+    footnotes?.reference.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [])
+    .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
   let base = '0';
   let bases: readonly string[] = base.split('.');
