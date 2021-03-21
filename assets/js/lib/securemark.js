@@ -509,6 +509,8 @@ require = function () {
                         this.dispose(record, true);
                         return;
                     }
+                    if (this.capacity >= 10 && record.index === record.index.list.head)
+                        return record.value;
                     this.access(record);
                     this.slide();
                     return record.value;
@@ -567,18 +569,8 @@ require = function () {
                 slide() {
                     const {LRU, LFU} = this.stats;
                     const {capacity, ratio, indexes} = this;
-                    if ((LRU[0] + LFU[0]) % this.frequency)
-                        return;
                     const window = capacity;
-                    const isCalculable = LRU[1] + LFU[1] > 0;
-                    const rateR = +isCalculable && rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]);
-                    const rateF = +isCalculable && rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1]) * indexes.LRU.length / indexes.LFU.length | 0;
-                    if (isCalculable && ratio < 100 && rateF > rateR && indexes.LFU.length >= capacity * ratio / 100) {
-                        ++this.ratio;
-                    } else if (isCalculable && ratio > 10 && rateR > rateF && indexes.LRU.length >= capacity * (100 - ratio) / 100) {
-                        --this.ratio;
-                    }
-                    if (LRU[0] + LFU[0] >= window) {
+                    if (LRU[0] + LFU[0] === window) {
                         this.stats = {
                             LRU: [
                                 0,
@@ -589,6 +581,17 @@ require = function () {
                                 LFU[0]
                             ]
                         };
+                    }
+                    if (LRU[1] + LFU[1] === 0)
+                        return;
+                    if ((LRU[0] + LFU[0]) % this.frequency)
+                        return;
+                    const rateR = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]);
+                    const rateF = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1]) * indexes.LRU.length / indexes.LFU.length | 0;
+                    if (ratio < 100 && rateF > rateR && indexes.LFU.length >= capacity * ratio / 100) {
+                        ++this.ratio;
+                    } else if (ratio > 10 && rateR > rateF && indexes.LRU.length >= capacity * (100 - ratio) / 100) {
+                        --this.ratio;
                     }
                 }
                 access(record) {
@@ -976,9 +979,9 @@ require = function () {
                     return this.head = this.push(value);
                 }
                 unshiftRotationally(value) {
-                    if (!this.head)
-                        return this.unshift(value);
                     const node = this.last;
+                    if (!node)
+                        return this.unshift(value);
                     node.value = value;
                     this.head = node;
                     return node;
@@ -992,9 +995,9 @@ require = function () {
                     return new Node(value, this.head, (_b = this.head) === null || _b === void 0 ? void 0 : _b.prev, this);
                 }
                 pushRotationally(value) {
-                    if (!this.head)
-                        return this.push(value);
                     const node = this.head;
+                    if (!node)
+                        return this.push(value);
                     node.value = value;
                     this.head = node.next;
                     return node;
@@ -1105,8 +1108,9 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.memoize = void 0;
+            exports.reduce = exports.memoize = void 0;
             const global_1 = _dereq_('./global');
+            const compare_1 = _dereq_('./compare');
             function memoize(f, identify = (...as) => as[0], memory) {
                 if (typeof identify === 'object')
                     return memoize(f, void 0, identify);
@@ -1125,8 +1129,24 @@ require = function () {
                 };
             }
             exports.memoize = memoize;
+            function reduce(f, identify = (...as) => as[0]) {
+                let key = [];
+                let val = [];
+                return (...as) => {
+                    const b = identify(...as);
+                    if (!(0, compare_1.equal)(key, b)) {
+                        key = b;
+                        val = f(...as);
+                    }
+                    return val;
+                };
+            }
+            exports.reduce = reduce;
         },
-        { './global': 17 }
+        {
+            './compare': 12,
+            './global': 17
+        }
     ],
     21: [
         function (_dereq_, module, exports) {
@@ -5564,11 +5584,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function* figure(target, footnotes, opts = {}) {
                 var _a, _b, _c;
-                const refs = new multimap_1.MultiMap([
-                    ...target.querySelectorAll('a.label:not(.disabled)[data-label]'),
-                    ...(_a = footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label:not(.disabled)')) !== null && _a !== void 0 ? _a : [],
-                    ...(_b = footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label:not(.disabled)')) !== null && _b !== void 0 ? _b : []
-                ].map(el => [
+                const refs = new multimap_1.MultiMap((0, array_1.push)((0, array_1.push)((0, array_1.push)([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), (_a = footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label:not(.disabled)')) !== null && _a !== void 0 ? _a : []), (_b = footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label:not(.disabled)')) !== null && _b !== void 0 ? _b : []).map(el => [
                     el.getAttribute('data-label'),
                     el
                 ]));
@@ -8130,14 +8146,16 @@ require = function () {
             const code_1 = _dereq_('./render/code');
             const math_1 = _dereq_('./render/math');
             const media_1 = _dereq_('./render/media');
+            const memoize_1 = _dereq_('spica/memoize');
             const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).media:not(.invalid), pre.code:not(.invalid), .math:not(.invalid)';
+            const extend = (0, memoize_1.reduce)(opts => ({
+                code: code_1.code,
+                math: math_1.math,
+                media: {},
+                ...opts
+            }));
             function render(target, opts = {}) {
-                opts = {
-                    code: code_1.code,
-                    math: math_1.math,
-                    media: {},
-                    ...opts
-                };
+                opts = extend(opts);
                 if (target.classList.contains('invalid'))
                     return;
                 const base = global_1.location.href;
@@ -8178,7 +8196,8 @@ require = function () {
             './render/code': 146,
             './render/math': 147,
             './render/media': 148,
-            'spica/global': 17
+            'spica/global': 17,
+            'spica/memoize': 20
         }
     ],
     146: [
@@ -8270,17 +8289,19 @@ require = function () {
             const audio_1 = _dereq_('./media/audio');
             const image_1 = _dereq_('./media/image');
             const url_1 = _dereq_('spica/url');
+            const memoize_1 = _dereq_('spica/memoize');
+            const extend = (0, memoize_1.reduce)(opts => ({
+                twitter: twitter_1.twitter,
+                youtube: youtube_1.youtube,
+                pdf: pdf_1.pdf,
+                video: video_1.video,
+                audio: audio_1.audio,
+                image: image_1.image,
+                ...opts
+            }));
             function media(base, target, opts, cache) {
                 var _a, _b, _c, _d, _e, _f;
-                opts = {
-                    twitter: twitter_1.twitter,
-                    youtube: youtube_1.youtube,
-                    pdf: pdf_1.pdf,
-                    video: video_1.video,
-                    audio: audio_1.audio,
-                    image: image_1.image,
-                    ...opts
-                };
+                opts = extend(opts);
                 const url = new url_1.ReadonlyURL(target.getAttribute('data-src'), base);
                 const alt = target.getAttribute('alt') || '';
                 return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url, cache)) || ((_c = opts.pdf) === null || _c === void 0 ? void 0 : _c.call(opts, url, cache)) || ((_d = opts.video) === null || _d === void 0 ? void 0 : _d.call(opts, url, alt, cache)) || ((_e = opts.audio) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt, cache)) || ((_f = opts.image) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt, cache));
@@ -8294,6 +8315,7 @@ require = function () {
             './media/twitter': 152,
             './media/video': 153,
             './media/youtube': 154,
+            'spica/memoize': 20,
             'spica/url': 28
         }
     ],
