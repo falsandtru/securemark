@@ -5,8 +5,7 @@ import { line } from '../constraint/line';
 import { bind } from '../monad/bind';
 import { match } from './match';
 import { open } from './surround';
-import { memoize } from 'spica/memoize';
-import { Cache } from 'spica/cache';
+import { reduce } from 'spica/memoize';
 import { join } from 'spica/array';
 
 export function indent<P extends Parser<unknown>>(parser: P): P;
@@ -14,11 +13,10 @@ export function indent<T>(parser: Parser<T>): Parser<T> {
   assert(parser);
   return bind(match(
     /^(?=(([ \t　])\2*))/,
-    memoize<string[], Parser<string>, string>(
+    reduce<string[], Parser<string>, string>(
     ([, indent]) =>
       some(line(open(indent, source => [[unline(source)], '']))),
-    ([, indent]) => indent,
-    new Cache(100))),
+    ([, indent]) => indent)),
     (nodes, rest, context) => {
       const result = parser(join(nodes, '\n'), context);
       return result && exec(result) === ''
