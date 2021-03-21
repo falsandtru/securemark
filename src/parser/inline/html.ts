@@ -89,7 +89,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
             ? [unshift(as, bs), rest]
             : undefined)),
     ([, tag]) => tag,
-    new Cache(100))),
+    new Cache(1000))),
 ])))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
