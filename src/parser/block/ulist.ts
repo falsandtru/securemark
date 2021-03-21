@@ -13,7 +13,7 @@ export const ulist: UListParser = lazy(() => block(fmap(validate(
     fmap(
       inits([
         line(open(/^-(?:$|\s)/, trim(subsequence([checkbox, trimStart(some(inline))])), true)),
-        indent(union([ulist_, olist_, ilist_]))
+        indent(union([ulist_, olist_, ilist_])),
       ]),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
   ]))))),

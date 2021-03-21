@@ -11,7 +11,7 @@ export const ilist: IListParser = lazy(() => block(fmap(validate(
     fmap(
       inits([
         line(open(/^[-+*](?:$|\s)/, trim(some(inline)), true)),
-        indent(union([ulist_, olist_, ilist_]))
+        indent(union([ulist_, olist_, ilist_])),
       ]),
       ns => [html('li', defrag(fillFirstLine(ns)))]),
   ])))),

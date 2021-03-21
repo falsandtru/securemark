@@ -20,7 +20,7 @@ const list = (type: string, delim: string): OListParser => fmap(
     fmap(
       inits([
         line(open(items[delim], trim(subsequence([checkbox, trimStart(some(inline))])), true)),
-        indent(union([ulist_, olist_, ilist_]))
+        indent(union([ulist_, olist_, ilist_])),
       ]),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
   ])))),
