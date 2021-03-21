@@ -5302,7 +5302,7 @@ require = function () {
                     'data-type': style(type) || global_1.undefined
                 });
                 const value = ((_d = (_c = el.firstElementChild) === null || _c === void 0 ? void 0 : _c.getAttribute('data-value').match(initial(type))) === null || _d === void 0 ? void 0 : _d[0]) || '';
-                for (let es = el.children, i = 0; i < es.length; ++i) {
+                for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
                     const el = es[i];
                     if (el.getAttribute('data-value') !== value)
                         break;
