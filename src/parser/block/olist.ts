@@ -100,7 +100,7 @@ function format(el: HTMLOListElement, type: string, delim: string): HTMLOListEle
     'data-type': style(type) || undefined,
   });
   const value = el.firstElementChild?.getAttribute('data-value')!.match(initial(type))?.[0] || '';
-  for (let es = el.children, i = 0; i < es.length; ++i) {
+  for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     if (el.getAttribute('data-value') !== value) break;
     el.removeAttribute('data-value');
