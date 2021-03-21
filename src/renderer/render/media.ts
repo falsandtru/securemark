@@ -7,10 +7,16 @@ import { audio } from './media/audio';
 import { image } from './media/image';
 import { Collection } from 'spica/collection';
 import { ReadonlyURL } from 'spica/url';
+import { reduce } from 'spica/memoize';
 
-export function media(base: string, target: HTMLImageElement, opts: NonNullable<RenderingOptions['media']>, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
+type MediaOptions = NonNullable<RenderingOptions['media']>;
+
+const extend = reduce((opts: MediaOptions): MediaOptions =>
+  ({ twitter, youtube, pdf, video, audio, image, ...opts }));
+
+export function media(base: string, target: HTMLImageElement, opts: MediaOptions, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
   assert(target.matches('img:not([src])[data-src]'));
-  opts = { twitter, youtube, pdf, video, audio, image, ...opts };
+  opts = extend(opts);
   const url = new ReadonlyURL(target.getAttribute('data-src')!, base);
   const alt = target.getAttribute('alt') || '';
   return opts.twitter?.(url)
