@@ -3093,13 +3093,12 @@ require = function () {
             const match_1 = _dereq_('./match');
             const surround_1 = _dereq_('./surround');
             const memoize_1 = _dereq_('spica/memoize');
-            const cache_1 = _dereq_('spica/cache');
             const array_1 = _dereq_('spica/array');
             function indent(parser) {
-                return (0, bind_1.bind)((0, match_1.match)(/^(?=(([^\S\n])\2*))/, (0, memoize_1.memoize)(([, indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [
+                return (0, bind_1.bind)((0, match_1.match)(/^(?=(([ \t　])\2*))/, (0, memoize_1.reduce)(([, indent]) => (0, some_1.some)((0, line_1.line)((0, surround_1.open)(indent, source => [
                     [unline(source)],
                     ''
-                ]))), ([, indent]) => indent, new cache_1.Cache(100))), (nodes, rest, context) => {
+                ]))), ([, indent]) => indent)), (nodes, rest, context) => {
                     const result = parser((0, array_1.join)(nodes, '\n'), context);
                     return result && (0, parser_1.exec)(result) === '' ? [
                         (0, parser_1.eval)(result),
@@ -3120,7 +3119,6 @@ require = function () {
             './match': 47,
             './surround': 52,
             'spica/array': 6,
-            'spica/cache': 9,
             'spica/global': 17,
             'spica/memoize': 20
         }
@@ -6764,7 +6762,7 @@ require = function () {
                 ] : global_1.undefined, ([as, bs], rest) => as.length === 1 ? [
                     (0, array_1.unshift)(as, bs),
                     rest
-                ] : global_1.undefined)), ([, tag]) => tag, new cache_1.Cache(100)))
+                ] : global_1.undefined)), ([, tag]) => tag, new cache_1.Cache(1000)))
             ])))));
             exports.attribute = (0, combinator_1.union)([(0, source_1.str)(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/)]);
             function elem(tag, as, bs, cs, context) {
