@@ -13,11 +13,11 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('a1. ')), undefined);
       assert.deepStrictEqual(inspect(parser('aZ. ')), undefined);
       assert.deepStrictEqual(inspect(parser('Az. ')), undefined);
-      assert.deepStrictEqual(inspect(parser('0')), undefined);
-      assert.deepStrictEqual(inspect(parser('0 ')), undefined);
-      assert.deepStrictEqual(inspect(parser('0\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('0.')), undefined);
-      assert.deepStrictEqual(inspect(parser('0.a')), undefined);
+      assert.deepStrictEqual(inspect(parser('1')), undefined);
+      assert.deepStrictEqual(inspect(parser('1 ')), undefined);
+      assert.deepStrictEqual(inspect(parser('1\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('1.')), undefined);
+      assert.deepStrictEqual(inspect(parser('1.a')), undefined);
       assert.deepStrictEqual(inspect(parser('1')), undefined);
       assert.deepStrictEqual(inspect(parser('1 ')), undefined);
       assert.deepStrictEqual(inspect(parser('1\n')), undefined);
@@ -27,21 +27,23 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1.a')), undefined);
       assert.deepStrictEqual(inspect(parser('1.\n')), undefined);
       assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), undefined);
-      assert.deepStrictEqual(inspect(parser('0.\n0 ')), undefined);
-      assert.deepStrictEqual(inspect(parser('0. !http://host')), [['<ol><li>!<a href="http://host" target="_blank">http://host</a></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. \n1 ')), undefined);
+      assert.deepStrictEqual(inspect(parser('1. !http://host')), [['<ol><li>!<a href="http://host" target="_blank">http://host</a></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1)')), undefined);
+      assert.deepStrictEqual(inspect(parser('(1)\n')), undefined);
       assert.deepStrictEqual(inspect(parser('(I) ')), undefined);
       assert.deepStrictEqual(inspect(parser('(A) ')), undefined);
-      assert.deepStrictEqual(inspect(parser(' 0.')), undefined);
+      assert.deepStrictEqual(inspect(parser(' 1.')), undefined);
     });
 
     it('single', () => {
       // pending
-      assert.deepStrictEqual(inspect(parser('0. ')), [['<ol><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. ')), [['<ol><li></li></ol>'], '']);
       // filled
-      assert.deepStrictEqual(inspect(parser('0. \\')), [['<ol><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('0. \\\n')), [['<ol><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('0. -')), [['<ol><li>-</li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('0. -\n')), [['<ol><li>-</li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. \\')), [['<ol><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. \\\n')), [['<ol><li></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. -')), [['<ol><li>-</li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1. -\n')), [['<ol><li>-</li></ol>'], '']);
       // pending
       assert.deepStrictEqual(inspect(parser('(1) ')), [['<ol data-format="paren"><li></li></ol>'], '']);
       // filled
@@ -92,8 +94,8 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1.\n1-')), [['<ol><li></li><li data-value="1-."></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1.\n1-1')), [['<ol><li></li><li data-value="1-1."></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('(1)-1 ')), [['<ol data-format="paren"><li data-value="(1)-1"></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('(1)\n(1)-')), [['<ol data-format="paren"><li></li><li data-value="(1)-"></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('(1)\n(1)-1')), [['<ol data-format="paren"><li></li><li data-value="(1)-1"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1) \n(1)-')), [['<ol data-format="paren"><li></li><li data-value="(1)-"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1) \n(1)-1')), [['<ol data-format="paren"><li></li><li data-value="(1)-1"></li></ol>'], '']);
     });
 
     it('type', () => {
@@ -103,7 +105,7 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('a. ')), [['<ol type="a" data-type="lower-alpha"><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('I. ')), [['<ol type="I" data-type="upper-roman"><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('A. ')), [['<ol type="A" data-type="upper-alpha"><li></li></ol>'], '']);
-      assert.deepStrictEqual(inspect(parser('a.\n0.\nc')), [['<ol type="a" data-type="lower-alpha"><li></li><li data-value="0."></li><li data-value="c."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('a.\n1.\nc')), [['<ol type="a" data-type="lower-alpha"><li></li><li data-value="1."></li><li data-value="c."></li></ol>'], '']);
     });
 
     it('checkbox', () => {
