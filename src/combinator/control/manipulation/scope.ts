@@ -7,7 +7,7 @@ export function focus<T>(scope: string | RegExp, parser: Parser<T>): Parser<T> {
   assert(parser);
   const match: (source: string) => string = typeof scope === 'string'
     ? source => source.slice(0, scope.length) === scope ? scope : ''
-    : source => source.match(scope)?.[0] || '';
+    : source => source.match(scope)?.[0] ?? '';
   return (source, context) => {
     if (source === '') return;
     const src = match(source);

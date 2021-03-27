@@ -25,7 +25,7 @@ const inherit2 = memoize<MarkdownParser.Context, (url: string) => MarkdownParser
 
 export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Context): DocumentFragment {
   if (source.length > SEGMENT_LENGTH_LIMIT) throw new Error(`Too large input over ${SEGMENT_LENGTH_LIMIT.toLocaleString('en')} in length.`);
-  const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
+  const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
   assert(!context?.delimiters);
   context = context && url === '' && context.id === opts.id

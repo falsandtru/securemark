@@ -23,7 +23,7 @@ export const account: AutolinkParser.AccountParser = creator(rewrite(
         class: 'account',
         href: source.indexOf('/') > -1
           ? `https://${source.slice(1).replace('/', '/@')}`
-          : `${url?.origin || ''}/${source}`,
+          : `${url?.origin ?? ''}/${source}`,
         target: source.indexOf('/') > -1 || url && url.origin !== host?.origin
           ? '_blank'
           : undefined,

@@ -18,7 +18,7 @@ export function media(base: string, target: HTMLImageElement, opts: MediaOptions
   assert(target.matches('img:not([src])[data-src]'));
   opts = extend(opts);
   const url = new ReadonlyURL(target.getAttribute('data-src')!, base);
-  const alt = target.getAttribute('alt') || '';
+  const alt = target.getAttribute('alt') ?? '';
   return opts.twitter?.(url)
       || opts.youtube?.(url, cache)
       || opts.pdf?.(url, cache)

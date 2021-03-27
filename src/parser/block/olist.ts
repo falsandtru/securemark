@@ -99,7 +99,7 @@ function format(el: HTMLOListElement, type: string, delim: string): HTMLOListEle
     'data-format': delim === '.' ? undefined : 'paren',
     'data-type': style(type) || undefined,
   });
-  const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] || '';
+  const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
   for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
     if (el.getAttribute('data-marker') !== marker) break;

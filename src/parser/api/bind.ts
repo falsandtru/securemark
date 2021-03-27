@@ -42,7 +42,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
 
   function* parse(source: string): Generator<Progress, undefined, undefined> {
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated.');
-    const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() || '';
+    const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
     source = normalize(prepare(source));
     context = ObjectAssign(context, { url: url ? new ReadonlyURL(url) : undefined });
     const rev = revision = Symbol();
@@ -111,14 +111,14 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       yield { type: 'block', value: el };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of footnote(next(0)?.parentNode || target, settings.footnotes, context)) {
+    for (const el of footnote(next(0)?.parentNode ?? target, settings.footnotes, context)) {
       assert(rev === revision);
       el
         ? yield { type: 'footnote', value: el }
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of figure(next(0)?.parentNode || target, settings.footnotes, context)) {
+    for (const el of figure(next(0)?.parentNode ?? target, settings.footnotes, context)) {
       assert(rev === revision);
       el
         ? yield { type: 'figure', value: el }
@@ -143,7 +143,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
     for (let i = 0; i < blocks.length; ++i) {
       const block = blocks[i];
       len += block[0].length;
-      el = block[1][0] || el;
+      el = block[1][0] ?? el;
       if (len >= index) break;
     }
     return el;
