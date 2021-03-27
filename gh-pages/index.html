@@ -123,8 +123,8 @@
   ol[data-format="paren"][type="a"] > li::before {
     content: "(" counter(counter, lower-alpha) ") ";
   }
-  ol > li[data-value]::before {
-    content: attr(data-value) " " !important;
+  ol > li[data-marker]::before {
+    content: attr(data-marker) " " !important;
   }
   blockquote {
     padding-inline-start: .3em;

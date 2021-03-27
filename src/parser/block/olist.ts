@@ -22,7 +22,7 @@ const list = (type: string, delim: string): OListParser => fmap(
         line(open(items[delim], trim(subsequence([checkbox, trimStart(some(inline))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
-      (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-value': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
+      (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
   ])))),
   es => [format(html('ol', es), type, delim)]);
 
@@ -99,11 +99,11 @@ function format(el: HTMLOListElement, type: string, delim: string): HTMLOListEle
     'data-format': delim === '.' ? undefined : 'paren',
     'data-type': style(type) || undefined,
   });
-  const value = el.firstElementChild?.getAttribute('data-value')!.match(initial(type))?.[0] || '';
+  const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] || '';
   for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    if (el.getAttribute('data-value') !== value) break;
-    el.removeAttribute('data-value');
+    if (el.getAttribute('data-marker') !== marker) break;
+    el.removeAttribute('data-marker');
   }
   return el;
 }
