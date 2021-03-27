@@ -1513,15 +1513,6 @@ require = function () {
             exports.unique = exports.rnd0Z = exports.rnd0z = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd36 = exports.rnd32 = exports.rnd16 = void 0;
             const global_1 = _dereq_('./global');
             const bases = [...Array(7)].map((_, i) => 1 << i);
-            assert.deepStrictEqual(bases, [
-                1,
-                2,
-                4,
-                8,
-                16,
-                32,
-                64
-            ]);
             const dict = [
                 ...[...Array(36)].map((_, i) => i.toString(36)),
                 ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26)
@@ -2399,7 +2390,6 @@ require = function () {
                     case 3: {
                             const sourceChildren = children;
                             const targetChildren = this.children_;
-                            assert.deepStrictEqual(Object.keys(sourceChildren), Object.keys(targetChildren));
                             for (const name of (0, alias_1.ObjectKeys)(targetChildren)) {
                                 const oldChild = targetChildren[name];
                                 const newChild = sourceChildren[name];
@@ -3449,10 +3439,6 @@ require = function () {
             }
             exports.exec = exec;
             function check(source, result, mustConsume = true) {
-                assert.doesNotThrow(() => {
-                    if (source.slice(+mustConsume).slice(-exec(result, '').length || source.length) !== exec(result, ''))
-                        throw new Error();
-                });
                 return true;
             }
             exports.check = check;
@@ -3566,7 +3552,6 @@ require = function () {
                         if ((_a = context === null || context === void 0 ? void 0 : context.delimiters) === null || _a === void 0 ? void 0 : _a.some(match => match(rest)))
                             break;
                         const result = parser(rest, context);
-                        assert.doesNotThrow(() => limit < 0 && (0, parser_1.check)(rest, result));
                         if (!result)
                             break;
                         nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
