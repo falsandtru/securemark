@@ -1513,6 +1513,15 @@ require = function () {
             exports.unique = exports.rnd0Z = exports.rnd0z = exports.rnd0f = exports.rnd64 = exports.rnd62 = exports.rnd36 = exports.rnd32 = exports.rnd16 = void 0;
             const global_1 = _dereq_('./global');
             const bases = [...Array(7)].map((_, i) => 1 << i);
+            assert.deepStrictEqual(bases, [
+                1,
+                2,
+                4,
+                8,
+                16,
+                32,
+                64
+            ]);
             const dict = [
                 ...[...Array(36)].map((_, i) => i.toString(36)),
                 ...[...Array(36)].map((_, i) => i.toString(36).toUpperCase()).slice(-26)
@@ -2390,6 +2399,7 @@ require = function () {
                     case 3: {
                             const sourceChildren = children;
                             const targetChildren = this.children_;
+                            assert.deepStrictEqual(Object.keys(sourceChildren), Object.keys(targetChildren));
                             for (const name of (0, alias_1.ObjectKeys)(targetChildren)) {
                                 const oldChild = targetChildren[name];
                                 const newChild = sourceChildren[name];
@@ -3229,8 +3239,8 @@ require = function () {
             const parser_1 = _dereq_('../../data/parser');
             function focus(scope, parser) {
                 const match = typeof scope === 'string' ? source => source.slice(0, scope.length) === scope ? scope : '' : source => {
-                    var _a;
-                    return ((_a = source.match(scope)) === null || _a === void 0 ? void 0 : _a[0]) || '';
+                    var _a, _b;
+                    return (_b = (_a = source.match(scope)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : '';
                 };
                 return (source, context) => {
                     if (source === '')
@@ -3439,6 +3449,10 @@ require = function () {
             }
             exports.exec = exec;
             function check(source, result, mustConsume = true) {
+                assert.doesNotThrow(() => {
+                    if (source.slice(+mustConsume).slice(-exec(result, '').length || source.length) !== exec(result, ''))
+                        throw new Error();
+                });
                 return true;
             }
             exports.check = check;
@@ -3552,6 +3566,7 @@ require = function () {
                         if ((_a = context === null || context === void 0 ? void 0 : context.delimiters) === null || _a === void 0 ? void 0 : _a.some(match => match(rest)))
                             break;
                         const result = parser(rest, context);
+                        assert.doesNotThrow(() => limit < 0 && (0, parser_1.check)(rest, result));
                         if (!result)
                             break;
                         nodes = nodes ? (0, array_1.push)(nodes, (0, parser_1.eval)(result)) : (0, parser_1.eval)(result);
@@ -3777,10 +3792,10 @@ require = function () {
                     index
                 };
                 function* parse(source) {
-                    var _a, _b, _c, _d;
+                    var _a, _b, _c, _d, _e, _f, _g;
                     if (settings.chunk && revision)
                         throw new Error('Chunks cannot be updated.');
-                    const url = ((_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
+                    const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
                     source = (0, normalize_1.normalize)((0, segment_1.prepare)(source));
                     context = (0, alias_1.ObjectAssign)(context, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
                     const rev = revision = Symbol();
@@ -3854,7 +3869,7 @@ require = function () {
                     }
                     while (dels.length > 0) {
                         const [el] = dels.shift();
-                        (_b = el.parentNode) === null || _b === void 0 ? void 0 : _b.removeChild(el);
+                        (_c = el.parentNode) === null || _c === void 0 ? void 0 : _c.removeChild(el);
                         yield {
                             type: 'block',
                             value: el
@@ -3862,7 +3877,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of (0, footnote_1.footnote)(((_c = next(0)) === null || _c === void 0 ? void 0 : _c.parentNode) || target, settings.footnotes, context)) {
+                    for (const el of (0, footnote_1.footnote)((_e = (_d = next(0)) === null || _d === void 0 ? void 0 : _d.parentNode) !== null && _e !== void 0 ? _e : target, settings.footnotes, context)) {
                         el ? yield {
                             type: 'footnote',
                             value: el
@@ -3870,7 +3885,7 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of (0, figure_1.figure)(((_d = next(0)) === null || _d === void 0 ? void 0 : _d.parentNode) || target, settings.footnotes, context)) {
+                    for (const el of (0, figure_1.figure)((_g = (_f = next(0)) === null || _f === void 0 ? void 0 : _f.parentNode) !== null && _g !== void 0 ? _g : target, settings.footnotes, context)) {
                         el ? yield {
                             type: 'figure',
                             value: el
@@ -3888,12 +3903,13 @@ require = function () {
                     return bottom;
                 }
                 function nearest(index) {
+                    var _a;
                     let el;
                     let len = 0;
                     for (let i = 0; i < blocks.length; ++i) {
                         const block = blocks[i];
                         len += block[0].length;
-                        el = block[1][0] || el;
+                        el = (_a = block[1][0]) !== null && _a !== void 0 ? _a : el;
                         if (len >= index)
                             break;
                     }
@@ -4068,23 +4084,23 @@ require = function () {
             const inherit = (0, memoize_1.memoize)(context => (0, alias_1.ObjectCreate)(context), new WeakMap());
             const inherit2 = (0, memoize_1.memoize)(context => (0, memoize_1.memoize)(_ => (0, alias_1.ObjectCreate)(context)), new WeakMap());
             function parse(source, opts = {}, context) {
-                var _a, _b, _c, _d, _e, _f, _g, _h;
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
                 if (source.length > segment_1.SEGMENT_LENGTH_LIMIT)
                     throw new Error(`Too large input over ${ segment_1.SEGMENT_LENGTH_LIMIT.toLocaleString('en') } in length.`);
-                const url = ((_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) || '';
+                const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
                 source = !context ? (0, normalize_1.normalize)(source) : source;
                 context = context && url === '' && context.id === opts.id ? context : (0, alias_1.ObjectAssign)(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
-                    host: (_c = (_b = opts.host) !== null && _b !== void 0 ? _b : context === null || context === void 0 ? void 0 : context.host) !== null && _c !== void 0 ? _c : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
+                    host: (_d = (_c = opts.host) !== null && _c !== void 0 ? _c : context === null || context === void 0 ? void 0 : context.host) !== null && _d !== void 0 ? _d : new url_1.ReadonlyURL(global_1.location.pathname, global_1.location.origin),
                     url: url ? new url_1.ReadonlyURL(url) : context === null || context === void 0 ? void 0 : context.url,
-                    id: (_d = opts.id) !== null && _d !== void 0 ? _d : context === null || context === void 0 ? void 0 : context.id,
+                    id: (_e = opts.id) !== null && _e !== void 0 ? _e : context === null || context === void 0 ? void 0 : context.id,
                     footnotes: global_1.undefined,
                     header: global_1.undefined,
                     test: global_1.undefined
                 });
-                if (((_e = context.host) === null || _e === void 0 ? void 0 : _e.origin) === 'null')
+                if (((_f = context.host) === null || _f === void 0 ? void 0 : _f.origin) === 'null')
                     throw new Error(`Invalid host: ${ context.host.href }`);
                 const es = [];
-                let head = (_f = opts.header) !== null && _f !== void 0 ? _f : true;
+                let head = (_g = opts.header) !== null && _g !== void 0 ? _g : true;
                 for (const seg of (0, segment_1.segment)(source)) {
                     (0, array_1.push)(es, (0, parser_1.eval)(head && (0, header_1.header)(seg, context) || (0, block_1.block)(seg, context), []));
                     head = false;
@@ -4284,7 +4300,7 @@ require = function () {
             exports.segment = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300))));
             exports.segment_ = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.clear)((0, combinator_1.fence)(opener, 300, false))), false);
             exports.codeblock = (0, combinator_1.block)((0, combinator_1.validate)('```', (0, combinator_1.fmap)((0, combinator_1.fence)(opener, 300), ([body, closer, opener, delim, lang, param], _, context) => {
-                var _a, _b;
+                var _a, _b, _c;
                 [lang, param] = language.test(lang) ? [
                     lang,
                     param
@@ -4301,7 +4317,7 @@ require = function () {
                             'data-invalid-type': closer ? 'argument' : 'closer',
                             'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
-                const file = path.split('/').pop() || '';
+                const file = (_a = path.split('/').pop()) !== null && _a !== void 0 ? _a : '';
                 const ext = file && file.indexOf('.') > 0 ? file.split('.').pop() : '';
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
                 const el = (0, typed_dom_1.html)('pre', { class: 'notranslate' }, body.slice(0, -1) || global_1.undefined);
@@ -4312,7 +4328,7 @@ require = function () {
                     (0, typed_dom_1.define)(el, (0, typed_dom_1.defrag)((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)(el.textContent, context), [])));
                 }
                 path && el.setAttribute('data-path', path);
-                if ((_b = (_a = context.caches) === null || _a === void 0 ? void 0 : _a.code) === null || _b === void 0 ? void 0 : _b.has(`${ lang }\n${ el.textContent }`)) {
+                if ((_c = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.code) === null || _c === void 0 ? void 0 : _c.has(`${ lang }\n${ el.textContent }`)) {
                     (0, typed_dom_1.define)(el, context.caches.code.get(`${ lang }\n${ el.textContent }`).cloneNode(true).childNodes);
                 }
                 return [el];
@@ -5226,7 +5242,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
             const array_1 = _dereq_('spica/array');
-            exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.match)(/^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/, (0, memoize_1.memoize)(ms => list(type(ms[1] || ms[3]), ms[2] || ms[4]), ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
+            exports.olist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.match)(/^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)*)(?=[^\S\n]|\n[^\S\n]*\S))/, (0, memoize_1.memoize)(ms => list(type(ms[1] || ms[3]), ms[2] || ms[4]), ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
             const list = (type, delim) => (0, combinator_1.fmap)((0, combinator_1.context)({ syntax: { inline: { media: false } } }, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.inits)([
                     (0, combinator_1.line)((0, combinator_1.open)(items[delim], (0, combinator_1.trim)((0, combinator_1.subsequence)([
                         ulist_1.checkbox,
@@ -5237,18 +5253,18 @@ require = function () {
                         exports.olist_,
                         ilist_1.ilist_
                     ]))
-                ]), ns => [(0, typed_dom_1.html)('li', { 'data-value': ns[0] }, (0, typed_dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))])])))), es => [format((0, typed_dom_1.html)('ol', es), type, delim)]);
+                ]), ns => [(0, typed_dom_1.html)('li', { 'data-marker': ns[0] }, (0, typed_dom_1.defrag)((0, ulist_1.fillFirstLine)((0, array_1.shift)(ns)[1])))])])))), es => [format((0, typed_dom_1.html)('ol', es), type, delim)]);
             const items = {
-                '.': (0, combinator_1.focus)(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/, source => [
+                '.': (0, combinator_1.focus)(/^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/, source => [
                     [`${ source.split('.', 1)[0] }.`],
                     ''
                 ]),
-                ')': (0, combinator_1.focus)(/^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/, source => [
-                    [source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')],
+                ')': (0, combinator_1.focus)(/^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/, source => [
+                    [source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)\)?$/, '($1)')],
                     ''
                 ])
             };
-            exports.olist_ = (0, combinator_1.convert)(source => source[0] === '(' ? source.replace(/^\(((?:[0-9]+|[a-z]+))\)?(?:-[0-9]*)?(?=$|\n)/, `($1) `).replace(/^\(\)?(?=$|\n)/, `(1) `) : source.replace(/^((?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?)\.?(?=$|\n)/, `$1. `), exports.olist);
+            exports.olist_ = (0, combinator_1.convert)(source => source[0] !== '(' ? source.replace(/^((?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*)\.?(?=$|\n)/, `$1. `) : source.replace(/^\((?=$|\n)/, `(1) `).replace(/^\(((?:[0-9]+|[a-z]+))\)?((?:-(?!-)[0-9]*)*(?=$|\n))/, `($1)$2 `), exports.olist);
             function type(index) {
                 switch (index) {
                 case 'i':
@@ -5292,7 +5308,7 @@ require = function () {
                 }
             }
             function format(el, type, delim) {
-                var _a, _b, _c, _d;
+                var _a, _b, _c, _d, _e;
                 if ((_b = (_a = el.firstElementChild) === null || _a === void 0 ? void 0 : _a.firstElementChild) === null || _b === void 0 ? void 0 : _b.classList.contains('checkbox')) {
                     el.setAttribute('class', 'checklist');
                 }
@@ -5301,12 +5317,12 @@ require = function () {
                     'data-format': delim === '.' ? global_1.undefined : 'paren',
                     'data-type': style(type) || global_1.undefined
                 });
-                const value = ((_d = (_c = el.firstElementChild) === null || _c === void 0 ? void 0 : _c.getAttribute('data-value').match(initial(type))) === null || _d === void 0 ? void 0 : _d[0]) || '';
+                const marker = (_e = (_d = (_c = el.firstElementChild) === null || _c === void 0 ? void 0 : _c.getAttribute('data-marker').match(initial(type))) === null || _d === void 0 ? void 0 : _d[0]) !== null && _e !== void 0 ? _e : '';
                 for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
                     const el = es[i];
-                    if (el.getAttribute('data-value') !== value)
+                    if (el.getAttribute('data-marker') !== marker)
                         break;
-                    el.removeAttribute('data-value');
+                    el.removeAttribute('data-marker');
                 }
                 return el;
             }
@@ -6012,14 +6028,17 @@ require = function () {
             exports.account = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.open)('@', (0, combinator_1.tails)([
                 (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
                 (0, combinator_1.verify)((0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 63)
-            ])), (source, {host, url}) => [
-                [(0, typed_dom_1.html)('a', {
-                        class: 'account',
-                        href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/${ source }`,
-                        target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
-                    }, source)],
-                ''
-            ]));
+            ])), (source, {host, url}) => {
+                var _a;
+                return [
+                    [(0, typed_dom_1.html)('a', {
+                            class: 'account',
+                            href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/${ source }`,
+                            target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
+                        }, source)],
+                    ''
+                ];
+            }));
         },
         {
             '../../../combinator': 37,
@@ -6142,14 +6161,17 @@ require = function () {
             exports.hashtag = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, combinator_1.tails)([
                 (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
                 (0, combinator_1.validate)(/^[0-9]{0,4}(?:[A-Za-z]|[^\x00-\x7F\s])/, (0, source_1.str)(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s]){1,128}(?![0-9A-Za-z]|[^\x00-\x7F\s])/))
-            ])), (source, {host, url}) => [
-                [(0, typed_dom_1.html)('a', {
-                        class: 'hashtag',
-                        href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (url === null || url === void 0 ? void 0 : url.origin) || '' }/hashtags/${ source.slice(1) }`,
-                        target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : undefined
-                    }, source)],
-                ''
-            ]));
+            ])), (source, {host, url}) => {
+                var _a;
+                return [
+                    [(0, typed_dom_1.html)('a', {
+                            class: 'hashtag',
+                            href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/hashtags/${ source.slice(1) }`,
+                            target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : undefined
+                        }, source)],
+                    ''
+                ];
+            }));
         },
         {
             '../../../combinator': 37,
@@ -8241,7 +8263,10 @@ require = function () {
                     const Prism = __importStar(typeof window !== 'undefined' ? window['Prism'] : typeof global !== 'undefined' ? global['Prism'] : null);
                     function code(target, cache) {
                         const source = target.textContent;
-                        Prism.highlightElement(target, false, () => void (cache === null || cache === void 0 ? void 0 : cache.set(`${ target.getAttribute('data-lang') || '' }\n${ source }`, target.cloneNode(true))));
+                        Prism.highlightElement(target, false, () => {
+                            var _a;
+                            return void (cache === null || cache === void 0 ? void 0 : cache.set(`${ (_a = target.getAttribute('data-lang')) !== null && _a !== void 0 ? _a : '' }\n${ source }`, target.cloneNode(true)));
+                        });
                     }
                     exports.code = code;
                 }.call(this));
@@ -8298,11 +8323,11 @@ require = function () {
                 ...opts
             }));
             function media(base, target, opts, cache) {
-                var _a, _b, _c, _d, _e, _f;
+                var _a, _b, _c, _d, _e, _f, _g;
                 opts = extend(opts);
                 const url = new url_1.ReadonlyURL(target.getAttribute('data-src'), base);
-                const alt = target.getAttribute('alt') || '';
-                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, url, cache)) || ((_c = opts.pdf) === null || _c === void 0 ? void 0 : _c.call(opts, url, cache)) || ((_d = opts.video) === null || _d === void 0 ? void 0 : _d.call(opts, url, alt, cache)) || ((_e = opts.audio) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt, cache)) || ((_f = opts.image) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt, cache));
+                const alt = (_a = target.getAttribute('alt')) !== null && _a !== void 0 ? _a : '';
+                return ((_b = opts.twitter) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.youtube) === null || _c === void 0 ? void 0 : _c.call(opts, url, cache)) || ((_d = opts.pdf) === null || _d === void 0 ? void 0 : _d.call(opts, url, cache)) || ((_e = opts.video) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt, cache)) || ((_f = opts.audio) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt, cache)) || ((_g = opts.image) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt, cache));
             }
             exports.media = media;
         },
