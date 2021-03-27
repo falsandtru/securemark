@@ -28,9 +28,13 @@ describe('Unit: parser/block/olist', () => {
       assert.deepStrictEqual(inspect(parser('1.\n')), undefined);
       assert.deepStrictEqual(inspect(parser('1. a\n  1. a\n 1. a')), undefined);
       assert.deepStrictEqual(inspect(parser('1. \n1 ')), undefined);
+      assert.deepStrictEqual(inspect(parser('1. \n1--')), undefined);
+      assert.deepStrictEqual(inspect(parser('1. \n1--. ')), undefined);
       assert.deepStrictEqual(inspect(parser('1. !http://host')), [['<ol><li>!<a href="http://host" target="_blank">http://host</a></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('(1)')), undefined);
       assert.deepStrictEqual(inspect(parser('(1)\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('(1) \n(1)--')), undefined);
+      assert.deepStrictEqual(inspect(parser('(1) \n(1)-- ')), undefined);
       assert.deepStrictEqual(inspect(parser('(I) ')), undefined);
       assert.deepStrictEqual(inspect(parser('(A) ')), undefined);
       assert.deepStrictEqual(inspect(parser(' 1.')), undefined);
@@ -91,9 +95,11 @@ describe('Unit: parser/block/olist', () => {
 
     it('branch', () => {
       assert.deepStrictEqual(inspect(parser('1-1. ')), [['<ol><li data-value="1-1."></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('1-1-1. ')), [['<ol><li data-value="1-1-1."></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1.\n1-')), [['<ol><li></li><li data-value="1-."></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('1.\n1-1')), [['<ol><li></li><li data-value="1-1."></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('(1)-1 ')), [['<ol data-format="paren"><li data-value="(1)-1"></li></ol>'], '']);
+      assert.deepStrictEqual(inspect(parser('(1)-1-1 ')), [['<ol data-format="paren"><li data-value="(1)-1-1"></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('(1) \n(1)-')), [['<ol data-format="paren"><li></li><li data-value="(1)-"></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('(1) \n(1)-1')), [['<ol data-format="paren"><li></li><li data-value="(1)-1"></li></ol>'], '']);
     });

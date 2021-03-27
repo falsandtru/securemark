@@ -9,7 +9,7 @@ import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
 
 export const olist: OListParser = lazy(() => block(match(
-  /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)?(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)?)(?=[^\S\n]|\n[^\S\n]*\S))/,
+  /^(?=(?:([0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]+)*(\.)|\(([0-9]+|[a-z]+)(\))(?:-[0-9]+)*)(?=[^\S\n]|\n[^\S\n]*\S))/,
   memoize(
   ms => list(type(ms[1] || ms[3]), ms[2] || ms[4]),
   ms => type(ms[1] || ms[3]) + (ms[2] || ms[4])))));
@@ -28,21 +28,21 @@ const list = (type: string, delim: string): OListParser => fmap(
 
 const items = {
   '.': focus(
-    /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?(?![^.\n])\.?(?:$|\s)/,
+    /^(?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*(?![^\S\n])\.?(?=$|\s)/,
     (source: string) => [[`${source.split('.', 1)[0]}.`], '']),
   ')': focus(
-    /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-[0-9]*)?(?:$|\s)/,
-    (source: string) => [[source.trimEnd().replace(/^\((\w+)\)?$/, '($1)').replace(/^\($/, '(1)')], '']),
+    /^\((?:[0-9]*|[a-z]*)(?![^)\n])\)?(?:-(?!-)[0-9]*)*(?=$|\s)/,
+    (source: string) => [[source.trimEnd().replace(/^\($/, '(1)').replace(/^\((\w+)\)?$/, '($1)')], '']),
 } as const;
 
 export const olist_: OListParser = convert(
   source =>
-    source[0] === '('
+    source[0] !== '('
       ? source
-          .replace(/^\(((?:[0-9]+|[a-z]+))\)?(?:-[0-9]*)?(?=$|\n)/, `($1) `)
-          .replace(/^\(\)?(?=$|\n)/, `(1) `)
+          .replace(/^((?:[0-9]+|[a-z]+|[A-Z]+)(?:-(?!-)[0-9]*)*)\.?(?=$|\n)/, `$1. `)
       : source
-          .replace(/^((?:[0-9]+|[a-z]+|[A-Z]+)(?:-[0-9]*)?)\.?(?=$|\n)/, `$1. `),
+          .replace(/^\((?=$|\n)/, `(1) `)
+          .replace(/^\(((?:[0-9]+|[a-z]+))\)?((?:-(?!-)[0-9]*)*(?=$|\n))/, `($1)$2 `),
   olist);
 
 function type(index: string): string {

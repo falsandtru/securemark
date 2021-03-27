@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.205.0
+
+- Extend olist syntax to support multiple branch number.
+
 ## 0.204.2
 
 - Refactoring.
