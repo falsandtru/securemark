@@ -19,7 +19,7 @@ const origins = [
 
 export function twitter(url: URL): HTMLElement | undefined {
   if (!origins.includes(url.origin)) return;
-  if (url.pathname.split('/').pop()!.indexOf('.') > -1) return;
+  if (url.pathname.split('/').pop()!.indexOf('.') !== -1) return;
   if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
   return HTML.div({ class: 'media' }, [HTML.em(`loading ${url.href}`)], (h, tag) => {
     const outer = h(tag);

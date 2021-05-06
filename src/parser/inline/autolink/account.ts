@@ -21,10 +21,10 @@ export const account: AutolinkParser.AccountParser = creator(rewrite(
     html('a',
       {
         class: 'account',
-        href: source.indexOf('/') > -1
+        href: source.indexOf('/') !== -1
           ? `https://${source.slice(1).replace('/', '/@')}`
           : `${url?.origin ?? ''}/${source}`,
-        target: source.indexOf('/') > -1 || url && url.origin !== host?.origin
+        target: source.indexOf('/') !== -1 || url && url.origin !== host?.origin
           ? '_blank'
           : undefined,
       },

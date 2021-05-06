@@ -29,9 +29,9 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
   const match2 = (source: string): boolean => {
     if (!has) return true;
     const i = end ? source.indexOf(end, 1) : -1;
-    return i > -1
-      ? source.slice(0, i).indexOf(has, 1) > -1
-      : source.indexOf(has, 1) > -1;
+    return i !== -1
+      ? source.slice(0, i).indexOf(has, 1) !== -1
+      : source.indexOf(has, 1) !== -1;
   };
   return (source, context) => {
     if (source === '') return;
