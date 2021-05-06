@@ -4,7 +4,7 @@ import { str } from '../../source';
 import { html } from 'typed-dom';
 
 export const hashref: AutolinkParser.HashrefParser = creator(rewrite(
-  open('#', str(/^[0-9]{1,16}(?![0-9A-Za-z]|[^\x00-\x7F\s])/)),
+  open('#', str(/^[0-9]{1,16}(?![0-9A-Za-z']|[^\x00-\x7F\s])/)),
   (source, { host, url }) => [[
     html('a',
       {

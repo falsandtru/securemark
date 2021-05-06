@@ -19,7 +19,7 @@ export const autolink: AutolinkParser = fmap(
     // Escape unmatched email-like strings.
     str(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/),
     // Escape repeated symbols.
-    str(/^[@#]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
+    str(/^[@#]+(?![0-9A-Za-z']|[^\x00-\x7F\s])/),
     channel,
     account,
     // Escape unmatched account-like strings.
@@ -29,7 +29,7 @@ export const autolink: AutolinkParser = fmap(
     hashtag,
     hashref,
     // Escape unmatched hashtag-like strings.
-    str(/^#(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/),
+    str(/^#(?:[0-9A-Za-z']|[^\x00-\x7F\s])+/),
     anchor,
   ])))),
   ns => ns.length === 1 ? ns : [stringify(ns)]);

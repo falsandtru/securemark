@@ -14,7 +14,7 @@ export const hashtag: AutolinkParser.HashtagParser = creator(rewrite(
         ([source]) => source.length <= 253 + 1),
       verify(validate(
         /^[0-9]{0,4}(?:[A-Za-z]|[^\x00-\x7F\s])/,
-        str(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s]){1,128}(?:\((?=[0-9]{0,4}(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]){1,125}\))?/)),
+        str(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')){1,128}(?:\((?=[0-9]{0,4}(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')){1,125}\))?/)),
         ([source]) => source.length <= 128),
     ])),
   (source, { host, url }) => [[

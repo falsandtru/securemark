@@ -20,6 +20,8 @@ describe('Unit: parser/inline/autolink/hashref', () => {
       assert.deepStrictEqual(inspect(parser('##')), [['##'], '']);
       assert.deepStrictEqual(inspect(parser('##1')), [['##1'], '']);
       assert.deepStrictEqual(inspect(parser('###1')), [['###1'], '']);
+      assert.deepStrictEqual(inspect(parser(`#1'`)), [[`#1'`], '']);
+      assert.deepStrictEqual(inspect(parser(`#1''`)), [[`#1''`], '']);
       assert.deepStrictEqual(inspect(parser('#{}')), [['#'], '{}']);
       assert.deepStrictEqual(inspect(parser('#{{}')), [['#'], '{{}']);
       assert.deepStrictEqual(inspect(parser('#{}}')), [['#'], '{}}']);

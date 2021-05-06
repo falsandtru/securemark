@@ -3,6 +3,7 @@
 ## 0.206.0
 
 - Extend hashtag syntax to be possible to end with parenthesises.
+- Extend hashtag syntax to be possible to use quotations.
 
 ## 0.205.0
 
