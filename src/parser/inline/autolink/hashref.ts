@@ -1,3 +1,4 @@
+import { undefined } from 'spica/global';
 import { AutolinkParser } from '../../inline';
 import { rewrite, creator, open } from '../../../combinator';
 import { str } from '../../source';
