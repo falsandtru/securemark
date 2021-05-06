@@ -39,7 +39,6 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('a##b')), [['a##b'], '']);
       assert.deepStrictEqual(inspect(parser('あ#b')), [['あ#b'], '']);
       assert.deepStrictEqual(inspect(parser(' #a')), undefined);
-      assert.deepStrictEqual(inspect(parser('#12345a')), [['#12345a'], '']);
     });
 
     it('valid', () => {
@@ -64,7 +63,6 @@ describe('Unit: parser/inline/autolink/hashtag', () => {
       assert.deepStrictEqual(inspect(parser('#あ')), [['<a class="hashtag" href="/hashtags/あ">#あ</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#1a')), [['<a class="hashtag" href="/hashtags/1a">#1a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#1あ')), [['<a class="hashtag" href="/hashtags/1あ">#1あ</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('#1234a')), [['<a class="hashtag" href="/hashtags/1234a">#1234a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#domain/a')), [['<a class="hashtag" href="https://domain/hashtags/a" target="_blank">#domain/a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('#domain.co.jp/a')), [['<a class="hashtag" href="https://domain.co.jp/hashtags/a" target="_blank">#domain.co.jp/a</a>'], '']);
     });
