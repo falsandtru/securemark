@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.206.0
+
+- Extend hashtag syntax to be possible to end with parenthesises.
+
 ## 0.205.0
 
 - Extend olist syntax to support multiple branch number.
