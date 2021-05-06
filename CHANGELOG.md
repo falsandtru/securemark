@@ -4,6 +4,7 @@
 
 - Extend hashtag syntax to be possible to end with parenthesises.
 - Extend hashtag syntax to be possible to use quotations.
+- Extend hashtag syntax to be possible to use underscores.
 
 ## 0.205.0
 

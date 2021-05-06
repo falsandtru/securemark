@@ -999,6 +999,7 @@ export namespace MarkdownParser {
         AutolinkParser.EmailParser,
         SourceParser.StrParser,
         SourceParser.StrParser,
+        SourceParser.StrParser,
         AutolinkParser.ChannelParser,
         AutolinkParser.AccountParser,
         SourceParser.StrParser,
