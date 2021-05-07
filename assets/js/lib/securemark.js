@@ -2860,7 +2860,7 @@ require = function () {
                     if (!has)
                         return true;
                     const i = end ? source.indexOf(end, 1) : -1;
-                    return i > -1 ? source.slice(0, i).indexOf(has, 1) > -1 : source.indexOf(has, 1) > -1;
+                    return i !== -1 ? source.slice(0, i).indexOf(has, 1) !== -1 : source.indexOf(has, 1) !== -1;
                 };
                 return (source, context) => {
                     if (source === '')
@@ -3040,7 +3040,7 @@ require = function () {
                     if (!matches)
                         return;
                     const delim = matches[1];
-                    if (matches[0].indexOf(delim, delim.length) > -1)
+                    if (matches[0].indexOf(delim, delim.length) !== -1)
                         return;
                     let rest = source.slice(matches[0].length);
                     if ((0, line_1.isEmpty)((0, line_1.firstline)(rest)) && (0, line_1.firstline)(rest.slice((0, line_1.firstline)(rest).length)).trimEnd() !== delim)
@@ -5975,14 +5975,15 @@ require = function () {
                 url_1.url,
                 email_1.email,
                 (0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*(?:@(?:[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?)+/),
-                (0, source_1.str)(/^[@#]+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
+                (0, source_1.str)(/^@+(?![0-9A-Za-z]|[^\x00-\x7F\s])/),
+                (0, source_1.str)(/^#+(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/),
                 channel_1.channel,
                 account_1.account,
                 (0, source_1.str)(/^@[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/),
                 (0, source_1.str)(/^[0-9A-Za-z]+(?=#)|^[^\x00-\x7F\s]+(?=#)/),
                 hashtag_1.hashtag,
                 hashref_1.hashref,
-                (0, source_1.str)(/^#(?:[0-9A-Za-z]|[^\x00-\x7F\s])+/),
+                (0, source_1.str)(/^#(?:[0-9A-Za-z'_]|[^\x00-\x7F\s])+/),
                 anchor_1.anchor
             ])))), ns => ns.length === 1 ? ns : [(0, util_1.stringify)(ns)]);
         },
@@ -6016,8 +6017,8 @@ require = function () {
                 return [
                     [(0, typed_dom_1.html)('a', {
                             class: 'account',
-                            href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/${ source }`,
-                            target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
+                            href: source.indexOf('/') !== -1 ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/${ source }`,
+                            target: source.indexOf('/') !== -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
                         }, source)],
                     ''
                 ];
@@ -6065,7 +6066,7 @@ require = function () {
                 (0, combinator_1.some)(hashtag_1.hashtag)
             ]), (es, rest) => {
                 const source = (0, util_1.stringify)(es);
-                if (source.indexOf('/', source.indexOf('#')) > -1)
+                if (source.indexOf('/', source.indexOf('#')) !== -1)
                     return;
                 const el = es[0];
                 const url = `${ el.getAttribute('href') }?ch=${ source.slice(source.indexOf('#') + 1).replace(/#/g, '+') }`;
@@ -6116,13 +6117,14 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.hashref = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(/^[0-9]{1,16}(?![0-9A-Za-z]|[^\x00-\x7F\s])/)), (source, {host, url}) => [
+            exports.hashref = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, source_1.str)(/^[0-9]{1,16}(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/)), (source, {host, url}) => [
                 [(0, typed_dom_1.html)('a', {
                         class: 'hashref',
-                        target: url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : undefined
+                        target: url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
                     }, source)],
                 ''
             ]));
@@ -6130,6 +6132,7 @@ require = function () {
         {
             '../../../combinator': 37,
             '../../source': 137,
+            'spica/global': 17,
             'typed-dom': 30
         }
     ],
@@ -6138,19 +6141,20 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.hashtag = void 0;
+            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.hashtag = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.open)('#', (0, combinator_1.tails)([
                 (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
-                (0, combinator_1.validate)(/^[0-9]{0,4}(?:[A-Za-z]|[^\x00-\x7F\s])/, (0, source_1.str)(/^(?:[0-9A-Za-z]|[^\x00-\x7F\s]){1,128}(?![0-9A-Za-z]|[^\x00-\x7F\s])/))
+                (0, combinator_1.verify)((0, source_1.str)(/^(?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,128}(?:_?\((?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,125}\))?(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/), ([source]) => source.length <= 128)
             ])), (source, {host, url}) => {
                 var _a;
                 return [
                     [(0, typed_dom_1.html)('a', {
                             class: 'hashtag',
-                            href: source.indexOf('/') > -1 ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/hashtags/${ source.slice(1) }`,
-                            target: source.indexOf('/') > -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : undefined
+                            href: source.indexOf('/') !== -1 ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/hashtags/${ source.slice(1) }`,
+                            target: source.indexOf('/') !== -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
                         }, source)],
                     ''
                 ];
@@ -6159,6 +6163,7 @@ require = function () {
         {
             '../../../combinator': 37,
             '../../source': 137,
+            'spica/global': 17,
             'typed-dom': 30
         }
     ],
@@ -6972,7 +6977,7 @@ require = function () {
                 switch (true) {
                 case uri.slice(0, 2) === '^/':
                     const file = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-                    return file.indexOf('.') > -1 ? `${ host.pathname.slice(0, -file.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
+                    return file.indexOf('.') !== -1 ? `${ host.pathname.slice(0, -file.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
                 case host.origin === source.origin && host.pathname === source.pathname:
                 case uri.slice(0, 2) === '//':
                     return uri;
@@ -8425,7 +8430,7 @@ require = function () {
                     function twitter(url) {
                         if (!origins.includes(url.origin))
                             return;
-                        if (url.pathname.split('/').pop().indexOf('.') > -1)
+                        if (url.pathname.split('/').pop().indexOf('.') !== -1)
                             return;
                         if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                             return;
@@ -8517,7 +8522,7 @@ require = function () {
                 default:
                     return;
                 }
-                if (url.pathname.split('/').pop().indexOf('.') > -1)
+                if (url.pathname.split('/').pop().indexOf('.') !== -1)
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
