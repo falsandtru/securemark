@@ -14,7 +14,11 @@ export const segment: HeadingParser.SegmentParser = block(validate('#', focus(
 
 export const heading: HeadingParser = block(rewrite(segment,
   context({ syntax: { inline: {
+    annotation: false,
+    reference: false,
+    index: false,
     label: false,
+    link: false,
     media: false,
   }}},
   line(indexee(fmap(union([
@@ -24,14 +28,6 @@ export const heading: HeadingParser = block(rewrite(segment,
     open(
       str('#'),
       context({ syntax: { inline: {
-        annotation: false,
-        reference: false,
-        index: false,
-        // Redundant
-        //label: false,
-        link: false,
-        // Redundant
-        //media: false,
         autolink: false,
       }}},
       visualize(trim(some(union([indexer, inline]))))), true),

@@ -2,6 +2,7 @@
 
 ## 0.207.0
 
+- Change heading and dlist syntax to disable annotation, reference, index, and link syntax.
 - Change dlist syntax to enable media syntax in descriptions.
 
 ## 0.206.0

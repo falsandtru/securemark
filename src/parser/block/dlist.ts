@@ -13,7 +13,11 @@ export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
   /^~[^\S\n]+(?=\S)/,
   some(inits([
     context({ syntax: { inline: {
+      annotation: false,
+      reference: false,
+      index: false,
       label: false,
+      link: false,
       media: false,
     }}},
     some(term)),
