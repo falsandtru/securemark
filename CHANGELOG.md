@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.207.0
+
+- Change dlist syntax to enable media syntax in descriptions.
+
 ## 0.206.0
 
 - Extend hashtag syntax to be possible to end with parenthesises.

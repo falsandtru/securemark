@@ -11,14 +11,14 @@ import { push } from 'spica/array';
 
 export const dlist: DListParser = lazy(() => block(localize(fmap(validate(
   /^~[^\S\n]+(?=\S)/,
-  context({ syntax: { inline: { media: false } } },
   some(inits([
     context({ syntax: { inline: {
       label: false,
+      media: false,
     }}},
     some(term)),
     some(desc),
-  ])))),
+  ]))),
   es => [html('dl', fillTrailingDescription(es))]))));
 
 const term: DListParser.TermParser = creator(line(indexee(fmap(open(
