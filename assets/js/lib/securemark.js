@@ -4301,7 +4301,7 @@ require = function () {
                             'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
                 const file = (_a = path.split('/').pop()) !== null && _a !== void 0 ? _a : '';
-                const ext = file && file.indexOf('.') > 0 ? file.split('.').pop() : '';
+                const ext = file && file.includes('.', 1) ? file.split('.').pop() : '';
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
                 const el = (0, typed_dom_1.html)('pre', { class: 'notranslate' }, body.slice(0, -1) || global_1.undefined);
                 if (lang) {
@@ -4341,10 +4341,21 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.context)({ syntax: { inline: { media: false } } }, (0, combinator_1.some)((0, combinator_1.inits)([
-                (0, combinator_1.context)({ syntax: { inline: { label: false } } }, (0, combinator_1.some)(term)),
+            exports.dlist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.validate)(/^~[^\S\n]+(?=\S)/, (0, combinator_1.some)((0, combinator_1.inits)([
+                (0, combinator_1.context)({
+                    syntax: {
+                        inline: {
+                            annotation: false,
+                            reference: false,
+                            index: false,
+                            label: false,
+                            link: false,
+                            media: false
+                        }
+                    }
+                }, (0, combinator_1.some)(term)),
                 (0, combinator_1.some)(desc)
-            ])))), es => [(0, typed_dom_1.html)('dl', fillTrailingDescription(es))]))));
+            ]))), es => [(0, typed_dom_1.html)('dl', fillTrailingDescription(es))]))));
             const term = (0, combinator_1.creator)((0, combinator_1.line)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.open)(/^~[^\S\n]+(?=\S)/, (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
                 indexer_1.indexer,
                 inline_1.inline
@@ -5098,7 +5109,11 @@ require = function () {
             exports.heading = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.context)({
                 syntax: {
                     inline: {
+                        annotation: false,
+                        reference: false,
+                        index: false,
                         label: false,
+                        link: false,
                         media: false
                     }
                 }
@@ -5107,17 +5122,7 @@ require = function () {
                     indexer_1.indexer,
                     inline_1.inline
                 ])))), true),
-                (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({
-                    syntax: {
-                        inline: {
-                            annotation: false,
-                            reference: false,
-                            index: false,
-                            link: false,
-                            autolink: false
-                        }
-                    }
-                }, (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
+                (0, combinator_1.open)((0, source_1.str)('#'), (0, combinator_1.context)({ syntax: { inline: { autolink: false } } }, (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
                     indexer_1.indexer,
                     inline_1.inline
                 ]))))), true)
@@ -6017,8 +6022,8 @@ require = function () {
                 return [
                     [(0, typed_dom_1.html)('a', {
                             class: 'account',
-                            href: source.indexOf('/') !== -1 ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/${ source }`,
-                            target: source.indexOf('/') !== -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
+                            href: source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/${ source }`,
+                            target: source.includes('/') || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
                         }, source)],
                     ''
                 ];
@@ -6066,7 +6071,7 @@ require = function () {
                 (0, combinator_1.some)(hashtag_1.hashtag)
             ]), (es, rest) => {
                 const source = (0, util_1.stringify)(es);
-                if (source.indexOf('/', source.indexOf('#')) !== -1)
+                if (source.includes('/', source.indexOf('#')))
                     return;
                 const el = es[0];
                 const url = `${ el.getAttribute('href') }?ch=${ source.slice(source.indexOf('#') + 1).replace(/#/g, '+') }`;
@@ -6977,7 +6982,7 @@ require = function () {
                 switch (true) {
                 case uri.slice(0, 2) === '^/':
                     const file = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-                    return file.indexOf('.') !== -1 ? `${ host.pathname.slice(0, -file.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
+                    return file.includes('.') ? `${ host.pathname.slice(0, -file.length) }${ uri.slice(2) }` : `${ fillTrailingSlash(host.pathname) }${ uri.slice(2) }`;
                 case host.origin === source.origin && host.pathname === source.pathname:
                 case uri.slice(0, 2) === '//':
                     return uri;
@@ -8430,7 +8435,7 @@ require = function () {
                     function twitter(url) {
                         if (!origins.includes(url.origin))
                             return;
-                        if (url.pathname.split('/').pop().indexOf('.') !== -1)
+                        if (url.pathname.split('/').pop().includes('.'))
                             return;
                         if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                             return;
@@ -8522,7 +8527,7 @@ require = function () {
                 default:
                     return;
                 }
-                if (url.pathname.split('/').pop().indexOf('.') !== -1)
+                if (url.pathname.split('/').pop().includes('.'))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
