@@ -17,14 +17,14 @@ export function text(source: HTMLElement): string {
   assert(!source.matches('.indexer'));
   assert(source.querySelectorAll('.indexer').length <= 1);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
-  assert(!source.querySelector('.label'));
+  assert(!source.querySelector('.annotation, .reference, .label'));
   const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
   for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
     define(es[i], es[i].getAttribute('data-src')!);
   }
-  for (let es = target.querySelectorAll('.annotation, .reference, rt, rp'), i = 0, len = es.length; i < len; ++i) {
+  for (let es = target.querySelectorAll('rt, rp'), i = 0, len = es.length; i < len; ++i) {
     es[i].remove();
   }
   return target.innerText.trim();
