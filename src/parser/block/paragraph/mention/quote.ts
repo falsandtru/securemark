@@ -10,14 +10,12 @@ export const syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:
 
 export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
   '>',
-  union([
-    rewrite(
+  rewrite(
+    union([
       some(validate(/^>+(?:$|\s)/, contentline)),
-      convert(source => source.replace(/\n$/, ''), block_)),
-    rewrite(
       some(validate(syntax, contentline)),
-      convert(source => source.replace(/\n$/, ''), block_)),
-  ])),
+    ]),
+    union([convert(source => source.replace(/\n$/, ''), block_)]))),
   ns => [html('span', { class: 'quote' }, ns)]),
   false)));
 

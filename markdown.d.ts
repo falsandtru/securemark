@@ -558,7 +558,6 @@ export namespace MarkdownParser {
           Block<'paragraph/mention/quote'>,
           Parser<HTMLSpanElement, Context, [
             QuoteParser.BlockParser,
-            QuoteParser.BlockParser,
           ]> {
         }
         export namespace QuoteParser {
