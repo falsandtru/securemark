@@ -22,18 +22,18 @@ describe('Unit: parser/block/paragraph/mention/anchor', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('>0')), [['<span class="quote"><a class="anchor" href="?res=0">&gt;0</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0 ')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0\n')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>>0')), [['<span class="quote">&gt;&gt;<a class="anchor" href="?res=0">&gt;0</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0\n1')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>'], '1']);
-      assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>', '<span class="quote"><a class="anchor" href="?res=1">&gt;1</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0\n>>')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>'], '>>']);
-      assert.deepStrictEqual(inspect(parser('>>0\n>>1')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>', '<span class="quote">&gt;<a class="anchor" href="?res=1">&gt;1</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0\n>>>1')), [['<span class="quote">&gt;<a class="anchor" href="?res=0">&gt;0</a></span>', '<span class="quote">&gt;&gt;<a class="anchor" href="?res=1">&gt;1</a></span>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>>0\n>>')), [['<span class="quote">&gt;&gt;<a class="anchor" href="?res=0">&gt;0</a></span>'], '>>']);
-      assert.deepStrictEqual(inspect(parser('>>>0\n>>1')), [['<span class="quote">&gt;&gt;<a class="anchor" href="?res=0">&gt;0</a></span>', '<span class="quote">&gt;<a class="anchor" href="?res=1">&gt;1</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>0')), [['<span class="quote"><a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0 ')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>>0')), [['<span class="quote">&gt;&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n1')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '1']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>1')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>', '<span class="quote"><a class="anchor quote-anchor" href="?res=1">&gt;1</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>>')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '>>']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>>1')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>', '<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=1">&gt;1</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0\n>>>1')), [['<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>', '<span class="quote">&gt;&gt;<a class="anchor quote-anchor" href="?res=1">&gt;1</a></span>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>>0\n>>')), [['<span class="quote">&gt;&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>'], '>>']);
+      assert.deepStrictEqual(inspect(parser('>>>0\n>>1')), [['<span class="quote">&gt;&gt;<a class="anchor quote-anchor" href="?res=0">&gt;0</a></span>', '<span class="quote">&gt;<a class="anchor quote-anchor" href="?res=1">&gt;1</a></span>'], '']);
     });
 
   });
