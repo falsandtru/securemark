@@ -2,6 +2,7 @@
 
 ## 0.207.1
 
+- Fix account parser.
 - Fix email parser.
 
 ## 0.207.0

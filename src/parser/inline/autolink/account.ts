@@ -15,7 +15,7 @@ export const account: AutolinkParser.AccountParser = creator(rewrite(
         ([source]) => source.length <= 253 + 1),
       verify(
         str(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
-        ([source]) => source.length <= 63),
+        ([source]) => source.length <= 64),
     ])),
   (source, { host, url }) => [[
     html('a',
