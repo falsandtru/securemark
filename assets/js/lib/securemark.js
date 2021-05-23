@@ -5390,7 +5390,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.anchor = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.tails)([
                 (0, source_1.str)(/^>*(?=>)/),
-                anchor_1.anchor
+                (0, combinator_1.fmap)(anchor_1.anchor, ([el]) => [(0, typed_dom_1.define)(el, { class: void el.classList.add('quote-anchor') })])
             ])), ns => [(0, typed_dom_1.html)('span', { class: 'quote' }, ns)])));
         },
         {
@@ -5412,10 +5412,10 @@ require = function () {
             const autolink_1 = _dereq_('../../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
             exports.syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
-            exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.union)([
-                (0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(/^>+(?:$|\s)/, source_1.contentline)), (0, combinator_1.convert)(source => source.replace(/\n$/, ''), block_)),
-                (0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.contentline)), (0, combinator_1.convert)(source => source.replace(/\n$/, ''), block_))
-            ])), ns => [(0, typed_dom_1.html)('span', { class: 'quote' }, ns)]), false)));
+            exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.rewrite)((0, combinator_1.union)([
+                (0, combinator_1.some)((0, combinator_1.validate)(/^>+(?:$|\s)/, source_1.contentline)),
+                (0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.contentline))
+            ]), (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(/\n$/, ''), block_)]))), ns => [(0, typed_dom_1.html)('span', { class: 'quote' }, ns)]), false)));
             const block_ = (source, context) => {
                 const lines = source.match(/^.*\n?/mg);
                 const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg);
@@ -6016,7 +6016,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             exports.account = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.open)('@', (0, combinator_1.tails)([
                 (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
-                (0, combinator_1.verify)((0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 63)
+                (0, combinator_1.verify)((0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 64)
             ])), (source, {host, url}) => {
                 var _a;
                 return [
@@ -6100,10 +6100,7 @@ require = function () {
             const combinator_1 = _dereq_('../../../combinator');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.email = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.sequence)([
-                (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*@/), ([source]) => source.length <= 63 + 1),
-                (0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*/), ([source]) => source.length <= 256 - 63 - 1)
-            ]), source => [
+            exports.email = (0, combinator_1.creator)((0, combinator_1.rewrite)((0, combinator_1.verify)((0, source_1.str)(/^[0-9A-Za-z]+(?:[.+_-][0-9A-Za-z]+)*@[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*/), ([source]) => source.indexOf('@') <= 64 && source.length <= 255), source => [
                 [(0, typed_dom_1.html)('a', {
                         class: 'email',
                         href: `mailto:${ source }`
@@ -6575,7 +6572,7 @@ require = function () {
                 for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
                     (0, typed_dom_1.define)(es[i], es[i].getAttribute('data-src'));
                 }
-                for (let es = target.querySelectorAll('.annotation, .reference, rt, rp'), i = 0, len = es.length; i < len; ++i) {
+                for (let es = target.querySelectorAll('rt, rp'), i = 0, len = es.length; i < len; ++i) {
                     es[i].remove();
                 }
                 return target.innerText.trim();
