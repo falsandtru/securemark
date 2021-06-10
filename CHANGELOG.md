@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.207.2
+
+- Fix header parser.
+
 ## 0.207.1
 
 - Fix account parser.

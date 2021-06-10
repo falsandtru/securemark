@@ -10,15 +10,15 @@ describe('Unit: parser/header', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('---')), undefined);
       assert.deepStrictEqual(inspect(parser('---\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('---\na: b\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('---\na: b\n---c')), undefined);
+      assert.deepStrictEqual(inspect(parser('---\na: b\n')), [['<pre class="notranslate invalid">---\na: b\n</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\na: b\n---c')), [['<pre class="notranslate invalid">---\na: b\n---c</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('---\na: b\n---\nc')), undefined);
       assert.deepStrictEqual(inspect(parser('---\r \na: b\n---')), undefined);
-      assert.deepStrictEqual(inspect(parser('---\na:\rb\n---')), undefined);
-      assert.deepStrictEqual(inspect(parser('---\na: b\r \n---')), undefined);
+      assert.deepStrictEqual(inspect(parser('---\na:\rb\n---')), [['<pre class="notranslate invalid">---\na:\nb\n---</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\na: b\r \n---')), [['<pre class="notranslate invalid">---\na: b\n \n---</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('---\n\n---')), undefined);
       assert.deepStrictEqual(inspect(parser('---\n \n---')), undefined);
-      assert.deepStrictEqual(inspect(parser('---\n-\n---')), undefined);
+      assert.deepStrictEqual(inspect(parser('---\n-\n---')), [['<pre class="notranslate invalid">---\n-\n---</pre>'], '']);
     });
 
     it('basic', () => {
