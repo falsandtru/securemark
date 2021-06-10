@@ -217,11 +217,15 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.aggregate = exports.bundle = void 0;
             function bundle(...as) {
-                return (...bs) => as.map((f, i) => f(bs[i]));
+                return function (...bs) {
+                    return as.map((f, i) => f.call(this, bs[i]));
+                };
             }
             exports.bundle = bundle;
             function aggregate(...as) {
-                return b => as.map(f => f(b));
+                return function (b) {
+                    return as.map(f => f.call(this, b));
+                };
             }
             exports.aggregate = aggregate;
         },
@@ -859,9 +863,20 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.run = exports.once = exports.clear = exports.mapReturn = exports.mapParameters = void 0;
+            exports.run = exports.clear = exports.mapReturn = exports.mapParameters = exports.once = void 0;
             const global_1 = _dereq_('./global');
             const noop_1 = _dereq_('./noop');
+            function once(f) {
+                let result;
+                return function (...as) {
+                    if (f === noop_1.noop)
+                        return result;
+                    result = f.call(this, ...as);
+                    f = noop_1.noop;
+                    return result;
+                };
+            }
+            exports.once = once;
             function mapParameters(f, g) {
                 return (...as) => f(...g(...as));
             }
@@ -874,16 +889,6 @@ require = function () {
                 return (...as) => void f(...as);
             }
             exports.clear = clear;
-            function once(f) {
-                return (...as) => {
-                    if (f === noop_1.noop)
-                        return;
-                    f(...as);
-                    f = noop_1.noop;
-                    as = [];
-                };
-            }
-            exports.once = once;
             function run(fs) {
                 const gs = (0, global_1.Array)(fs.length);
                 try {
@@ -2204,7 +2209,7 @@ require = function () {
                         this.type = 3;
                         break;
                     default:
-                        throw new Error(`TypedDOM: Invalid type children.`);
+                        throw new Error(`TypedDOM: Invalid children type.`);
                     }
                     throwErrorIfNotUsable(this);
                     proxies.set(this.element, this);
@@ -2278,12 +2283,16 @@ require = function () {
                 }
                 observe(children) {
                     const descs = {};
+                    let i = -1;
                     for (const name of (0, alias_1.ObjectKeys)(children)) {
                         if (name in {})
-                            continue;
+                            throw new Error(`TypedDOM: Child names must be different from the object property names.`);
+                        ++i;
                         let child = children[name];
                         throwErrorIfNotUsable(child);
-                        this.container.appendChild(child.element);
+                        if (child.element !== this.container.children[i]) {
+                            this.container.appendChild(child.element);
+                        }
                         descs[name] = {
                             configurable: true,
                             enumerable: true,
@@ -3961,14 +3970,20 @@ require = function () {
             const parser_1 = _dereq_('../../combinator/data/parser');
             const header_1 = _dereq_('../header');
             function header(source) {
-                return source.slice(0, source.length - (0, parser_1.exec)((0, header_1.header)(source, {}), source).length);
+                const result = (0, header_1.header)(source, {});
+                const [el] = (0, parser_1.eval)(result, []);
+                return isValid(el) ? source.slice(0, source.length - (0, parser_1.exec)(result, source).length) : '';
             }
             exports.header = header;
             function headers(source) {
-                const [el] = (0, parser_1.eval)((0, header_1.header)(source, {}), []);
-                return el && el.childNodes.length > 1 ? el.lastChild.textContent.split(/[^\S\n]*\n/) : [];
+                const result = (0, header_1.header)(source, {});
+                const [el] = (0, parser_1.eval)(result, []);
+                return isValid(el) ? el.lastChild.textContent.split(/[^\S\n]*\n/) : [];
             }
             exports.headers = headers;
+            function isValid(el) {
+                return !!el && el.classList.contains('header') && el.childNodes.length > 1;
+            }
         },
         {
             '../../combinator/data/parser': 56,
@@ -5810,12 +5825,23 @@ require = function () {
                         [],
                         source.slice(seg.length)
                     ] : global_1.undefined;
-                }, (0, combinator_1.block)((0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){0,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
-                    [(0, typed_dom_1.html)('details', { class: 'header' }, (0, typed_dom_1.defrag)([
-                            (0, typed_dom_1.html)('summary', 'Header'),
-                            (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, '')
-                        ]))],
-                    ''
+                }, (0, combinator_1.block)((0, combinator_1.union)([
+                    (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){0,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
+                        [(0, typed_dom_1.html)('details', { class: 'header' }, (0, typed_dom_1.defrag)([
+                                (0, typed_dom_1.html)('summary', 'Header'),
+                                (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, '')
+                            ]))],
+                        ''
+                    ]),
+                    (0, combinator_1.validate)(/^---[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, source => [
+                        [(0, typed_dom_1.html)('pre', {
+                                class: `notranslate invalid`,
+                                'data-invalid-syntax': 'header',
+                                'data-invalid-type': 'syntax',
+                                'data-invalid-description': `Invalid syntax.`
+                            }, (0, normalize_1.normalize)(source))],
+                        ''
+                    ])
                 ]))),
                 (0, combinator_1.clear)((0, source_1.str)(/^[^\S\v\f\r\n]*\r?\n/))
             ]);
