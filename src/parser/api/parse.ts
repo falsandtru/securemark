@@ -15,7 +15,6 @@ import { memoize } from 'spica/memoize';
 import { ReadonlyURL } from 'spica/url';
 
 interface Options extends ParserOptions {
-  readonly header?: boolean;
   readonly test?: boolean;
 }
 
@@ -34,15 +33,13 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
         url: url ? new ReadonlyURL(url) : context?.url,
         id: opts.id ?? context?.id,
         footnotes: undefined,
-        header: undefined,
         test: undefined,
       });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
   const node = frag();
-  let head = opts.header ?? true;
+  let index = 0;
   for (const seg of segment(source)) {
-    node.append(...eval(head && header(seg, context) || block(seg, context), []));
-    head = false;
+    node.append(...eval(index++ === 0 && header(seg, context) || block(seg, context), []));
   }
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (opts.test) return node;
