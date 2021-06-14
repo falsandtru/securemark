@@ -13,8 +13,8 @@ export function guard<T>(f: (context: Ctx) => boolean, parser: Parser<T>): Parse
       : undefined;
 }
 
-export function update<P extends Parser<unknown>>(context: Context<P>, parser: P): P;
-export function update<T>(base: Ctx, parser: Parser<T>): Parser<T> {
+export function reset<P extends Parser<unknown>>(context: Context<P>, parser: P): P;
+export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
   const clone = memoize<Ctx, Ctx>(context => ObjectCreate(context), new WeakMap());

@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { union, update, creator, open, recover } from '../combinator';
+import { union, reset, creator, open, recover } from '../combinator';
 import { emptyline } from './source';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -32,7 +32,7 @@ export import BlockquoteParser = BlockParser.BlockquoteParser;
 export import ParagraphParser = BlockParser.ParagraphParser;
 
 export const block: BlockParser = creator(error(
-  update({ resources: { budget: 100 * 1000 } },
+  reset({ resources: { budget: 100 * 1000 } },
   union([
     emptyline,
     horizontalrule,
