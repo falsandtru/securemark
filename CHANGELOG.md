@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.207.3
+
+- Fix header parser to ensure consistency and modularity.
+
 ## 0.207.2
 
-- Fix header parser.
+- Fix header parser to ensure extensibility.
 
 ## 0.207.1
 

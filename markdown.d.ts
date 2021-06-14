@@ -7,6 +7,7 @@ declare abstract class Markdown<T> {
 export interface MarkdownParser extends
   Markdown<'markdown'>,
   Parser<DocumentFragment, MarkdownParser.Context, [
+    MarkdownParser.HeaderParser,
     MarkdownParser.BlockParser,
   ]> {
 }
@@ -15,6 +16,7 @@ export namespace MarkdownParser {
     readonly host?: URL;
     readonly url?: URL;
     readonly id?: string;
+    readonly header?: boolean;
     readonly syntax?: {
       readonly inline?: {
         readonly annotation?: boolean;

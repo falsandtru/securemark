@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { union, inits, block, firstline, validate, focus, rewrite, clear } from '../combinator';
+import { union, inits, block, firstline, validate, focus, rewrite, guard, clear } from '../combinator';
 import { segment } from './segment';
 import { normalize } from './api/normalize';
 import { str } from './source';
@@ -8,7 +8,8 @@ import { html, defrag } from 'typed-dom';
 
 export const header: MarkdownParser.HeaderParser = inits([
   rewrite(
-    source => {
+    (source, context) => {
+      if (context.header === false) return [[], ''];
       const seg = firstline(source).trimEnd() === '---' && segment(source).next().value || '';
       assert(source.startsWith(seg));
       return seg
@@ -17,6 +18,8 @@ export const header: MarkdownParser.HeaderParser = inits([
     },
     block(
       union([
+        // Bug: Inference
+        guard((context: MarkdownParser.Context) => context.header ?? true,
         focus(
           /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){0,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
           source => [[
@@ -24,7 +27,7 @@ export const header: MarkdownParser.HeaderParser = inits([
               html('summary', 'Header'),
               normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''),
             ]))
-          ], '']),
+          ], ''])),
         validate(
           /^---[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/,
           source => [[html('pre', {
