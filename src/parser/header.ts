@@ -20,8 +20,7 @@ export const header: MarkdownParser.HeaderParser = inits([
     },
     block(
       union([
-        // Bug: Inference
-        guard((context: MarkdownParser.Context) => context.header ?? true,
+        guard(context => context.header ?? true,
         focus(
           /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
           source => [[
@@ -29,7 +28,8 @@ export const header: MarkdownParser.HeaderParser = inits([
               html('summary', 'Header'),
               normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''),
             ]))
-          ], ''])),
+          // Bug: Unnecessary assertion
+          ], '', {} as MarkdownParser.Context])),
         validate(
           syntax,
           source => [[html('pre', {
