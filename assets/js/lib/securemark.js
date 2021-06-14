@@ -2953,7 +2953,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.context = exports.update = exports.guard = void 0;
+            exports.context = exports.reset = exports.guard = void 0;
             const global_1 = _dereq_('spica/global');
             const alias_1 = _dereq_('spica/alias');
             const assign_1 = _dereq_('spica/assign');
@@ -2963,11 +2963,11 @@ require = function () {
                 return (source, context) => f(context) ? parser(source, context) : global_1.undefined;
             }
             exports.guard = guard;
-            function update(base, parser) {
+            function reset(base, parser) {
                 const clone = (0, memoize_1.memoize)(context => (0, alias_1.ObjectCreate)(context), new global_1.WeakMap());
                 return (source, context) => parser(source, inherit(clone(context), base));
             }
-            exports.update = update;
+            exports.reset = reset;
             function context(base, parser) {
                 const inherit_ = (0, memoize_1.memoize)(context => inherit((0, alias_1.ObjectCreate)(context), base), new global_1.WeakMap());
                 return (source, context) => parser(source, inherit_(context));
@@ -3820,7 +3820,7 @@ require = function () {
                     let index = head;
                     for (; index < sourceSegments.length - last; ++index) {
                         const seg = sourceSegments[index];
-                        const es = (0, parser_1.eval)(index === 0 && (0, header_1.header)(seg, context) || (0, block_1.block)(seg, context), []);
+                        const es = (0, parser_1.eval)((0, header_1.header)(seg, { header: index === 0 }) || (0, block_1.block)(seg, context), []);
                         blocks.splice(index, 0, [
                             seg,
                             es,
@@ -3970,19 +3970,23 @@ require = function () {
             const parser_1 = _dereq_('../../combinator/data/parser');
             const header_1 = _dereq_('../header');
             function header(source) {
-                const result = (0, header_1.header)(source, {});
-                const [el] = (0, parser_1.eval)(result, []);
-                return isValid(el) ? source.slice(0, source.length - (0, parser_1.exec)(result, source).length) : '';
+                const [, rest = source] = parse(source);
+                return source.slice(0, source.length - rest.length);
             }
             exports.header = header;
             function headers(source) {
-                const result = (0, header_1.header)(source, {});
-                const [el] = (0, parser_1.eval)(result, []);
-                return isValid(el) ? el.lastChild.textContent.split(/[^\S\n]*\n/) : [];
+                var _a;
+                const [el] = parse(source);
+                return (_a = el === null || el === void 0 ? void 0 : el.lastChild.textContent.split(/[^\S\n]*\n/)) !== null && _a !== void 0 ? _a : [];
             }
             exports.headers = headers;
-            function isValid(el) {
-                return !!el && el.classList.contains('header') && el.childNodes.length > 1;
+            function parse(source) {
+                const result = (0, header_1.header)(source, {});
+                const [el] = (0, parser_1.eval)(result, []);
+                return el instanceof HTMLDetailsElement ? [
+                    el,
+                    (0, parser_1.exec)(result)
+                ] : [];
             }
         },
         {
@@ -4078,11 +4082,10 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
             const url_1 = _dereq_('spica/url');
-            const array_1 = _dereq_('spica/array');
             const inherit = (0, memoize_1.memoize)(context => (0, alias_1.ObjectCreate)(context), new WeakMap());
             const inherit2 = (0, memoize_1.memoize)(context => (0, memoize_1.memoize)(_ => (0, alias_1.ObjectCreate)(context)), new WeakMap());
             function parse(source, opts = {}, context) {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+                var _a, _b, _c, _d, _e, _f, _g, _h;
                 if (source.length > segment_1.SEGMENT_LENGTH_LIMIT)
                     throw new Error(`Too large input over ${ segment_1.SEGMENT_LENGTH_LIMIT.toLocaleString('en') } in length.`);
                 const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
@@ -4092,18 +4095,15 @@ require = function () {
                     url: url ? new url_1.ReadonlyURL(url) : context === null || context === void 0 ? void 0 : context.url,
                     id: (_e = opts.id) !== null && _e !== void 0 ? _e : context === null || context === void 0 ? void 0 : context.id,
                     footnotes: global_1.undefined,
-                    header: global_1.undefined,
                     test: global_1.undefined
                 });
                 if (((_f = context.host) === null || _f === void 0 ? void 0 : _f.origin) === 'null')
                     throw new Error(`Invalid host: ${ context.host.href }`);
-                const es = [];
-                let head = (_g = opts.header) !== null && _g !== void 0 ? _g : true;
+                const node = (0, typed_dom_1.frag)();
+                let index = 0;
                 for (const seg of (0, segment_1.segment)(source)) {
-                    (0, array_1.push)(es, (0, parser_1.eval)(head && (0, header_1.header)(seg, context) || (0, block_1.block)(seg, context), []));
-                    head = false;
+                    node.append(...(0, parser_1.eval)((0, header_1.header)(seg, { header: index++ === 0 }) || (0, block_1.block)(seg, context), []));
                 }
-                const node = (0, typed_dom_1.frag)(es);
                 if (opts.test)
                     return node;
                 for (const _ of (0, footnote_1.footnote)(node, opts.footnotes, context));
@@ -4122,7 +4122,6 @@ require = function () {
             './header': 68,
             './normalize': 69,
             'spica/alias': 5,
-            'spica/array': 6,
             'spica/global': 17,
             'spica/memoize': 20,
             'spica/url': 28,
@@ -4171,7 +4170,7 @@ require = function () {
             const paragraph_1 = _dereq_('./block/paragraph');
             const typed_dom_1 = _dereq_('typed-dom');
             const random_1 = _dereq_('spica/random');
-            exports.block = (0, combinator_1.creator)(error((0, combinator_1.update)({ resources: { budget: 100 * 1000 } }, (0, combinator_1.union)([
+            exports.block = (0, combinator_1.creator)(error((0, combinator_1.reset)({ resources: { budget: 100 * 1000 } }, (0, combinator_1.union)([
                 source_1.emptyline,
                 horizontalrule_1.horizontalrule,
                 heading_1.heading,
@@ -5818,22 +5817,32 @@ require = function () {
             const normalize_1 = _dereq_('./api/normalize');
             const source_1 = _dereq_('./source');
             const typed_dom_1 = _dereq_('typed-dom');
+            const syntax = /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/;
             exports.header = (0, combinator_1.inits)([
-                (0, combinator_1.rewrite)(source => {
-                    const seg = (0, combinator_1.firstline)(source).trimEnd() === '---' && (0, segment_1.segment)(source).next().value || '';
+                (0, combinator_1.rewrite)((source, context) => {
+                    if (context.header === false)
+                        return [
+                            [],
+                            ''
+                        ];
+                    const seg = syntax.test(source) && (0, segment_1.segment)(source).next().value || '';
                     return seg ? [
                         [],
                         source.slice(seg.length)
                     ] : global_1.undefined;
                 }, (0, combinator_1.block)((0, combinator_1.union)([
-                    (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){0,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
+                    (0, combinator_1.guard)(context => {
+                        var _a;
+                        return (_a = context.header) !== null && _a !== void 0 ? _a : true;
+                    }, (0, combinator_1.focus)(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
                         [(0, typed_dom_1.html)('details', { class: 'header' }, (0, typed_dom_1.defrag)([
                                 (0, typed_dom_1.html)('summary', 'Header'),
                                 (0, normalize_1.normalize)(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, '')
                             ]))],
-                        ''
-                    ]),
-                    (0, combinator_1.validate)(/^---[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, source => [
+                        '',
+                        {}
+                    ])),
+                    (0, combinator_1.validate)(syntax, source => [
                         [(0, typed_dom_1.html)('pre', {
                                 class: `notranslate invalid`,
                                 'data-invalid-syntax': 'header',
