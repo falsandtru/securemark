@@ -13,7 +13,6 @@ import { footnote } from '../function/footnote';
 import { frag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
 import { ReadonlyURL } from 'spica/url';
-import { push } from 'spica/array';
 
 interface Options extends ParserOptions {
   readonly header?: boolean;
@@ -39,13 +38,12 @@ export function parse(source: string, opts: Options = {}, context?: MarkdownPars
         test: undefined,
       });
   if (context.host?.origin === 'null') throw new Error(`Invalid host: ${context.host.href}`);
-  const es: HTMLElement[] = [];
+  const node = frag();
   let head = opts.header ?? true;
   for (const seg of segment(source)) {
-    push(es, eval(head && header(seg, context) || block(seg, context), []));
+    node.append(...eval(head && header(seg, context) || block(seg, context), []));
     head = false;
   }
-  const node = frag(es);
   assert(opts.id !== '' || !node.querySelector('[id], .index[href], .label[href], .annotation > a[href], .reference > a[href]'));
   if (opts.test) return node;
   for (const _ of footnote(node, opts.footnotes, context));
