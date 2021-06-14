@@ -23,7 +23,7 @@ export const header: MarkdownParser.HeaderParser = inits([
         // Bug: Inference
         guard((context: MarkdownParser.Context) => context.header ?? true,
         focus(
-          /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){0,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
+          /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
           source => [[
             html('details', { class: 'header' }, defrag([
               html('summary', 'Header'),

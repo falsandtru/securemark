@@ -10,6 +10,7 @@ describe('Unit: parser/header', () => {
       assert.deepStrictEqual(inspect(parser('')), undefined);
       assert.deepStrictEqual(inspect(parser('---')), undefined);
       assert.deepStrictEqual(inspect(parser('---\n')), undefined);
+      assert.deepStrictEqual(inspect(parser('---\n---')), [['<pre class="notranslate invalid">---\n---</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('---\na: b\n')), [['<pre class="notranslate invalid">---\na: b\n</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('---\na: b\n---c')), [['<pre class="notranslate invalid">---\na: b\n---c</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('---\na: b\n---\nc')), undefined);
@@ -23,9 +24,8 @@ describe('Unit: parser/header', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('---\n---')), [['<details class="header"><summary>Header</summary></details>'], '']);
-      assert.deepStrictEqual(inspect(parser('---\n---\n')), [['<details class="header"><summary>Header</summary></details>'], '']);
       assert.deepStrictEqual(inspect(parser('---\na: b\n---')), [['<details class="header"><summary>Header</summary>a: b</details>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\na: b\n---\n')), [['<details class="header"><summary>Header</summary>a: b</details>'], '']);
       assert.deepStrictEqual(inspect(parser('---\na: b\nC: d e\n---\n')), [['<details class="header"><summary>Header</summary>a: b\nC: d e</details>'], '']);
       assert.deepStrictEqual(inspect(parser('--- \r\na: b \r\n--- \r\n \r\n \r\na')), [['<details class="header"><summary>Header</summary>a: b</details>'], ' \r\na']);
     });
