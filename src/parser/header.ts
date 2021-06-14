@@ -1,16 +1,18 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { union, inits, block, firstline, validate, focus, rewrite, guard, clear } from '../combinator';
+import { union, inits, block, validate, focus, rewrite, guard, clear } from '../combinator';
 import { segment } from './segment';
 import { normalize } from './api/normalize';
 import { str } from './source';
 import { html, defrag } from 'typed-dom';
 
+const syntax = /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/;
+
 export const header: MarkdownParser.HeaderParser = inits([
   rewrite(
     (source, context) => {
       if (context.header === false) return [[], ''];
-      const seg = firstline(source).trimEnd() === '---' && segment(source).next().value || '';
+      const seg = syntax.test(source) && segment(source).next().value || '';
       assert(source.startsWith(seg));
       return seg
         ? [[], source.slice(seg.length)]
@@ -29,7 +31,7 @@ export const header: MarkdownParser.HeaderParser = inits([
             ]))
           ], ''])),
         validate(
-          /^---[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/,
+          syntax,
           source => [[html('pre', {
             class: `notranslate invalid`,
             'data-invalid-syntax': 'header',
