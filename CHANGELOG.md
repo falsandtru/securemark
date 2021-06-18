@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.207.4
+
+- Refactoring.
+
 ## 0.207.3
 
 - Fix header parser to ensure consistency and modularity.
