@@ -5811,25 +5811,18 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.header = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../combinator');
             const segment_1 = _dereq_('./segment');
             const normalize_1 = _dereq_('./api/normalize');
             const source_1 = _dereq_('./source');
             const typed_dom_1 = _dereq_('typed-dom');
-            const syntax = /^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/;
-            exports.header = (0, combinator_1.inits)([
+            exports.header = (0, combinator_1.validate)(/^---+[^\S\v\f\r\n]*\r?\n[^\S\n]*(?=\S)/, (0, combinator_1.inits)([
                 (0, combinator_1.rewrite)((source, context) => {
-                    if (context.header === false)
-                        return [
-                            [],
-                            ''
-                        ];
-                    const seg = syntax.test(source) && (0, segment_1.segment)(source).next().value || '';
-                    return seg ? [
+                    var _a;
+                    return [
                         [],
-                        source.slice(seg.length)
-                    ] : global_1.undefined;
+                        ((_a = context.header) !== null && _a !== void 0 ? _a : true) ? source.slice((0, segment_1.segment)(source).next().value.length) : ''
+                    ];
                 }, (0, combinator_1.block)((0, combinator_1.union)([
                     (0, combinator_1.guard)(context => {
                         var _a;
@@ -5842,7 +5835,7 @@ require = function () {
                         '',
                         {}
                     ])),
-                    (0, combinator_1.validate)(syntax, source => [
+                    source => [
                         [(0, typed_dom_1.html)('pre', {
                                 class: `notranslate invalid`,
                                 'data-invalid-syntax': 'header',
@@ -5850,17 +5843,16 @@ require = function () {
                                 'data-invalid-description': `Invalid syntax.`
                             }, (0, normalize_1.normalize)(source))],
                         ''
-                    ])
+                    ]
                 ]))),
                 (0, combinator_1.clear)((0, source_1.str)(/^[^\S\v\f\r\n]*\r?\n/))
-            ]);
+            ]));
         },
         {
             '../combinator': 37,
             './api/normalize': 69,
             './segment': 136,
             './source': 137,
-            'spica/global': 17,
             'typed-dom': 30
         }
     ],
