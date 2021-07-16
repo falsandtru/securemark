@@ -60,7 +60,7 @@ function expand(range: Range): boolean {
 }
 
 function trim<T extends Node>(node: T): T {
-  for (let child: ChildNode | null; child = node.firstChild;) {
+  for (let child: ChildNode & Node | null; child = node.firstChild;) {
     if (child.textContent) break;
     child.remove();
   }
