@@ -9,7 +9,7 @@ describe('Unit: parser/inline/html', () => {
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('<script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<script>alert()<script>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), [['<span class="invalid">&lt;script&gt;alert()&lt;/script&gt;</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('<script>alert()</script>')), [['<span class="invalid">&lt;script&gt;alert<span class="paren">()</span>&lt;/script&gt;</span>'], '']);
       assert.deepStrictEqual(inspect(parser('<script src="\\""></script>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small onclick="alert()">')), undefined);
       assert.deepStrictEqual(inspect(parser('<small onclick="alert()"></small>')), undefined);

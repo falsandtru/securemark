@@ -46,7 +46,7 @@ describe('Unit: parser/inline/extension/placeholder', () => {
       assert.deepStrictEqual(inspect(parser('[^a<wbr>c]')), [['<span class="invalid">a<wbr>c</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^a<# b #>c]')), [['<span class="invalid">a<sup class="comment" title="b"></sup>c</span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^\\]]')), [['<span class="invalid">]</span>'], '']);
-      assert.deepStrictEqual(inspect(parser('[^(])]')), [['<span class="invalid">(])</span>'], '']);
+      assert.deepStrictEqual(inspect(parser('[^(])]')), [['<span class="invalid"><span class="paren">(])</span></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^!http://host]')), [['<span class="invalid"><a href="http://host" target="_blank"><img class="media" data-src="http://host" alt=""></a></span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^a ]')), [['<span class="invalid">a </span>'], '']);
       assert.deepStrictEqual(inspect(parser('[^a\\ ]')), [['<span class="invalid">a </span>'], '']);

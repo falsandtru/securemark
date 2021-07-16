@@ -41,8 +41,8 @@ describe('Unit: parser/inline/emphasis', () => {
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('*`a`*')), [['<em><code data-src="`a`">a</code></em>'], '']);
       assert.deepStrictEqual(inspect(parser('*<small>*')), [['<em>&lt;small&gt;</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*(*a*)*')), [['<em>(<em>a</em>)</em>'], '']);
-      assert.deepStrictEqual(inspect(parser('*(**a**)*')), [['<em>(<strong>a</strong>)</em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*(*a*)*')), [['<em><span class="paren">(<em>a</em>)</span></em>'], '']);
+      assert.deepStrictEqual(inspect(parser('*(**a**)*')), [['<em><span class="paren">(<strong>a</strong>)</span></em>'], '']);
     });
 
   });

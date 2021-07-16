@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.208.0
+
+- Enhance bracket parser to mark up parenthesises.
+
 ## 0.207.4
 
 - Refactoring.

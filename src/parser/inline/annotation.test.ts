@@ -46,8 +46,8 @@ describe('Unit: parser/inline/annotation', () => {
       assert.deepStrictEqual(inspect(parser('((http://host))')), [['<sup class="annotation"><a href="http://host" target="_blank">http://host</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((![]{a}))')), [['<sup class="annotation">!<a href="a">a</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('((<a>))')), [['<sup class="annotation">&lt;a&gt;</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation">(a)</sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation">((a))</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('(((a)))')), [['<sup class="annotation"><span class="paren">(a)</span></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('((((a))))')), [['<sup class="annotation"><span class="paren">(<span class="paren">(a)</span>)</span></sup>'], '']);
     });
 
   });
