@@ -6245,9 +6245,20 @@ require = function () {
             const combinator_1 = _dereq_('../../combinator');
             const inline_1 = _dereq_('../inline');
             const source_1 = _dereq_('../source');
+            const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.bracket = (0, combinator_1.lazy)(() => (0, combinator_1.union)([
-                (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)(inline_1.inline, ')'), (0, source_1.str)(')'), true, global_1.undefined, ([as, bs = []], rest) => [
+                (0, combinator_1.surround)((0, source_1.str)('('), (0, combinator_1.some)(inline_1.inline, ')'), (0, source_1.str)(')'), true, ([as, bs = [], cs], rest) => [
+                    [(0, typed_dom_1.html)('span', { class: 'paren' }, (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))],
+                    rest
+                ], ([as, bs = []], rest) => [
+                    (0, array_1.unshift)(as, bs),
+                    rest
+                ]),
+                (0, combinator_1.surround)((0, source_1.str)('\uFF08'), (0, combinator_1.some)(inline_1.inline, '\uFF09'), (0, source_1.str)('\uFF09'), true, ([as, bs = [], cs], rest) => [
+                    [(0, typed_dom_1.html)('span', { class: 'paren' }, (0, typed_dom_1.defrag)((0, array_1.push)((0, array_1.unshift)(as, bs), cs)))],
+                    rest
+                ], ([as, bs = []], rest) => [
                     (0, array_1.unshift)(as, bs),
                     rest
                 ]),
@@ -6270,7 +6281,8 @@ require = function () {
             '../inline': 99,
             '../source': 137,
             'spica/array': 6,
-            'spica/global': 17
+            'spica/global': 17,
+            'typed-dom': 30
         }
     ],
     110: [
