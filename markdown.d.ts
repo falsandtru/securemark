@@ -1097,6 +1097,7 @@ export namespace MarkdownParser {
         InlineParser,
         InlineParser,
         InlineParser,
+        InlineParser,
       ]> {
     }
   }

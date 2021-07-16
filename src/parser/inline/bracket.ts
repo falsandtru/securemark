@@ -8,6 +8,7 @@ import { unshift, push } from 'spica/array';
 
 export const bracket: BracketParser = lazy(() => union([
   surround(str('('), some(inline, ')'), str(')'), true, ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest], ([as, bs = []], rest) => [unshift(as, bs), rest]),
+  surround(str('（'), some(inline, '）'), str('）'), true, ([as, bs = [], cs], rest) => [[html('span', { class: 'paren' }, defrag(push(unshift(as, bs), cs)))], rest], ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('['), some(inline, ']'), str(']'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   surround(str('{'), some(inline, '}'), str('}'), true, undefined, ([as, bs = []], rest) => [unshift(as, bs), rest]),
   // Control media blinking in editing rather than control confusion of pairs of quote marks

@@ -2,6 +2,7 @@
 
 ## 0.208.0
 
+- Extend bracket syntax to support fullwidth parenthesises.
 - Enhance bracket parser to mark up parenthesises.
 
 ## 0.207.4
