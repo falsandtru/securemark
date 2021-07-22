@@ -5,21 +5,21 @@ describe('Unit: util/quote', () => {
   describe('quote', () => {
     it('basic', () => {
       const range = document.createRange();
-      const el = parse('>>1\n> a\n>0 `b` ${c}$ !{d}\n[e](f)').firstElementChild!;
+      const el = parse('>>1\n> a\n>2\n>3 `b` ${c}$ !{d}\n[e](f)').firstElementChild!;
       range.setStart(el.firstChild!.firstChild!, 0);
       range.setEnd(el.lastChild!.lastChild!.lastChild!, 1);
-      assert(quote('2', range) === `>>>1\n>> a\n>>2\n> >0 \`b\` \${c}$ !{d}\n> e`);
+      assert(quote('2', range) === `>>>1\n>> a\n>>2\n> >2\n> >3 \`b\` \${c}$ !{d}\n> e`);
     });
 
     it('adjustment', () => {
       const range = document.createRange();
       const el = parse('>>>1\n>> a').firstElementChild!;
       range.setEnd(el.lastChild!.lastChild!, 4);
-      range.setStart(el.firstChild!.firstChild!, 0);
+      range.setStart(el.children[0].firstChild!, 0);
       assert(quote('2', range) === '>>>>1\n>>> a\n>>2');
-      range.setStart(el.firstChild!.firstChild!, 1);
+      range.setStart(el.children[0].firstChild!, 1);
       assert(quote('2', range) === '>>>>1\n>>> a\n>>2');
-      range.setStart(el.firstChild!.firstChild!, 2);
+      range.setStart(el.children[0].firstChild!, 2);
       assert(quote('2', range) === '>>>>1\n>>> a\n>>2');
       range.setStart(el.children[0].firstElementChild!.firstChild!, 0);
       assert(quote('2', range) === '>>>>1\n>>> a\n>>2');

@@ -7,7 +7,12 @@ import { html, define, defrag } from 'typed-dom';
 export const cite: ParagraphParser.MentionParser.CiteParser = creator(line(fmap(validate(
   '>',
   reverse(tails([
-    str(/^>*(?=>)/),
+    str(/^>*(?=>>)/),
     anchor,
   ]))),
-  ([el, str = '']: [HTMLElement, string?]) => [html('span', { class: 'cite' }, defrag([str, define(el, { 'data-depth': `${str.length + 1}` })]))])));
+  ([el, str = '']: [HTMLElement, string?]) => [
+    html('span', { class: 'cite' }, defrag([
+      str + '>',
+      define(el, { 'data-depth': `${str.length + 1}` }, el.textContent!.slice(1)),
+    ])),
+  ])));

@@ -3,6 +3,7 @@
 ## 0.209.0
 
 - Refine paragraph parser to identify the cite sources.
+- Change cite and anchor syntax to have to start with two `>`.
 - Fix figure index format.
 
 ## 0.208.0
