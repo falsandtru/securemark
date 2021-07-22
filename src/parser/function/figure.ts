@@ -79,10 +79,10 @@ export function* figure(
     !isFixed(label) && numbers.set(group, number);
     assert(!+def.setAttribute('data-number', number));
     opts.id !== '' && def.setAttribute('id', `label:${opts.id ? `${opts.id}:` : ''}${label}`);
-    const figindex = group === '$' ? `(${number})` : `${capitalize(group)} ${number}`;
+    const figindex = group === '$' ? `(${number})` : `${capitalize(group)}${group === 'fig' ? '.' : ''} ${number}`;
     define(
       def.querySelector(':scope > .figindex')!,
-      group === '$' ? figindex : `${figindex}. `);
+      group === '$' ? figindex : `${figindex}: `);
     for (const ref of refs.take(label, Infinity)) {
       if (ref.hash.slice(1) === def.id && ref.textContent === figindex) continue;
       yield define(ref, opts.id !== '' ? { href: `#${def.id}` } : { class: `${ref.className} disabled` }, figindex);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.208.1
+
+- Fix figure index format.
+
 ## 0.208.0
 
 - Extend bracket syntax to support fullwidth parenthesises.
