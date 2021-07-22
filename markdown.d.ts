@@ -547,13 +547,13 @@ export namespace MarkdownParser {
         // > text
         Block<'paragraph/mention'>,
         Parser<HTMLSpanElement, Context, [
-          ParagraphParser.MentionParser.AnchorParser,
+          ParagraphParser.MentionParser.CiteParser,
           ParagraphParser.MentionParser.QuoteParser,
         ]> {
       }
       export namespace MentionParser {
-        export interface AnchorParser extends
-          Block<'paragraph/mention/anchor'>,
+        export interface CiteParser extends
+          Block<'paragraph/mention/cite'>,
           Parser<HTMLSpanElement, Context, [
             SourceParser.StrParser,
             InlineParser.AutolinkParser.AnchorParser,

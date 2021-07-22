@@ -1,9 +1,9 @@
 import { ParagraphParser } from '../../block';
-import { subsequence, some, validate } from '../../../combinator';
-import { anchor } from './mention/anchor';
+import { inits, some, validate } from '../../../combinator';
+import { cite } from './mention/cite';
 import { quote } from './mention/quote';
 
-export const mention: ParagraphParser.MentionParser = validate('>', subsequence([
-  some(anchor),
+export const mention: ParagraphParser.MentionParser = validate('>', inits([
+  some(cite),
   quote,
 ]));

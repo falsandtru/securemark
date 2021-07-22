@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.208.1
+## 0.209.0
 
+- Refine paragraph parser to identify the cite sources.
 - Fix figure index format.
 
 ## 0.208.0

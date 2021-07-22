@@ -18,7 +18,7 @@ export function quote(anchor: string, range: Range): string {
         continue;
     }
   }
-  expansion ||= !!trim(node).firstElementChild?.matches('.quote');
+  expansion ||= !!trim(node).firstElementChild?.matches('.cite, .quote');
   if (!node.firstChild) return '';
   let add: boolean;
   if (expansion) {
@@ -32,7 +32,7 @@ export function quote(anchor: string, range: Range): string {
   for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     const target = el.nextSibling as Node | Element;
-    if (target && 'id' in target && target.matches('.quote')) {
+    if (target && 'id' in target && target.matches('.cite, .quote')) {
       el.replaceWith('\n>');
       add ||= i < len - 1;
     }
@@ -47,12 +47,12 @@ export function quote(anchor: string, range: Range): string {
 
 function expand(range: Range): boolean {
   const node = range.startContainer;
-  if (node.parentElement?.matches('.quote > .anchor:first-child')) {
+  if (node.parentElement?.matches('.cite > .anchor')) {
     range.setStart(node.parentElement.previousSibling!, 0);
     return true;
   }
   const offset = range.startOffset;
-  if (node.parentElement?.matches('.quote') && node.textContent!.slice(0, offset) === '>'.repeat(offset)) {
+  if (node.parentElement?.matches('.cite, .quote') && node.textContent!.slice(0, offset) === '>'.repeat(offset)) {
     range.setStart(node, 0);
     return true;
   }

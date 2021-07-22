@@ -6,14 +6,11 @@ import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
 import { html, defrag } from 'typed-dom';
 
-export const syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
-
 export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
   '>',
   rewrite(
     union([
-      some(validate(/^>+(?:$|\s)/, contentline)),
-      some(validate(syntax, contentline)),
+      some(validate(/^>+(?!\S)/, contentline)),
     ]),
     union([convert(source => source.replace(/\n$/, ''), block_)]))),
   ns => [html('span', { class: 'quote' }, ns)]),
@@ -42,7 +39,7 @@ const block_: ParagraphParser.MentionParser.QuoteParser.BlockParser = (source, c
       ++i;
       continue;
     }
-    if (child.classList.contains('quote')) {
+    if (child.classList.contains('cite') || child.classList.contains('quote')) {
       context.resources && (context.resources.budget -= child.childNodes.length);
       nodes.splice(i, 1, ...child.childNodes as NodeListOf<HTMLElement>);
       --i;
