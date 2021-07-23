@@ -6,11 +6,13 @@ import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
 import { html, defrag } from 'typed-dom';
 
+export const syntax = /^>+(?!\S)/;
+
 export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
   '>',
   rewrite(
     union([
-      some(validate(/^>+(?!\S)/, contentline)),
+      some(validate(syntax, contentline)),
     ]),
     union([convert(source => source.replace(/\n$/, ''), block_)]))),
   ns => [html('span', { class: 'quote' }, ns)]),

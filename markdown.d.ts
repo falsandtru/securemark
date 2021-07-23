@@ -538,7 +538,10 @@ export namespace MarkdownParser {
       Block<'paragraph'>,
       Parser<HTMLParagraphElement, Context, [
         ParagraphParser.MentionParser,
-        InlineParser,
+        Parser<string | HTMLElement, Context, [
+          InlineParser,
+          ParagraphParser.MentionParser.QuoteParser,
+        ]>,
       ]> {
     }
     export namespace ParagraphParser {

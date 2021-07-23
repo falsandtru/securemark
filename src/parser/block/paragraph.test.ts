@@ -35,14 +35,16 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('>>1 a\nb')), [['<p><a class="anchor" href="?res=1">&gt;&gt;1</a> a<br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>1 a\n>>2')), [['<p><a class="anchor" href="?res=1">&gt;&gt;1</a> a<br><a class="anchor" href="?res=2">&gt;&gt;2</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>1 a\n>>b')), [['<p><a class="anchor" href="?res=1">&gt;&gt;1</a> a<br>&gt;&gt;b</p>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>1 a\n>> 2')), [['<p><a class="anchor" href="?res=1">&gt;&gt;1</a> a<br>&gt;&gt; 2</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>1 a\n>> b')), [['<p><a class="anchor" href="?res=1">&gt;&gt;1</a> a<br><span class="quote">&gt;&gt; b</span></p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>11.')), [['<p><a class="anchor" href="?res=11">&gt;&gt;11</a>.</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>11 a')), [['<p><a class="anchor" href="?res=11">&gt;&gt;11</a> a</p>'], '']);
       assert.deepStrictEqual(inspect(parser('>>>11 a')), [['<p>&gt;<a class="anchor" href="?res=11">&gt;&gt;11</a> a</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('>> a\n>>1')), [['<p><span class="quote">&gt;&gt; a</span><br><a class="anchor" href="?res=1">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a>>1')), [['<p>a<a class="anchor" href="?res=1">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a >>1')), [['<p>a <a class="anchor" href="?res=1">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>>1')), [['<p>a<br><a class="anchor" href="?res=1">&gt;&gt;1</a></p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>>1\nb')), [['<p>a<br><a class="anchor" href="?res=1">&gt;&gt;1</a><br>b</p>'], '']);
+      assert.deepStrictEqual(inspect(parser('a\n>> b\nc')), [['<p>a<br><span class="quote">&gt;&gt; b</span><br>c</p>'], '']);
       assert.deepStrictEqual(inspect(parser(' >>1')), [['<p><a class="anchor" href="?res=1">&gt;&gt;1</a></p>'], '']);
     });
 
