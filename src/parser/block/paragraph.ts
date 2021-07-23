@@ -11,19 +11,14 @@ import { push, pop } from 'spica/array';
 
 export const paragraph: ParagraphParser = block(localize(fmap(
   subsequence([
-    fmap(
-      some(mention),
-      es => es.reduce((acc, el) => push(acc, [el, html('br')]), [])),
+    some(mention),
     some(union([
       fmap(
         rewrite(
           some(anyline, delimiter),
           visualize(trim(some(inline)))),
         ns => push(ns, [html('br')])),
-      fmap(
-        quote,
-        // Bug: Type mismatch between outer and inner.
-        (es: HTMLElement[]) => es.reduce((acc, el) => push(acc, [el, html('br')]), [])),
+      quote,
     ])),
   ]),
   ns => [html('p', defrag(pop(ns)[0]))])));

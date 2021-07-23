@@ -549,7 +549,7 @@ export namespace MarkdownParser {
         // >>1
         // > text
         Block<'paragraph/mention'>,
-        Parser<HTMLSpanElement, Context, [
+        Parser<HTMLSpanElement | HTMLBRElement, Context, [
           ParagraphParser.MentionParser.CiteParser,
           ParagraphParser.MentionParser.QuoteParser,
         ]> {
@@ -557,14 +557,14 @@ export namespace MarkdownParser {
       export namespace MentionParser {
         export interface CiteParser extends
           Block<'paragraph/mention/cite'>,
-          Parser<HTMLSpanElement, Context, [
+          Parser<HTMLSpanElement | HTMLBRElement, Context, [
             SourceParser.StrParser,
             InlineParser.AutolinkParser.AnchorParser,
           ]> {
         }
         export interface QuoteParser extends
           Block<'paragraph/mention/quote'>,
-          Parser<HTMLSpanElement, Context, [
+          Parser<HTMLSpanElement | HTMLBRElement, Context, [
             QuoteParser.BlockParser,
           ]> {
         }

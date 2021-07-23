@@ -15,7 +15,7 @@ export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creat
       some(validate(syntax, contentline)),
     ]),
     union([convert(source => source.replace(/\n$/, ''), block_)]))),
-  ns => [html('span', { class: 'quote' }, ns)]),
+  ns => [html('span', { class: 'quote' }, ns), html('br')]),
   false)));
 
 const block_: ParagraphParser.MentionParser.QuoteParser.BlockParser = (source, context) => {

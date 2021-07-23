@@ -15,4 +15,5 @@ export const cite: ParagraphParser.MentionParser.CiteParser = creator(line(fmap(
       str + '>',
       define(el, { 'data-depth': `${str.length + 1}` }, el.textContent!.slice(1)),
     ])),
+    html('br'),
   ])));
