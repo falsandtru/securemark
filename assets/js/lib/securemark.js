@@ -5354,13 +5354,13 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.some)((0, combinator_1.subsequence)([
-                (0, combinator_1.fmap)((0, combinator_1.some)(mention_1.mention), es => es.reduce((acc, el) => (0, array_1.push)(acc, [
-                    el,
-                    (0, typed_dom_1.html)('br')
-                ]), [])),
-                (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')]))
-            ])), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))])));
+            exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.subsequence)([
+                (0, combinator_1.some)(mention_1.mention),
+                (0, combinator_1.some)((0, combinator_1.union)([
+                    (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')])),
+                    quote_1.quote
+                ]))
+            ]), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))])));
         },
         {
             '../../combinator': 37,
@@ -5380,16 +5380,16 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.mention = void 0;
             const combinator_1 = _dereq_('../../../combinator');
-            const anchor_1 = _dereq_('./mention/anchor');
+            const cite_1 = _dereq_('./mention/cite');
             const quote_1 = _dereq_('./mention/quote');
-            exports.mention = (0, combinator_1.validate)('>', (0, combinator_1.subsequence)([
-                (0, combinator_1.some)(anchor_1.anchor),
+            exports.mention = (0, combinator_1.validate)('>', (0, combinator_1.inits)([
+                (0, combinator_1.some)(cite_1.cite),
                 quote_1.quote
             ]));
         },
         {
             '../../../combinator': 37,
-            './mention/anchor': 92,
+            './mention/cite': 92,
             './mention/quote': 93
         }
     ],
@@ -5397,15 +5397,21 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.anchor = void 0;
+            exports.cite = void 0;
             const combinator_1 = _dereq_('../../../../combinator');
             const anchor_1 = _dereq_('../../../inline/autolink/anchor');
             const source_1 = _dereq_('../../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.anchor = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.tails)([
-                (0, source_1.str)(/^>*(?=>)/),
-                (0, combinator_1.fmap)(anchor_1.anchor, ([el]) => [(0, typed_dom_1.define)(el, { class: void el.classList.add('quote-anchor') })])
-            ])), ns => [(0, typed_dom_1.html)('span', { class: 'quote' }, ns)])));
+            exports.cite = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.reverse)((0, combinator_1.tails)([
+                (0, source_1.str)(/^>*(?=>>)/),
+                anchor_1.anchor
+            ]))), ([el, str = '']) => [
+                (0, typed_dom_1.html)('span', { class: 'cite' }, (0, typed_dom_1.defrag)([
+                    str + '>',
+                    (0, typed_dom_1.define)(el, { 'data-depth': `${ str.length + 1 }` }, el.textContent.slice(1))
+                ])),
+                (0, typed_dom_1.html)('br')
+            ])));
         },
         {
             '../../../../combinator': 37,
@@ -5425,11 +5431,11 @@ require = function () {
             const source_1 = _dereq_('../../../source');
             const autolink_1 = _dereq_('../../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.syntax = /^>+(?!>|[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*(?![^\S\n]*(?:$|\n)))/;
-            exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.rewrite)((0, combinator_1.union)([
-                (0, combinator_1.some)((0, combinator_1.validate)(/^>+(?:$|\s)/, source_1.contentline)),
-                (0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.contentline))
-            ]), (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(/\n$/, ''), block_)]))), ns => [(0, typed_dom_1.html)('span', { class: 'quote' }, ns)]), false)));
+            exports.syntax = /^>+(?!\S)/;
+            exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.contentline))]), (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(/\n$/, ''), block_)]))), ns => [
+                (0, typed_dom_1.html)('span', { class: 'quote' }, ns),
+                (0, typed_dom_1.html)('br')
+            ]), false)));
             const block_ = (source, context) => {
                 const lines = source.match(/^.*\n?/mg);
                 const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg);
@@ -5449,7 +5455,7 @@ require = function () {
                         ++i;
                         continue;
                     }
-                    if (child.classList.contains('quote')) {
+                    if (child.classList.contains('cite') || child.classList.contains('quote')) {
                         context.resources && (context.resources.budget -= child.childNodes.length);
                         nodes.splice(i, 1, ...child.childNodes);
                         --i;
@@ -5646,8 +5652,8 @@ require = function () {
                     }
                     !(0, label_1.isFixed)(label) && numbers.set(group, number);
                     opts.id !== '' && def.setAttribute('id', `label:${ opts.id ? `${ opts.id }:` : '' }${ label }`);
-                    const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) } ${ number }`;
-                    (0, typed_dom_1.define)(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }. `);
+                    const figindex = group === '$' ? `(${ number })` : `${ capitalize(group) }${ group === 'fig' ? '.' : '' } ${ number }`;
+                    (0, typed_dom_1.define)(def.querySelector(':scope > .figindex'), group === '$' ? figindex : `${ figindex }: `);
                     for (const ref of refs.take(label, global_1.Infinity)) {
                         if (ref.hash.slice(1) === def.id && ref.textContent === figindex)
                             continue;
@@ -6070,7 +6076,7 @@ require = function () {
             exports.anchor = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.anchor = (0, combinator_1.creator)((0, combinator_1.validate)('>', (0, combinator_1.focus)(/^>>?[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, source => [
+            exports.anchor = (0, combinator_1.creator)((0, combinator_1.validate)('>', (0, combinator_1.focus)(/^>>[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, source => [
                 [(0, typed_dom_1.html)('a', {
                         class: 'anchor',
                         href: `?res=${ source.slice(source.lastIndexOf('>') + 1) }`
@@ -8668,7 +8674,7 @@ require = function () {
                     hashref: find('a.hashref[href]'),
                     channel: find('a.channel[href]'),
                     account: find('a.account[href]'),
-                    mention: find('a.anchor[href]'),
+                    mention: find('.cite > a.anchor[href]'),
                     url: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)').filter(el => [
                         'http:',
                         'https:'
@@ -8717,7 +8723,7 @@ require = function () {
                         continue;
                     }
                 }
-                expansion || (expansion = !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.quote')));
+                expansion || (expansion = !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.cite, .quote')));
                 if (!node.firstChild)
                     return '';
                 let add;
@@ -8731,7 +8737,7 @@ require = function () {
                 for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     const target = el.nextSibling;
-                    if (target && 'id' in target && target.matches('.quote')) {
+                    if (target && 'id' in target && target.matches('.cite, .quote')) {
                         el.replaceWith('\n>');
                         add || (add = i < len - 1);
                     } else {
@@ -8746,12 +8752,12 @@ require = function () {
             function expand(range) {
                 var _a, _b;
                 const node = range.startContainer;
-                if ((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.quote > .anchor:first-child')) {
+                if ((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.cite > .anchor')) {
                     range.setStart(node.parentElement.previousSibling, 0);
                     return true;
                 }
                 const offset = range.startOffset;
-                if (((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.quote')) && node.textContent.slice(0, offset) === '>'.repeat(offset)) {
+                if (((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.cite, .quote')) && node.textContent.slice(0, offset) === '>'.repeat(offset)) {
                     range.setStart(node, 0);
                     return true;
                 }
