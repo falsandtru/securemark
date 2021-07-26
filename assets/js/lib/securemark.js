@@ -5431,7 +5431,7 @@ require = function () {
             const source_1 = _dereq_('../../../source');
             const autolink_1 = _dereq_('../../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.syntax = /^>+(?!\S)/;
+            exports.syntax = /^>+(?=[^\S\n])/;
             exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.contentline))]), (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(/\n$/, ''), block_)]))), ns => [
                 (0, typed_dom_1.html)('span', { class: 'quote' }, ns),
                 (0, typed_dom_1.html)('br')

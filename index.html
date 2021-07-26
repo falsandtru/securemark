@@ -437,6 +437,12 @@
     display: block;
     margin-bottom: 1em;
   }
+  blockquote:empty::before {
+    content: "(Empty blockquote)";
+    font-style: italic;
+    font-weight: bold;
+    color: gray;
+  }
   table:empty::before {
     content: "(Empty table)";
     font-style: italic;
