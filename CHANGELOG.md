@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.209.1
+
+- Fix quote parser.
+
 ## 0.209.0
 
 - Refine paragraph parser to identify the cite sources.

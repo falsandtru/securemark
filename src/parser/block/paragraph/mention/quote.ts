@@ -6,7 +6,7 @@ import { contentline } from '../../../source';
 import { autolink } from '../../../autolink';
 import { html, defrag } from 'typed-dom';
 
-export const syntax = /^>+(?!\S)/;
+export const syntax = /^>+(?=[^\S\n])/;
 
 export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
   '>',
