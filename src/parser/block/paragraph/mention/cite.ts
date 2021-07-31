@@ -5,7 +5,7 @@ import { str } from '../../../source';
 import { html, define, defrag } from 'typed-dom';
 
 export const cite: ParagraphParser.MentionParser.CiteParser = creator(line(fmap(validate(
-  '>',
+  '>>',
   reverse(tails([
     str(/^>*(?=>>)/),
     anchor,
