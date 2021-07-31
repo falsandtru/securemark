@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.209.2
+
+- Update dependencies.
+
 ## 0.209.1
 
 - Fix quote parser.
