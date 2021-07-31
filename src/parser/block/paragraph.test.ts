@@ -46,6 +46,7 @@ describe('Unit: parser/block/paragraph', () => {
       assert.deepStrictEqual(inspect(parser('a\n>>1\nb')), [['<p>a<br><a class="anchor" href="?res=1">&gt;&gt;1</a><br>b</p>'], '']);
       assert.deepStrictEqual(inspect(parser('a\n>> b\nc')), [['<p>a<br><span class="quote">&gt;&gt; b</span><br>c</p>'], '']);
       assert.deepStrictEqual(inspect(parser(' >>1')), [['<p><a class="anchor" href="?res=1">&gt;&gt;1</a></p>'], '']);
+      assert.deepStrictEqual(inspect(parser(' >>>1')), [['<p>&gt;<a class="anchor" href="?res=1">&gt;&gt;1</a></p>'], '']);
     });
 
     it('comment', () => {
