@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.210.0
+
+- Extend anchor syntax to allow identifiers starting with alphabets.
+
 ## 0.209.2
 
 - Update dependencies.
