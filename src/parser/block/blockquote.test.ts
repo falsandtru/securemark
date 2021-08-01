@@ -76,10 +76,10 @@ describe('Unit: parser/block/blockquote', () => {
       assert.deepStrictEqual(inspect(parser('!>> a')), [['<blockquote><blockquote><p>a</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!>> a\n> b')), [['<blockquote><blockquote><p>a</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote><p>b</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> - a')), [['<blockquote><ul><li>a</li></ul><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> ```\na\n```')), [['<blockquote><pre class="notranslate">a</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n```')), [['<blockquote><pre class="notranslate">a</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n> ```')), [['<blockquote><pre class="notranslate">a</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
-      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n> \n> b\n> ```')), [['<blockquote><pre class="notranslate">a<br><br>b</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\na\n```')), [['<blockquote><pre translate="no">a</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n```')), [['<blockquote><pre translate="no">a</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n> ```')), [['<blockquote><pre translate="no">a</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
+      assert.deepStrictEqual(inspect(parser('!> ```\n> a\n> \n> b\n> ```')), [['<blockquote><pre translate="no">a<br><br>b</pre><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> a\n>\n> b')), [['<blockquote><p>a</p><p>b</p><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> > a')), [['<blockquote><blockquote><pre>a</pre></blockquote><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);
       assert.deepStrictEqual(inspect(parser('!> > a\n> b')), [['<blockquote><blockquote><pre>a<br>b</pre></blockquote><ol class="annotation"></ol><ol class="reference"></ol></blockquote>'], '']);

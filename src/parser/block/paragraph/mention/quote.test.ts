@@ -36,8 +36,8 @@ describe('Unit: parser/block/paragraph/mention/quote', () => {
       assert.deepStrictEqual(inspect(parser('> > a\n> > b\n> > c')), [['<span class="quote">&gt; &gt; a<br>&gt; &gt; b<br>&gt; &gt; c</span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('> > > a\n> > > b')), [['<span class="quote">&gt; &gt; &gt; a<br>&gt; &gt; &gt; b</span>', '<br>'], '']);
       assert.deepStrictEqual(inspect(parser('> $a-b$')), [['<span class="quote">&gt; $a-b$</span>', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('> $a=b$')), [['<span class="quote">&gt; <span class="math notranslate" data-src="$a=b$">$a=b$</span></span>', '<br>'], '']);
-      assert.deepStrictEqual(inspect(parser('> ${a}$')), [['<span class="quote">&gt; <span class="math notranslate" data-src="${a}$">${a}$</span></span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('> $a=b$')), [['<span class="quote">&gt; <span class="math" translate="no" data-src="$a=b$">$a=b$</span></span>', '<br>'], '']);
+      assert.deepStrictEqual(inspect(parser('> ${a}$')), [['<span class="quote">&gt; <span class="math" translate="no" data-src="${a}$">${a}$</span></span>', '<br>'], '']);
     });
 
   });

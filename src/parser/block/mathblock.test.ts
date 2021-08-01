@@ -25,20 +25,20 @@ describe('Unit: parser/block/mathblock', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('$$\n$$')), [['<div class="math notranslate">$$\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n\n$$')), [['<div class="math notranslate">$$\n\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na\n$$')), [['<div class="math notranslate">$$\na\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na\n$$\n')), [['<div class="math notranslate">$$\na\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na\nb\n$$')), [['<div class="math notranslate">$$\na\nb\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n\\\n$$')), [['<div class="math notranslate">$$\n\\\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$\n$$')), [['<div class="math notranslate">$$\n$\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$\n\n$$')), [['<div class="math notranslate">$$\n$\n\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$$\n$$')), [['<div class="math notranslate">$$\n$$\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$$\n\n$$')), [['<div class="math notranslate">$$\n$$</div>'], '\n$$']);
-      assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math notranslate">$$\n$$$\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$$$\n\n$$')), [['<div class="math notranslate">$$\n$$$\n\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\n$$\n$$')), [['<div class="math notranslate">$$\n$$\n$$</div>'], '']);
-      assert.deepStrictEqual(inspect(parser(`$$\n0${'\n'.repeat(100)}$$`), '>'), [['<div class="math notranslate">'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$')), [['<div class="math" translate="no">$$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n\n$$')), [['<div class="math" translate="no">$$\n\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\n$$')), [['<div class="math" translate="no">$$\na\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\n$$\n')), [['<div class="math" translate="no">$$\na\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\nb\n$$')), [['<div class="math" translate="no">$$\na\nb\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n\\\n$$')), [['<div class="math" translate="no">$$\n\\\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$\n$$')), [['<div class="math" translate="no">$$\n$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$\n\n$$')), [['<div class="math" translate="no">$$\n$\n\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$\n$$')), [['<div class="math" translate="no">$$\n$$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$\n\n$$')), [['<div class="math" translate="no">$$\n$$</div>'], '\n$$']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$$\n$$')), [['<div class="math" translate="no">$$\n$$$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$$\n\n$$')), [['<div class="math" translate="no">$$\n$$$\n\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\n$$\n$$')), [['<div class="math" translate="no">$$\n$$\n$$</div>'], '']);
+      assert.deepStrictEqual(inspect(parser(`$$\n0${'\n'.repeat(100)}$$`), '>'), [['<div class="math" translate="no">'], '']);
     });
 
   });

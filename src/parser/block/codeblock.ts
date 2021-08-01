@@ -38,16 +38,16 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     lang = language.test(lang || ext)
       ? lang || ext
       : lang && 'invalid';
-    const el = html('pre', { class: 'notranslate' }, body.slice(0, -1) || undefined);
-    if (lang) {
-      assert(el.className);
-      el.className += ` code language-${lang}`;
-      el.setAttribute('data-lang', lang);
-    }
-    else {
-      define(el, defrag(eval(some(autolink)(el.textContent!, context), [])));
-    }
-    path && el.setAttribute('data-path', path);
+    const el = html('pre',
+      {
+        class: lang ? `code language-${lang}` : undefined,
+        translate: 'no',
+        'data-lang': lang || undefined,
+        'data-path': path || undefined,
+      },
+      lang
+        ? body.slice(0, -1) || undefined
+        : defrag(eval(some(autolink)(body.slice(0, -1), context), [])));
     if (context.caches?.code?.has(`${lang}\n${el.textContent}`)) {
       define(el, context.caches.code.get(`${lang}\n${el.textContent}`)!.cloneNode(true).childNodes);
     }

@@ -18,7 +18,7 @@ export const mathblock: MathBlockParser = block(validate('$$', fmap(
     closer && param.trimStart() === ''
       ? (body = `$$\n${body}$$`) && cache?.has(body)
         ? cache.get(body)!.cloneNode(true) as HTMLDivElement
-        : html('div', { class: `math notranslate` }, body)
+        : html('div', { class: `math`, translate: 'no' }, body)
       : html('pre', {
           class: `math notranslate invalid`,
           'data-invalid-syntax': 'mathblock',

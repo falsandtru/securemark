@@ -28,7 +28,7 @@ export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewr
     cache?.has(source)
       ? cache.get(source)!.cloneNode(true)
       : !disallowedCommand.test(source)
-        ? html('span', { class: 'math notranslate', 'data-src': source }, source)
+        ? html('span', { class: 'math', translate: 'no', 'data-src': source }, source)
         : html('span', {
             class: 'notranslate invalid',
             'data-invalid-syntax': 'math',

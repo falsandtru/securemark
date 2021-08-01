@@ -106,7 +106,7 @@ describe('Unit: parser/api/parse', () => {
           '<p><a href="https://source/hashtags/a" target="_blank" class="hashtag">#a</a></p>',
           '<p><a href="https://domain/hashtags/a" target="_blank" class="hashtag">#domain/a</a></p>',
           '<p><a class="index" href="#index:a">a</a></p>',
-          '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math notranslate">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
+          '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math" translate="no">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
           '<p><a class="label" data-label="$-a" href="#label:$-a">(1)</a></p>',
           '<p><sup class="annotation" id="annotation:ref:1" title="a"><a href="#annotation:def:1">*1</a></sup></p>',
           '<p><a href="https://source/x/a" target="_blank">a</a></p>',

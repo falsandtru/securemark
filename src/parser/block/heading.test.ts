@@ -36,7 +36,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a ')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a b  c \n')), [['<h1 id="index:a_b_c">a b  c</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\n')), [['<h1 id="index:a">a</h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# *a*`b`${c}$')), [['<h1 id="index:a`b`${c}$"><em>a</em><code data-src="`b`">b</code><span class="math notranslate" data-src="${c}$">${c}$</span></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# *a*`b`${c}$')), [['<h1 id="index:a`b`${c}$"><em>a</em><code data-src="`b`">b</code><span class="math" translate="no" data-src="${c}$">${c}$</span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\\')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a\\\n')), [['<h1 id="index:a">a</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# \\')), [['<h1 id="index:\\">\\</h1>'], '']);
@@ -72,7 +72,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# A')), [['<h1 id="index:A">A</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# *A*')), [['<h1 id="index:A"><em>A</em></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# `A`')), [['<h1 id="index:`A`"><code data-src="`A`">A</code></h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# ${A}$')), [['<h1 id="index:${A}$"><span class="math notranslate" data-src="${A}$">${A}$</span></h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# ${A}$')), [['<h1 id="index:${A}$"><span class="math" translate="no" data-src="${A}$">${A}$</span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# A [#B]')), [['<h1 id="index:B">A<span class="indexer" data-index="B"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# A [#`B`]')), [['<h1 id="index:`B`">A<span class="indexer" data-index="`B`"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# A [#@a]')), [['<h1 id="index:@a">A<span class="indexer" data-index="@a"></span></h1>'], '']);
