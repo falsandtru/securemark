@@ -928,12 +928,6 @@
   });
   editor.setOption('vimMode', true);
   let hover = true;
-  //editor.addEventListener('click', () =>
-  //  nearest(editor.selectionStart)?.scrollIntoView({ block: 'nearest' }));
-  editor.on('mousedown', () => {
-    hover && nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
-    hover = true;
-  });
   editor.on('cursorActivity', () => {
     hover && nearest(editor.doc.indexFromPos(editor.getCursor()))?.scrollIntoView({ block: 'nearest' });
     hover = true;
