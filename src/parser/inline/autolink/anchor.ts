@@ -1,7 +1,15 @@
 import { AutolinkParser } from '../../inline';
-import { validate, focus, creator } from '../../../combinator';
-import { html } from 'typed-dom';
+import { union, validate, focus, context, convert, fmap, lazy } from '../../../combinator';
+import { link } from '../link';
+import { define } from 'typed-dom';
 
-export const anchor: AutolinkParser.AnchorParser = creator(validate('>>', focus(
+export const anchor: AutolinkParser.AnchorParser = lazy(() => validate('>>', fmap(focus(
   /^>>[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/,
-  source => [[html('a', { class: 'anchor', href: `?res=${source.slice(source.lastIndexOf('>') + 1)}` }, source)], ''])));
+  context({ syntax: { inline: {
+    link: true,
+    autolink: false,
+  }}},
+  convert(
+    source => `[${source}]{ ?res=${source.slice(2)} }`,
+    union([link])))),
+  ([el]) => [define(el, { class: 'anchor' })])));

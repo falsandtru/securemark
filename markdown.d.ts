@@ -780,7 +780,7 @@ export namespace MarkdownParser {
       // { uri }
       // [abc]{uri nofollow}
       Inline<'link'>,
-      Parser<HTMLElement, Context, [
+      Parser<HTMLAnchorElement, Context, [
         LinkParser.ContentParser,
         LinkParser.ParameterParser,
       ]> {
@@ -1064,28 +1064,28 @@ export namespace MarkdownParser {
         // @user
         Inline<'account'>,
         Parser<HTMLAnchorElement, Context, [
-          SourceParser.StrParser,
+          LinkParser,
         ]> {
       }
       export interface HashtagParser extends
         // #tag
         Inline<'hashtag'>,
         Parser<HTMLAnchorElement, Context, [
-          SourceParser.StrParser,
+          LinkParser,
         ]> {
       }
       export interface HashrefParser extends
         // #1
         Inline<'hashref'>,
         Parser<HTMLAnchorElement, Context, [
-          SourceParser.StrParser,
+          LinkParser,
         ]> {
       }
       export interface AnchorParser extends
         // >>1
         Inline<'anchor'>,
         Parser<HTMLAnchorElement, Context, [
-          SourceParser.StrParser,
+          LinkParser,
         ]> {
       }
     }

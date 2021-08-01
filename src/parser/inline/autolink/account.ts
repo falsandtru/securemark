@@ -1,12 +1,12 @@
-import { undefined } from 'spica/global';
 import { AutolinkParser } from '../../inline';
-import { tails, verify, rewrite, creator, open } from '../../../combinator';
+import { union, tails, verify, rewrite, context, open, convert, fmap, lazy } from '../../../combinator';
+import { link } from '../link';
 import { str } from '../../source';
-import { html } from 'typed-dom';
+import { define } from 'typed-dom';
 
 // https://example/@user must be a user page or a redirect page going there.
 
-export const account: AutolinkParser.AccountParser = creator(rewrite(
+export const account: AutolinkParser.AccountParser = lazy(() => fmap(rewrite(
   open(
     '@',
     tails([
@@ -17,16 +17,16 @@ export const account: AutolinkParser.AccountParser = creator(rewrite(
         str(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/),
         ([source]) => source.length <= 64),
     ])),
-  (source, { host, url }) => [[
-    html('a',
-      {
-        class: 'account',
-        href: source.includes('/')
-          ? `https://${source.slice(1).replace('/', '/@')}`
-          : `${url?.origin ?? ''}/${source}`,
-        target: source.includes('/') || url && url.origin !== host?.origin
-          ? '_blank'
-          : undefined,
-      },
-      source)
-  ], '']));
+  context({ syntax: { inline: {
+    link: true,
+    autolink: false,
+  }}},
+  convert(
+    source =>
+      `[${source}]{ ${
+      source.includes('/')
+        ? `https://${source.slice(1).replace('/', '/@')}`
+        : `/${source}`
+      } }`,
+    union([link])))),
+  ([el]) => [define(el, { class: 'account' })]));

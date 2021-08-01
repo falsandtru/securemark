@@ -43,7 +43,7 @@ describe('Unit: parser/inline/reference', () => {
 
     it('nest', () => {
       assert.deepStrictEqual(inspect(parser('[[`a`]]')), [['<sup class="reference"><code data-src="`a`">a</code></sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[@a]]')), [['<sup class="reference"><a class="account" href="/@a">@a</a></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[@a]]')), [['<sup class="reference"><a href="/@a" class="account">@a</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[http://host]]')), [['<sup class="reference"><a href="http://host" target="_blank">http://host</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[![]{a}]]')), [['<sup class="reference">!<a href="a">a</a></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[<a>]]')), [['<sup class="reference">&lt;a&gt;</sup>'], '']);

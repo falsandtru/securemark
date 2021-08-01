@@ -3,6 +3,7 @@
 ## 0.210.0
 
 - Extend anchor syntax to allow identifiers starting with alphabets.
+- Fix anchor, account, hashtag, and hashref parsers to reflect the document URL.
 
 ## 0.209.2
 

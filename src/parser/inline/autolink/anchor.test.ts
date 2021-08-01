@@ -16,12 +16,12 @@ describe('Unit: parser/inline/autolink/anchor', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('>>0')), [['<a class="anchor" href="?res=0">&gt;&gt;0</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>a')), [['<a class="anchor" href="?res=a">&gt;&gt;a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>A')), [['<a class="anchor" href="?res=A">&gt;&gt;A</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('>>0-')), [['<a class="anchor" href="?res=0">&gt;&gt;0</a>'], '-']);
-      assert.deepStrictEqual(inspect(parser('>>0--a')), [['<a class="anchor" href="?res=0">&gt;&gt;0</a>'], '--a']);
-      assert.deepStrictEqual(inspect(parser('>>0-a-A')), [['<a class="anchor" href="?res=0-a-A">&gt;&gt;0-a-A</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0')), [['<a href="?res=0" class="anchor">&gt;&gt;0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>a')), [['<a href="?res=a" class="anchor">&gt;&gt;a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>A')), [['<a href="?res=A" class="anchor">&gt;&gt;A</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('>>0-')), [['<a href="?res=0" class="anchor">&gt;&gt;0</a>'], '-']);
+      assert.deepStrictEqual(inspect(parser('>>0--a')), [['<a href="?res=0" class="anchor">&gt;&gt;0</a>'], '--a']);
+      assert.deepStrictEqual(inspect(parser('>>0-a-A')), [['<a href="?res=0-a-A" class="anchor">&gt;&gt;0-a-A</a>'], '']);
     });
 
   });

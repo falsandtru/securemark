@@ -1,12 +1,12 @@
-import { undefined } from 'spica/global';
 import { AutolinkParser } from '../../inline';
-import { tails, verify, rewrite, creator, open } from '../../../combinator';
+import { union, tails, verify, rewrite, context, open, convert, fmap, lazy } from '../../../combinator';
+import { link } from '../link';
 import { str } from '../../source';
-import { html } from 'typed-dom';
+import { define } from 'typed-dom';
 
 // https://example/hashtags/a must be a hashtag page or a redirect page going there.
 
-export const hashtag: AutolinkParser.HashtagParser = creator(rewrite(
+export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
   open(
     '#',
     tails([
@@ -17,16 +17,16 @@ export const hashtag: AutolinkParser.HashtagParser = creator(rewrite(
         str(/^(?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,128}(?:_?\((?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,125}\))?(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/),
         ([source]) => source.length <= 128),
     ])),
-  (source, { host, url }) => [[
-    html('a',
-      {
-        class: 'hashtag',
-        href: source.indexOf('/') !== -1
-          ? `https://${source.slice(1).replace('/', '/hashtags/')}`
-          : `${url?.origin ?? ''}/hashtags/${source.slice(1)}`,
-        target: source.indexOf('/') !== -1 || url && url.origin !== host?.origin
-          ? '_blank'
-          : undefined,
-      },
-      source)
-  ], '']));
+  context({ syntax: { inline: {
+    link: true,
+    autolink: false,
+  }}},
+  convert(
+    source =>
+      `[${source}]{ ${
+      source.includes('/')
+        ? `https://${source.slice(1).replace('/', '/hashtags/')}`
+        : `/hashtags/${source.slice(1)}`
+      } }`,
+    union([link])))),
+  ([el]) => [define(el, { class: 'hashtag' }, el.textContent!)]));
