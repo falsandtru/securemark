@@ -11,17 +11,17 @@ describe('Unit: parser/block/mathblock', () => {
       assert.deepStrictEqual(inspect(parser('\n')), undefined);
       assert.deepStrictEqual(inspect(parser('$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$\na')), [['<pre class="math notranslate invalid">$$\na</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na$$')), [['<pre class="math notranslate invalid">$$\na$$</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na\n$$b')), [['<pre class="math notranslate invalid">$$\na\n$$b</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('$$\na\n$$\nb')), [['<pre class="math notranslate invalid">$$\na\n$$\nb</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na')), [['<pre class="invalid" translate="no">$$\na</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na$$')), [['<pre class="invalid" translate="no">$$\na$$</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\n$$b')), [['<pre class="invalid" translate="no">$$\na\n$$b</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$\na\n$$\nb')), [['<pre class="invalid" translate="no">$$\na\n$$\nb</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('$$$\n\n\n$$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$ $$\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<pre class="math notranslate invalid">$$latex\n$$</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('$$latex\n$$')), [['<pre class="invalid" translate="no">$$latex\n$$</pre>'], '']);
       assert.deepStrictEqual(inspect(parser('$$$\n$$')), undefined);
       assert.deepStrictEqual(inspect(parser('$$$\n$$$')), undefined);
       assert.deepStrictEqual(inspect(parser(' $$\n$$')), undefined);
-      assert.deepStrictEqual(inspect(parser(`$$\n0${'\n'.repeat(101)}$$`), '>'), [['<pre class="math notranslate invalid">'], '']);
+      assert.deepStrictEqual(inspect(parser(`$$\n0${'\n'.repeat(101)}$$`), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('basic', () => {

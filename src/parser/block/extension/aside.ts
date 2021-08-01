@@ -9,7 +9,8 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
     if (!closer || param.trimStart()) return [html('pre', {
-      class: `notranslate invalid`,
+      class: 'invalid',
+      translate: 'no',
       'data-invalid-syntax': 'aside',
       'data-invalid-type': closer ? 'argument' : 'closer',
       'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
@@ -28,7 +29,8 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
     //const heading = view.querySelector(':scope > h1:first-child');
     const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes(view.firstElementChild?.tagName!) && view.firstElementChild as HTMLHeadingElement;
     if (!heading) return [html('pre', {
-      class: `notranslate invalid`,
+      class: 'invalid',
+      translate: 'no',
       'data-invalid-syntax': 'aside',
       'data-invalid-type': 'content',
       'data-invalid-description': 'Missing the title at the first line.',

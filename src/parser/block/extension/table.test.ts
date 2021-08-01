@@ -8,22 +8,22 @@ describe('Unit: parser/block/extension/table', () => {
     const parser = (source: string) => some(table)(source, {});
 
     it('invalid', () => {
-      assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~')), [['<pre class="notranslate invalid">~~~table a\n-\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser(`~~~table\n0${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~table a\n-\n~~~')), [['<pre class="invalid" translate="no">~~~table a\n-\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser(`~~~table\n0${'\n'.repeat(10001)}~~~`), '>'), [['<pre class="invalid" translate="no">'], '']);
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
           `${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}`,
           '~~~'
         ].join('\n'))),
-        [[`<pre class="notranslate invalid">~~~table\n${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}\n~~~</pre>`], '']);
+        [[`<pre class="invalid" translate="no">~~~table\n${[...Array(33)].map((_, i) => `${i + 1}`).join('\n')}\n~~~</pre>`], '']);
       assert.deepStrictEqual(
         inspect(parser([
           '~~~table',
           '::33 1',
           '~~~'
         ].join('\n'))),
-        [[`<pre class="notranslate invalid">~~~table\n::33 1\n~~~</pre>`], '']);
+        [[`<pre class="invalid" translate="no">~~~table\n::33 1\n~~~</pre>`], '']);
     });
 
     it('data', () => {

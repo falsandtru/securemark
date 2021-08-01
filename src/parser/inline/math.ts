@@ -30,7 +30,8 @@ export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewr
       : !disallowedCommand.test(source)
         ? html('span', { class: 'math', translate: 'no', 'data-src': source }, source)
         : html('span', {
-            class: 'notranslate invalid',
+            class: 'invalid',
+            translate: 'no',
             'data-invalid-syntax': 'math',
             'data-invalid-type': 'content',
             'data-invalid-description': `"${source.match(disallowedCommand)![0]}" command is disallowed.`,

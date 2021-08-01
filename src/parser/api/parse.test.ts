@@ -182,7 +182,7 @@ describe('Unit: parser/api/parse', () => {
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
           `<details class="header"><summary>Header</summary>URL: https://example/x</details>`,
-          '<pre class="notranslate invalid" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-description="Invalid syntax.">---\nURL: https://example/y\n---\n</pre>',
+          '<pre class="invalid" translate="no" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-description="Invalid syntax.">---\nURL: https://example/y\n---\n</pre>',
           '<aside class="example" data-type="markdown"><pre>---\nURL: https://example/y\n---\n\n{#}</pre><hr><div><details class="header"><summary>Header</summary>URL: https://example/y</details><p><a href="https://example/y#" target="_blank">#</a></p></div><ol class="annotation"></ol><ol class="reference"></ol></aside>',
           '<p><a href="https://example/x#" target="_blank">#</a></p>',
         ]);

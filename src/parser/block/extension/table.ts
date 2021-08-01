@@ -28,7 +28,8 @@ export const table: TableParser = block(validate('~~~', recover(bind(
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, param]: string[], _, context) => {
     if (!closer || param.trimStart()) return [[html('pre', {
-      class: `notranslate invalid`,
+      class: 'invalid',
+      translate: 'no',
       'data-invalid-syntax': 'table',
       'data-invalid-type': closer ? 'argument' : 'closer',
       'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
@@ -39,7 +40,8 @@ export const table: TableParser = block(validate('~~~', recover(bind(
     reason instanceof Error && reason.message === 'Number of columns must be 32 or less.'
       ? [[
           html('pre', {
-            class: `notranslate invalid`,
+            class: 'invalid',
+            translate: 'no',
             'data-invalid-syntax': 'table',
             'data-invalid-type': 'content',
             'data-invalid-description': reason.message,

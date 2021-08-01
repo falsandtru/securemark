@@ -21,7 +21,8 @@ export const message: MessageParser = block(validate('~~~', fmap(
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type, param]: string[], _, context) => {
     if (!closer || param.trimStart()) return [html('pre', {
-      class: `notranslate invalid`,
+      class: 'invalid',
+      translate: 'no',
       'data-invalid-syntax': 'message',
       'data-invalid-type': closer ? 'argument' : 'closer',
       'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
@@ -33,7 +34,8 @@ export const message: MessageParser = block(validate('~~~', fmap(
         break;
       default:
         return [html('pre', {
-          class: 'notranslate invalid',
+          class: 'invalid',
+          translate: 'no',
           'data-invalid-syntax': 'message',
           'data-invalid-description': `Invalid message type.`,
         }, `${opener}${body}${closer}`)];

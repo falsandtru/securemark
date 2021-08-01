@@ -12,7 +12,8 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
   // Bug: Type mismatch between outer and inner.
   ([body, closer, opener, delim, type = 'markdown', param]: string[], _, context) => {
     if (!closer || param.trimStart()) return [html('pre', {
-      class: 'notranslate invalid',
+      class: 'invalid',
+      translate: 'no',
       'data-invalid-syntax': 'example',
       'data-invalid-type': closer ? 'argument' : 'closer',
       'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
@@ -45,7 +46,8 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
         ])];
       default:
         return [html('pre', {
-          class: 'notranslate invalid',
+          class: 'invalid',
+          translate: 'no',
           'data-invalid-syntax': 'example',
           'data-invalid-description': `Invalid example type.`,
         }, `${opener}${body}${closer}`)];

@@ -26,7 +26,8 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
     param = param.trim();
     const path = join(eval(some(escsource, /^\s/)(param, context), []));
     if (!closer || param !== path) return [html('pre', {
-      class: `notranslate invalid`,
+      class: 'invalid',
+      translate: 'no',
       'data-invalid-syntax': 'codeblock',
       'data-invalid-type': closer ? 'argument' : 'closer',
       'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,

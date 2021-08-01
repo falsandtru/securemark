@@ -9,9 +9,9 @@ describe('Unit: parser/block/extension/message', () => {
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~message\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~message/\n~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~message/a\n~~~')), [['<pre class="notranslate invalid">~~~message/a\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser('~~~message/note a\n~~~')), [['<pre class="notranslate invalid">~~~message/note a\n~~~</pre>'], '']);
-      assert.deepStrictEqual(inspect(parser(`~~~message/note\n0${'\n'.repeat(301)}~~~`), '>'), [['<pre class="notranslate invalid">'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/a\n~~~')), [['<pre class="invalid" translate="no">~~~message/a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~message/note a\n~~~')), [['<pre class="invalid" translate="no">~~~message/note a\n~~~</pre>'], '']);
+      assert.deepStrictEqual(inspect(parser(`~~~message/note\n0${'\n'.repeat(301)}~~~`), '>'), [['<pre class="invalid" translate="no">'], '']);
     });
 
     it('valid', () => {

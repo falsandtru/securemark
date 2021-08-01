@@ -25,7 +25,8 @@ export const header: MarkdownParser.HeaderParser = validate(
             ], '', {} as MarkdownParser.Context])),
           source => [[
             html('pre', {
-              class: `notranslate invalid`,
+              class: 'invalid',
+              translate: 'no',
               'data-invalid-syntax': 'header',
               'data-invalid-type': 'syntax',
               'data-invalid-description': `Invalid syntax.`,

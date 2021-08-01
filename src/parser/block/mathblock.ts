@@ -20,7 +20,8 @@ export const mathblock: MathBlockParser = block(validate('$$', fmap(
         ? cache.get(body)!.cloneNode(true) as HTMLDivElement
         : html('div', { class: `math`, translate: 'no' }, body)
       : html('pre', {
-          class: `math notranslate invalid`,
+          class: 'invalid',
+          translate: 'no',
           'data-invalid-syntax': 'mathblock',
           'data-invalid-type': closer ? 'argument' : 'closer',
           'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
