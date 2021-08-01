@@ -5402,7 +5402,7 @@ require = function () {
             const anchor_1 = _dereq_('../../../inline/autolink/anchor');
             const source_1 = _dereq_('../../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.cite = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.validate('>', combinator_1.reverse(combinator_1.tails([
+            exports.cite = combinator_1.creator(combinator_1.line(combinator_1.fmap(combinator_1.validate('>>', combinator_1.reverse(combinator_1.tails([
                 source_1.str(/^>*(?=>>)/),
                 anchor_1.anchor
             ]))), ([el, str = '']) => [
@@ -6043,29 +6043,26 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.account = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
+            const link_1 = _dereq_('../link');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.account = combinator_1.creator(combinator_1.rewrite(combinator_1.open('@', combinator_1.tails([
+            exports.account = combinator_1.lazy(() => combinator_1.fmap(combinator_1.rewrite(combinator_1.open('@', combinator_1.tails([
                 combinator_1.verify(source_1.str(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
                 combinator_1.verify(source_1.str(/^[A-Za-z][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/), ([source]) => source.length <= 64)
-            ])), (source, {host, url}) => {
-                var _a;
-                return [
-                    [typed_dom_1.html('a', {
-                            class: 'account',
-                            href: source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/${ source }`,
-                            target: source.includes('/') || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
-                        }, source)],
-                    ''
-                ];
-            }));
+            ])), combinator_1.context({
+                syntax: {
+                    inline: {
+                        link: true,
+                        autolink: false
+                    }
+                }
+            }, combinator_1.convert(source => `[${ source }]{ ${ source.includes('/') ? `https://${ source.slice(1).replace('/', '/@') }` : `/${ source }` } }`, combinator_1.union([link_1.link])))), ([el]) => [typed_dom_1.define(el, { class: 'account' })]));
         },
         {
             '../../../combinator': 37,
             '../../source': 137,
-            'spica/global': 17,
+            '../link': 125,
             'typed-dom': 30
         }
     ],
@@ -6075,17 +6072,20 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.anchor = void 0;
             const combinator_1 = _dereq_('../../../combinator');
+            const link_1 = _dereq_('../link');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.anchor = combinator_1.creator(combinator_1.validate('>', combinator_1.focus(/^>>[0-9][0-9A-Za-z]*(?:-[0-9A-Za-z]+)*/, source => [
-                [typed_dom_1.html('a', {
-                        class: 'anchor',
-                        href: `?res=${ source.slice(source.lastIndexOf('>') + 1) }`
-                    }, source)],
-                ''
-            ])));
+            exports.anchor = combinator_1.lazy(() => combinator_1.validate('>>', combinator_1.fmap(combinator_1.focus(/^>>[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/, combinator_1.context({
+                syntax: {
+                    inline: {
+                        link: true,
+                        autolink: false
+                    }
+                }
+            }, combinator_1.convert(source => `[${ source }]{ ?res=${ source.slice(2) } }`, combinator_1.union([link_1.link])))), ([el]) => [typed_dom_1.define(el, { class: 'anchor' })])));
         },
         {
             '../../../combinator': 37,
+            '../link': 125,
             'typed-dom': 30
         }
     ],
@@ -6152,22 +6152,26 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.hashref = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
+            const link_1 = _dereq_('../link');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashref = combinator_1.creator(combinator_1.rewrite(combinator_1.open('#', source_1.str(/^[0-9]{1,16}(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/)), (source, {host, url}) => [
-                [typed_dom_1.html('a', {
-                        class: 'hashref',
-                        target: url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
-                    }, source)],
-                ''
-            ]));
+            exports.hashref = combinator_1.lazy(() => combinator_1.fmap(combinator_1.rewrite(combinator_1.open('#', source_1.str(/^[0-9]{1,16}(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/)), combinator_1.context({
+                syntax: {
+                    inline: {
+                        link: true,
+                        autolink: false
+                    }
+                }
+            }, combinator_1.convert(source => `[${ source }]{ ${ source.slice(1) } }`, combinator_1.union([link_1.link])))), ([el]) => [typed_dom_1.define(el, {
+                    class: 'hashref',
+                    href: null
+                })]));
         },
         {
             '../../../combinator': 37,
             '../../source': 137,
-            'spica/global': 17,
+            '../link': 125,
             'typed-dom': 30
         }
     ],
@@ -6176,29 +6180,26 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.hashtag = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
+            const link_1 = _dereq_('../link');
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.hashtag = combinator_1.creator(combinator_1.rewrite(combinator_1.open('#', combinator_1.tails([
+            exports.hashtag = combinator_1.lazy(() => combinator_1.fmap(combinator_1.rewrite(combinator_1.open('#', combinator_1.tails([
                 combinator_1.verify(source_1.str(/^[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?(?:\.[0-9A-Za-z](?:[0-9A-Za-z-]{0,61}[0-9A-Za-z])?)*\//), ([source]) => source.length <= 253 + 1),
                 combinator_1.verify(source_1.str(/^(?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,128}(?:_?\((?=(?:[0-9]{1,127}_?)?(?:[A-Za-z]|[^\x00-\x7F\s]))(?:[0-9A-Za-z]|[^\x00-\x7F\s]|'(?!')|_(?=[0-9A-Za-z]|[^\x00-\x7F\s])){1,125}\))?(?![0-9A-Za-z'_]|[^\x00-\x7F\s])/), ([source]) => source.length <= 128)
-            ])), (source, {host, url}) => {
-                var _a;
-                return [
-                    [typed_dom_1.html('a', {
-                            class: 'hashtag',
-                            href: source.indexOf('/') !== -1 ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `${ (_a = url === null || url === void 0 ? void 0 : url.origin) !== null && _a !== void 0 ? _a : '' }/hashtags/${ source.slice(1) }`,
-                            target: source.indexOf('/') !== -1 || url && url.origin !== (host === null || host === void 0 ? void 0 : host.origin) ? '_blank' : global_1.undefined
-                        }, source)],
-                    ''
-                ];
-            }));
+            ])), combinator_1.context({
+                syntax: {
+                    inline: {
+                        link: true,
+                        autolink: false
+                    }
+                }
+            }, combinator_1.convert(source => `[${ source }]{ ${ source.includes('/') ? `https://${ source.slice(1).replace('/', '/hashtags/') }` : `/hashtags/${ source.slice(1) }` } }`, combinator_1.union([link_1.link])))), ([el]) => [typed_dom_1.define(el, { class: 'hashtag' }, el.textContent)]));
         },
         {
             '../../../combinator': 37,
             '../../source': 137,
-            'spica/global': 17,
+            '../link': 125,
             'typed-dom': 30
         }
     ],
@@ -6207,7 +6208,6 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.url = void 0;
-            const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
             const source_1 = _dereq_('../../source');
@@ -6218,7 +6218,7 @@ require = function () {
             ], combinator_1.rewrite(combinator_1.open(/^https?:\/\/(?=[\x21-\x7E])/, combinator_1.focus(/^[\x21-\x7E]+/, combinator_1.some(combinator_1.union([
                 bracket,
                 combinator_1.some(source_1.unescsource, closer)
-            ])))), combinator_1.convert(url => `{ ${ url } }`, combinator_1.context({ syntax: { inline: { link: global_1.undefined } } }, combinator_1.union([link_1.link]))))));
+            ])))), combinator_1.context({ syntax: { inline: { link: true } } }, combinator_1.convert(url => `{ ${ url } }`, combinator_1.union([link_1.link]))))));
             const bracket = combinator_1.lazy(() => combinator_1.creator(combinator_1.union([
                 combinator_1.surround('(', combinator_1.some(combinator_1.union([
                     bracket,
@@ -6238,8 +6238,7 @@ require = function () {
         {
             '../../../combinator': 37,
             '../../source': 137,
-            '../link': 125,
-            'spica/global': 17
+            '../link': 125
         }
     ],
     109: [
