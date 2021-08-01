@@ -25,17 +25,18 @@ export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewr
       /^\$(?![0-9A-Za-z])/),
   ]),
   (source, { caches: { math: cache } = {} }) => [[
-    cache?.has(source)
-      ? cache.get(source)!.cloneNode(true)
-      : !disallowedCommand.test(source)
-        ? html('span', { class: 'math', translate: 'no', 'data-src': source }, source)
-        : html('span', {
+    cache?.get(source)?.cloneNode(true) ||
+    html('span',
+      !disallowedCommand.test(source)
+        ? { class: 'math', translate: 'no', 'data-src': source }
+        : {
             class: 'invalid',
             translate: 'no',
             'data-invalid-syntax': 'math',
             'data-invalid-type': 'content',
             'data-invalid-description': `"${source.match(disallowedCommand)![0]}" command is disallowed.`,
-          }, source)
+          },
+      source)
   ], '']))));
 
 const bracket: MathParser.BracketParser = lazy(() => creator(surround(

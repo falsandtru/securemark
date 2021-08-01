@@ -4,7 +4,7 @@ import { eval } from '../../combinator/data/parser';
 import { some, block, validate, fence, clear, fmap } from '../../combinator';
 import { autolink } from '../autolink';
 import { escsource } from '../source';
-import { html, define, defrag } from 'typed-dom';
+import { html, defrag } from 'typed-dom';
 import { join } from 'spica/array';
 
 const opener = /^(`{3,})(?!`)(\S*)([^\n]*)(?:$|\n)/;
@@ -47,10 +47,8 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
         'data-path': path || undefined,
       },
       lang
-        ? body.slice(0, -1) || undefined
+        ? context.caches?.code?.get(`${lang}\n${body.slice(0, -1)}`)?.cloneNode(true).childNodes ||
+          body.slice(0, -1) || undefined
         : defrag(eval(some(autolink)(body.slice(0, -1), context), [])));
-    if (context.caches?.code?.has(`${lang}\n${el.textContent}`)) {
-      define(el, context.caches.code.get(`${lang}\n${el.textContent}`)!.cloneNode(true).childNodes);
-    }
     return [el];
   })));
