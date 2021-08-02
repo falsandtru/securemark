@@ -141,16 +141,17 @@
   blockquote > :not(blockquote) {
     margin-inline-start: .5em;
   }
-  pre:not([translate]) {
-    all: unset;
-    display: block;
-    margin-inline-start: .5em;
-    margin-top: 0;
-    margin-bottom: 1rem;
+  blockquote > pre {
     white-space: pre-wrap;
   }
-  pre,
-  pre.code {
+  pre {
+    /* Unset bootstrap's CSS */
+    font-size: unset;
+  }
+  pre.text,
+  pre.code,
+  pre.invalid,
+  pre.error {
     background-color: #fbfbfb;
     position: relative;
     border: solid 1px #eee;

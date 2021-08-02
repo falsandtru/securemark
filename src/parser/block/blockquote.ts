@@ -6,7 +6,7 @@ import { parse } from '../api/parse';
 import { html, defrag } from 'typed-dom';
 
 export const segment: BlockquoteParser.SegmentParser = block(validate(['!>', '>'], union([
-  validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, some(contentline)),
+  validate(/^!?>+(?=[^\S\n]|\n[^\S\n]*\S)/, some(contentline)),
 ])));
 
 export const blockquote: BlockquoteParser = lazy(() => block(rewrite(segment, union([
@@ -46,7 +46,7 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
       convert(unindent, (source, context) => {
         const annotation = html('ol', { class: 'annotation' });
         const reference = html('ol', { class: 'reference' });
-        return [[parse(source, { id: '', footnotes: { annotation, reference } }, context), annotation, reference], ''];
+        return [[html('section', [parse(source, { id: '', footnotes: { annotation, reference } }, context), annotation, reference])], ''];
       }))),
   ]))),
   ns => [html('blockquote', ns)]));

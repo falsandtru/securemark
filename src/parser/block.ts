@@ -60,11 +60,16 @@ function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
         {
           id: id !== '' ? `error:${rnd0Z(8)}` : undefined,
           class: 'error',
+          translate: 'no',
         },
         reason instanceof Error
           ? `${reason.name}: ${reason.message}`
           : `UnknownError: ${reason}`),
       html('pre',
+        {
+          class: 'error',
+          translate: 'no',
+        },
         source
           .replace(/^\0.*\n/, '')
           .slice(0, 1001)

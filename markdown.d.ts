@@ -276,7 +276,7 @@ export namespace MarkdownParser {
         Block<'blockquote/markdown'>,
         Parser<HTMLQuoteElement, Context, [
           MarkdownParser,
-          Parser<DocumentFragment | HTMLOListElement, Context, []>,
+          Parser<HTMLElement, Context, []>,
         ]> {
       }
     }

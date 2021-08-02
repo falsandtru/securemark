@@ -41,7 +41,7 @@ export const codeblock: CodeBlockParser = block(validate('```', fmap(
       : lang && 'invalid';
     const el = html('pre',
       {
-        class: lang ? `code language-${lang}` : undefined,
+        class: lang ? `code language-${lang}` : 'text',
         translate: 'no',
         'data-lang': lang || undefined,
         'data-path': path || undefined,
