@@ -22,19 +22,19 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
       case 'markdown': {
         const annotation = html('ol', { class: 'annotation' });
         const reference = html('ol', { class: 'reference' });
-        const view = parse(body.slice(0, -1), {
+        const document = parse(body.slice(0, -1), {
           id: '',
           footnotes: {
             annotation,
             reference,
           },
         }, context);
-        assert(!view.querySelector('[id]'));
+        assert(!document.querySelector('[id]'));
         return [
           html('aside', { class: 'example', 'data-type': 'markdown' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
-            html('section', [view, annotation, reference]),
+            html('section', [document, annotation, reference]),
           ]),
         ];
       }

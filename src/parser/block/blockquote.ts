@@ -46,14 +46,14 @@ const markdown: BlockquoteParser.MarkdownParser = lazy(() => fmap(
       convert(unindent, (source, context) => {
         const annotation = html('ol', { class: 'annotation' });
         const reference = html('ol', { class: 'reference' });
-        const view = parse(source, {
+        const document = parse(source, {
           id: '',
           footnotes: {
             annotation,
             reference,
           },
         }, context);
-        return [[html('section', [view, annotation, reference])], ''];
+        return [[html('section', [document, annotation, reference])], ''];
       }))),
   ]))),
   ns => [html('blockquote', ns)]));
