@@ -47,10 +47,6 @@
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
-  .header + h1,
-  h1:first-child {
-    margin-top: 0;
-  }
   h1,
   h2,
   h3,
@@ -59,6 +55,14 @@
   h6 {
     margin-top: 1.5rem;
     margin-bottom: 1rem;
+  }
+  h1:first-child, .header + h1,
+  h2:first-child, .header + h2,
+  h3:first-child, .header + h3,
+  h4:first-child, .header + h4,
+  h5:first-child, .header + h5,
+  h6:first-child, .header + h6 {
+    margin-top: 0;
   }
   ul {
     margin-inline-start: 1.7em;
@@ -226,28 +230,27 @@
     border: solid 2px #ddd;
     border-radius: 5px;
   }
-  aside.example > pre,
-  aside.example > div,
-  aside.example > ol {
-    transform: scale(0.9);
-  }
-  aside.example > pre {
+  aside.example > * {
     margin: 0;
-    line-height: 1.2;
+  }
+  aside.example > pre,
+  aside.example > section {
+    padding: 1rem;
+    font-size: 90%;
+    line-height: 120%;
   }
   aside.example > hr {
-    margin: 0;
-    border: 0;
+    margin-top: 1rem;
     border-top: dashed 2px #ddd;
   }
   aside.aside {
-    padding: .5em;
+    padding: 1rem;
   }
   .message {
     margin-bottom: 1rem;
     border: solid 1px;
     border-radius: 5px;
-    padding: .5em;
+    padding: 1rem;
   }
   .message.type-note {
     background-image: linear-gradient(to bottom,#dff0d8 0,#c8e5bc 100%);
@@ -462,18 +465,18 @@
   ol:empty {
     display: none;
   }
-  ol#annotation,
-  ol.annotation,
-  ol#reference,
-  ol.reference {
+  ol#annotations,
+  ol.annotations,
+  ol#references,
+  ol.references {
     position: relative;
     margin-top: 7em;
     width: 100%;
   }
-  ol#annotation::before,
-  ol.annotation::before,
-  ol#reference::before,
-  ol.reference::before {
+  ol#annotations::before,
+  ol.annotations::before,
+  ol#references::before,
+  ol.references::before {
     display: table-row;
     position: absolute;
     top: -2em;
@@ -481,18 +484,18 @@
     text-align: center;
     font-size: 2em;
   }
-  ol#annotation::before,
-  ol.annotation::before {
+  ol#annotations::before,
+  ol.annotations::before {
     content: "Annotations";
   }
-  ol#reference::before,
-  ol.reference::before {
+  ol#references::before,
+  ol.references::before {
     content: "References";
   }
-  ol#annotation > li > sup:last-child > a,
-  ol.annotation > li > sup:last-child > a,
-  ol#reference > li > sup:last-child > a,
-  ol.reference > li > sup:last-child > a {
+  ol#annotations > li > sup:last-child > a,
+  ol.annotations > li > sup:last-child > a,
+  ol#references > li > sup:last-child > a,
+  ol.references > li > sup:last-child > a {
     margin-inline-start: .1em;
   }
   @media print {
@@ -531,7 +534,7 @@
   <div class="h-100" translate="no"><textarea id="editor" spellcheck="false"></textarea></div>
 </div>
 <div id="secondary" class="col-6">
-  <div id="viewer"><ol id="annotation" class="footnote"></ol><ol id="reference" class="footnote"></ol></div>
+  <div id="viewer"><ol id="annotations" class="footnotes"></ol><ol id="references" class="footnotes"></ol></div>
 </div>
 </div>
 
@@ -926,8 +929,8 @@
   const { parse, nearest, index } = bind(viewer, {
     caches,
     footnotes: {
-      annotation: document.getElementById('annotation'),
-      reference: document.getElementById('reference'),
+      annotations: document.getElementById('annotations'),
+      references: document.getElementById('references'),
     },
   });
   editor.setOption('vimMode', true);

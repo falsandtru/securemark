@@ -4257,19 +4257,20 @@ require = function () {
             const markdown = combinator_1.lazy(() => combinator_1.fmap(combinator_1.some(combinator_1.creator(combinator_1.union([
                 combinator_1.rewrite(indent, combinator_1.convert(unindent, markdown)),
                 combinator_1.creator(99, combinator_1.rewrite(combinator_1.some(source_1.contentline, opener), combinator_1.convert(unindent, (source, context) => {
-                    const annotation = typed_dom_1.html('ol', { class: 'annotation' });
-                    const reference = typed_dom_1.html('ol', { class: 'reference' });
+                    const annotations = typed_dom_1.html('ol', { class: 'annotations' });
+                    const references = typed_dom_1.html('ol', { class: 'references' });
+                    const document = parse_1.parse(source, {
+                        id: '',
+                        footnotes: {
+                            annotations,
+                            references
+                        }
+                    }, context);
                     return [
                         [typed_dom_1.html('section', [
-                                parse_1.parse(source, {
-                                    id: '',
-                                    footnotes: {
-                                        annotation,
-                                        reference
-                                    }
-                                }, context),
-                                annotation,
-                                reference
+                                document,
+                                annotations,
+                                references
                             ])],
                         ''
                     ];
@@ -4457,16 +4458,16 @@ require = function () {
                             'data-invalid-type': closer ? 'argument' : 'closer',
                             'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${ delim }.`
                         }, `${ opener }${ body }${ closer }`)];
-                const annotation = typed_dom_1.html('ol', { class: 'annotation' });
-                const reference = typed_dom_1.html('ol', { class: 'reference' });
-                const view = parse_1.parse(body.slice(0, -1), {
+                const annotations = typed_dom_1.html('ol', { class: 'annotations' });
+                const references = typed_dom_1.html('ol', { class: 'references' });
+                const document = parse_1.parse(body.slice(0, -1), {
                     id: '',
                     footnotes: {
-                        annotation,
-                        reference
+                        annotations,
+                        references
                     }
                 }, context);
-                const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes((_a = view.firstElementChild) === null || _a === void 0 ? void 0 : _a.tagName) && view.firstElementChild;
+                const heading = 'H1 H2 H3 H4 H5 H6'.split(' ').includes((_a = document.firstElementChild) === null || _a === void 0 ? void 0 : _a.tagName) && document.firstElementChild;
                 if (!heading)
                     return [typed_dom_1.html('pre', {
                             class: 'invalid',
@@ -4479,9 +4480,9 @@ require = function () {
                         id: indexee_1.identity(heading),
                         class: 'aside'
                     }, [
-                        view,
-                        annotation,
-                        reference
+                        document,
+                        annotations,
+                        references
                     ])];
             }))));
         },
@@ -4514,13 +4515,13 @@ require = function () {
                         }, `${ opener }${ body }${ closer }`)];
                 switch (type) {
                 case 'markdown': {
-                        const annotation = typed_dom_1.html('ol', { class: 'annotation' });
-                        const reference = typed_dom_1.html('ol', { class: 'reference' });
-                        const view = parse_1.parse(body.slice(0, -1), {
+                        const annotations = typed_dom_1.html('ol', { class: 'annotations' });
+                        const references = typed_dom_1.html('ol', { class: 'references' });
+                        const document = parse_1.parse(body.slice(0, -1), {
                             id: '',
                             footnotes: {
-                                annotation,
-                                reference
+                                annotations,
+                                references
                             }
                         }, context);
                         return [typed_dom_1.html('aside', {
@@ -4529,9 +4530,11 @@ require = function () {
                             }, [
                                 typed_dom_1.html('pre', { translate: 'no' }, body.slice(0, -1)),
                                 typed_dom_1.html('hr'),
-                                typed_dom_1.html('div', [view]),
-                                annotation,
-                                reference
+                                typed_dom_1.html('section', [
+                                    document,
+                                    annotations,
+                                    references
+                                ])
                             ])];
                     }
                 case 'math':
@@ -5622,7 +5625,7 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             function* figure(target, footnotes, opts = {}) {
                 var _a, _b, _c;
-                const refs = new multimap_1.MultiMap(array_1.push(array_1.push(array_1.push([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), (_a = footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation.querySelectorAll('a.label:not(.disabled)')) !== null && _a !== void 0 ? _a : []), (_b = footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference.querySelectorAll('a.label:not(.disabled)')) !== null && _b !== void 0 ? _b : []).map(el => [
+                const refs = new multimap_1.MultiMap(array_1.push(array_1.push(array_1.push([], target.querySelectorAll('a.label:not(.disabled)[data-label]')), (_a = footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotations.querySelectorAll('a.label:not(.disabled)')) !== null && _a !== void 0 ? _a : []), (_b = footnotes === null || footnotes === void 0 ? void 0 : footnotes.references.querySelectorAll('a.label:not(.disabled)')) !== null && _b !== void 0 ? _b : []).map(el => [
                     el.getAttribute('data-label'),
                     el
                 ]));
@@ -5726,8 +5729,8 @@ require = function () {
             const multimap_1 = _dereq_('spica/multimap');
             const memoize_1 = _dereq_('spica/memoize');
             function* footnote(target, footnotes, opts = {}) {
-                yield* exports.annotation(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotation, opts);
-                yield* exports.reference(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.reference, opts);
+                yield* exports.annotation(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.annotations, opts);
+                yield* exports.reference(target, footnotes === null || footnotes === void 0 ? void 0 : footnotes.references, opts);
                 return;
             }
             exports.footnote = footnote;
