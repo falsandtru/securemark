@@ -4195,9 +4195,13 @@ require = function () {
                     [
                         typed_dom_1.html('h1', {
                             id: id !== '' ? `error:${ random_1.rnd0Z(8) }` : global_1.undefined,
-                            class: 'error'
+                            class: 'error',
+                            translate: 'no'
                         }, reason instanceof Error ? `${ reason.name }: ${ reason.message }` : `UnknownError: ${ reason }`),
-                        typed_dom_1.html('pre', source.replace(/^\0.*\n/, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || global_1.undefined)
+                        typed_dom_1.html('pre', {
+                            class: 'error',
+                            translate: 'no'
+                        }, source.replace(/^\0.*\n/, '').slice(0, 1001).replace(/^(.{997}).{4}$/s, '$1...') || global_1.undefined)
                     ],
                     ''
                 ]);
@@ -4236,7 +4240,7 @@ require = function () {
             exports.segment = combinator_1.block(combinator_1.validate([
                 '!>',
                 '>'
-            ], combinator_1.union([combinator_1.validate(/^!?>+(?=[^\S\n]|\n\s*\S)/, combinator_1.some(source_1.contentline))])));
+            ], combinator_1.union([combinator_1.validate(/^!?>+(?=[^\S\n]|\n[^\S\n]*\S)/, combinator_1.some(source_1.contentline))])));
             exports.blockquote = combinator_1.lazy(() => combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.union([
                 combinator_1.open(/^(?=>)/, source),
                 combinator_1.open(/^!(?=>)/, markdown)
@@ -4256,17 +4260,17 @@ require = function () {
                     const annotation = typed_dom_1.html('ol', { class: 'annotation' });
                     const reference = typed_dom_1.html('ol', { class: 'reference' });
                     return [
-                        [
-                            parse_1.parse(source, {
-                                id: '',
-                                footnotes: {
-                                    annotation,
-                                    reference
-                                }
-                            }, context),
-                            annotation,
-                            reference
-                        ],
+                        [typed_dom_1.html('section', [
+                                parse_1.parse(source, {
+                                    id: '',
+                                    footnotes: {
+                                        annotation,
+                                        reference
+                                    }
+                                }, context),
+                                annotation,
+                                reference
+                            ])],
                         ''
                     ];
                 })))
@@ -4319,7 +4323,7 @@ require = function () {
                 const ext = file && file.includes('.', 1) ? file.split('.').pop() : '';
                 lang = language.test(lang || ext) ? lang || ext : lang && 'invalid';
                 const el = typed_dom_1.html('pre', {
-                    class: lang ? `code language-${ lang }` : global_1.undefined,
+                    class: lang ? `code language-${ lang }` : 'text',
                     translate: 'no',
                     'data-lang': lang || global_1.undefined,
                     'data-path': path || global_1.undefined
@@ -5226,7 +5230,7 @@ require = function () {
             }) => {
                 var _a;
                 return [closer && param.trimStart() === '' ? ((_a = cache === null || cache === void 0 ? void 0 : cache.get(`$$\n${ body }$$`)) === null || _a === void 0 ? void 0 : _a.cloneNode(true)) || typed_dom_1.html('div', {
-                        class: `math`,
+                        class: 'math',
                         translate: 'no'
                     }, `$$\n${ body }$$`) : typed_dom_1.html('pre', {
                         class: 'invalid',
