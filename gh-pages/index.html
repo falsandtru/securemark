@@ -53,16 +53,15 @@
   h4,
   h5,
   h6 {
-    margin-top: 1.5rem;
     margin-bottom: 1rem;
   }
-  h1:first-child, .header + h1,
-  h2:first-child, .header + h2,
-  h3:first-child, .header + h3,
-  h4:first-child, .header + h4,
-  h5:first-child, .header + h5,
-  h6:first-child, .header + h6 {
-    margin-top: 0;
+  h1:not(:first-child),
+  h2:not(:first-child),
+  h3:not(:first-child),
+  h4:not(:first-child),
+  h5:not(:first-child),
+  h6:not(:first-child) {
+    margin-top: 1.5rem;
   }
   ul {
     margin-inline-start: 1.7em;
