@@ -33,9 +33,11 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
         return [html('aside', { class: 'example', 'data-type': 'markdown' }, [
           html('pre', { translate: 'no' }, body.slice(0, -1)),
           html('hr'),
-          html('div', [view]),
-          annotation,
-          reference,
+          html('section', [
+            view,
+            annotation,
+            reference,
+          ]),
         ])];
       }
       case 'math':

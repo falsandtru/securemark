@@ -47,10 +47,6 @@
     border-bottom: dashed 1px gray;
     white-space: pre;
   }
-  .header + h1,
-  h1:first-child {
-    margin-top: 0;
-  }
   h1,
   h2,
   h3,
@@ -59,6 +55,14 @@
   h6 {
     margin-top: 1.5rem;
     margin-bottom: 1rem;
+  }
+  h1:first-child, .header + h1,
+  h2:first-child, .header + h2,
+  h3:first-child, .header + h3,
+  h4:first-child, .header + h4,
+  h5:first-child, .header + h5,
+  h6:first-child, .header + h6 {
+    margin-top: 0;
   }
   ul {
     margin-inline-start: 1.7em;
@@ -226,22 +230,22 @@
     border: solid 2px #ddd;
     border-radius: 5px;
   }
+  aside.example > * {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
   aside.example > pre,
-  aside.example > div,
-  aside.example > ol {
+  aside.example > section {
     transform: scale(0.9);
   }
   aside.example > pre {
-    margin: 0;
     line-height: 1.2;
   }
   aside.example > hr {
-    margin: 0;
-    border: 0;
     border-top: dashed 2px #ddd;
   }
   aside.aside {
-    padding: .5em;
+    padding: 1rem;
   }
   .message {
     margin-bottom: 1rem;
