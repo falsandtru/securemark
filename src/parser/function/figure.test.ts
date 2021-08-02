@@ -110,8 +110,8 @@ describe('Unit: parser/figure', () => {
         assert.deepStrictEqual(
           [...target.children].map(el => el.outerHTML),
           [
-            '<blockquote><blockquote><section><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure><ol class="annotation"></ol><ol class="reference"></ol></section></blockquote><section><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure><ol class="annotation"></ol><ol class="reference"></ol></section></blockquote>',
-            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><hr><section><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure><p><a class="label disabled" data-label="fig-a">Fig. 1</a></p><ol class="annotation"></ol><ol class="reference"></ol></section></aside>',
+            '<blockquote><blockquote><section><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure><ol class="annotations"></ol><ol class="references"></ol></section></blockquote><section><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure><ol class="annotations"></ol><ol class="references"></ol></section></blockquote>',
+            '<aside class="example" data-type="markdown"><pre translate="no">~~~figure $fig-a\n&gt; \n\n~~~\n\n$fig-a</pre><hr><section><figure data-label="fig-a" data-group="fig" data-number="1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure><p><a class="label disabled" data-label="fig-a">Fig. 1</a></p><ol class="annotations"></ol><ol class="references"></ol></section></aside>',
             '<figure data-label="fig-b" data-group="fig" data-number="1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure>',
             '<figure data-label="fig-a" data-group="fig" data-number="2" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2: </span><figcaption></figcaption></figure>',
           ]);
@@ -164,7 +164,7 @@ describe('Unit: parser/figure', () => {
             '<h2 id="index:0">0</h2>',
             '<figure data-label="fig-1" data-group="fig" data-number="1" id="label:fig-1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
-            '<blockquote><section><h2>0</h2><ol class="annotation"></ol><ol class="reference"></ol></section></blockquote>',
+            '<blockquote><section><h2>0</h2><ol class="annotations"></ol><ol class="references"></ol></section></blockquote>',
             '<figure data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2.1: </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="$-0.0.0" data-group="$" style="display: none;"></figure>',

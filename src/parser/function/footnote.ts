@@ -6,13 +6,13 @@ import { memoize } from 'spica/memoize';
 
 export function* footnote(
   target: ParentNode & Node,
-  footnotes?: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
+  footnotes?: Readonly<{ annotations: HTMLOListElement; references: HTMLOListElement; }>,
   opts: Readonly<{
     id?: string;
   }> = {},
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-  yield* annotation(target, footnotes?.annotation, opts);
-  yield* reference(target, footnotes?.reference, opts);
+  yield* annotation(target, footnotes?.annotations, opts);
+  yield* reference(target, footnotes?.references, opts);
   return;
 }
 

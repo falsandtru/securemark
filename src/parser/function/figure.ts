@@ -6,15 +6,15 @@ import { push, join } from 'spica/array';
 
 export function* figure(
   target: ParentNode & Node,
-  footnotes?: Readonly<{ annotation: HTMLOListElement; reference: HTMLOListElement; }>,
+  footnotes?: Readonly<{ annotations: HTMLOListElement; references: HTMLOListElement; }>,
   opts: Readonly<{
     id?: string;
   }> = {},
 ): Generator<HTMLAnchorElement | undefined, undefined, undefined> {
   const refs = new MultiMap<string, HTMLAnchorElement>(push(push(push([],
     target.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)[data-label]')),
-    footnotes?.annotation.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? []),
-    footnotes?.reference.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [])
+    footnotes?.annotations.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? []),
+    footnotes?.references.querySelectorAll<HTMLAnchorElement>('a.label:not(.disabled)') ?? [])
     .map(el => [el.getAttribute('data-label')!, el]));
   const numbers = new Map<string, string>();
   let base = '0';

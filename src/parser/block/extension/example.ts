@@ -20,13 +20,13 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
     }, `${opener}${body}${closer}`)];
     switch (type) {
       case 'markdown': {
-        const annotation = html('ol', { class: 'annotation' });
-        const reference = html('ol', { class: 'reference' });
+        const annotations = html('ol', { class: 'annotations' });
+        const references = html('ol', { class: 'references' });
         const document = parse(body.slice(0, -1), {
           id: '',
           footnotes: {
-            annotation,
-            reference,
+            annotations,
+            references,
           },
         }, context);
         assert(!document.querySelector('[id]'));
@@ -34,7 +34,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
           html('aside', { class: 'example', 'data-type': 'markdown' }, [
             html('pre', { translate: 'no' }, body.slice(0, -1)),
             html('hr'),
-            html('section', [document, annotation, reference]),
+            html('section', [document, annotations, references]),
           ]),
         ];
       }

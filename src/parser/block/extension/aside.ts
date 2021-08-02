@@ -15,13 +15,13 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       'data-invalid-type': closer ? 'argument' : 'closer',
       'data-invalid-description': closer ? 'Invalid argument.' : `Missing the closing delimiter ${delim}.`,
     }, `${opener}${body}${closer}`)];
-    const annotation = html('ol', { class: 'annotation' });
-    const reference = html('ol', { class: 'reference' });
+    const annotations = html('ol', { class: 'annotations' });
+    const references = html('ol', { class: 'references' });
     const document = parse(body.slice(0, -1), {
       id: '',
       footnotes: {
-        annotation,
-        reference,
+        annotations,
+        references,
       },
     }, context);
     assert(!document.querySelector('[id]'));
@@ -39,8 +39,8 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
     return [
       html('aside', { id: identity(heading), class: 'aside' }, [
         document,
-        annotation,
-        reference,
+        annotations,
+        references,
       ]),
     ];
   }))));

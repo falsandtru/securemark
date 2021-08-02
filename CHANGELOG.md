@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.211.0
+
+- Change annotation and reference options to annotations and references options.
+
 ## 0.210.0
 
 - Extend anchor syntax to allow identifiers starting with alphabets.
