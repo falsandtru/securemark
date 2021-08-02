@@ -40,9 +40,10 @@ export const message: MessageParser = block(validate('~~~', fmap(
           'data-invalid-description': `Invalid message type.`,
         }, `${opener}${body}${closer}`)];
     }
-    return [html('div', { class: `message type-${type}` }, unshift(
-      [html('h6', title(type))],
-      [...segment(body)].reduce((acc, seg) => push(acc, eval(content(seg, context), [])), [])))
+    return [
+      html('div', { class: `message type-${type}` }, unshift(
+        [html('h6', title(type))],
+        [...segment(body)].reduce((acc, seg) => push(acc, eval(content(seg, context), [])), []))),
     ];
   })));
 

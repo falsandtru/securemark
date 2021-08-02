@@ -30,28 +30,30 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
           },
         }, context);
         assert(!view.querySelector('[id]'));
-        return [html('aside', { class: 'example', 'data-type': 'markdown' }, [
-          html('pre', { translate: 'no' }, body.slice(0, -1)),
-          html('hr'),
-          html('section', [
-            view,
-            annotation,
-            reference,
+        return [
+          html('aside', { class: 'example', 'data-type': 'markdown' }, [
+            html('pre', { translate: 'no' }, body.slice(0, -1)),
+            html('hr'),
+            html('section', [view, annotation, reference]),
           ]),
-        ])];
+        ];
       }
       case 'math':
-        return [html('aside', { class: 'example', 'data-type': 'math' }, [
-          html('pre', { translate: 'no' }, body.slice(0, -1)),
-          html('hr'),
-          eval(mathblock(`$$\n${body}$$`, context), [])[0]
-        ])];
+        return [
+          html('aside', { class: 'example', 'data-type': 'math' }, [
+            html('pre', { translate: 'no' }, body.slice(0, -1)),
+            html('hr'),
+            eval(mathblock(`$$\n${body}$$`, context), [])[0],
+          ]),
+        ];
       default:
-        return [html('pre', {
-          class: 'invalid',
-          translate: 'no',
-          'data-invalid-syntax': 'example',
-          'data-invalid-description': `Invalid example type.`,
-        }, `${opener}${body}${closer}`)];
+        return [
+          html('pre', {
+            class: 'invalid',
+            translate: 'no',
+            'data-invalid-syntax': 'example',
+            'data-invalid-description': `Invalid example type.`,
+          }, `${opener}${body}${closer}`),
+        ];
     }
   }))));

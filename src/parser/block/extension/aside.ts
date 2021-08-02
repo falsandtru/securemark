@@ -36,9 +36,11 @@ export const aside: ExtensionParser.AsideParser = creator(100, block(validate('~
       'data-invalid-description': 'Missing the title at the first line.',
     }, `${opener}${body}${closer}`)];
     assert(identity(heading));
-    return [html('aside', { id: identity(heading), class: 'aside' }, [
-      view,
-      annotation,
-      reference,
-    ])];
+    return [
+      html('aside', { id: identity(heading), class: 'aside' }, [
+        view,
+        annotation,
+        reference,
+      ]),
+    ];
   }))));
