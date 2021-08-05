@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.212.0
+
+- Improve bracket parser not to mark up parenthesises surrounding an index.
+
 ## 0.211.0
 
 - Change annotation and reference options to annotations and references options.
