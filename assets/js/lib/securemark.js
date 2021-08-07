@@ -5853,7 +5853,10 @@ require = function () {
                         var _a;
                         return (_a = context.header) !== null && _a !== void 0 ? _a : true;
                     }, combinator_1.focus(/^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/, source => [
-                        [typed_dom_1.html('details', { class: 'header' }, typed_dom_1.defrag([
+                        [typed_dom_1.html('details', {
+                                class: 'header',
+                                open: ''
+                            }, typed_dom_1.defrag([
                                 typed_dom_1.html('summary', 'Header'),
                                 normalize_1.normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, '')
                             ]))],
@@ -6272,7 +6275,20 @@ require = function () {
             const source_1 = _dereq_('../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
+            const index = new RegExp(`^(?:${ [
+                /(?:0|[1-9]\d*)(?:\.(?:0|[1-9]\d*))+/,
+                /[0-9]{1,4}|[A-Za-z]/
+            ].map(r => r.source).join('|') })`);
+            const indexFW = new RegExp(index.source.replace(/[019AZaz](?!,)/g, c => String.fromCharCode(c.charCodeAt(0) + 65248)));
             exports.bracket = combinator_1.lazy(() => combinator_1.union([
+                combinator_1.surround(source_1.str('('), source_1.str(index), source_1.str(')'), false, ([as, bs = [], cs], rest) => [
+                    typed_dom_1.defrag(array_1.push(array_1.unshift(as, bs), cs)),
+                    rest
+                ]),
+                combinator_1.surround(source_1.str('\uFF08'), source_1.str(indexFW), source_1.str('\uFF09'), false, ([as, bs = [], cs], rest) => [
+                    typed_dom_1.defrag(array_1.push(array_1.unshift(as, bs), cs)),
+                    rest
+                ]),
                 combinator_1.surround(source_1.str('('), combinator_1.some(inline_1.inline, ')'), source_1.str(')'), true, ([as, bs = [], cs], rest) => [
                     [typed_dom_1.html('span', { class: 'paren' }, typed_dom_1.defrag(array_1.push(array_1.unshift(as, bs), cs)))],
                     rest
