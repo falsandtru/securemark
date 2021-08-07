@@ -17,10 +17,10 @@ export const header: MarkdownParser.HeaderParser = validate(
           focus(
             /^---[^\S\v\f\r\n]*\r?\n(?:[A-Za-z][0-9A-Za-z]*(?:-[A-Za-z][0-9A-Za-z]*)*:[ \t]+\S[^\v\f\r\n]*\r?\n){1,100}---[^\S\v\f\r\n]*(?:$|\r?\n)/,
             source => [[
-              html('details', { class: 'header' }, defrag([
+              html('details', { class: 'header', open: '' }, defrag([
                 html('summary', 'Header'),
                 normalize(source.slice(source.indexOf('\n') + 1, source.trimEnd().lastIndexOf('\n'))).replace(/\s+$/mg, ''),
-              ]))
+              ])),
             // Bug: Unnecessary assertion
             ], '', {} as MarkdownParser.Context])),
           source => [[

@@ -24,10 +24,10 @@ describe('Unit: parser/header', () => {
     });
 
     it('basic', () => {
-      assert.deepStrictEqual(inspect(parser('---\na: b\n---')), [['<details class="header"><summary>Header</summary>a: b</details>'], '']);
-      assert.deepStrictEqual(inspect(parser('---\na: b\n---\n')), [['<details class="header"><summary>Header</summary>a: b</details>'], '']);
-      assert.deepStrictEqual(inspect(parser('---\na: b\nC: d e\n---\n')), [['<details class="header"><summary>Header</summary>a: b\nC: d e</details>'], '']);
-      assert.deepStrictEqual(inspect(parser('--- \r\na: b \r\n--- \r\n \r\n \r\na')), [['<details class="header"><summary>Header</summary>a: b</details>'], ' \r\na']);
+      assert.deepStrictEqual(inspect(parser('---\na: b\n---')), [['<details class="header" open=""><summary>Header</summary>a: b</details>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\na: b\n---\n')), [['<details class="header" open=""><summary>Header</summary>a: b</details>'], '']);
+      assert.deepStrictEqual(inspect(parser('---\na: b\nC: d e\n---\n')), [['<details class="header" open=""><summary>Header</summary>a: b\nC: d e</details>'], '']);
+      assert.deepStrictEqual(inspect(parser('--- \r\na: b \r\n--- \r\n \r\n \r\na')), [['<details class="header" open=""><summary>Header</summary>a: b</details>'], ' \r\na']);
     });
 
   });

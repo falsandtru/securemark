@@ -98,7 +98,7 @@ describe('Unit: parser/api/parse', () => {
           '!{../../a}',
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
-          '<details class="header"><summary>Header</summary>URL: https://source/x/y</details>',
+          '<details class="header" open=""><summary>Header</summary>URL: https://source/x/y</details>',
           '<p><a href="https://source/@a" target="_blank" class="account">@a</a></p>',
           '<p><a href="https://domain/@a" target="_blank" class="account">@domain/a</a></p>',
           '<p><a href="https://source/@a?ch=b" target="_blank" class="channel">@a#b</a></p>',
@@ -135,7 +135,7 @@ describe('Unit: parser/api/parse', () => {
           '{./a}',
         ].join('\n\n'), { host: new URL(`${location.origin}/index.md`) }).children].map(el => el.outerHTML),
         [
-          '<details class="header"><summary>Header</summary>URL: https://source/x/y</details>',
+          '<details class="header" open=""><summary>Header</summary>URL: https://source/x/y</details>',
           '<p><a href="/a">^/a</a></p>',
           '<p><a href="https://source/x/a" target="_blank">./a</a></p>',
         ]);
@@ -150,7 +150,7 @@ describe('Unit: parser/api/parse', () => {
           '{./a}',
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
-          `<details class="header"><summary>Header</summary>URL: ${location.origin}/x/y</details>`,
+          `<details class="header" open=""><summary>Header</summary>URL: ${location.origin}/x/y</details>`,
           '<p><a href="/z/a">^/a</a></p>',
           '<p><a href="/x/a">./a</a></p>',
         ]);
@@ -181,9 +181,9 @@ describe('Unit: parser/api/parse', () => {
           '{#}',
         ].join('\n\n'), { host: new URL(`${location.origin}/z`) }).children].map(el => el.outerHTML),
         [
-          `<details class="header"><summary>Header</summary>URL: https://example/x</details>`,
+          `<details class="header" open=""><summary>Header</summary>URL: https://example/x</details>`,
           '<pre class="invalid" translate="no" data-invalid-syntax="header" data-invalid-type="syntax" data-invalid-description="Invalid syntax.">---\nURL: https://example/y\n---\n</pre>',
-          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><details class="header"><summary>Header</summary>URL: https://example/y</details><p><a href="https://example/y#" target="_blank">#</a></p><ol class="annotations"></ol><ol class="references"></ol></section></aside>',
+          '<aside class="example" data-type="markdown"><pre translate="no">---\nURL: https://example/y\n---\n\n{#}</pre><hr><section><details class="header" open=""><summary>Header</summary>URL: https://example/y</details><p><a href="https://example/y#" target="_blank">#</a></p><ol class="annotations"></ol><ol class="references"></ol></section></aside>',
           '<p><a href="https://example/x#" target="_blank">#</a></p>',
         ]);
     });

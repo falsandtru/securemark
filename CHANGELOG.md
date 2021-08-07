@@ -2,6 +2,7 @@
 
 ## 0.212.0
 
+- Change header parser to be open.
 - Improve bracket parser not to mark up parenthesises surrounding an index.
 
 ## 0.211.0
