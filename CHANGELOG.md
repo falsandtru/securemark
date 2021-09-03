@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.212.1
+
+- Fix fig parser to accept invalid arguments.
+
 ## 0.212.0
 
 - Change header parser to be open.
@@ -1124,7 +1128,7 @@
 
 ## 0.99.5
 
-- Fix lightweight figure syntax to be possible to take graph syntax.
+- Fix fig syntax to be possible to take graph syntax.
 
 ## 0.99.4
 
@@ -1469,7 +1473,7 @@
 
 - Allow example syntax in figure syntax.
 - Fix markdown example parser.
-- Fix lightweight figure parser to parse blockquote syntax including extension syntax.
+- Fix fig parser to parse blockquote syntax including extension syntax.
 
 ## 0.73.0
 
@@ -1575,7 +1579,7 @@
 
 ## 0.57.0
 
-- Add lightweight figure syntax.
+- Add fig syntax.
 
 ## 0.56.0
 

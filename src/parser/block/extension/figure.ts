@@ -19,12 +19,12 @@ import { memoize } from 'spica/memoize';
 import FigureParser = ExtensionParser.FigureParser;
 
 export const segment: FigureParser.SegmentParser = block(match(
-  /^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
+  /^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/,
   memoize(
   ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) =>
     close(
       sequence([
-        line(seg_label),
+        line(close(seg_label, /^\s.*/)),
         inits([
           // All parsers which can include closing terms.
           union([

@@ -11,7 +11,7 @@ export const segment_: ExtensionParser.PlaceholderParser.SegmentParser = block(v
   clear(fence(opener, 300, false))), false);
 
 export const placeholder: ExtensionParser.PlaceholderParser = block(validate('~~~', fmap(
-  fence(opener, 300),
+  fence(opener, Infinity),
   ([body, closer, opener, delim]) => [
     html('pre', {
       class: 'invalid',

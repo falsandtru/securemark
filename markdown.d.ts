@@ -386,6 +386,7 @@ export namespace MarkdownParser {
         Block<'extension/fig'>,
         Parser<HTMLElement, Context, [
           FigureParser,
+          PlaceholderParser,
         ]> {
       }
       export namespace FigParser {
