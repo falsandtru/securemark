@@ -12,7 +12,7 @@ export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewr
     surround(
       '$',
       verify(
-        // Latex reserved characters: # $ % ^ & _ { } ~ \
+        // Latex's reserved characters: # $ % ^ & _ { } ~ \
         // $[0-9]+                    : Dollar
         // $[A-z]*-                   : Label
         // $[A-z]*(?!-)               : Math
