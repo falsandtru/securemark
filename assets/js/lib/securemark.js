@@ -4582,7 +4582,7 @@ require = function () {
                 '[$',
                 '$'
             ], combinator_1.sequence([
-                combinator_1.line(label_1.segment),
+                combinator_1.line(combinator_1.close(label_1.segment, /^.*/)),
                 combinator_1.union([
                     codeblock_1.segment,
                     mathblock_1.segment,
@@ -4595,7 +4595,10 @@ require = function () {
             exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.convert(source => {
                 const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
                 return `${ fence }figure ${ source }\n\n${ fence }`;
-            }, combinator_1.union([figure_1.figure]))));
+            }, combinator_1.union([
+                figure_1.figure,
+                placeholder_1.placeholder
+            ]))));
         },
         {
             '../../../combinator': 37,
@@ -4654,8 +4657,8 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
-            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-]\S*[^\S\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, memoize_1.memoize(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => combinator_1.close(combinator_1.sequence([
-                combinator_1.line(label_1.segment),
+            exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, memoize_1.memoize(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => combinator_1.close(combinator_1.sequence([
+                combinator_1.line(combinator_1.close(label_1.segment, /^\s.*/)),
                 combinator_1.inits([
                     combinator_1.union([
                         codeblock_1.segment_,
@@ -4826,7 +4829,7 @@ require = function () {
             const opener = /^(~{3,})(?!~)[^\n]*(?:$|\n)/;
             exports.segment = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 300))));
             exports.segment_ = combinator_1.block(combinator_1.validate('~~~', combinator_1.clear(combinator_1.fence(opener, 300, false))), false);
-            exports.placeholder = combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, 300), ([body, closer, opener, delim]) => [typed_dom_1.html('pre', {
+            exports.placeholder = combinator_1.block(combinator_1.validate('~~~', combinator_1.fmap(combinator_1.fence(opener, Infinity), ([body, closer, opener, delim]) => [typed_dom_1.html('pre', {
                     class: 'invalid',
                     translate: 'no',
                     'data-invalid-syntax': 'extension',
