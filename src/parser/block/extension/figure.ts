@@ -1,7 +1,7 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../block';
 import { union, inits, sequence, some, block, line, rewrite, context, close, match, convert, trim, fmap } from '../../../combinator';
-import { contentline, emptyline } from '../../source';
+import { str, contentline, emptyline } from '../../source';
 import { label, segment as seg_label } from '../../inline/extension/label';
 import { table as styled_table } from '../table';
 import { codeblock, segment_ as seg_code } from '../codeblock';
@@ -24,7 +24,7 @@ export const segment: FigureParser.SegmentParser = block(match(
   ([, fence], closer = new RegExp(String.raw`^${fence}[^\S\n]*(?:$|\n)`)) =>
     close(
       sequence([
-        line(close(seg_label, /^\s.*/)),
+        line(close(seg_label, /^.*\n/)),
         inits([
           // All parsers which can include closing terms.
           union([
@@ -48,7 +48,7 @@ export const segment: FigureParser.SegmentParser = block(match(
 export const figure: FigureParser = block(rewrite(segment, fmap(
   convert(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')),
   sequence([
-    line(label),
+    line(sequence([label, str(/^.*\n/)])),
     inits([
       block(union([
         styled_table,
@@ -67,9 +67,9 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
         visualize(trim(some(inline)))))),
     ]),
   ])),
-  ([label, content, ...caption]: [HTMLAnchorElement, ...HTMLElement[]]) => [
+  ([label, param, content, ...caption]: [HTMLAnchorElement, string, ...HTMLElement[]]) => [
     html('figure',
-      attributes(label.getAttribute('data-label')!, content, caption),
+      attributes(label.getAttribute('data-label')!, param, content, caption),
       [
         html('div', { class: 'figcontent' }, [content]),
         html('span', { class: 'figindex' }),
@@ -77,11 +77,12 @@ export const figure: FigureParser = block(rewrite(segment, fmap(
       ])
   ])));
 
-function attributes(label: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
+function attributes(label: string, param: string, content: HTMLElement, caption: readonly HTMLElement[]): Record<string, string | undefined> {
   const group = label.split('-', 1)[0];
   const invalidLabel = /^[^-]+-(?:[0-9]+\.)*0$/.test(label);
+  const invalidParam = param.trimStart() !== '';
   const invalidContent = group === '$' && (!content.classList.contains('math') || caption.length > 0);
-  const invalid = invalidLabel || invalidContent || undefined;
+  const invalid = invalidLabel || invalidParam || invalidContent || undefined;
   return {
     'data-label': label,
     'data-group': group,
@@ -91,6 +92,11 @@ function attributes(label: string, content: HTMLElement, caption: readonly HTMLE
         'data-invalid-syntax': 'figure',
         'data-invalid-type': 'label',
         'data-invalid-description': 'The last part of the fixed label numbers must not be 0.',
+      } ||
+      invalidParam && {
+        'data-invalid-syntax': 'figure',
+        'data-invalid-type': 'argument',
+        'data-invalid-description': 'Invalid argument.',
       } ||
       invalidContent && {
         'data-invalid-syntax': 'figure',

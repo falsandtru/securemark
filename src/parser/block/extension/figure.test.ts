@@ -8,7 +8,7 @@ describe('Unit: parser/block/extension/figure', () => {
 
     it('invalid', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure\n!https://host\n~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~figure $group-name]\n!https://host\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~figure $group-name]\n!https://host\n~~~')), [['<figure data-label="group-name" data-group="group" class="invalid"><div class="figcontent"><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name\n!https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\nhttps://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\\\n~~~')), undefined);
@@ -20,8 +20,10 @@ describe('Unit: parser/block/extension/figure', () => {
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\n~~~\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]\n!https://host\n~~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~~figure [$group-name]\n!https://host\n~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]a\n!https://host\n~~~')), undefined);
-      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name] a\n!https://host\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]a\nhttps://host\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name]a\n!https://host\n~~~')), [['<figure data-label="group-name" data-group="group" class="invalid"><div class="figcontent"><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name] a\nhttps://host\n~~~')), undefined);
+      assert.deepStrictEqual(inspect(parser('~~~figure [$group-name] a\n!https://host\n~~~')), [['<figure data-label="group-name" data-group="group" class="invalid"><div class="figcontent"><a href="https://host" target="_blank"><img class="media" data-src="https://host" alt=""></a></div><span class="figindex"></span><figcaption></figcaption></figure>'], '']);
       assert.deepStrictEqual(inspect(parser('~~~ [$group-name]\n!https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser('~~~ $group-name\n!https://host\n~~~')), undefined);
       assert.deepStrictEqual(inspect(parser(' ~~~figure [$group-name]\n!https://host\n~~~')), undefined);

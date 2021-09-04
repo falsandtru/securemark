@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.212.2
+
+- Fix fig parser.
+
 ## 0.212.1
 
 - Fix fig parser to accept invalid arguments.

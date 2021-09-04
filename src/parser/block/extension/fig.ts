@@ -7,13 +7,13 @@ import { segment as seg_code } from '../codeblock';
 import { segment as seg_math } from '../mathblock';
 import { segment as seg_blockquote } from '../blockquote';
 import { segment as seg_table } from './table';
-import { segment as seg_placeholder, placeholder } from './placeholder';
+import { segment as seg_placeholder } from './placeholder';
 
 import FigParser = ExtensionParser.FigParser;
 
 export const segment: FigParser.SegmentParser = block(validate(['[$', '$'],
   sequence([
-    line(close(seg_label, /^.*/)),
+    line(close(seg_label, /^.*\s/)),
     union([
       seg_code,
       seg_math,
@@ -30,7 +30,4 @@ export const fig: FigParser = block(rewrite(segment, convert(
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     return `${fence}figure ${source}\n\n${fence}`;
   },
-  union([
-    figure,
-    placeholder,
-  ]))));
+  union([figure]))));

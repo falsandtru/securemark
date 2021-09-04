@@ -339,7 +339,10 @@ export namespace MarkdownParser {
         // ~~~
         Block<'extension/figure'>,
         Parser<HTMLElement, Context, [
-          InlineParser.ExtensionParser.LabelParser,
+          Parser<HTMLElement | string, Context, [
+            InlineParser.ExtensionParser.LabelParser,
+            SourceParser.StrParser,
+          ]>,
           Parser<HTMLElement | string, Context, [
             Parser<HTMLElement | string, Context, [
               BlockParser.TableParser,
@@ -386,7 +389,6 @@ export namespace MarkdownParser {
         Block<'extension/fig'>,
         Parser<HTMLElement, Context, [
           FigureParser,
-          PlaceholderParser,
         ]> {
       }
       export namespace FigParser {
