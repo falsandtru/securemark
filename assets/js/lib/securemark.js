@@ -4582,7 +4582,7 @@ require = function () {
                 '[$',
                 '$'
             ], combinator_1.sequence([
-                combinator_1.line(combinator_1.close(label_1.segment, /^.*/)),
+                combinator_1.line(combinator_1.close(label_1.segment, /^.*\s/)),
                 combinator_1.union([
                     codeblock_1.segment,
                     mathblock_1.segment,
@@ -4595,10 +4595,7 @@ require = function () {
             exports.fig = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.convert(source => {
                 const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
                 return `${ fence }figure ${ source }\n\n${ fence }`;
-            }, combinator_1.union([
-                figure_1.figure,
-                placeholder_1.placeholder
-            ]))));
+            }, combinator_1.union([figure_1.figure]))));
         },
         {
             '../../../combinator': 37,
@@ -4658,7 +4655,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
             exports.segment = combinator_1.block(combinator_1.match(/^(~{3,})(?:figure[^\S\n]+)?(?=\[?\$[A-Za-z-][^\n]*\n(?:[^\n]*\n)*?\1[^\S\n]*(?:$|\n))/, memoize_1.memoize(([, fence], closer = new RegExp(String.raw`^${ fence }[^\S\n]*(?:$|\n)`)) => combinator_1.close(combinator_1.sequence([
-                combinator_1.line(combinator_1.close(label_1.segment, /^\s.*/)),
+                combinator_1.line(combinator_1.close(label_1.segment, /^.*\n/)),
                 combinator_1.inits([
                     combinator_1.union([
                         codeblock_1.segment_,
@@ -4676,7 +4673,10 @@ require = function () {
                 ])
             ]), closer), ([, fence]) => fence.length)));
             exports.figure = combinator_1.block(combinator_1.rewrite(exports.segment, combinator_1.fmap(combinator_1.convert(source => source.slice(source.search(/[[$]/), source.trimEnd().lastIndexOf('\n')), combinator_1.sequence([
-                combinator_1.line(label_1.label),
+                combinator_1.line(combinator_1.sequence([
+                    label_1.label,
+                    source_1.str(/^.*\n/)
+                ])),
                 combinator_1.inits([
                     combinator_1.block(combinator_1.union([
                         table_1.table,
@@ -4692,16 +4692,17 @@ require = function () {
                     source_1.emptyline,
                     combinator_1.block(locale_1.localize(combinator_1.context({ syntax: { inline: { media: false } } }, util_1.visualize(combinator_1.trim(combinator_1.some(inline_1.inline))))))
                 ])
-            ])), ([label, content, ...caption]) => [typed_dom_1.html('figure', attributes(label.getAttribute('data-label'), content, caption), [
+            ])), ([label, param, content, ...caption]) => [typed_dom_1.html('figure', attributes(label.getAttribute('data-label'), param, content, caption), [
                     typed_dom_1.html('div', { class: 'figcontent' }, [content]),
                     typed_dom_1.html('span', { class: 'figindex' }),
                     typed_dom_1.html('figcaption', typed_dom_1.defrag(caption))
                 ])])));
-            function attributes(label, content, caption) {
+            function attributes(label, param, content, caption) {
                 const group = label.split('-', 1)[0];
                 const invalidLabel = /^[^-]+-(?:[0-9]+\.)*0$/.test(label);
+                const invalidParam = param.trimStart() !== '';
                 const invalidContent = group === '$' && (!content.classList.contains('math') || caption.length > 0);
-                const invalid = invalidLabel || invalidContent || global_1.undefined;
+                const invalid = invalidLabel || invalidParam || invalidContent || global_1.undefined;
                 return {
                     'data-label': label,
                     'data-group': group,
@@ -4710,6 +4711,10 @@ require = function () {
                         'data-invalid-syntax': 'figure',
                         'data-invalid-type': 'label',
                         'data-invalid-description': 'The last part of the fixed label numbers must not be 0.'
+                    } || invalidParam && {
+                        'data-invalid-syntax': 'figure',
+                        'data-invalid-type': 'argument',
+                        'data-invalid-description': 'Invalid argument.'
                     } || invalidContent && {
                         'data-invalid-syntax': 'figure',
                         'data-invalid-type': 'content',
