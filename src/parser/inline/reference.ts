@@ -16,7 +16,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
     media: false,
     // Redundant
     //index: true,
-    label: true,
+    //label: true,
     //link: true,
     //autolink: true,
   }}, state: undefined },
