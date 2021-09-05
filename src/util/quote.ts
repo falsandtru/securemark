@@ -3,7 +3,9 @@ import { define } from 'typed-dom';
 export function quote(anchor: string, range: Range): string {
   let expansion = expand(range);
   const node = range.cloneContents();
-  for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
+  for (
+    let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'),
+        i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (true) {
       case el.matches('code'):

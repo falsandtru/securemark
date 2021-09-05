@@ -21,7 +21,9 @@ export function text(source: HTMLElement): string {
   const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
+  for (
+    let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp'),
+        i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
       case 'RT':

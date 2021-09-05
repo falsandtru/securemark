@@ -15,7 +15,9 @@ export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
   if (target.classList.contains('invalid')) return;
   const base = location.href;
   if (target.matches(selector)) return void render_(base, target, opts);
-  for (let es = target.querySelectorAll<HTMLElement>(selector), i = 0, len = es.length; i < len; ++i) {
+  for (
+    let es = target.querySelectorAll<HTMLElement>(selector),
+        i = 0, len = es.length; i < len; ++i) {
     render_(base, es[i], opts);
   }
 }

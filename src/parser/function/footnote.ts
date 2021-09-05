@@ -36,7 +36,9 @@ function build(
     const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     let count = 0;
-    for (let refs = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`), i = 0, len = refs.length; i < len; ++i) {
+    for (
+      let refs = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`),
+          i = 0, len = refs.length; i < len; ++i) {
       yield;
       const ref = refs[i];
       ++count;
