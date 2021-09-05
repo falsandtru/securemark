@@ -33,12 +33,12 @@ function build(
     new WeakMap());
   return function* (target: ParentNode & Node, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
-    const refs = new MultiMap<string, HTMLElement>();
+    const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
     let count = 0;
-    for (let es = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`), i = 0, len = es.length; i < len; ++i) {
+    for (let refs = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`), i = 0, len = refs.length; i < len; ++i) {
       yield;
-      const ref = es[i];
+      const ref = refs[i];
       ++count;
       const identifier = identify(ref);
       const abbr = ref.getAttribute('data-abbr') || undefined;
@@ -47,7 +47,7 @@ function build(
         : titles.get(identifier) || ref.title || text(ref) || undefined;
       title
         ? !titles.has(identifier) && titles.set(identifier, title)
-        : refs.set(identifier, ref);
+        : buffer.set(identifier, ref);
       const content = contentify(ref);
       const refIndex = count;
       const refId = opts.id !== ''
@@ -63,7 +63,7 @@ function build(
       if (title && content.firstChild && def.childNodes.length === 1) {
         def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
-        for (const ref of refs.take(identifier, Infinity)) {
+        for (const ref of buffer.take(identifier, Infinity)) {
           ref.classList.remove('invalid');
           define(ref, {
             title,
