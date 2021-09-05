@@ -43,8 +43,8 @@ export interface ParserSettings {
 export type Progress =
   | { type: 'segment', value: string; }
   | { type: 'block', value: HTMLElement }
-  | { type: 'footnote', value: HTMLLIElement | HTMLElement }
   | { type: 'figure', value: HTMLAnchorElement }
+  | { type: 'footnote', value: HTMLLIElement | HTMLElement }
   | { type: 'break' }
   | { type: 'cancel' };
 

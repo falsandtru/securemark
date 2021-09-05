@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.212.3
+
+- Fix footnote processing with labels.
+
 ## 0.212.2
 
 - Fix fig parser.

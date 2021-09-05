@@ -188,6 +188,15 @@ describe('Unit: parser/api/parse', () => {
         ]);
     });
 
+    it('footnote', () => {
+      assert.deepStrictEqual(
+        [...parse('$-a\n$$\n$$\n\n(($-a))').children].map(el => el.outerHTML),
+        [
+          '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math" translate="no">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
+          '<p><sup class="annotation" id="annotation:ref:1" title="(1)"><a href="#annotation:def:1">*1</a></sup></p>',
+        ]);
+    });
+
     it('normalize', () => {
       assert.deepStrictEqual(
         [...parse('a\\\r\nb').children].map(el => el.outerHTML),

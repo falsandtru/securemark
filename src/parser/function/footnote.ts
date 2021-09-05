@@ -20,7 +20,7 @@ export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 
 const identify = memoize<HTMLElement, string>(
-  ref => ref.getAttribute('data-abbr') || ref.innerHTML,
+  ref => `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || ref.innerHTML}`,
   new WeakMap());
 
 function build(
@@ -44,11 +44,15 @@ function build(
       const abbr = ref.getAttribute('data-abbr') || undefined;
       const title = ref.classList.contains('invalid')
         ? undefined
-        : titles.get(identifier) || ref.title || text(ref) || undefined;
+        : titles.get(identifier) ||
+          +identifier[0] && ref.title ||
+          text(ref.title ? html('span', [contentify(ref).cloneNode(true)]) : ref) ||
+          undefined;
       title
         ? !titles.has(identifier) && titles.set(identifier, title)
         : buffer.set(identifier, ref);
       const content = contentify(ref);
+      const blank = !!abbr && !content.firstChild;
       const refIndex = count;
       const refId = opts.id !== ''
         ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}`
@@ -60,7 +64,7 @@ function build(
             [content.cloneNode(true), html('sup', [])]))
             .get(identifier)!;
       assert(def.lastChild);
-      if (title && content.firstChild && def.childNodes.length === 1) {
+      if (title && !blank && def.childNodes.length === 1) {
         def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
         for (const ref of buffer.take(identifier, Infinity)) {
@@ -99,7 +103,7 @@ function build(
         html('a',
           {
             href: refId && `#${refId}`,
-            title: content.firstChild && abbr
+            title: abbr && !blank
               ? title
               : undefined,
           },

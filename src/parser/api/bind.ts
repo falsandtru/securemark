@@ -111,17 +111,17 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
       yield { type: 'block', value: el };
       if (rev !== revision) return yield { type: 'cancel' };
     }
-    for (const el of footnote(next(0)?.parentNode ?? target, settings.footnotes, context)) {
-      assert(rev === revision);
-      el
-        ? yield { type: 'footnote', value: el }
-        : yield { type: 'break' };
-      if (rev !== revision) return yield { type: 'cancel' };
-    }
     for (const el of figure(next(0)?.parentNode ?? target, settings.footnotes, context)) {
       assert(rev === revision);
       el
         ? yield { type: 'figure', value: el }
+        : yield { type: 'break' };
+      if (rev !== revision) return yield { type: 'cancel' };
+    }
+    for (const el of footnote(next(0)?.parentNode ?? target, settings.footnotes, context)) {
+      assert(rev === revision);
+      el
+        ? yield { type: 'footnote', value: el }
         : yield { type: 'break' };
       if (rev !== revision) return yield { type: 'cancel' };
     }
