@@ -17,7 +17,7 @@ export function text(source: HTMLElement): string {
   assert(!source.matches('.indexer'));
   assert(source.querySelectorAll('.indexer').length <= 1);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
-  assert(!source.querySelector('.annotation, .reference, .label'));
+  assert(!source.querySelector('.annotation, .reference'));
   const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
