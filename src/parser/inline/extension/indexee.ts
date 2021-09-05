@@ -21,11 +21,17 @@ export function text(source: HTMLElement): string {
   const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true);
-  for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
-    define(es[i], es[i].getAttribute('data-src')!);
-  }
-  for (let es = target.querySelectorAll('rt, rp'), i = 0, len = es.length; i < len; ++i) {
-    es[i].remove();
+  for (let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
+    const el = es[i];
+    switch (el.tagName) {
+      case 'RT':
+      case 'RP':
+        el.remove();
+        continue;
+      default:
+        define(el, el.getAttribute('data-src')!);
+        continue;
+    }
   }
   return target.innerText.trim();
 }

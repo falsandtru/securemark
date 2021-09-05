@@ -45,11 +45,14 @@ function build(
       const title = ref.classList.contains('invalid')
         ? undefined
         : titles.get(identifier) || ref.title || text(ref) || undefined;
-      title && !titles.has(title) && titles.set(identifier, title);
-      !title && refs.set(identifier, ref);
+      title
+        ? !titles.has(identifier) && titles.set(identifier, title)
+        : refs.set(identifier, ref);
       const content = contentify(ref);
       const refIndex = count;
-      const refId = opts.id !== '' ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}` : undefined;
+      const refId = opts.id !== ''
+        ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}`
+        : undefined;
       const def = undefined
         || defs.get(identifier)
         || defs.set(identifier, html('li',
