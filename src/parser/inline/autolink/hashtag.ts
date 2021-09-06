@@ -29,4 +29,4 @@ export const hashtag: AutolinkParser.HashtagParser = lazy(() => fmap(rewrite(
         : `/hashtags/${source.slice(1)}`
       } }`,
     union([link])))),
-  ([el]) => [define(el, { class: 'hashtag' }, el.textContent!)]));
+  ([el]) => [define(el, { class: 'hashtag' }, el.innerText)]));

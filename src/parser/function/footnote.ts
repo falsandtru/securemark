@@ -95,7 +95,7 @@ function build(
                 'data-invalid-description': 'Missing the content.',
               }
         },
-        refChild?.getAttribute('href')?.slice(1) === defId && refChild?.textContent === marker(defIndex, abbr)
+        refChild?.getAttribute('href')?.slice(1) === defId && refChild?.innerText === marker(defIndex, abbr)
           ? undefined
           : [html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr))])
         .firstChild as HTMLAnchorElement;

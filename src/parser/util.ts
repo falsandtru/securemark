@@ -175,6 +175,7 @@ export function stringify(nodes: readonly (HTMLElement | string)[]): string {
       ? node
       : node.tagName === 'BR'
         ? '\n'
+        // Note: innerText is faster but trims the text.
         : node.innerText;
   }
   return acc;

@@ -13,7 +13,7 @@ export const cite: ParagraphParser.MentionParser.CiteParser = creator(line(fmap(
   ([el, str = '']: [HTMLElement, string?]) => [
     html('span', { class: 'cite' }, defrag([
       str + '>',
-      define(el, { 'data-depth': `${str.length + 1}` }, el.textContent!.slice(1)),
+      define(el, { 'data-depth': `${str.length + 1}` }, el.innerText.slice(1)),
     ])),
     html('br'),
   ])));

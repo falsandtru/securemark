@@ -88,7 +88,7 @@ export function* figure(
       def.querySelector(':scope > .figindex')!,
       group === '$' ? figindex : `${figindex}: `);
     for (const ref of refs.take(label, Infinity)) {
-      if (ref.hash.slice(1) === def.id && ref.textContent === figindex) continue;
+      if (ref.hash.slice(1) === def.id && ref.innerText === figindex) continue;
       yield define(ref,
         opts.id !== '' ? { href: `#${def.id}` } : { class: `${ref.className} disabled` },
         figindex);
