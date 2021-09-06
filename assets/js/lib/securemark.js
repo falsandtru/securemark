@@ -3869,17 +3869,17 @@ require = function () {
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of footnote_1.footnote((_e = (_d = next(0)) === null || _d === void 0 ? void 0 : _d.parentNode) !== null && _e !== void 0 ? _e : target, settings.footnotes, context)) {
+                    for (const el of figure_1.figure((_e = (_d = next(0)) === null || _d === void 0 ? void 0 : _d.parentNode) !== null && _e !== void 0 ? _e : target, settings.footnotes, context)) {
                         el ? yield {
-                            type: 'footnote',
+                            type: 'figure',
                             value: el
                         } : yield { type: 'break' };
                         if (rev !== revision)
                             return yield { type: 'cancel' };
                     }
-                    for (const el of figure_1.figure((_g = (_f = next(0)) === null || _f === void 0 ? void 0 : _f.parentNode) !== null && _g !== void 0 ? _g : target, settings.footnotes, context)) {
+                    for (const el of footnote_1.footnote((_g = (_f = next(0)) === null || _f === void 0 ? void 0 : _f.parentNode) !== null && _g !== void 0 ? _g : target, settings.footnotes, context)) {
                         el ? yield {
-                            type: 'figure',
+                            type: 'footnote',
                             value: el
                         } : yield { type: 'break' };
                         if (rev !== revision)
@@ -4106,8 +4106,8 @@ require = function () {
                 }
                 if (opts.test)
                     return node;
-                for (const _ of footnote_1.footnote(node, opts.footnotes, context));
                 for (const _ of figure_1.figure(node, opts.footnotes, context));
+                for (const _ of footnote_1.footnote(node, opts.footnotes, context));
                 return node;
             }
             exports.parse = parse;
@@ -4582,7 +4582,7 @@ require = function () {
                 '[$',
                 '$'
             ], combinator_1.sequence([
-                combinator_1.line(combinator_1.close(label_1.segment, /^.*\s/)),
+                combinator_1.line(combinator_1.close(label_1.segment, /^.*\n/)),
                 combinator_1.union([
                     codeblock_1.segment,
                     mathblock_1.segment,
@@ -5744,34 +5744,34 @@ require = function () {
             exports.footnote = footnote;
             exports.annotation = build('annotation', n => `*${ n }`);
             exports.reference = build('reference', (n, abbr) => `[${ abbr || n }]`);
-            const identify = memoize_1.memoize(ref => ref.getAttribute('data-abbr') || ref.innerHTML, new global_1.WeakMap());
+            const identify = memoize_1.memoize(ref => `${ +!ref.querySelector('.label') }:${ ref.getAttribute('data-abbr') || ref.innerHTML }`, new global_1.WeakMap());
             function build(syntax, marker) {
                 const contentify = memoize_1.memoize(ref => typed_dom_1.frag(ref.childNodes), new global_1.WeakMap());
                 return function* (target, footnote, opts = {}) {
                     var _a;
                     const defs = new global_1.Map();
-                    const refs = new multimap_1.MultiMap();
+                    const buffer = new multimap_1.MultiMap();
                     const titles = new global_1.Map();
                     let count = 0;
-                    for (let es = target.querySelectorAll(`sup.${ syntax }:not(.disabled)`), i = 0, len = es.length; i < len; ++i) {
+                    for (let refs = target.querySelectorAll(`sup.${ syntax }:not(.disabled)`), i = 0, len = refs.length; i < len; ++i) {
                         yield;
-                        const ref = es[i];
+                        const ref = refs[i];
                         ++count;
                         const identifier = identify(ref);
                         const abbr = ref.getAttribute('data-abbr') || global_1.undefined;
-                        const title = ref.classList.contains('invalid') ? global_1.undefined : titles.get(identifier) || ref.title || indexee_1.text(ref) || global_1.undefined;
-                        title && !titles.has(title) && titles.set(identifier, title);
-                        !title && refs.set(identifier, ref);
+                        const title = ref.classList.contains('invalid') ? global_1.undefined : titles.get(identifier) || +identifier[0] && ref.title || indexee_1.text(ref.title ? typed_dom_1.html('span', [contentify(ref).cloneNode(true)]) : ref) || global_1.undefined;
+                        title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
                         const content = contentify(ref);
+                        const blank = !!abbr && !content.firstChild;
                         const refIndex = count;
                         const refId = opts.id !== '' ? ref.id || `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }ref:${ count }` : global_1.undefined;
                         const def = global_1.undefined || defs.get(identifier) || defs.set(identifier, typed_dom_1.html('li', { id: opts.id !== '' ? `${ syntax }:${ opts.id ? `${ opts.id }:` : '' }def:${ defs.size + 1 }` : global_1.undefined }, [
                             content.cloneNode(true),
                             typed_dom_1.html('sup', [])
                         ])).get(identifier);
-                        if (title && content.firstChild && def.childNodes.length === 1) {
+                        if (title && !blank && def.childNodes.length === 1) {
                             def.insertBefore(content.cloneNode(true), def.lastChild);
-                            for (const ref of refs.take(identifier, global_1.Infinity)) {
+                            for (const ref of buffer.take(identifier, global_1.Infinity)) {
                                 ref.classList.remove('invalid');
                                 typed_dom_1.define(ref, {
                                     title,
@@ -5796,7 +5796,7 @@ require = function () {
                         }, ((_a = refChild === null || refChild === void 0 ? void 0 : refChild.getAttribute('href')) === null || _a === void 0 ? void 0 : _a.slice(1)) === defId && (refChild === null || refChild === void 0 ? void 0 : refChild.textContent) === marker(defIndex, abbr) ? global_1.undefined : [typed_dom_1.html('a', { href: refId && defId && `#${ defId }` }, marker(defIndex, abbr))]).firstChild;
                         def.lastChild.appendChild(typed_dom_1.html('a', {
                             href: refId && `#${ refId }`,
-                            title: content.firstChild && abbr ? title : global_1.undefined
+                            title: abbr && !blank ? title : global_1.undefined
                         }, `~${ refIndex }`));
                     }
                     if (!footnote)
@@ -6007,8 +6007,7 @@ require = function () {
                     inline: {
                         annotation: false,
                         reference: false,
-                        media: false,
-                        label: true
+                        media: false
                     }
                 },
                 state: global_1.undefined
@@ -6657,11 +6656,17 @@ require = function () {
                 if (indexer)
                     return indexer.getAttribute('data-index');
                 const target = source.cloneNode(true);
-                for (let es = target.querySelectorAll('code[data-src], .math[data-src]'), i = 0, len = es.length; i < len; ++i) {
-                    typed_dom_1.define(es[i], es[i].getAttribute('data-src'));
-                }
-                for (let es = target.querySelectorAll('rt, rp'), i = 0, len = es.length; i < len; ++i) {
-                    es[i].remove();
+                for (let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
+                    const el = es[i];
+                    switch (el.tagName) {
+                    case 'RT':
+                    case 'RP':
+                        el.remove();
+                        continue;
+                    default:
+                        typed_dom_1.define(el, el.getAttribute('data-src'));
+                        continue;
+                    }
                 }
                 return target.innerText.trim();
             }
@@ -7360,8 +7365,7 @@ require = function () {
                     inline: {
                         annotation: false,
                         reference: false,
-                        media: false,
-                        label: true
+                        media: false
                     }
                 },
                 state: global_1.undefined
