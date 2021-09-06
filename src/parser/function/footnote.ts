@@ -70,9 +70,9 @@ function build(
         def.insertBefore(content.cloneNode(true), def.lastChild);
         assert(def.childNodes.length > 1);
         for (const ref of buffer.take(identifier, Infinity)) {
-          ref.classList.remove('invalid');
           define(ref, {
             title,
+            class: void ref.classList.remove('invalid'),
             'data-invalid-syntax': null,
             'data-invalid-type': null,
             'data-invalid-description': null,
