@@ -13,14 +13,14 @@ export function identity(source: HTMLElement): string {
   return identify(text(source));
 }
 
-export function text(source: HTMLElement): string {
-  assert(!source.matches('.indexer'));
+export function text(source: HTMLElement | DocumentFragment): string {
+  assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll('.indexer').length <= 1);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
-  assert(!source.querySelector('.annotation, .reference'));
+  assert(!source.querySelector('.annotation, .reference, br'));
   const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
-  const target = source.cloneNode(true);
+  const target = source.cloneNode(true) as typeof source;
   for (
     let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp'),
         i = 0, len = es.length; i < len; ++i) {
@@ -35,7 +35,9 @@ export function text(source: HTMLElement): string {
         continue;
     }
   }
-  return target.innerText.trim();
+  // Better:
+  //return target.innerText.trim();
+  return target.textContent!.trim();
 }
 
 export function identify(index: string): string {
