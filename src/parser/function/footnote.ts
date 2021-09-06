@@ -48,7 +48,7 @@ function build(
         ? undefined
         : titles.get(identifier) ||
           +identifier[0] && ref.title ||
-          text(ref.title ? contentify(ref) : ref) ||
+          text(ref.title ? contentify(ref) : ref).trim() ||
           undefined;
       title
         ? !titles.has(identifier) && titles.set(identifier, title)

@@ -10,7 +10,7 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Pa
 }
 
 export function identity(source: HTMLElement): string {
-  return identify(text(source));
+  return identify(text(source).trim());
 }
 
 export function text(source: HTMLElement | DocumentFragment): string {
@@ -36,8 +36,8 @@ export function text(source: HTMLElement | DocumentFragment): string {
     }
   }
   // Better:
-  //return target.innerText.trim();
-  return target.textContent!.trim();
+  //return target.innerText;
+  return target.textContent!;
 }
 
 export function identify(index: string): string {
