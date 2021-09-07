@@ -53,10 +53,10 @@ export interface RenderingOptions {
   readonly math?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
   readonly media?: {
     readonly twitter?: (target: HTMLImageElement, url: URL) => HTMLElement | undefined;
-    readonly youtube?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
-    readonly pdf?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
-    readonly video?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLVideoElement | undefined;
-    readonly audio?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLAudioElement | undefined;
+    readonly youtube?: (target: HTMLImageElement, url: URL) => HTMLElement | undefined;
+    readonly pdf?: (target: HTMLImageElement, url: URL) => HTMLElement | undefined;
+    readonly video?: (target: HTMLImageElement, url: URL) => HTMLVideoElement | undefined;
+    readonly audio?: (target: HTMLImageElement, url: URL) => HTMLAudioElement | undefined;
     readonly image?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLImageElement;
   };
   readonly caches?: Partial<Caches>;

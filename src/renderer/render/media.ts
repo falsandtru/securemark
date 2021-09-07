@@ -19,9 +19,9 @@ export function media(base: string, target: HTMLImageElement, opts: MediaOptions
   opts = extend(opts);
   const url = new ReadonlyURL(target.getAttribute('data-src')!, base);
   return opts.twitter?.(target, url)
-      || opts.youtube?.(target, url, cache)
-      || opts.pdf?.(target, url, cache)
-      || opts.video?.(target, url, cache)
-      || opts.audio?.(target, url, cache)
+      || opts.youtube?.(target, url)
+      || opts.pdf?.(target, url)
+      || opts.video?.(target, url)
+      || opts.audio?.(target, url)
       || opts.image?.(target, url, cache);
 }

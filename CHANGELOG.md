@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.213.2
+
+- Fix media rendering functions.
+
 ## 0.213.1
 
 - Fix media rendering functions.

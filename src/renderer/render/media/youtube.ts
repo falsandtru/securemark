@@ -1,7 +1,6 @@
-import { html, define } from 'typed-dom';
-import { Collection } from 'spica/collection';
+import { html } from 'typed-dom';
 
-export function youtube(target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
+export function youtube(target: HTMLImageElement, url: URL): HTMLElement | undefined {
   let id: string;
   switch (url.origin) {
     case 'https://www.youtube.com':
@@ -16,10 +15,6 @@ export function youtube(target: HTMLImageElement, url: URL, cache?: Collection<s
       return;
   }
   if (url.pathname.split('/').pop()!.includes('.')) return;
-  if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLElement;
-  if (cache?.has(url.href)) return define(
-    cache.get(url.href)!.cloneNode(true) as HTMLElement,
-    { class: target.className });
   const el = html('div', { class: target.className }, [
     html('div', { style: 'position: relative; padding-top: 56.25%;' }, [
       html('iframe', {
@@ -31,6 +26,5 @@ export function youtube(target: HTMLImageElement, url: URL, cache?: Collection<s
       }),
     ]),
   ]);
-  cache?.set(url.href, el.cloneNode(true));
   return el;
 }
