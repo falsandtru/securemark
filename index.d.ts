@@ -52,12 +52,12 @@ export interface RenderingOptions {
   readonly code?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
   readonly math?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
   readonly media?: {
-    readonly twitter?: (url: URL) => HTMLElement | undefined;
-    readonly youtube?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
-    readonly pdf?: (url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
-    readonly video?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLVideoElement | undefined;
-    readonly audio?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLAudioElement | undefined;
-    readonly image?: (url: URL, alt: string, cache?: Collection<string, HTMLElement>) => HTMLImageElement;
+    readonly twitter?: (target: HTMLImageElement, url: URL) => HTMLElement | undefined;
+    readonly youtube?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
+    readonly pdf?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLElement | undefined;
+    readonly video?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLVideoElement | undefined;
+    readonly audio?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLAudioElement | undefined;
+    readonly image?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLImageElement;
   };
   readonly caches?: Partial<Caches>;
 }

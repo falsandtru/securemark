@@ -1,15 +1,17 @@
-import { html } from 'typed-dom';
+import { define } from 'typed-dom';
 import { Collection } from 'spica/collection';
+import { ObjectFromEntries } from 'spica/alias';
 
-export function image(url: URL, alt: string, cache?: Collection<string, HTMLElement>): HTMLImageElement {
-  if (cache?.has(url.href)) return cache.get(url.href)!.cloneNode(true) as HTMLImageElement;
-  const el = html('img', {
-    class: 'media',
-    src: url.href,
-    alt,
+export function image(target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>): HTMLImageElement {
+  if (cache?.has(url.href)) return define(
+    cache.get(url.href)!.cloneNode(true) as HTMLImageElement,
+    ObjectFromEntries([...target.attributes]
+      .map(attr => [attr.name, attr.value])));
+  define(target, {
+    src: target.getAttribute('data-src'),
     style: 'max-width: 100%;',
     loading: 'lazy',
   });
-  cache?.set(url.href, el.cloneNode(true));
-  return el;
+  cache?.set(url.href, target.cloneNode(true));
+  return target;
 }

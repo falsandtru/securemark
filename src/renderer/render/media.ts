@@ -18,11 +18,10 @@ export function media(base: string, target: HTMLImageElement, opts: MediaOptions
   assert(target.matches('img:not([src])[data-src]'));
   opts = extend(opts);
   const url = new ReadonlyURL(target.getAttribute('data-src')!, base);
-  const alt = target.getAttribute('alt') ?? '';
-  return opts.twitter?.(url)
-      || opts.youtube?.(url, cache)
-      || opts.pdf?.(url, cache)
-      || opts.video?.(url, alt, cache)
-      || opts.audio?.(url, alt, cache)
-      || opts.image?.(url, alt, cache);
+  return opts.twitter?.(target, url)
+      || opts.youtube?.(target, url, cache)
+      || opts.pdf?.(target, url, cache)
+      || opts.video?.(target, url, cache)
+      || opts.audio?.(target, url, cache)
+      || opts.image?.(target, url, cache);
 }

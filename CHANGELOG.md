@@ -3,6 +3,7 @@
 ## 0.213.0
 
 - Extend media syntax to add width and height options.
+- Fix media rendering functions.
 
 ## 0.212.4
 

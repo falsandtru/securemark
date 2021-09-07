@@ -1,6 +1,7 @@
 import { media } from './media';
 import { parse } from '../../parser';
 import { html } from 'typed-dom';
+import { caches } from '../../parser/api';
 
 describe('Unit: renderer/render/media', () => {
 
@@ -38,7 +39,8 @@ describe('Unit: renderer/render/media', () => {
     });
 
     it('image', () => {
-      assert(media(location.href, parse('!{/}').querySelector('img')!, {})!.matches(`[src="${new URL('/', location.href).href}"][alt=""]`));
+      assert(media(location.href, parse('!{/ 4x3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt=""][width="4"][height="3"]`));
+      assert(media(location.href, parse('!{/ 4:3}').querySelector('img')!, {}, caches.media)!.matches(`[src="/"][alt=""][aspect-ratio="4/3"]`));
     });
 
   });
