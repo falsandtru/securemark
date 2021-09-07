@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.212.4
+
+- Refactoring.
+
 ## 0.212.3
 
 - Fix footnote processing with labels.
