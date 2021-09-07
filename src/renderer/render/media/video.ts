@@ -19,9 +19,11 @@ export function video(target: HTMLImageElement, url: URL, cache?: Collection<str
       .map(attr => [attr.name, attr.value])),
     muted: '',
     controls: '',
-    style: 'max-width: 100%;',
-    loading: 'lazy',
   });
-  cache?.set(url.href, el.cloneNode(true));
+  cache?.set(url.href, define(el.cloneNode(true), {
+    width: null,
+    height: null,
+    'aspect-ratio': null,
+  }));
   return el;
 }

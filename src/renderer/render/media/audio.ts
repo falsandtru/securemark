@@ -18,8 +18,6 @@ export function audio(target: HTMLImageElement, url: URL, cache?: Collection<str
     src: target.getAttribute('data-src'),
     alt: target.alt,
     controls: '',
-    style: 'width: 100%;',
-    loading: 'lazy',
   });
   cache?.set(url.href, el.cloneNode(true));
   return el;

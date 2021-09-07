@@ -12,12 +12,10 @@ export function pdf(target: HTMLImageElement, url: URL, cache?: Collection<strin
     cache.get(url.href)!.cloneNode(true) as HTMLElement,
     { class: target.className });
   const el = html('div', { class: target.className }, [
-    html('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [
+    html('div', [
       html('object', {
         type: 'application/pdf',
         data: target.getAttribute('data-src'),
-        style: 'width: 100%; height: 100%; min-height: 400px;',
-        loading: 'lazy',
       }),
     ]),
     html('div', { style: 'word-wrap: break-word;' },

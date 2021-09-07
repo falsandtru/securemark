@@ -354,11 +354,20 @@
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
   }
+  img.media,
+  audio.media,
+  video.media {
+    max-width: 100%;
+  }
   /*
   img.media {
     display: flow;
   }
   */
+  .media > div > object {
+    aspect-ratio: 841/1189;
+    width: 100%;
+  }
   .paren > .paren {
     font-size: 90%;
   }
