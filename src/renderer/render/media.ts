@@ -14,14 +14,14 @@ type MediaOptions = NonNullable<RenderingOptions['media']>;
 const extend = reduce((opts: MediaOptions): MediaOptions =>
   ({ twitter, youtube, pdf, video, audio, image, ...opts }));
 
-export function media(base: string, target: HTMLImageElement, opts: MediaOptions, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
-  assert(target.matches('img:not([src])[data-src]'));
+export function media(base: string, source: HTMLImageElement, opts: MediaOptions, cache?: Collection<string, HTMLElement>): HTMLElement | undefined {
+  assert(source.matches('img:not([src])[data-src]'));
   opts = extend(opts);
-  const url = new ReadonlyURL(target.getAttribute('data-src')!, base);
-  return opts.twitter?.(target, url)
-      || opts.youtube?.(target, url)
-      || opts.pdf?.(target, url)
-      || opts.video?.(target, url)
-      || opts.audio?.(target, url)
-      || opts.image?.(target, url, cache);
+  const url = new ReadonlyURL(source.getAttribute('data-src')!, base);
+  return opts.twitter?.(source, url)
+      || opts.youtube?.(source, url)
+      || opts.pdf?.(source, url)
+      || opts.video?.(source, url)
+      || opts.audio?.(source, url)
+      || opts.image?.(source, url, cache);
 }

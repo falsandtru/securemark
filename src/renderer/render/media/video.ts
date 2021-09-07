@@ -6,11 +6,11 @@ const extensions = [
   '.ogv',
 ];
 
-export function video(target: HTMLImageElement, url: URL): HTMLVideoElement | undefined {
+export function video(source: HTMLImageElement, url: URL): HTMLVideoElement | undefined {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   const el = html('video', {
-    src: target.getAttribute('data-src'),
-    ...ObjectFromEntries([...target.attributes]
+    src: source.getAttribute('data-src'),
+    ...ObjectFromEntries([...source.attributes]
       .map(attr => [attr.name, attr.value])),
     muted: '',
     controls: '',

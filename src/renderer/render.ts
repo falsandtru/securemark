@@ -10,43 +10,43 @@ const selector = 'img.media:not(.invalid):not([src])[data-src], a > :not(img).me
 const extend = reduce((opts: RenderingOptions): RenderingOptions =>
   ({ code, math, media: {}, ...opts }));
 
-export function render(target: HTMLElement, opts: RenderingOptions = {}): void {
+export function render(source: HTMLElement, opts: RenderingOptions = {}): void {
   opts = extend(opts);
-  if (target.classList.contains('invalid')) return;
+  if (source.classList.contains('invalid')) return;
   const base = location.href;
-  if (target.matches(selector)) return void render_(base, target, opts);
+  if (source.matches(selector)) return void render_(base, source, opts);
   for (
-    let es = target.querySelectorAll<HTMLElement>(selector),
+    let es = source.querySelectorAll<HTMLElement>(selector),
         i = 0, len = es.length; i < len; ++i) {
     render_(base, es[i], opts);
   }
 }
 
-function render_(base: string, target: HTMLElement, opts: RenderingOptions): void {
-  assert(!target.matches('.invalid'));
+function render_(base: string, source: HTMLElement, opts: RenderingOptions): void {
+  assert(!source.matches('.invalid'));
   try {
     switch (true) {
       case !!opts.code
-        && !target.firstElementChild
-        && target.matches('pre.code'):
-        return void opts.code!(target, opts.caches?.code);
+        && !source.firstElementChild
+        && source.matches('pre.code'):
+        return void opts.code!(source, opts.caches?.code);
       case !!opts.math
-        && !target.firstElementChild
-        && target.matches('.math'):
-        return void opts.math!(target, opts.caches?.math);
-      case target.matches('.media:not(img)'):
-        assert(target.matches('a > .media'));
-        return void target.parentElement!.parentElement!.replaceChild(target, target.parentElement!);
+        && !source.firstElementChild
+        && source.matches('.math'):
+        return void opts.math!(source, opts.caches?.math);
+      case source.matches('.media:not(img)'):
+        assert(source.matches('a > .media'));
+        return void source.parentElement!.parentElement!.replaceChild(source, source.parentElement!);
       case !!opts.media
-        && target.matches('img.media:not([src])[data-src]'): {
-        assert(target.matches('a > .media'));
-        const el = media(base, target as HTMLImageElement, opts.media!, opts.caches?.media);
+        && source.matches('img.media:not([src])[data-src]'): {
+        assert(source.matches('a > .media'));
+        const el = media(base, source as HTMLImageElement, opts.media!, opts.caches?.media);
         if (!el) return;
         assert(el.matches('.media'));
-        el.setAttribute('data-src', target.getAttribute('data-src')!);
+        el.setAttribute('data-src', source.getAttribute('data-src')!);
         const scope = el.matches('img')
-          ? target
-          : target.parentElement as HTMLAnchorElement;
+          ? source
+          : source.parentElement as HTMLAnchorElement;
         return void scope.parentElement!.replaceChild(el, scope);
       }
       default:

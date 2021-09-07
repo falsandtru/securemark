@@ -13,7 +13,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   nearest: (index: number) => HTMLElement | undefined;
   index: (block: HTMLElement) => number;
 };
-export function render(target: HTMLElement, options?: RenderingOptions): void;
+export function render(source: HTMLElement, options?: RenderingOptions): void;
 export const caches: Caches;
 export function header(source: string): string;
 export function headers(source: string): string[];
@@ -52,12 +52,12 @@ export interface RenderingOptions {
   readonly code?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
   readonly math?: (target: HTMLElement, cache?: Collection<string, HTMLElement>) => void;
   readonly media?: {
-    readonly twitter?: (target: HTMLImageElement, url: URL) => HTMLElement | undefined;
-    readonly youtube?: (target: HTMLImageElement, url: URL) => HTMLElement | undefined;
-    readonly pdf?: (target: HTMLImageElement, url: URL) => HTMLElement | undefined;
-    readonly video?: (target: HTMLImageElement, url: URL) => HTMLVideoElement | undefined;
-    readonly audio?: (target: HTMLImageElement, url: URL) => HTMLAudioElement | undefined;
-    readonly image?: (target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLImageElement;
+    readonly twitter?: (source: HTMLImageElement, url: URL) => HTMLElement | undefined;
+    readonly youtube?: (source: HTMLImageElement, url: URL) => HTMLElement | undefined;
+    readonly pdf?: (source: HTMLImageElement, url: URL) => HTMLElement | undefined;
+    readonly video?: (source: HTMLImageElement, url: URL) => HTMLVideoElement | undefined;
+    readonly audio?: (source: HTMLImageElement, url: URL) => HTMLAudioElement | undefined;
+    readonly image?: (source: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>) => HTMLImageElement;
   };
   readonly caches?: Partial<Caches>;
 }

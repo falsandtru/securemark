@@ -2,19 +2,19 @@ import { define } from 'typed-dom';
 import { Collection } from 'spica/collection';
 import { ObjectFromEntries } from 'spica/alias';
 
-export function image(target: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>): HTMLImageElement {
+export function image(source: HTMLImageElement, url: URL, cache?: Collection<string, HTMLElement>): HTMLImageElement {
   if (cache?.has(url.href)) return define(
     cache.get(url.href)!.cloneNode(true) as HTMLImageElement,
-    ObjectFromEntries([...target.attributes]
+    ObjectFromEntries([...source.attributes]
       .map(attr => [attr.name, attr.value])));
-  define(target, {
-    src: target.getAttribute('data-src'),
+  define(source, {
+    src: source.getAttribute('data-src'),
     loading: 'lazy',
   });
-  cache?.set(url.href, define(target.cloneNode(true), {
+  cache?.set(url.href, define(source.cloneNode(true), {
     width: null,
     height: null,
     'aspect-ratio': null,
   }));
-  return target;
+  return source;
 }

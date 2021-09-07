@@ -5,12 +5,12 @@ const extensions = [
   '.ogg',
 ];
 
-export function audio(target: HTMLImageElement, url: URL): HTMLAudioElement | undefined {
+export function audio(source: HTMLImageElement, url: URL): HTMLAudioElement | undefined {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   const el = html('audio', {
-    class: target.className,
-    src: target.getAttribute('data-src'),
-    alt: target.alt,
+    class: source.className,
+    src: source.getAttribute('data-src'),
+    alt: source.alt,
     controls: '',
   });
   return el;

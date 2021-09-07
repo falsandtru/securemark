@@ -17,11 +17,11 @@ const origins = [
   'https://twitter.com',
 ];
 
-export function twitter(target: HTMLImageElement, url: URL): HTMLElement | undefined {
+export function twitter(source: HTMLImageElement, url: URL): HTMLElement | undefined {
   if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
   if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
-  return HTML.div({ class: target.className }, [HTML.em(`loading ${target.getAttribute('data-src')}`)], (h, tag) => {
+  return HTML.div({ class: source.className }, [HTML.em(`loading ${source.getAttribute('data-src')}`)], (h, tag) => {
     const outer = h(tag);
     $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}&omit_script=true`, {
       dataType: 'jsonp',
@@ -36,7 +36,7 @@ export function twitter(target: HTMLImageElement, url: URL): HTMLElement | undef
       },
       error({ status, statusText }) {
         assert(Number.isSafeInteger(status));
-        define(outer, [parse(`*{ ${target.getAttribute('data-src')} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
+        define(outer, [parse(`*{ ${source.getAttribute('data-src')} }*\n\n\`\`\`\n${status}\n${statusText}\n\`\`\``)]);
       },
     });
     return outer;

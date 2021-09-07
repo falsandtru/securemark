@@ -1,6 +1,6 @@
 import { html } from 'typed-dom';
 
-export function youtube(target: HTMLImageElement, url: URL): HTMLElement | undefined {
+export function youtube(source: HTMLImageElement, url: URL): HTMLElement | undefined {
   let id: string;
   switch (url.origin) {
     case 'https://www.youtube.com':
@@ -15,7 +15,7 @@ export function youtube(target: HTMLImageElement, url: URL): HTMLElement | undef
       return;
   }
   if (url.pathname.split('/').pop()!.includes('.')) return;
-  const el = html('div', { class: target.className }, [
+  const el = html('div', { class: source.className }, [
     html('div', { style: 'position: relative; padding-top: 56.25%;' }, [
       html('iframe', {
         src: `https://www.youtube.com/embed/${id}`,
