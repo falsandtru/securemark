@@ -3,6 +3,7 @@
 ## 0.213.1
 
 - Fix media rendering functions.
+- Fix visualization.
 
 ## 0.213.0
 

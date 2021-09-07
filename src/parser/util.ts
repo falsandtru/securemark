@@ -69,7 +69,7 @@ function hasVisible(
     }
     else {
       if (node.innerText.trimStart()) return true;
-      if (media && node.getElementsByClassName('media').length > 0) return true;
+      if (media && (node.classList.contains('media') || node.getElementsByClassName('media')[0])) return true;
     }
   }
   return false;
