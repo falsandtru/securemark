@@ -8214,7 +8214,11 @@ require = function () {
                 let acc = '';
                 for (let i = 0; i < nodes.length; ++i) {
                     const node = nodes[i];
-                    acc += typeof node === 'string' ? node : node.tagName === 'BR' ? '\n' : node.innerText;
+                    if (typeof node === 'string') {
+                        acc += node;
+                    } else {
+                        acc += node.innerText;
+                    }
                 }
                 return acc;
             }
