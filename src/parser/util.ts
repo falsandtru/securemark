@@ -171,12 +171,16 @@ export function stringify(nodes: readonly (HTMLElement | string)[]): string {
   let acc = '';
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];
-    acc += typeof node === 'string'
-      ? node
-      : node.tagName === 'BR'
-        ? '\n'
-        // Note: innerText is faster but trims the text.
-        : node.innerText;
+    if (typeof node === 'string') {
+      assert(!node.includes('\n'));
+      acc += node;
+    }
+    else {
+      assert(!node.matches('br'));
+      assert(!node.querySelector('br'));
+      // Note: Can't express line breaks.
+      acc += node.innerText;
+    }
   }
   return acc;
 }
