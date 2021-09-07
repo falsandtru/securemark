@@ -40,7 +40,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('a   b')), [['a', '   ', 'b'], '']);
     });
 
-    it('newlinw', () => {
+    it('hardbreak', () => {
       assert.deepStrictEqual(inspect(parser('\n')), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser('\n ')), [['<br>'], '']);
       assert.deepStrictEqual(inspect(parser(' \n')), [['<br>'], '']);
@@ -65,7 +65,7 @@ describe('Unit: parser/text/text', () => {
       assert.deepStrictEqual(inspect(parser('\\。')), [['。'], '']);
     });
 
-    it('break', () => {
+    it('softbreak', () => {
       assert.deepStrictEqual(inspect(parser('\\\n')), [['<span class="linebreak"> </span>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\n ')), [['<span class="linebreak"> </span>'], '']);
       assert.deepStrictEqual(inspect(parser('\\\na')), [['<span class="linebreak"> </span>', 'a'], '']);
