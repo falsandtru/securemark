@@ -12,6 +12,8 @@ import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
 
 const optspec = {
+  'width': [],
+  'height': [],
   'aspect-ratio': [],
   rel: undefined,
 } as const;
@@ -58,6 +60,7 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
 ]));
 
 const option: MediaParser.ParameterParser.OptionParser = union([
+  fmap(str(/^ [1-9][0-9]*x[1-9][0-9]*(?=[ }])/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]),
   fmap(str(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
   linkoption,
 ]);

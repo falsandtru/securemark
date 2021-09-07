@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.213.0
+
+- Extend media syntax to add width and height options.
+
 ## 0.212.4
 
 - Refactoring.
