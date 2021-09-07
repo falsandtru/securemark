@@ -7229,6 +7229,8 @@ require = function () {
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
             const optspec = {
+                'width': [],
+                'height': [],
                 'aspect-ratio': [],
                 rel: global_1.undefined
             };
@@ -7314,6 +7316,10 @@ require = function () {
                 ]), '"'), (0, source_1.str)('"'), true)
             ]));
             const option = (0, combinator_1.union)([
+                (0, combinator_1.fmap)((0, source_1.str)(/^ [1-9][0-9]*x[1-9][0-9]*(?=[ }])/), ([opt]) => [
+                    ` width="${ opt.slice(1).split('x')[0] }"`,
+                    ` height="${ opt.slice(1).split('x')[1] }"`
+                ]),
                 (0, combinator_1.fmap)((0, source_1.str)(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${ opt.slice(1).split(':').join('/') }"`]),
                 link_1.option
             ]);
@@ -8414,11 +8420,10 @@ require = function () {
                 ...opts
             }));
             function media(base, target, opts, cache) {
-                var _a, _b, _c, _d, _e, _f, _g;
+                var _a, _b, _c, _d, _e, _f;
                 opts = extend(opts);
                 const url = new url_1.ReadonlyURL(target.getAttribute('data-src'), base);
-                const alt = (_a = target.getAttribute('alt')) !== null && _a !== void 0 ? _a : '';
-                return ((_b = opts.twitter) === null || _b === void 0 ? void 0 : _b.call(opts, url)) || ((_c = opts.youtube) === null || _c === void 0 ? void 0 : _c.call(opts, url, cache)) || ((_d = opts.pdf) === null || _d === void 0 ? void 0 : _d.call(opts, url, cache)) || ((_e = opts.video) === null || _e === void 0 ? void 0 : _e.call(opts, url, alt, cache)) || ((_f = opts.audio) === null || _f === void 0 ? void 0 : _f.call(opts, url, alt, cache)) || ((_g = opts.image) === null || _g === void 0 ? void 0 : _g.call(opts, url, alt, cache));
+                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, target, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, target, url, cache)) || ((_c = opts.pdf) === null || _c === void 0 ? void 0 : _c.call(opts, target, url, cache)) || ((_d = opts.video) === null || _d === void 0 ? void 0 : _d.call(opts, target, url, cache)) || ((_e = opts.audio) === null || _e === void 0 ? void 0 : _e.call(opts, target, url, cache)) || ((_f = opts.image) === null || _f === void 0 ? void 0 : _f.call(opts, target, url, cache));
             }
             exports.media = media;
         },
@@ -8439,19 +8444,23 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.audio = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
+            const alias_1 = _dereq_('spica/alias');
             const extensions = [
                 '.oga',
                 '.ogg'
             ];
-            function audio(url, alt, cache) {
+            function audio(target, url, cache) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return cache.get(url.href).cloneNode(true);
+                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
+                        attr.name,
+                        attr.value
+                    ])));
                 const el = (0, typed_dom_1.html)('audio', {
-                    class: 'media',
-                    src: url.href,
-                    alt,
+                    class: target.className,
+                    src: target.getAttribute('data-src'),
+                    alt: target.alt,
                     controls: '',
                     style: 'width: 100%;',
                     loading: 'lazy'
@@ -8461,7 +8470,10 @@ require = function () {
             }
             exports.audio = audio;
         },
-        { 'typed-dom': 30 }
+        {
+            'spica/alias': 5,
+            'typed-dom': 30
+        }
     ],
     150: [
         function (_dereq_, module, exports) {
@@ -8469,22 +8481,27 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.image = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            function image(url, alt, cache) {
+            const alias_1 = _dereq_('spica/alias');
+            function image(target, url, cache) {
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return cache.get(url.href).cloneNode(true);
-                const el = (0, typed_dom_1.html)('img', {
-                    class: 'media',
-                    src: url.href,
-                    alt,
+                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
+                        attr.name,
+                        attr.value
+                    ])));
+                (0, typed_dom_1.define)(target, {
+                    src: target.getAttribute('data-src'),
                     style: 'max-width: 100%;',
                     loading: 'lazy'
                 });
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
-                return el;
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, target.cloneNode(true));
+                return target;
             }
             exports.image = image;
         },
-        { 'typed-dom': 30 }
+        {
+            'spica/alias': 5,
+            'typed-dom': 30
+        }
     ],
     151: [
         function (_dereq_, module, exports) {
@@ -8494,19 +8511,19 @@ require = function () {
             const parser_1 = _dereq_('../../../parser');
             const typed_dom_1 = _dereq_('typed-dom');
             const extensions = ['.pdf'];
-            function pdf(url, cache) {
+            function pdf(target, url, cache) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return cache.get(url.href).cloneNode(true);
-                const el = (0, typed_dom_1.html)('div', { class: 'media' }, [
+                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), { class: target.className });
+                const el = (0, typed_dom_1.html)('div', { class: target.className }, [
                     (0, typed_dom_1.html)('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [(0, typed_dom_1.html)('object', {
                             type: 'application/pdf',
-                            data: url.href,
+                            data: target.getAttribute('data-src'),
                             style: 'width: 100%; height: 100%; min-height: 400px;',
                             loading: 'lazy'
                         })]),
-                    (0, typed_dom_1.html)('div', { style: 'word-wrap: break-word;' }, (0, parser_1.parse)(`**{ ${ url.href } }**`).firstElementChild.childNodes)
+                    (0, typed_dom_1.html)('div', { style: 'word-wrap: break-word;' }, (0, parser_1.parse)(`**{ ${ target.getAttribute('data-src') } }**`).firstElementChild.childNodes)
                 ]);
                 cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
@@ -8530,14 +8547,14 @@ require = function () {
                     const typed_dom_1 = _dereq_('typed-dom');
                     const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                     const origins = ['https://twitter.com'];
-                    function twitter(url) {
+                    function twitter(target, url) {
                         if (!origins.includes(url.origin))
                             return;
                         if (url.pathname.split('/').pop().includes('.'))
                             return;
                         if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                             return;
-                        return typed_dom_1.HTML.div({ class: 'media' }, [typed_dom_1.HTML.em(`loading ${ url.href }`)], (h, tag) => {
+                        return typed_dom_1.HTML.div({ class: target.className }, [typed_dom_1.HTML.em(`loading ${ target.getAttribute('data-src') }`)], (h, tag) => {
                             const outer = h(tag);
                             $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                                 dataType: 'jsonp',
@@ -8556,7 +8573,7 @@ require = function () {
                                     }));
                                 },
                                 error({status, statusText}) {
-                                    (0, typed_dom_1.define)(outer, [(0, parser_1.parse)(`*{ ${ url.href } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                    (0, typed_dom_1.define)(outer, [(0, parser_1.parse)(`*{ ${ target.getAttribute('data-src') } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                                 }
                             });
                             return outer;
@@ -8578,19 +8595,25 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.video = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
+            const alias_1 = _dereq_('spica/alias');
             const extensions = [
                 '.webm',
                 '.ogv'
             ];
-            function video(url, alt, cache) {
+            function video(target, url, cache) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return cache.get(url.href).cloneNode(true);
+                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
+                        attr.name,
+                        attr.value
+                    ])));
                 const el = (0, typed_dom_1.html)('video', {
-                    class: 'media',
-                    src: url.href,
-                    alt,
+                    src: target.getAttribute('data-src'),
+                    ...(0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
+                        attr.name,
+                        attr.value
+                    ])),
                     muted: '',
                     controls: '',
                     style: 'max-width: 100%;',
@@ -8601,7 +8624,10 @@ require = function () {
             }
             exports.video = video;
         },
-        { 'typed-dom': 30 }
+        {
+            'spica/alias': 5,
+            'typed-dom': 30
+        }
     ],
     154: [
         function (_dereq_, module, exports) {
@@ -8609,7 +8635,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.youtube = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            function youtube(url, cache) {
+            function youtube(target, url, cache) {
                 let id;
                 switch (url.origin) {
                 case 'https://www.youtube.com':
@@ -8629,7 +8655,9 @@ require = function () {
                     return;
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return cache.get(url.href).cloneNode(true);
-                const el = (0, typed_dom_1.html)('div', { class: 'media' }, [(0, typed_dom_1.html)('div', { style: 'position: relative; padding-top: 56.25%;' }, [(0, typed_dom_1.html)('iframe', {
+                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
+                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), { class: target.className });
+                const el = (0, typed_dom_1.html)('div', { class: target.className }, [(0, typed_dom_1.html)('div', { style: 'position: relative; padding-top: 56.25%;' }, [(0, typed_dom_1.html)('iframe', {
                             src: `https://www.youtube.com/embed/${ id }`,
                             allowfullscreen: '',
                             frameborder: '0',
