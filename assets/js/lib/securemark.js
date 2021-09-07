@@ -8271,34 +8271,34 @@ require = function () {
                 media: {},
                 ...opts
             }));
-            function render(target, opts = {}) {
+            function render(source, opts = {}) {
                 opts = extend(opts);
-                if (target.classList.contains('invalid'))
+                if (source.classList.contains('invalid'))
                     return;
                 const base = global_1.location.href;
-                if (target.matches(selector))
-                    return void render_(base, target, opts);
-                for (let es = target.querySelectorAll(selector), i = 0, len = es.length; i < len; ++i) {
+                if (source.matches(selector))
+                    return void render_(base, source, opts);
+                for (let es = source.querySelectorAll(selector), i = 0, len = es.length; i < len; ++i) {
                     render_(base, es[i], opts);
                 }
             }
             exports.render = render;
-            function render_(base, target, opts) {
+            function render_(base, source, opts) {
                 var _a, _b, _c;
                 try {
                     switch (true) {
-                    case !!opts.code && !target.firstElementChild && target.matches('pre.code'):
-                        return void opts.code(target, (_a = opts.caches) === null || _a === void 0 ? void 0 : _a.code);
-                    case !!opts.math && !target.firstElementChild && target.matches('.math'):
-                        return void opts.math(target, (_b = opts.caches) === null || _b === void 0 ? void 0 : _b.math);
-                    case target.matches('.media:not(img)'):
-                        return void target.parentElement.parentElement.replaceChild(target, target.parentElement);
-                    case !!opts.media && target.matches('img.media:not([src])[data-src]'): {
-                            const el = (0, media_1.media)(base, target, opts.media, (_c = opts.caches) === null || _c === void 0 ? void 0 : _c.media);
+                    case !!opts.code && !source.firstElementChild && source.matches('pre.code'):
+                        return void opts.code(source, (_a = opts.caches) === null || _a === void 0 ? void 0 : _a.code);
+                    case !!opts.math && !source.firstElementChild && source.matches('.math'):
+                        return void opts.math(source, (_b = opts.caches) === null || _b === void 0 ? void 0 : _b.math);
+                    case source.matches('.media:not(img)'):
+                        return void source.parentElement.parentElement.replaceChild(source, source.parentElement);
+                    case !!opts.media && source.matches('img.media:not([src])[data-src]'): {
+                            const el = (0, media_1.media)(base, source, opts.media, (_c = opts.caches) === null || _c === void 0 ? void 0 : _c.media);
                             if (!el)
                                 return;
-                            el.setAttribute('data-src', target.getAttribute('data-src'));
-                            const scope = el.matches('img') ? target : target.parentElement;
+                            el.setAttribute('data-src', source.getAttribute('data-src'));
+                            const scope = el.matches('img') ? source : source.parentElement;
                             return void scope.parentElement.replaceChild(el, scope);
                         }
                     default:
@@ -8419,11 +8419,11 @@ require = function () {
                 image: image_1.image,
                 ...opts
             }));
-            function media(base, target, opts, cache) {
+            function media(base, source, opts, cache) {
                 var _a, _b, _c, _d, _e, _f;
                 opts = extend(opts);
-                const url = new url_1.ReadonlyURL(target.getAttribute('data-src'), base);
-                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, target, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, target, url, cache)) || ((_c = opts.pdf) === null || _c === void 0 ? void 0 : _c.call(opts, target, url, cache)) || ((_d = opts.video) === null || _d === void 0 ? void 0 : _d.call(opts, target, url, cache)) || ((_e = opts.audio) === null || _e === void 0 ? void 0 : _e.call(opts, target, url, cache)) || ((_f = opts.image) === null || _f === void 0 ? void 0 : _f.call(opts, target, url, cache));
+                const url = new url_1.ReadonlyURL(source.getAttribute('data-src'), base);
+                return ((_a = opts.twitter) === null || _a === void 0 ? void 0 : _a.call(opts, source, url)) || ((_b = opts.youtube) === null || _b === void 0 ? void 0 : _b.call(opts, source, url)) || ((_c = opts.pdf) === null || _c === void 0 ? void 0 : _c.call(opts, source, url)) || ((_d = opts.video) === null || _d === void 0 ? void 0 : _d.call(opts, source, url)) || ((_e = opts.audio) === null || _e === void 0 ? void 0 : _e.call(opts, source, url)) || ((_f = opts.image) === null || _f === void 0 ? void 0 : _f.call(opts, source, url, cache));
             }
             exports.media = media;
         },
@@ -8444,34 +8444,24 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.audio = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            const alias_1 = _dereq_('spica/alias');
             const extensions = [
                 '.oga',
                 '.ogg'
             ];
-            function audio(target, url, cache) {
+            function audio(source, url) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
-                        attr.name,
-                        attr.value
-                    ])));
                 const el = (0, typed_dom_1.html)('audio', {
-                    class: target.className,
-                    src: target.getAttribute('data-src'),
-                    alt: target.alt,
+                    class: source.className,
+                    src: source.getAttribute('data-src'),
+                    alt: source.alt,
                     controls: ''
                 });
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
             }
             exports.audio = audio;
         },
-        {
-            'spica/alias': 5,
-            'typed-dom': 30
-        }
+        { 'typed-dom': 30 }
     ],
     150: [
         function (_dereq_, module, exports) {
@@ -8480,22 +8470,22 @@ require = function () {
             exports.image = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
             const alias_1 = _dereq_('spica/alias');
-            function image(target, url, cache) {
+            function image(source, url, cache) {
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
+                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...source.attributes].map(attr => [
                         attr.name,
                         attr.value
                     ])));
-                (0, typed_dom_1.define)(target, {
-                    src: target.getAttribute('data-src'),
+                (0, typed_dom_1.define)(source, {
+                    src: source.getAttribute('data-src'),
                     loading: 'lazy'
                 });
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, (0, typed_dom_1.define)(target.cloneNode(true), {
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, (0, typed_dom_1.define)(source.cloneNode(true), {
                     width: null,
                     height: null,
                     'aspect-ratio': null
                 }));
-                return target;
+                return source;
             }
             exports.image = image;
         },
@@ -8512,19 +8502,16 @@ require = function () {
             const parser_1 = _dereq_('../../../parser');
             const typed_dom_1 = _dereq_('typed-dom');
             const extensions = ['.pdf'];
-            function pdf(target, url, cache) {
+            function pdf(source, url) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), { class: target.className });
-                const el = (0, typed_dom_1.html)('div', { class: target.className }, [
+                const el = (0, typed_dom_1.html)('div', { class: source.className }, [
                     (0, typed_dom_1.html)('div', [(0, typed_dom_1.html)('object', {
                             type: 'application/pdf',
-                            data: target.getAttribute('data-src')
+                            data: source.getAttribute('data-src')
                         })]),
-                    (0, typed_dom_1.html)('div', { style: 'word-wrap: break-word;' }, (0, parser_1.parse)(`**{ ${ target.getAttribute('data-src') } }**`).firstElementChild.childNodes)
+                    (0, typed_dom_1.html)('div', { style: 'word-wrap: break-word;' }, (0, parser_1.parse)(`**{ ${ source.getAttribute('data-src') } }**`).firstElementChild.childNodes)
                 ]);
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
             }
             exports.pdf = pdf;
@@ -8546,14 +8533,14 @@ require = function () {
                     const typed_dom_1 = _dereq_('typed-dom');
                     const dompurify_1 = typeof window !== 'undefined' ? window['DOMPurify'] : typeof global !== 'undefined' ? global['DOMPurify'] : null;
                     const origins = ['https://twitter.com'];
-                    function twitter(target, url) {
+                    function twitter(source, url) {
                         if (!origins.includes(url.origin))
                             return;
                         if (url.pathname.split('/').pop().includes('.'))
                             return;
                         if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                             return;
-                        return typed_dom_1.HTML.div({ class: target.className }, [typed_dom_1.HTML.em(`loading ${ target.getAttribute('data-src') }`)], (h, tag) => {
+                        return typed_dom_1.HTML.div({ class: source.className }, [typed_dom_1.HTML.em(`loading ${ source.getAttribute('data-src') }`)], (h, tag) => {
                             const outer = h(tag);
                             $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                                 dataType: 'jsonp',
@@ -8572,7 +8559,7 @@ require = function () {
                                     }));
                                 },
                                 error({status, statusText}) {
-                                    (0, typed_dom_1.define)(outer, [(0, parser_1.parse)(`*{ ${ target.getAttribute('data-src') } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                    (0, typed_dom_1.define)(outer, [(0, parser_1.parse)(`*{ ${ source.getAttribute('data-src') } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                                 }
                             });
                             return outer;
@@ -8599,28 +8586,18 @@ require = function () {
                 '.webm',
                 '.ogv'
             ];
-            function video(target, url, cache) {
+            function video(source, url) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), (0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
-                        attr.name,
-                        attr.value
-                    ])));
                 const el = (0, typed_dom_1.html)('video', {
-                    src: target.getAttribute('data-src'),
-                    ...(0, alias_1.ObjectFromEntries)([...target.attributes].map(attr => [
+                    src: source.getAttribute('data-src'),
+                    ...(0, alias_1.ObjectFromEntries)([...source.attributes].map(attr => [
                         attr.name,
                         attr.value
                     ])),
                     muted: '',
                     controls: ''
                 });
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, (0, typed_dom_1.define)(el.cloneNode(true), {
-                    width: null,
-                    height: null,
-                    'aspect-ratio': null
-                }));
                 return el;
             }
             exports.video = video;
@@ -8636,7 +8613,7 @@ require = function () {
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.youtube = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
-            function youtube(target, url, cache) {
+            function youtube(source, url) {
                 let id;
                 switch (url.origin) {
                 case 'https://www.youtube.com':
@@ -8654,18 +8631,13 @@ require = function () {
                 }
                 if (url.pathname.split('/').pop().includes('.'))
                     return;
-                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return cache.get(url.href).cloneNode(true);
-                if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
-                    return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), { class: target.className });
-                const el = (0, typed_dom_1.html)('div', { class: target.className }, [(0, typed_dom_1.html)('div', { style: 'position: relative; padding-top: 56.25%;' }, [(0, typed_dom_1.html)('iframe', {
+                const el = (0, typed_dom_1.html)('div', { class: source.className }, [(0, typed_dom_1.html)('div', { style: 'position: relative; padding-top: 56.25%;' }, [(0, typed_dom_1.html)('iframe', {
                             src: `https://www.youtube.com/embed/${ id }`,
                             allowfullscreen: '',
                             frameborder: '0',
                             style: 'display: block; aspect-ratio: 16/9; position: absolute; top: 0; right: 0; width: 100%; height: 100%;',
                             loading: 'lazy'
                         })])]);
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
             }
             exports.youtube = youtube;
