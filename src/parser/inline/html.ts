@@ -154,6 +154,7 @@ export function attributes(
   assert(attrs instanceof Object === false);
   for (let i = 0; i < params.length; ++i) {
     assert(params[i][0] === ' ');
+    assert(params[i][1] !== ' ');
     const param = params[i].slice(1);
     const name = param.split('=', 1)[0];
     assert(name !== '__proto__');
