@@ -8461,9 +8461,7 @@ require = function () {
                     class: target.className,
                     src: target.getAttribute('data-src'),
                     alt: target.alt,
-                    controls: '',
-                    style: 'width: 100%;',
-                    loading: 'lazy'
+                    controls: ''
                 });
                 cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
                 return el;
@@ -8490,10 +8488,13 @@ require = function () {
                     ])));
                 (0, typed_dom_1.define)(target, {
                     src: target.getAttribute('data-src'),
-                    style: 'max-width: 100%;',
                     loading: 'lazy'
                 });
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, target.cloneNode(true));
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, (0, typed_dom_1.define)(target.cloneNode(true), {
+                    width: null,
+                    height: null,
+                    'aspect-ratio': null
+                }));
                 return target;
             }
             exports.image = image;
@@ -8517,11 +8518,9 @@ require = function () {
                 if (cache === null || cache === void 0 ? void 0 : cache.has(url.href))
                     return (0, typed_dom_1.define)(cache.get(url.href).cloneNode(true), { class: target.className });
                 const el = (0, typed_dom_1.html)('div', { class: target.className }, [
-                    (0, typed_dom_1.html)('div', { style: 'position: relative; resize: vertical; overflow: hidden; padding-bottom: 10px;' }, [(0, typed_dom_1.html)('object', {
+                    (0, typed_dom_1.html)('div', [(0, typed_dom_1.html)('object', {
                             type: 'application/pdf',
-                            data: target.getAttribute('data-src'),
-                            style: 'width: 100%; height: 100%; min-height: 400px;',
-                            loading: 'lazy'
+                            data: target.getAttribute('data-src')
                         })]),
                     (0, typed_dom_1.html)('div', { style: 'word-wrap: break-word;' }, (0, parser_1.parse)(`**{ ${ target.getAttribute('data-src') } }**`).firstElementChild.childNodes)
                 ]);
@@ -8615,11 +8614,13 @@ require = function () {
                         attr.value
                     ])),
                     muted: '',
-                    controls: '',
-                    style: 'max-width: 100%;',
-                    loading: 'lazy'
+                    controls: ''
                 });
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, el.cloneNode(true));
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, (0, typed_dom_1.define)(el.cloneNode(true), {
+                    width: null,
+                    height: null,
+                    'aspect-ratio': null
+                }));
                 return el;
             }
             exports.video = video;
