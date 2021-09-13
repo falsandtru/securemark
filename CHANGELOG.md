@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.214.0
+
+- Change anchor parser to accept only lower-case alphanumeric characters.
+
 ## 0.213.2
 
 - Fix media rendering functions.
