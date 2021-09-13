@@ -542,8 +542,8 @@ export namespace MarkdownParser {
       Parser<HTMLParagraphElement, Context, [
         ParagraphParser.MentionParser,
         Parser<string | HTMLElement, Context, [
-          InlineParser,
           ParagraphParser.MentionParser.QuoteParser,
+          InlineParser,
         ]>,
       ]> {
     }

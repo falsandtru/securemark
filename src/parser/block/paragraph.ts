@@ -13,12 +13,12 @@ export const paragraph: ParagraphParser = block(localize(fmap(
   subsequence([
     some(mention),
     some(union([
+      quote,
       fmap(
         rewrite(
           some(anyline, delimiter),
           visualize(trim(some(inline)))),
         ns => push(ns, [html('br')])),
-      quote,
     ])),
   ]),
   ns => [html('p', defrag(pop(ns)[0]))])));
