@@ -5384,8 +5384,8 @@ require = function () {
             exports.paragraph = (0, combinator_1.block)((0, locale_1.localize)((0, combinator_1.fmap)((0, combinator_1.subsequence)([
                 (0, combinator_1.some)(mention_1.mention),
                 (0, combinator_1.some)((0, combinator_1.union)([
-                    (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')])),
-                    quote_1.quote
+                    quote_1.quote,
+                    (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, combinator_1.some)(source_1.anyline, quote_1.syntax), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline)))), ns => (0, array_1.push)(ns, [(0, typed_dom_1.html)('br')]))
                 ]))
             ]), ns => [(0, typed_dom_1.html)('p', (0, typed_dom_1.defrag)((0, array_1.pop)(ns)[0]))])));
         },
@@ -5458,14 +5458,23 @@ require = function () {
             const source_1 = _dereq_('../../../source');
             const autolink_1 = _dereq_('../../../autolink');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.syntax = /^>+(?=[^\S\n])/;
-            exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.rewrite)((0, combinator_1.union)([(0, combinator_1.some)((0, combinator_1.validate)(exports.syntax, source_1.contentline))]), (0, combinator_1.union)([(0, combinator_1.convert)(source => source.replace(/\n$/, ''), block_)]))), ns => [
-                (0, typed_dom_1.html)('span', { class: 'quote' }, ns),
+            exports.syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
+            exports.quote = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)('>', (0, combinator_1.union)([
+                (0, combinator_1.rewrite)((0, combinator_1.some)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|')[0]), source_1.anyline)), qblock),
+                (0, combinator_1.rewrite)((0, combinator_1.validate)(new RegExp(exports.syntax.source.split('|').slice(1).join('|')), source_1.anyline), (0, combinator_1.line)((0, combinator_1.union)([(0, source_1.str)(/^.+/)])))
+            ])), ns => [
+                (0, typed_dom_1.html)('span', ns.length > 1 || /^>+(?=[^\S\n])/.test(ns[0]) ? { class: 'quote' } : {
+                    class: 'quote invalid',
+                    'data-invalid-syntax': 'quote',
+                    'data-invalid-type': 'syntax',
+                    'data-invalid-description': `Missing the whitespace after ${ ns[0].split(/[^>]/, 1)[0] }.`
+                }, ns),
                 (0, typed_dom_1.html)('br')
             ]), false)));
-            const block_ = (source, context) => {
+            const qblock = (source, context) => {
+                source = source.replace(/\n$/, '');
                 const lines = source.match(/^.*\n?/mg);
-                const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg);
+                const quotes = source.match(/^>+[^\S\n]/mg);
                 const content = lines.reduce((acc, line, row) => acc + line.slice(quotes[row].length), '');
                 const nodes = (0, parser_1.eval)((0, combinator_1.some)(text)(content, context), []);
                 nodes.unshift(quotes.shift());
@@ -6103,8 +6112,9 @@ require = function () {
             exports.anchor = void 0;
             const combinator_1 = _dereq_('../../../combinator');
             const link_1 = _dereq_('../link');
+            const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.focus)(/^>>[0-9A-Za-z]+(?:-[0-9A-Za-z]+)*/, (0, combinator_1.context)({
+            exports.anchor = (0, combinator_1.lazy)(() => (0, combinator_1.validate)('>>', (0, combinator_1.fmap)((0, combinator_1.rewrite)((0, source_1.str)(/^>>[0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:])/), (0, combinator_1.context)({
                 syntax: {
                     inline: {
                         link: true,
@@ -6115,6 +6125,7 @@ require = function () {
         },
         {
             '../../../combinator': 37,
+            '../../source': 137,
             '../link': 125,
             'typed-dom': 30
         }
@@ -8760,11 +8771,17 @@ require = function () {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
             exports.quote = void 0;
+            const parser_1 = _dereq_('../combinator/data/parser');
+            const cite_1 = _dereq_('../parser/block/paragraph/mention/cite');
             const typed_dom_1 = _dereq_('typed-dom');
             function quote(anchor, range) {
-                var _a;
-                let expansion = expand(range);
-                const node = range.cloneContents();
+                var _a, _b;
+                if ((0, parser_1.exec)((0, cite_1.cite)(`>>${ anchor }`, {})) !== '')
+                    throw new Error(`Invalid anchor: ${ anchor }`);
+                fit(range);
+                const node = trim(range.cloneContents());
+                if (!node.firstChild)
+                    return '';
                 for (let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
                     switch (true) {
@@ -8780,45 +8797,48 @@ require = function () {
                         continue;
                     }
                 }
-                expansion || (expansion = !!((_a = trim(node).firstElementChild) === null || _a === void 0 ? void 0 : _a.matches('.cite, .quote')));
-                if (!node.firstChild)
-                    return '';
-                let add;
-                if (expansion) {
-                    node.prepend('>');
-                    add = true;
+                if (range.startOffset === 0 && ((_a = range.startContainer.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.cite, .quote')) && (!range.startContainer.previousSibling || range.startContainer.previousSibling.nodeName === 'BR')) {
+                    node.prepend(`>${ range.startContainer.parentElement.matches('.quote.invalid') ? ' ' : '' }`);
                 } else {
                     node.prepend(`>>${ anchor }\n> `);
-                    add = false;
+                    anchor = '';
                 }
                 for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
                     const el = es[i];
-                    const target = el.nextSibling;
-                    if (target && 'id' in target && target.matches('.cite, .quote')) {
-                        el.replaceWith('\n>');
-                        add || (add = i < len - 1);
+                    if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
+                        el.replaceWith(`\n>${ el.nextSibling.matches('.quote.invalid') ? ' ' : '' }`);
+                        continue;
+                    }
+                    if (anchor && ((_b = el.parentElement) === null || _b === void 0 ? void 0 : _b.closest('.cite, .quote'))) {
+                        el.replaceWith(`\n>${ el.parentElement.closest('.quote.invalid') ? ' ' : '' }`);
+                        continue;
+                    }
+                    if (anchor) {
+                        el.replaceWith(`\n>>${ anchor }\n> `);
+                        anchor = '';
+                        continue;
                     } else {
-                        el.replaceWith(add ? `\n>>${ anchor }\n> ` : '\n> ');
-                        add = false;
+                        el.replaceWith(`\n> `);
+                        continue;
                     }
                 }
-                add && node.append(`\n>>${ anchor }`);
+                anchor && node.append(`\n>>${ anchor }`);
                 return node.textContent;
             }
             exports.quote = quote;
-            function expand(range) {
+            function fit(range) {
                 var _a, _b;
                 const node = range.startContainer;
                 if ((_a = node.parentElement) === null || _a === void 0 ? void 0 : _a.matches('.cite > .anchor')) {
-                    range.setStart(node.parentElement.previousSibling, 0);
-                    return true;
+                    return void range.setStart(node.parentElement.previousSibling, 0);
+                }
+                if (node.nodeName === 'BR' && node.nextSibling instanceof Element && node.nextSibling.matches('.cite, .quote')) {
+                    return void range.setStart(node.nextSibling.firstChild, 0);
                 }
                 const offset = range.startOffset;
-                if (((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.cite, .quote')) && node.textContent.slice(0, offset) === '>'.repeat(offset)) {
-                    range.setStart(node, 0);
-                    return true;
+                if (((_b = node.parentElement) === null || _b === void 0 ? void 0 : _b.matches('.cite, .quote')) && node.textContent.slice(0, offset) === '>'.repeat(offset) && (!node.previousSibling || node.previousSibling.nodeName === 'BR')) {
+                    return void range.setStart(node, 0);
                 }
-                return false;
             }
             function trim(node) {
                 for (let child; child = node.firstChild;) {
@@ -8829,7 +8849,11 @@ require = function () {
                 return node;
             }
         },
-        { 'typed-dom': 30 }
+        {
+            '../combinator/data/parser': 56,
+            '../parser/block/paragraph/mention/cite': 92,
+            'typed-dom': 30
+        }
     ],
     159: [
         function (_dereq_, module, exports) {
