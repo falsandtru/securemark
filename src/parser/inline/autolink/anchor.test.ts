@@ -25,6 +25,7 @@ describe('Unit: parser/inline/autolink/anchor', () => {
       assert.deepStrictEqual(inspect(parser('>>0')), [['<a href="?res=0" class="anchor">&gt;&gt;0</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>>a')), [['<a href="?res=a" class="anchor">&gt;&gt;a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>>0-')), [['<a href="?res=0" class="anchor">&gt;&gt;0</a>'], '-']);
+      assert.deepStrictEqual(inspect(parser('>>0-a')), [['<a href="?res=0-a" class="anchor">&gt;&gt;0-a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('>>0-A')), [['<a href="?res=0" class="anchor">&gt;&gt;0</a>'], '-A']);
       assert.deepStrictEqual(inspect(parser('>>0--a')), [['<a href="?res=0" class="anchor">&gt;&gt;0</a>'], '--a']);
     });
@@ -32,4 +33,3 @@ describe('Unit: parser/inline/autolink/anchor', () => {
   });
 
 });
-
