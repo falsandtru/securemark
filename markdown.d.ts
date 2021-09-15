@@ -569,6 +569,7 @@ export namespace MarkdownParser {
           Block<'paragraph/mention/quote'>,
           Parser<HTMLSpanElement | HTMLBRElement, Context, [
             QuoteParser.BlockParser,
+            QuoteParser.PlaceholderParser,
           ]> {
         }
         export namespace QuoteParser {
@@ -583,6 +584,12 @@ export namespace MarkdownParser {
             Parser<string | HTMLElement, Context, [
               InlineParser.MathParser,
               AutolinkParser,
+            ]> {
+          }
+          export interface PlaceholderParser extends
+            Block<'paragraph/mention/quote/placeholder'>,
+            Parser<string | HTMLElement, Context, [
+              SourceParser.StrParser,
             ]> {
           }
         }

@@ -1,27 +1,43 @@
 import { ParagraphParser } from '../../../block';
 import { eval } from '../../../../combinator/data/parser';
-import { union, some, block, validate, rewrite, creator, convert, lazy, fmap } from '../../../../combinator';
+import { union, some, block, line, validate, rewrite, creator, lazy, fmap } from '../../../../combinator';
 import { math } from '../../../inline/math';
-import { contentline } from '../../../source';
+import { str, anyline } from '../../../source';
 import { autolink } from '../../../autolink';
 import { html, defrag } from 'typed-dom';
 
-export const syntax = /^>+(?=[^\S\n])/;
+export const syntax = /^>+(?=[^\S\n])|^>(?=[^\s>])|^>+(?=[^\s>])(?![0-9a-z]+(?:-[0-9a-z]+)*(?![0-9A-Za-z@#:]))/;
 
 export const quote: ParagraphParser.MentionParser.QuoteParser = lazy(() => creator(block(fmap(validate(
   '>',
-  rewrite(
-    union([
-      some(validate(syntax, contentline)),
-    ]),
-    union([convert(source => source.replace(/\n$/, ''), block_)]))),
-  ns => [html('span', { class: 'quote' }, ns), html('br')]),
+  union([
+    rewrite(
+      some(validate(new RegExp(syntax.source.split('|')[0]), anyline)),
+      qblock),
+    rewrite(
+      validate(new RegExp(syntax.source.split('|').slice(1).join('|')), anyline),
+      line(union([str(/^.+/)]))),
+  ])),
+  (ns: [string, ...(string | HTMLElement)[]]) => [
+    html('span',
+      ns.length > 1 || /^>+(?=[^\S\n])/.test(ns[0])
+        ? { class: 'quote' }
+        : {
+            class: 'quote invalid',
+            'data-invalid-syntax': 'quote',
+            'data-invalid-type': 'syntax',
+            'data-invalid-description': `Missing the whitespace after ${ns[0].split(/[^>]/, 1)[0]}.`,
+          },
+      ns),
+    html('br'),
+  ]),
   false)));
 
-const block_: ParagraphParser.MentionParser.QuoteParser.BlockParser = (source, context) => {
+const qblock: ParagraphParser.MentionParser.QuoteParser.BlockParser = (source, context) => {
+  source = source.replace(/\n$/, '');
   const lines = source.match(/^.*\n?/mg)!;
   assert(lines);
-  const quotes = source.match(/^>+(?:$|\s)/.test(source) ? /^>+(?:$|\s)/mg : /^>+/mg)!;
+  const quotes = source.match(/^>+[^\S\n]/mg)!;
   assert(quotes);
   assert(quotes.length > 0);
   const content = lines.reduce((acc, line, row) => acc + line.slice(quotes[row].length), '');

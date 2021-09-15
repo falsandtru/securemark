@@ -1,8 +1,12 @@
+import { exec } from '../combinator/data/parser';
+import { cite } from '../parser/block/paragraph/mention/cite';
 import { define } from 'typed-dom';
 
 export function quote(anchor: string, range: Range): string {
-  let expansion = expand(range);
-  const node = range.cloneContents();
+  if (exec(cite(`>>${anchor}`, {})) !== '') throw new Error(`Invalid anchor: ${anchor}`);
+  fit(range);
+  const node = trim(range.cloneContents());
+  if (!node.firstChild) return '';
   for (
     let es = node.querySelectorAll('code[data-src], .math[data-src], .media[data-src], rt, rp'),
         i = 0, len = es.length; i < len; ++i) {
@@ -20,45 +24,54 @@ export function quote(anchor: string, range: Range): string {
         continue;
     }
   }
-  expansion ||= !!trim(node).firstElementChild?.matches('.cite, .quote');
-  if (!node.firstChild) return '';
-  let add: boolean;
-  if (expansion) {
-    node.prepend('>');
-    add = true;
+  if (range.startOffset === 0 &&
+      range.startContainer.parentElement?.matches('.cite, .quote') &&
+      (!range.startContainer.previousSibling || range.startContainer.previousSibling.nodeName === 'BR')) {
+    node.prepend(`>${range.startContainer.parentElement.matches('.quote.invalid') ? ' ' : ''}`);
   }
   else {
     node.prepend(`>>${anchor}\n> `);
-    add = false;
+    anchor = '';
   }
   for (let es = node.querySelectorAll('br'), i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
-    const target = el.nextSibling as Node | Element;
-    if (target && 'id' in target && target.matches('.cite, .quote')) {
-      el.replaceWith('\n>');
-      add ||= i < len - 1;
+    if (anchor && el.nextSibling instanceof Element && el.nextSibling.matches('.cite, .quote')) {
+      el.replaceWith(`\n>${el.nextSibling.matches('.quote.invalid') ? ' ' : ''}`);
+      continue;
+    }
+    if (anchor && el.parentElement?.closest('.cite, .quote')) {
+      el.replaceWith(`\n>${el.parentElement.closest('.quote.invalid') ? ' ' : ''}`);
+      continue;
+    }
+    if (anchor) {
+      el.replaceWith(`\n>>${anchor}\n> `);
+      anchor = '';
+      continue;
     }
     else {
-      el.replaceWith(add ? `\n>>${anchor}\n> ` : '\n> ');
-      add = false;
+      el.replaceWith(`\n> `);
+      continue;
     }
   }
-  add && node.append(`\n>>${anchor}`);
+  anchor && node.append(`\n>>${anchor}`);
   return node.textContent!;
 }
 
-function expand(range: Range): boolean {
+function fit(range: Range): void {
   const node = range.startContainer;
   if (node.parentElement?.matches('.cite > .anchor')) {
-    range.setStart(node.parentElement.previousSibling!, 0);
-    return true;
+    return void range.setStart(node.parentElement.previousSibling!, 0);
+  }
+  if (node.nodeName === 'BR' &&
+      node.nextSibling instanceof Element && node.nextSibling.matches('.cite, .quote')) {
+    return void range.setStart(node.nextSibling.firstChild!, 0);
   }
   const offset = range.startOffset;
-  if (node.parentElement?.matches('.cite, .quote') && node.textContent!.slice(0, offset) === '>'.repeat(offset)) {
-    range.setStart(node, 0);
-    return true;
+  if (node.parentElement?.matches('.cite, .quote') &&
+      node.textContent!.slice(0, offset) === '>'.repeat(offset) &&
+      (!node.previousSibling || node.previousSibling.nodeName === 'BR')) {
+    return void range.setStart(node, 0);
   }
-  return false;
 }
 
 function trim<T extends Node>(node: T): T {

@@ -2,6 +2,7 @@
 
 ## 0.214.0
 
+- Extend quote syntax to improve syntax predictability.
 - Change anchor parser to accept only lower-case alphanumeric characters.
 
 ## 0.213.2
