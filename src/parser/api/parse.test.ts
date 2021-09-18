@@ -203,6 +203,12 @@ describe('Unit: parser/api/parse', () => {
         ['<p>a<span class="linebreak"> </span>b</p>']);
     });
 
+    it('reset', () => {
+      assert.deepStrictEqual(
+        [...parse(`"${'('.repeat(10000)}\n\n"`).children].slice(2).map(el => el.outerHTML),
+        ['<p>"</p>']);
+    });
+
   });
 
 });

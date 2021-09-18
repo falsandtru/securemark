@@ -17,9 +17,8 @@ export function reset<P extends Parser<unknown>>(context: Context<P>, parser: P)
 export function reset<T>(base: Ctx, parser: Parser<T>): Parser<T> {
   assert(Object.getPrototypeOf(base) === Object.prototype);
   assert(Object.freeze(base));
-  const clone = memoize<Ctx, Ctx>(context => ObjectCreate(context), new WeakMap());
   return (source, context) =>
-    parser(source, inherit(clone(context), base));
+    parser(source, inherit(ObjectCreate(context), base));
 }
 
 export function context<P extends Parser<unknown>>(context: Context<P>, parser: P): P;

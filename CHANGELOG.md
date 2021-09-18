@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.214.1
+
+- Fix error handling.
+
 ## 0.214.0
 
 - Extend quote syntax to improve syntax predictability.
