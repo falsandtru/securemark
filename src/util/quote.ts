@@ -17,7 +17,10 @@ export function quote(anchor: string, range: Range): string {
         define(el, el.getAttribute('data-src')!);
         continue;
       case el.matches('.media'):
-        el.replaceWith(`!{${el.getAttribute('data-src')!.replace(/^.*?[\s{}].*$/, ' $& ')}}`);
+        el.replaceWith(
+          /[\s{}]/.test(el.getAttribute('data-src')!)
+            ? `!{ ${el.getAttribute('data-src')} }`
+            : `!{${el.getAttribute('data-src')}}`);
         continue;
       case el.matches('rt, rp'):
         el.remove();
