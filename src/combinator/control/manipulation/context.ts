@@ -2,7 +2,7 @@ import { undefined, WeakMap } from 'spica/global';
 import { hasOwnProperty, ObjectCreate } from 'spica/alias';
 import { Parser, Ctx, Context } from '../../data/parser';
 import { template } from 'spica/assign';
-import { type, isPrimitive } from 'spica/type';
+import { type } from 'spica/type';
 import { memoize } from 'spica/memoize';
 
 export function guard<P extends Parser<unknown>>(f: (context: Context<P>) => boolean, parser: P): P;
@@ -34,6 +34,7 @@ const inherit = template((prop, target, source) => {
   assert(!Object.isSealed(target));
   assert(Object.isExtensible(target));
   //assert(Object.freeze(source));
+  if (target[prop] === source[prop]) return;
   switch (prop) {
     case 'resources':
       assert(typeof source[prop] === 'object');
@@ -49,11 +50,9 @@ const inherit = template((prop, target, source) => {
         case 'Object':
           return target[prop] = inherit(ObjectCreate(target[prop]), source[prop]);
         default:
-          return target[prop] = ObjectCreate(source[prop]);
+          return target[prop] = source[prop];
       }
     default:
-      return target[prop] = isPrimitive(source[prop])
-        ? source[prop]
-        : ObjectCreate(source[prop]);
+      return target[prop] = source[prop];
   }
 });
