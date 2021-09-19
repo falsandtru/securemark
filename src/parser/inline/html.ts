@@ -162,7 +162,7 @@ export function attributes(
     invalid ||= !spec || name in attrs;
     if (spec && !spec[name] && name in spec) continue;
     spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0
-      ? attrs[name] = value
+      ? attrs[name] = value ?? ''
       : invalid ||= !!spec;
     assert(!(name in {} && attrs.hasOwnProperty(name)));
     splice(params, i--, 1);
