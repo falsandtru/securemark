@@ -51,7 +51,6 @@ export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
     if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;
     assert(!html('div', content).querySelector('a, .media, .annotation, .reference') || (content[0] as HTMLElement).matches('.media'));
     const INSECURE_URI = params.shift()!;
-    if (INSECURE_URI[0] === ' ') return;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const src = resolve(INSECURE_URI, context.host || location, context.url || location);
@@ -71,7 +70,6 @@ export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
 export const uri: LinkParser.ParameterParser.UriParser = union([
   open(' ', str(/^\S+/)),
   str(/^[^\s{}]+/),
-  str(' '),
 ]);
 
 export const option: LinkParser.ParameterParser.OptionParser = union([

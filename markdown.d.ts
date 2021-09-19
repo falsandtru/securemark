@@ -817,7 +817,6 @@ export namespace MarkdownParser {
           Parser<string, Context, [
             SourceParser.StrParser,
             SourceParser.StrParser,
-            SourceParser.StrParser,
           ]> {
         }
         export interface OptionParser extends
