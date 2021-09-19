@@ -2964,8 +2964,7 @@ require = function () {
             }
             exports.guard = guard;
             function reset(base, parser) {
-                const clone = (0, memoize_1.memoize)(context => (0, alias_1.ObjectCreate)(context), new global_1.WeakMap());
-                return (source, context) => parser(source, inherit(clone(context), base));
+                return (source, context) => parser(source, inherit((0, alias_1.ObjectCreate)(context), base));
             }
             exports.reset = reset;
             function context(base, parser) {
@@ -2974,6 +2973,8 @@ require = function () {
             }
             exports.context = context;
             const inherit = (0, assign_1.template)((prop, target, source) => {
+                if (target[prop] === source[prop])
+                    return;
                 switch (prop) {
                 case 'resources':
                     if (prop in target && !(0, alias_1.hasOwnProperty)(target, prop))
@@ -2986,10 +2987,10 @@ require = function () {
                     case 'Object':
                         return target[prop] = inherit((0, alias_1.ObjectCreate)(target[prop]), source[prop]);
                     default:
-                        return target[prop] = (0, alias_1.ObjectCreate)(source[prop]);
+                        return target[prop] = source[prop];
                     }
                 default:
-                    return target[prop] = (0, type_1.isPrimitive)(source[prop]) ? source[prop] : (0, alias_1.ObjectCreate)(source[prop]);
+                    return target[prop] = source[prop];
                 }
             });
         },
@@ -6923,7 +6924,7 @@ require = function () {
             function attributes(syntax, classes, spec, params) {
                 var _a, _b;
                 let invalid = false;
-                const attrs = (0, alias_1.ObjectCreate)(null);
+                const attrs = {};
                 for (let i = 0; i < params.length; ++i) {
                     const param = params[i].slice(1);
                     const name = param.split('=', 1)[0];
