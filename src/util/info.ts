@@ -1,8 +1,8 @@
 import { Info } from '../..';
-import { context } from './context';
+import { scope } from './scope';
 
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
-  const match = context(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
+  const match = scope(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
   return {
     url: find<HTMLAnchorElement>('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
       .filter(el => ['http:', 'https:'].includes(el.protocol)),

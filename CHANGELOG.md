@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.215.0
+
+- Change context function to scope function.
+
 ## 0.214.1
 
 - Fix error handling.

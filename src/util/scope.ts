@@ -1,6 +1,6 @@
 import { undefined, WeakMap } from 'spica/global';
 
-export function context(
+export function scope(
   base: DocumentFragment | HTMLElement | ShadowRoot,
   bound: string = `${'id' in base && base.id ? `#${base.id}, ` : ''}section, article, aside, blockquote`,
 ): (el: Element) => boolean {
