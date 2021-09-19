@@ -21,7 +21,7 @@ export function twitter(source: HTMLImageElement, url: URL): HTMLElement | undef
   if (!origins.includes(url.origin)) return;
   if (url.pathname.split('/').pop()!.includes('.')) return;
   if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/)) return;
-  return HTML.div({ class: source.className }, [HTML.em(`loading ${source.getAttribute('data-src')}`)], (h, tag) => {
+  return HTML.div({ class: source.className, 'data-type': 'twitter' }, [HTML.em(`loading ${source.getAttribute('data-src')}`)], (h, tag) => {
     const outer = h(tag);
     $.ajax(`https://publish.twitter.com/oembed?url=${url.href.replace('?', '&')}&omit_script=true`, {
       dataType: 'jsonp',

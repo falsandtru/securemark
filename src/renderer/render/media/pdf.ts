@@ -7,7 +7,7 @@ const extensions = [
 
 export function pdf(source: HTMLImageElement, url: URL): HTMLElement | undefined {
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
-  const el = html('div', { class: source.className }, [
+  const el = html('div', { class: source.className, 'data-type': 'pdf' }, [
     html('div', [
       html('object', {
         type: 'application/pdf',

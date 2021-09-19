@@ -8,6 +8,7 @@ export function image(source: HTMLImageElement, url: URL, cache?: Collection<str
     ObjectFromEntries([...source.attributes]
       .map(attr => [attr.name, attr.value])));
   define(source, {
+    'data-type': 'image',
     src: source.getAttribute('data-src'),
     loading: 'lazy',
   });

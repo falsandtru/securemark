@@ -10,6 +10,7 @@ export function video(source: HTMLImageElement, url: URL): HTMLVideoElement | un
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   const el = html('video', {
     src: source.getAttribute('data-src'),
+    'data-type': 'video',
     ...ObjectFromEntries([...source.attributes]
       .map(attr => [attr.name, attr.value])),
     muted: '',

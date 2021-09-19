@@ -9,6 +9,7 @@ export function audio(source: HTMLImageElement, url: URL): HTMLAudioElement | un
   if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()!)) return;
   const el = html('audio', {
     class: source.className,
+    'data-type': 'audio',
     src: source.getAttribute('data-src'),
     alt: source.alt,
     controls: '',
