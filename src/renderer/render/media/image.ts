@@ -12,10 +12,10 @@ export function image(source: HTMLImageElement, url: URL, cache?: Collection<str
     src: source.getAttribute('data-src'),
     loading: 'lazy',
   });
-  cache?.set(url.href, define(source.cloneNode(true), {
-    width: null,
-    height: null,
-    'aspect-ratio': null,
-  }));
+  cache?.set(url.href, define(
+    source.cloneNode(true),
+    ObjectFromEntries([...source.attributes]
+      .filter(attr => !['class', 'data-type', 'data-src', 'src', 'loading'].includes(attr.name))
+      .map(attr => [attr.name, null]))));
   return source;
 }
