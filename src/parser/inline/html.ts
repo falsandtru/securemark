@@ -1,5 +1,5 @@
 import { undefined } from 'spica/global';
-import { isFrozen, ObjectCreate, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
+import { isFrozen, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser } from '../inline';
 import { union, some, validate, verify, context, creator, surround, match, lazy } from '../../combinator';
@@ -150,14 +150,12 @@ export function attributes(
   assert(!spec?.['__proto__']);
   assert(!spec?.toString);
   let invalid = false;
-  const attrs: Record<string, string | undefined> = ObjectCreate(null);
-  assert(attrs instanceof Object === false);
+  const attrs: Record<string, string | undefined> = {};
   for (let i = 0; i < params.length; ++i) {
     assert(params[i][0] === ' ');
     assert(params[i][1] !== ' ');
     const param = params[i].slice(1);
     const name = param.split('=', 1)[0];
-    assert(name !== '__proto__');
     const value = param !== name
       ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
       : undefined;
@@ -166,6 +164,7 @@ export function attributes(
     spec?.[name]?.includes(value) || value !== undefined && spec?.[name]?.length === 0
       ? attrs[name] = value
       : invalid ||= !!spec;
+    assert(!(name in {} && attrs.hasOwnProperty(name)));
     splice(params, i--, 1);
   }
   invalid ||= !!spec && !requiredAttributes(spec).every(name => name in attrs);
