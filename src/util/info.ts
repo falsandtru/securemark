@@ -14,6 +14,7 @@ export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info 
     hashtag: find('a.hashtag'),
     hashref: find('a.hashref'),
     mention: find('.cite > a.anchor'),
+    anchor: find(':not(.cite) > a.anchor'),
     media: find('.media[data-src]'),
   };
 

@@ -77,5 +77,6 @@ export interface Info {
   readonly hashtag: HTMLAnchorElement[];
   readonly hashref: HTMLAnchorElement[];
   readonly mention: HTMLAnchorElement[];
+  readonly anchor: HTMLAnchorElement[];
   readonly media: HTMLElement[];
 }

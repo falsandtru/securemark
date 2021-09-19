@@ -15,6 +15,7 @@ describe('Unit: util/info', () => {
           hashtag: [],
           hashref: [],
           mention: [],
+          anchor: [],
           media: [],
         });
     });

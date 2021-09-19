@@ -2,6 +2,7 @@
 
 ## 0.215.0
 
+- Extend info function to return anchors.
 - Change context function to scope function.
 
 ## 0.214.1
