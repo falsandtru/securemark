@@ -348,26 +348,25 @@
   }
   .media {
     display: block;
-    min-width: 1em;
+    max-width: 100%;
+    min-width: 10%;
     min-height: 3em;
   }
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
   }
-  img.media,
-  audio.media,
-  video.media {
-    max-width: 100%;
-  }
-  /*
-  img.media {
-    display: flow;
-  }
-  */
-  .media > div > object {
+  .media[data-type="pdf"] > object {
     display: block;
-    aspect-ratio: 841/1189;
     width: 100%;
+    aspect-ratio: 841/1189;
+  }
+  .media[data-type="youtube"] {
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  .media[data-type="youtube"] > iframe {
+    width: 100%;
+    height: 100%;
   }
   .paren > .paren {
     font-size: 90%;

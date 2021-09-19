@@ -6932,7 +6932,7 @@ require = function () {
                     invalid || (invalid = !spec || name in attrs);
                     if (spec && !spec[name] && name in spec)
                         continue;
-                    ((_a = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _a === void 0 ? void 0 : _a.includes(value)) || value !== global_1.undefined && ((_b = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _b === void 0 ? void 0 : _b.length) === 0 ? attrs[name] = value : invalid || (invalid = !!spec);
+                    ((_a = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _a === void 0 ? void 0 : _a.includes(value)) || value !== global_1.undefined && ((_b = spec === null || spec === void 0 ? void 0 : spec[name]) === null || _b === void 0 ? void 0 : _b.length) === 0 ? attrs[name] = value !== null && value !== void 0 ? value : '' : invalid || (invalid = !!spec);
                     (0, array_1.splice)(params, i--, 1);
                 }
                 invalid || (invalid = !!spec && !requiredAttributes(spec).every(name => name in attrs));
@@ -7054,8 +7054,6 @@ require = function () {
                 if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
-                if (INSECURE_URI[0] === ' ')
-                    return;
                 const src = resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
                 const el = (0, typed_dom_1.html)('a', { href: src }, content.length > 0 ? content = (0, typed_dom_1.defrag)(content) : decode(INSECURE_URI.replace(/^tel:/i, '')));
                 if (!sanitize(new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
@@ -7071,8 +7069,7 @@ require = function () {
             })));
             exports.uri = (0, combinator_1.union)([
                 (0, combinator_1.open)(' ', (0, source_1.str)(/^\S+/)),
-                (0, source_1.str)(/^[^\s{}]+/),
-                (0, source_1.str)(' ')
+                (0, source_1.str)(/^[^\s{}]+/)
             ]);
             exports.option = (0, combinator_1.union)([
                 (0, combinator_1.fmap)((0, source_1.str)(/^ nofollow(?=[ }])/), () => [` rel="nofollow"`]),
@@ -7272,8 +7269,6 @@ require = function () {
             ]), ([[text]]) => (0, util_1.isStartTight)([text || '-']) && (0, util_1.isEndTight)([text])), ([[text], params], rest, context) => {
                 var _a, _b, _c, _d;
                 const INSECURE_URI = params.shift();
-                if (INSECURE_URI[0] === ' ')
-                    return;
                 const src = (0, link_1.resolve)(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
                 const url = new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
                 const cache = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.media;
@@ -8463,13 +8458,13 @@ require = function () {
             function audio(source, url) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                const el = (0, typed_dom_1.html)('audio', {
+                return (0, typed_dom_1.html)('audio', {
                     class: source.className,
+                    'data-type': 'audio',
                     src: source.getAttribute('data-src'),
                     alt: source.alt,
                     controls: ''
                 });
-                return el;
             }
             exports.audio = audio;
         },
@@ -8489,14 +8484,20 @@ require = function () {
                         attr.value
                     ])));
                 (0, typed_dom_1.define)(source, {
+                    'data-type': 'image',
                     src: source.getAttribute('data-src'),
                     loading: 'lazy'
                 });
-                cache === null || cache === void 0 ? void 0 : cache.set(url.href, (0, typed_dom_1.define)(source.cloneNode(true), {
-                    width: null,
-                    height: null,
-                    'aspect-ratio': null
-                }));
+                cache === null || cache === void 0 ? void 0 : cache.set(url.href, (0, typed_dom_1.define)(source.cloneNode(true), (0, alias_1.ObjectFromEntries)([...source.attributes].filter(attr => ![
+                    'class',
+                    'data-type',
+                    'data-src',
+                    'src',
+                    'loading'
+                ].includes(attr.name)).map(attr => [
+                    attr.name,
+                    null
+                ]))));
                 return source;
             }
             exports.image = image;
@@ -8517,14 +8518,16 @@ require = function () {
             function pdf(source, url) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                const el = (0, typed_dom_1.html)('div', { class: source.className }, [
-                    (0, typed_dom_1.html)('div', [(0, typed_dom_1.html)('object', {
-                            type: 'application/pdf',
-                            data: source.getAttribute('data-src')
-                        })]),
+                return (0, typed_dom_1.html)('div', {
+                    class: source.className,
+                    'data-type': 'pdf'
+                }, [
+                    (0, typed_dom_1.html)('object', {
+                        type: 'application/pdf',
+                        data: source.getAttribute('data-src')
+                    }),
                     (0, typed_dom_1.html)('div', { style: 'word-wrap: break-word;' }, (0, parser_1.parse)(`**{ ${ source.getAttribute('data-src') } }**`).firstElementChild.childNodes)
                 ]);
-                return el;
             }
             exports.pdf = pdf;
         },
@@ -8552,7 +8555,10 @@ require = function () {
                             return;
                         if (!url.pathname.match(/^\/\w+\/status\/[0-9]{15,}(?!\w)/))
                             return;
-                        return typed_dom_1.HTML.div({ class: source.className }, [typed_dom_1.HTML.em(`loading ${ source.getAttribute('data-src') }`)], (h, tag) => {
+                        return typed_dom_1.HTML.div({
+                            class: source.className,
+                            'data-type': 'twitter'
+                        }, [typed_dom_1.HTML.em(`Loading ${ source.getAttribute('data-src') }...`)], (h, tag) => {
                             const outer = h(tag);
                             $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                                 dataType: 'jsonp',
@@ -8601,8 +8607,9 @@ require = function () {
             function video(source, url) {
                 if (!extensions.includes(url.pathname.split(/(?=\.)/).pop()))
                     return;
-                const el = (0, typed_dom_1.html)('video', {
+                return (0, typed_dom_1.html)('video', {
                     src: source.getAttribute('data-src'),
+                    'data-type': 'video',
                     ...(0, alias_1.ObjectFromEntries)([...source.attributes].map(attr => [
                         attr.name,
                         attr.value
@@ -8610,7 +8617,6 @@ require = function () {
                     muted: '',
                     controls: ''
                 });
-                return el;
             }
             exports.video = video;
         },
@@ -8626,33 +8632,29 @@ require = function () {
             exports.youtube = void 0;
             const typed_dom_1 = _dereq_('typed-dom');
             function youtube(source, url) {
-                let id;
+                const id = resolve(url);
+                if (!id)
+                    return;
+                return (0, typed_dom_1.html)('div', {
+                    class: source.className,
+                    'data-type': 'youtube'
+                }, [(0, typed_dom_1.html)('iframe', {
+                        src: `https://www.youtube.com/embed/${ id }`,
+                        allow: 'fullscreen',
+                        loading: 'lazy'
+                    })]);
+            }
+            exports.youtube = youtube;
+            function resolve(url) {
                 switch (url.origin) {
                 case 'https://www.youtube.com':
-                    if (!url.pathname.match(/^\/watch$/))
-                        return;
-                    id = url.href.replace(/.+?=/, '').replace('&', '?');
-                    break;
+                    return url.pathname === '/watch/' ? url.href.replace(/.+?=/, '').replace('&', '?') : undefined;
                 case 'https://youtu.be':
-                    if (!url.pathname.match(/^\/[\w-]+$/))
-                        return;
-                    id = url.href.slice(url.href.indexOf('/', 9) + 1);
-                    break;
+                    return url.pathname.match(/^\/[\w-]+$/) ? url.href.slice(url.href.indexOf('/', 9) + 1) : undefined;
                 default:
                     return;
                 }
-                if (url.pathname.split('/').pop().includes('.'))
-                    return;
-                const el = (0, typed_dom_1.html)('div', { class: source.className }, [(0, typed_dom_1.html)('div', { style: 'position: relative; padding-top: 56.25%;' }, [(0, typed_dom_1.html)('iframe', {
-                            src: `https://www.youtube.com/embed/${ id }`,
-                            allowfullscreen: '',
-                            frameborder: '0',
-                            style: 'display: block; aspect-ratio: 16/9; position: absolute; top: 0; right: 0; width: 100%; height: 100%;',
-                            loading: 'lazy'
-                        })])]);
-                return el;
             }
-            exports.youtube = youtube;
         },
         { 'typed-dom': 30 }
     ],
@@ -8660,7 +8662,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.sync = exports.context = exports.info = exports.toc = exports.quote = void 0;
+            exports.sync = exports.scope = exports.info = exports.toc = exports.quote = void 0;
             var quote_1 = _dereq_('./util/quote');
             Object.defineProperty(exports, 'quote', {
                 enumerable: true,
@@ -8682,11 +8684,11 @@ require = function () {
                     return info_1.info;
                 }
             });
-            var context_1 = _dereq_('./util/context');
-            Object.defineProperty(exports, 'context', {
+            var scope_1 = _dereq_('./util/scope');
+            Object.defineProperty(exports, 'scope', {
                 enumerable: true,
                 get: function () {
-                    return context_1.context;
+                    return scope_1.scope;
                 }
             });
             var sync_1 = _dereq_('./util/sync');
@@ -8698,9 +8700,9 @@ require = function () {
             });
         },
         {
-            './util/context': 156,
-            './util/info': 157,
-            './util/quote': 158,
+            './util/info': 156,
+            './util/quote': 157,
+            './util/scope': 158,
             './util/sync': 159,
             './util/toc': 160
         }
@@ -8709,47 +8711,23 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.context = void 0;
-            const global_1 = _dereq_('spica/global');
-            function context(base, bound = `${ 'id' in base && base.id ? `#${ base.id }, ` : '' }section, article, aside, blockquote`) {
-                const memory = new global_1.WeakMap();
-                const context = 'id' in base && base.closest(bound) || null;
-                return el => {
-                    var _a;
-                    const {parentNode} = el;
-                    const node = memory.has(parentNode) ? parentNode : parentNode.parentNode;
-                    let result = memory.get(node);
-                    if (result === global_1.undefined) {
-                        result = el.closest(bound) === context;
-                        memory.set(node, result);
-                    }
-                    return result;
-                };
-            }
-            exports.context = context;
-        },
-        { 'spica/global': 17 }
-    ],
-    157: [
-        function (_dereq_, module, exports) {
-            'use strict';
-            Object.defineProperty(exports, '__esModule', { value: true });
             exports.info = void 0;
-            const context_1 = _dereq_('./context');
+            const scope_1 = _dereq_('./scope');
             function info(source) {
-                const match = (0, context_1.context)(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
+                const match = (0, scope_1.scope)(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
                 return {
-                    hashtag: find('a.hashtag[href]'),
-                    hashref: find('a.hashref[href]'),
-                    channel: find('a.channel[href]'),
-                    account: find('a.account[href]'),
-                    mention: find('.cite > a.anchor[href]'),
-                    url: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)').filter(el => [
+                    url: find('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)').filter(el => [
                         'http:',
                         'https:'
                     ].includes(el.protocol)),
-                    tel: find('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)').filter(el => el.protocol === 'tel:'),
-                    email: find('a.email[href]'),
+                    tel: find('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)').filter(el => ['tel:'].includes(el.protocol)),
+                    email: find('a.email'),
+                    account: find('a.account'),
+                    channel: find('a.channel'),
+                    hashtag: find('a.hashtag'),
+                    hashref: find('a.hashref'),
+                    mention: find('.cite > a.anchor'),
+                    anchor: find(':not(.cite) > a.anchor'),
                     media: find('.media[data-src]')
                 };
                 function find(selector) {
@@ -8765,9 +8743,9 @@ require = function () {
             }
             exports.info = info;
         },
-        { './context': 156 }
+        { './scope': 158 }
     ],
-    158: [
+    157: [
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
@@ -8791,7 +8769,7 @@ require = function () {
                         (0, typed_dom_1.define)(el, el.getAttribute('data-src'));
                         continue;
                     case el.matches('.media'):
-                        el.replaceWith(`!{${ el.getAttribute('data-src').replace(/^.*?[\s{}].*$/, ' $& ') }}`);
+                        el.replaceWith(/[\s{}]/.test(el.getAttribute('data-src')) ? `!{ ${ el.getAttribute('data-src') } }` : `!{${ el.getAttribute('data-src') }}`);
                         continue;
                     case el.matches('rt, rp'):
                         el.remove();
@@ -8855,6 +8833,31 @@ require = function () {
             '../parser/block/paragraph/mention/cite': 92,
             'typed-dom': 30
         }
+    ],
+    158: [
+        function (_dereq_, module, exports) {
+            'use strict';
+            Object.defineProperty(exports, '__esModule', { value: true });
+            exports.scope = void 0;
+            const global_1 = _dereq_('spica/global');
+            function scope(base, bound = `${ 'id' in base && base.id ? `#${ base.id }, ` : '' }section, article, aside, blockquote`) {
+                const memory = new global_1.WeakMap();
+                const context = 'id' in base && base.closest(bound) || null;
+                return el => {
+                    var _a;
+                    const {parentNode} = el;
+                    const node = memory.has(parentNode) ? parentNode : parentNode.parentNode;
+                    let result = memory.get(node);
+                    if (result === global_1.undefined) {
+                        result = el.closest(bound) === context;
+                        memory.set(node, result);
+                    }
+                    return result;
+                };
+            }
+            exports.scope = scope;
+        },
+        { 'spica/global': 17 }
     ],
     159: [
         function (_dereq_, module, exports) {
