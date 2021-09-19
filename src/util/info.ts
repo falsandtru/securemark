@@ -4,16 +4,16 @@ import { context } from './context';
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
   const match = context(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
   return {
+    url: find<HTMLAnchorElement>('a[href]:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
+      .filter(el => ['http:', 'https:'].includes(el.protocol)),
+    tel: find<HTMLAnchorElement>('a[href]:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
+      .filter(el => ['tel:'].includes(el.protocol)),
+    email: find('a.email[href]'),
+    account: find('a.account[href]'),
+    channel: find('a.channel[href]'),
     hashtag: find('a.hashtag[href]'),
     hashref: find('a.hashref[href]'),
-    channel: find('a.channel[href]'),
-    account: find('a.account[href]'),
     mention: find('.cite > a.anchor[href]'),
-    url: find<HTMLAnchorElement>('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)')
-      .filter(el => ['http:', 'https:'].includes(el.protocol)),
-    tel: find<HTMLAnchorElement>('a[href]:not(.hashtag):not(.hashref):not(.channel):not(.account):not(.anchor)')
-      .filter(el => el.protocol === 'tel:'),
-    email: find('a.email[href]'),
     media: find('.media[data-src]'),
   };
 

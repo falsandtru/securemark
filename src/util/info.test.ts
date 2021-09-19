@@ -7,14 +7,14 @@ describe('Unit: util/info', () => {
       assert.deepStrictEqual(
         info(parse('')),
         {
-          hashtag: [],
-          hashref: [],
-          channel: [],
-          account: [],
-          mention: [],
           url: [],
           tel: [],
           email: [],
+          account: [],
+          channel: [],
+          hashtag: [],
+          hashref: [],
+          mention: [],
           media: [],
         });
     });

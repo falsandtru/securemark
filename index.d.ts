@@ -69,13 +69,13 @@ export interface Caches {
 }
 
 export interface Info {
-  readonly hashtag: HTMLAnchorElement[];
-  readonly hashref: HTMLAnchorElement[];
-  readonly channel: HTMLAnchorElement[];
-  readonly account: HTMLAnchorElement[];
-  readonly mention: HTMLAnchorElement[];
   readonly url: HTMLAnchorElement[];
   readonly tel: HTMLAnchorElement[];
   readonly email: HTMLAnchorElement[];
+  readonly account: HTMLAnchorElement[];
+  readonly channel: HTMLAnchorElement[];
+  readonly hashtag: HTMLAnchorElement[];
+  readonly hashref: HTMLAnchorElement[];
+  readonly mention: HTMLAnchorElement[];
   readonly media: HTMLElement[];
 }
