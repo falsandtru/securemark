@@ -348,23 +348,14 @@
   }
   .media {
     display: block;
-    min-width: 1em;
+    max-width: 100%;
+    min-width: 10%;
     min-height: 3em;
   }
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
   }
-  img.media,
-  audio.media,
-  video.media {
-    max-width: 100%;
-  }
-  /*
-  img.media {
-    display: flow;
-  }
-  */
-  .media[data-type="pdf"] > div > object {
+  .media[data-type="pdf"] object {
     display: block;
     aspect-ratio: 841/1189;
     width: 100%;
