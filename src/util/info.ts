@@ -4,16 +4,16 @@ import { context } from './context';
 export function info(source: DocumentFragment | HTMLElement | ShadowRoot): Info {
   const match = context(source, 'section, article, aside, blockquote, .quote, pre, .math, .media');
   return {
-    url: find<HTMLAnchorElement>('a[href]:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
+    url: find<HTMLAnchorElement>('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
       .filter(el => ['http:', 'https:'].includes(el.protocol)),
-    tel: find<HTMLAnchorElement>('a[href]:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
+    tel: find<HTMLAnchorElement>('a:not(.email):not(.account):not(.channel):not(.hashtag):not(.hashref):not(.anchor)')
       .filter(el => ['tel:'].includes(el.protocol)),
-    email: find('a.email[href]'),
-    account: find('a.account[href]'),
-    channel: find('a.channel[href]'),
-    hashtag: find('a.hashtag[href]'),
-    hashref: find('a.hashref[href]'),
-    mention: find('.cite > a.anchor[href]'),
+    email: find('a.email'),
+    account: find('a.account'),
+    channel: find('a.channel'),
+    hashtag: find('a.hashtag'),
+    hashref: find('a.hashref'),
+    mention: find('.cite > a.anchor'),
     media: find('.media[data-src]'),
   };
 
