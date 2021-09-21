@@ -338,6 +338,9 @@
     font-size: 1rem;
     font-weight: bold;
   }
+  p .media {
+    margin: 1rem 0;
+  }
   .cite,
   .quote {
     white-space: pre-wrap;
@@ -355,6 +358,9 @@
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
   }
+  .media[data-type="pdf"] {
+    word-wrap: break-word;
+  }
   .media[data-type="pdf"] > object {
     display: block;
     width: 100%;
@@ -367,6 +373,9 @@
   .media[data-type="youtube"] > iframe {
     width: 100%;
     height: 100%;
+  }
+  .media + br {
+    display: none;
   }
   .paren > .paren {
     font-size: 90%;
