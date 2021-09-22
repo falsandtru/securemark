@@ -350,15 +350,21 @@
     display: block;
     max-width: 100%;
     min-width: 10%;
-    min-height: 3em;
+    min-height: 2rem;
   }
   .media[aspect-ratio] {
     aspect-ratio: attr(aspect-ratio);
+  }
+  .media[data-type="pdf"] {
+    word-wrap: break-word;
   }
   .media[data-type="pdf"] > object {
     display: block;
     width: 100%;
     aspect-ratio: 841/1189;
+  }
+  .media[data-type="pdf"] > div {
+    font-weight: bold;
   }
   .media[data-type="youtube"] {
     width: 100%;

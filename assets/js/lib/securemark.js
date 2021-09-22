@@ -5201,14 +5201,14 @@ require = function () {
             const olist_1 = _dereq_('./olist');
             const inline_1 = _dereq_('../inline');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.inits)([
+            exports.ilist = (0, combinator_1.lazy)(() => (0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.validate)(/^[-+*](?=[^\S\n]|\n[^\S\n]*\S)/, (0, combinator_1.context)({ syntax: { inline: { media: false } } }, (0, combinator_1.some)((0, combinator_1.creator)((0, combinator_1.union)([(0, combinator_1.fmap)((0, combinator_1.inits)([
                     (0, combinator_1.line)((0, combinator_1.open)(/^[-+*](?:$|\s)/, (0, combinator_1.trim)((0, combinator_1.some)(inline_1.inline)), true)),
                     (0, combinator_1.indent)((0, combinator_1.union)([
                         ulist_1.ulist_,
                         olist_1.olist_,
                         exports.ilist_
                     ]))
-                ]), ns => [(0, typed_dom_1.html)('li', (0, typed_dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])])))), es => [(0, typed_dom_1.html)('ul', {
+                ]), ns => [(0, typed_dom_1.html)('li', (0, typed_dom_1.defrag)((0, ulist_1.fillFirstLine)(ns)))])]))))), es => [(0, typed_dom_1.html)('ul', {
                     class: 'invalid',
                     'data-invalid-syntax': 'list',
                     'data-invalid-type': 'syntax',
@@ -7054,16 +7054,14 @@ require = function () {
                 if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
-                const src = resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
-                const el = (0, typed_dom_1.html)('a', { href: src }, content.length > 0 ? content = (0, typed_dom_1.defrag)(content) : decode(INSECURE_URI.replace(/^tel:/i, '')));
-                if (!sanitize(new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), el, INSECURE_URI, ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin))
+                const el = create(INSECURE_URI, (0, typed_dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin);
+                if (el.classList.contains('invalid'))
                     return [
                         [el],
                         rest
                     ];
-                (0, typed_dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params));
                 return [
-                    [el],
+                    [(0, typed_dom_1.define)(el, (0, html_1.attributes)('link', [], optspec, params))],
                     rest
                 ];
             })));
@@ -7094,33 +7092,35 @@ require = function () {
             function fillTrailingSlash(pathname) {
                 return pathname[pathname.length - 1] === '/' ? pathname : pathname + '/';
             }
-            function sanitize(uri, target, source, origin) {
+            function create(address, content, uri, origin) {
                 let type;
                 let description;
                 switch (uri.protocol) {
                 case 'http:':
                 case 'https:':
-                    uri.origin !== origin && target.setAttribute('target', '_blank');
-                    return true;
+                    return (0, typed_dom_1.html)('a', {
+                        href: uri.src,
+                        target: undefined || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : undefined
+                    }, content.length === 0 ? decode(address) : content);
                 case 'tel:':
-                    const pattern = /^tel:(?:\+(?!0))?\d+(?:-\d+)*$/i;
-                    if (pattern.test(source) && pattern.test(`tel:${ target.textContent }`) && source.replace(/[^+\d]/g, '') === target.textContent.replace(/[^+\d]/g, ''))
-                        return true;
+                    if (content.length === 0) {
+                        content = [address];
+                    }
+                    const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
+                    switch (true) {
+                    case content.length === 1 && typeof content[0] === 'string' && pattern.test(address) && pattern.test(content[0]) && address.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
+                        return (0, typed_dom_1.html)('a', { href: uri.src }, content);
+                    }
                     type = 'content';
                     description = 'Invalid phone number.';
                     break;
                 }
-                type !== null && type !== void 0 ? type : type = 'argument';
-                description !== null && description !== void 0 ? description : description = 'Invalid protocol.';
-                (0, typed_dom_1.define)(target, {
-                    class: void target.classList.add('invalid'),
+                return (0, typed_dom_1.html)('a', {
+                    class: 'invalid',
                     'data-invalid-syntax': 'link',
-                    'data-invalid-type': type,
-                    'data-invalid-description': description,
-                    href: null,
-                    rel: null
-                });
-                return false;
+                    'data-invalid-type': type !== null && type !== void 0 ? type : type = 'argument',
+                    'data-invalid-description': description !== null && description !== void 0 ? description : description = 'Invalid protocol.'
+                }, content.length === 0 ? address : content);
             }
             function decode(uri) {
                 if (uri.indexOf('%') === -1)
@@ -7269,13 +7269,12 @@ require = function () {
             ]), ([[text]]) => (0, util_1.isStartTight)([text || '-']) && (0, util_1.isEndTight)([text])), ([[text], params], rest, context) => {
                 var _a, _b, _c, _d;
                 const INSECURE_URI = params.shift();
-                const src = (0, link_1.resolve)(INSECURE_URI, context.host || global_1.location, context.url || global_1.location);
-                const url = new url_1.ReadonlyURL(src, ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
+                const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
                 const cache = (_b = context.caches) === null || _b === void 0 ? void 0 : _b.media;
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(url.href);
                 const el = cache && cached ? cache.get(url.href).cloneNode(true) : (0, typed_dom_1.html)('img', {
                     class: 'media',
-                    'data-src': src,
+                    'data-src': url.src,
                     alt: text.trimEnd()
                 });
                 if (!cached && !sanitize(url, el))
@@ -8526,7 +8525,7 @@ require = function () {
                         type: 'application/pdf',
                         data: source.getAttribute('data-src')
                     }),
-                    (0, typed_dom_1.html)('div', { style: 'word-wrap: break-word;' }, (0, parser_1.parse)(`**{ ${ source.getAttribute('data-src') } }**`).firstElementChild.childNodes)
+                    (0, typed_dom_1.html)('div', [(0, typed_dom_1.define)((0, parser_1.parse)(`{ ${ source.getAttribute('data-src') } }`).querySelector('a'), { target: '_blank' })])
                 ]);
             }
             exports.pdf = pdf;
@@ -8559,15 +8558,15 @@ require = function () {
                             class: source.className,
                             'data-type': 'twitter'
                         }, [typed_dom_1.HTML.em(`Loading ${ source.getAttribute('data-src') }...`)], (h, tag) => {
-                            const outer = h(tag);
+                            const el = h(tag);
                             $.ajax(`https://publish.twitter.com/oembed?url=${ url.href.replace('?', '&') }&omit_script=true`, {
                                 dataType: 'jsonp',
                                 timeout: 10 * 1000,
                                 cache: true,
                                 success({html}) {
-                                    outer.innerHTML = (0, dompurify_1.sanitize)(`<div style="margin-top: -10px; margin-bottom: -10px;">${ html }</div>`);
+                                    el.innerHTML = (0, dompurify_1.sanitize)(html);
                                     if (global_1.window.twttr)
-                                        return void global_1.window.twttr.widgets.load(outer);
+                                        return void global_1.window.twttr.widgets.load(el);
                                     const id = 'twitter-wjs';
                                     if (global_1.document.getElementById(id))
                                         return;
@@ -8577,10 +8576,10 @@ require = function () {
                                     }));
                                 },
                                 error({status, statusText}) {
-                                    (0, typed_dom_1.define)(outer, [(0, parser_1.parse)(`*{ ${ source.getAttribute('data-src') } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
+                                    (0, typed_dom_1.define)(el, [(0, parser_1.parse)(`*{ ${ source.getAttribute('data-src') } }*\n\n\`\`\`\n${ status }\n${ statusText }\n\`\`\``)]);
                                 }
                             });
-                            return outer;
+                            return el;
                         }).element;
                     }
                     exports.twitter = twitter;
