@@ -117,9 +117,9 @@ function attributes(source: string) {
   rowspan &&= max(0, min(+rowspan, 65534)) + '';
   colspan &&= max(0, min(+colspan, 1000)) + '';
   highlight &&= highlight.length > 0 ? highlight.length + '' : undefined;
-  const valid = !highlight ||
-    source[0] === '#' && +highlight <= 1 ||
-    source[0] === ':' && +highlight <= 6;
+  const valid = !highlight
+    || source[0] === '#' && +highlight <= 1
+    || source[0] === ':' && +highlight <= 6;
   return {
     class: valid ? highlight && 'highlight' : 'invalid',
     rowspan,
