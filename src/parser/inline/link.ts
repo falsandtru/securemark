@@ -132,15 +132,15 @@ function create(
           : content);
     case 'tel:':
       if (content.length === 0) {
-        content = [address.slice(4)];
+        content = [address];
       }
-      const pattern = /^tel:(?:\+(?!0))?\d+(?:-\d+)*$/i;
+      const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
       switch (true) {
         case content.length === 1
           && typeof content[0] === 'string'
           && pattern.test(address)
-          && pattern.test(`tel:${content[0]}`)
-          && address.slice(4).replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
+          && pattern.test(content[0])
+          && address.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
           return html('a', { href: uri.src }, content);
       }
       type = 'content';
