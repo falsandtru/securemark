@@ -122,12 +122,12 @@ describe('Unit: parser/inline/link', () => {
     });
 
     it('media', () => {
-      assert.deepStrictEqual(inspect(parser('[![]{a}]{a}')), [['<a href="a"><img class="media" data-src="a" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[![]{a}]{b}')), [['<a href="b"><img class="media" data-src="a" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[![]{a}]{a}')), [['<a href="a" target="_blank"><img class="media" data-src="a" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[![]{a}]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="a" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[![]{a} ]{b}')), [['<a href="b">![]{a} </a>'], '']);
       assert.deepStrictEqual(inspect(parser('[![]{a}![]{a}]{b}')), [['<a href="b">![]{a}![]{a}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[![]{a}]{b}]{c}')), [['<a href="c">[![]{a}]{b}</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[!http://host]{b}')), [['<a href="b"><img class="media" data-src="http://host" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[!http://host]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
     });
 
     it('nest', () => {
@@ -140,7 +140,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[[![]{a}]{b}]{b}')), [['<a href="b">[![]{a}]{b}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[((a))]{b}')), [['<a href="b"><span class="paren">((a))</span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]]{b}')), [['<a href="b">[[a]]</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[!http://host]{/}')), [['<a href="/"><img class="media" data-src="http://host" alt=""></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[!http://host]{/}')), [['<a href="/" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[*a*]{b}')), [['<a href="b"><em>a</em></a>'], '']);
     });
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.215.1
+
+- Fix link parser to open the media in a new tab.
+
 ## 0.215.0
 
 - Extend info function to return anchors.

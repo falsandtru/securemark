@@ -57,6 +57,9 @@ export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
     const el = html('a',
       {
         href: src,
+        target: typeof content[0] === 'object' && content[0].classList.contains('media')
+          ? '_blank'
+          : undefined,
       },
       content.length > 0
         ? content = defrag(content)
