@@ -61,7 +61,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
       content.length > 0
         ? content = defrag(content)
         : decode(INSECURE_URI.replace(/^tel:/i, '')));
-    if (!sanitize(new ReadonlyURL(src, context.host?.href || location.href), el, INSECURE_URI, context.host?.origin || location.origin)) return [[el], rest];
+    if (!sanitize(el, INSECURE_URI, new ReadonlyURL(src, context.host?.href || location.href), context.host?.origin || location.origin)) return [[el], rest];
     assert(el.classList.length === 0);
     define(el, attributes('link', [], optspec, params));
     return [[el], rest];
@@ -108,7 +108,7 @@ function fillTrailingSlash(pathname: string): string {
     : pathname + '/';
 }
 
-function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, origin: string): boolean {
+function sanitize(target: HTMLElement, address: string, uri: ReadonlyURL, origin: string): boolean {
   assert(target.tagName === 'A');
   let type: string;
   let description: string;
@@ -120,9 +120,9 @@ function sanitize(uri: ReadonlyURL, target: HTMLElement, source: string, origin:
       return true;
     case 'tel:':
       const pattern = /^tel:(?:\+(?!0))?\d+(?:-\d+)*$/i;
-      if (pattern.test(source) &&
+      if (pattern.test(address) &&
           pattern.test(`tel:${target.textContent}`) &&
-          source.replace(/[^+\d]/g, '') === target.textContent!.replace(/[^+\d]/g, '')) return true;
+          address.replace(/[^+\d]/g, '') === target.textContent!.replace(/[^+\d]/g, '')) return true;
       type = 'content';
       description = 'Invalid phone number.';
       break;
