@@ -53,21 +53,16 @@ export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    const src = resolve(INSECURE_URI, context.host || location, context.url || location);
-    const el = html('a',
-      {
-        href: src,
-        target: typeof content[0] === 'object' && content[0].classList.contains('media')
-          ? '_blank'
-          : undefined,
-      },
-      content.length > 0
-        ? content = defrag(content)
-        : decode(INSECURE_URI.replace(/^tel:/i, '')));
-    if (!sanitize(el, INSECURE_URI, new ReadonlyURL(src, context.host?.href || location.href), context.host?.origin || location.origin)) return [[el], rest];
+    const el = create(
+      INSECURE_URI,
+      defrag(content),
+      new ReadonlyURL(
+        resolve(INSECURE_URI, context.host || location, context.url || location),
+        context.host?.href || location.href),
+      context.host?.origin || location.origin);
+    if (el.classList.contains('invalid')) return [[el], rest];
     assert(el.classList.length === 0);
-    define(el, attributes('link', [], optspec, params));
-    return [[el], rest];
+    return [[define(el, attributes('link', [], optspec, params))], rest];
   })));
 
 export const uri: LinkParser.ParameterParser.UriParser = union([
@@ -111,37 +106,57 @@ function fillTrailingSlash(pathname: string): string {
     : pathname + '/';
 }
 
-function sanitize(target: HTMLElement, address: string, uri: ReadonlyURL, origin: string): boolean {
-  assert(target.tagName === 'A');
+function create(
+  address: string,
+  content: readonly (string | HTMLElement)[],
+  uri: ReadonlyURL,
+  origin: string,
+): HTMLAnchorElement {
   let type: string;
   let description: string;
   switch (uri.protocol) {
     case 'http:':
     case 'https:':
-      uri.origin !== origin && target.setAttribute('target', '_blank');
       assert(uri.host);
-      return true;
+      return html('a',
+        {
+          href: uri.src,
+          target: undefined
+            || uri.origin !== origin
+            || typeof content[0] === 'object' && content[0].classList.contains('media')
+              ? '_blank'
+              : undefined,
+        },
+        content.length === 0
+          ? decode(address)
+          : content);
     case 'tel:':
+      if (content.length === 0) {
+        content = [address.slice(4)];
+      }
       const pattern = /^tel:(?:\+(?!0))?\d+(?:-\d+)*$/i;
-      if (pattern.test(address) &&
-          pattern.test(`tel:${target.textContent}`) &&
-          address.replace(/[^+\d]/g, '') === target.textContent!.replace(/[^+\d]/g, '')) return true;
+      switch (true) {
+        case content.length === 1
+          && typeof content[0] === 'string'
+          && pattern.test(address)
+          && pattern.test(`tel:${content[0]}`)
+          && address.slice(4).replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
+          return html('a', { href: uri.src }, content);
+      }
       type = 'content';
       description = 'Invalid phone number.';
       break;
   }
-  type ??= 'argument';
-  description ??= 'Invalid protocol.';
-  assert(!target.classList.contains('invalid'));
-  define(target, {
-    class: void target.classList.add('invalid'),
-    'data-invalid-syntax': 'link',
-    'data-invalid-type': type,
-    'data-invalid-description': description,
-    href: null,
-    rel: null,
-  });
-  return false;
+  return html('a',
+    {
+      class: 'invalid',
+      'data-invalid-syntax': 'link',
+      'data-invalid-type': type ??= 'argument',
+      'data-invalid-description': description ??= 'Invalid protocol.',
+    },
+    content.length === 0
+      ? address
+      : content);
 }
 
 function decode(uri: string): string {

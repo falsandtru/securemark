@@ -33,13 +33,14 @@ export const media: MediaParser = lazy(() => creator(100, bind(verify(fmap(open(
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
-    const src = resolve(INSECURE_URI, context.host || location, context.url || location);
-    const url = new ReadonlyURL(src, context.host?.href || location.href);
+    const url = new ReadonlyURL(
+      resolve(INSECURE_URI, context.host || location, context.url || location),
+      context.host?.href || location.href);
     const cache = context.caches?.media;
     const cached = cache?.has(url.href);
     const el = cache && cached
       ? cache.get(url.href)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': src, alt: text.trimEnd() });
+      : html('img', { class: 'media', 'data-src': url.src, alt: text.trimEnd() });
     if (!cached && !sanitize(url, el)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
     define(el, attributes('media', push([], el.classList), optspec, params));
