@@ -109,6 +109,7 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('{b}')), [['<a href="b">b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{ ][ }')), [['<a href="][">][</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{ }{ }')), [['<a href="}{">}{</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('{Http://host}')), [['<a href="Http://host" target="_blank">Http://host</a>'], '']);
     });
 
     it('tel', () => {
