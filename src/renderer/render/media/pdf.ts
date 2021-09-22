@@ -1,5 +1,5 @@
 import { parse } from '../../../parser';
-import { html } from 'typed-dom';
+import { html, define } from 'typed-dom';
 
 const extensions = [
   '.pdf',
@@ -12,7 +12,10 @@ export function pdf(source: HTMLImageElement, url: URL): HTMLElement | undefined
       type: 'application/pdf',
       data: source.getAttribute('data-src'),
     }),
-    html('div',
-      parse(`**{ ${source.getAttribute('data-src')} }**`).firstElementChild!.childNodes),
+    html('div', [
+      define(parse(`{ ${source.getAttribute('data-src')} }`).querySelector('a')!, {
+        target: '_blank',
+      }),
+    ]),
   ]);
 }
