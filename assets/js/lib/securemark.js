@@ -1724,11 +1724,11 @@ require = function () {
             });
             const internal = Symbol.for('spica/url::internal');
             class URL {
-                constructor(url, base) {
-                    this.url = url;
+                constructor(source, base) {
+                    this.source = source;
                     this.base = base;
                     this[internal] = {
-                        url: new format_1.ReadonlyURL(url, base),
+                        url: new format_1.ReadonlyURL(source, base),
                         searchParams: void 0
                     };
                 }
@@ -1826,20 +1826,20 @@ require = function () {
             exports._encode = encode;
             const internal = Symbol.for('spica/url::internal');
             class ReadonlyURL {
-                constructor(src, base) {
+                constructor(source, base) {
                     var _a, _b;
-                    this.src = src;
+                    this.source = source;
                     this.base = base;
                     const i = (_a = base === null || base === void 0 ? void 0 : base.indexOf('#')) !== null && _a !== void 0 ? _a : -1;
                     if (i > -1) {
                         base = base === null || base === void 0 ? void 0 : base.slice(0, i);
                     }
                     const j = (_b = base === null || base === void 0 ? void 0 : base.indexOf('?')) !== null && _b !== void 0 ? _b : -1;
-                    if (i > -1 && src.indexOf('#') === -1) {
+                    if (i > -1 && source.indexOf('#') === -1) {
                         base = base === null || base === void 0 ? void 0 : base.slice(0, j);
                     }
                     this[internal] = {
-                        share: ReadonlyURL.get(src, base),
+                        share: ReadonlyURL.get(source, base),
                         searchParams: void 0
                     };
                 }
@@ -7099,7 +7099,7 @@ require = function () {
                 case 'http:':
                 case 'https:':
                     return (0, typed_dom_1.html)('a', {
-                        href: uri.src,
+                        href: uri.source,
                         target: undefined || uri.origin !== origin || typeof content[0] === 'object' && content[0].classList.contains('media') ? '_blank' : undefined
                     }, content.length === 0 ? decode(address) : content);
                 case 'tel:':
@@ -7109,7 +7109,7 @@ require = function () {
                     const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
                     switch (true) {
                     case content.length === 1 && typeof content[0] === 'string' && pattern.test(address) && pattern.test(content[0]) && address.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
-                        return (0, typed_dom_1.html)('a', { href: uri.src }, content);
+                        return (0, typed_dom_1.html)('a', { href: uri.source }, content);
                     }
                     type = 'content';
                     description = 'Invalid phone number.';
@@ -7244,7 +7244,7 @@ require = function () {
                 rel: global_1.undefined
             };
             (0, alias_1.ObjectSetPrototypeOf)(optspec, null);
-            exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(100, (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.validate)([
+            exports.media = (0, combinator_1.lazy)(() => (0, combinator_1.creator)(10, (0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.fmap)((0, combinator_1.open)('!', (0, combinator_1.validate)([
                 '[',
                 '{'
             ], '}', '\n', (0, combinator_1.guard)(context => {
@@ -7274,7 +7274,7 @@ require = function () {
                 const cached = cache === null || cache === void 0 ? void 0 : cache.has(url.href);
                 const el = cache && cached ? cache.get(url.href).cloneNode(true) : (0, typed_dom_1.html)('img', {
                     class: 'media',
-                    'data-src': url.src,
+                    'data-src': url.source,
                     alt: text.trimEnd()
                 });
                 if (!cached && !sanitize(url, el))
