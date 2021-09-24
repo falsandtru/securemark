@@ -120,7 +120,7 @@ function create(
       assert(uri.host);
       return html('a',
         {
-          href: uri.src,
+          href: uri.source,
           target: undefined
             || uri.origin !== origin
             || typeof content[0] === 'object' && content[0].classList.contains('media')
@@ -141,7 +141,7 @@ function create(
           && pattern.test(address)
           && pattern.test(content[0])
           && address.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
-          return html('a', { href: uri.src }, content);
+          return html('a', { href: uri.source }, content);
       }
       type = 'content';
       description = 'Invalid phone number.';
