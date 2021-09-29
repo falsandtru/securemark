@@ -20,7 +20,7 @@ describe('Unit: parser/inline/strong', () => {
       assert.deepStrictEqual(inspect(parser('**\\ a**')), undefined);
       assert.deepStrictEqual(inspect(parser('**\\\na**')), undefined);
       assert.deepStrictEqual(inspect(parser('**<wbr>a**')), undefined);
-      assert.deepStrictEqual(inspect(parser('**<# a #>b**')), undefined);
+      assert.deepStrictEqual(inspect(parser('**[# a #]b**')), undefined);
       assert.deepStrictEqual(inspect(parser('***a***')), undefined);
       assert.deepStrictEqual(inspect(parser(' **a**')), undefined);
     });

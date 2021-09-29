@@ -93,11 +93,16 @@ export function startTight<T>(parser: Parser<T>): Parser<T> {
             return;
         }
         break;
-      case '<':
+      case '[':
         switch (true) {
           case source.length >= 7
             && source[1] === '#'
             && !!comment(source, context):
+            return;
+        }
+        break;
+      case '<':
+        switch (true) {
           case source.length >= 5
             && source[1] === 'w'
             && source.slice(0, 5) === '<wbr>':

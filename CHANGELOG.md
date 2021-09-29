@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.216.0
+
+- Refine comment syntax.
+
 ## 0.215.1
 
 - Fix link parser to open the media in a new tab.

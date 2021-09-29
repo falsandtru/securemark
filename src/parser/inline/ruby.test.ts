@@ -47,7 +47,6 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser('[&amp;](&amp;)')), [['<ruby>&amp;<rp>(</rp><rt>&amp;</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[*A*](*a*)')), [['<ruby>*A*<rp>(</rp><rt>*a*</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[<wbr>](<wbr>)')), [['<ruby>&lt;wbr&gt;<rp>(</rp><rt>&lt;wbr&gt;</rt><rp>)</rp></ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('[<# A #>](<# a #>)')), [['<ruby>&lt;#<rp>(</rp><rt>&lt;#</rt><rp>)</rp>A<rp>(</rp><rt>a</rt><rp>)</rp>#&gt;<rp>(</rp><rt>#&gt;</rt><rp>)</rp></ruby>'], '']);
     });
 
   });
