@@ -1,8 +1,8 @@
 import { undefined } from 'spica/global';
 import { Parser, exec, check } from '../../data/parser';
 
-export function match<P extends Parser<unknown>>(pattern: RegExp, f: (matched: string[]) => P): P;
-export function match<T>(pattern: RegExp, f: (matched: string[]) => Parser<T>): Parser<T> {
+export function match<P extends Parser<unknown>>(pattern: RegExp, f: (matched: RegExpMatchArray) => P): P;
+export function match<T>(pattern: RegExp, f: (matched: RegExpMatchArray) => Parser<T>): Parser<T> {
   assert(!pattern.global && pattern.source.startsWith('^'));
   return (source, context) => {
     if (source === '') return;
