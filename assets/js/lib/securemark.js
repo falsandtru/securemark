@@ -7088,7 +7088,7 @@ require = function () {
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('<#', '#>', (0, combinator_1.match)(/^<(#+)\s+((?:(?!\1>)\S+\s+)+)(\1>)?/, ([, , title, closer]) => (rest, {resources}) => closer ? [
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+((?:(?!\1\])\S+\s+)+)(\1\])?/, ([, , title, closer]) => (rest, {resources}) => closer ? [
                 [(0, typed_dom_1.html)('sup', {
                         class: 'comment',
                         title: title.trim()
@@ -8876,9 +8876,14 @@ require = function () {
                             return;
                         }
                         break;
-                    case '<':
+                    case '[':
                         switch (true) {
                         case source.length >= 7 && source[1] === '#' && !!(0, comment_1.comment)(source, context):
+                            return;
+                        }
+                        break;
+                    case '<':
+                        switch (true) {
                         case source.length >= 5 && source[1] === 'w' && source.slice(0, 5) === '<wbr>':
                         case source.length >= 4 && source[1] === 'b' && source.slice(0, 4) === '<br>':
                             return;
