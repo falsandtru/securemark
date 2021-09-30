@@ -7088,7 +7088,7 @@ require = function () {
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+((?:(?!\1\])\S+\s+)+)(\1\])?/, ([, , title, closer]) => (rest, {resources}) => closer ? [
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+((?:\S+\s+)+?)(\1\]|$)/, ([, , title, closer]) => (rest, {resources}) => closer ? [
                 [(0, typed_dom_1.html)('sup', {
                         class: 'comment',
                         title: title.trim()
@@ -7439,7 +7439,7 @@ require = function () {
             const source_1 = _dereq_('../../source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*(?![0-9A-Za-z]))+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?!\.?[0-9A-Za-z]))/);
+            const body = (0, source_1.str)(/^\$[A-Za-z]*(?:(?:-[A-Za-z][0-9A-Za-z]*)+|-(?:(?:0|[1-9][0-9]*)\.)*(?:0|[1-9][0-9]*)(?![0-9A-Za-z]))/);
             exports.segment = (0, combinator_1.clear)((0, combinator_1.validate)([
                 '[$',
                 '$'
