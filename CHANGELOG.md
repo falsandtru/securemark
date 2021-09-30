@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.216.1
+
+- Improve label parser.
+
 ## 0.216.0
 
 - Refine comment syntax.

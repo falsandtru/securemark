@@ -30,10 +30,14 @@ describe('Unit: parser/inline/extension/label', () => {
       assert.deepStrictEqual(inspect(parser('$a-b-$a-c')), [['<a class="label" data-label="a-b">$a-b</a>'], '-$a-c']);
       assert.deepStrictEqual(inspect(parser('$a-b-0-$a-c')), [['<a class="label" data-label="a-b">$a-b</a>'], '-0-$a-c']);
       assert.deepStrictEqual(inspect(parser('$a-0')), [['<a class="label" data-label="a-0">$a-0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('$a-0.b')), [['<a class="label" data-label="a-0">$a-0</a>'], '.b']);
+      assert.deepStrictEqual(inspect(parser('$a-0.0b')), [['<a class="label" data-label="a-0">$a-0</a>'], '.0b']);
       assert.deepStrictEqual(inspect(parser('$a-0-$a-0')), [['<a class="label" data-label="a-0">$a-0</a>'], '-$a-0']);
       assert.deepStrictEqual(inspect(parser('$-b')), [['<a class="label" data-label="$-b">$-b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('$-b-$-c')), [['<a class="label" data-label="$-b">$-b</a>'], '-$-c']);
       assert.deepStrictEqual(inspect(parser('$-0')), [['<a class="label" data-label="$-0">$-0</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('$-0.b')), [['<a class="label" data-label="$-0">$-0</a>'], '.b']);
+      assert.deepStrictEqual(inspect(parser('$-0.0b')), [['<a class="label" data-label="$-0">$-0</a>'], '.0b']);
       assert.deepStrictEqual(inspect(parser('$-0-$-0')), [['<a class="label" data-label="$-0">$-0</a>'], '-$-0']);
       assert.deepStrictEqual(inspect(parser('$A-B')), [['<a class="label" data-label="a-b">$A-B</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[$a-b]')), [['<a class="label" data-label="a-b">$a-b</a>'], '']);
