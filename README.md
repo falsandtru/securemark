@@ -36,7 +36,7 @@ https://falsandtru.github.io/securemark/
 
 - Heading (#)
 - UList (-)
-- OList (1., I., A., (1), (i), (a)-1)
+- OList (1., I., A., A-1., (1), (i), (a)-1)
 - DList (~)
 - Table (| |)
 - Blockquote (>, !>)
@@ -44,10 +44,10 @@ https://falsandtru.github.io/securemark/
 - HorizontalRule (---)
 - Inline markups (*, `, []{}, {}, ![]{}, !{}, \[](), ++, ~~, (()), ...)
 - Inline HTML tags (\<small>, \<bdi>, ...)
-- Autolink (https://host, ttps://host, user@host, @user)
-- Shortmedia (!https://host/image.png, !https://youtu.be/..., !https://gist.github.com/...)
+- Autolink (https://host, user@host, @user)
+- Shortmedia (!https://host/image.png, !https://youtu.be/...)
 - Syntex highlight (```lang filename)
-- LaTeX ($expr$, ${expr}$, $$expr$$)
+- LaTeX ($expr$, ${expr}$, $$)
 - Index (# title [#indexer], ~ term [#indexer], [#index])
 - Figure (~~~figure $fig-name)
 - Label ($fig-name, [$fig-name])
@@ -56,7 +56,7 @@ https://falsandtru.github.io/securemark/
 - Channel (@user#tag)
 - Hashtag (#tag)
 - Template ({{ template }})
-- Comment (<# comment #>)
+- Comment ([# comment #])
 
 ## Media
 
