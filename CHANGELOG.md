@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.217.0
+
+- Extend reference syntax to enable abbr syntax to use an identifier starting with a number.
+
 ## 0.216.1
 
 - Improve label parser.
