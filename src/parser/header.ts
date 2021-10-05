@@ -29,7 +29,7 @@ export const header: MarkdownParser.HeaderParser = validate(
               translate: 'no',
               'data-invalid-syntax': 'header',
               'data-invalid-type': 'syntax',
-              'data-invalid-description': `Invalid syntax.`,
+              'data-invalid-description': 'Invalid syntax.',
             }, normalize(source)),
           ], ''],
         ]))),

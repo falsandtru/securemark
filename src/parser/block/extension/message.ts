@@ -37,7 +37,7 @@ export const message: MessageParser = block(validate('~~~', fmap(
           class: 'invalid',
           translate: 'no',
           'data-invalid-syntax': 'message',
-          'data-invalid-description': `Invalid message type.`,
+          'data-invalid-description': 'Invalid message type.',
         }, `${opener}${body}${closer}`)];
     }
     return [

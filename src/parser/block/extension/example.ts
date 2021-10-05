@@ -52,7 +52,7 @@ export const example: ExtensionParser.ExampleParser = creator(100, block(validat
             class: 'invalid',
             translate: 'no',
             'data-invalid-syntax': 'example',
-            'data-invalid-description': `Invalid example type.`,
+            'data-invalid-description': 'Invalid example type.',
           }, `${opener}${body}${closer}`),
         ];
     }

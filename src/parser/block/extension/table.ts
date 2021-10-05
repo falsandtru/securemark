@@ -129,7 +129,7 @@ function attributes(source: string) {
       : {
           'data-invalid-syntax': 'table',
           'data-invalid-type': 'highlight',
-          'data-invalid-description': `Too much highlight level`,
+          'data-invalid-description': 'Too much highlight level.',
         },
   };
 }
