@@ -212,15 +212,15 @@ describe('Unit: parser/api/bind', () => {
         html('ol', [
           html('li', { id: 'annotation:def:1' }, [
             '1',
-            html('sup', [html('a', { href: '#annotation:ref:1' }, '~1')])
+            html('sup', [html('a', { href: '#annotation:ref:1' }, '^1')])
           ]),
           html('li', { id: 'annotation:def:2' }, [
             '2',
-            html('sup', [html('a', { href: '#annotation:ref:2' }, '~2')])
+            html('sup', [html('a', { href: '#annotation:ref:2' }, '^2')])
           ]),
           html('li', { id: 'annotation:def:3' }, [
             '3',
-            html('sup', [html('a', { href: '#annotation:ref:3' }, '~3')])
+            html('sup', [html('a', { href: '#annotation:ref:3' }, '^3')])
           ]),
         ]).outerHTML);
       assert.throws(() => update('').next());
