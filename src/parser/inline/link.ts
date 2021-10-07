@@ -2,12 +2,12 @@ import { location, encodeURI, decodeURI, Location } from 'spica/global';
 import { ObjectSetPrototypeOf } from 'spica/alias';
 import { LinkParser } from '../inline';
 import { eval } from '../../combinator/data/parser';
-import { union, inits, tails, some, validate, verify, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
+import { union, inits, tails, some, validate, guard, context, creator, surround, open, dup, reverse, lazy, fmap, bind } from '../../combinator';
 import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { startTight, isEndTight, stringify } from '../util';
+import { startTight, markVerboseTail, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -16,7 +16,7 @@ const optspec = {
 } as const;
 ObjectSetPrototypeOf(optspec, null);
 
-export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
+export const link: LinkParser = lazy(() => creator(10, bind(reverse(
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.link ?? true,
   tails([
@@ -45,7 +45,6 @@ export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
     ]))),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ])))),
-  ([, content = []]) => isEndTight(content)),
   ([params, content = []]: [string[], (HTMLElement | string)[]], rest, context) => {
     assert(params.every(p => typeof p === 'string'));
     if (eval(some(autolink)(stringify(content), context), []).some(node => typeof node === 'object')) return;
@@ -55,7 +54,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(verify(reverse(
     assert(!INSECURE_URI.match(/\s/));
     const el = create(
       INSECURE_URI,
-      defrag(content),
+      markVerboseTail(defrag(content)),
       new ReadonlyURL(
         resolve(INSECURE_URI, context.host || location, context.url || location),
         context.host?.href || location.href),

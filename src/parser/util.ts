@@ -4,6 +4,7 @@ import { Parser, eval } from '../combinator/data/parser';
 import { union, verify, convert } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
+import { html, defrag } from 'typed-dom';
 import { pop } from 'spica/array';
 
 // https://dev.w3.org/html5/html-author/charref
@@ -121,26 +122,55 @@ export function startTight<T>(parser: Parser<T>): Parser<T> {
 
 export function isStartTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
-  return isVisible(nodes[0], 'start');
+  return isVisible(nodes[0]);
 }
 export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   const last = nodes.length - 1;
   return typeof nodes[last] === 'string' && (nodes[last] as string).length > 1
-    ? isVisible(nodes[last], 'end', 0) ||
-      isVisible(nodes[last], 'end', 1)
-    : isVisible(nodes[last], 'end') || last === 0 ||
-      isVisible(nodes[last - 1], 'end');
+    ? isVisible(nodes[last], -1) ||
+      isVisible(nodes[last], -2)
+    : isVisible(nodes[last], -1) || last === 0 ||
+      isVisible(nodes[last - 1], -1);
 }
-function isVisible(node: HTMLElement | string | undefined, dir: 'start' | 'end', offset = 0): boolean {
-  assert(offset >= 0);
+export function markVerboseTail(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+  assert(isStartTight(nodes));
+  if (isEndTight(nodes)) return nodes;
+  const invisibles: typeof nodes = [];
+  for (
+    let last = nodes[0];
+    last = nodes[nodes.length - 1],
+    typeof last === 'string' && last.length > 1
+      ? !isVisible(last, -2)
+      : !isVisible(nodes[nodes.length - 2], -1);
+  ) {
+    assert(nodes.length > 0);
+    if (typeof last === 'string' && last.length > 1) {
+      const pos = last.trimEnd().length + 1;
+      invisibles.unshift(last.slice(pos));
+      nodes[nodes.length - 1] = last.slice(0, pos);
+      break;
+    }
+    else {
+      invisibles.unshift(nodes.pop()!);
+    }
+  }
+  nodes.push(html('span', {
+    class: 'invalid',
+    'data-invalid-syntax': 'invisible',
+    'data-invalid-type': 'invisible',
+    'data-invalid-description': 'Cannot end with invisibles in the syntax.',
+  }, defrag(invisibles)));
+  return nodes;
+}
+function isVisible(node: HTMLElement | string | undefined, position = 0): boolean {
   if (!node) return false;
   switch (typeof node) {
     case 'string':
-      const char = node[dir === 'start' ? 0 + offset : node.length - 1 - offset];
+      assert(node.length + position >= 0);
+      const char = node[position >= 0 ? position : node.length + position];
       assert(char);
       switch (char) {
-        case '':
         case ' ':
         case '\t':
         case '\n':

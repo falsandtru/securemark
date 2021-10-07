@@ -2,10 +2,10 @@ import { undefined } from 'spica/global';
 import { isFrozen, ObjectEntries, ObjectFreeze, ObjectSetPrototypeOf, ObjectValues } from 'spica/alias';
 import { MarkdownParser } from '../../../markdown';
 import { HTMLParser } from '../inline';
-import { union, some, validate, verify, context, creator, surround, match, lazy } from '../../combinator';
+import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, isEndTight, trimEndBR } from '../util';
+import { startTight, markVerboseTail, trimEndBR } from '../util';
 import { html as h, defrag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
@@ -39,7 +39,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
       validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
-        startTight(verify(
+        startTight(
         context((() => {
           switch (tag) {
             case 'sup':
@@ -63,11 +63,10 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
               return {};
           }
         })(),
-        some(union([inline]), `</${tag}>`)),
-        isEndTight)),
+        some(union([inline]), `</${tag}>`))),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest, context) =>
-          [[elem(tag, as, trimEndBR(bs), cs, context)], rest])),
+          [[elem(tag, as, trimEndBR(markVerboseTail(defrag(bs))), cs, context)], rest])),
       ([, tag]) => tag)),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
@@ -79,11 +78,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
         startTight(some(union([inline]), `</${tag}>`)),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
-          isEndTight(bs)
-            ? [[elem(tag, as, trimEndBR(bs), cs, {})], rest]
-            : as.length === 1
-              ? [push(unshift(as, bs), cs), rest]
-              : undefined,
+          [[elem(tag, as, trimEndBR(markVerboseTail(defrag(bs))), cs, {})], rest],
         ([as, bs], rest) =>
           as.length === 1
             ? [unshift(as, bs), rest]
@@ -97,20 +92,21 @@ export const attribute: HTMLParser.TagParser.AttributeParser = union([
 ]);
 
 function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
+  assert(bs.length === defrag(bs).length);
   if (!tags.includes(tag)) return invalid('tag', `Invalid HTML tag <${tag}>.`, as, bs, cs);
   switch (tag) {
     case 'sup':
     case 'sub':
       switch (true) {
         case context.state?.in?.supsub:
-          return invalid('nest', `<${tag}> HTML tag can't be used in <sup>/<sub> HTML tags.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup>/<sub> HTML tags.`, as, bs, cs);
       }
       break;
     case 'small':
       switch (true) {
         case context.state?.in?.supsub:
         case context.state?.in?.small:
-          return invalid('nest', `<${tag}> HTML tag can't be used in <sup>/<sub>/<small> HTML tags.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup>/<sub>/<small> HTML tags.`, as, bs, cs);
       }
       break;
   }
@@ -123,7 +119,7 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
       return invalid('closer', `Missing the closing HTML tag <${tag}>.`, as, bs, cs);
     default:
       assert(attrs);
-      return h(tag as 'span', attrs, defrag(bs));
+      return h(tag as 'span', attrs, bs);
   }
 }
 function invalid(type: string, description: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[]): HTMLElement {

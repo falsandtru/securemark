@@ -1,12 +1,12 @@
 import { undefined } from 'spica/global';
 import { ReferenceParser } from '../inline';
-import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, lazy, fmap } from '../../combinator';
+import { union, subsequence, some, validate, focus, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, isEndTight, stringify } from '../util';
+import { startTight, markVerboseTail, stringify } from '../util';
 import { html, defrag } from 'typed-dom';
 
-export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(verify(surround(
+export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
   startTight(
@@ -26,13 +26,12 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
     startTight(some(inline, ']', /^\\?\n/)),
   ])))),
   ']]'),
-  isEndTight),
-  ns => [html('sup', attributes(ns), defrag(ns))]))));
+  ns => [html('sup', attributes(ns), markVerboseTail(defrag(ns)))]))));
 
 const abbr: ReferenceParser.AbbrParser = creator(fmap(surround(
   '^',
   union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]),
-  /^[^\S\n]?\|?(?=]])|^\|[^\S\n]/),
+  /^[^\S\n]?\|?(?=]])|^\|[^\S\n](?![^\S\n])/),
   ([source]) => [html('abbr', source)]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {

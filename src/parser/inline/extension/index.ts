@@ -1,16 +1,16 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, inits, some, validate, verify, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
+import { union, some, validate, verify, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identify } from './indexee';
 import { txt, str } from '../../source';
-import { startTight, isEndTight } from '../../util';
+import { startTight, markVerboseTail, isEndTight } from '../../util';
 import { html, define, defrag } from 'typed-dom';
 import { join } from 'spica/array';
 
 import IndexParser = ExtensionParser.IndexParser;
 
-export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(fmap(verify(surround(
+export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(fmap(surround(
   '[#',
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
@@ -23,22 +23,25 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     media: false,
     autolink: false,
   }}},
-  inits([
-    some(inline, /^]|^\|#(?!]|\\?\s)/, /^\\?\n/),
+  some(union([
     indexer,
-  ])))),
+    inline,
+  ]), /^]/, /^\\?\n/)))),
   ']'),
-  isEndTight),
-  ns => [html('a', defrag(ns))])),
+  ns => [html('a', markVerboseTail(defrag(ns)))])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
-      { id: el.id ? null : undefined, class: 'index', href: el.id ? `#${el.id}` : undefined },
+      {
+        id: el.id ? null : undefined,
+        class: 'index',
+        href: el.id ? `#${el.id}` : undefined,
+      },
       el.childNodes),
   ]))));
 
 const indexer: IndexParser.IndexerParser = lazy(() => creator(fmap(verify(open(
   '|#',
-  some(union([bracket, txt]), ']', /^\\?\n/)),
+  startTight(some(union([bracket, txt]), ']', /^\\?\n/))),
   isEndTight),
   ns => [
     html('span', { class: 'indexer', 'data-index': identify(join(ns).trim()).slice(6) }),

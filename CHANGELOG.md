@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.218.0
+
+- Refine the handling of invisible verbose tails.
+
 ## 0.217.0
 
 - Extend reference syntax to enable abbr syntax to use an identifier starting with a number.

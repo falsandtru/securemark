@@ -1,6 +1,5 @@
 import { undefined } from 'spica/global';
 import { TextParser, TxtParser, LinebreakParser } from '../source';
-import { Parser, Context } from '../../combinator/data/parser';
 import { union, focus, creator, fmap } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom';
@@ -66,7 +65,7 @@ export const text: TextParser = creator((source, context) => {
 
 export const txt: TxtParser = union([
   text,
-]) as Parser<string, Context<TxtParser>, [TextParser]>;
+]) as TxtParser;
 
 export const linebreak: LinebreakParser = fmap(
   focus('\n', union([text])),

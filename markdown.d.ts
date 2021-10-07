@@ -707,8 +707,8 @@ export namespace MarkdownParser {
         // [#index]
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, Context, [
-          InlineParser,
           IndexParser.IndexerParser,
+          InlineParser,
         ]> {
       }
       export namespace IndexParser {

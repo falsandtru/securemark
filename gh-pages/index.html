@@ -444,11 +444,14 @@
     font-weight: bold;
     color: red;
   }
-  .invalid::before {
-    content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-description);
+  .invalid[data-invalid-description]::before {
+    content: attr(data-invalid-description);
     font-style: italic;
     font-weight: bold;
     color: gray;
+  }
+  .invalid[data-invalid-syntax][data-invalid-description]::before {
+    content: "Invalid " attr(data-invalid-syntax) " syntax: " attr(data-invalid-description);
   }
   div.invalid::before,
   pre.invalid::before,

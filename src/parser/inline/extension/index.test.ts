@@ -10,7 +10,6 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#]')), undefined);
       assert.deepStrictEqual(inspect(parser('[#]]')), undefined);
-      assert.deepStrictEqual(inspect(parser('[#a  ]')), undefined);
       assert.deepStrictEqual(inspect(parser('[# ]')), undefined);
       assert.deepStrictEqual(inspect(parser('[# a]')), undefined);
       assert.deepStrictEqual(inspect(parser('[# a ]')), undefined);
@@ -30,6 +29,7 @@ describe('Unit: parser/inline/extension/index', () => {
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('[#a]')), [['<a class="index" href="#index:a">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a ]')), [['<a class="index" href="#index:a">a </a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a  ]')), [['<a class="index" href="#index:a">a <span class="invalid"> </span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a b]')), [['<a class="index" href="#index:a_b">a b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a  b]')), [['<a class="index" href="#index:a_b">a  b</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a\\ ]')), [['<a class="index" href="#index:a">a </a>'], '']);
@@ -59,6 +59,8 @@ describe('Unit: parser/inline/extension/index', () => {
       assert.deepStrictEqual(inspect(parser('[#a|# ]')), [['<a class="index" href="#index:a|#">a|# </a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a|#\\ ]')), [['<a class="index" href="#index:a|#">a|# </a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a|#b]')), [['<a class="index" href="#index:b">a<span class="indexer" data-index="b"></span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a|#b ]')), [['<a class="index" href="#index:b">a<span class="indexer" data-index="b"></span></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[#a|#b  ]')), [['<a class="index" href="#index:a|#b">a|#b <span class="invalid"> </span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a|#\\b]')), [['<a class="index" href="#index:b">a<span class="indexer" data-index="b"></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a|#*b*]')), [['<a class="index" href="#index:*b*">a<span class="indexer" data-index="*b*"></span></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[#a|#b c]')), [['<a class="index" href="#index:b_c">a<span class="indexer" data-index="b_c"></span></a>'], '']);

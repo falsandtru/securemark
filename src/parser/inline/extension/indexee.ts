@@ -9,7 +9,7 @@ export function indexee(parser: Parser<HTMLElement, MarkdownParser.Context>): Pa
   return fmap(parser, ([el], _, { id }) => [define(el, { id: id !== '' && identity(el) || undefined })]);
 }
 
-export function identity(source: HTMLElement): string {
+export function identity(source: HTMLElement | DocumentFragment): string {
   return identify(text(source).trim());
 }
 

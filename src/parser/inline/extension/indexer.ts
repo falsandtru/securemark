@@ -1,14 +1,16 @@
 import { ExtensionParser } from '../../inline';
-import { union, line, creator, context, open, fmap } from '../../../combinator';
+import { union, verify, creator, context, surround, fmap } from '../../../combinator';
 import { index } from './index';
 import { html } from 'typed-dom';
 
-export const indexer: ExtensionParser.IndexerParser = creator(fmap(open(
+export const indexer: ExtensionParser.IndexerParser = creator(fmap(verify(surround(
   /^\s+(?=\[#[^\s\]])/,
   context({ syntax: { inline: {
     index: true,
   }}},
-  line(union([index])))),
+  union([index])),
+  /^\s*$/),
+  ([el]) => el.getElementsByClassName('invalid').length === 0),
   ([el]) => [
     html('span', { class: 'indexer', 'data-index': el.getAttribute('href')!.slice(7) }),
   ]));
