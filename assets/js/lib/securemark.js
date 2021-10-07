@@ -383,7 +383,7 @@ require = function () {
                     this.settings = {
                         space: global_1.Infinity,
                         age: global_1.Infinity,
-                        life: 8,
+                        life: 10,
                         capture: {
                             delete: true,
                             clear: true
@@ -407,7 +407,7 @@ require = function () {
                     if (capacity >= 1 === false)
                         throw new Error(`Spica: Cache: Capacity must be 1 or more.`);
                     (0, assign_1.extend)(this.settings, opts);
-                    this.life = this.settings.life;
+                    this.life = this.capacity * this.settings.life;
                     this.space = this.settings.space;
                 }
                 get length() {
@@ -443,7 +443,7 @@ require = function () {
                     const {LRU, LFU} = this.indexes;
                     let target;
                     while (this.length === this.capacity || this.size + margin > this.space) {
-                        const list = void 0 || LRU.length === +(target === LRU) || LFU.length > this.capacity * this.ratio / 100 || LFU.last && LFU.last.value.clock < this.clock - this.capacity * this.life || LFU.last && LFU.last.value.expiry !== global_1.Infinity && LFU.last.value.expiry < (0, clock_1.now)() ? LFU : LRU;
+                        const list = void 0 || LRU.length === +(target === LRU) || LFU.length > this.capacity * this.ratio / 100 || LFU.last && LFU.last.value.clock < this.clock - this.life || LFU.last && LFU.last.value.expiry !== global_1.Infinity && LFU.last.value.expiry < (0, clock_1.now)() ? LFU : LRU;
                         const index = list.last.value;
                         if (skip && (0, compare_1.equal)(index.key, key)) {
                             target = list;
@@ -590,12 +590,16 @@ require = function () {
                     }
                     if ((LRU[0] + LFU[0]) % frequency || LRU[1] + LFU[1] === 0)
                         return;
-                    const rateR = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]);
-                    const rateF = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1]) * indexes.LRU.length / indexes.LFU.length | 0;
-                    if (ratio < 98 && rateF > rateR && indexes.LFU.length >= capacity * ratio / 100) {
-                        ++this.ratio;
-                    } else if (ratio > 0 && rateR > rateF && indexes.LRU.length >= capacity * (100 - ratio) / 100) {
-                        --this.ratio;
+                    const rateR = rate(window, LRU[0], LRU[0] + LFU[0], LRU[1], LRU[1] + LFU[1]) / (100 - ratio) * 100;
+                    const rateF = rate(window, LFU[0], LRU[0] + LFU[0], LFU[1], LRU[1] + LFU[1]) / (ratio || 1) * 100;
+                    if (ratio > 0 && rateR > rateF || ratio > 50 && rateF * 1.05 < rate(window, LFU[1], LRU[1] + LFU[1], LFU[0], LRU[0] + LFU[0])) {
+                        if (indexes.LRU.length >= capacity * (100 - ratio) / 100) {
+                            --this.ratio;
+                        }
+                    } else if (ratio < 100 && rateF > rateR) {
+                        if (indexes.LFU.length >= capacity * ratio / 100) {
+                            ++this.ratio;
+                        }
                     }
                 }
                 access(record) {
@@ -607,7 +611,7 @@ require = function () {
                     ++this.stats.LRU[0];
                     ++this.clock;
                     ++this.clockR;
-                    if (node.value.clock + LRU.length / 3 > this.clockR) {
+                    if (node.value.clock > this.clockR - LRU.length / 3) {
                         node.value.clock = this.clockR;
                         node.moveToHead();
                         return true;
@@ -619,7 +623,8 @@ require = function () {
                 }
                 accessLFU(record) {
                     const node = record.index;
-                    if (node.list !== this.indexes.LFU)
+                    const {LFU} = this.indexes;
+                    if (node.list !== LFU)
                         return false;
                     ++this.stats.LFU[0];
                     ++this.clock;
@@ -1045,6 +1050,7 @@ require = function () {
                     if (this.prev) {
                         this.prev.next = this.next;
                     }
+                    this.list = undefined;
                     this.next = this.prev = undefined;
                     return this.value;
                 }
@@ -5268,7 +5274,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'example',
-                            'data-invalid-description': `Invalid example type.`
+                            'data-invalid-description': 'Invalid example type.'
                         }, `${ opener }${ body }${ closer }`)];
                 }
             }))));
@@ -5497,7 +5503,7 @@ require = function () {
                             class: 'invalid',
                             translate: 'no',
                             'data-invalid-syntax': 'message',
-                            'data-invalid-description': `Invalid message type.`
+                            'data-invalid-description': 'Invalid message type.'
                         }, `${ opener }${ body }${ closer }`)];
                 }
                 return [(0, typed_dom_1.html)('div', { class: `message type-${ type }` }, (0, array_1.unshift)([(0, typed_dom_1.html)('h6', title(type))], [...(0, segment_1.segment)(body)].reduce((acc, seg) => (0, array_1.push)(acc, (0, parser_1.eval)(content(seg, context), [])), [])))];
@@ -5652,7 +5658,7 @@ require = function () {
                     ...valid ? { 'data-highlight-level': +highlight > 1 ? highlight : global_1.undefined } : {
                         'data-invalid-syntax': 'table',
                         'data-invalid-type': 'highlight',
-                        'data-invalid-description': `Too much highlight level`
+                        'data-invalid-description': 'Too much highlight level.'
                     }
                 };
             }
@@ -6419,7 +6425,7 @@ require = function () {
                             class: `${ ref.className } disabled invalid`,
                             'data-invalid-syntax': 'label',
                             'data-invalid-type': 'reference',
-                            'data-invalid-description': `Missing the reference.`
+                            'data-invalid-description': 'Missing the reference.'
                         });
                     }
                     yield ref;
@@ -6603,7 +6609,7 @@ require = function () {
                                 translate: 'no',
                                 'data-invalid-syntax': 'header',
                                 'data-invalid-type': 'syntax',
-                                'data-invalid-description': `Invalid syntax.`
+                                'data-invalid-description': 'Invalid syntax.'
                             }, (0, normalize_1.normalize)(source))],
                         ''
                     ]
@@ -6838,7 +6844,7 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, (0, combinator_1.convert)(source => `[${ source }]{ ?res=${ source.slice(2) } }`, (0, combinator_1.union)([link_1.link])))), ([el]) => [(0, typed_dom_1.define)(el, { class: 'anchor' })])));
+            }, (0, combinator_1.convert)(source => `[${ source }]{ ?comment=${ source.slice(2) } }`, (0, combinator_1.union)([link_1.link])))), ([el]) => [(0, typed_dom_1.define)(el, { class: 'anchor' })])));
         },
         {
             '../../../combinator': 30,
@@ -8099,14 +8105,26 @@ require = function () {
                 state: global_1.undefined
             }, (0, combinator_1.subsequence)([
                 abbr,
+                (0, combinator_1.focus)('^', c => [
+                    [
+                        '',
+                        c
+                    ],
+                    ''
+                ]),
                 (0, util_1.startTight)((0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))
-            ])))), ']]'), util_1.isEndTight), ns => [(0, typed_dom_1.html)('sup', {
-                    class: 'reference',
-                    ...attributes(ns)
-                }, (0, typed_dom_1.defrag)(ns))]))));
-            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^[A-Za-z][0-9A-Za-z]*(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]), /^\|?(?=]])|^\|[^\S\n]?/), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
+            ])))), ']]'), util_1.isEndTight), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, typed_dom_1.defrag)(ns))]))));
+            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]), /^[^\S\n]?\|?(?=]])|^\|[^\S\n]/), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
             function attributes(ns) {
-                return { 'data-abbr': typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? (0, util_1.stringify)([ns.shift()]) : global_1.undefined };
+                return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
+                    class: 'reference',
+                    'data-abbr': (0, util_1.stringify)([ns.shift()])
+                } : ns[0] === '' ? {
+                    class: 'reference invalid',
+                    'data-invalid-syntax': 'reference',
+                    'data-invalid-type': 'syntax',
+                    'data-invalid-description': 'Invalid abbr.'
+                } : { class: 'reference' };
             }
         },
         {
