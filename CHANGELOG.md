@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.218.1
+
+- Fix visualization.
+
 ## 0.218.0
 
 - Allow invisible verbose tails.

@@ -17,6 +17,9 @@ export const text: TextParser = creator((source, context) => {
       return [[source], ''];
     case 0:
       switch (source[0]) {
+        case '\x7F':
+          assert(source[1] === '\\');
+          return [[], source.slice(1)];
         case '\\':
           switch (source[1]) {
             case undefined:

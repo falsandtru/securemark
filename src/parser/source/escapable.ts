@@ -4,6 +4,7 @@ import { creator } from '../../combinator';
 const separator = /[\s\x00-\x2F\x3A-\x40\x5B-\x60\x7B-\x7F]/;
 
 export const escsource: EscapableSourceParser = creator(source => {
+  assert(source[0] !== '\x7F');
   if (source === '') return;
   const i = source.search(separator);
   switch (i) {

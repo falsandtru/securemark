@@ -1,9 +1,10 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
 import { Parser, eval } from '../combinator/data/parser';
-import { union, verify, convert } from '../combinator';
+import { union, some, verify, clear, convert, trim } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
+import { linebreak, unescsource, str } from './source';
 import { html, defrag } from 'typed-dom';
 import { pop } from 'spica/array';
 
@@ -44,17 +45,17 @@ const invisibleHTMLEntityNames = [
 ];
 const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)*\\?(?:\n|$)`, 'gm');
 
-export function visualize<P extends Parser<HTMLElement | string>>(parser: P, message?: string): P;
-export function visualize<T extends HTMLElement | string>(parser: Parser<T>, message = '(Empty)'): Parser<T> {
+export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
   return justify(union([
     verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
-    (source: string) => [[source.trim() || message], ''],
+    trim(some(union([clear(str('\x7F\\')), linebreak, unescsource]))),
   ]));
 }
 function justify<P extends Parser<unknown>>(parser: P): P;
 function justify<T>(parser: Parser<T>): Parser<T> {
   return convert(
-    source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\\$&')),
+    source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x7F\\$&')),
     parser);
 }
 function hasVisible(

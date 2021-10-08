@@ -36,14 +36,26 @@ describe('Unit: parser/api/parse', () => {
         [...parse('\\').children].map(el => el.outerHTML),
         ['<p>\\</p>']);
       assert.deepStrictEqual(
+        [...parse('\\\na').children].map(el => el.outerHTML),
+        ['<p>\\<br>a</p>']);
+      assert.deepStrictEqual(
         [...parse('&Tab;').children].map(el => el.outerHTML),
         ['<p>&amp;Tab;</p>']);
+      assert.deepStrictEqual(
+        [...parse('&Tab;\na').children].map(el => el.outerHTML),
+        ['<p>&amp;Tab;<br>a</p>']);
       assert.deepStrictEqual(
         [...parse('<wbr>').children].map(el => el.outerHTML),
         ['<p>&lt;wbr&gt;</p>']);
       assert.deepStrictEqual(
-        [...parse('[# a #]').children].map(el => el.outerHTML),
-        ['<p>[# a #]</p>']);
+        [...parse('<wbr>\na').children].map(el => el.outerHTML),
+        ['<p>&lt;wbr&gt;<br>a</p>']);
+      assert.deepStrictEqual(
+        [...parse('[#\n<wbr>\n#]').children].map(el => el.outerHTML),
+        ['<p>[#<br>&lt;wbr&gt;<br>#]</p>']);
+      assert.deepStrictEqual(
+        [...parse('[#\n<wbr>\n#]a').children].map(el => el.outerHTML),
+        ['<p><sup class="comment" title="<wbr>"></sup>a</p>']);
     });
 
     it('linebreak', () => {
