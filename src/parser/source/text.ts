@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { TextParser, TxtParser, LinebreakParser } from '../source';
-import { union, focus, creator, fmap } from '../../combinator';
+import { union, focus, creator } from '../../combinator';
 import { str } from './str';
 import { html } from 'typed-dom';
 
@@ -67,9 +67,9 @@ export const txt: TxtParser = union([
   text,
 ]) as TxtParser;
 
-export const linebreak: LinebreakParser = fmap(
-  focus('\n', union([text])),
-  ns => ns as [HTMLBRElement]);
+export const linebreak: LinebreakParser = focus('\n', union([
+  text,
+])) as LinebreakParser;
 
 export function isAlphanumeric(char: string): boolean {
   assert(char.length === 1);
