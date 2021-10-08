@@ -7337,10 +7337,10 @@ require = function () {
                     class: 'index',
                     href: el.id ? `#${ el.id }` : global_1.undefined
                 }, el.childNodes)]))));
-            const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.open)(/^[^\S\n]?\|#/, (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
+            const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)(/^[^\S\n]?\|#/, (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 bracket,
                 source_1.txt
-            ]), ']', /^\\?\n/))), util_1.verifyEndTight), ns => [(0, typed_dom_1.html)('span', {
+            ]), ']', /^\\?\n/))), ns => [(0, typed_dom_1.html)('span', {
                     class: 'indexer',
                     'data-index': (0, indexee_1.identify)((0, array_1.join)(ns).trim()).slice(6)
                 })])));
@@ -8116,7 +8116,7 @@ require = function () {
                 ]),
                 (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)
             ])))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, typed_dom_1.defrag)(ns))]))));
-            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]), /^[^\S\n]?\|?(?=]])|^\|[^\S\n]/), (_, rest, context) => (0, util_1.isStartTight)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
+            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]), /^[^\S\n]?\|?(?=]])|^\|[^\S\n]+/), (_, rest, context) => (0, util_1.isStartTight)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
             function attributes(ns) {
                 return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
                     class: 'reference',
