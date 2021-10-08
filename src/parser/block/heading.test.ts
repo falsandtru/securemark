@@ -66,7 +66,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a [#b]\\')), [['<h1 id="index:a_[#b]">a [#b]</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [#B]')), [['<h1 id="index:B">a<span class="indexer" data-index="B"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [#b ]')), [['<h1 id="index:b">a<span class="indexer" data-index="b"></span></h1>'], '']);
-      assert.deepStrictEqual(inspect(parser('# a [#b  ]')), [['<h1 id="index:a_[#b_]">a [#b  ]</h1>'], '']);
+      assert.deepStrictEqual(inspect(parser('# a [#b  ]')), [['<h1 id="index:b">a<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [#b c]')), [['<h1 id="index:b_c">a<span class="indexer" data-index="b_c"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [#*b*`c`${d}$]')), [['<h1 id="index:b`c`${d}$">a<span class="indexer" data-index="b`c`${d}$"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a [#@a]')), [['<h1 id="index:@a">a<span class="indexer" data-index="@a"></span></h1>'], '']);
@@ -79,7 +79,7 @@ describe('Unit: parser/block/heading', () => {
       assert.deepStrictEqual(inspect(parser('# a  [#b] \n')), [['<h1 id="index:b">a<span class="indexer" data-index="b"></span></h1>'], '']);
       assert.deepStrictEqual(inspect(parser('# a \\[#b]')), [['<h1 id="index:a_[#b]">a [#b]</h1>'], '']);
       assert.deepStrictEqual(inspect(parser('## a [#b] [#c]')), [['<h2 id="index:c">a [<a href="/hashtags/b" class="hashtag">#b</a>]<span class="indexer" data-index="c"></span></h2>'], '']);
-      assert.deepStrictEqual(inspect(parser('## a [#b  ] [#c  ]')), [['<h2 id="index:a_[#b_]_[#c_]">a [<a href="/hashtags/b" class="hashtag">#b</a>  ] [<a href="/hashtags/c" class="hashtag">#c</a>  ]</h2>'], '']);
+      assert.deepStrictEqual(inspect(parser('## a [#b  ] [#c  ]')), [['<h2 id="index:c">a [<a href="/hashtags/b" class="hashtag">#b</a>  ]<span class="indexer" data-index="c"></span></h2>'], '']);
     });
 
   });

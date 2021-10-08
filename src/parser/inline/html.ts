@@ -5,7 +5,7 @@ import { HTMLParser } from '../inline';
 import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, markVerboseTail, trimEndBR } from '../util';
+import { startTight, trimEndBR } from '../util';
 import { html as h, defrag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
@@ -66,7 +66,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
         some(union([inline]), `</${tag}>`))),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest, context) =>
-          [[elem(tag, as, trimEndBR(markVerboseTail(defrag(bs))), cs, context)], rest])),
+          [[elem(tag, as, trimEndBR(defrag(bs)), cs, context)], rest])),
       ([, tag]) => tag)),
   match(
     /^(?=<([a-z]+)(?=[ >]))/,
@@ -78,7 +78,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
         startTight(some(union([inline]), `</${tag}>`)),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
-          [[elem(tag, as, trimEndBR(markVerboseTail(defrag(bs))), cs, {})], rest],
+          [[elem(tag, as, trimEndBR(defrag(bs)), cs, {})], rest],
         ([as, bs], rest) =>
           as.length === 1
             ? [unshift(as, bs), rest]

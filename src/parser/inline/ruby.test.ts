@@ -28,7 +28,7 @@ describe('Unit: parser/inline/ruby', () => {
       assert.deepStrictEqual(inspect(parser('[A ](a)')), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[A ](a b)')), [['<ruby>A<rp>(</rp><rt>a b</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[A ](a b )')), [['<ruby>A<rp>(</rp><rt>a b</rt><rp>)</rp></ruby>'], '']);
-      assert.deepStrictEqual(inspect(parser('[A  ](a)')), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp><rt></rt><span class="invalid"></span></ruby>'], '']);
+      assert.deepStrictEqual(inspect(parser('[A  ](a)')), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp><rt></rt></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[A \\ ](a)')), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp> <rt></rt></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[AB](a)')), [['<ruby>AB<rp>(</rp><rt>a</rt><rp>)</rp></ruby>'], '']);
       assert.deepStrictEqual(inspect(parser('[AB](a )')), [['<ruby>A<rp>(</rp><rt>a</rt><rp>)</rp>B<rt></rt></ruby>'], '']);

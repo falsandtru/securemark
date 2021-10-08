@@ -826,6 +826,7 @@ export namespace MarkdownParser {
             SourceParser.StrParser,
             SourceParser.StrParser,
             SourceParser.StrParser,
+            SourceParser.StrParser,
           ]> {
         }
       }

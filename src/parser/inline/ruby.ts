@@ -4,7 +4,7 @@ import { eval, exec } from '../../combinator/data/parser';
 import { sequence, validate, verify, focus, creator, surround, lazy, bind } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text as txt } from '../source';
-import { verifyStartTight, markVerboseTail } from '../util';
+import { verifyStartTight } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
@@ -16,7 +16,6 @@ export const ruby: RubyParser = lazy(() => creator(bind(verify(
   ])),
   ([texts]) => verifyStartTight(texts)),
   ([texts, rubies], rest) => {
-    markVerboseTail(texts);
     const tail = typeof texts[texts.length - 1] === 'object'
       ? [texts.pop()!]
       : [];

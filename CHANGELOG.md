@@ -2,7 +2,7 @@
 
 ## 0.218.0
 
-- Refine the handling of invisible verbose tails.
+- Allow invisible verbose tails.
 
 ## 0.217.0
 

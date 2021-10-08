@@ -6,7 +6,7 @@ import { link, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { txt, str } from '../source';
-import { verifyStartTight, verifyEndTight, markVerboseTail } from '../util';
+import { verifyStartTight } from '../util';
 import { html, define } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
@@ -41,15 +41,6 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
     const el = cache && cached
       ? cache.get(url.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': url.source, alt: text.trimEnd() });
-    if (!verifyEndTight([text])) {
-      const attrs = (markVerboseTail([text]).pop() as HTMLElement).attributes;
-      el.classList.add('invalid');
-      define(el, {
-        'data-invalid-syntax': attrs['data-invalid-syntax'],
-        'data-invalid-type': attrs['data-invalid-type'],
-        'data-invalid-description': attrs['data-invalid-description'],
-      });
-    }
     if (!cached && !sanitize(url, el)) return [[el], rest];
     cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
     define(el, attributes('media', push([], el.classList), optspec, params));

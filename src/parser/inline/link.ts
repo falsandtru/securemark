@@ -7,7 +7,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { startTight, markVerboseTail, stringify } from '../util';
+import { startTight, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -54,7 +54,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
     assert(!INSECURE_URI.match(/\s/));
     const el = create(
       INSECURE_URI,
-      markVerboseTail(defrag(content)),
+      defrag(content),
       new ReadonlyURL(
         resolve(INSECURE_URI, context.host || location, context.url || location),
         context.host?.href || location.href),
@@ -72,6 +72,7 @@ export const uri: LinkParser.ParameterParser.UriParser = union([
 export const option: LinkParser.ParameterParser.OptionParser = union([
   fmap(str(/^ nofollow(?=[ }])/), () => [` rel="nofollow"`]),
   str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ }])/),
+  fmap(str(/^ +(?=})/), () => []),
   fmap(str(/^ [^\n{}]+/), opt => [` \\${opt.slice(1)}`]),
 ]);
 

@@ -2,7 +2,7 @@ import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
 import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
-import { startTight, markVerboseTail } from '../util';
+import { startTight } from '../util';
 import { html, defrag } from 'typed-dom';
 
 export const annotation: AnnotationParser = lazy(() => creator(validate('((', '))', '\n', fmap(surround(
@@ -21,4 +21,4 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', ')
   }}, state: undefined },
   union([some(inline, ')', /^\\?\n/)])))),
   '))'),
-  ns => [html('sup', { class: 'annotation' }, markVerboseTail(defrag(ns)))]))));
+  ns => [html('sup', { class: 'annotation' }, defrag(ns))]))));

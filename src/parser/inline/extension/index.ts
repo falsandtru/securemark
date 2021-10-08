@@ -4,9 +4,9 @@ import { union, some, validate, verify, guard, context, creator, surround, open,
 import { inline } from '../../inline';
 import { indexee, identify } from './indexee';
 import { txt, str } from '../../source';
-import { startTight, verifyEndTight, markVerboseTail } from '../../util';
+import { startTight, verifyEndTight } from '../../util';
 import { html, define, defrag } from 'typed-dom';
-import { push, pop, join } from 'spica/array';
+import { join } from 'spica/array';
 
 import IndexParser = ExtensionParser.IndexParser;
 
@@ -29,7 +29,7 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     inline,
   ]), /^]/, /^\\?\n/), true)))),
   ']'),
-  ns => [html('a', fix(defrag(ns)))])),
+  ns => [html('a', defrag(ns))])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {
@@ -54,11 +54,3 @@ const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creator(un
   surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true),
   surround(str('"'), some(txt, '"'), str('"'), true),
 ])));
-
-function fix(ns: (string | HTMLElement)[]): (string | HTMLElement)[] {
-  assert(ns.length === defrag(ns).length);
-  const last = ns[ns.length - 1];
-  return typeof last === 'object' && last.className === 'indexer'
-    ? push(markVerboseTail(pop(ns)[0]), [last])
-    : markVerboseTail(ns);
-}

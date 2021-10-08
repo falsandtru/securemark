@@ -2,7 +2,7 @@ import { ExtensionParser } from '../../inline';
 import { union, some, validate, creator, surround, lazy } from '../../../combinator';
 import { inline } from '../../inline';
 import { str } from '../../source';
-import { startTight, markVerboseTail } from '../../util';
+import { startTight } from '../../util';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 
@@ -20,6 +20,6 @@ export const placeholder: ExtensionParser.PlaceholderParser = lazy(() => creator
       'data-invalid-syntax': 'extension',
       'data-invalid-type': 'syntax',
       'data-invalid-description': 'Invalid symbol.',
-    }, markVerboseTail(defrag(bs))),
+    }, defrag(bs)),
   ], rest],
   ([as, bs], rest) => [unshift(as, bs), rest]))));
