@@ -6,7 +6,7 @@ import { link, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { txt, str } from '../source';
-import { isStartTight, markVerboseTail, isEndTight } from '../util';
+import { verifyStartTight, verifyEndTight, markVerboseTail } from '../util';
 import { html, define } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
@@ -28,7 +28,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
   ])))),
   ([as, bs]) => bs ? [[join(as)], bs] : [[''], as]),
-  ([[text]]) => isStartTight([text || '-'])),
+  ([[text]]) => verifyStartTight([text || '-'])),
   ([[text], params], rest, context) => {
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
@@ -41,7 +41,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
     const el = cache && cached
       ? cache.get(url.href)!.cloneNode(true)
       : html('img', { class: 'media', 'data-src': url.source, alt: text.trimEnd() });
-    if (!isEndTight([text])) {
+    if (!verifyEndTight([text])) {
       const attrs = (markVerboseTail([text]).pop() as HTMLElement).attributes;
       el.classList.add('invalid');
       define(el, {

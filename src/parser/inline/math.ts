@@ -1,7 +1,7 @@
 import { MathParser } from '../inline';
 import { union, some, validate, verify, rewrite, creator, surround, lazy } from '../../combinator';
 import { escsource, str } from '../source';
-import { isEndTight } from '../util';
+import { verifyEndTight } from '../util';
 import { html } from 'typed-dom';
 
 const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
@@ -21,7 +21,7 @@ export const math: MathParser = lazy(() => creator(validate('$', '$', '\n', rewr
         // $[A-z]*[,.!?()]            : Incomplete syntax before texts
         // $[A-z]*\s?[!@#&*+~=`$[]{<] : Incomplete syntax in or around another syntax
         str(/^(?=[\\^_[(|]|[A-Za-z][0-9A-Za-z]*'*[ ~]?(?:\$|([\\^_(|:=<>])(?!\1)))(?:\\\$|[\x20-\x23\x25-\x7E])*/),
-        isEndTight),
+        verifyEndTight),
       /^\$(?![0-9A-Za-z])/),
   ]),
   (source, { caches: { math: cache } = {} }) => [[

@@ -4,7 +4,7 @@ import { union, some, validate, verify, guard, context, creator, surround, open,
 import { inline } from '../../inline';
 import { indexee, identify } from './indexee';
 import { txt, str } from '../../source';
-import { startTight, markVerboseTail, isEndTight } from '../../util';
+import { startTight, verifyEndTight, markVerboseTail } from '../../util';
 import { html, define, defrag } from 'typed-dom';
 import { join } from 'spica/array';
 
@@ -42,7 +42,7 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
 const indexer: IndexParser.IndexerParser = lazy(() => creator(fmap(verify(open(
   '|#',
   startTight(some(union([bracket, txt]), ']', /^\\?\n/))),
-  isEndTight),
+  verifyEndTight),
   ns => [
     html('span', { class: 'indexer', 'data-index': identify(join(ns).trim()).slice(6) }),
   ])));

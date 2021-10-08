@@ -80,51 +80,57 @@ export function startTight<P extends Parser<unknown>>(parser: P): P;
 export function startTight<T>(parser: Parser<T>): Parser<T> {
   return (source, context) => {
     if (source === '') return;
-    switch (source[0]) {
-      case ' ':
-      case '　':
-      case '\t':
-      case '\n':
-        return;
-      case '&':
-        switch (true) {
-          case source.length > 2
-            && source[1] !== ' '
-            && eval(htmlentity(source, context))?.[0].trimStart() == '':
-            return;
-        }
-        break;
-      case '[':
-        switch (true) {
-          case source.length >= 7
-            && source[1] === '#'
-            && !!comment(source, context):
-            return;
-        }
-        break;
-      case '<':
-        switch (true) {
-          case source.length >= 5
-            && source[1] === 'w'
-            && source.slice(0, 5) === '<wbr>':
-          case source.length >= 4
-            && source[1] === 'b'
-            && source.slice(0, 4) === '<br>':
-            return;
-        }
-        break;
-    }
+    if (!isStartTight(source, context)) return;
     return (source[0] === '\\' ? source[1] : source[0])?.trimStart()
       ? parser(source, context)
       : undefined;
   }
 }
 
-export function isStartTight(nodes: readonly (HTMLElement | string)[]): boolean {
+export function isStartTight(source: string, context: MarkdownParser.Context): boolean {
+  if (source === '') return true;
+  switch (source[0]) {
+    case ' ':
+    case '　':
+    case '\t':
+    case '\n':
+      return false;
+    case '&':
+      switch (true) {
+        case source.length > 2
+          && source[1] !== ' '
+          && eval(htmlentity(source, context))?.[0].trimStart() == '':
+          return false;
+      }
+      return true;
+    case '[':
+      switch (true) {
+        case source.length >= 7
+          && source[1] === '#'
+          && !!comment(source, context):
+          return false;
+      }
+      return true;
+    case '<':
+      switch (true) {
+        case source.length >= 5
+          && source[1] === 'w'
+          && source.slice(0, 5) === '<wbr>':
+        case source.length >= 4
+          && source[1] === 'b'
+          && source.slice(0, 4) === '<br>':
+          return false;
+      }
+      return true;
+    default:
+      return true;
+  }
+}
+export function verifyStartTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   return isVisible(nodes[0]);
 }
-export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
+export function verifyEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   const last = nodes.length - 1;
   return typeof nodes[last] === 'string' && (nodes[last] as string).length > 1
@@ -134,8 +140,8 @@ export function isEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
       isVisible(nodes[last - 1], -1);
 }
 export function markVerboseTail(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  assert(isStartTight(nodes));
-  if (isEndTight(nodes)) return nodes;
+  assert(verifyStartTight(nodes));
+  if (verifyEndTight(nodes)) return nodes;
   const invisibles: typeof nodes = [];
   for (
     let last = nodes[0];
