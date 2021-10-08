@@ -26,7 +26,7 @@ export const segment: FigParser.SegmentParser = block(validate(['[$', '$'],
 
 export const fig: FigParser = block(rewrite(segment, convert(
   source => {
-    const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || [])
+    const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/mg) || [])
       .reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
     return `${fence}figure ${source}\n\n${fence}`;
   },
