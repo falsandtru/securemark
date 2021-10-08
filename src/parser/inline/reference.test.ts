@@ -64,8 +64,8 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[^a| b]]')), [['<sup class="reference" data-abbr="a">b</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^a| b ]]')), [['<sup class="reference" data-abbr="a">b </sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^a| b  ]]')), [['<sup class="reference" data-abbr="a">b  </sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[^a|  ]]')), [['<sup class="reference invalid">^a|  </sup>'], '']);
-      assert.deepStrictEqual(inspect(parser('[[^a|  b]]')), [['<sup class="reference invalid">^a|  b</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[^a|  ]]')), [['<sup class="reference" data-abbr="a"></sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[^a|  b]]')), [['<sup class="reference" data-abbr="a">b</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^a| <wbr>]]')), [['<sup class="reference invalid">^a| <wbr></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^a| <wbr>b]]')), [['<sup class="reference invalid">^a| <wbr>b</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[^1]]')), [['<sup class="reference invalid">^1</sup>'], '']);

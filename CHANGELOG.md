@@ -3,6 +3,7 @@
 ## 0.218.1
 
 - Fix visualization.
+- Fix invisible verbose tail handling.
 
 ## 0.218.0
 

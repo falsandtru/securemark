@@ -31,7 +31,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
 const abbr: ReferenceParser.AbbrParser = creator(fmap(verify(surround(
   '^',
   union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]),
-  /^[^\S\n]?\|?(?=]])|^\|[^\S\n]/),
+  /^[^\S\n]?\|?(?=]])|^\|[^\S\n]+/),
   (_, rest, context) => isStartTight(rest, context)),
   ([source]) => [html('abbr', source)]));
 

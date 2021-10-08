@@ -1,10 +1,10 @@
 import { undefined } from 'spica/global';
 import { ExtensionParser } from '../../inline';
-import { union, some, validate, verify, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
+import { union, some, validate, guard, context, creator, surround, open, lazy, fmap } from '../../../combinator';
 import { inline } from '../../inline';
 import { indexee, identify } from './indexee';
 import { txt, str } from '../../source';
-import { startTight, verifyEndTight } from '../../util';
+import { startTight } from '../../util';
 import { html, define, defrag } from 'typed-dom';
 import { join } from 'spica/array';
 
@@ -40,10 +40,9 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
       el.childNodes),
   ]))));
 
-const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(verify(open(
+const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(open(
   /^[^\S\n]?\|#/,
   startTight(some(union([bracket, txt]), ']', /^\\?\n/))),
-  verifyEndTight),
   ns => [
     html('span', { class: 'indexer', 'data-index': identify(join(ns).trim()).slice(6) }),
   ])));
