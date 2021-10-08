@@ -5316,7 +5316,7 @@ require = function () {
                 ])
             ])));
             exports.fig = (0, combinator_1.block)((0, combinator_1.rewrite)(exports.segment, (0, combinator_1.convert)(source => {
-                const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/gm) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
+                const fence = (/^[^\n]*\n!?>+\s/.test(source) && source.match(/^~{3,}(?=\s*$)/mg) || []).reduce((max, fence) => fence > max ? fence : max, '~~') + '~';
                 return `${ fence }figure ${ source }\n\n${ fence }`;
             }, (0, combinator_1.union)([figure_1.figure]))));
         },
@@ -5632,11 +5632,11 @@ require = function () {
             const head = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^#(?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
                 source_1.anyline,
                 (0, combinator_1.some)(source_1.contentline, delimiter)
-            ]), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))), '')), true), ns => [(0, typed_dom_1.html)('th', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
+            ]), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('th', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
             const data = (0, combinator_1.creator)((0, combinator_1.block)((0, combinator_1.fmap)((0, combinator_1.open)((0, source_1.str)(/^:(?:(?!:!*[^\S\n]|0)\d*:(?!0)\d*)?!*(?=[^\S\n])/), (0, combinator_1.rewrite)((0, combinator_1.inits)([
                 source_1.anyline,
                 (0, combinator_1.some)(source_1.contentline, delimiter)
-            ]), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))), '')), true), ns => [(0, typed_dom_1.html)('td', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
+            ]), (0, util_1.visualize)((0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]))))), true), ns => [(0, typed_dom_1.html)('td', attributes(ns.shift()), (0, typed_dom_1.defrag)(ns))]), false));
             const dataline = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.rewrite)(source_1.contentline, (0, combinator_1.union)([
                 (0, combinator_1.validate)(/^:!*[^\S\n]/, data),
                 (0, combinator_1.validate)(/^!+[^\S\n]/, (0, combinator_1.convert)(source => `:${ source }`, data)),
@@ -7097,7 +7097,7 @@ require = function () {
             exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+((?:\S+\s+)+?)(\1\]|$)/, ([, , title, closer]) => (rest, {resources}) => closer ? [
                 [(0, typed_dom_1.html)('sup', {
                         class: 'comment',
-                        title: title.trim()
+                        title: title.trim().replace(/\x7F.?/gs, '')
                     })],
                 rest
             ] : resources && void (resources.budget -= title.match(/\s+/g).length))));
@@ -8679,6 +8679,11 @@ require = function () {
                     ];
                 case 0:
                     switch (source[0]) {
+                    case '\x7F':
+                        return [
+                            [],
+                            source.slice(1)
+                        ];
                     case '\\':
                         switch (source[1]) {
                         case global_1.undefined:
@@ -8744,7 +8749,7 @@ require = function () {
                 }
             });
             exports.txt = (0, combinator_1.union)([exports.text]);
-            exports.linebreak = (0, combinator_1.fmap)((0, combinator_1.focus)('\n', (0, combinator_1.union)([exports.text])), ns => ns);
+            exports.linebreak = (0, combinator_1.focus)('\n', (0, combinator_1.union)([exports.text]));
             function isAlphanumeric(char) {
                 if (char < '0' || '\x7F' < char)
                     return false;
@@ -8807,6 +8812,7 @@ require = function () {
             const combinator_1 = _dereq_('../combinator');
             const comment_1 = _dereq_('./inline/comment');
             const htmlentity_1 = _dereq_('./inline/htmlentity');
+            const source_1 = _dereq_('./source');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             const invisibleHTMLEntityNames = [
@@ -8844,18 +8850,19 @@ require = function () {
                 'ic'
             ];
             const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)*\\?(?:\n|$)`, 'gm');
-            function visualize(parser, message = '(Empty)') {
+            function visualize(parser) {
                 return justify((0, combinator_1.union)([
                     (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
-                    source => [
-                        [source.trim() || message],
-                        ''
-                    ]
+                    (0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
+                        (0, combinator_1.clear)((0, source_1.str)('\x7F\\')),
+                        source_1.linebreak,
+                        source_1.unescsource
+                    ])))
                 ]));
             }
             exports.visualize = visualize;
             function justify(parser) {
-                return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\\$&')), parser);
+                return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x7F\\$&')), parser);
             }
             function hasVisible(nodes, {
                 syntax: {
@@ -9012,6 +9019,7 @@ require = function () {
             '../combinator/data/parser': 49,
             './inline/comment': 104,
             './inline/htmlentity': 116,
+            './source': 130,
             'spica/array': 6,
             'spica/global': 17,
             'typed-dom': 29
