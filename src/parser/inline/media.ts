@@ -25,7 +25,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
     dup(surround(/^\[(?!\\?\s)/, some(union([htmlentity, bracket, txt]), ']', /^\\?\n/), ']', true)),
-    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^ ?}/)),
+    dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]?}/)),
   ])))),
   ([as, bs]) => bs ? [[join(as)], bs] : [[''], as]),
   ([[text]]) => verifyStartTight([text || '-'])),
@@ -60,8 +60,8 @@ const bracket: MediaParser.TextParser.BracketParser = lazy(() => union([
 ]));
 
 const option: MediaParser.ParameterParser.OptionParser = union([
-  fmap(str(/^ [1-9][0-9]*x[1-9][0-9]*(?=[ }])/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]),
-  fmap(str(/^ [1-9][0-9]*:[1-9][0-9]*(?=[ }])/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
+  fmap(str(/^[^\S\n]+[1-9][0-9]*x[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` width="${opt.slice(1).split('x')[0]}"`, ` height="${opt.slice(1).split('x')[1]}"`]),
+  fmap(str(/^[^\S\n]+[1-9][0-9]*:[1-9][0-9]*(?=[^\S\n]|})/), ([opt]) => [` aspect-ratio="${opt.slice(1).split(':').join('/')}"`]),
   linkoption,
 ]);
 

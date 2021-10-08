@@ -20,9 +20,9 @@ const attrspec = {
 ObjectSetPrototypeOf(attrspec, null);
 ObjectValues(attrspec).forEach(o => ObjectSetPrototypeOf(o, null));
 
-export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', validate(/^<[a-z]+[ >]/, union([
+export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', validate(/^<[a-z]+(?=[^\S\n]|>)/, union([
   match(
-    /^(?=<(wbr)(?=[ >]))/,
+    /^(?=<(wbr)(?=[^\S\n]|>))/,
     memoize(
     ([, tag]) =>
       surround(
@@ -33,7 +33,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
         ]),
     ([, tag]) => tag)),
   match(
-    /^(?=<(sup|sub|small|bdo|bdi)(?=[ >]))/,
+    /^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/,
     memoize(
     ([, tag]) =>
       validate(`<${tag}`, `</${tag}>`,
@@ -69,7 +69,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
           [[elem(tag, as, trimEndBR(defrag(bs)), cs, context)], rest])),
       ([, tag]) => tag)),
   match(
-    /^(?=<([a-z]+)(?=[ >]))/,
+    /^(?=<([a-z]+)(?=[^\S\n]|>))/,
     memoize(
     ([, tag]) =>
       validate(`<${tag}`, `</${tag}>`,
@@ -88,7 +88,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
 ])))));
 
 export const attribute: HTMLParser.TagParser.AttributeParser = union([
-  str(/^ [a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[ >])/),
+  str(/^[^\S\n]+[a-z]+(?:-[a-z]+)*(?:="(?:\\[^\n]|[^\n"])*")?(?=[^\S\n]|>)/),
 ]);
 
 function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | string)[], cs: (HTMLElement | string)[], context: MarkdownParser.Context): HTMLElement {
@@ -148,9 +148,7 @@ export function attributes(
   let invalid = false;
   const attrs: Record<string, string | undefined> = {};
   for (let i = 0; i < params.length; ++i) {
-    assert(params[i][0] === ' ');
-    assert(params[i][1] !== ' ');
-    const param = params[i].slice(1);
+    const param = params[i].trim();
     const name = param.split('=', 1)[0];
     const value = param !== name
       ? param.slice(name.length + 2, -1).replace(/\\(.?)/g, '$1')
