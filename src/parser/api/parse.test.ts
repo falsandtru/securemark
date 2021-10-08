@@ -38,6 +38,12 @@ describe('Unit: parser/api/parse', () => {
       assert.deepStrictEqual(
         [...parse('&Tab;').children].map(el => el.outerHTML),
         ['<p>&amp;Tab;</p>']);
+      assert.deepStrictEqual(
+        [...parse('<wbr>').children].map(el => el.outerHTML),
+        ['<p>&lt;wbr&gt;</p>']);
+      assert.deepStrictEqual(
+        [...parse('[# a #]').children].map(el => el.outerHTML),
+        ['<p>[# a #]</p>']);
     });
 
     it('linebreak', () => {

@@ -42,7 +42,7 @@ const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ];
-const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});)*\\?(?:\n|$)`, 'gm');
+const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)*\\?(?:\n|$)`, 'gm');
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P, message?: string): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>, message = '(Empty)'): Parser<T> {
@@ -53,11 +53,9 @@ export function visualize<T extends HTMLElement | string>(parser: Parser<T>, mes
 }
 function justify<P extends Parser<unknown>>(parser: P): P;
 function justify<T>(parser: Parser<T>): Parser<T> {
-  return convert(source => source.replace(blankline, visualize), parser);
-
-  function visualize(line: string): string {
-    return line.replace(/[\\&]/g, '\\$&');
-  }
+  return convert(
+    source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\\$&')),
+    parser);
 }
 function hasVisible(
   nodes: readonly (HTMLElement | string)[],
@@ -116,9 +114,6 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
         case source.length >= 5
           && source[1] === 'w'
           && source.slice(0, 5) === '<wbr>':
-        case source.length >= 4
-          && source[1] === 'b'
-          && source.slice(0, 4) === '<br>':
           return false;
       }
       return true;
