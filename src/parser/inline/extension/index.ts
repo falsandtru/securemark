@@ -6,12 +6,12 @@ import { indexee, identify } from './indexee';
 import { txt, str } from '../../source';
 import { startTight, verifyEndTight, markVerboseTail } from '../../util';
 import { html, define, defrag } from 'typed-dom';
-import { join } from 'spica/array';
+import { push, pop, join } from 'spica/array';
 
 import IndexParser = ExtensionParser.IndexParser;
 
 export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(fmap(surround(
-  '[#',
+  /^\[#(?!])/,
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
   context({ syntax: { inline: {
@@ -23,12 +23,13 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     media: false,
     autolink: false,
   }}},
+  open(inline,
   some(union([
-    indexer,
+    signature,
     inline,
-  ]), /^]/, /^\\?\n/)))),
+  ]), /^]/, /^\\?\n/), true)))),
   ']'),
-  ns => [html('a', markVerboseTail(defrag(ns)))])),
+  ns => [html('a', fix(defrag(ns)))])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {
@@ -39,17 +40,25 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
       el.childNodes),
   ]))));
 
-const indexer: IndexParser.IndexerParser = lazy(() => creator(fmap(verify(open(
-  '|#',
+const signature: IndexParser.SignatureParser = lazy(() => creator(fmap(verify(open(
+  /^[^\S\n]?\|#/,
   startTight(some(union([bracket, txt]), ']', /^\\?\n/))),
   verifyEndTight),
   ns => [
     html('span', { class: 'indexer', 'data-index': identify(join(ns).trim()).slice(6) }),
   ])));
 
-const bracket: IndexParser.IndexerParser.BracketParser = lazy(() => creator(union([
+const bracket: IndexParser.SignatureParser.BracketParser = lazy(() => creator(union([
   surround(str('('), some(union([bracket, txt]), ')'), str(')'), true),
   surround(str('['), some(union([bracket, txt]), ']'), str(']'), true),
   surround(str('{'), some(union([bracket, txt]), '}'), str('}'), true),
   surround(str('"'), some(txt, '"'), str('"'), true),
 ])));
+
+function fix(ns: (string | HTMLElement)[]): (string | HTMLElement)[] {
+  assert(ns.length === defrag(ns).length);
+  const last = ns[ns.length - 1];
+  return typeof last === 'object' && last.className === 'indexer'
+    ? push(markVerboseTail(pop(ns)[0]), [last])
+    : markVerboseTail(ns);
+}

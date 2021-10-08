@@ -707,21 +707,21 @@ export namespace MarkdownParser {
         // [#index]
         Inline<'extension/index'>,
         Parser<HTMLAnchorElement, Context, [
-          IndexParser.IndexerParser,
+          IndexParser.SignatureParser,
           InlineParser,
         ]> {
       }
       export namespace IndexParser {
-        export interface IndexerParser extends
-          Inline<'extension/index/indexer'>,
+        export interface SignatureParser extends
+          Inline<'extension/index/signature'>,
           Parser<HTMLElement, Context, [
-            IndexerParser.BracketParser,
+            SignatureParser.BracketParser,
             SourceParser.TxtParser,
           ]> {
         }
-        export namespace IndexerParser {
+        export namespace SignatureParser {
           export interface BracketParser extends
-            Inline<'extension/index/indexer/bracket'>,
+            Inline<'extension/index/signature/bracket'>,
             Parser<string, Context, [
               Parser<string, Context, [
                 BracketParser,
