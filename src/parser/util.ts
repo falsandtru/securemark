@@ -5,7 +5,6 @@ import { union, some, verify, clear, convert, trim } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { linebreak, unescsource, str } from './source';
-import { html, defrag } from 'typed-dom';
 import { pop } from 'spica/array';
 
 // https://dev.w3.org/html5/html-author/charref
@@ -133,36 +132,6 @@ export function verifyEndTight(nodes: readonly (HTMLElement | string)[]): boolea
       isVisible(nodes[last], -2)
     : isVisible(nodes[last], -1) || last === 0 ||
       isVisible(nodes[last - 1], -1);
-}
-export function markVerboseTail(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  assert(verifyStartTight(nodes));
-  if (verifyEndTight(nodes)) return nodes;
-  const invisibles: typeof nodes = [];
-  for (
-    let last = nodes[0];
-    last = nodes[nodes.length - 1],
-    typeof last === 'string' && last.length > 1
-      ? !isVisible(last, -2)
-      : !isVisible(nodes[nodes.length - 2], -1);
-  ) {
-    assert(nodes.length > 0);
-    if (typeof last === 'string' && last.length > 1) {
-      const pos = last.trimEnd().length + 1;
-      invisibles.unshift(last.slice(pos));
-      nodes[nodes.length - 1] = last.slice(0, pos);
-      break;
-    }
-    else {
-      invisibles.unshift(nodes.pop()!);
-    }
-  }
-  nodes.push(html('span', {
-    class: 'invalid',
-    'data-invalid-syntax': 'invisible',
-    'data-invalid-type': 'invisible',
-    'data-invalid-description': 'Cannot end with invisibles in the syntax.',
-  }, defrag(invisibles)));
-  return nodes;
 }
 function isVisible(node: HTMLElement | string | undefined, position = 0): boolean {
   if (!node) return false;
