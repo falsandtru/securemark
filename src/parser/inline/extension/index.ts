@@ -11,7 +11,7 @@ import { join } from 'spica/array';
 import IndexParser = ExtensionParser.IndexParser;
 
 export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', fmap(indexee(fmap(surround(
-  /^\[#(?!])/,
+  '[#',
   guard(context => context.syntax?.inline?.index ?? true,
   startTight(
   context({ syntax: { inline: {
@@ -23,11 +23,11 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     media: false,
     autolink: false,
   }}},
-  open(inline,
+  open(str(/^\|?/, false),
   some(union([
     signature,
     inline,
-  ]), /^]/, /^\\?\n/), true)))),
+  ]), ']', /^\\?\n/), true)))),
   ']'),
   ns => [html('a', defrag(ns))])),
   ([el]: [HTMLAnchorElement]) => [
