@@ -4511,7 +4511,7 @@ require = function () {
                     if (settings.chunk && revision)
                         throw new Error('Chunks cannot be updated.');
                     const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
-                    source = (0, normalize_1.normalize)((0, segment_1.prepare)(source));
+                    source = (0, normalize_1.normalize)((0, segment_1.validate)(source, segment_1.MAX_INPUT_SIZE) ? source : source.slice(0, segment_1.MAX_INPUT_SIZE + 1));
                     context = (0, alias_1.ObjectAssign)(context, { url: url ? new url_1.ReadonlyURL(url) : global_1.undefined });
                     const rev = revision = Symbol();
                     const sourceSegments = [];
@@ -4809,8 +4809,8 @@ require = function () {
             const inherit2 = (0, memoize_1.memoize)(context => (0, memoize_1.memoize)(_ => (0, alias_1.ObjectCreate)(context)), new WeakMap());
             function parse(source, opts = {}, context) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
-                if (source.length > segment_1.SEGMENT_LENGTH_LIMIT)
-                    throw new Error(`Too large input over ${ segment_1.SEGMENT_LENGTH_LIMIT.toLocaleString('en') } in length.`);
+                if (!(0, segment_1.validate)(source, segment_1.MAX_SEGMENT_SIZE))
+                    throw new Error(`Too large input over ${ segment_1.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.`);
                 const url = (_b = (_a = (0, header_2.headers)(source).find(field => field.toLowerCase().startsWith('url:'))) === null || _a === void 0 ? void 0 : _a.slice(4).trim()) !== null && _b !== void 0 ? _b : '';
                 source = !context ? (0, normalize_1.normalize)(source) : source;
                 context = context && url === '' && context.id === opts.id ? context : (0, alias_1.ObjectAssign)(context ? url ? inherit2(context)(url) : inherit(context) : {}, opts, {
@@ -7147,7 +7147,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('*', '*'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
+            exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, combinator_1.close)((0, source_1.str)('*'), /^(?!\*)/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 strong_1.strong,
                 (0, combinator_1.some)(inline_1.inline, '*')
             ]))), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.verifyEndTight)(bs) ? [
@@ -7314,7 +7314,7 @@ require = function () {
             const util_1 = _dereq_('../../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', ']', '\n', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.surround)(/^\[#(?!])/, (0, combinator_1.guard)(context => {
+            exports.index = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[#', ']', '\n', (0, combinator_1.fmap)((0, indexee_1.indexee)((0, combinator_1.fmap)((0, combinator_1.surround)('[#', (0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.index) !== null && _c !== void 0 ? _c : true;
             }, (0, util_1.startTight)((0, combinator_1.context)({
@@ -7329,10 +7329,10 @@ require = function () {
                         autolink: false
                     }
                 }
-            }, (0, combinator_1.open)(inline_1.inline, (0, combinator_1.some)((0, combinator_1.union)([
+            }, (0, combinator_1.open)((0, source_1.str)(/^\|?/, false), (0, combinator_1.some)((0, combinator_1.union)([
                 signature,
                 inline_1.inline
-            ]), /^]/, /^\\?\n/), true)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, typed_dom_1.defrag)(ns))])), ([el]) => [(0, typed_dom_1.define)(el, {
+            ]), ']', /^\\?\n/), true)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, typed_dom_1.defrag)(ns))])), ([el]) => [(0, typed_dom_1.define)(el, {
                     id: el.id ? null : global_1.undefined,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : global_1.undefined
@@ -8116,11 +8116,11 @@ require = function () {
                 ]),
                 (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)
             ])))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, typed_dom_1.defrag)(ns))]))));
-            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:['-]|[.,]? |\., )[0-9A-Za-z]+)*/)]), /^[^\S\n]?\|?(?=]])|^\|[^\S\n]+/), (_, rest, context) => (0, util_1.isStartTight)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
+            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]+/), (_, rest, context) => (0, util_1.isStartTight)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
             function attributes(ns) {
                 return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
                     class: 'reference',
-                    'data-abbr': (0, util_1.stringify)([ns.shift()])
+                    'data-abbr': (0, util_1.stringify)([ns.shift()]).trimEnd()
                 } : ns[0] === '' ? {
                     class: 'reference invalid',
                     'data-invalid-syntax': 'reference',
@@ -8259,7 +8259,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('**', '*'), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
+            exports.strong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, combinator_1.close)((0, source_1.str)('**'), /^(?!\*)/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 emphasis_1.emphasis,
                 (0, combinator_1.some)(inline_1.inline, '*'),
                 (0, source_1.str)('*')
@@ -8430,7 +8430,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.prepare = exports.segment = exports.SEGMENT_LENGTH_LIMIT = void 0;
+            exports.validate = exports.segment = exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -8439,38 +8439,35 @@ require = function () {
             const mathblock_1 = _dereq_('./block/mathblock');
             const extension_1 = _dereq_('./block/extension');
             const source_1 = _dereq_('./source');
-            const INPUT_SIZE_LIMIT = 1000 ** 2;
-            exports.SEGMENT_LENGTH_LIMIT = 100 * 1000;
+            exports.MAX_SEGMENT_SIZE = 100000;
+            exports.MAX_INPUT_SIZE = exports.MAX_SEGMENT_SIZE * 10;
             const parser = (0, combinator_1.union)([
                 heading_1.segment,
                 codeblock_1.segment,
                 mathblock_1.segment,
                 extension_1.segment,
-                (0, combinator_1.some)(source_1.contentline, exports.SEGMENT_LENGTH_LIMIT),
-                (0, combinator_1.some)(source_1.emptyline, exports.SEGMENT_LENGTH_LIMIT)
+                (0, combinator_1.some)(source_1.contentline, exports.MAX_SEGMENT_SIZE * 2),
+                (0, combinator_1.some)(source_1.emptyline, exports.MAX_SEGMENT_SIZE * 2)
             ]);
             function* segment(source) {
-                if (!validate(source))
-                    return yield `\0Too large input over ${ INPUT_SIZE_LIMIT.toLocaleString('en') } bytes.\n${ source.slice(0, 1001) }`;
+                if (!validate(source, exports.MAX_INPUT_SIZE))
+                    return yield `\0Too large input over ${ exports.MAX_INPUT_SIZE.toLocaleString('en') } bytes.\n${ source.slice(0, 1001) }`;
                 while (source !== '') {
                     const result = parser(source, {});
                     const rest = (0, parser_1.exec)(result);
                     const segs = (0, parser_1.eval)(result).length ? (0, parser_1.eval)(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        seg.length > exports.SEGMENT_LENGTH_LIMIT ? yield `\0Too large segment over ${ exports.SEGMENT_LENGTH_LIMIT.toLocaleString('en') } in length.\n${ seg }` : yield seg;
+                        validate(source, exports.MAX_SEGMENT_SIZE) ? yield seg : yield `\0Too large segment over ${ exports.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.\n${ seg }`;
                     }
                     source = rest;
                 }
             }
             exports.segment = segment;
-            function validate(source) {
-                return source.length <= INPUT_SIZE_LIMIT && new global_1.Blob([source]).size <= INPUT_SIZE_LIMIT;
+            function validate(source, size) {
+                return source.length <= size / 2 || source.length <= size && new global_1.Blob([source]).size <= size;
             }
-            function prepare(source) {
-                return validate(source) ? source : source.slice(0, INPUT_SIZE_LIMIT + 1);
-            }
-            exports.prepare = prepare;
+            exports.validate = validate;
         },
         {
             '../combinator': 30,
@@ -8628,11 +8625,11 @@ require = function () {
             exports.str = void 0;
             const global_1 = _dereq_('spica/global');
             const combinator_1 = _dereq_('../../combinator');
-            function str(pattern, not) {
+            function str(pattern, mustConsume = true) {
                 return typeof pattern === 'string' ? (0, combinator_1.creator)(source => {
                     if (source === '')
                         return;
-                    return source.slice(0, pattern.length) === pattern && !(not && source.slice(pattern.length, pattern.length + not.length) === not) ? [
+                    return source.slice(0, pattern.length) === pattern ? [
                         [pattern],
                         source.slice(pattern.length)
                     ] : global_1.undefined;
@@ -8640,7 +8637,7 @@ require = function () {
                     if (source === '')
                         return;
                     const m = source.match(pattern);
-                    return m && m[0].length > 0 && !(not && source.slice(m[0].length, m[0].length + not.length) === not) ? [
+                    return m && (!mustConsume || m[0].length > 0) ? [
                         [m[0]],
                         source.slice(m[0].length)
                     ] : global_1.undefined;
@@ -8806,14 +8803,13 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.trimEndBR = exports.markVerboseTail = exports.verifyEndTight = exports.verifyStartTight = exports.isStartTight = exports.startTight = exports.visualize = void 0;
+            exports.stringify = exports.trimEndBR = exports.verifyEndTight = exports.verifyStartTight = exports.isStartTight = exports.startTight = exports.visualize = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
             const comment_1 = _dereq_('./inline/comment');
             const htmlentity_1 = _dereq_('./inline/htmlentity');
             const source_1 = _dereq_('./source');
-            const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             const invisibleHTMLEntityNames = [
                 'Tab',
@@ -8886,18 +8882,11 @@ require = function () {
                 return false;
             }
             function startTight(parser) {
-                return (source, context) => {
-                    var _a;
-                    if (source === '')
-                        return;
-                    if (!isStartTight(source, context))
-                        return;
-                    return ((_a = source[0] === '\\' ? source[1] : source[0]) === null || _a === void 0 ? void 0 : _a.trimStart()) ? parser(source, context) : global_1.undefined;
-                };
+                return (source, context) => isStartTight(source, context) ? parser(source, context) : global_1.undefined;
             }
             exports.startTight = startTight;
             function isStartTight(source, context) {
-                var _a;
+                var _a, _b;
                 if (source === '')
                     return true;
                 switch (source[0]) {
@@ -8906,9 +8895,11 @@ require = function () {
                 case '\t':
                 case '\n':
                     return false;
+                case '\\':
+                    return ((_a = source[1]) === null || _a === void 0 ? void 0 : _a.trimStart()) !== '';
                 case '&':
                     switch (true) {
-                    case source.length > 2 && source[1] !== ' ' && ((_a = (0, parser_1.eval)((0, htmlentity_1.htmlentity)(source, context))) === null || _a === void 0 ? void 0 : _a[0].trimStart()) == '':
+                    case source.length > 2 && source[1] !== ' ' && ((_b = (0, parser_1.eval)((0, htmlentity_1.htmlentity)(source, context))) === null || _b === void 0 ? void 0 : _b[0].trimStart()) == '':
                         return false;
                     }
                     return true;
@@ -8925,7 +8916,7 @@ require = function () {
                     }
                     return true;
                 default:
-                    return true;
+                    return source[0].trimStart() !== '';
                 }
             }
             exports.isStartTight = isStartTight;
@@ -8942,29 +8933,6 @@ require = function () {
                 return typeof nodes[last] === 'string' && nodes[last].length > 1 ? isVisible(nodes[last], -1) || isVisible(nodes[last], -2) : isVisible(nodes[last], -1) || last === 0 || isVisible(nodes[last - 1], -1);
             }
             exports.verifyEndTight = verifyEndTight;
-            function markVerboseTail(nodes) {
-                if (verifyEndTight(nodes))
-                    return nodes;
-                const invisibles = [];
-                for (let last = nodes[0]; last = nodes[nodes.length - 1], typeof last === 'string' && last.length > 1 ? !isVisible(last, -2) : !isVisible(nodes[nodes.length - 2], -1);) {
-                    if (typeof last === 'string' && last.length > 1) {
-                        const pos = last.trimEnd().length + 1;
-                        invisibles.unshift(last.slice(pos));
-                        nodes[nodes.length - 1] = last.slice(0, pos);
-                        break;
-                    } else {
-                        invisibles.unshift(nodes.pop());
-                    }
-                }
-                nodes.push((0, typed_dom_1.html)('span', {
-                    class: 'invalid',
-                    'data-invalid-syntax': 'invisible',
-                    'data-invalid-type': 'invisible',
-                    'data-invalid-description': 'Cannot end with invisibles in the syntax.'
-                }, (0, typed_dom_1.defrag)(invisibles)));
-                return nodes;
-            }
-            exports.markVerboseTail = markVerboseTail;
             function isVisible(node, position = 0) {
                 if (!node)
                     return false;
@@ -9021,8 +8989,7 @@ require = function () {
             './inline/htmlentity': 116,
             './source': 130,
             'spica/array': 6,
-            'spica/global': 17,
-            'typed-dom': 29
+            'spica/global': 17
         }
     ],
     137: [
