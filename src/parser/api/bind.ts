@@ -5,7 +5,7 @@ import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
 import { header } from '../header';
 import { block } from '../block';
-import { segment, prepare } from '../segment';
+import { segment, validate, MAX_INPUT_SIZE } from '../segment';
 import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../function/figure';
@@ -43,7 +43,7 @@ export function bind(target: DocumentFragment | HTMLElement | ShadowRoot, settin
   function* parse(source: string): Generator<Progress, undefined, undefined> {
     if (settings.chunk && revision) throw new Error('Chunks cannot be updated.');
     const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
-    source = normalize(prepare(source));
+    source = normalize(validate(source, MAX_INPUT_SIZE) ? source : source.slice(0, MAX_INPUT_SIZE + 1));
     context = ObjectAssign(context, { url: url ? new ReadonlyURL(url) : undefined });
     const rev = revision = Symbol();
     const sourceSegments: string[] = [];

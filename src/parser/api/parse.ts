@@ -5,7 +5,7 @@ import { MarkdownParser } from '../../../markdown';
 import { eval } from '../../combinator/data/parser';
 import { header } from '../header';
 import { block } from '../block';
-import { segment, MAX_SEGMENT_LENGTH } from '../segment';
+import { segment, validate, MAX_SEGMENT_SIZE } from '../segment';
 import { normalize } from './normalize';
 import { headers } from './header';
 import { figure } from '../function/figure';
@@ -22,7 +22,7 @@ const inherit = memoize<MarkdownParser.Context, MarkdownParser.Context>(context 
 const inherit2 = memoize<MarkdownParser.Context, (url: string) => MarkdownParser.Context>(context => memoize((_: string) => ObjectCreate(context)), new WeakMap());
 
 export function parse(source: string, opts: Options = {}, context?: MarkdownParser.Context): DocumentFragment {
-  if (source.length > MAX_SEGMENT_LENGTH) throw new Error(`Too large input over ${MAX_SEGMENT_LENGTH.toLocaleString('en')} in length.`);
+  if (!validate(source, MAX_SEGMENT_SIZE)) throw new Error(`Too large input over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.`);
   const url = headers(source).find(field => field.toLowerCase().startsWith('url:'))?.slice(4).trim() ?? '';
   source = !context ? normalize(source) : source;
   assert(!context?.delimiters);

@@ -46,9 +46,9 @@ describe('Unit: parser/api/bind', () => {
       assert.deepStrictEqual(
         inspect(iter, 3),
         [
-          '<h1 class="error" translate="no">Error: Too large segment over 100,000 in length.</h1>',
+          '<h1 class="error" translate="no">Error: Too large segment over 100,000 bytes.</h1>',
           `<pre class="error" translate="no">${'\n'.repeat(997)}...</pre>`,
-          '<h1 class="error" translate="no">Error: Too large segment over 100,000 in length.</h1>',
+          '<h1 class="error" translate="no">Error: Too large segment over 100,000 bytes.</h1>',
         ]);
     });
 
