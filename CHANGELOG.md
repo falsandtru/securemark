@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.218.3
+
+- Remove invisible tail in index, annotation, and reference syntax.
+
 ## 0.218.2
 
 - Improve abbr parser.

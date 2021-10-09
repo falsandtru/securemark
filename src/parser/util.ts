@@ -5,7 +5,7 @@ import { union, some, verify, clear, convert, trim } from '../combinator';
 import { comment } from './inline/comment';
 import { htmlentity } from './inline/htmlentity';
 import { linebreak, unescsource, str } from './source';
-import { pop } from 'spica/array';
+import { push, pop } from 'spica/array';
 
 // https://dev.w3.org/html5/html-author/charref
 const invisibleHTMLEntityNames = [
@@ -163,6 +163,31 @@ function isVisible(node: HTMLElement | string, position = 0): boolean {
   }
 }
 
+export function trimEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+  assert(verifyStartTight(nodes));
+  const skip = nodes.length > 0 &&
+    typeof nodes[nodes.length - 1] === 'object' &&
+    nodes[nodes.length - 1]['className'] === 'indexer'
+    ? [nodes.pop()!]
+    : [];
+  for (
+    let last = nodes[0];
+    nodes.length > 0 &&
+    !isVisible(last = nodes[nodes.length - 1], -1) &&
+    !(typeof last === 'object' && last.className === 'comment');
+  ) {
+    assert(nodes.length > 0);
+    if (typeof last === 'string') {
+      const pos = last.trimEnd().length;
+      if (pos > 0) {
+        nodes[nodes.length - 1] = last.slice(0, pos);
+        break;
+      }
+    }
+    nodes.pop();
+  }
+  return push(nodes, skip);
+}
 export function trimEndBR<T extends HTMLElement | string>(nodes: T[]): T[];
 export function trimEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
   if (nodes.length === 0) return nodes;
