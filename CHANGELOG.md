@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.218.2
+
+- Improve abbr parser.
+
 ## 0.218.1
 
 - Fix visualization.
