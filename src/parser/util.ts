@@ -100,19 +100,19 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
           return false;
       }
       return true;
-    case '[':
-      switch (true) {
-        case source.length >= 7
-          && source[1] === '#'
-          && !!comment(source, context):
-          return false;
-      }
-      return true;
     case '<':
       switch (true) {
         case source.length >= 5
           && source[1] === 'w'
           && source.slice(0, 5) === '<wbr>':
+          return false;
+      }
+      return true;
+    case '[':
+      switch (true) {
+        case source.length >= 7
+          && source[1] === '#'
+          && !!comment(source, context):
           return false;
       }
       return true;
@@ -133,7 +133,7 @@ export function verifyEndTight(nodes: readonly (HTMLElement | string)[]): boolea
     : isVisible(nodes[last], -1) || last === 0 ||
       isVisible(nodes[last - 1], -1);
 }
-function isVisible(node: HTMLElement | string | undefined, position = 0): boolean {
+function isVisible(node: HTMLElement | string, position = 0): boolean {
   if (!node) return false;
   switch (typeof node) {
     case 'string':
