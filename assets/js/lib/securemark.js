@@ -6743,7 +6743,7 @@ require = function () {
                     }
                 },
                 state: global_1.undefined
-            }, (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)])))), '))'), ns => [(0, typed_dom_1.html)('sup', { class: 'annotation' }, (0, typed_dom_1.defrag)(ns))]))));
+            }, (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)])))), '))'), ns => [(0, typed_dom_1.html)('sup', { class: 'annotation' }, (0, util_1.trimEnd)((0, typed_dom_1.defrag)(ns)))]))));
         },
         {
             '../../combinator': 30,
@@ -7332,12 +7332,12 @@ require = function () {
             }, (0, combinator_1.open)((0, source_1.str)(/^\|?/, false), (0, combinator_1.some)((0, combinator_1.union)([
                 signature,
                 inline_1.inline
-            ]), ']', /^\\?\n/), true)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, typed_dom_1.defrag)(ns))])), ([el]) => [(0, typed_dom_1.define)(el, {
+            ]), ']', /^\\?\n/), true)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, util_1.trimEnd)((0, typed_dom_1.defrag)(ns)))])), ([el]) => [(0, typed_dom_1.define)(el, {
                     id: el.id ? null : global_1.undefined,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : global_1.undefined
                 }, el.childNodes)]))));
-            const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)(/^[^\S\n]?\|#/, (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
+            const signature = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.open)('|#', (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 bracket,
                 source_1.txt
             ]), ']', /^\\?\n/))), ns => [(0, typed_dom_1.html)('span', {
@@ -8115,7 +8115,7 @@ require = function () {
                     ''
                 ]),
                 (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)
-            ])))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, typed_dom_1.defrag)(ns))]))));
+            ])))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, util_1.trimEnd)((0, typed_dom_1.defrag)(ns)))]))));
             const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]+/), (_, rest, context) => (0, util_1.isStartTight)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
             function attributes(ns) {
                 return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
@@ -8803,7 +8803,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.trimEndBR = exports.verifyEndTight = exports.verifyStartTight = exports.isStartTight = exports.startTight = exports.visualize = void 0;
+            exports.stringify = exports.trimEndBR = exports.trimEnd = exports.verifyEndTight = exports.verifyStartTight = exports.isStartTight = exports.startTight = exports.visualize = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -8903,15 +8903,15 @@ require = function () {
                         return false;
                     }
                     return true;
-                case '[':
-                    switch (true) {
-                    case source.length >= 7 && source[1] === '#' && !!(0, comment_1.comment)(source, context):
-                        return false;
-                    }
-                    return true;
                 case '<':
                     switch (true) {
                     case source.length >= 5 && source[1] === 'w' && source.slice(0, 5) === '<wbr>':
+                        return false;
+                    }
+                    return true;
+                case '[':
+                    switch (true) {
+                    case source.length >= 7 && source[1] === '#' && !!(0, comment_1.comment)(source, context):
                         return false;
                     }
                     return true;
@@ -8961,6 +8961,21 @@ require = function () {
                     }
                 }
             }
+            function trimEnd(nodes) {
+                const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
+                for (let last = nodes[0]; nodes.length > 0 && !isVisible(last = nodes[nodes.length - 1], -1) && !(typeof last === 'object' && last.className === 'comment');) {
+                    if (typeof last === 'string') {
+                        const pos = last.trimEnd().length;
+                        if (pos > 0) {
+                            nodes[nodes.length - 1] = last.slice(0, pos);
+                            break;
+                        }
+                    }
+                    nodes.pop();
+                }
+                return (0, array_1.push)(nodes, skip);
+            }
+            exports.trimEnd = trimEnd;
             function trimEndBR(nodes) {
                 if (nodes.length === 0)
                     return nodes;
