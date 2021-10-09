@@ -77,13 +77,10 @@ function hasVisible(
 
 export function startTight<P extends Parser<unknown>>(parser: P): P;
 export function startTight<T>(parser: Parser<T>): Parser<T> {
-  return (source, context) => {
-    if (source === '') return;
-    if (!isStartTight(source, context)) return;
-    return (source[0] === '\\' ? source[1] : source[0])?.trimStart()
+  return (source, context) =>
+    isStartTight(source, context)
       ? parser(source, context)
       : undefined;
-  }
 }
 
 export function isStartTight(source: string, context: MarkdownParser.Context): boolean {
@@ -94,6 +91,8 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
     case '\t':
     case '\n':
       return false;
+    case '\\':
+      return source[1]?.trimStart() !== '';
     case '&':
       switch (true) {
         case source.length > 2
@@ -119,7 +118,7 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
       }
       return true;
     default:
-      return true;
+      return source[0].trimStart() !== '';
   }
 }
 export function verifyStartTight(nodes: readonly (HTMLElement | string)[]): boolean {
