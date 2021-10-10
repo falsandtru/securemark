@@ -6491,7 +6491,7 @@ require = function () {
                         ++count;
                         const identifier = identify(ref);
                         const abbr = ref.getAttribute('data-abbr') || global_1.undefined;
-                        const title = ref.classList.contains('invalid') ? global_1.undefined : titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(ref.title ? contentify(ref) : ref).trim() || global_1.undefined;
+                        const title = global_1.undefined || titles.get(identifier) || +identifier[0] && ref.title || (0, indexee_1.text)(ref.title ? contentify(ref) : ref).trim() || global_1.undefined;
                         title ? !titles.has(identifier) && titles.set(identifier, title) : buffer.set(identifier, ref);
                         const content = contentify(ref);
                         const blank = !!abbr && !content.firstChild;
