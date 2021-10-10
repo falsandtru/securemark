@@ -15,7 +15,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
   @font-face {
-    font-family: Meiryo;
+    /* メイリオをイタリック対応にするがボールドが潰れ滲むため欧文は他のフォントを優先する */
+    font-family: Meiryo Italic;
     src: local('Meiryo');
   }
   a {
@@ -24,19 +25,44 @@
   body {
     font-family:
       -apple-system,
-      BlinkMacSystemFont,
       Segoe UI,
       Roboto,
-      Oxygen,
-      Cantarell,
-      Open Sans,
       Helvetica Neue,
+      Arial,
+      /* Linuxで無効なフォント名、CJKは言語を自動選択させるため明示しない */
+      Noto Sans,
+      /* LinuxでデフォルトのNoto Sans CJKの選択を阻害するため除外
+      Liberation Sans,
+      */
       Hiragino Kaku Gothic ProN,
       Hiragino Kaku Gothic Pro,
       Hiragino Sans,
       Meiryo,
-      sans-serif;
+      sans-serif,
+      Apple Color Emoji,
+      Segoe UI Emoji,
+      Segoe UI Symbol,
+      Noto Color Emoji;
     background-color: #fdfdfd;
+  }
+  em,
+  .index {
+    font-family:
+      -apple-system,
+      Segoe UI,
+      Roboto,
+      Helvetica Neue,
+      Arial,
+      Noto Sans,
+      Hiragino Kaku Gothic ProN,
+      Hiragino Kaku Gothic Pro,
+      Hiragino Sans,
+      Meiryo Italic,
+      sans-serif,
+      Apple Color Emoji,
+      Segoe UI Emoji,
+      Segoe UI Symbol,
+      Noto Color Emoji;
   }
   #primary {
     position: sticky;
@@ -169,7 +195,7 @@
     display: table-cell;
     width: 1px;
     white-space: pre;
-    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
   }
   /*
   ol[data-type] > li::before {
