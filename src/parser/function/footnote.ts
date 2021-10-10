@@ -44,12 +44,11 @@ function build(
       ++count;
       const identifier = identify(ref);
       const abbr = ref.getAttribute('data-abbr') || undefined;
-      const title = ref.classList.contains('invalid')
-        ? undefined
-        : titles.get(identifier) ||
-          +identifier[0] && ref.title ||
-          text(ref.title ? contentify(ref) : ref).trim() ||
-          undefined;
+      const title = undefined
+        || titles.get(identifier)
+        || +identifier[0] && ref.title
+        || text(ref.title ? contentify(ref) : ref).trim()
+        || undefined;
       title
         ? !titles.has(identifier) && titles.set(identifier, title)
         : buffer.set(identifier, ref);
@@ -93,7 +92,7 @@ function build(
                 'data-invalid-syntax': syntax,
                 'data-invalid-type': 'content',
                 'data-invalid-description': 'Missing the content.',
-              }
+              },
         },
         refChild?.getAttribute('href')?.slice(1) === defId && refChild?.innerText === marker(defIndex, abbr)
           ? undefined

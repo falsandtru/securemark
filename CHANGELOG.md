@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.218.4
+
+- Fix footnote processing with invalids.
+
 ## 0.218.3
 
 - Remove invisible tail in index, annotation, and reference syntax.
