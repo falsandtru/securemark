@@ -444,11 +444,11 @@
   del code {
     background: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
-  sup.annotation + sup.annotation,
-  sup.annotation + sup.reference,
-  sup.reference + sup.annotation,
-  sup.reference + sup.reference {
-    margin-inline-start: .2em;
+  sup.annotation + sup.annotation > a::before,
+  sup.annotation + sup.reference > a::before,
+  sup.reference + sup.reference > a::before,
+  sup.reference + sup.annotation > a::before {
+    content: " ";
   }
   .comment::before {
     content: "†";
@@ -529,11 +529,11 @@
   ol.references::before {
     content: "References";
   }
-  ol#annotations > li > sup:last-child > a,
-  ol.annotations > li > sup:last-child > a,
-  ol#references > li > sup:last-child > a,
-  ol.references > li > sup:last-child > a {
-    margin-inline-start: .1em;
+  ol#annotations > li > sup:last-child > a::before,
+  ol.annotations > li > sup:last-child > a::before,
+  ol#references > li > sup:last-child > a::before,
+  ol.references > li > sup:last-child > a::before {
+    content: " ";
   }
   @media print {
     #viewer > hr {
