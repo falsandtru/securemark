@@ -167,24 +167,6 @@
   ol[data-format="paren"] {
     margin-inline-start: 0;
   }
-  .checklist > li > ul,
-  .checklist > li > ol {
-    padding-inline-start: 2em;
-  }
-  ul.checklist {
-    list-style-type: none;
-    margin-inline-start: 0;
-    padding: 0;
-  }
-  li > .checkbox {
-    display: inline-block;
-    margin-top: -.1em;
-    margin-inline-end: .3em;
-    line-height: 0;
-    vertical-align: middle;
-    font-family: initial;
-    font-size: x-large;
-  }
   ol {
     counter-reset: counter;
     list-style-type: none;
@@ -229,6 +211,24 @@
   }
   ol > li[data-marker]::before {
     content: attr(data-marker) " " !important;
+  }
+  .checklist > li > ul,
+  .checklist > li > ol {
+    padding-inline-start: 2em;
+  }
+  ul.checklist {
+    list-style-type: none;
+    margin-inline-start: 0;
+    padding: 0;
+  }
+  li > .checkbox {
+    display: inline-block;
+    margin-top: -.1em;
+    margin-inline-end: .3em;
+    line-height: 0;
+    vertical-align: middle;
+    font-family: initial;
+    font-size: x-large;
   }
   table {
     margin-bottom: 1rem;
