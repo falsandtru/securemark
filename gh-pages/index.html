@@ -91,6 +91,9 @@
     display: inline-block;
     background-color: #bbb;
   }
+  #viewer {
+    letter-spacing: 0.05em;
+  }
   details.header {
     margin-top: 0;
     margin-bottom: 1rem;
@@ -181,6 +184,7 @@
     display: table-cell;
     width: 1px;
     white-space: pre;
+    letter-spacing: normal;
     font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
   }
   /*
@@ -211,6 +215,7 @@
   }
   ol > li[data-marker]::before {
     content: attr(data-marker) " " !important;
+    letter-spacing: normal;
   }
   .checklist > li > ul,
   .checklist > li > ol {
@@ -233,6 +238,7 @@
   table {
     margin-bottom: 1rem;
     border-collapse: collapse;
+    letter-spacing: normal;
     font-size: 97%;
   }
   thead,
@@ -308,6 +314,7 @@
     white-space: pre-wrap;
   }
   pre {
+    letter-spacing: normal;
     /* Unset bootstrap's CSS */
     font-size: unset;
   }
@@ -467,6 +474,7 @@
     margin: 0;
     padding: .15em .3em;
     white-space: pre;
+    letter-spacing: normal;
     font-size: 90%;
     color: inherit;
   }
