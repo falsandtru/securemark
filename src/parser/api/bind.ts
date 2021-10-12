@@ -8,8 +8,8 @@ import { block } from '../block';
 import { segment, validate, MAX_INPUT_SIZE } from '../segment';
 import { normalize } from './normalize';
 import { headers } from './header';
-import { figure } from '../function/figure';
-import { footnote } from '../function/footnote';
+import { figure } from '../processor/figure';
+import { footnote } from '../processor/footnote';
 import { ReadonlyURL } from 'spica/url';
 import { push, splice } from 'spica/array';
 

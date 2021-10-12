@@ -4,7 +4,7 @@ import { html } from 'typed-dom';
 
 const parse = (s: string) => parse_(s, { test: true });
 
-describe('Unit: parser/footnote', () => {
+describe('Unit: parser/processor/footnote', () => {
   describe('annotation', () => {
     it('empty', () => {
       const target = parse('');

@@ -4,7 +4,7 @@ import { html } from 'typed-dom';
 
 const parse = (s: string) => parse_(s, { test: true });
 
-describe('Unit: parser/figure', () => {
+describe('Unit: parser/processor/figure', () => {
   describe('figure', () => {
     it('empty', () => {
       const target = parse('');
