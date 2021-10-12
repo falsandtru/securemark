@@ -17,15 +17,15 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
   assert(patterns.length > 0);
   assert(patterns.every(pattern => pattern instanceof RegExp ? !pattern.global && pattern.source.startsWith('^') : true));
   assert(parser);
-  const match: (source: string) => boolean = Function('patterns', [
+  const match: (source: string) => boolean = Function([
     '"use strict";',
     "return source =>",
     'false',
-    ...patterns.map((pattern, i) =>
+    ...patterns.map(pattern =>
       typeof pattern === 'string'
         ? `|| source.slice(0, ${pattern.length}) === '${pattern}'`
-        : `|| patterns[${i}].test(source)`),
-  ].join(''))(patterns);
+        : `|| /${pattern.source}/${pattern.flags}.test(source)`),
+  ].join(''))();
   const match2 = (source: string): boolean => {
     if (!has) return true;
     const i = end ? source.indexOf(end, 1) : -1;
