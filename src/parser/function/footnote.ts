@@ -18,7 +18,7 @@ export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 
 const identify = memoize<HTMLElement, string>(
-  ref => `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || ref.innerHTML}`,
+  ref => `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.innerHTML}`,
   new WeakMap());
 
 function build(
@@ -64,7 +64,7 @@ function build(
         || defs.get(identifier)
         || defs.set(identifier, html('li',
             { id: opts.id !== '' ? `${syntax}:${opts.id ? `${opts.id}:` : ''}def:${defs.size + 1}` : undefined },
-            [content.cloneNode(true), html('sup', [])]))
+            [content.cloneNode(true), html('sup')]))
             .get(identifier)!;
       assert(def.lastChild);
       if (title && !blank && def.childNodes.length === 1) {
