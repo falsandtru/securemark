@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { BracketParser } from '../inline';
-import { union, some, surround, lazy } from '../../combinator';
+import { union, some, validate, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
 import { html, defrag } from 'typed-dom';
@@ -12,7 +12,7 @@ const index = new RegExp(`^(?:${[
 ].map(r => r.source).join('|')})`);
 const indexFW = new RegExp(index.source.replace(/[019AZaz](?!,)/g, c => String.fromCharCode(c.charCodeAt(0) + 0xfee0)));
 
-export const bracket: BracketParser = lazy(() => union([
+export const bracket: BracketParser = lazy(() => validate(['(', '（', '[', '{', '"'], union([
   surround(str('('), str(index), str(')'), false,
     ([as, bs = [], cs], rest) => [defrag(push(unshift(as, bs), cs)), rest]),
   surround(str('（'), str(indexFW), str('）'), false,
@@ -33,4 +33,4 @@ export const bracket: BracketParser = lazy(() => union([
   surround(str('"'), some(inline, '"', '"'), str('"'), true,
     undefined,
     ([as, bs = []], rest) => [unshift(as, bs), rest]),
-]));
+])));
