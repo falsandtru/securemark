@@ -19,11 +19,11 @@ describe('Unit: parser/block/extension/figbase', () => {
     });
 
     it('valid', () => {
-      assert.deepStrictEqual(inspect(parser('$-0')), [['<figure data-label="$-0" data-group="$" style="display: none;"></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser('$-0.0')), [['<figure data-label="$-0.0" data-group="$" style="display: none;"></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser('$-1.0')), [['<figure data-label="$-1.0" data-group="$" style="display: none;"></figure>'], '']);
-      assert.deepStrictEqual(inspect(parser('$-0\n \n')), [['<figure data-label="$-0" data-group="$" style="display: none;"></figure>'], ' \n']);
-      assert.deepStrictEqual(inspect(parser('[$-0]')), [['<figure data-label="$-0" data-group="$" style="display: none;"></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('$-0')), [['<figure data-label="$-0" data-group="$" hidden=""></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('$-0.0')), [['<figure data-label="$-0.0" data-group="$" hidden=""></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('$-1.0')), [['<figure data-label="$-1.0" data-group="$" hidden=""></figure>'], '']);
+      assert.deepStrictEqual(inspect(parser('$-0\n \n')), [['<figure data-label="$-0" data-group="$" hidden=""></figure>'], ' \n']);
+      assert.deepStrictEqual(inspect(parser('[$-0]')), [['<figure data-label="$-0" data-group="$" hidden=""></figure>'], '']);
     });
 
   });

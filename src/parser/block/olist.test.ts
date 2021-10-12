@@ -105,8 +105,6 @@ describe('Unit: parser/block/olist', () => {
     });
 
     it('type', () => {
-      // Bug: Firefox
-      if (navigator.userAgent.includes('Firefox')) return;
       assert.deepStrictEqual(inspect(parser('i. ')), [['<ol type="i" data-type="lower-roman"><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('a. ')), [['<ol type="a" data-type="lower-alpha"><li></li></ol>'], '']);
       assert.deepStrictEqual(inspect(parser('I. ')), [['<ol type="I" data-type="upper-roman"><li></li></ol>'], '']);

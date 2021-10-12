@@ -20,8 +20,15 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
       el.innerHTML = node.outerHTML.slice(0, until);
       assert(until === Infinity ? node.outerHTML === el.innerHTML : el.innerHTML.startsWith(node.outerHTML.slice(0, until)));
       assert(until !== Infinity || node.childNodes.length === el.firstChild?.childNodes.length);
-      return node.outerHTML.slice(0, until);
+      return normalize(node.outerHTML.slice(0, until));
     }),
     exec(result)
   ];
+}
+
+// Bug: Firefox
+export function normalize(html: string): string {
+  return html
+    .replace(/(data-number="[\w.]+") (hidden="")/g, '$2 $1')
+    .replace(/(data-type="[\w-]+") (type="\w+")/g, '$2 $1');
 }

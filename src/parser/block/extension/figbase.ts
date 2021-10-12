@@ -13,7 +13,7 @@ export const figbase: ExtensionParser.FigbaseParser = block(fmap(
       html('figure', {
         'data-label': label,
         'data-group': group,
-        style: 'display: none;',
+        hidden: '',
       }),
     ];
   }));

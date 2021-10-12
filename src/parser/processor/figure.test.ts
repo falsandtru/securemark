@@ -1,6 +1,7 @@
 import { figure } from './figure';
 import { parse as parse_ } from '../../parser';
 import { html } from 'typed-dom';
+import { normalize } from '../../debug.test';
 
 const parse = (s: string) => parse_(s, { test: true });
 
@@ -157,36 +158,36 @@ describe('Unit: parser/processor/figure', () => {
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
-          [...target.children].map(el => el.outerHTML),
+          [...target.children].map(el => normalize(el.outerHTML)),
           [
             '<h1 id="index:0">0</h1>',
-            '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="0.0"></figure>',
+            '<figure data-label="$-0.0" data-group="$" hidden="" data-number="0.0"></figure>',
             '<h2 id="index:0">0</h2>',
             '<figure data-label="fig-1" data-group="fig" data-number="1" id="label:fig-1"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1: </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
             '<blockquote><section><h2>0</h2><ol class="annotations"></ol><ol class="references"></ol></section></blockquote>',
             '<figure data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2.1: </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-0.0.0" data-group="$" style="display: none;"></figure>',
+            '<figure data-label="$-0.0.0" data-group="$" hidden=""></figure>',
             '<figure data-label="fig-c" data-group="fig" data-number="3.1" id="label:fig-c"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 3.1: </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-0.1.0" data-group="$" style="display: none;"></figure>',
+            '<figure data-label="$-0.1.0" data-group="$" hidden=""></figure>',
             '<figure data-label="fig-d" data-group="fig" data-number="4.1" id="label:fig-d"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 4.1: </span><figcaption></figcaption></figure>',
-            '<figure data-label="$-0.0" data-group="$" style="display: none;"></figure>',
-            '<figure data-label="$-0.1.0" data-group="$" style="display: none;"></figure>',
-            '<figure data-label="$-0.4.0" data-group="$" style="display: none;"></figure>',
-            '<figure data-label="$-0.1.0" data-group="$" style="display: none;"></figure>',
+            '<figure data-label="$-0.0" data-group="$" hidden=""></figure>',
+            '<figure data-label="$-0.1.0" data-group="$" hidden=""></figure>',
+            '<figure data-label="$-0.4.0" data-group="$" hidden=""></figure>',
+            '<figure data-label="$-0.1.0" data-group="$" hidden=""></figure>',
             '<h2 id="index:0">0</h2>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="6.0"></figure>',
+            '<figure data-label="$-0.0" data-group="$" hidden="" data-number="6.0"></figure>',
             '<figure data-label="fig-e" data-group="fig" data-number="6.1" id="label:fig-e"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 6.1: </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-5.0" data-group="$" style="display: none;" data-number="5.0"></figure>',
+            '<figure data-label="$-5.0" data-group="$" hidden="" data-number="5.0"></figure>',
             '<figure data-label="fig-f" data-group="fig" data-number="5.1" id="label:fig-f"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 5.1: </span><figcaption></figcaption></figure>',
-            '<figure data-label="$-0" data-group="$" style="display: none;"></figure>',
+            '<figure data-label="$-0" data-group="$" hidden=""></figure>',
             '<figure data-label="fig-g" data-group="fig" data-number="5.2" id="label:fig-g"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 5.2: </span><figcaption></figcaption></figure>',
             '<h3 id="index:0">0</h3>',
-            '<figure data-label="$-0.0.0" data-group="$" style="display: none;"></figure>',
+            '<figure data-label="$-0.0.0" data-group="$" hidden=""></figure>',
             '<figure data-label="fig-h" data-group="fig" data-number="5.3" id="label:fig-h"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 5.3: </span><figcaption></figcaption></figure>',
             '<h3 id="index:0">0</h3>',
             '<figure data-label="fig-i" data-group="fig" data-number="5.4" id="label:fig-i"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 5.4: </span><figcaption></figcaption></figure>',
@@ -211,16 +212,16 @@ describe('Unit: parser/processor/figure', () => {
       for (let i = 0; i < 3; ++i) {
         [...figure(target)];
         assert.deepStrictEqual(
-          [...target.children].map(el => el.outerHTML),
+          [...target.children].map(el => normalize(el.outerHTML)),
           [
             '<h1 id="index:0">0</h1>',
-            '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="0.0"></figure>',
+            '<figure data-label="$-0.0" data-group="$" hidden="" data-number="0.0"></figure>',
             '<h2 id="index:0">0</h2>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-1.0" data-group="$" style="display: none;" data-number="1.0"></figure>',
+            '<figure data-label="$-1.0" data-group="$" hidden="" data-number="1.0"></figure>',
             '<figure data-label="fig-a" data-group="fig" data-number="1.1" id="label:fig-a"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 1.1: </span><figcaption></figcaption></figure>',
             '<h2 id="index:0">0</h2>',
-            '<figure data-label="$-0.0" data-group="$" style="display: none;" data-number="2.0"></figure>',
+            '<figure data-label="$-0.0" data-group="$" hidden="" data-number="2.0"></figure>',
             '<figure data-label="fig-b" data-group="fig" data-number="2.1" id="label:fig-b"><div class="figcontent"><blockquote></blockquote></div><span class="figindex">Fig. 2.1: </span><figcaption></figcaption></figure>',
           ]);
       }
