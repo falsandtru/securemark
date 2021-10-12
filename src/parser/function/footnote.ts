@@ -7,9 +7,7 @@ import { memoize } from 'spica/memoize';
 export function* footnote(
   target: ParentNode & Node,
   footnotes?: Readonly<{ annotations: HTMLOListElement; references: HTMLOListElement; }>,
-  opts: Readonly<{
-    id?: string;
-  }> = {},
+  opts: Readonly<{ id?: string; }> = {},
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
   yield* annotation(target, footnotes?.annotations, opts);
   yield* reference(target, footnotes?.references, opts);
@@ -26,12 +24,16 @@ const identify = memoize<HTMLElement, string>(
 function build(
   syntax: string,
   marker: (index: number, abbr: string | undefined) => string,
-): (target: ParentNode & Node, footnote?: HTMLOListElement, opts?: Readonly<{ id?: string }>) => Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+) {
   assert(syntax.match(/^[a-z]+$/));
   const contentify = memoize<HTMLElement, DocumentFragment>(
     ref => frag(ref.childNodes),
     new WeakMap());
-  return function* (target: ParentNode & Node, footnote?: HTMLOListElement, opts: Readonly<{ id?: string }> = {}): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
+  return function* (
+    target: ParentNode & Node,
+    footnote?: HTMLOListElement,
+    opts: Readonly<{ id?: string }> = {},
+  ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
     const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
