@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.219.0
+
+- Extend annotation syntax to enable reference syntax.
+
 ## 0.218.4
 
 - Fix footnote processing with invalids.

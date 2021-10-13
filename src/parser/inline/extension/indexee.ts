@@ -17,18 +17,22 @@ export function text(source: HTMLElement | DocumentFragment): string {
   assert(source instanceof DocumentFragment || !source.matches('.indexer'));
   assert(source.querySelectorAll('.indexer').length <= 1);
   assert(source.querySelector('.indexer') === source.querySelector(':scope > .indexer'));
-  assert(!source.querySelector('.annotation, .reference, br'));
+  assert(!source.querySelector('.annotation, br'));
   const indexer = source.querySelector('.indexer');
   if (indexer) return indexer.getAttribute('data-index')!;
   const target = source.cloneNode(true) as typeof source;
   for (
-    let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp'),
+    let es = target.querySelectorAll('code[data-src], .math[data-src], rt, rp, .reference'),
         i = 0, len = es.length; i < len; ++i) {
     const el = es[i];
     switch (el.tagName) {
       case 'RT':
       case 'RP':
         el.remove();
+        continue;
+      case 'SUP':
+        el.firstChild!.remove();
+        el.matches('.reference + .reference') && el.prepend(' ');
         continue;
       default:
         define(el, el.getAttribute('data-src')!);

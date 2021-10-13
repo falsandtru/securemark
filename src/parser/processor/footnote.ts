@@ -9,56 +9,64 @@ export function* footnote(
   footnotes?: Readonly<{ annotations: HTMLOListElement; references: HTMLOListElement; }>,
   opts: Readonly<{ id?: string; }> = {},
 ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
-  yield* annotation(target, footnotes?.annotations, opts);
-  yield* reference(target, footnotes?.references, opts);
+  yield* reference(target, footnotes?.references, opts, footnotes?.annotations && [footnotes.annotations]);
+  yield* annotation(target, footnotes?.annotations, opts, []);
   return;
 }
 
 export const annotation = build('annotation', n => `*${n}`);
 export const reference = build('reference', (n, abbr) => `[${abbr || n}]`);
 
-const identify = memoize<HTMLElement, string>(
-  ref => `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.innerHTML}`,
-  new WeakMap());
-
 function build(
   syntax: string,
   marker: (index: number, abbr: string | undefined) => string,
 ) {
   assert(syntax.match(/^[a-z]+$/));
+  // Referenceを含むAnnotationの重複排除は両構文が互いに処理済みである必要があるため
+  // 事後の補正処理が必要となり各1回の処理では不可能
+  const identify = memoize<HTMLElement, string>(
+    ref => `${+!ref.querySelector('.label')}:${ref.getAttribute('data-abbr') || '_' + ref.innerHTML}`,
+    new WeakMap());
   const contentify = memoize<HTMLElement, DocumentFragment>(
-    ref => frag(ref.childNodes),
+    ref => frag(ref.cloneNode(true).childNodes),
     new WeakMap());
   return function* (
     target: ParentNode & Node,
     footnote?: HTMLOListElement,
     opts: Readonly<{ id?: string }> = {},
+    footnotes: readonly HTMLOListElement[] = [],
   ): Generator<HTMLAnchorElement | HTMLLIElement | undefined, undefined, undefined> {
     const defs = new Map<string, HTMLLIElement>();
     const buffer = new MultiMap<string, HTMLElement>();
     const titles = new Map<string, string>();
-    let count = 0;
+    const check = footnotes.some(el => target.contains(el));
     for (
       let refs = target.querySelectorAll<HTMLElement>(`sup.${syntax}:not(.disabled)`),
           i = 0, len = refs.length; i < len; ++i) {
       yield;
       const ref = refs[i];
-      ++count;
+      if (check && footnotes.some(el => el.contains(ref))) continue;
       const identifier = identify(ref);
       const abbr = ref.getAttribute('data-abbr') || undefined;
+      const content = contentify(ref);
+      if (ref.firstElementChild?.getAttribute('hidden') !== '') {
+        ref.replaceChildren(html('span', { hidden: '' }, ref.childNodes));
+      }
+      else {
+        ref.lastChild?.remove();
+      }
       const title = undefined
         || titles.get(identifier)
         || +identifier[0] && ref.title
-        || text(ref.title ? contentify(ref) : ref).trim()
+        || text(content).trim()
         || undefined;
       title
         ? !titles.has(identifier) && titles.set(identifier, title)
         : buffer.set(identifier, ref);
-      const content = contentify(ref);
       const blank = !!abbr && !content.firstChild;
-      const refIndex = count;
+      const refIndex = i + 1;
       const refId = opts.id !== ''
-        ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${count}`
+        ? ref.id || `${syntax}:${opts.id ? `${opts.id}:` : ''}ref:${refIndex}`
         : undefined;
       const def = undefined
         || defs.get(identifier)
@@ -82,26 +90,19 @@ function build(
       }
       const defIndex = +def.id.slice(def.id.lastIndexOf(':') + 1) || defs.size;
       const defId = def.id || undefined;
-      const refChild = ref.firstChild as HTMLAnchorElement | null;
-      assert(refChild instanceof HTMLAnchorElement || !refChild);
-      yield define(ref,
-        {
-          id: refId,
-          class: opts.id !== '' ? undefined : `${ref.className} disabled`,
-          ...title
-            ? { title }
-            : { class: void ref.classList.add('invalid'),
-                'data-invalid-syntax': syntax,
-                'data-invalid-type': 'content',
-                'data-invalid-description': 'Missing the content.',
-              },
-        },
-        refChild?.getAttribute('href')?.slice(1) === defId && refChild?.innerText === marker(defIndex, abbr)
-          ? undefined
-          : [html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr))])
-        .firstChild as HTMLAnchorElement;
+      define(ref, {
+        id: refId,
+        class: opts.id !== '' ? undefined : `${ref.className} disabled`,
+        ...title
+          ? { title }
+          : { class: void ref.classList.add('invalid'),
+              'data-invalid-syntax': syntax,
+              'data-invalid-type': 'content',
+              'data-invalid-description': 'Missing the content.',
+            },
+      });
+      yield ref.appendChild(html('a', { href: refId && defId && `#${defId}` }, marker(defIndex, abbr)));
       assert(ref.title || ref.matches('.invalid'));
-      assert(ref.firstChild);
       def.lastChild!.appendChild(
         html('a',
           {
@@ -114,7 +115,7 @@ function build(
     }
     if (!footnote) return;
     const { children } = footnote;
-    count = 0;
+    let count = 0;
     let length = children.length;
     I:
     for (const def of defs.values()) {

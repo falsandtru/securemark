@@ -193,16 +193,19 @@ describe('Unit: parser/api/bind', () => {
         [
           html('p', [
             html('sup', { class: "annotation", id: "annotation:ref:1", title: "1" }, [
+              html('span', { hidden: '' }, '1'),
               html('a', { href: "#annotation:def:1" }, '*1')
             ]),
           ]).outerHTML,
           html('p', [
             html('sup', { class: "annotation", id: "annotation:ref:2", title: "2" }, [
+              html('span', { hidden: '' }, '2'),
               html('a', { href: "#annotation:def:2" }, '*2')
             ]),
           ]).outerHTML,
           html('p', [
             html('sup', { class: "annotation", id: "annotation:ref:3", title: "3" }, [
+              html('span', { hidden: '' }, '3'),
               html('a', { href: "#annotation:def:3" }, '*3')
             ]),
           ]).outerHTML,

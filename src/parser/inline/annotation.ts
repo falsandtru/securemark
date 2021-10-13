@@ -11,7 +11,8 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', ')
   startTight(
   context({ syntax: { inline: {
     annotation: false,
-    reference: false,
+    // Redundant
+    //reference: true,
     media: false,
     // Redundant
     //index: true,

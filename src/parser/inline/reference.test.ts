@@ -51,6 +51,7 @@ describe('Unit: parser/inline/reference', () => {
       assert.deepStrictEqual(inspect(parser('[[<a>]]')), [['<sup class="reference">&lt;a&gt;</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[a]]]')), [['<sup class="reference">[a]</sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[[[[a]]]]')), [['<sup class="reference">[[a]]</sup>'], '']);
+      assert.deepStrictEqual(inspect(parser('[[((a))]]')), [['<sup class="reference"><span class="paren">((a))</span></sup>'], '']);
     });
 
     it('abbr', () => {
