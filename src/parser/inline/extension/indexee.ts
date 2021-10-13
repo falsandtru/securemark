@@ -32,7 +32,6 @@ export function text(source: HTMLElement | DocumentFragment): string {
         continue;
       case 'SUP':
         el.firstChild!.remove();
-        el.matches('.reference + .reference') && el.prepend(' ');
         continue;
       default:
         define(el, el.getAttribute('data-src')!);

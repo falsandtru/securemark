@@ -482,12 +482,6 @@
   del code {
     background: linear-gradient(rgba(27, 31, 35, 0.05) 65%, transparent 0%);
   }
-  sup.annotation + sup.annotation > a::before,
-  sup.annotation + sup.reference > a::before,
-  sup.reference + sup.reference > a::before,
-  sup.reference + sup.annotation > a::before {
-    content: " ";
-  }
   .comment::before {
     content: "†";
     font-weight: bold;
@@ -566,12 +560,6 @@
   ol#references::before,
   ol.references::before {
     content: "References";
-  }
-  ol#annotations > li > sup:last-child > a::before,
-  ol.annotations > li > sup:last-child > a::before,
-  ol#references > li > sup:last-child > a::before,
-  ol.references > li > sup:last-child > a::before {
-    content: " ";
   }
   @media print {
     #viewer > hr {

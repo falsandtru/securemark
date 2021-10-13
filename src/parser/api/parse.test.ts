@@ -213,7 +213,7 @@ describe('Unit: parser/api/parse', () => {
         [...parse('$-a\n$$\n$$\n\n(($-a[[b]][[c]]))', { footnotes }).children].map(el => el.outerHTML),
         [
           '<figure data-label="$-a" data-group="$" data-number="1" id="label:$-a"><div class="figcontent"><div class="math" translate="no">$$\n$$</div></div><span class="figindex">(1)</span><figcaption></figcaption></figure>',
-          '<p><sup class="annotation" id="annotation:ref:1" title="(1)[1] [2]"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" id="reference:ref:1" title="b"><span hidden="">b</span><a href="#reference:def:1">[1]</a></sup><sup class="reference" id="reference:ref:2" title="c"><span hidden="">c</span><a href="#reference:def:2">[2]</a></sup></span><a href="#annotation:def:1">*1</a></sup></p>',
+          '<p><sup class="annotation" id="annotation:ref:1" title="(1)[1][2]"><span hidden=""><a class="label" data-label="$-a" href="#label:$-a">(1)</a><sup class="reference" id="reference:ref:1" title="b"><span hidden="">b</span><a href="#reference:def:1">[1]</a></sup><sup class="reference" id="reference:ref:2" title="c"><span hidden="">c</span><a href="#reference:def:2">[2]</a></sup></span><a href="#annotation:def:1">*1</a></sup></p>',
         ]);
       assert.deepStrictEqual(
         footnotes.annotations.outerHTML,
