@@ -5,7 +5,7 @@ describe('Unit: parser/api/parse', () => {
   describe('parse', () => {
     it('huge input', () => {
       assert.throws(() =>
-        parse(`${'\n'.repeat(10 * 1000 ** 2 + 1)}`));
+        parse(`${'\n'.repeat(10 * 1000 ** 2)}`));
     });
 
     it('huge segment', () => {

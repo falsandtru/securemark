@@ -30,7 +30,7 @@ describe('Unit: parser/api/bind', () => {
     const cfgs: ParserSettings = { footnotes: { annotations: html('ol'), references: html('ol') } };
 
     it('huge input', () => {
-      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(10 * 1000 ** 2 + 1)}`);
+      const iter = bind(html('div'), { ...cfgs, id: '' }).parse(`${'\n'.repeat(10 * 1000 ** 2)}`);
       assert.deepStrictEqual(
         inspect(iter),
         [

@@ -3,8 +3,8 @@ import { segment } from './segment';
 describe('Unit: parser/segment', () => {
   describe('segment', () => {
     it('huge input', () => {
-      const result = [...segment(`${'\n'.repeat(10 * 1000 ** 2 + 1)}`)].map(s => s.split('\n', 1)[0]);
-      assert(result[0].startsWith('\0Too large input'));
+      const result = segment(`${'\n'.repeat(10 * 1000 ** 2)}`).next().value?.split('\n', 1)[0];
+      assert(result?.startsWith('\0Too large input'));
     });
 
     it('huge segment', () => {
