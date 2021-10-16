@@ -46,16 +46,12 @@ const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${invisibleHTMLEnt
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  return justify(union([
-    verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
-    trim(some(union([clear(str('\x7F\\')), linebreak, unescsource]))),
-  ]));
-}
-function justify<P extends Parser<unknown>>(parser: P): P;
-function justify<T>(parser: Parser<T>): Parser<T> {
   return convert(
     source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')),
-    parser);
+    union([
+      verify(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
+      trim(some(union([clear(str('\x7F\\')), linebreak, unescsource]))),
+    ]));
 }
 function hasVisible(
   nodes: readonly (HTMLElement | string)[],
@@ -96,7 +92,7 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
       switch (true) {
         case source.length > 2
           && source[1] !== ' '
-          && eval(htmlentity(source, context))?.[0].trimStart() == '':
+          && eval(htmlentity(source, context))?.[0].trimStart() === '':
           return false;
       }
       return true;
@@ -206,8 +202,7 @@ export function stringify(nodes: readonly (HTMLElement | string)[]): string {
       acc += node;
     }
     else {
-      assert(!node.matches('br'));
-      assert(!node.querySelector('br'));
+      assert(!node.matches('br') && !node.querySelector('br'));
       // Note: Can't express line breaks.
       acc += node.innerText;
     }
