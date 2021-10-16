@@ -6881,13 +6881,13 @@ require = function () {
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+((?:\S+\s+)+?)($|\1\])/, ([, , title, closer]) => (rest, {resources}) => closer ? [
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+(\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*))($|\1\])/, ([, , title, closer]) => (rest, {resources}) => closer ? [
                 [(0, typed_dom_1.html)('sup', {
                         class: 'comment',
                         title: title.trim().replace(/\x7F.?/gs, '')
                     })],
                 rest
-            ] : resources && void (resources.budget -= title.match(/\s+/g).length))));
+            ] : resources && void (resources.budget -= title.match(/\n/g).length))));
         },
         {
             '../../combinator': 30,
@@ -8472,7 +8472,7 @@ require = function () {
                     const segs = (0, parser_1.eval)(result).length ? (0, parser_1.eval)(result) : [source.slice(0, source.length - rest.length)];
                     for (let i = 0; i < segs.length; ++i) {
                         const seg = segs[i];
-                        validate(source, exports.MAX_SEGMENT_SIZE) ? yield seg : yield `\0Too large segment over ${ exports.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.\n${ seg }`;
+                        validate(seg, exports.MAX_SEGMENT_SIZE) ? yield seg : yield `\0Too large segment over ${ exports.MAX_SEGMENT_SIZE.toLocaleString('en') } bytes.\n${ seg }`;
                     }
                     source = rest;
                 }
@@ -8859,7 +8859,7 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?:\S+\s+)+?\1\])*\\?(?:$|\n)`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*)\1\])*\\?(?:$|\n)`, 'gm');
             function visualize(parser) {
                 return justify((0, combinator_1.union)([
                     (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
@@ -8880,7 +8880,7 @@ require = function () {
                         media = true
                     } = {}
                 } = {}
-            }) {
+            } = {}) {
                 for (let i = 0; i < nodes.length; ++i) {
                     const node = nodes[i];
                     if (typeof node === 'string') {
