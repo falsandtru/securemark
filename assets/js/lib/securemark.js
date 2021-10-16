@@ -6881,7 +6881,7 @@ require = function () {
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+((?:\S+\s+)+?)(\1\]|$)/, ([, , title, closer]) => (rest, {resources}) => closer ? [
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+((?:\S+\s+)+?)($|\1\])/, ([, , title, closer]) => (rest, {resources}) => closer ? [
                 [(0, typed_dom_1.html)('sup', {
                         class: 'comment',
                         title: title.trim().replace(/\x7F.?/gs, '')
@@ -8859,7 +8859,7 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>)*\\?(?:\n|$)`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?:\S+\s+)+?\1\])*\\?(?:$|\n)`, 'gm');
             function visualize(parser) {
                 return justify((0, combinator_1.union)([
                     (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
@@ -8872,7 +8872,7 @@ require = function () {
             }
             exports.visualize = visualize;
             function justify(parser) {
-                return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x7F\\$&')), parser);
+                return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')), parser);
             }
             function hasVisible(nodes, {
                 syntax: {
