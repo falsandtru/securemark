@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.219.2
+
+- Fix comment syntax to limit the maximum number of contained lines to 100.
+
 ## 0.219.1
 
 - Fix visualization.

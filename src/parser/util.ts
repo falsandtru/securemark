@@ -42,7 +42,7 @@ const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ];
-const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)\s+(?:\S+\s+)+?\1\])*\\?(?:$|\n)`, 'gm');
+const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)\s+\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*)\1\])*\\?(?:$|\n)`, 'gm');
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
@@ -59,7 +59,7 @@ function justify<T>(parser: Parser<T>): Parser<T> {
 }
 function hasVisible(
   nodes: readonly (HTMLElement | string)[],
-  { syntax: { inline: { media = true } = {} } = {} }: MarkdownParser.Context,
+  { syntax: { inline: { media = true } = {} } = {} }: MarkdownParser.Context = {},
 ): boolean {
   for (let i = 0; i < nodes.length; ++i) {
     const node = nodes[i];

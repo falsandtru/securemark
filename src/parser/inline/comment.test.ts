@@ -35,6 +35,11 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('[## #] ##]')), [['<sup class="comment" title="#]"></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[# a #]b')), [['<sup class="comment" title="a"></sup>'], 'b']);
       assert.deepStrictEqual(inspect(parser('[#\na\n#]')), [['<sup class="comment" title="a"></sup>'], '']);
+      assert(parser(`[# ${'a'.repeat(100 - 6)} #]`));
+      assert(parser(`[# ${'a'.repeat(100000 - 6)} #]`));
+      assert(parser(`[# ${'a\n'.repeat(100)} #]`));
+      assert(!parser(`[# ${'a\n'.repeat(101)} #]`));
+      assert(!parser(`[# ${'a\n'.repeat(100000 / 2 - 6 / 2)} #]`));
     });
 
   });
