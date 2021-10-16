@@ -34,7 +34,7 @@ export function* segment(source: string): Generator<string, undefined, undefined
     assert(segs.join('') === source.slice(0, source.length - rest.length));
     for (let i = 0; i < segs.length; ++i) {
       const seg = segs[i];
-      validate(source, MAX_SEGMENT_SIZE)
+      validate(seg, MAX_SEGMENT_SIZE)
         ? yield seg
         : yield `\0Too large segment over ${MAX_SEGMENT_SIZE.toLocaleString('en')} bytes.\n${seg}`
     }
