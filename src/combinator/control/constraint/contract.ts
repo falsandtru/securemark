@@ -19,8 +19,8 @@ export function validate<T>(patterns: string | RegExp | (string | RegExp)[], has
   assert(parser);
   const match: (source: string) => boolean = Function([
     '"use strict";',
-    "return source =>",
-    'false',
+    'return source =>',
+    '0',
     ...patterns.map(pattern =>
       typeof pattern === 'string'
         ? `|| source.slice(0, ${pattern.length}) === '${pattern}'`
