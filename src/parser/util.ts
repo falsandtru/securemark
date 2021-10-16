@@ -42,7 +42,7 @@ const invisibleHTMLEntityNames = [
   'InvisibleComma',
   'ic',
 ];
-const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>)*\\?(?:\n|$)`, 'gm');
+const blankline = new RegExp(String.raw`^(?!\n|$)(?:\\?\s|&(?:${invisibleHTMLEntityNames.join('|')});|<wbr>|\[(#+)\s+(?:\S+\s+)+?\1\])*\\?(?:\n|$)`, 'gm');
 
 export function visualize<P extends Parser<HTMLElement | string>>(parser: P): P;
 export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
@@ -54,7 +54,7 @@ export function visualize<T extends HTMLElement | string>(parser: Parser<T>): Pa
 function justify<P extends Parser<unknown>>(parser: P): P;
 function justify<T>(parser: Parser<T>): Parser<T> {
   return convert(
-    source => source.replace(blankline, line => line.replace(/[\\&<]/g, '\x7F\\$&')),
+    source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')),
     parser);
 }
 function hasVisible(

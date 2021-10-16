@@ -55,8 +55,8 @@ describe('Unit: parser/api/parse', () => {
         [...parse('[#\n<wbr>\n#]').children].map(el => el.outerHTML),
         ['<p>[#<br>&lt;wbr&gt;<br>#]</p>']);
       assert.deepStrictEqual(
-        [...parse('[#\n<wbr>\n#]a').children].map(el => el.outerHTML),
-        ['<p><sup class="comment" title="<wbr>"></sup>a</p>']);
+        [...parse('[#\n<wbr>\n#]\na').children].map(el => el.outerHTML),
+        ['<p>[#<br>&lt;wbr&gt;<br>#]<br>a</p>']);
     });
 
     it('linebreak', () => {

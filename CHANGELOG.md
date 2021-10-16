@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.219.1
+
+- Fix visualization.
+
 ## 0.219.0
 
 - Extend annotation syntax to enable reference syntax.
