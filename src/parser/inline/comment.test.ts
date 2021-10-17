@@ -22,6 +22,7 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('[# a ##]')), undefined);
       assert.deepStrictEqual(inspect(parser('[## a #]')), undefined);
       assert.deepStrictEqual(inspect(parser(' [# a #]')), undefined);
+      assert.deepStrictEqual(inspect(parser(`[#\na${' '.repeat(100000 - 6)}\n#`)), undefined);
     });
 
     it('basic', () => {
