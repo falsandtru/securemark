@@ -3584,7 +3584,7 @@ require = function () {
                 const match = (0, global_1.Function)([
                     '"use strict";',
                     'return source =>',
-                    'false',
+                    '0',
                     ...patterns.map(pattern => typeof pattern === 'string' ? `|| source.slice(0, ${ pattern.length }) === '${ pattern }'` : `|| /${ pattern.source }/${ pattern.flags }.test(source)`)
                 ].join(''))();
                 const match2 = source => {
@@ -6881,16 +6881,34 @@ require = function () {
             exports.comment = void 0;
             const combinator_1 = _dereq_('../../combinator');
             const typed_dom_1 = _dereq_('typed-dom');
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', '#]', (0, combinator_1.match)(/^\[(#+)\s+(\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*))($|\1\])/, ([, , title, closer]) => (rest, {resources}) => closer ? [
-                [(0, typed_dom_1.html)('sup', {
-                        class: 'comment',
-                        title: title.trim().replace(/\x7F.?/gs, '')
-                    })],
-                rest
-            ] : resources && void (resources.budget -= title.match(/\n/g).length))));
+            const memoize_1 = _dereq_('spica/memoize');
+            const closer = (0, memoize_1.memoize)(sharps => new RegExp(String.raw`\s${ sharps }]`));
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?:(\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*))(\1\]))?/, ([, sharps, title, closed]) => rest => {
+                if (closed)
+                    return [
+                        [(0, typed_dom_1.html)('sup', {
+                                class: 'comment',
+                                title: title.trimEnd().replace(/\x7F.?/gs, '')
+                            })],
+                        rest
+                    ];
+                const i = rest.search(closer(sharps));
+                if (i === -1)
+                    return;
+                return [
+                    [(0, typed_dom_1.html)('sup', {
+                            class: 'comment invalid',
+                            'data-invalid-syntax': 'comment',
+                            'data-invalid-type': 'content',
+                            'data-invalid-description': 'Too many lines.'
+                        }, rest.slice(0, i).trimEnd().replace(/\x7F.?/gs, ''))],
+                    rest.slice(i + sharps.length + 2)
+                ];
+            })));
         },
         {
             '../../combinator': 30,
+            'spica/memoize': 20,
             'typed-dom': 29
         }
     ],
@@ -8861,7 +8879,7 @@ require = function () {
             ];
             const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*)\1\])*\\?(?:$|\n)`, 'gm');
             function visualize(parser) {
-                return justify((0, combinator_1.union)([
+                return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')), (0, combinator_1.union)([
                     (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
                     (0, combinator_1.trim)((0, combinator_1.some)((0, combinator_1.union)([
                         (0, combinator_1.clear)((0, source_1.str)('\x7F\\')),
@@ -8871,9 +8889,6 @@ require = function () {
                 ]));
             }
             exports.visualize = visualize;
-            function justify(parser) {
-                return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')), parser);
-            }
             function hasVisible(nodes, {
                 syntax: {
                     inline: {
@@ -8900,7 +8915,7 @@ require = function () {
             }
             exports.startTight = startTight;
             function isStartTight(source, context) {
-                var _a, _b;
+                var _a, _b, _c, _d;
                 if (source === '')
                     return true;
                 switch (source[0]) {
@@ -8913,7 +8928,7 @@ require = function () {
                     return ((_a = source[1]) === null || _a === void 0 ? void 0 : _a.trimStart()) !== '';
                 case '&':
                     switch (true) {
-                    case source.length > 2 && source[1] !== ' ' && ((_b = (0, parser_1.eval)((0, htmlentity_1.htmlentity)(source, context))) === null || _b === void 0 ? void 0 : _b[0].trimStart()) == '':
+                    case source.length > 2 && source[1] !== ' ' && ((_b = (0, parser_1.eval)((0, htmlentity_1.htmlentity)(source, context))) === null || _b === void 0 ? void 0 : _b[0].trimStart()) === '':
                         return false;
                     }
                     return true;
@@ -8925,7 +8940,7 @@ require = function () {
                     return true;
                 case '[':
                     switch (true) {
-                    case source.length >= 7 && source[1] === '#' && !!(0, comment_1.comment)(source, context):
+                    case source.length >= 7 && source[1] === '#' && ((_c = (0, parser_1.eval)((0, comment_1.comment)(source, context))) === null || _c === void 0 ? void 0 : _c[0].className) === 'comment':
                         return false;
                     }
                     return true;
