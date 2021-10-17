@@ -108,7 +108,8 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
       switch (true) {
         case source.length >= 7
           && source[1] === '#'
-          && !!comment(source, context):
+          && eval(comment(source, context))?.[0].className === 'comment':
+          assert(!eval(comment(source, context))?.[0].matches('.invalid'));
           return false;
       }
       return true;

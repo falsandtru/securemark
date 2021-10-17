@@ -18,8 +18,13 @@ export function inspect(result: Result<HTMLElement | string>, until: number | st
         : ~(~node.outerHTML.indexOf(until) || -Infinity) + until.length;
       const el = html('div');
       el.innerHTML = node.outerHTML.slice(0, until);
-      assert(until === Infinity ? node.outerHTML === el.innerHTML : el.innerHTML.startsWith(node.outerHTML.slice(0, until)));
-      assert(until !== Infinity || node.childNodes.length === el.firstChild?.childNodes.length);
+      if (node.outerHTML.length <= until) {
+        assert(node.outerHTML === el.innerHTML);
+        assert(node.childNodes.length === el.firstChild?.childNodes.length || />[^<]{65537}/.test(node.outerHTML));
+      }
+      else {
+        assert(el.innerHTML.startsWith(node.outerHTML.slice(0, until)));
+      }
       return normalize(node.outerHTML.slice(0, until));
     }),
     exec(result)

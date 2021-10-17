@@ -36,11 +36,10 @@ describe('Unit: parser/inline/comment', () => {
       assert.deepStrictEqual(inspect(parser('[## #] ##]')), [['<sup class="comment" title="#]"></sup>'], '']);
       assert.deepStrictEqual(inspect(parser('[# a #]b')), [['<sup class="comment" title="a"></sup>'], 'b']);
       assert.deepStrictEqual(inspect(parser('[#\na\n#]')), [['<sup class="comment" title="a"></sup>'], '']);
-      assert(parser(`[# ${'a'.repeat(100 - 6)} #]`));
-      assert(parser(`[# ${'a'.repeat(100000 - 6)} #]`));
-      assert(parser(`[# ${'a\n'.repeat(100)} #]`));
-      assert(!parser(`[# ${'a\n'.repeat(101)} #]`));
-      assert(!parser(`[# ${'a\n'.repeat(100000 / 2 - 6 / 2)} #]`));
+      assert.deepStrictEqual(inspect(parser(`[#\n${'a'.repeat(100000 - 6)}\n#]`)), [[`<sup class="comment" title="${'a'.repeat(100000 - 6).trim()}"></sup>`], '']);
+      assert.deepStrictEqual(inspect(parser(`[#\n${'a\n'.repeat(100)}#]`)), [[`<sup class="comment" title="${'a\n'.repeat(100).trim()}"></sup>`], '']);
+      assert.deepStrictEqual(inspect(parser(`[#\n${'a\n'.repeat(101)}#]b`)), [[`<sup class="comment invalid">${'a\n'.repeat(101).trim()}</sup>`], 'b']);
+      assert.deepStrictEqual(inspect(parser(`[#\n${'a\n'.repeat(100000 / 2 - 6 / 2)}#]b`)), [[`<sup class="comment invalid">${'a\n'.repeat(100000 / 2 - 6 / 2).trim()}</sup>`], 'b']);
     });
 
   });
