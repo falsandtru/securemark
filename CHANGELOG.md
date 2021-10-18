@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.220.0
+
+- Change normalization not to escape unreadable characters.
+
 ## 0.219.4
 
 - Fix comment parser.

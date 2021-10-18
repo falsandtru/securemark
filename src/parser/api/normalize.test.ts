@@ -1,4 +1,4 @@
-import { normalize } from './normalize';
+import { normalize, escape } from './normalize';
 
 describe('Unit: parser/normalize', () => {
   describe('normalize', () => {
@@ -45,11 +45,6 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\x7F') === '\uFFFD');
     });
 
-    it('escape', () => {
-      assert(normalize('\u200B') === '&ZeroWidthSpace;');
-      assert(normalize('\u200D') === '&zwj;');
-    });
-
     it('sanitize', () => {
       assert(normalize('\u2006') === '\uFFFD');
       assert(normalize('\u202A') === '\uFFFD');
@@ -70,6 +65,14 @@ describe('Unit: parser/normalize', () => {
       assert(normalize('\0---\na: b\x01\n---') === '\uFFFD---\na: b\uFFFD\n---');
       assert(normalize('\x01---\na: b\x01\n---') === '\uFFFD---\na: b\uFFFD\n---');
       assert(normalize('\x01---\na: b\x01\n---\n\n!> \x01---\na: b\x01\n---') === '\uFFFD---\na: b\uFFFD\n---\n\n!> \uFFFD---\na: b\uFFFD\n---');
+    });
+
+  });
+
+  describe('escape', () => {
+    it('', () => {
+      assert(escape('\u200B') === '&ZeroWidthSpace;');
+      assert(escape('\u200D') === '&zwj;');
     });
 
   });
