@@ -6883,8 +6883,8 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const memoize_1 = _dereq_('spica/memoize');
             const closer = (0, memoize_1.memoize)(sharps => new RegExp(String.raw`\s${ sharps }]`));
-            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?:(\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*))(\1\]))?/, ([, sharps, title, closed]) => rest => {
-                if (closed)
+            exports.comment = (0, combinator_1.creator)((0, combinator_1.validate)('[#', (0, combinator_1.match)(/^\[(#+)\s+(?!\s|\1\])(?:(\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*))\1\])?/, ([, sharps, title]) => (rest, {resources}) => {
+                if (title)
                     return [
                         [(0, typed_dom_1.html)('sup', {
                                 class: 'comment',
@@ -6893,17 +6893,17 @@ require = function () {
                         rest
                     ];
                 const i = rest.search(closer(sharps));
-                if (i === -1)
-                    return;
-                return [
-                    [(0, typed_dom_1.html)('sup', {
-                            class: 'comment invalid',
-                            'data-invalid-syntax': 'comment',
-                            'data-invalid-type': 'content',
-                            'data-invalid-description': 'Too many lines.'
-                        }, rest.slice(0, i).trimEnd().replace(/\x7F.?/gs, ''))],
-                    rest.slice(i + sharps.length + 2)
-                ];
+                if (i !== -1)
+                    return [
+                        [(0, typed_dom_1.html)('sup', {
+                                class: 'comment invalid',
+                                'data-invalid-syntax': 'comment',
+                                'data-invalid-type': 'content',
+                                'data-invalid-description': 'Too many lines.'
+                            }, rest.slice(0, i).trimEnd().replace(/\x7F.?/gs, ''))],
+                        rest.slice(i + sharps.length + 2)
+                    ];
+                resources && (resources.budget -= 10);
             })));
         },
         {
@@ -8877,7 +8877,7 @@ require = function () {
                 'InvisibleComma',
                 'ic'
             ];
-            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*)\1\])*\\?(?:$|\n)`, 'gm');
+            const blankline = new RegExp(String.raw`^(?!$|\n)(?:\\?\s|&(?:${ invisibleHTMLEntityNames.join('|') });|<wbr>|\[(#+)\s+(?!\s|\1\])\S[^\n]*?(?:\n.*?){0,99}?(?:\s|\n\s*)\1\])*\\?(?:$|\n)`, 'gm');
             function visualize(parser) {
                 return (0, combinator_1.convert)(source => source.replace(blankline, line => line.replace(/[\\&<\[]/g, '\x7F\\$&')), (0, combinator_1.union)([
                     (0, combinator_1.verify)(parser, (ns, rest, context) => !rest && hasVisible(ns, context)),
