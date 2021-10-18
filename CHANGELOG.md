@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.219.4
+
+- Fix comment parser.
+
 ## 0.219.3
 
 - Improve comment parser.
