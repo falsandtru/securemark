@@ -4721,13 +4721,30 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.normalize = void 0;
+            exports.escape = exports.normalize = void 0;
             const htmlentity_1 = _dereq_('../inline/htmlentity');
             const parser_1 = _dereq_('../../combinator/data/parser');
+            const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
+            function normalize(source) {
+                return format(sanitize(source));
+            }
+            exports.normalize = normalize;
+            function format(source) {
+                return source.replace(/\r\n?/g, '\n');
+            }
+            function sanitize(source) {
+                return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g, `$1${ UNICODE_REPLACEMENT_CHARACTER }`).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
+            }
             const unreadableHTMLEntityNames = [
+                'NonBreakingSpace',
+                'nbsp',
                 'shy',
+                'ensp',
+                'emsp',
                 'emsp13',
                 'emsp14',
+                'numsp',
+                'puncsp',
                 'ThinSpace',
                 'thinsp',
                 'VeryThinSpace',
@@ -4741,6 +4758,7 @@ require = function () {
                 'zwnj',
                 'lrm',
                 'rlm',
+                'MediumSpace',
                 'NoBreak',
                 'ApplyFunction',
                 'af',
@@ -4767,20 +4785,10 @@ require = function () {
                 '\u2060',
                 '\uFEFF'
             ];
-            const UNICODE_REPLACEMENT_CHARACTER = '\uFFFD';
-            function normalize(source) {
-                return format(sanitize(escape(source)));
-            }
-            exports.normalize = normalize;
-            function format(source) {
-                return source.replace(/\r\n?/g, '\n');
-            }
-            function sanitize(source) {
-                return source.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]|[\u2006\u200B-\u200F\u202A-\u202F\u2060\uFEFF]|(^|[^\u1820\u1821])\u180E/g, `$1${ UNICODE_REPLACEMENT_CHARACTER }`).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]?|[\uDC00-\uDFFF]/g, char => char.length === 1 ? UNICODE_REPLACEMENT_CHARACTER : char);
-            }
             function escape(source) {
                 return source.replace(unreadableEscapableCharacter, char => `&${ unreadableHTMLEntityNames[unreadableEscapableCharacters.indexOf(char)] };`);
             }
+            exports.escape = escape;
         },
         {
             '../../combinator/data/parser': 49,
