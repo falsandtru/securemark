@@ -1,9 +1,10 @@
 import { undefined } from 'spica/global';
 import { OListParser } from '../block';
-import { union, inits, subsequence, some, block, line, indent, focus, context, creator, open, match, convert, trim, trimStart, lazy, fmap } from '../../combinator';
+import { union, inits, subsequence, some, block, line, indent, focus, rewrite, context, creator, open, match, convert, trim, trimStart, fallback, lazy, fmap } from '../../combinator';
 import { checkbox, ulist_, fillFirstLine } from './ulist';
 import { ilist_ } from './ilist';
 import { inline } from '../inline';
+import { contentline } from '../source';
 import { html, define, defrag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
 import { shift } from 'spica/array';
@@ -17,11 +18,12 @@ export const olist: OListParser = lazy(() => block(match(
 const list = (type: string, delim: string): OListParser => fmap(
   context({ syntax: { inline: { media: false } } },
   some(creator(union([
-    fmap(
+    fmap(fallback(
       inits([
         line(open(items[delim], trim(subsequence([checkbox, trimStart(some(inline))])), true)),
         indent(union([ulist_, olist_, ilist_])),
       ]),
+      iitem),
       (ns: [string, ...(HTMLElement | string)[]]) => [html('li', { 'data-marker': ns[0] }, defrag(fillFirstLine(shift(ns)[1])))]),
   ])))),
   es => [format(html('ol', es), type, delim)]);
@@ -44,6 +46,16 @@ export const olist_: OListParser = convert(
           .replace(/^\((?=$|\n)/, `(1) `)
           .replace(/^\(((?:[0-9]+|[a-z]+))\)?((?:-(?!-)[0-9]*)*(?=$|\n))/, `($1)$2 `),
   olist);
+
+const iitem = rewrite(contentline, source => [[
+  '',
+  html('span', {
+    class: 'invalid',
+    'data-invalid-syntax': 'listitem',
+    'data-invalid-type': 'syntax',
+    'data-invalid-description': 'Fix the indent or the head of list items.',
+  }, source.replace('\n', ''))
+], '']);
 
 function type(index: string): string {
   switch (index) {
@@ -102,8 +114,13 @@ function format(el: HTMLOListElement, type: string, delim: string): HTMLOListEle
   const marker = el.firstElementChild?.getAttribute('data-marker')!.match(initial(type))?.[0] ?? '';
   for (let es = el.children, len = es.length, i = 0; i < len; ++i) {
     const el = es[i];
-    if (el.getAttribute('data-marker') !== marker) break;
-    el.removeAttribute('data-marker');
+    switch (el.getAttribute('data-marker')) {
+      case '':
+      case marker:
+        el.removeAttribute('data-marker');
+        continue;
+    }
+    break;
   }
   return el;
 }

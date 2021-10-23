@@ -17,11 +17,6 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('-[ ]')), undefined);
       assert.deepStrictEqual(inspect(parser('-[x]')), undefined);
       assert.deepStrictEqual(inspect(parser('-\n')), undefined);
-      assert.deepStrictEqual(inspect(parser('-\n+')), undefined);
-      assert.deepStrictEqual(inspect(parser('-\n0')), undefined);
-      assert.deepStrictEqual(inspect(parser('-\n -\n 0')), undefined);
-      assert.deepStrictEqual(inspect(parser('- 0\n  - 0\n - 0')), undefined);
-      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li>!<a href="http://host" target="_blank">http://host</a></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser(' -')), undefined);
       assert.deepStrictEqual(inspect(parser('+')), undefined);
       assert.deepStrictEqual(inspect(parser('*')), undefined);
@@ -43,6 +38,9 @@ describe('Unit: parser/block/ulist', () => {
       // filled
       assert.deepStrictEqual(inspect(parser('- 1\n- 2')), [['<ul><li>1</li><li>2</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n- 2\n- 3')), [['<ul><li>1</li><li>2</li><li>3</li></ul>'], '']);
+      // invalid
+      assert.deepStrictEqual(inspect(parser('-\n+')), [['<ul><li></li><li><span class="invalid">+</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('-\n0')), [['<ul><li></li><li><span class="invalid">0</span></li></ul>'], '']);
     });
 
     it('nest', () => {
@@ -51,11 +49,14 @@ describe('Unit: parser/block/ulist', () => {
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n- 3')), [['<ul><li>1<ul><li>2</li></ul></li><li>3</li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n - 3')), [['<ul><li>1<ul><li>2</li><li>3</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n - 2\n  - 3')), [['<ul><li>1<ul><li>2<ul><li>3</li></ul></li></ul></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- 1\n  - 2\n - 3')), [['<ul><li>1<ul><li>2</li></ul></li><li><span class="invalid"> - 3</span></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('-\n -\n +\n -\n +\n+')), [['<ul><li><br><ul><li></li><li><span class="invalid">+</span></li><li></li><li><span class="invalid">+</span></li></ul></li><li><span class="invalid">+</span></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n + 2')), [['<ul><li>1<ul class="invalid"><li>2</li></ul></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0')), [['<ul><li>1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0.')), [['<ul><li>1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0. ')), [['<ul><li>1<ol><li></li></ol></li></ul>'], '']);
       assert.deepStrictEqual(inspect(parser('- 1\n 0. 2')), [['<ul><li>1<ol><li>2</li></ol></li></ul>'], '']);
+      assert.deepStrictEqual(inspect(parser('- !http://host')), [['<ul><li>!<a href="http://host" target="_blank">http://host</a></li></ul>'], '']);
     });
 
     it('checkbox', () => {
