@@ -3,6 +3,7 @@
 ## 0.221.0
 
 - Fix ulist, olist, and ilist parsers to accept invalid lines.
+- Fix table parser to accept invalid lines.
 
 ## 0.220.0
 

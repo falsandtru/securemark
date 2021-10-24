@@ -1,6 +1,7 @@
 import { TableParser } from '../block';
-import { union, sequence, some, block, line, validate, focus, creator, surround, open, lazy, fmap } from '../../combinator';
+import { union, sequence, some, block, line, validate, focus, rewrite, creator, surround, open, fallback, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
+import { contentline } from '../source';
 import { html, defrag } from 'typed-dom';
 import { push } from 'spica/array';
 
@@ -18,13 +19,21 @@ export const table: TableParser = lazy(() => block(fmap(validate(
   rows => [
     html('table', [
       html('thead', [rows.shift()!]),
-      html('tbody', format(rows, push([], rows.shift()!.children).map(el => el.textContent!))),
+      html('tbody', format(rows)),
     ]),
   ])));
 
-const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creator(fmap(
+const row = <P extends CellParser | AlignParser>(parser: P, optional: boolean): RowParser<P> => creator(fallback(fmap(
   line(surround(/^(?=\|)/, some(union([parser])), /^\|?\s*$/, optional)),
-  es => [html('tr', es)]));
+  es => [html('tr', es)]),
+  rewrite(contentline, source => [[
+    html('tr', {
+      class: 'invalid',
+      'data-invalid-syntax': 'tablerow',
+      'data-invalid-type': 'syntax',
+      'data-invalid-description': 'Invalid table row.',
+    }, [html('td', source.replace('\n', ''))])
+  ], ''])));
 
 const align: AlignParser = creator(fmap(open(
   '|',
@@ -49,8 +58,10 @@ const data: CellParser.DataParser = creator(fmap(
   cell,
   ns => [html('td', defrag(ns))]));
 
-function format(rows: HTMLTableRowElement[], aligns: string[]): HTMLTableRowElement[] {
-  assert(aligns.length > 0);
+function format(rows: HTMLTableRowElement[]): HTMLTableRowElement[] {
+  const aligns = rows[0].classList.contains('invalid')
+    ? []
+    : push([], rows.shift()!.children).map(el => el.textContent!);
   for (let i = 0, len = rows.length; i < len; ++i) {
     const cols = rows[i].children;
     for (let i = 0, len = cols.length; i < len; ++i) {
