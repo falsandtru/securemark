@@ -9,7 +9,7 @@ import AlignParser = TableParser.AlignParser;
 import CellParser = TableParser.CellParser;
 
 export const table: TableParser = lazy(() => block(fmap(validate(
-  /^\|[^\n]*(?:\n\|[^\n]*){2,}/,
+  /^\|[^\n]*(?:\n\|[^\n]*){2}/,
   sequence([
     row(some(head), true),
     row(some(align), false),
@@ -52,8 +52,7 @@ const data: CellParser.DataParser = creator(fmap(
 function format(rows: HTMLTableRowElement[], aligns: string[]): HTMLTableRowElement[] {
   assert(aligns.length > 0);
   for (let i = 0, len = rows.length; i < len; ++i) {
-    const row = rows[i];
-    const cols = row.children;
+    const cols = rows[i].children;
     for (let i = 0, len = cols.length; i < len; ++i) {
       if (i > 0 && !aligns[i]) {
         aligns[i] = aligns[i - 1];
