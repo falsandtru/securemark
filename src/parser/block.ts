@@ -1,6 +1,6 @@
 import { undefined } from 'spica/global';
 import { MarkdownParser } from '../../markdown';
-import { union, reset, creator, open, recover } from '../combinator';
+import { union, reset, creator, open, fallback, recover } from '../combinator';
 import { emptyline } from './source';
 import { horizontalrule } from './block/horizontalrule';
 import { heading } from './block/heading';
@@ -49,12 +49,10 @@ export const block: BlockParser = creator(error(
     paragraph
   ]))));
 
-function error(parser: MarkdownParser.BlockParser): MarkdownParser.BlockParser {
-  return recover(
-    union([
-      open('\0', source => { throw new Error(source.split('\n', 1)[0]); }),
-      parser,
-    ]),
+function error(parser: BlockParser): BlockParser {
+  return recover<BlockParser>(fallback(
+    open('\0', source => { throw new Error(source.split('\n', 1)[0]); }),
+    parser),
     (source, { id }, reason) => [[
       html('h1',
         {

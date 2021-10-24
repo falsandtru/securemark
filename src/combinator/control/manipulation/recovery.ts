@@ -1,6 +1,6 @@
-import { Parser, Result, Ctx } from '../../data/parser';
+import { Parser, Result, Ctx, Tree, Context } from '../../data/parser';
 
-export function recover<T, C extends Ctx, D extends Parser<unknown, C>[]>(parser: Parser<T, C, D> | Parser<T, C, [...Parser<never, C>[], Parser<T, C, D>]>, fallback: (source: string, context: C, reason: unknown) => Result<T, C, D>): Parser<T, C, D>;
+export function recover<P extends Parser<unknown>>(parser: P, fallback: (source: string, context: Context<P>, reason: unknown) => Result<Tree<P>>): P;
 export function recover<T>(parser: Parser<T>, fallback: (source: string, context: Ctx, reason: unknown) => Result<T>): Parser<T> {
   return (source, context) => {
     try {

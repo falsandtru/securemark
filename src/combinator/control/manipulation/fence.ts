@@ -2,7 +2,7 @@ import { Parser, Ctx } from '../../data/parser';
 import { firstline, isEmpty } from '../constraint/line';
 import { unshift } from 'spica/array';
 
-export function fence<D extends Parser<unknown, C>[], C extends Ctx>(opener: RegExp, limit: number, separation: boolean = true): Parser<string, C, D> {
+export function fence<C extends Ctx, D extends Parser<unknown, C>[]>(opener: RegExp, limit: number, separation: boolean = true): Parser<string, C, D> {
   return source => {
     if (source === '') return;
     const matches = source.match(opener);
