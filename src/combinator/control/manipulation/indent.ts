@@ -12,7 +12,7 @@ export function indent<P extends Parser<unknown>>(parser: P): P;
 export function indent<T>(parser: Parser<T>): Parser<T> {
   assert(parser);
   return bind(match(
-    /^(?=(([ \t　])\2*))/,
+    /^(?=(([ \t])\2*))/,
     reduce<string[], Parser<string>, string>(
     ([, indent]) =>
       some(line(open(indent, source => [[unline(source)], '']))),

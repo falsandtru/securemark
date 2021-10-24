@@ -16,7 +16,6 @@ describe('Unit: combinator/indent', () => {
       assert.deepStrictEqual(inspect(parser('  a\n a')), [['a'], ' a']);
       assert.deepStrictEqual(inspect(parser(' \ta')), [['\ta'], '']);
       assert.deepStrictEqual(inspect(parser('\ta')), [['a'], '']);
-      assert.deepStrictEqual(inspect(parser('　a')), [['a'], '']);
     });
 
   });

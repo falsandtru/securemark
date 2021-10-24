@@ -2,6 +2,7 @@
 
 ## 0.221.0
 
+- Change ulist, olist, and ilist parsers to disallow fullwidth space indent.
 - Fix ulist, olist, and ilist parsers to accept invalid lines.
 - Fix table parser to accept invalid lines.
 
