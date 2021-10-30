@@ -13,7 +13,7 @@ export function math(target: HTMLElement, cache?: Collection<string, HTMLElement
 
 async function queue(target: HTMLElement, callback = () => undefined): Promise<void> {
   // @ts-ignore
-  MathJax.typesetPromise || await MathJax.startup.promise;
+  !MathJax.typesetPromise && await MathJax.startup.promise;
   // @ts-ignore
   MathJax.typesetPromise([target]).then(callback);
 }
