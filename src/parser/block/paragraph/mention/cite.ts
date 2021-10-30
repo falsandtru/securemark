@@ -10,10 +10,10 @@ export const cite: ParagraphParser.MentionParser.CiteParser = creator(line(fmap(
     str(/^>*(?=>>)/),
     anchor,
   ]))),
-  ([el, str = '']: [HTMLElement, string?]) => [
+  ([el, quotes = '']: [HTMLElement, string?]) => [
     html('span', { class: 'cite' }, defrag([
-      str + '>',
-      define(el, { 'data-depth': `${str.length + 1}` }, el.innerText.slice(1)),
+      quotes + '>',
+      define(el, { 'data-depth': `${quotes.length + 1}` }, el.innerText.slice(1)),
     ])),
     html('br'),
   ])));
