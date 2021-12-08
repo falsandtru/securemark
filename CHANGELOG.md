@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.222.0
+
+- Change link parser to trim the content.
+
 ## 0.221.0
 
 - Change ulist, olist, and ilist parsers to disallow fullwidth space indent.
