@@ -77,7 +77,6 @@ export function startTight<T>(parser: Parser<T>): Parser<T> {
       ? parser(source, context)
       : undefined;
 }
-
 export function isStartTight(source: string, context: MarkdownParser.Context): boolean {
   if (source === '') return true;
   switch (source[0]) {
@@ -119,7 +118,7 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
 }
 export function verifyStartTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
-  return isVisible(nodes[0]);
+  return isVisible(nodes[0], 0);
 }
 export function verifyEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
@@ -130,7 +129,7 @@ export function verifyEndTight(nodes: readonly (HTMLElement | string)[]): boolea
     : isVisible(nodes[last], -1) || last === 0 ||
       isVisible(nodes[last - 1], -1);
 }
-function isVisible(node: HTMLElement | string, position = 0): boolean {
+function isVisible(node: HTMLElement | string, position: number): boolean {
   if (!node) return false;
   switch (typeof node) {
     case 'string':
