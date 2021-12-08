@@ -98,8 +98,8 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[a]{b}')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a]{#}')), [['<a href="#">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a]{#b}')), [['<a href="#b">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[a ]{b}')), [['<a href="b">a </a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[a  ]{b}')), [['<a href="b">a  </a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[a ]{b}')), [['<a href="b">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[a  ]{b}')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a b]{c}')), [['<a href="c">a b</a>'], '']);
       assert.deepStrictEqual(inspect(parser(`[]{?#${encodeURIComponent(':/[]{}<>?#=& ')}}`)), [['<a href="?#%3A%2F%5B%5D%7B%7D%3C%3E%3F%23%3D%26%20">?#%3A%2F[]{}&lt;&gt;%3F%23%3D%26%20</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{b}')), [['<a href="b">b</a>'], '']);
@@ -121,7 +121,7 @@ describe('Unit: parser/inline/link', () => {
     it('media', () => {
       assert.deepStrictEqual(inspect(parser('[![]{a}]{a}')), [['<a href="a" target="_blank"><img class="media" data-src="a" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('[![]{a}]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="a" alt=""></a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[![]{a} ]{b}')), [['<a href="b">![]{a} </a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[![]{a} ]{b}')), [['<a href="b">![]{a}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[![]{a}![]{a}]{b}')), [['<a href="b">![]{a}![]{a}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[[![]{a}]{b}]{c}')), [['<a href="c">[![]{a}]{b}</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[!http://host]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="http://host" alt=""></a>'], '']);
