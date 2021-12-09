@@ -4,7 +4,7 @@ import { union, some, validate, guard, context, creator, surround, open, lazy, f
 import { inline } from '../../inline';
 import { indexee, identify } from './indexee';
 import { txt, str } from '../../source';
-import { startTight, trimEnd } from '../../util';
+import { startTight, trimNodeEnd } from '../../util';
 import { html, define, defrag } from 'typed-dom';
 import { join } from 'spica/array';
 
@@ -29,7 +29,7 @@ export const index: IndexParser = lazy(() => creator(validate('[#', ']', '\n', f
     inline,
   ]), ']', /^\\?\n/), true)))),
   ']'),
-  ns => [html('a', trimEnd(defrag(ns)))])),
+  ns => [html('a', trimNodeEnd(defrag(ns)))])),
   ([el]: [HTMLAnchorElement]) => [
     define(el,
       {

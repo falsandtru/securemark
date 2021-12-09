@@ -70,6 +70,17 @@ function hasVisible(
   return false;
 }
 
+export function startLoose<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function startLoose<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+  return (source, context) =>
+    isStartLoose(source, context)
+      ? parser(source, context)
+      : undefined;
+}
+function isStartLoose(source: string, context: MarkdownParser.Context): boolean {
+  if (source === '') return true;
+  return isStartTight(source.replace(/^[^\S\n]+/, ''), context);
+}
 export function startTight<P extends Parser<unknown>>(parser: P): P;
 export function startTight<T>(parser: Parser<T>): Parser<T> {
   return (source, context) =>
@@ -116,11 +127,11 @@ export function isStartTight(source: string, context: MarkdownParser.Context): b
       return source[0].trimStart() !== '';
   }
 }
-export function verifyStartTight(nodes: readonly (HTMLElement | string)[]): boolean {
+export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   return isVisible(nodes[0], 0);
 }
-export function verifyEndTight(nodes: readonly (HTMLElement | string)[]): boolean {
+export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
   const last = nodes.length - 1;
   return typeof nodes[last] === 'string' && (nodes[last] as string).length > 1
@@ -129,12 +140,23 @@ export function verifyEndTight(nodes: readonly (HTMLElement | string)[]): boolea
     : isVisible(nodes[last], -1) || last === 0 ||
       isVisible(nodes[last - 1], -1);
 }
-function isVisible(node: HTMLElement | string, position: number): boolean {
+export function visible<P extends Parser<HTMLElement | string>>(parser: P): P;
+export function visible<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+  return verify(parser, nodes => {
+    if (nodes.length === 0) return true;
+    for (let i = 0; i < nodes.length; ++i) {
+      if (isVisible(nodes[i])) return true;
+    }
+    return false;
+  });
+}
+function isVisible(node: HTMLElement | string, position?: number): boolean {
   if (!node) return false;
   switch (typeof node) {
     case 'string':
-      assert(node.length + position >= 0);
-      const char = node[position >= 0 ? position : node.length + position];
+      const char = position === undefined
+        ? node
+        : node[position >= 0 ? position : node.length + position];
       assert(char);
       switch (char) {
         case ' ':
@@ -159,8 +181,34 @@ function isVisible(node: HTMLElement | string, position: number): boolean {
   }
 }
 
-export function trimEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  assert(verifyStartTight(nodes));
+export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+  return trimNodeStart(trimNodeEnd(nodes));
+}
+function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+  const skip = nodes.length > 0 &&
+    typeof nodes[nodes.length - 1] === 'object' &&
+    nodes[nodes.length - 1]['className'] === 'indexer'
+    ? [nodes.pop()!]
+    : [];
+  for (
+    let first = nodes[0];
+    nodes.length > 0 &&
+    !isVisible(first, 0) &&
+    !(typeof first === 'object' && first.className === 'comment');
+  ) {
+    assert(nodes.length > 0);
+    if (typeof first === 'string') {
+      const pos = first.length - first.trimStart().length;
+      if (pos > 0) {
+        nodes[0] = first.slice(pos);
+        break;
+      }
+    }
+    nodes.pop();
+  }
+  return push(nodes, skip);
+}
+export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
   const skip = nodes.length > 0 &&
     typeof nodes[nodes.length - 1] === 'object' &&
     nodes[nodes.length - 1]['className'] === 'indexer'

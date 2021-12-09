@@ -29,8 +29,6 @@ describe('Unit: parser/inline/html', () => {
       assert.deepStrictEqual(inspect(parser('<small>z')), undefined);
       assert.deepStrictEqual(inspect(parser('<small></small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small> </small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small> a</small>')), undefined);
-      assert.deepStrictEqual(inspect(parser('<small> a </small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>\n</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>\na</small>')), undefined);
       assert.deepStrictEqual(inspect(parser('<small>\\ a</small>')), undefined);
@@ -59,6 +57,8 @@ describe('Unit: parser/inline/html', () => {
     });
 
     it('basic', () => {
+      assert.deepStrictEqual(inspect(parser('<small> a</small>')), [['<small> a</small>'], '']);
+      assert.deepStrictEqual(inspect(parser('<small> a </small>')), [['<small> a </small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>')), [['<small>a</small>'], '']);
       assert.deepStrictEqual(inspect(parser('<small>a</small>a')), [['<small>a</small>'], 'a']);
       assert.deepStrictEqual(inspect(parser('<small>a </small>')), [['<small>a </small>'], '']);

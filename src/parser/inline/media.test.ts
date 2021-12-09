@@ -39,9 +39,8 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![\\ ]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('![&Tab;]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a]{}')), undefined);
-      assert.deepStrictEqual(inspect(parser('![ a]{#}')), undefined);
-      assert.deepStrictEqual(inspect(parser('![ a ]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('![\\ a ]{#}')), undefined);
+      assert.deepStrictEqual(inspect(parser('![ \\ a ]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\nb]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('![a\\\nb]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('![]{ttp://host}')), [['<img class="media invalid" data-src="ttp://host" alt="">'], '']);
@@ -63,6 +62,8 @@ describe('Unit: parser/inline/media', () => {
       assert.deepStrictEqual(inspect(parser('![]{\\b}')), [['<a href="\\b" target="_blank"><img class="media" data-src="\\b" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{./b}')), [['<a href="./b" target="_blank"><img class="media" data-src="./b" alt=""></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![]{^/b}')), [[`<a href="/b" target="_blank"><img class="media" data-src="/b" alt=""></a>`], '']);
+      assert.deepStrictEqual(inspect(parser('![ a]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
+      assert.deepStrictEqual(inspect(parser('![ a ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a  ]{b}')), [['<a href="b" target="_blank"><img class="media" data-src="b" alt="a"></a>'], '']);
       assert.deepStrictEqual(inspect(parser('![a b]{c}')), [['<a href="c" target="_blank"><img class="media" data-src="c" alt="a b"></a>'], '']);

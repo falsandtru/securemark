@@ -4,7 +4,7 @@ import { eval, exec } from '../../combinator/data/parser';
 import { sequence, validate, verify, focus, creator, surround, lazy, bind } from '../../combinator';
 import { htmlentity } from './htmlentity';
 import { text as txt } from '../source';
-import { verifyStartTight } from '../util';
+import { isStartTightNodes } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift, push, join } from 'spica/array';
 
@@ -14,7 +14,7 @@ export const ruby: RubyParser = lazy(() => creator(bind(verify(
     surround('[', focus(/^(?:\\[^\n]|[^\[\]\n])+(?=]\()/, text), ']'),
     surround('(', focus(/^(?:\\[^\n]|[^\(\)\n])+(?=\))/, text), ')'),
   ])),
-  ([texts]) => verifyStartTight(texts)),
+  ([texts]) => isStartTightNodes(texts)),
   ([texts, rubies], rest) => {
     const tail = typeof texts[texts.length - 1] === 'object'
       ? [texts.pop()!]

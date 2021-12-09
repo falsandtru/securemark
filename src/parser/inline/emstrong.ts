@@ -2,7 +2,7 @@ import { EmStrongParser } from '../inline';
 import { union, some, creator, surround, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, verifyEndTight, trimEndBR } from '../util';
+import { startTight, isEndTightNodes, trimEndBR } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 
@@ -11,13 +11,13 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
   startTight(union([some(inline, '*')])),
   str(/^\*{1,3}/), false,
   ([as, bs, cs], rest, context) => {
-    if (!verifyEndTight(bs)) return [unshift(as, bs), cs[0] + rest];
+    if (!isEndTightNodes(bs)) return [unshift(as, bs), cs[0] + rest];
     switch (cs[0]) {
       case '*':
         return bind<EmStrongParser>(
           union([some(inline, '**')]),
           (ds, rest) =>
-            rest.slice(0, 2) === '**' && verifyEndTight(ds)
+            rest.slice(0, 2) === '**' && isEndTightNodes(ds)
               ? [[html('strong', unshift([html('em', defrag(trimEndBR(bs)))], defrag(trimEndBR(ds))))], rest.slice(2)]
               : [unshift(['**', html('em', defrag(trimEndBR(bs)))], ds), rest])
           (rest, context) ?? [['**', html('em', defrag(trimEndBR(bs)))], rest];
@@ -25,7 +25,7 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
         return bind<EmStrongParser>(
           union([some(inline, '*')]),
           (ds, rest) =>
-            rest.slice(0, 1) === '*' && verifyEndTight(ds)
+            rest.slice(0, 1) === '*' && isEndTightNodes(ds)
               ? [[html('em', unshift([html('strong', defrag(trimEndBR(bs)))], defrag(trimEndBR(ds))))], rest.slice(1)]
               : [unshift(['*', html('strong', defrag(trimEndBR(bs)))], ds), rest])
           (rest, context) ?? [['*', html('strong', defrag(trimEndBR(bs)))], rest];

@@ -65,8 +65,6 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[[]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[]]{}')), undefined);
       assert.deepStrictEqual(inspect(parser('[a]{}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[ a]{b}')), undefined);
-      assert.deepStrictEqual(inspect(parser('[ a ]{b}')), undefined);
       assert.deepStrictEqual(inspect(parser('[a\nb]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('[a\\\nb]{#}')), undefined);
       assert.deepStrictEqual(inspect(parser('[<wbr>]{/}')), undefined);
@@ -95,11 +93,13 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{^/b}')), [[`<a href="/b">^/b</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{#}')), [['<a href="#">#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{#b}')), [['<a href="#b">#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[ a]{b}')), [['<a href="b">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[ a ]{b}')), [['<a href="b">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[a ]{b}')), [['<a href="b">a</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[a  ]{b}')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a]{b}')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a]{#}')), [['<a href="#">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a]{#b}')), [['<a href="#b">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[a ]{b}')), [['<a href="b">a</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[a  ]{b}')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a b]{c}')), [['<a href="c">a b</a>'], '']);
       assert.deepStrictEqual(inspect(parser(`[]{?#${encodeURIComponent(':/[]{}<>?#=& ')}}`)), [['<a href="?#%3A%2F%5B%5D%7B%7D%3C%3E%3F%23%3D%26%20">?#%3A%2F[]{}&lt;&gt;%3F%23%3D%26%20</a>'], '']);
       assert.deepStrictEqual(inspect(parser('{b}')), [['<a href="b">b</a>'], '']);

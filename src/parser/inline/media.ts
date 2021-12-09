@@ -6,7 +6,6 @@ import { link, uri, option as linkoption, resolve } from './link';
 import { attributes } from './html';
 import { htmlentity } from './htmlentity';
 import { txt, str } from '../source';
-import { verifyStartTight } from '../util';
 import { html, define } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 import { unshift, push, join } from 'spica/array';
@@ -24,11 +23,11 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
   validate(['[', '{'], '}', '\n',
   guard(context => context.syntax?.inline?.media ?? true,
   tails([
-    dup(surround(/^\[(?!\\?\s)/, some(union([htmlentity, bracket, txt]), ']', /^\\?\n/), ']', true)),
+    dup(surround(/^\[(?!\s*\\\s)/, some(union([htmlentity, bracket, txt]), ']', /^\\?\n/), ']', true)),
     dup(surround(/^{(?![{}])/, inits([uri, some(option)]), /^[^\S\n]?}/)),
   ])))),
-  ([as, bs]) => bs ? [[join(as)], bs] : [[''], as]),
-  ([[text]]) => verifyStartTight([text || '-'])),
+  ([as, bs]) => bs ? [[join(as).trim() || join(as)], bs] : [[''], as]),
+  ([[text]]) => text === '' || text.trim() !== ''),
   ([[text], params], rest, context) => {
     const INSECURE_URI = params.shift()!;
     assert(INSECURE_URI === INSECURE_URI.trim());
@@ -40,9 +39,9 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
     const cached = cache?.has(url.href);
     const el = cache && cached
       ? cache.get(url.href)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': url.source, alt: text.trimEnd() });
+      : html('img', { class: 'media', 'data-src': url.source, alt: text });
     if (!cached && !sanitize(url, el)) return [[el], rest];
-    cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
+    cached && el.hasAttribute('alt') && el.setAttribute('alt', text);
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
     if (context.syntax?.inline?.link === false || cached && el.tagName !== 'IMG') return [[el], rest];

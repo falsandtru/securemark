@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.223.0
+
+- Refine some parsers to allow and trim leading whitespace.
+
 ## 0.222.0
 
-- Change link parser to trim the content.
+- Change link parser to trim whitespace.
 
 ## 0.221.0
 
