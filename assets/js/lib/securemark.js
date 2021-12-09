@@ -869,10 +869,11 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.run = exports.clear = exports.mapReturn = exports.mapParameters = exports.once = void 0;
+            exports.run = exports.clear = exports.mapReturn = exports.mapParameters = exports.singleton = void 0;
             const global_1 = _dereq_('./global');
+            const exception_1 = _dereq_('./exception');
             const noop_1 = _dereq_('./noop');
-            function once(f) {
+            function singleton(f) {
                 let result;
                 return function (...as) {
                     if (f === noop_1.noop)
@@ -882,7 +883,7 @@ require = function () {
                     return result;
                 };
             }
-            exports.once = once;
+            exports.singleton = singleton;
             function mapParameters(f, g) {
                 return (...as) => f(...g(...as));
             }
@@ -903,19 +904,32 @@ require = function () {
                     }
                 } catch (reason) {
                     for (let i = 0; gs[i]; ++i) {
-                        gs[i]();
+                        try {
+                            gs[i]();
+                        } catch (reason) {
+                            (0, exception_1.causeAsyncException)(reason);
+                        }
                     }
                     throw reason;
                 }
-                return once(() => {
+                return singleton(() => {
+                    const rs = [];
                     for (let i = 0; gs[i]; ++i) {
-                        gs[i]();
+                        try {
+                            gs[i]();
+                        } catch (reason) {
+                            rs.push(reason);
+                        }
+                    }
+                    if (rs.length > 0) {
+                        throw new AggregateError(rs);
                     }
                 });
             }
             exports.run = run;
         },
         {
+            './exception': 14,
             './global': 17,
             './noop': 22
         }
@@ -2151,7 +2165,7 @@ require = function () {
                         }
                         exports.join = join;
                     },
-                    { './global': 8 }
+                    { './global': 9 }
                 ],
                 6: [
                     function (_dereq_, module, exports) {
@@ -2169,10 +2183,23 @@ require = function () {
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
-                        exports.run = exports.clear = exports.mapReturn = exports.mapParameters = exports.once = void 0;
+                        exports.causeAsyncException = void 0;
+                        function causeAsyncException(reason) {
+                            void Promise.reject(reason);
+                        }
+                        exports.causeAsyncException = causeAsyncException;
+                    },
+                    {}
+                ],
+                8: [
+                    function (_dereq_, module, exports) {
+                        'use strict';
+                        Object.defineProperty(exports, '__esModule', { value: true });
+                        exports.run = exports.clear = exports.mapReturn = exports.mapParameters = exports.singleton = void 0;
                         const global_1 = _dereq_('./global');
+                        const exception_1 = _dereq_('./exception');
                         const noop_1 = _dereq_('./noop');
-                        function once(f) {
+                        function singleton(f) {
                             let result;
                             return function (...as) {
                                 if (f === noop_1.noop)
@@ -2182,7 +2209,7 @@ require = function () {
                                 return result;
                             };
                         }
-                        exports.once = once;
+                        exports.singleton = singleton;
                         function mapParameters(f, g) {
                             return (...as) => f(...g(...as));
                         }
@@ -2203,24 +2230,37 @@ require = function () {
                                 }
                             } catch (reason) {
                                 for (let i = 0; gs[i]; ++i) {
-                                    gs[i]();
+                                    try {
+                                        gs[i]();
+                                    } catch (reason) {
+                                        (0, exception_1.causeAsyncException)(reason);
+                                    }
                                 }
                                 throw reason;
                             }
-                            return once(() => {
+                            return singleton(() => {
+                                const rs = [];
                                 for (let i = 0; gs[i]; ++i) {
-                                    gs[i]();
+                                    try {
+                                        gs[i]();
+                                    } catch (reason) {
+                                        rs.push(reason);
+                                    }
+                                }
+                                if (rs.length > 0) {
+                                    throw new AggregateError(rs);
                                 }
                             });
                         }
                         exports.run = run;
                     },
                     {
-                        './global': 8,
-                        './noop': 10
+                        './exception': 7,
+                        './global': 9,
+                        './noop': 11
                     }
                 ],
-                8: [
+                9: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         const global = void 0 || typeof globalThis !== 'undefined' && globalThis || typeof self !== 'undefined' && self || Function('return this')();
@@ -2229,7 +2269,7 @@ require = function () {
                     },
                     {}
                 ],
-                9: [
+                10: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2270,10 +2310,10 @@ require = function () {
                     },
                     {
                         './compare': 6,
-                        './global': 8
+                        './global': 9
                     }
                 ],
-                10: [
+                11: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2284,7 +2324,7 @@ require = function () {
                     },
                     {}
                 ],
-                11: [
+                12: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         var _a, _b;
@@ -2631,11 +2671,11 @@ require = function () {
                     },
                     {
                         './alias': 4,
-                        './global': 8,
-                        './noop': 10
+                        './global': 9,
+                        './noop': 11
                     }
                 ],
-                12: [
+                13: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2717,9 +2757,9 @@ require = function () {
                             }
                         }
                     },
-                    { './global': 8 }
+                    { './global': 9 }
                 ],
-                13: [
+                14: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2763,7 +2803,7 @@ require = function () {
                                     return true;
                                 }
                                 function elem(factory, attrs, children) {
-                                    const el = factory ? (0, dom_1.define)(factory(baseFactory, tag, attrs || {}, children), attrs) : baseFactory(tag, attrs);
+                                    const el = factory ? (0, dom_1.define)(factory(baseFactory, tag, attrs !== null && attrs !== void 0 ? attrs : {}, children), attrs) : baseFactory(tag, attrs);
                                     if (tag !== el.tagName.toLowerCase())
                                         throw new Error(`TypedDOM: Expected tag name is "${ tag }" but actually "${ el.tagName.toLowerCase() }".`);
                                     return el;
@@ -2772,12 +2812,12 @@ require = function () {
                         }
                     },
                     {
-                        './proxy': 14,
-                        './util/dom': 15,
+                        './proxy': 15,
+                        './util/dom': 16,
                         'spica/alias': 4
                     }
                 ],
-                14: [
+                15: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         var _a, _b, _c, _d;
@@ -3081,14 +3121,14 @@ require = function () {
                         }
                     },
                     {
-                        './util/dom': 15,
-                        './util/identity': 16,
+                        './util/dom': 16,
+                        './util/identity': 17,
                         'spica/alias': 4,
                         'spica/array': 5,
-                        'spica/global': 8
+                        'spica/global': 9
                     }
                 ],
-                15: [
+                16: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -3096,19 +3136,19 @@ require = function () {
                         const global_1 = _dereq_('spica/global');
                         const alias_1 = _dereq_('spica/alias');
                         const memoize_1 = _dereq_('spica/memoize');
-                        const array_1 = _dereq_('spica/array');
                         var caches;
                         (function (caches) {
                             caches.shadows = new WeakMap();
                             caches.fragment = global_1.document.createDocumentFragment();
                         }(caches || (caches = {})));
                         function shadow(el, children, opts) {
+                            var _a, _b;
                             if (typeof el === 'string')
                                 return shadow((0, exports.html)(el), children, opts);
                             if (children && !isChildren(children))
                                 return shadow(el, void 0, children);
-                            const root = opts === void 0 ? el.shadowRoot || caches.shadows.get(el) : opts.mode === 'open' ? el.shadowRoot || void 0 : caches.shadows.get(el);
-                            return defineChildren(!opts || opts.mode === 'open' ? root || el.attachShadow(opts || { mode: 'open' }) : root || caches.shadows.set(el, el.attachShadow(opts)).get(el), !root && children == void 0 ? el.childNodes : children);
+                            const root = opts === void 0 ? (_a = el.shadowRoot) !== null && _a !== void 0 ? _a : caches.shadows.get(el) : opts.mode === 'open' ? (_b = el.shadowRoot) !== null && _b !== void 0 ? _b : void 0 : caches.shadows.get(el);
+                            return defineChildren(!opts || opts.mode === 'open' ? root !== null && root !== void 0 ? root : el.attachShadow(opts !== null && opts !== void 0 ? opts : { mode: 'open' }) : root !== null && root !== void 0 ? root : caches.shadows.set(el, el.attachShadow(opts)).get(el), !root && children === void 0 ? el.childNodes : children);
                         }
                         exports.shadow = shadow;
                         function frag(children) {
@@ -3179,7 +3219,9 @@ require = function () {
                             return el;
                         }
                         function defineChildren(node, children) {
-                            children && node.replaceChildren(...typeof children === 'string' ? [children] : children);
+                            if (children === void 0)
+                                return node;
+                            node.replaceChildren(...typeof children === 'string' ? [children] : children);
                             return node;
                         }
                         function isChildren(o) {
@@ -3200,12 +3242,11 @@ require = function () {
                     },
                     {
                         'spica/alias': 4,
-                        'spica/array': 5,
-                        'spica/global': 8,
-                        'spica/memoize': 9
+                        'spica/global': 9,
+                        'spica/memoize': 10
                     }
                 ],
-                16: [
+                17: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         var _a;
@@ -3217,11 +3258,11 @@ require = function () {
                         exports.identity = (0, random_1.unique)(random_1.rnd0Z, 2, (_a = global_1.global[ids]) !== null && _a !== void 0 ? _a : global_1.global[ids] = new global_1.Set());
                     },
                     {
-                        'spica/global': 8,
-                        'spica/random': 12
+                        'spica/global': 9,
+                        'spica/random': 13
                     }
                 ],
-                17: [
+                18: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -3254,7 +3295,7 @@ require = function () {
                                 var _a, _b;
                                 unbind();
                                 const cx = ev.target.shadowRoot ? (_a = ev.composedPath()[0]) === null || _a === void 0 ? void 0 : _a.closest(selector) : (_b = ev.target) === null || _b === void 0 ? void 0 : _b.closest(selector);
-                                return cx ? unbind = once(cx, type, listener, option) : void 0, ev.returnValue;
+                                return cx ? unbind = once(cx, type, listener, option) : void 0;
                             }, {
                                 ...option,
                                 capture: true
@@ -3263,20 +3304,21 @@ require = function () {
                         exports.delegate = delegate;
                         function bind(target, type, listener, option = false) {
                             target.addEventListener(type, handler, option);
-                            return (0, function_1.once)(() => void target.removeEventListener(type, handler, option));
+                            return (0, function_1.singleton)(() => void target.removeEventListener(type, handler, option));
                             function handler(ev) {
-                                return exports.currentTarget in ev && !ev[exports.currentTarget] ? void 0 : ev[exports.currentTarget] = ev.currentTarget, listener(ev);
+                                ev[exports.currentTarget] = ev.currentTarget;
+                                return listener(ev);
                             }
                         }
                         exports.bind = bind;
                     },
                     {
-                        'spica/function': 7,
-                        'spica/noop': 10,
-                        'spica/promise': 11
+                        'spica/function': 8,
+                        'spica/noop': 11,
+                        'spica/promise': 12
                     }
                 ],
-                18: [
+                19: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -3291,7 +3333,7 @@ require = function () {
                         }
                         exports.apply = apply;
                     },
-                    { './dom': 15 }
+                    { './dom': 16 }
                 ],
                 'typed-dom': [
                     function (_dereq_, module, exports) {
@@ -3433,13 +3475,13 @@ require = function () {
                         });
                     },
                     {
-                        './src/builder': 13,
-                        './src/proxy': 14,
-                        './src/util/dom': 15,
-                        './src/util/identity': 16,
-                        './src/util/listener': 17,
-                        './src/util/query': 18,
-                        'spica/global': 8
+                        './src/builder': 14,
+                        './src/proxy': 15,
+                        './src/util/dom': 16,
+                        './src/util/identity': 17,
+                        './src/util/listener': 18,
+                        './src/util/query': 19,
+                        'spica/global': 9
                     }
                 ]
             }, {}, [
@@ -6201,10 +6243,10 @@ require = function () {
             exports.cite = (0, combinator_1.creator)((0, combinator_1.line)((0, combinator_1.fmap)((0, combinator_1.validate)('>>', (0, combinator_1.reverse)((0, combinator_1.tails)([
                 (0, source_1.str)(/^>*(?=>>)/),
                 anchor_1.anchor
-            ]))), ([el, str = '']) => [
+            ]))), ([el, quotes = '']) => [
                 (0, typed_dom_1.html)('span', { class: 'cite' }, (0, typed_dom_1.defrag)([
-                    str + '>',
-                    (0, typed_dom_1.define)(el, { 'data-depth': `${ str.length + 1 }` }, el.innerText.slice(1))
+                    quotes + '>',
+                    (0, typed_dom_1.define)(el, { 'data-depth': `${ quotes.length + 1 }` }, el.innerText.slice(1))
                 ])),
                 (0, typed_dom_1.html)('br')
             ])));
@@ -7652,7 +7694,7 @@ require = function () {
                 if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
-                const el = create(INSECURE_URI, (0, typed_dom_1.defrag)(content), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin);
+                const el = create(INSECURE_URI, (0, util_1.trimEnd)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin);
                 if (el.classList.contains('invalid'))
                     return [
                         [el],
@@ -9019,7 +9061,7 @@ require = function () {
             function verifyStartTight(nodes) {
                 if (nodes.length === 0)
                     return true;
-                return isVisible(nodes[0]);
+                return isVisible(nodes[0], 0);
             }
             exports.verifyStartTight = verifyStartTight;
             function verifyEndTight(nodes) {
@@ -9029,7 +9071,7 @@ require = function () {
                 return typeof nodes[last] === 'string' && nodes[last].length > 1 ? isVisible(nodes[last], -1) || isVisible(nodes[last], -2) : isVisible(nodes[last], -1) || last === 0 || isVisible(nodes[last - 1], -1);
             }
             exports.verifyEndTight = verifyEndTight;
-            function isVisible(node, position = 0) {
+            function isVisible(node, position) {
                 if (!node)
                     return false;
                 switch (typeof node) {
@@ -9252,7 +9294,7 @@ require = function () {
             }
             exports.math = math;
             async function queue(target, callback = () => global_1.undefined) {
-                MathJax.typesetPromise || await MathJax.startup.promise;
+                !MathJax.typesetPromise && await MathJax.startup.promise;
                 MathJax.typesetPromise([target]).then(callback);
             }
         },
