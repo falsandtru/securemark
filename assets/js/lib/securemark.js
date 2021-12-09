@@ -6625,7 +6625,7 @@ require = function () {
             exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('((', '))', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('((', (0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.annotation) !== null && _c !== void 0 ? _c : true;
-            }, (0, util_1.startTight)((0, combinator_1.context)({
+            }, (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)({
                 syntax: {
                     inline: {
                         annotation: false,
@@ -6633,7 +6633,7 @@ require = function () {
                     }
                 },
                 state: global_1.undefined
-            }, (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)])))), '))'), ns => [(0, typed_dom_1.html)('sup', { class: 'annotation' }, (0, util_1.trimEnd)((0, typed_dom_1.defrag)(ns)))]))));
+            }, (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)]))))), '))'), ns => [(0, typed_dom_1.html)('sup', { class: 'annotation' }, (0, util_1.trimNode)((0, typed_dom_1.defrag)(ns)))]))));
         },
         {
             '../../combinator': 30,
@@ -7064,7 +7064,7 @@ require = function () {
             exports.emphasis = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, combinator_1.close)((0, source_1.str)('*'), /^(?!\*)/), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([
                 strong_1.strong,
                 (0, combinator_1.some)(inline_1.inline, '*')
-            ]))), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.verifyEndTight)(bs) ? [
+            ]))), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
                 rest
             ] : [
@@ -7098,14 +7098,14 @@ require = function () {
             const array_1 = _dereq_('spica/array');
             exports.emstrong = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('***'), (0, util_1.startTight)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*')])), (0, source_1.str)(/^\*{1,3}/), false, ([as, bs, cs], rest, context) => {
                 var _a, _b;
-                if (!(0, util_1.verifyEndTight)(bs))
+                if (!(0, util_1.isEndTightNodes)(bs))
                     return [
                         (0, array_1.unshift)(as, bs),
                         cs[0] + rest
                     ];
                 switch (cs[0]) {
                 case '*':
-                    return (_a = (0, combinator_1.bind)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '**')]), (ds, rest) => rest.slice(0, 2) === '**' && (0, util_1.verifyEndTight)(ds) ? [
+                    return (_a = (0, combinator_1.bind)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '**')]), (ds, rest) => rest.slice(0, 2) === '**' && (0, util_1.isEndTightNodes)(ds) ? [
                         [(0, typed_dom_1.html)('strong', (0, array_1.unshift)([(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))], (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(ds))))],
                         rest.slice(2)
                     ] : [
@@ -7122,7 +7122,7 @@ require = function () {
                         rest
                     ];
                 case '**':
-                    return (_b = (0, combinator_1.bind)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*')]), (ds, rest) => rest.slice(0, 1) === '*' && (0, util_1.verifyEndTight)(ds) ? [
+                    return (_b = (0, combinator_1.bind)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*')]), (ds, rest) => rest.slice(0, 1) === '*' && (0, util_1.isEndTightNodes)(ds) ? [
                         [(0, typed_dom_1.html)('em', (0, array_1.unshift)([(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))], (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(ds))))],
                         rest.slice(1)
                     ] : [
@@ -7246,7 +7246,7 @@ require = function () {
             }, (0, combinator_1.open)((0, source_1.str)(/^\|?/, false), (0, combinator_1.some)((0, combinator_1.union)([
                 signature,
                 inline_1.inline
-            ]), ']', /^\\?\n/), true)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, util_1.trimEnd)((0, typed_dom_1.defrag)(ns)))])), ([el]) => [(0, typed_dom_1.define)(el, {
+            ]), ']', /^\\?\n/), true)))), ']'), ns => [(0, typed_dom_1.html)('a', (0, util_1.trimNodeEnd)((0, typed_dom_1.defrag)(ns)))])), ([el]) => [(0, typed_dom_1.define)(el, {
                     id: el.id ? null : global_1.undefined,
                     class: 'index',
                     href: el.id ? `#${ el.id }` : global_1.undefined
@@ -7485,7 +7485,7 @@ require = function () {
                     [(0, typed_dom_1.html)(tag, attributes('html', [], attrspec[tag], as))],
                     rest
                 ]), ([, tag]) => tag)),
-                (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startTight)((0, combinator_1.context)((() => {
+                (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)((() => {
                     switch (tag) {
                     case 'sup':
                     case 'sub':
@@ -7507,11 +7507,11 @@ require = function () {
                     default:
                         return {};
                     }
-                })(), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`))), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
+                })(), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`)))), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
                     [elem(tag, as, (0, util_1.trimEndBR)((0, typed_dom_1.defrag)(bs)), cs, context)],
                     rest
                 ])), ([, tag]) => tag)),
-                (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startTight)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`)), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest) => [
+                (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`))), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest) => [
                     [elem(tag, as, (0, util_1.trimEndBR)((0, typed_dom_1.defrag)(bs)), cs, {})],
                     rest
                 ], ([as, bs], rest) => as.length === 1 ? [
@@ -7672,7 +7672,7 @@ require = function () {
                 (0, combinator_1.context)({ syntax: { inline: { link: false } } }, (0, combinator_1.dup)((0, combinator_1.union)([
                     (0, combinator_1.surround)('[', inline_1.media, ']'),
                     (0, combinator_1.surround)('[', inline_1.shortmedia, ']'),
-                    (0, combinator_1.surround)('[', (0, util_1.startTight)((0, combinator_1.context)({
+                    (0, combinator_1.surround)('[', (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)({
                         syntax: {
                             inline: {
                                 annotation: false,
@@ -7683,7 +7683,7 @@ require = function () {
                                 autolink: false
                             }
                         }
-                    }, (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/))), ']', true)
+                    }, (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)))), ']', true)
                 ]))),
                 (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([
                     exports.uri,
@@ -7694,7 +7694,7 @@ require = function () {
                 if ((0, parser_1.eval)((0, combinator_1.some)(autolink_1.autolink)((0, util_1.stringify)(content), context), []).some(node => typeof node === 'object'))
                     return;
                 const INSECURE_URI = params.shift();
-                const el = create(INSECURE_URI, (0, util_1.trimEnd)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin);
+                const el = create(INSECURE_URI, (0, util_1.trimNode)((0, typed_dom_1.defrag)(content)), new url_1.ReadonlyURL(resolve(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href), ((_b = context.host) === null || _b === void 0 ? void 0 : _b.origin) || global_1.location.origin);
                 if (el.classList.contains('invalid'))
                     return [
                         [el],
@@ -7798,7 +7798,7 @@ require = function () {
             const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
-            exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '==')])), (0, source_1.str)('=='), false, ([as, bs, cs], rest) => (0, util_1.verifyEndTight)(bs) ? [
+            exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '==')])), (0, source_1.str)('=='), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('mark', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
                 rest
             ] : [
@@ -7830,7 +7830,7 @@ require = function () {
             const disallowedCommand = /\\(?:begin|tiny|huge|large)(?![0-9a-z])/i;
             exports.math = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('$', '$', '\n', (0, combinator_1.rewrite)((0, combinator_1.union)([
                 (0, combinator_1.surround)('$', bracket, '$'),
-                (0, combinator_1.surround)('$', (0, combinator_1.verify)((0, source_1.str)(/^(?=[\\^_[(|]|[A-Za-z][0-9A-Za-z]*'*[ ~]?(?:\$|([\\^_(|:=<>])(?!\1)))(?:\\\$|[\x20-\x23\x25-\x7E])*/), util_1.verifyEndTight), /^\$(?![0-9A-Za-z])/)
+                (0, combinator_1.surround)('$', (0, combinator_1.verify)((0, source_1.str)(/^(?=[\\^_[(|]|[A-Za-z][0-9A-Za-z]*'*[ ~]?(?:\$|([\\^_(|:=<>])(?!\1)))(?:\\\$|[\x20-\x23\x25-\x7E])*/), util_1.isEndTightNodes), /^\$(?![0-9A-Za-z])/)
             ]), (source, {
                 caches: {math: cache} = {}
             }) => {
@@ -7874,7 +7874,6 @@ require = function () {
             const html_1 = _dereq_('./html');
             const htmlentity_1 = _dereq_('./htmlentity');
             const source_1 = _dereq_('../source');
-            const util_1 = _dereq_('../util');
             const typed_dom_1 = _dereq_('typed-dom');
             const url_1 = _dereq_('spica/url');
             const array_1 = _dereq_('spica/array');
@@ -7892,7 +7891,7 @@ require = function () {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.media) !== null && _c !== void 0 ? _c : true;
             }, (0, combinator_1.tails)([
-                (0, combinator_1.dup)((0, combinator_1.surround)(/^\[(?!\\?\s)/, (0, combinator_1.some)((0, combinator_1.union)([
+                (0, combinator_1.dup)((0, combinator_1.surround)(/^\[(?!\s*\\\s)/, (0, combinator_1.some)((0, combinator_1.union)([
                     htmlentity_1.htmlentity,
                     bracket,
                     source_1.txt
@@ -7902,12 +7901,12 @@ require = function () {
                     (0, combinator_1.some)(option)
                 ]), /^[^\S\n]?}/))
             ])))), ([as, bs]) => bs ? [
-                [(0, array_1.join)(as)],
+                [(0, array_1.join)(as).trim() || (0, array_1.join)(as)],
                 bs
             ] : [
                 [''],
                 as
-            ]), ([[text]]) => (0, util_1.verifyStartTight)([text || '-'])), ([[text], params], rest, context) => {
+            ]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
                 var _a, _b, _c, _d;
                 const INSECURE_URI = params.shift();
                 const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, context.host || global_1.location, context.url || global_1.location), ((_a = context.host) === null || _a === void 0 ? void 0 : _a.href) || global_1.location.href);
@@ -7916,14 +7915,14 @@ require = function () {
                 const el = cache && cached ? cache.get(url.href).cloneNode(true) : (0, typed_dom_1.html)('img', {
                     class: 'media',
                     'data-src': url.source,
-                    alt: text.trimEnd()
+                    alt: text
                 });
                 if (!cached && !sanitize(url, el))
                     return [
                         [el],
                         rest
                     ];
-                cached && el.hasAttribute('alt') && el.setAttribute('alt', text.trimEnd());
+                cached && el.hasAttribute('alt') && el.setAttribute('alt', text);
                 (0, typed_dom_1.define)(el, (0, html_1.attributes)('media', (0, array_1.push)([], el.classList), optspec, params));
                 if (((_d = (_c = context.syntax) === null || _c === void 0 ? void 0 : _c.inline) === null || _d === void 0 ? void 0 : _d.link) === false || cached && el.tagName !== 'IMG')
                     return [
@@ -7988,7 +7987,6 @@ require = function () {
         {
             '../../combinator': 30,
             '../source': 131,
-            '../util': 137,
             './html': 114,
             './htmlentity': 115,
             './link': 117,
@@ -8013,7 +8011,7 @@ require = function () {
             exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[[', ']]', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
-            }, (0, util_1.startTight)((0, combinator_1.context)({
+            }, (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)({
                 syntax: {
                     inline: {
                         annotation: false,
@@ -8032,7 +8030,7 @@ require = function () {
                     ''
                 ]),
                 (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)
-            ])))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, util_1.trimEnd)((0, typed_dom_1.defrag)(ns)))]))));
+            ]))))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, util_1.trimNode)((0, typed_dom_1.defrag)(ns)))]))));
             const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]+/), (_, rest, context) => (0, util_1.isStartTight)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
             function attributes(ns) {
                 return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
@@ -8071,7 +8069,7 @@ require = function () {
             exports.ruby = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.bind)((0, combinator_1.verify)((0, combinator_1.validate)('[', ')', '\n', (0, combinator_1.sequence)([
                 (0, combinator_1.surround)('[', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\[\]\n])+(?=]\()/, text), ']'),
                 (0, combinator_1.surround)('(', (0, combinator_1.focus)(/^(?:\\[^\n]|[^\(\)\n])+(?=\))/, text), ')')
-            ])), ([texts]) => (0, util_1.verifyStartTight)(texts)), ([texts, rubies], rest) => {
+            ])), ([texts]) => (0, util_1.isStartTightNodes)(texts)), ([texts, rubies], rest) => {
                 const tail = typeof texts[texts.length - 1] === 'object' ? [texts.pop()] : [];
                 tail.length === 0 && texts[texts.length - 1] === '' && texts.pop();
                 switch (true) {
@@ -8180,7 +8178,7 @@ require = function () {
                 emphasis_1.emphasis,
                 (0, combinator_1.some)(inline_1.inline, '*'),
                 (0, source_1.str)('*')
-            ]), '**')), (0, source_1.str)('**'), false, ([as, bs, cs], rest) => (0, util_1.verifyEndTight)(bs) ? [
+            ]), '**')), (0, source_1.str)('**'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
                 [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
                 rest
             ] : [
@@ -8944,7 +8942,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.trimEndBR = exports.trimEnd = exports.verifyEndTight = exports.verifyStartTight = exports.isStartTight = exports.startTight = exports.visualize = void 0;
+            exports.stringify = exports.trimEndBR = exports.trimNodeEnd = exports.trimNode = exports.visible = exports.isEndTightNodes = exports.isStartTightNodes = exports.isStartTight = exports.startTight = exports.startLoose = exports.visualize = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -9019,6 +9017,15 @@ require = function () {
                 }
                 return false;
             }
+            function startLoose(parser) {
+                return (source, context) => isStartLoose(source, context) ? parser(source, context) : global_1.undefined;
+            }
+            exports.startLoose = startLoose;
+            function isStartLoose(source, context) {
+                if (source === '')
+                    return true;
+                return isStartTight(source.replace(/^[^\S\n]+/, ''), context);
+            }
             function startTight(parser) {
                 return (source, context) => isStartTight(source, context) ? parser(source, context) : global_1.undefined;
             }
@@ -9058,25 +9065,37 @@ require = function () {
                 }
             }
             exports.isStartTight = isStartTight;
-            function verifyStartTight(nodes) {
+            function isStartTightNodes(nodes) {
                 if (nodes.length === 0)
                     return true;
                 return isVisible(nodes[0], 0);
             }
-            exports.verifyStartTight = verifyStartTight;
-            function verifyEndTight(nodes) {
+            exports.isStartTightNodes = isStartTightNodes;
+            function isEndTightNodes(nodes) {
                 if (nodes.length === 0)
                     return true;
                 const last = nodes.length - 1;
                 return typeof nodes[last] === 'string' && nodes[last].length > 1 ? isVisible(nodes[last], -1) || isVisible(nodes[last], -2) : isVisible(nodes[last], -1) || last === 0 || isVisible(nodes[last - 1], -1);
             }
-            exports.verifyEndTight = verifyEndTight;
+            exports.isEndTightNodes = isEndTightNodes;
+            function visible(parser) {
+                return (0, combinator_1.verify)(parser, nodes => {
+                    if (nodes.length === 0)
+                        return true;
+                    for (let i = 0; i < nodes.length; ++i) {
+                        if (isVisible(nodes[i]))
+                            return true;
+                    }
+                    return false;
+                });
+            }
+            exports.visible = visible;
             function isVisible(node, position) {
                 if (!node)
                     return false;
                 switch (typeof node) {
                 case 'string':
-                    const char = node[position >= 0 ? position : node.length + position];
+                    const char = position === global_1.undefined ? node : node[position >= 0 ? position : node.length + position];
                     switch (char) {
                     case ' ':
                     case '\t':
@@ -9099,7 +9118,25 @@ require = function () {
                     }
                 }
             }
-            function trimEnd(nodes) {
+            function trimNode(nodes) {
+                return trimNodeStart(trimNodeEnd(nodes));
+            }
+            exports.trimNode = trimNode;
+            function trimNodeStart(nodes) {
+                const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
+                for (let first = nodes[0]; nodes.length > 0 && !isVisible(first, 0) && !(typeof first === 'object' && first.className === 'comment');) {
+                    if (typeof first === 'string') {
+                        const pos = first.length - first.trimStart().length;
+                        if (pos > 0) {
+                            nodes[0] = first.slice(pos);
+                            break;
+                        }
+                    }
+                    nodes.pop();
+                }
+                return (0, array_1.push)(nodes, skip);
+            }
+            function trimNodeEnd(nodes) {
                 const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
                 for (let last = nodes[0]; nodes.length > 0 && !isVisible(last = nodes[nodes.length - 1], -1) && !(typeof last === 'object' && last.className === 'comment');) {
                     if (typeof last === 'string') {
@@ -9113,7 +9150,7 @@ require = function () {
                 }
                 return (0, array_1.push)(nodes, skip);
             }
-            exports.trimEnd = trimEnd;
+            exports.trimNodeEnd = trimNodeEnd;
             function trimEndBR(nodes) {
                 if (nodes.length === 0)
                     return nodes;
