@@ -3,7 +3,7 @@ import { ReferenceParser } from '../inline';
 import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, isStartTight, visible, trimNode, stringify } from '../util';
+import { startLoose, isStartLoose, visible, trimNode, stringify } from '../util';
 import { html, defrag } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
@@ -31,8 +31,8 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
 const abbr: ReferenceParser.AbbrParser = creator(fmap(verify(surround(
   '^',
   union([str(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]),
-  /^\|?(?=]])|^\|[^\S\n]+/),
-  (_, rest, context) => isStartTight(rest, context)),
+  /^\|?(?=]])|^\|[^\S\n]/),
+  (_, rest, context) => isStartLoose(rest, context)),
   ([source]) => [html('abbr', source)]));
 
 function attributes(ns: (string | HTMLElement)[]): Record<string, string | undefined> {
