@@ -7,7 +7,7 @@ import { inline, media, shortmedia } from '../inline';
 import { attributes } from './html';
 import { autolink } from '../autolink';
 import { str } from '../source';
-import { startLoose, visible, trimNode, stringify } from '../util';
+import { startLoose, trimNode, stringify } from '../util';
 import { html, define, defrag } from 'typed-dom';
 import { ReadonlyURL } from 'spica/url';
 
@@ -28,7 +28,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
       surround('[', shortmedia, ']'),
       surround(
         '[',
-        startLoose(visible(
+        startLoose(
         context({ syntax: { inline: {
           annotation: false,
           reference: false,
@@ -39,7 +39,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
           media: false,
           autolink: false,
         }}},
-        some(inline, ']', /^\\?\n/)))),
+        some(inline, ']', /^\\?\n/)), ']'),
         ']',
         true),
     ]))),

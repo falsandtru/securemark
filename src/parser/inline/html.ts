@@ -5,7 +5,7 @@ import { HTMLParser } from '../inline';
 import { union, some, validate, context, creator, surround, match, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, visible, trimEndBR } from '../util';
+import { startLoose, trimEndBR } from '../util';
 import { html as h, defrag } from 'typed-dom';
 import { memoize } from 'spica/memoize';
 import { Cache } from 'spica/cache';
@@ -39,7 +39,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
       validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
-        startLoose(visible(
+        startLoose(
         context((() => {
           switch (tag) {
             case 'sup':
@@ -63,7 +63,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
               return {};
           }
         })(),
-        some(union([inline]), `</${tag}>`)))),
+        some(union([inline]), `</${tag}>`)), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest, context) =>
           [[elem(tag, as, trimEndBR(defrag(bs)), cs, context)], rest])),
@@ -75,7 +75,7 @@ export const html: HTMLParser = lazy(() => creator(validate('<', '>', '\n', vali
       validate(`<${tag}`, `</${tag}>`,
       surround<HTMLParser.TagParser, string>(surround(
         str(`<${tag}`), some(attribute), str('>'), true),
-        startLoose(visible(some(union([inline]), `</${tag}>`))),
+        startLoose(some(union([inline]), `</${tag}>`), `</${tag}>`),
         str(`</${tag}>`), false,
         ([as, bs, cs], rest) =>
           [[elem(tag, as, trimEndBR(defrag(bs)), cs, {})], rest],

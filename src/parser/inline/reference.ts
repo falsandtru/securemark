@@ -3,13 +3,13 @@ import { ReferenceParser } from '../inline';
 import { union, subsequence, some, validate, verify, focus, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startLoose, isStartLoose, visible, trimNode, stringify } from '../util';
+import { startLoose, isStartLoose, trimNode, stringify } from '../util';
 import { html, defrag } from 'typed-dom';
 
 export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]', '\n', fmap(surround(
   '[[',
   guard(context => context.syntax?.inline?.reference ?? true,
-  startLoose(visible(
+  startLoose(
   context({ syntax: { inline: {
     annotation: false,
     reference: false,
@@ -24,7 +24,7 @@ export const reference: ReferenceParser = lazy(() => creator(validate('[[', ']]'
     abbr,
     focus('^', c => [['', c], '']),
     some(inline, ']', /^\\?\n/),
-  ]))))),
+  ])), ']]')),
   ']]'),
   ns => [html('sup', attributes(ns), trimNode(defrag(ns)))]))));
 

@@ -2,13 +2,13 @@ import { undefined } from 'spica/global';
 import { AnnotationParser } from '../inline';
 import { union, some, validate, guard, context, creator, surround, lazy, fmap } from '../../combinator';
 import { inline } from '../inline';
-import { startLoose, visible, trimNode } from '../util';
+import { startLoose, trimNode } from '../util';
 import { html, defrag } from 'typed-dom';
 
 export const annotation: AnnotationParser = lazy(() => creator(validate('((', '))', '\n', fmap(surround(
   '((',
   guard(context => context.syntax?.inline?.annotation ?? true,
-  startLoose(visible(
+  startLoose(
   context({ syntax: { inline: {
     annotation: false,
     // Redundant
@@ -20,6 +20,6 @@ export const annotation: AnnotationParser = lazy(() => creator(validate('((', ')
     //link: true,
     //autolink: true,
   }}, state: undefined },
-  union([some(inline, ')', /^\\?\n/)]))))),
+  union([some(inline, ')', /^\\?\n/)])), '))')),
   '))'),
   ns => [html('sup', { class: 'annotation' }, trimNode(defrag(ns)))]))));

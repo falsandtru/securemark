@@ -70,16 +70,18 @@ function hasVisible(
   return false;
 }
 
-export function startLoose<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function startLoose<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
+export function startLoose<P extends Parser<HTMLElement | string>>(parser: P, except?: string): P;
+export function startLoose<T extends HTMLElement | string>(parser: Parser<T>, except?: string): Parser<T> {
   return (source, context) =>
-    isStartLoose(source, context)
+    isStartLoose(source, context, except)
       ? parser(source, context)
       : undefined;
 }
-export function isStartLoose(source: string, context: MarkdownParser.Context): boolean {
+export function isStartLoose(source: string, context: MarkdownParser.Context, except?: string): boolean {
+  source &&= source.replace(/^[^\S\n]+/, '');
   if (source === '') return true;
-  return isStartTight(source.replace(/^[^\S\n]+/, ''), context);
+  return source.slice(0, except?.length ?? 0) !== except
+      && isStartTight(source, context);
 }
 export function startTight<P extends Parser<unknown>>(parser: P): P;
 export function startTight<T>(parser: Parser<T>): Parser<T> {
@@ -139,16 +141,6 @@ export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boole
       isVisible(nodes[last], -2)
     : isVisible(nodes[last], -1) || last === 0 ||
       isVisible(nodes[last - 1], -1);
-}
-export function visible<P extends Parser<HTMLElement | string>>(parser: P): P;
-export function visible<T extends HTMLElement | string>(parser: Parser<T>): Parser<T> {
-  return verify(parser, nodes => {
-    if (nodes.length === 0) return true;
-    for (let i = 0; i < nodes.length; ++i) {
-      if (isVisible(nodes[i])) return true;
-    }
-    return false;
-  });
 }
 function isVisible(node: HTMLElement | string, position?: number): boolean {
   if (!node) return false;
