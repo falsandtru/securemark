@@ -81,29 +81,21 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
   assert(uri === uri.trim());
   switch (true) {
     case uri.slice(0, 2) === '^/':
-      const file = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
-      return file.includes('.')
-        ? `${host.pathname.slice(0, -file.length)}${uri.slice(2)}`
-        : `${fillTrailingSlash(host.pathname)}${uri.slice(2)}`;
+      const last = host.pathname.slice(host.pathname.lastIndexOf('/') + 1);
+      return last.includes('.') // isFile
+          && /^[0-9]*[a-z][0-9a-z]*$/i.test(last.slice(last.lastIndexOf('.') + 1))
+        ? `${host.pathname.slice(0, -last.length)}${uri.slice(2)}`
+        : `${host.pathname.replace(/\/?$/, '/')}${uri.slice(2)}`;
     case host.origin === source.origin
       && host.pathname === source.pathname:
     case uri.slice(0, 2) === '//':
       return uri;
     default:
       const target = new ReadonlyURL(uri, source.href);
-      return target.origin === uri.match(/^[A-Za-z][0-9A-Za-z.+-]*:\/\/[^/?#]*/)?.[0]
-        ? uri
-        : target.origin === host.origin
+      return target.origin === host.origin
           ? target.href.slice(target.origin.length)
           : target.href;
   }
-}
-
-function fillTrailingSlash(pathname: string): string {
-  assert(pathname);
-  return pathname[pathname.length - 1] === '/'
-    ? pathname
-    : pathname + '/';
 }
 
 function create(

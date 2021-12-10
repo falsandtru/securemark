@@ -1,10 +1,11 @@
 import { link } from './link';
 import { some } from '../../combinator';
 import { inspect } from '../../debug.test';
+import { MarkdownParser } from '../../../markdown';
 
 describe('Unit: parser/inline/link', () => {
   describe('link', () => {
-    const parser = (source: string) => some(link)(source, {});
+    const parser = (source: string, context: MarkdownParser.Context = {}) => some(link)(source, context);
 
     it('xss', () => {
       assert.deepStrictEqual(inspect(parser('[]{javascript:alert}')), [['<a class="invalid">javascript:alert</a>'], '']);
@@ -89,10 +90,19 @@ describe('Unit: parser/inline/link', () => {
       assert.deepStrictEqual(inspect(parser('[]{\\b}')), [[`<a href="\\b">\\b</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{?b=c+d&\\#}')), [['<a href="?b=c+d&amp;\\#">?b=c+d&amp;\\#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{?&amp;}')), [['<a href="?&amp;amp;">?&amp;amp;</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{./b}')), [['<a href="./b">./b</a>'], '']);
-      assert.deepStrictEqual(inspect(parser('[]{^/b}')), [[`<a href="/b">^/b</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[]{#}')), [['<a href="#">#</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[]{#b}')), [['<a href="#b">#b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{./b}')), [['<a href="./b">./b</a>'], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}')), [[`<a href="/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/dir', location.origin) })), [[`<a href="/dir/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/dir/', location.origin) })), [[`<a href="/dir/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/folder/doc.md', location.origin) })), [[`<a href="/folder/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/folder/doc.md/', location.origin) })), [[`<a href="/folder/doc.md/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/.file', location.origin) })), [[`<a href="/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/0.0a', location.origin) })), [[`<a href="/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/0.a0', location.origin) })), [[`<a href="/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/0.0', location.origin) })), [[`<a href="/0.0/b">^/b</a>`], '']);
+      assert.deepStrictEqual(inspect(parser('[]{^/b}', { host: new URL('/0.0,0.0,0z', location.origin) })), [[`<a href="/0.0,0.0,0z/b">^/b</a>`], '']);
       assert.deepStrictEqual(inspect(parser('[ a]{b}')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[ a ]{b}')), [['<a href="b">a</a>'], '']);
       assert.deepStrictEqual(inspect(parser('[a ]{b}')), [['<a href="b">a</a>'], '']);
