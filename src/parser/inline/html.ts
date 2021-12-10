@@ -99,14 +99,14 @@ function elem(tag: string, as: (HTMLElement | string)[], bs: (HTMLElement | stri
     case 'sub':
       switch (true) {
         case context.state?.in?.supsub:
-          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup>/<sub> HTML tags.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup> or <sub> HTML tag.`, as, bs, cs);
       }
       break;
     case 'small':
       switch (true) {
         case context.state?.in?.supsub:
         case context.state?.in?.small:
-          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup>/<sub>/<small> HTML tags.`, as, bs, cs);
+          return invalid('nest', `<${tag}> HTML tag cannot be used in <sup>, <sub>, or <small> HTML tag.`, as, bs, cs);
       }
       break;
   }
