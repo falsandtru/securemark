@@ -12,7 +12,6 @@ const extend = reduce((opts: RenderingOptions): RenderingOptions =>
 
 export function render(source: HTMLElement, opts: RenderingOptions = {}): void {
   opts = extend(opts);
-  if (source.classList.contains('invalid')) return;
   const base = location.href;
   if (source.matches(selector)) return void render_(base, source, opts);
   for (
@@ -23,7 +22,7 @@ export function render(source: HTMLElement, opts: RenderingOptions = {}): void {
 }
 
 function render_(base: string, source: HTMLElement, opts: RenderingOptions): void {
-  assert(!source.matches('.invalid'));
+  if (source.classList.contains('invalid')) return;
   try {
     switch (true) {
       case !!opts.code
