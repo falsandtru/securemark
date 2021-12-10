@@ -35,16 +35,15 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
     const url = new ReadonlyURL(
       resolve(INSECURE_URI, context.host || location, context.url || location),
       context.host?.href || location.href);
-    const cache = context.caches?.media;
-    const cached = cache?.has(url.href);
-    const el = cache && cached
-      ? cache.get(url.href)!.cloneNode(true)
-      : html('img', { class: 'media', 'data-src': url.source, alt: text });
-    if (!cached && !sanitize(url, el)) return [[el], rest];
-    cached && el.hasAttribute('alt') && el.setAttribute('alt', text);
+    let cache: HTMLElement | undefined;
+    const el = undefined
+      || (cache = context.caches?.media?.get(url.href)!.cloneNode(true))
+      || html('img', { class: 'media', 'data-src': url.source, alt: text });
+    if (!cache && !sanitize(url, el)) return [[el], rest];
+    cache?.hasAttribute('alt') && cache?.setAttribute('alt', text);
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
-    if (context.syntax?.inline?.link === false || cached && el.tagName !== 'IMG') return [[el], rest];
+    if (context.syntax?.inline?.link === false || cache && cache.tagName !== 'IMG') return [[el], rest];
     return fmap(
       link as MediaParser,
       ([link]) => [define(link, { target: '_blank' }, [el])])
