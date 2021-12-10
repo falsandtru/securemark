@@ -6625,7 +6625,7 @@ require = function () {
             exports.annotation = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('((', '))', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('((', (0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.annotation) !== null && _c !== void 0 ? _c : true;
-            }, (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)({
+            }, (0, util_1.startLoose)((0, combinator_1.context)({
                 syntax: {
                     inline: {
                         annotation: false,
@@ -6633,7 +6633,7 @@ require = function () {
                     }
                 },
                 state: global_1.undefined
-            }, (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)]))))), '))'), ns => [(0, typed_dom_1.html)('sup', { class: 'annotation' }, (0, util_1.trimNode)((0, typed_dom_1.defrag)(ns)))]))));
+            }, (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, ')', /^\\?\n/)])), '))')), '))'), ns => [(0, typed_dom_1.html)('sup', { class: 'annotation' }, (0, util_1.trimNode)((0, typed_dom_1.defrag)(ns)))]))));
         },
         {
             '../../combinator': 30,
@@ -7485,7 +7485,7 @@ require = function () {
                     [(0, typed_dom_1.html)(tag, attributes('html', [], attrspec[tag], as))],
                     rest
                 ]), ([, tag]) => tag)),
-                (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)((() => {
+                (0, combinator_1.match)(/^(?=<(sup|sub|small|bdo|bdi)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, combinator_1.context)((() => {
                     switch (tag) {
                     case 'sup':
                     case 'sub':
@@ -7507,11 +7507,11 @@ require = function () {
                     default:
                         return {};
                     }
-                })(), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`)))), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
+                })(), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
                     [elem(tag, as, (0, util_1.trimEndBR)((0, typed_dom_1.defrag)(bs)), cs, context)],
                     rest
                 ])), ([, tag]) => tag)),
-                (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`))), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest) => [
+                (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest) => [
                     [elem(tag, as, (0, util_1.trimEndBR)((0, typed_dom_1.defrag)(bs)), cs, {})],
                     rest
                 ], ([as, bs], rest) => as.length === 1 ? [
@@ -7672,7 +7672,7 @@ require = function () {
                 (0, combinator_1.context)({ syntax: { inline: { link: false } } }, (0, combinator_1.dup)((0, combinator_1.union)([
                     (0, combinator_1.surround)('[', inline_1.media, ']'),
                     (0, combinator_1.surround)('[', inline_1.shortmedia, ']'),
-                    (0, combinator_1.surround)('[', (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)({
+                    (0, combinator_1.surround)('[', (0, util_1.startLoose)((0, combinator_1.context)({
                         syntax: {
                             inline: {
                                 annotation: false,
@@ -7683,7 +7683,7 @@ require = function () {
                                 autolink: false
                             }
                         }
-                    }, (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)))), ']', true)
+                    }, (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)), ']'), ']', true)
                 ]))),
                 (0, combinator_1.dup)((0, combinator_1.surround)(/^{(?![{}])/, (0, combinator_1.inits)([
                     exports.uri,
@@ -8011,7 +8011,7 @@ require = function () {
             exports.reference = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.validate)('[[', ']]', '\n', (0, combinator_1.fmap)((0, combinator_1.surround)('[[', (0, combinator_1.guard)(context => {
                 var _a, _b, _c;
                 return (_c = (_b = (_a = context.syntax) === null || _a === void 0 ? void 0 : _a.inline) === null || _b === void 0 ? void 0 : _b.reference) !== null && _c !== void 0 ? _c : true;
-            }, (0, util_1.startLoose)((0, util_1.visible)((0, combinator_1.context)({
+            }, (0, util_1.startLoose)((0, combinator_1.context)({
                 syntax: {
                     inline: {
                         annotation: false,
@@ -8030,8 +8030,8 @@ require = function () {
                     ''
                 ]),
                 (0, combinator_1.some)(inline_1.inline, ']', /^\\?\n/)
-            ]))))), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, util_1.trimNode)((0, typed_dom_1.defrag)(ns)))]))));
-            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]+/), (_, rest, context) => (0, util_1.isStartTight)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
+            ])), ']]')), ']]'), ns => [(0, typed_dom_1.html)('sup', attributes(ns), (0, util_1.trimNode)((0, typed_dom_1.defrag)(ns)))]))));
+            const abbr = (0, combinator_1.creator)((0, combinator_1.fmap)((0, combinator_1.verify)((0, combinator_1.surround)('^', (0, combinator_1.union)([(0, source_1.str)(/^(?![0-9]+\s?[|\]])[0-9A-Za-z]+(?:(?:-|(?=\W)(?!'\d)'?(?!\.\d)\.?(?!,\S),? ?)[0-9A-Za-z]+)*(?:-|'?\.?,? ?)?/)]), /^\|?(?=]])|^\|[^\S\n]/), (_, rest, context) => (0, util_1.isStartLoose)(rest, context)), ([source]) => [(0, typed_dom_1.html)('abbr', source)]));
             function attributes(ns) {
                 return typeof ns[0] === 'object' && ns[0].tagName === 'ABBR' ? {
                     class: 'reference',
@@ -8942,7 +8942,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.trimEndBR = exports.trimNodeEnd = exports.trimNode = exports.visible = exports.isEndTightNodes = exports.isStartTightNodes = exports.isStartTight = exports.startTight = exports.startLoose = exports.visualize = void 0;
+            exports.stringify = exports.trimEndBR = exports.trimNodeEnd = exports.trimNode = exports.isEndTightNodes = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -9017,15 +9017,18 @@ require = function () {
                 }
                 return false;
             }
-            function startLoose(parser) {
-                return (source, context) => isStartLoose(source, context) ? parser(source, context) : global_1.undefined;
+            function startLoose(parser, except) {
+                return (source, context) => isStartLoose(source, context, except) ? parser(source, context) : global_1.undefined;
             }
             exports.startLoose = startLoose;
-            function isStartLoose(source, context) {
+            function isStartLoose(source, context, except) {
+                var _a;
+                source && (source = source.replace(/^[^\S\n]+/, ''));
                 if (source === '')
                     return true;
-                return isStartTight(source.replace(/^[^\S\n]+/, ''), context);
+                return source.slice(0, (_a = except === null || except === void 0 ? void 0 : except.length) !== null && _a !== void 0 ? _a : 0) !== except && isStartTight(source, context);
             }
+            exports.isStartLoose = isStartLoose;
             function startTight(parser) {
                 return (source, context) => isStartTight(source, context) ? parser(source, context) : global_1.undefined;
             }
@@ -9064,7 +9067,6 @@ require = function () {
                     return source[0].trimStart() !== '';
                 }
             }
-            exports.isStartTight = isStartTight;
             function isStartTightNodes(nodes) {
                 if (nodes.length === 0)
                     return true;
@@ -9078,18 +9080,6 @@ require = function () {
                 return typeof nodes[last] === 'string' && nodes[last].length > 1 ? isVisible(nodes[last], -1) || isVisible(nodes[last], -2) : isVisible(nodes[last], -1) || last === 0 || isVisible(nodes[last - 1], -1);
             }
             exports.isEndTightNodes = isEndTightNodes;
-            function visible(parser) {
-                return (0, combinator_1.verify)(parser, nodes => {
-                    if (nodes.length === 0)
-                        return true;
-                    for (let i = 0; i < nodes.length; ++i) {
-                        if (isVisible(nodes[i]))
-                            return true;
-                    }
-                    return false;
-                });
-            }
-            exports.visible = visible;
             function isVisible(node, position) {
                 if (!node)
                     return false;
