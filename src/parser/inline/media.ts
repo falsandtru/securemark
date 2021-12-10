@@ -39,7 +39,9 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
     const el = undefined
       || (cache = context.caches?.media?.get(url.href)!.cloneNode(true))
       || html('img', { class: 'media', 'data-src': url.source, alt: text });
+    assert(!el.matches('.invalid'));
     if (!cache && !sanitize(url, el)) return [[el], rest];
+    assert(!el.matches('.invalid'));
     cache?.hasAttribute('alt') && cache?.setAttribute('alt', text);
     define(el, attributes('media', push([], el.classList), optspec, params));
     assert(el.matches('img') || !el.matches('.invalid'));
@@ -65,18 +67,29 @@ const option: MediaParser.ParameterParser.OptionParser = union([
 
 function sanitize(uri: ReadonlyURL, target: HTMLElement): boolean {
   assert(target.tagName === 'IMG');
+  assert(!target.matches('.invalid'));
+  if (/^\.\.?\//.test(uri.source)) {
+    define(target, {
+      class: void target.classList.add('invalid'),
+      'data-invalid-syntax': 'media',
+      'data-invalid-type': 'argument',
+      'data-invalid-description': 'Relative paths cannot be used with media syntax; Use subresource paths instead.',
+    });
+    return false;
+  }
   switch (uri.protocol) {
     case 'http:':
     case 'https:':
       assert(uri.host);
-      return true;
+      break;
+    default:
+      define(target, {
+        class: void target.classList.add('invalid'),
+        'data-invalid-syntax': 'media',
+        'data-invalid-type': 'argument',
+        'data-invalid-description': 'Invalid protocol.',
+      });
+      return false;
   }
-  assert(!target.classList.contains('invalid'));
-  define(target, {
-    class: void target.classList.add('invalid'),
-    'data-invalid-syntax': 'media',
-    'data-invalid-type': 'argument',
-    'data-invalid-description': 'Invalid protocol.',
-  });
-  return false;
+  return true;
 }
