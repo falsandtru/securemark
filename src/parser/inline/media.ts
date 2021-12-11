@@ -33,7 +33,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
     assert(INSECURE_URI === INSECURE_URI.trim());
     assert(!INSECURE_URI.match(/\s/));
     const url = new ReadonlyURL(
-      resolve(INSECURE_URI, context.host || location, context.url || location),
+      resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
       context.host?.href || location.href);
     let cache: HTMLElement | undefined;
     const el = undefined

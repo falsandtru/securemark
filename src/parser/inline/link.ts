@@ -56,7 +56,7 @@ export const link: LinkParser = lazy(() => creator(10, bind(reverse(
       INSECURE_URI,
       trimNode(defrag(content)),
       new ReadonlyURL(
-        resolve(INSECURE_URI, context.host || location, context.url || location),
+        resolve(INSECURE_URI, context.host ?? location, context.url ?? context.host ?? location),
         context.host?.href || location.href),
       context.host?.origin || location.origin);
     if (el.classList.contains('invalid')) return [[el], rest];
