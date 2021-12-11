@@ -137,15 +137,14 @@ export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boole
   if (nodes.length === 0) return true;
   return isVisible(nodes[nodes.length - 1], -1);
 }
-function isVisible(node: HTMLElement | string, position?: number): boolean {
-  if (!node) return false;
+function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   switch (typeof node) {
     case 'string':
-      const char = position === undefined
-        ? node
-        : node[position >= 0 ? position : node.length + position];
-      assert(char);
+      const char = node && strpos !== undefined
+        ? node[strpos >= 0 ? strpos : node.length + strpos]
+        : node;
       switch (char) {
+        case '':
         case ' ':
         case '\t':
         case '\n':
