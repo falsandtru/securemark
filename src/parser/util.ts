@@ -224,8 +224,8 @@ export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | str
   }
   return push(nodes, skip);
 }
-export function trimEndBR<T extends HTMLElement | string>(nodes: T[]): T[];
-export function trimEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
+export function trimNodeEndBR<T extends HTMLElement | string>(nodes: T[]): T[];
+export function trimNodeEndBR(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
   if (nodes.length === 0) return nodes;
   const node = nodes[nodes.length - 1];
   return typeof node === 'object' && node.tagName === 'BR'
