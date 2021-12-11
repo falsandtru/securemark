@@ -37,7 +37,7 @@ export const media: MediaParser = lazy(() => creator(10, bind(verify(fmap(open(
       context.host?.href || location.href);
     let cache: HTMLElement | undefined;
     const el = undefined
-      || (cache = context.caches?.media?.get(url.href)!.cloneNode(true))
+      || (cache = context.caches?.media?.get(url.href)?.cloneNode(true))
       || html('img', { class: 'media', 'data-src': url.source, alt: text });
     assert(!el.matches('.invalid'));
     if (!cache && !sanitize(url, el)) return [[el], rest];
