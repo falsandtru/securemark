@@ -2,7 +2,7 @@ import { EmStrongParser } from '../inline';
 import { union, some, creator, surround, lazy, bind } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, isEndTightNodes, trimNodeEndBR } from '../util';
+import { startTight, isEndTightNodes, trimNodeEnd } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 
@@ -18,19 +18,19 @@ export const emstrong: EmStrongParser = lazy(() => creator(surround(
           union([some(inline, '**')]),
           (ds, rest) =>
             rest.slice(0, 2) === '**' && isEndTightNodes(ds)
-              ? [[html('strong', unshift([html('em', defrag(trimNodeEndBR(bs)))], defrag(trimNodeEndBR(ds))))], rest.slice(2)]
-              : [unshift(['**', html('em', defrag(trimNodeEndBR(bs)))], ds), rest])
-          (rest, context) ?? [['**', html('em', defrag(trimNodeEndBR(bs)))], rest];
+              ? [[html('strong', unshift([html('em', defrag(trimNodeEnd(bs)))], defrag(trimNodeEnd(ds))))], rest.slice(2)]
+              : [unshift(['**', html('em', defrag(trimNodeEnd(bs)))], ds), rest])
+          (rest, context) ?? [['**', html('em', defrag(trimNodeEnd(bs)))], rest];
       case '**':
         return bind<EmStrongParser>(
           union([some(inline, '*')]),
           (ds, rest) =>
             rest.slice(0, 1) === '*' && isEndTightNodes(ds)
-              ? [[html('em', unshift([html('strong', defrag(trimNodeEndBR(bs)))], defrag(trimNodeEndBR(ds))))], rest.slice(1)]
-              : [unshift(['*', html('strong', defrag(trimNodeEndBR(bs)))], ds), rest])
-          (rest, context) ?? [['*', html('strong', defrag(trimNodeEndBR(bs)))], rest];
+              ? [[html('em', unshift([html('strong', defrag(trimNodeEnd(bs)))], defrag(trimNodeEnd(ds))))], rest.slice(1)]
+              : [unshift(['*', html('strong', defrag(trimNodeEnd(bs)))], ds), rest])
+          (rest, context) ?? [['*', html('strong', defrag(trimNodeEnd(bs)))], rest];
       case '***':
-        return [[html('em', [html('strong', defrag(trimNodeEndBR(bs)))])], rest];
+        return [[html('em', [html('strong', defrag(trimNodeEnd(bs)))])], rest];
     }
     assert(false);
   },

@@ -27,9 +27,9 @@ describe('Unit: parser/inline/strong', () => {
 
     it('basic', () => {
       assert.deepStrictEqual(inspect(parser('**a**')), [['<strong>a</strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('**a **')), [['<strong>a </strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**a **')), [['<strong>a</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a\n**')), [['<strong>a</strong>'], '']);
-      assert.deepStrictEqual(inspect(parser('**a\\\n**')), [['<strong>a<span class="linebreak"> </span></strong>'], '']);
+      assert.deepStrictEqual(inspect(parser('**a\\\n**')), [['<strong>a</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**ab**')), [['<strong>ab</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a\nb**')), [['<strong>a<br>b</strong>'], '']);
       assert.deepStrictEqual(inspect(parser('**a\\\nb**')), [['<strong>a<span class="linebreak"> </span>b</strong>'], '']);
