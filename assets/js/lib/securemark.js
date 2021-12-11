@@ -6966,7 +6966,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.deletion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('~~'), (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '~~')]), (0, source_1.str)('~~'), false, ([, bs], rest) => [
-                [(0, typed_dom_1.html)('del', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
+                [(0, typed_dom_1.html)('del', (0, typed_dom_1.defrag)((0, util_1.trimNodeEndBR)(bs)))],
                 rest
             ], ([as, bs], rest) => [
                 (0, array_1.unshift)(as, bs),
@@ -6998,7 +6998,7 @@ require = function () {
                 strong_1.strong,
                 (0, combinator_1.some)(inline_1.inline, '*')
             ]))), (0, source_1.str)('*'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
-                [(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
+                [(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))],
                 rest
             ] : [
                 (0, array_1.unshift)(as, bs),
@@ -7039,41 +7039,41 @@ require = function () {
                 switch (cs[0]) {
                 case '*':
                     return (_a = (0, combinator_1.bind)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '**')]), (ds, rest) => rest.slice(0, 2) === '**' && (0, util_1.isEndTightNodes)(ds) ? [
-                        [(0, typed_dom_1.html)('strong', (0, array_1.unshift)([(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))], (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(ds))))],
+                        [(0, typed_dom_1.html)('strong', (0, array_1.unshift)([(0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))], (0, typed_dom_1.defrag)(ds)))],
                         rest.slice(2)
                     ] : [
                         (0, array_1.unshift)([
                             '**',
-                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))
+                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))
                         ], ds),
                         rest
                     ])(rest, context)) !== null && _a !== void 0 ? _a : [
                         [
                             '**',
-                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))
+                            (0, typed_dom_1.html)('em', (0, typed_dom_1.defrag)(bs))
                         ],
                         rest
                     ];
                 case '**':
                     return (_b = (0, combinator_1.bind)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '*')]), (ds, rest) => rest.slice(0, 1) === '*' && (0, util_1.isEndTightNodes)(ds) ? [
-                        [(0, typed_dom_1.html)('em', (0, array_1.unshift)([(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))], (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(ds))))],
+                        [(0, typed_dom_1.html)('em', (0, array_1.unshift)([(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))], (0, typed_dom_1.defrag)(ds)))],
                         rest.slice(1)
                     ] : [
                         (0, array_1.unshift)([
                             '*',
-                            (0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))
+                            (0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))
                         ], ds),
                         rest
                     ])(rest, context)) !== null && _b !== void 0 ? _b : [
                         [
                             '*',
-                            (0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))
+                            (0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))
                         ],
                         rest
                     ];
                 case '***':
                     return [
-                        [(0, typed_dom_1.html)('em', [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))])],
+                        [(0, typed_dom_1.html)('em', [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))])],
                         rest
                     ];
                 }
@@ -7441,11 +7441,11 @@ require = function () {
                         return {};
                     }
                 })(), (0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`)), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest, context) => [
-                    [elem(tag, as, (0, util_1.trimEndBR)((0, typed_dom_1.defrag)(bs)), cs, context)],
+                    [elem(tag, as, (0, util_1.trimNodeEndBR)((0, typed_dom_1.defrag)(bs)), cs, context)],
                     rest
                 ])), ([, tag]) => tag)),
                 (0, combinator_1.match)(/^(?=<([a-z]+)(?=[^\S\n]|>))/, (0, memoize_1.memoize)(([, tag]) => (0, combinator_1.validate)(`<${ tag }`, `</${ tag }>`, (0, combinator_1.surround)((0, combinator_1.surround)((0, source_1.str)(`<${ tag }`), (0, combinator_1.some)(exports.attribute), (0, source_1.str)('>'), true), (0, util_1.startLoose)((0, combinator_1.some)((0, combinator_1.union)([inline_1.inline]), `</${ tag }>`), `</${ tag }>`), (0, source_1.str)(`</${ tag }>`), false, ([as, bs, cs], rest) => [
-                    [elem(tag, as, (0, util_1.trimEndBR)((0, typed_dom_1.defrag)(bs)), cs, {})],
+                    [elem(tag, as, (0, util_1.trimNodeEndBR)((0, typed_dom_1.defrag)(bs)), cs, {})],
                     rest
                 ], ([as, bs], rest) => as.length === 1 ? [
                     (0, array_1.unshift)(as, bs),
@@ -7561,7 +7561,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.insertion = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('++'), (0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '++')]), (0, source_1.str)('++'), false, ([, bs], rest) => [
-                [(0, typed_dom_1.html)('ins', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
+                [(0, typed_dom_1.html)('ins', (0, typed_dom_1.defrag)((0, util_1.trimNodeEndBR)(bs)))],
                 rest
             ], ([as, bs], rest) => [
                 (0, array_1.unshift)(as, bs),
@@ -7733,7 +7733,7 @@ require = function () {
             const typed_dom_1 = _dereq_('typed-dom');
             const array_1 = _dereq_('spica/array');
             exports.mark = (0, combinator_1.lazy)(() => (0, combinator_1.creator)((0, combinator_1.surround)((0, source_1.str)('=='), (0, util_1.startTight)((0, combinator_1.union)([(0, combinator_1.some)(inline_1.inline, '==')])), (0, source_1.str)('=='), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
-                [(0, typed_dom_1.html)('mark', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
+                [(0, typed_dom_1.html)('mark', (0, typed_dom_1.defrag)(bs))],
                 rest
             ] : [
                 (0, array_1.unshift)(as, bs),
@@ -8123,7 +8123,7 @@ require = function () {
                 (0, combinator_1.some)(inline_1.inline, '*'),
                 (0, source_1.str)('*')
             ]), '**')), (0, source_1.str)('**'), false, ([as, bs, cs], rest) => (0, util_1.isEndTightNodes)(bs) ? [
-                [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)((0, util_1.trimEndBR)(bs)))],
+                [(0, typed_dom_1.html)('strong', (0, typed_dom_1.defrag)(bs))],
                 rest
             ] : [
                 (0, array_1.unshift)(as, bs),
@@ -8886,7 +8886,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.stringify = exports.trimEndBR = exports.trimNodeEnd = exports.trimNode = exports.isEndTightNodes = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = void 0;
+            exports.stringify = exports.trimNodeEndBR = exports.trimNodeEnd = exports.trimNode = exports.isEndTightNodes = exports.isStartTightNodes = exports.startTight = exports.isStartLoose = exports.startLoose = exports.visualize = void 0;
             const global_1 = _dereq_('spica/global');
             const parser_1 = _dereq_('../combinator/data/parser');
             const combinator_1 = _dereq_('../combinator');
@@ -9020,8 +9020,7 @@ require = function () {
             function isEndTightNodes(nodes) {
                 if (nodes.length === 0)
                     return true;
-                const last = nodes.length - 1;
-                return typeof nodes[last] === 'string' && nodes[last].length > 1 ? isVisible(nodes[last], -1) || isVisible(nodes[last], -2) : isVisible(nodes[last], -1) || last === 0 || isVisible(nodes[last - 1], -1);
+                return isVisible(nodes[nodes.length - 1], -1);
             }
             exports.isEndTightNodes = isEndTightNodes;
             function isVisible(node, position) {
@@ -9085,13 +9084,13 @@ require = function () {
                 return (0, array_1.push)(nodes, skip);
             }
             exports.trimNodeEnd = trimNodeEnd;
-            function trimEndBR(nodes) {
+            function trimNodeEndBR(nodes) {
                 if (nodes.length === 0)
                     return nodes;
                 const node = nodes[nodes.length - 1];
                 return typeof node === 'object' && node.tagName === 'BR' ? (0, array_1.pop)(nodes)[0] : nodes;
             }
-            exports.trimEndBR = trimEndBR;
+            exports.trimNodeEndBR = trimNodeEndBR;
             function stringify(nodes) {
                 let acc = '';
                 for (let i = 0; i < nodes.length; ++i) {
