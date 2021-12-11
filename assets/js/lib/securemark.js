@@ -9056,26 +9056,31 @@ require = function () {
             }
             exports.trimNode = trimNode;
             function trimNodeStart(nodes) {
-                const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
-                for (let first = nodes[0]; nodes.length > 0 && !isVisible(first, 0) && !(typeof first === 'object' && first.className === 'comment');) {
-                    if (typeof first === 'string') {
-                        const pos = first.length - first.trimStart().length;
+                for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
+                    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer')
+                        break;
+                    if (typeof node === 'object' && node.className === 'comment')
+                        break;
+                    if (typeof node === 'string') {
+                        const pos = node.length - node.trimStart().length;
                         if (pos > 0) {
-                            nodes[0] = first.slice(pos);
+                            nodes[0] = node.slice(pos);
                             break;
                         }
                     }
-                    nodes.pop();
+                    nodes.shift();
                 }
-                return (0, array_1.push)(nodes, skip);
+                return nodes;
             }
             function trimNodeEnd(nodes) {
                 const skip = nodes.length > 0 && typeof nodes[nodes.length - 1] === 'object' && nodes[nodes.length - 1]['className'] === 'indexer' ? [nodes.pop()] : [];
-                for (let last = nodes[0]; nodes.length > 0 && !isVisible(last = nodes[nodes.length - 1], -1) && !(typeof last === 'object' && last.className === 'comment');) {
-                    if (typeof last === 'string') {
-                        const pos = last.trimEnd().length;
+                for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[nodes.length - 1], -1);) {
+                    if (typeof node === 'object' && node.className === 'comment')
+                        break;
+                    if (typeof node === 'string') {
+                        const pos = node.trimEnd().length;
                         if (pos > 0) {
-                            nodes[nodes.length - 1] = last.slice(0, pos);
+                            nodes[nodes.length - 1] = node.slice(0, pos);
                             break;
                         }
                     }
