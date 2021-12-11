@@ -110,6 +110,12 @@ function create(
     case 'http:':
     case 'https:':
       assert(uri.host);
+      if (address.slice(0, 2) === '^/' &&
+          /(?:\/\.\.?)(?:\/|$)/.test(address.slice(0, address.search(/[?#]|$/)))) {
+        type = 'argument';
+        description = 'Subresource paths cannot contain dot-segments.';
+        break;
+      }
       return html('a',
         {
           href: uri.source,
