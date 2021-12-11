@@ -32,8 +32,6 @@ describe('Unit: parser/inline/insertion', () => {
       assert.deepStrictEqual(inspect(parser('++a\\\nb++')), [['<ins>a<span class="linebreak"> </span>b</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++\\+++')), [['<ins>+</ins>'], '']);
       assert.deepStrictEqual(inspect(parser('++a+++')), [['<ins>a</ins>'], '+']);
-      assert.deepStrictEqual(inspect(parser('+++a++')), [['<ins>+a</ins>'], '']);
-      assert.deepStrictEqual(inspect(parser('+++a+++')), [['<ins>+a</ins>'], '+']);
     });
 
     it('nest', () => {
