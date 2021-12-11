@@ -7908,11 +7908,11 @@ require = function () {
                 [''],
                 as
             ]), ([[text]]) => text === '' || text.trim() !== ''), ([[text], params], rest, context) => {
-                var _a, _b, _c, _d, _e, _f, _g, _h;
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
                 const INSECURE_URI = params.shift();
                 const url = new url_1.ReadonlyURL((0, link_1.resolve)(INSECURE_URI, (_a = context.host) !== null && _a !== void 0 ? _a : global_1.location, (_c = (_b = context.url) !== null && _b !== void 0 ? _b : context.host) !== null && _c !== void 0 ? _c : global_1.location), ((_d = context.host) === null || _d === void 0 ? void 0 : _d.href) || global_1.location.href);
                 let cache;
-                const el = global_1.undefined || (cache = (_f = (_e = context.caches) === null || _e === void 0 ? void 0 : _e.media) === null || _f === void 0 ? void 0 : _f.get(url.href).cloneNode(true)) || (0, typed_dom_1.html)('img', {
+                const el = global_1.undefined || (cache = (_g = (_f = (_e = context.caches) === null || _e === void 0 ? void 0 : _e.media) === null || _f === void 0 ? void 0 : _f.get(url.href)) === null || _g === void 0 ? void 0 : _g.cloneNode(true)) || (0, typed_dom_1.html)('img', {
                     class: 'media',
                     'data-src': url.source,
                     alt: text
@@ -7924,7 +7924,7 @@ require = function () {
                     ];
                 (cache === null || cache === void 0 ? void 0 : cache.hasAttribute('alt')) && (cache === null || cache === void 0 ? void 0 : cache.setAttribute('alt', text));
                 (0, typed_dom_1.define)(el, (0, html_1.attributes)('media', (0, array_1.push)([], el.classList), optspec, params));
-                if (((_h = (_g = context.syntax) === null || _g === void 0 ? void 0 : _g.inline) === null || _h === void 0 ? void 0 : _h.link) === false || cache && cache.tagName !== 'IMG')
+                if (((_j = (_h = context.syntax) === null || _h === void 0 ? void 0 : _h.inline) === null || _j === void 0 ? void 0 : _j.link) === false || cache && cache.tagName !== 'IMG')
                     return [
                         [el],
                         rest
