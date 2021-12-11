@@ -172,18 +172,13 @@ export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string
   return trimNodeStart(trimNodeEnd(nodes));
 }
 function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  for (
-    let first = nodes[0];
-    nodes.length > 0 &&
-    !isVisible(first = nodes[0], 0) &&
-    !(typeof first === 'object' && first.className === 'comment');
-  ) {
-    assert(nodes.length > 0);
-    if (nodes.length === 1 && typeof first === 'object' && first.className === 'indexer') break;
-    if (typeof first === 'string') {
-      const pos = first.length - first.trimStart().length;
+  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[0], 0);) {
+    if (nodes.length === 1 && typeof node === 'object' && node.className === 'indexer') break;
+    if (typeof node === 'object' && node.className === 'comment') break;
+    if (typeof node === 'string') {
+      const pos = node.length - node.trimStart().length;
       if (pos > 0) {
-        nodes[0] = first.slice(pos);
+        nodes[0] = node.slice(pos);
         break;
       }
     }
@@ -197,17 +192,12 @@ export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | str
     nodes[nodes.length - 1]['className'] === 'indexer'
     ? [nodes.pop()!]
     : [];
-  for (
-    let last = nodes[0];
-    nodes.length > 0 &&
-    !isVisible(last = nodes[nodes.length - 1], -1) &&
-    !(typeof last === 'object' && last.className === 'comment');
-  ) {
-    assert(nodes.length > 0);
-    if (typeof last === 'string') {
-      const pos = last.trimEnd().length;
+  for (let node = nodes[0]; nodes.length > 0 && !isVisible(node = nodes[nodes.length - 1], -1);) {
+    if (typeof node === 'object' && node.className === 'comment') break;
+    if (typeof node === 'string') {
+      const pos = node.trimEnd().length;
       if (pos > 0) {
-        nodes[nodes.length - 1] = last.slice(0, pos);
+        nodes[nodes.length - 1] = node.slice(0, pos);
         break;
       }
     }
