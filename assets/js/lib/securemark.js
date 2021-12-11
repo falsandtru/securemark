@@ -215,21 +215,52 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.aggregate = exports.bundle = void 0;
-            function bundle(...as) {
+            exports.compile = exports.aggregate = exports.bundle = void 0;
+            const function_1 = _dereq_('./function');
+            function bundle(...fs) {
                 return function (...bs) {
-                    return as.map((f, i) => f.call(this, bs[i]));
+                    return fs.map((f, i) => f.call(this, bs[i]));
                 };
             }
             exports.bundle = bundle;
-            function aggregate(...as) {
-                return function (b) {
-                    return as.map(f => f.call(this, b));
+            function aggregate(...fs) {
+                return function (a) {
+                    return fs.map(f => f.call(this, a));
                 };
             }
             exports.aggregate = aggregate;
+            function compile(...fs) {
+                return function (a) {
+                    var _a;
+                    const gs = [];
+                    try {
+                        for (let i = 0; i < fs.length; ++i) {
+                            gs.push(fs[i].call(this, a));
+                        }
+                        return (0, function_1.singleton)(() => cancel(gs));
+                    } catch (reason) {
+                        cancel(gs);
+                        throw new Error(`Spica: Arrow: ${ (_a = reason === null || reason === void 0 ? void 0 : reason.toString()) !== null && _a !== void 0 ? _a : reason }`);
+                    }
+                };
+            }
+            exports.compile = compile;
+            function cancel(cancellers) {
+                const reasons = [];
+                for (let i = 0; i < cancellers.length; ++i) {
+                    try {
+                        cancellers[i]();
+                    } catch (reason) {
+                        reasons.push(reason);
+                    }
+                }
+                if (reasons.length > 0) {
+                    throw new AggregateError(reasons);
+                }
+                return;
+            }
         },
-        {}
+        { './function': 16 }
     ],
     8: [
         function (_dereq_, module, exports) {
@@ -835,7 +866,7 @@ require = function () {
             exports.uncurry = uncurry;
             function uncurry_(f) {
                 const arity = f.length;
-                return (...xs) => arity === 0 || xs.length < 2 || xs.length <= arity ? f(...xs) : uncurry_(f(...(0, array_1.shift)(xs, arity)[0]))(...xs);
+                return (...xs) => arity === 0 || xs.length <= arity ? f(...xs) : uncurry_(f(...(0, array_1.shift)(xs, arity)[0]))(...xs);
             }
         },
         { './array': 6 }
@@ -869,9 +900,7 @@ require = function () {
         function (_dereq_, module, exports) {
             'use strict';
             Object.defineProperty(exports, '__esModule', { value: true });
-            exports.run = exports.clear = exports.mapReturn = exports.mapParameters = exports.singleton = void 0;
-            const global_1 = _dereq_('./global');
-            const exception_1 = _dereq_('./exception');
+            exports.clear = exports.singleton = void 0;
             const noop_1 = _dereq_('./noop');
             function singleton(f) {
                 let result;
@@ -884,55 +913,12 @@ require = function () {
                 };
             }
             exports.singleton = singleton;
-            function mapParameters(f, g) {
-                return (...as) => f(...g(...as));
-            }
-            exports.mapParameters = mapParameters;
-            function mapReturn(f, g) {
-                return (...as) => g(f(...as));
-            }
-            exports.mapReturn = mapReturn;
             function clear(f) {
                 return (...as) => void f(...as);
             }
             exports.clear = clear;
-            function run(fs) {
-                const gs = (0, global_1.Array)(fs.length);
-                try {
-                    for (let i = 0; i < fs.length; ++i) {
-                        gs[i] = fs[i]();
-                    }
-                } catch (reason) {
-                    for (let i = 0; gs[i]; ++i) {
-                        try {
-                            gs[i]();
-                        } catch (reason) {
-                            (0, exception_1.causeAsyncException)(reason);
-                        }
-                    }
-                    throw reason;
-                }
-                return singleton(() => {
-                    const rs = [];
-                    for (let i = 0; gs[i]; ++i) {
-                        try {
-                            gs[i]();
-                        } catch (reason) {
-                            rs.push(reason);
-                        }
-                    }
-                    if (rs.length > 0) {
-                        throw new AggregateError(rs);
-                    }
-                });
-            }
-            exports.run = run;
         },
-        {
-            './exception': 14,
-            './global': 17,
-            './noop': 22
-        }
+        { './noop': 22 }
     ],
     17: [
         function (_dereq_, module, exports) {
@@ -2165,7 +2151,7 @@ require = function () {
                         }
                         exports.join = join;
                     },
-                    { './global': 9 }
+                    { './global': 8 }
                 ],
                 6: [
                     function (_dereq_, module, exports) {
@@ -2183,21 +2169,7 @@ require = function () {
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
-                        exports.causeAsyncException = void 0;
-                        function causeAsyncException(reason) {
-                            void Promise.reject(reason);
-                        }
-                        exports.causeAsyncException = causeAsyncException;
-                    },
-                    {}
-                ],
-                8: [
-                    function (_dereq_, module, exports) {
-                        'use strict';
-                        Object.defineProperty(exports, '__esModule', { value: true });
-                        exports.run = exports.clear = exports.mapReturn = exports.mapParameters = exports.singleton = void 0;
-                        const global_1 = _dereq_('./global');
-                        const exception_1 = _dereq_('./exception');
+                        exports.clear = exports.singleton = void 0;
                         const noop_1 = _dereq_('./noop');
                         function singleton(f) {
                             let result;
@@ -2210,57 +2182,14 @@ require = function () {
                             };
                         }
                         exports.singleton = singleton;
-                        function mapParameters(f, g) {
-                            return (...as) => f(...g(...as));
-                        }
-                        exports.mapParameters = mapParameters;
-                        function mapReturn(f, g) {
-                            return (...as) => g(f(...as));
-                        }
-                        exports.mapReturn = mapReturn;
                         function clear(f) {
                             return (...as) => void f(...as);
                         }
                         exports.clear = clear;
-                        function run(fs) {
-                            const gs = (0, global_1.Array)(fs.length);
-                            try {
-                                for (let i = 0; i < fs.length; ++i) {
-                                    gs[i] = fs[i]();
-                                }
-                            } catch (reason) {
-                                for (let i = 0; gs[i]; ++i) {
-                                    try {
-                                        gs[i]();
-                                    } catch (reason) {
-                                        (0, exception_1.causeAsyncException)(reason);
-                                    }
-                                }
-                                throw reason;
-                            }
-                            return singleton(() => {
-                                const rs = [];
-                                for (let i = 0; gs[i]; ++i) {
-                                    try {
-                                        gs[i]();
-                                    } catch (reason) {
-                                        rs.push(reason);
-                                    }
-                                }
-                                if (rs.length > 0) {
-                                    throw new AggregateError(rs);
-                                }
-                            });
-                        }
-                        exports.run = run;
                     },
-                    {
-                        './exception': 7,
-                        './global': 9,
-                        './noop': 11
-                    }
+                    { './noop': 10 }
                 ],
-                9: [
+                8: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         const global = void 0 || typeof globalThis !== 'undefined' && globalThis || typeof self !== 'undefined' && self || Function('return this')();
@@ -2269,7 +2198,7 @@ require = function () {
                     },
                     {}
                 ],
-                10: [
+                9: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2310,10 +2239,10 @@ require = function () {
                     },
                     {
                         './compare': 6,
-                        './global': 9
+                        './global': 8
                     }
                 ],
-                11: [
+                10: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2324,7 +2253,7 @@ require = function () {
                     },
                     {}
                 ],
-                12: [
+                11: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         var _a, _b;
@@ -2671,11 +2600,11 @@ require = function () {
                     },
                     {
                         './alias': 4,
-                        './global': 9,
-                        './noop': 11
+                        './global': 8,
+                        './noop': 10
                     }
                 ],
-                13: [
+                12: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2757,9 +2686,9 @@ require = function () {
                             }
                         }
                     },
-                    { './global': 9 }
+                    { './global': 8 }
                 ],
-                14: [
+                13: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -2812,12 +2741,12 @@ require = function () {
                         }
                     },
                     {
-                        './proxy': 15,
-                        './util/dom': 16,
+                        './proxy': 14,
+                        './util/dom': 15,
                         'spica/alias': 4
                     }
                 ],
-                15: [
+                14: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         var _a, _b, _c, _d;
@@ -3121,14 +3050,14 @@ require = function () {
                         }
                     },
                     {
-                        './util/dom': 16,
-                        './util/identity': 17,
+                        './util/dom': 15,
+                        './util/identity': 16,
                         'spica/alias': 4,
                         'spica/array': 5,
-                        'spica/global': 9
+                        'spica/global': 8
                     }
                 ],
-                16: [
+                15: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -3196,18 +3125,22 @@ require = function () {
                                 case 'function':
                                     if (name.length < 3)
                                         throw new Error(`TypedDOM: Attribute names for event listeners must have an event name but got "${ name }".`);
-                                    if (name.slice(0, 2) !== 'on')
-                                        throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${ name }".`);
-                                    el.addEventListener(name.slice(2), value, {
-                                        passive: [
-                                            'wheel',
-                                            'mousewheel',
-                                            'touchstart',
-                                            'touchmove',
-                                            'touchend',
-                                            'touchcancel'
-                                        ].includes(name.slice(2))
-                                    });
+                                    const names = name.split(/\s+/);
+                                    for (let i = 0; i < names.length; ++i) {
+                                        const name = names[i];
+                                        if (name.slice(0, 2) !== 'on')
+                                            throw new Error(`TypedDOM: Attribute names for event listeners must start with "on" but got "${ name }".`);
+                                        el.addEventListener(name.slice(2), value, {
+                                            passive: [
+                                                'wheel',
+                                                'mousewheel',
+                                                'touchstart',
+                                                'touchmove',
+                                                'touchend',
+                                                'touchcancel'
+                                            ].includes(name.slice(2))
+                                        });
+                                    }
                                     continue;
                                 case 'object':
                                     el.removeAttribute(name);
@@ -3242,11 +3175,11 @@ require = function () {
                     },
                     {
                         'spica/alias': 4,
-                        'spica/global': 9,
-                        'spica/memoize': 10
+                        'spica/global': 8,
+                        'spica/memoize': 9
                     }
                 ],
-                17: [
+                16: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         var _a;
@@ -3258,11 +3191,11 @@ require = function () {
                         exports.identity = (0, random_1.unique)(random_1.rnd0Z, 2, (_a = global_1.global[ids]) !== null && _a !== void 0 ? _a : global_1.global[ids] = new global_1.Set());
                     },
                     {
-                        'spica/global': 9,
-                        'spica/random': 13
+                        'spica/global': 8,
+                        'spica/random': 12
                     }
                 ],
-                18: [
+                17: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -3313,12 +3246,12 @@ require = function () {
                         exports.bind = bind;
                     },
                     {
-                        'spica/function': 8,
-                        'spica/noop': 11,
-                        'spica/promise': 12
+                        'spica/function': 7,
+                        'spica/noop': 10,
+                        'spica/promise': 11
                     }
                 ],
-                19: [
+                18: [
                     function (_dereq_, module, exports) {
                         'use strict';
                         Object.defineProperty(exports, '__esModule', { value: true });
@@ -3333,7 +3266,7 @@ require = function () {
                         }
                         exports.apply = apply;
                     },
-                    { './dom': 16 }
+                    { './dom': 15 }
                 ],
                 'typed-dom': [
                     function (_dereq_, module, exports) {
@@ -3475,13 +3408,13 @@ require = function () {
                         });
                     },
                     {
-                        './src/builder': 14,
-                        './src/proxy': 15,
-                        './src/util/dom': 16,
-                        './src/util/identity': 17,
-                        './src/util/listener': 18,
-                        './src/util/query': 19,
-                        'spica/global': 9
+                        './src/builder': 13,
+                        './src/proxy': 14,
+                        './src/util/dom': 15,
+                        './src/util/identity': 16,
+                        './src/util/listener': 17,
+                        './src/util/query': 18,
+                        'spica/global': 8
                     }
                 ]
             }, {}, [
@@ -7735,9 +7668,9 @@ require = function () {
                 switch (uri.protocol) {
                 case 'http:':
                 case 'https:':
-                    if (INSECURE_URI.slice(0, 2) === '^/' && /(?:\/\.\.?)(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
+                    if (INSECURE_URI.slice(0, 2) === '^/' && /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
                         type = 'argument';
-                        description = 'Subresource paths cannot contain dot-segments.';
+                        description = 'Dot-segments cannot be used in subresource paths.';
                         break;
                     }
                     return (0, typed_dom_1.html)('a', {
@@ -7970,12 +7903,12 @@ require = function () {
                 link_1.option
             ]);
             function sanitize(uri, target) {
-                if (/^\.\.?\//.test(uri.source)) {
+                if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
                     (0, typed_dom_1.define)(target, {
                         class: void target.classList.add('invalid'),
                         'data-invalid-syntax': 'media',
                         'data-invalid-type': 'argument',
-                        'data-invalid-description': 'Relative paths cannot be used with media syntax; Use subresource paths instead.'
+                        'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.'
                     });
                     return false;
                 }
