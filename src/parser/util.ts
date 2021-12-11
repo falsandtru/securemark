@@ -135,7 +135,11 @@ export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boo
 }
 export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
-  return isVisible(nodes[nodes.length - 1], -1);
+  for (let i = nodes.length; i--;) {
+    if (typeof nodes[i] === 'object' && nodes[i]['className'] === 'comment') continue;
+    return isVisible(nodes[i], -1);
+  }
+  return false;
 }
 function isVisible(node: HTMLElement | string, strpos?: number): boolean {
   switch (typeof node) {
