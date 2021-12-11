@@ -99,7 +99,7 @@ export function resolve(uri: string, host: URL | Location, source: URL | Locatio
 }
 
 function create(
-  address: string,
+  INSECURE_URI: string,
   content: readonly (string | HTMLElement)[],
   uri: ReadonlyURL,
   origin: string,
@@ -110,8 +110,8 @@ function create(
     case 'http:':
     case 'https:':
       assert(uri.host);
-      if (address.slice(0, 2) === '^/' &&
-          /(?:\/\.\.?)(?:\/|$)/.test(address.slice(0, address.search(/[?#]|$/)))) {
+      if (INSECURE_URI.slice(0, 2) === '^/' &&
+          /(?:\/\.\.?)(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
         type = 'argument';
         description = 'Subresource paths cannot contain dot-segments.';
         break;
@@ -126,19 +126,19 @@ function create(
               : undefined,
         },
         content.length === 0
-          ? decode(address)
+          ? decode(INSECURE_URI)
           : content);
     case 'tel:':
       if (content.length === 0) {
-        content = [address];
+        content = [INSECURE_URI];
       }
       const pattern = /^(?:tel:)?(?:\+(?!0))?\d+(?:-\d+)*$/i;
       switch (true) {
         case content.length === 1
           && typeof content[0] === 'string'
-          && pattern.test(address)
+          && pattern.test(INSECURE_URI)
           && pattern.test(content[0])
-          && address.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
+          && INSECURE_URI.replace(/[^+\d]/g, '') === content[0].replace(/[^+\d]/g, ''):
           return html('a', { href: uri.source }, content);
       }
       type = 'content';
@@ -153,7 +153,7 @@ function create(
       'data-invalid-description': description ??= 'Invalid protocol.',
     },
     content.length === 0
-      ? address
+      ? INSECURE_URI
       : content);
 }
 
