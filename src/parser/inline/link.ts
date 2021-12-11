@@ -111,9 +111,9 @@ function create(
     case 'https:':
       assert(uri.host);
       if (INSECURE_URI.slice(0, 2) === '^/' &&
-          /(?:\/\.\.?)(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
+          /\/\.\.?(?:\/|$)/.test(INSECURE_URI.slice(0, INSECURE_URI.search(/[?#]|$/)))) {
         type = 'argument';
-        description = 'Subresource paths cannot contain dot-segments.';
+        description = 'Dot-segments cannot be used in subresource paths.';
         break;
       }
       return html('a',

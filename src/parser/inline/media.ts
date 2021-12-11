@@ -68,12 +68,12 @@ const option: MediaParser.ParameterParser.OptionParser = union([
 function sanitize(uri: ReadonlyURL, target: HTMLElement): boolean {
   assert(target.tagName === 'IMG');
   assert(!target.matches('.invalid'));
-  if (/^\.\.?\//.test(uri.source)) {
+  if (/\/\.\.?(?:\/|$)/.test('/' + uri.source.slice(0, uri.source.search(/[?#]|$/)))) {
     define(target, {
       class: void target.classList.add('invalid'),
       'data-invalid-syntax': 'media',
       'data-invalid-type': 'argument',
-      'data-invalid-description': 'Relative paths cannot be used with media syntax; Use subresource paths instead.',
+      'data-invalid-description': 'Dot-segments cannot be used in media paths; use subresource paths instead.',
     });
     return false;
   }
