@@ -2,7 +2,7 @@ import { MarkParser } from '../inline';
 import { union, some, creator, surround, lazy } from '../../combinator';
 import { inline } from '../inline';
 import { str } from '../source';
-import { startTight, isEndTightNodes, trimNodeEnd } from '../util';
+import { startTight, isEndTightNodes } from '../util';
 import { html, defrag } from 'typed-dom';
 import { unshift } from 'spica/array';
 
@@ -12,6 +12,6 @@ export const mark: MarkParser = lazy(() => creator(surround(
   str('=='), false,
   ([as, bs, cs], rest) =>
     isEndTightNodes(bs)
-      ? [[html('mark', defrag(trimNodeEnd(bs)))], rest]
+      ? [[html('mark', defrag(bs))], rest]
       : [unshift(as, bs), cs[0] + rest],
   ([as, bs], rest) => [unshift(as, bs), rest])));

@@ -135,12 +135,7 @@ export function isStartTightNodes(nodes: readonly (HTMLElement | string)[]): boo
 }
 export function isEndTightNodes(nodes: readonly (HTMLElement | string)[]): boolean {
   if (nodes.length === 0) return true;
-  const last = nodes.length - 1;
-  return typeof nodes[last] === 'string' && (nodes[last] as string).length > 1
-    ? isVisible(nodes[last], -1) ||
-      isVisible(nodes[last], -2)
-    : isVisible(nodes[last], -1) || last === 0 ||
-      isVisible(nodes[last - 1], -1);
+  return isVisible(nodes[nodes.length - 1], -1);
 }
 function isVisible(node: HTMLElement | string, position?: number): boolean {
   if (!node) return false;

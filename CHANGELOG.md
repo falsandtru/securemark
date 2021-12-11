@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.225.0
+
+- Refine some parsers to disallow trailing whitespace.
+
 ## 0.224.1
 
 - Refactoring.
