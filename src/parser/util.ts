@@ -172,18 +172,14 @@ export function trimNode(nodes: (HTMLElement | string)[]): (HTMLElement | string
   return trimNodeStart(trimNodeEnd(nodes));
 }
 function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
-  const skip = nodes.length > 0 &&
-    typeof nodes[nodes.length - 1] === 'object' &&
-    nodes[nodes.length - 1]['className'] === 'indexer'
-    ? [nodes.pop()!]
-    : [];
   for (
     let first = nodes[0];
     nodes.length > 0 &&
-    !isVisible(first, 0) &&
+    !isVisible(first = nodes[0], 0) &&
     !(typeof first === 'object' && first.className === 'comment');
   ) {
     assert(nodes.length > 0);
+    if (nodes.length === 1 && typeof first === 'object' && first.className === 'indexer') break;
     if (typeof first === 'string') {
       const pos = first.length - first.trimStart().length;
       if (pos > 0) {
@@ -191,9 +187,9 @@ function trimNodeStart(nodes: (HTMLElement | string)[]): (HTMLElement | string)[
         break;
       }
     }
-    nodes.pop();
+    nodes.shift();
   }
-  return push(nodes, skip);
+  return nodes;
 }
 export function trimNodeEnd(nodes: (HTMLElement | string)[]): (HTMLElement | string)[] {
   const skip = nodes.length > 0 &&
